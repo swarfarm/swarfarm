@@ -25,7 +25,7 @@ os.environ['LANG'] = 'en_US.UTF-8'
 SECRET_KEY = 'orf+tgfh64$b7sfn9v+brfu@a9@b43+o+b4=@f^^c0i!t^x8qr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '.swarfarm.com'
@@ -114,7 +114,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'http://static.swarfarm.com/'
 STATIC_ROOT = '/var/www/swarfarm_static'
 
 TEMPLATE_DIRS = (

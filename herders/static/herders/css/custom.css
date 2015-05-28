@@ -31,6 +31,10 @@ body {
 .monster-table {
 }
 
+.monster-table thead {
+    cursor: pointer;
+}
+
 .monster-image {
     padding: 0 !important;
     position: relative;
@@ -64,6 +68,10 @@ body {
 .monster-element img {
     width: 30px;
     height: 30px;
+}
+
+.monster-element span {
+    display: none;
 }
 
 .monster-awakens {
@@ -112,4 +120,14 @@ body {
 
 .monster-form {
     width: 600px;
+}
+
+.headerSortUp:after {
+    font-family: 'Glyphicons Halflings';
+    content: "\e113";
+}
+
+.headerSortDown:after {
+    font-family: "Glyphicons Halflings";
+    content: "\e114";
 }

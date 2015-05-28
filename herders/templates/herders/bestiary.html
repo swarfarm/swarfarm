@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load utils %}
+
+{% block title %}Monster Library - {{ block.super }}{% endblock title %}
+
+{% block css %}<link href="{% static 'herders/css/profile.css' %}" rel="stylesheet"/>{% endblock css %}
+
+{% block subnav %}
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+        <div class="container-fluid">
+            <a href="{% url 'herders:bestiary' monster_element='all' %}" class="btn btn-default navbar-btn">All</a>
+            <a href="{% url 'herders:bestiary' monster_element='fire' %}" class="btn btn-default navbar-btn">
+                <img src="{% static 'herders/images/elements/fire.png' %}" height="20" width="20" />
+                Fire
+            </a>
+            <a href="{% url 'herders:bestiary' monster_element='wind' %}" class="btn btn-default navbar-btn">
+                <img src="{% static 'herders/images/elements/wind.png' %}" height="20" width="20" />
+                Wind
+            </a>
+            <a href="{% url 'herders:bestiary' monster_element='water' %}" class="btn btn-default navbar-btn">
+                <img src="{% static 'herders/images/elements/water.png' %}" height="20" width="20" />
+                Water
+            </a>
+            <a href="{% url 'herders:bestiary' monster_element='dark' %}" class="btn btn-default navbar-btn">
+                <img src="{% static 'herders/images/elements/dark.png' %}" height="20" width="20" />
+                Dark
+            </a>
+            <a href="{% url 'herders:bestiary' monster_element='light' %}" class="btn btn-default navbar-btn">
+                <img src="{% static 'herders/images/elements/light.png' %}" height="20" width="20" />
+                Light
+            </a>
+        </div><!-- /.container-fluid -->
+    </nav>
+{% endblock subnav %}
+
+{% block content %}
+    {% if no_filter %}
+        <div class="alert alert-info" role="alert">Please select an element filter.</div>
+    {% endif %}
+
+    {% if monster_list %}
+        {% static 'herders/images/' as img_url_prefix %}
+        <table class="table table-hover table-condensed monster-table">
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Element</th>
+                <th>Type</th>
+                <th>Awakens To</th>
+                <th>Awakens From</th>
+                <th>Awakening Materials</th>
+                <th></th>
+            </tr>
+            {% for monster in monster_list %}
+            <tr>
+                <td class="monster-image">
+                    <a href="{% url 'herders:bestiary_detail' monster_id=monster.pk %}">
+                        <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}" class="monster-thumb"/>
+                        <div>
+                            {% if monster.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/{{ monster.base_stars }}star-awakened.png" class="monster-star" />
+                            {% elif monster.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/{{ monster.base_stars }}star-unawakened.png" class="monster-star" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/{{ monster.base_stars }}star-fodder.png" class="monster-star" />
+                            {% endif %}
+                        </div>
+                    </a>
+                </td>
+                <td class="monster-name">{{ monster.name|title }}</td>
+                <td class="monster-element"><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" /></td>
+                <td class="monster-type">{{ monster.archetype|title }}</td>
+                <td class="monster-awakens">
+                    {% if monster.awakens_to %}
+                        <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_to.pk %}">
+                            <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_to.image_filename }}" />
+                            {{ monster.awakens_to.name|title }}
+                        </a>
+                    {% endif %}
+                </td>
+                <td class="monster-awakens">
+                    {% if monster.awakens_from %}
+                        <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_from.pk %}">
+                            <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_from.image_filename }}" />
+                            {{ monster.awakens_from.name|title }}
+                        </a>
+                    {% endif %}
+                </td>
+                <td class="monster-awaken-materials">
+                    {% if monster.awaken_ele_mats_high %}
+                        <div>
+                            <img src="{{ img_url_prefix }}essences/{{ monster.element }}_high.png" />
+                            <span class="image-plus-text">{{ monster.awaken_ele_mats_high }}</span>
+                        </div>
+                    {% endif %}
+                    {% if monster.awaken_ele_mats_mid %}
+                        <div>
+                            <img src="{{ img_url_prefix }}essences/{{ monster.element }}_mid.png" />
+                            <span class="image-plus-text">{{ monster.awaken_ele_mats_mid }}</span>
+                        </div>
+                    {% endif %}
+                    {% if monster.awaken_ele_mats_low %}
+                        <div>
+                            <img src="{{ img_url_prefix }}essences/{{ monster.element }}_low.png" />
+                            <span class="image-plus-text">{{ monster.awaken_ele_mats_low }}</span>
+                        </div>
+                    {% endif %}
+                    {% if monster.awaken_magic_mats_high %}
+                        <div>
+                            <img src="{{ img_url_prefix }}essences/magic_high.png" />
+                            <span class="image-plus-text">{{ monster.awaken_magic_mats_high }}</span>
+                        </div>
+                    {% endif %}
+                    {% if monster.awaken_magic_mats_mid %}
+                        <div>
+                            <img src="{{ img_url_prefix }}essences/magic_mid.png" />
+                            <span class="image-plus-text">{{ monster.awaken_magic_mats_mid }}</span>
+                        </div>
+                    {% endif %}
+                    {% if monster.awaken_magic_mats_low %}
+                        <div>
+                            <img src="{{ img_url_prefix }}essences/magic_low.png" />
+                            <span class="image-plus-text">{{ monster.awaken_magic_mats_low }}</span>
+                        </div>
+                    {% endif %}
+                </td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+{% endblock %}

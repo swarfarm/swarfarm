@@ -1,0 +1,26 @@
+{% extends 'herders/profile/profile_base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block profile %}
+    <div class="row">
+        <div class="col-md-1">
+            {% static 'herders/images/' as img_url_prefix %}
+            <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}" class="monster-image-full"/>
+        </div>
+        <div class="col-md-4">
+            <h1>
+                {% static 'herders/images/' as img_url_prefix %}
+                <img src="{{ img_url_prefix }}elements/{{ monster.monster.element }}.png" />
+                <span>{{ monster.monster.name }}</span>
+            </h1>
+        </div>
+    </div>
+    <br />
+    <div class="monster-form">
+        {% crispy edit_monster_form %}
+    </div>
+
+
+{% endblock profile %}
+

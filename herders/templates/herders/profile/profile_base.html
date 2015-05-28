@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+    <link href="{% static 'herders/css/profile.css' %}" rel="stylesheet"/>
+    <link href="{% static 'herders/css/bootstrap-rating.css' %}" rel="stylesheet" />
+{% endblock css %}
+
+{% block subnav %}
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+        <div class="container-fluid">
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal"><span class="glyphicon glyphicon-plus"></span>Add Monster</button>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+{% endblock subnav %}
+
+{% block content %}
+
+{# Add monster modal #}
+<div class="modal fade" id="addMonsterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Add Monster</h4>
+            </div>
+            {% crispy add_monster_form %}
+        </div>
+    </div>
+</div>
+
+{% block profile %} {% endblock profile %}
+
+{% endblock content %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
+{% endblock javascript %}

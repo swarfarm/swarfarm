@@ -1,0 +1,73 @@
+{% extends 'herders/profile/profile_base.html' %}
+{% load staticfiles %}
+{% load utils %}
+
+{% block title %}My Monsters - {{ block.super }}{% endblock title %}
+
+{% block profile %}
+    {% if monster_stable %}
+        {% static 'herders/images/' as img_url_prefix %}
+        <table class="table table-hover table-condensed monster-table">
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Element</th>
+                <th>Fodder</th>
+                <th>Priority</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+            {% for instance in monster_stable %}
+                <tr>
+                    <td class="monster-image">
+                        <a href="{% url 'herders:edit_monster_instance' instance_id=instance.pk.hex %}">
+                            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
+                            <span>
+                                {% if instance.monster.is_awakened %}
+                                    <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-awakened.png" class="monster-star" />
+                                {% elif instance.monster.can_awaken %}
+                                    <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-unawakened.png" class="monster-star" />
+                                {% else %}
+                                    <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-fodder.png" class="monster-star" />
+                                {% endif %}
+                            </span>
+                            <span class="image-plus-text">{{ instance.level }}</span>
+                        </a>
+                    </td>
+                    <td>{{ instance.monster.name|title }}</td>
+                    <td>
+                        {{ instance.level }}
+                        {% if instance.is_max_level %}
+                            {% if instance.stars == 6 %}
+                                <span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span>
+                            {% else %}
+                                <span class="glyphicon glyphicon-upload" style="color:darkorange;" data-toggle="tooltip" data-placement="top" title="Ready for Evolution!"></span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="monster-element"><img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" /></td>
+                    <td>
+                        {% if instance.fodder %}
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        {% endif %}
+                    </td>
+                    <td>{{ instance.get_priority_display }}</td>
+                    <td>{{ instance.notes }}</td>
+                    <td>
+                        <a href="{% url 'herders:edit_monster_instance' instance_id=instance.pk.hex %}">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
+                        </a>
+                        {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
+                            <a href="{% url 'herders:awaken_monster_instance' instance_id=instance.pk.hex %}" data-toggle="tooltip" data-placement="top" title="Awaken"><span class="glyphicon glyphicon-star" style="color:purple"></span></a>
+                        {% endif %}
+                        <a href="{% url 'herders:power_up_monster_instance' instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span></a>
+                        <a href="{% url 'herders:delete_monster_instance' instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No monsters in your profile.</p>
+    {% endif %}
+{% endblock profile %}

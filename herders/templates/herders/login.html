@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block css %}
+    <link href="{% static 'herders/css/login.css' %}" rel="stylesheet"/>
+{% endblock css %}
+
+
+{% block content %}
+    {% if login_failure %}
+        <div class="alert alert-danger" role="alert">Log in failed. Please try again.</div>
+    {% endif %}
+    <form class="form-signin" action="{% url 'herders:login' %}" method="post">
+        {% csrf_token %}
+        <input type="text" class="form-control" placeholder="User name" required autofocus name="username" value="{{ username }}">
+        <input type="password" class="form-control" placeholder="Password" required name="userpass">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+{% endblock content %}

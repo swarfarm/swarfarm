@@ -1,0 +1,115 @@
+body {
+  min-height: 800px;
+  padding-top: 50px;
+}
+
+.navbar-right {
+  margin-right: 5px;
+}
+
+.container {
+    margin-top: 30px;
+    width: 95%;
+}
+
+.awakened {
+    color: #CC00CC;
+}
+
+.fodder {
+    color: #747474;
+}
+
+.unawakened {
+    color: #FFCC00;
+}
+
+.navbar-sub {
+    top: 50px;
+}
+
+.monster-table {
+}
+
+.monster-image {
+    padding: 0 !important;
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    border-radius: 15%;
+}
+
+.monster-image-full {
+    padding: 0 !important;
+    position: relative;
+    border: 1px solid black;
+    border-radius: 15%;
+}
+
+.monster-thumb {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    border-radius: 15%;
+}
+
+.monster-star {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    height: 15px;
+}
+
+.monster-element img {
+    width: 30px;
+    height: 30px;
+}
+
+.monster-awakens {
+    padding: 0 !important;
+}
+
+.monster-awakens img {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    border-radius: 15%;
+}
+
+.monster-awaken-materials {
+    padding: 0 !important;
+}
+
+.monster-awaken-materials div {
+    position: relative;
+    display: inline-block;
+}
+
+.monster-awaken-materials img {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    border-radius: 15%;
+}
+
+.monster-awaken-materials span {
+
+}
+
+.rating-symbol .glyphicon {
+    font-size: 200%;
+}
+
+.image-plus-text {
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    right: 3px;
+    bottom: 3px;
+    height: 16px;
+}
+
+.monster-form {
+    width: 600px;
+}

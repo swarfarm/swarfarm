@@ -27,7 +27,9 @@ SECRET_KEY = 'orf+tgfh64$b7sfn9v+brfu@a9@b43+o+b4=@f^^c0i!t^x8qr'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '.swarfarm.com'
+]
 
 # Application definition
 

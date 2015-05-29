@@ -55,7 +55,7 @@ body {
     width: 50px;
     height: 50px;
     border: 1px solid black;
-    border-radius: 15%;
+    border-radius: 4px;
 }
 
 .monster-star {
@@ -111,11 +111,22 @@ body {
 
 .image-plus-text {
     position: absolute;
+    right: 2px;
+    bottom: 2px;
+    height: 14px;
+    width: auto;
+
+    padding: 0 1px;
+    line-height: 11px;
+    font-size: 11px;
+    vertical-align: middle;
+
     color: white;
+    background: black;
+
+    border-radius: 3px;
+    border: 2px solid grey;
     font-weight: bold;
-    right: 3px;
-    bottom: 3px;
-    height: 16px;
 }
 
 .monster-form {

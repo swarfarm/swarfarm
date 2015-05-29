@@ -13,6 +13,7 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal"><span class="glyphicon glyphicon-plus"></span>Add Monster</button>
+                <a href="{% url 'herders:profile_storage' %}" class="btn btn-default navbar-btn">Material Storage</a>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
@@ -41,4 +42,12 @@
     <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
     <script type="text/javascript" src="{% static "herders/js/jquery.metadata.js" %}"></script>
     <script type="text/javascript" src="{% static "herders/js/jquery.tablesorter.min.js" %}"></script>
+
+    {% if show_add_modal %}
+    <script type="text/javascript">
+        $(window).load(function(){
+            $('#addMonsterModal').modal('show');
+        });
+    </script>
+    {% endif %}
 {% endblock javascript %}

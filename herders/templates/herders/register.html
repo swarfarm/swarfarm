@@ -2,9 +2,5 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    {% if registration_failure %}
-        <div class="alert alert-danger" role="alert">Registration failed. I don't actually know why.</div>
-    {% endif %}
-
     {% crispy form %}
 {% endblock content %}

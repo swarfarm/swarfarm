@@ -12,20 +12,21 @@ urlpatterns = [
 
     # Herders stuff
     url(r'^profile/$', views.profile, name='profile'),  # User profile - show owned library
+    url(r'profile/storage', views.profile_storage, name='profile_storage'),  #View/edit essence storage
     url(r'^profile/add/$', views.add_monster_instance, name='add_monster_instance'),  # Add monster to profile
-    url(r'^profile/(?P<instance_id>[0-9a-f]{32})/edit/$',  # Edit existing monster instance
+    url(r'^profile/monster/(?P<instance_id>[0-9a-f]{32})/edit/$',  # Edit existing monster instance
         views.edit_monster_instance,
         name='edit_monster_instance'
         ),
-    url(r'^profile/(?P<instance_id>[0-9a-f]{32})/delete/$',  # Delete monster instance
+    url(r'^profile/monster/(?P<instance_id>[0-9a-f]{32})/delete/$',  # Delete monster instance
         views.delete_monster_instance,
         name='delete_monster_instance'
         ),
-    url(r'^profile/(?P<instance_id>[0-9a-f]{32})/powerup/$',  # Power up monster instance
+    url(r'^profile/monster/(?P<instance_id>[0-9a-f]{32})/powerup/$',  # Power up monster instance
         views.power_up_monster_instance,
         name='power_up_monster_instance'
         ),
-    url(r'^profile/(?P<instance_id>[0-9a-f]{32})/awaken/$',  # Awaken monster instance
+    url(r'^profile/monster/(?P<instance_id>[0-9a-f]{32})/awaken/$',  # Awaken monster instance
         views.awaken_monster_instance,
         name='awaken_monster_instance'
         ),

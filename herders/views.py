@@ -1,6 +1,7 @@
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.core.urlresolvers import reverse
+from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -15,38 +16,35 @@ def index(request):
 
 
 def register(request):
-    context = {}
+    form = RegisterUserForm(request.POST or None
+                            )
     if request.method == 'POST':
-        form = RegisterUserForm(request.POST)
-
         if form.is_valid():
-            # Create the user
-            new_user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                password=form.cleaned_data['password'],
-            )
-            new_user.save()
+            try:
+                # Create the user
+                new_user = User.objects.create_user(
+                    username=form.cleaned_data['username'],
+                    password=form.cleaned_data['password'],
+                )
+                new_user.save()
 
-            new_summoner = Summoner.objects.create(
-                user=new_user,
-                summoner_name=form.cleaned_data['summoner_name'],
-                public=form.cleaned_data['is_public'],
-            )
+                new_summoner = Summoner.objects.create(
+                    user=new_user,
+                    summoner_name=form.cleaned_data['summoner_name'],
+                    public=form.cleaned_data['is_public'],
+                )
+                new_summoner.save()
 
-            new_summoner.save()
+                # Automatically log them in
+                user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                        return redirect('herders:profile')
+            except IntegrityError:
+                form.add_error('username', 'Username already taken')
 
-            # Automatically log them in
-            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return redirect('herders:profile')
-        else:
-            context['registration_failure'] = True
-    else:
-        form = RegisterUserForm()
-
-    context['form'] = form
+    context = {'form': form}
     return render(request, 'herders/register.html', context)
 
 
@@ -87,21 +85,28 @@ def profile(request):
     return render(request, 'herders/profile/profile_view.html', context)
 
 
+@login_required
+def profile_storage(request):
+    context = {'add_monster_form': AddMonsterInstanceForm()}
+
+    return render(request, 'herders/profile/profile_storage.html', context)
+
 @login_required()
 def add_monster_instance(request):
-    if request.method == 'POST':
-        form = AddMonsterInstanceForm(request.POST)
+    form = AddMonsterInstanceForm(request.POST or None)
+    if form.is_valid() and request.method == 'POST':
+        # Create the monster instance
+        new_monster = form.save(commit=False)
+        new_monster.owner = request.user.summoner
+        new_monster.save()
 
-        if form.is_valid():
-            # return render(request, 'herders/view_post_data.html', {'post_data': request.POST})
-            # Create the monster instance
-            new_monster = form.save(commit=False)
-            new_monster.owner = request.user.summoner
-            new_monster.save()
-
-            return redirect('herders:profile')
+        return redirect('herders:profile')
     else:
-        raise Http404("I don't know how this happened")
+        context = {}
+        context['add_monster_form'] = form
+        context['show_add_modal'] = True
+        context['monster_stable'] = MonsterInstance.objects.filter(owner=request.user.summoner)
+        return render(request, 'herders/profile/profile_view.html', context)
 
 
 @login_required()

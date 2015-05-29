@@ -25,6 +25,15 @@ class RegisterUserForm(forms.Form):
         FormActions(Submit('register', 'Register', css_class='btn-lg btn-primary btn-block'))
     )
 
+class EditEssenceStorageForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditEssenceStorageForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'herders:edit_essences'
+
+
 class AddMonsterInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddMonsterInstanceForm, self).__init__(*args, **kwargs)

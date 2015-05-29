@@ -2,3 +2,4 @@ Django==1.8.2
 django-timezone-field
 django-crispy-forms
 django-suit
+django-markdown-deux

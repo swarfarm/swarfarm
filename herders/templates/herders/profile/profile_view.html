@@ -61,7 +61,10 @@
                                 <span class="hidden">{{ instance.fodder }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ instance.get_priority_display }}</td>
+                        <td>
+                            <span class="hidden">{{ instance.priority }}</span>
+                            {{ instance.get_priority_display }}
+                        </td>
                         <td>{{ instance.notes }}</td>
                         <td>
                             <a href="{% url 'herders:edit_monster_instance' instance_id=instance.pk.hex %}">

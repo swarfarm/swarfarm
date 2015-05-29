@@ -32,7 +32,7 @@ body {
 }
 
 .monster-table thead {
-    cursor: pointer;
+
 }
 
 .monster-image {
@@ -122,12 +122,27 @@ body {
     width: 600px;
 }
 
-.headerSortUp:after {
-    font-family: 'Glyphicons Halflings';
-    content: "\e113";
+.header {
+    cursor: pointer;
 }
 
-.headerSortDown:after {
-    font-family: "Glyphicons Halflings";
+.header:before {
+    padding-right: 3px;
+    font-family: 'Glyphicons Halflings';
+    font-size: 0.7em;
+    content: "\e150";
+}
+
+.headerSortUp:before {
+    padding-right: 3px;
+    font-family: 'Glyphicons Halflings';
+    font-size: 0.7em;
     content: "\e114";
+}
+
+.headerSortDown:before {
+    padding-right: 3px;
+    font-family: "Glyphicons Halflings";
+    font-size: 0.7em;
+    content: "\e113";
 }

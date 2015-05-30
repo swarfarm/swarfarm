@@ -77,13 +77,36 @@ def log_out(request):
 
 @login_required
 def profile(request):
-    context = {'add_monster_form': AddMonsterInstanceForm()}
-
-    if request.user.is_authenticated():
-        context['monster_stable'] = MonsterInstance.objects.filter(owner=request.user.summoner)
+    context = {
+        'add_monster_form': AddMonsterInstanceForm(),
+        'monster_stable': MonsterInstance.objects.filter(owner=request.user.summoner)
+    }
 
     return render(request, 'herders/profile/profile_view.html', context)
 
+@login_required
+def profile_box(request, sort_method=None):
+    if sort_method:
+        sort_method = sort_method.lower()
+
+        # TODO: sorting
+        if sort_method == 'grade':
+            monster_stable = MonsterInstance.objects.filter(owner=request.user.summoner).order_by('stars', 'level')
+        elif sort_method == 'level':
+            monster_stable = MonsterInstance.objects.filter(owner=request.user.summoner)
+        elif sort_method == 'attribute':
+            monster_stable = MonsterInstance.objects.filter(owner=request.user.summoner)
+        else:
+            return Http404('Invalid sort method')
+    else:
+        monster_stable = MonsterInstance.objects.filter(owner=request.user.summoner)
+
+    context = {
+        'add_monster_form': AddMonsterInstanceForm(),
+        'monster_stable': monster_stable,
+    }
+
+    return render(request, 'herders/profile/profile_box.html', context)
 
 @login_required
 def profile_storage(request):
@@ -102,10 +125,12 @@ def add_monster_instance(request):
 
         return redirect('herders:profile')
     else:
-        context = {}
-        context['add_monster_form'] = form
-        context['show_add_modal'] = True
-        context['monster_stable'] = MonsterInstance.objects.filter(owner=request.user.summoner)
+        context = {
+            'add_monster_form': form,
+            'show_add_modal': True,
+            'monster_stable': MonsterInstance.objects.filter(owner=request.user.summoner)
+        }
+
         return render(request, 'herders/profile/profile_view.html', context)
 
 

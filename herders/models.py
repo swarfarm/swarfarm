@@ -229,3 +229,6 @@ class MonsterInstance(models.Model):
         return str(self.owner) + \
             ' (' + str(self.owner.summoner_name) + '), ' + \
             str(self.monster) + ', ' + str(self.stars) + '*, lvl ' + str(self.level)
+
+    class Meta:
+        ordering = ['-stars', '-level', '-priority']

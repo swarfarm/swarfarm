@@ -11,8 +11,8 @@ from crispy_forms.bootstrap import FormActions
 class RegisterUserForm(forms.Form):
     username = forms.CharField(label='Username', required=True)
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput)
-    summoner_name = forms.CharField(label='Account Name')
-    is_public = forms.BooleanField(label='Public Profile')
+    summoner_name = forms.CharField(label='Account Name', required=False)
+    is_public = forms.BooleanField(label='Public Profile', required=False)
 
     helper = FormHelper()
     helper.form_method = 'post'

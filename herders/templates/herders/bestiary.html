@@ -9,24 +9,24 @@
 {% block subnav %}
     <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
         <div class="container-fluid">
-            <a href="{% url 'herders:bestiary' monster_element='all' %}" class="btn btn-default navbar-btn">All</a>
-            <a href="{% url 'herders:bestiary' monster_element='fire' %}" class="btn btn-default navbar-btn">
+            <a href="{% url 'herders:bestiary_element' monster_element='all' %}" class="btn btn-default navbar-btn">All</a>
+            <a href="{% url 'herders:bestiary_element' monster_element='fire' %}" class="btn btn-default navbar-btn">
                 <img src="{% static 'herders/images/elements/fire.png' %}" height="20" width="20" />
                 Fire
             </a>
-            <a href="{% url 'herders:bestiary' monster_element='wind' %}" class="btn btn-default navbar-btn">
+            <a href="{% url 'herders:bestiary_element' monster_element='wind' %}" class="btn btn-default navbar-btn">
                 <img src="{% static 'herders/images/elements/wind.png' %}" height="20" width="20" />
                 Wind
             </a>
-            <a href="{% url 'herders:bestiary' monster_element='water' %}" class="btn btn-default navbar-btn">
+            <a href="{% url 'herders:bestiary_element' monster_element='water' %}" class="btn btn-default navbar-btn">
                 <img src="{% static 'herders/images/elements/water.png' %}" height="20" width="20" />
                 Water
             </a>
-            <a href="{% url 'herders:bestiary' monster_element='dark' %}" class="btn btn-default navbar-btn">
+            <a href="{% url 'herders:bestiary_element' monster_element='dark' %}" class="btn btn-default navbar-btn">
                 <img src="{% static 'herders/images/elements/dark.png' %}" height="20" width="20" />
                 Dark
             </a>
-            <a href="{% url 'herders:bestiary' monster_element='light' %}" class="btn btn-default navbar-btn">
+            <a href="{% url 'herders:bestiary_element' monster_element='light' %}" class="btn btn-default navbar-btn">
                 <img src="{% static 'herders/images/elements/light.png' %}" height="20" width="20" />
                 Light
             </a>

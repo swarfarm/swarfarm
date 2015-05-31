@@ -231,4 +231,4 @@ class MonsterInstance(models.Model):
             str(self.monster) + ', ' + str(self.stars) + '*, lvl ' + str(self.level)
 
     class Meta:
-        ordering = ['-stars', '-level', '-priority']
+        ordering = ['-stars', '-level', '-priority', 'monster__name']

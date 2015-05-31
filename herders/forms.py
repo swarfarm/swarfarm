@@ -82,7 +82,7 @@ class EditMonsterInstanceForm(ModelForm):
             Div(
                 FormActions(
                     Submit('save', 'Save', css_class='btn btn-primary'),
-                    HTML("""<a href="{% url 'herders:profile' %}" class="btn btn-link">Cancel</a>"""),
+                    HTML("""<a href="{% url 'herders:profile' profile_name=profile_name %}" class="btn btn-link">Cancel</a>"""),
                 ),
             )
         )
@@ -107,7 +107,7 @@ class AwakenMonsterInstanceForm(forms.Form):
         Div(
             FormActions(
                 Submit('awaken', 'Awaken', css_class='btn btn-primary'),
-                HTML("""<a href="{% url 'herders:profile' %}" class="btn btn-link">Cancel</a>"""),
+                HTML("""<a href="{% url 'herders:profile' profile_name=profile_name %}" class="btn btn-link">Cancel</a>"""),
             ),
         )
     )

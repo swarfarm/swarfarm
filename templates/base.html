@@ -13,6 +13,7 @@
 
         <!-- Bootstrap -->
         <link href="{% static "herders/css/bootstrap.min.css" %}" rel="stylesheet">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link href="{% static "herders/css/custom.css" %}" rel="stylesheet">
         {% block css %}
             {# Custom CSS for specific templates can be inserted here #}
@@ -50,9 +51,11 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li><a href="{% url 'herders:profile' %}">My Monsters</a></li>
-                        <li><a href="{% url 'herders:fusion' %}">Fusion Tracker</a></li>
-                        <li><a href="{% url 'herders:teams' %}">Teams</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'herders:profile' profile_name=user.username %}">My Monsters</a></li>
+                            <li><a href="{% url 'herders:fusion' %}">Fusion Tracker</a></li>
+                            <li><a href="{% url 'herders:teams' %}">Teams</a></li>
+                        {% endif %}
                         <li><a href="{% url 'herders:bestiary' %}">Monster Library</a></li>
                         {% if user.is_staff %}
                             <li><a href="{% url 'admin:index' %}">Site Admin</a></li>

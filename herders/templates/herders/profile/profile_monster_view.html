@@ -1,0 +1,29 @@
+{% extends 'herders/profile/profile_base.html' %}
+{% load staticfiles %}
+
+{# TODO: Fix formatting in this file. #}
+{% block profile %}
+    <div>
+        <div class="monster-image">
+            {% static 'herders/images/' as img_url_prefix %}
+            <span>
+                <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}" class="monster-image-full"/>
+                <span>
+                    {% if monster.monster.is_awakened %}
+                        <img src="{{ img_url_prefix }}stars/{{ monster.stars }}star-awakened.png" class="monster-star-full" />
+                    {% elif monster.monster.can_awaken %}
+                        <img src="{{ img_url_prefix }}stars/{{ monster.stars }}star-unawakened.png" class="monster-star-full" />
+                    {% else %}
+                        <img src="{{ img_url_prefix }}stars/{{ monster.stars }}star-fodder.png" class="monster-star-full" />
+                    {% endif %}
+                </span>
+                <span class="image-plus image-plus-left">{{ monster.monster.name }}</span>
+                <span class="image-plus image-plus-right">{{ monster.level }}</span>
+            </span>
+        </div>
+        <div>
+            <img src="{{ img_url_prefix }}elements/{{ monster.monster.element }}.png" />
+            <span>{{ monster.monster.name }}</span>
+        </div>
+    </div>
+{% endblock profile %}

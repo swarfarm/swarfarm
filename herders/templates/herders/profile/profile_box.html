@@ -1,3 +1,62 @@
 {% extends 'herders/profile/profile_base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
+
+{% block title %}My Monsters (Box View) - {{ block.super }}{% endblock title %}
+
+{% block profile %}
+    {% if monster_stable %}
+        {% static 'herders/images/' as img_url_prefix %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group">
+                    <a href="{% url 'herders:profile' profile_name=profile_name%}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-th-list"></span> List View</a>
+                </div>
+                <span>Sort by: </span>
+                <div class="btn-group">
+                    <a href="{% url 'herders:profile_box_sort' profile_name=profile_name sort_method='grade' %}" class="btn btn-default
+                    {% if sort_method == 'grade' or sort_method == None %}btn-info{% endif %}">Grade</a>
+                    <a href="{% url 'herders:profile_box_sort' profile_name=profile_name sort_method='level' %}" class="btn btn-default
+                    {% if sort_method == 'level' %}btn-info{% endif %}">Level</a>
+                    <a href="{% url 'herders:profile_box_sort' profile_name=profile_name sort_method='attribute' %}" class="btn btn-default
+                    {% if sort_method == 'attribute' %}btn-info{% endif %}">Attribute</a>
+                </div>
+            </div>
+            <div class="panel-body">
+                <table id="monster_table" class="table table-condensed monster-box">
+                    <tbody>
+                        {% for instance in monster_stable %}
+                            {% if forloop.counter0|divisibleby:4 %}<tr>{% endif %}
+                                <td class="monster-image">
+                                    {% if is_owner %}
+                                        <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">
+                                    {% else %}
+                                        <span>
+                                    {% endif %}
+                                        <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-box-thumb"/>
+                                        <span>
+                                            {% if instance.monster.is_awakened %}
+                                                <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-awakened.png" class="monster-star" />
+                                            {% elif instance.monster.can_awaken %}
+                                                <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-unawakened.png" class="monster-star" />
+                                            {% else %}
+                                                <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-fodder.png" class="monster-star" />
+                                            {% endif %}
+                                        </span>
+                                        <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
+                                        <span class="image-plus image-plus-right">{{ instance.level }}</span>
+                                    {% if is_owner %}
+                                        </a>
+                                    {% else %}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            {% if forloop.counter0|add:-3|divisibleby:4 %}</tr>{% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock profile %}

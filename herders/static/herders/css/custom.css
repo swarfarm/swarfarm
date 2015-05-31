@@ -26,13 +26,11 @@ body {
 
 .navbar-sub {
     top: 50px;
+    z-index: 1000;
 }
 
-.monster-table {
-}
-
-.monster-table thead {
-
+.monster-box {
+    width: auto;
 }
 
 .monster-image {
@@ -56,6 +54,10 @@ body {
     height: 50px;
     border: 1px solid black;
     border-radius: 4px;
+}
+
+.monster-box-thumb {
+    border-radius: 6px;
 }
 
 .monster-star {
@@ -101,17 +103,12 @@ body {
     border-radius: 15%;
 }
 
-.monster-awaken-materials span {
-
-}
-
 .rating-symbol .glyphicon {
     font-size: 200%;
 }
 
-.image-plus-text {
+.image-plus {
     position: absolute;
-    right: 2px;
     bottom: 2px;
     height: 14px;
     width: auto;
@@ -127,6 +124,14 @@ body {
     border-radius: 3px;
     border: 2px solid grey;
     font-weight: bold;
+}
+
+.image-plus-left {
+    left: 2px;
+}
+
+.image-plus-right {
+    right: 2px;
 }
 
 .monster-form {

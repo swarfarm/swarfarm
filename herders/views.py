@@ -6,7 +6,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
-from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm
+from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
+    EditEssenceStorageForm
 from .models import Monster, Summoner, MonsterInstance
 
 
@@ -141,7 +142,22 @@ def profile_box(request, profile_name, sort_method='grade'):
 
 @login_required
 def profile_storage(request):
-    context = {'add_monster_form': AddMonsterInstanceForm()}
+    context = {
+        'add_monster_form': AddMonsterInstanceForm(),
+        'is_owner': True,  # Because of @login_required decorator
+        'profile_name': request.user.username,
+    }
+
+    if request.method == 'POST':
+        form = EditEssenceStorageForm(request.POST, instance=request.user.summoner)
+
+        if form.is_valid():
+            form.save()
+            return redirect('herders:profile', profile_name=request.user.username)
+        else:
+            context['storage_form'] = form
+    else:
+        context['storage_form'] = EditEssenceStorageForm(instance=request.user.summoner)
 
     return render(request, 'herders/profile/profile_storage.html', context)
 

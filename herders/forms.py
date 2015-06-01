@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import MonsterInstance
+from .models import MonsterInstance, Summoner
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML
@@ -31,7 +31,147 @@ class EditEssenceStorageForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
-        self.helper.form_action = 'herders:edit_essences'
+        self.helper.form_action = 'herders:profile_storage'
+        self.helper.form_show_labels = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}magic_low.png" class="storage_icon" />"""),
+                    Field('storage_magic_low'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}magic_mid.png" class="storage_icon" />"""),
+                    Field('storage_magic_mid'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}magic_high.png" class="storage_icon" />"""),
+                    Field('storage_magic_high'),
+                    css_class='col-md-2 storage_group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}fire_low.png" class="storage_icon" />"""),
+                    Field('storage_fire_low'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}fire_mid.png" class="storage_icon" />"""),
+                    Field('storage_fire_mid'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}fire_high.png" class="storage_icon" />"""),
+                    Field('storage_fire_high'),
+                    css_class='col-md-2 storage_group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}water_low.png" class="storage_icon" />"""),
+                    Field('storage_water_low'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}water_mid.png" class="storage_icon" />"""),
+                    Field('storage_water_mid'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}water_high.png" class="storage_icon" />"""),
+                    Field('storage_water_high'),
+                    css_class='col-md-2 storage_group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}wind_low.png" class="storage_icon" />"""),
+                    Field('storage_wind_low'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}wind_mid.png" class="storage_icon" />"""),
+                    Field('storage_wind_mid'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}wind_high.png" class="storage_icon" />"""),
+                    Field('storage_wind_high'),
+                    css_class='col-md-2 storage_group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}light_low.png" class="storage_icon" />"""),
+                    Field('storage_light_low'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}light_mid.png" class="storage_icon" />"""),
+                    Field('storage_light_mid'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}light_high.png" class="storage_icon" />"""),
+                    Field('storage_light_high'),
+                    css_class='col-md-2 storage_group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}dark_low.png" class="storage_icon" />"""),
+                    Field('storage_dark_low'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}dark_mid.png" class="storage_icon" />"""),
+                    Field('storage_dark_mid'),
+                    css_class='col-md-2 storage_group',
+                ),
+                Div(
+                    HTML("""<img src="{{ essence_url_prefix }}dark_high.png" class="storage_icon" />"""),
+                    Field('storage_dark_high'),
+                    css_class='col-md-2 storage_group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                FormActions(
+                    Submit('save', 'Save', css_class='btn btn-primary'),
+                    HTML("""<a href="{% url 'herders:profile' profile_name=profile_name %}" class="btn btn-link">Cancel</a>"""),
+                ),
+            )
+        )
+
+    class Meta:
+        model = Summoner
+        fields = (
+            'storage_magic_low',
+            'storage_magic_mid',
+            'storage_magic_high',
+            'storage_fire_low',
+            'storage_fire_mid',
+            'storage_fire_high',
+            'storage_water_low',
+            'storage_water_mid',
+            'storage_water_high',
+            'storage_wind_low',
+            'storage_wind_mid',
+            'storage_wind_high',
+            'storage_light_low',
+            'storage_light_mid',
+            'storage_light_high',
+            'storage_dark_low',
+            'storage_dark_mid',
+            'storage_dark_high',
+        )
 
 
 class AddMonsterInstanceForm(ModelForm):
@@ -63,6 +203,7 @@ class AddMonsterInstanceForm(ModelForm):
     class Meta:
         model = MonsterInstance
         fields = ('monster', 'stars', 'level', 'fodder', 'priority', 'notes')
+
 
 class EditMonsterInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):

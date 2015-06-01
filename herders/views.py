@@ -245,6 +245,7 @@ def awaken_monster_instance(request, instance_id):
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': request.user.username,
+        'is_owner': True,  # Because of @login_required decorator
     }
 
     monster = get_object_or_404(MonsterInstance, pk=instance_id)

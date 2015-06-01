@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
-    EditEssenceStorageForm
+    EditEssenceStorageForm, EditProfileForm
 from .models import Monster, Summoner, MonsterInstance
 
 
@@ -74,6 +74,26 @@ def log_in(request):
 def log_out(request):
     logout(request)
     return redirect('herders:index')
+
+
+@login_required
+def profile_edit(request):
+    context = {
+        'add_monster_form': AddMonsterInstanceForm(),
+        'is_owner': True,  # Because of @login_required decorator
+        'profile_name': request.user.username,
+    }
+
+    form = EditProfileForm(request.POST or None, instance=request.user.summoner)
+    form.fields['rep_monster'].queryset = MonsterInstance.objects.filter(owner=request.user.summoner)
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('herders:profile', profile_name=request.user.username)
+    else:
+        context['profile_form'] = form
+
+    return render(request, 'herders/profile/profile_edit.html', context)
 
 
 def profile_redirect_to_view(request, profile_name):

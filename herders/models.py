@@ -10,11 +10,11 @@ from timezone_field import TimeZoneField
 
 class Summoner(models.Model):
     user = models.OneToOneField(User)
-    summoner_name = models.CharField(max_length=256)
-    global_server = models.BooleanField(default=True)
-    public = models.BooleanField(default=False)
+    summoner_name = models.CharField(max_length=256, null=True, blank=True)
+    global_server = models.NullBooleanField(default=True, null=True, blank=True)
+    public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
-    notes = models.TextField(blank=True)
+    notes = models.TextField(null=True, blank=True)
     rep_monster = models.ForeignKey('MonsterInstance', null=True, blank=True)
     storage_magic_low = models.IntegerField(default=0)
     storage_magic_mid = models.IntegerField(default=0)
@@ -226,9 +226,7 @@ class MonsterInstance(models.Model):
         super(MonsterInstance, self).clean()
 
     def __unicode__(self):
-        return str(self.owner) + \
-            ' (' + str(self.owner.summoner_name) + '), ' + \
-            str(self.monster) + ', ' + str(self.stars) + '*, lvl ' + str(self.level)
+        return str(self.monster) + ', ' + str(self.stars) + '*, lvl ' + str(self.level)
 
     class Meta:
         ordering = ['-stars', '-level', '-priority', 'monster__name']

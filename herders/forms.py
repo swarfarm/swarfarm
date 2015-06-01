@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm
+from django.core.validators import RegexValidator
 
 from .models import MonsterInstance, Summoner
 
@@ -9,7 +10,18 @@ from crispy_forms.bootstrap import FormActions
 
 
 class RegisterUserForm(forms.Form):
-    username = forms.CharField(label='Username', required=True)
+    username = forms.CharField(
+        label='Username',
+        required=True,
+        validators=[
+            RegexValidator(
+                regex='^[a-zA-Z0-9_]+$',
+                message='Username must contain only alphanumeric characters and underscore.',
+                code='invalid_username'
+            ),
+        ]
+    )
+
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput)
     summoner_name = forms.CharField(label='Account Name', required=False)
     is_public = forms.BooleanField(label='Public Profile', required=False)
@@ -25,6 +37,44 @@ class RegisterUserForm(forms.Form):
         FormActions(Submit('register', 'Register', css_class='btn-lg btn-primary btn-block'))
     )
 
+
+class EditProfileForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'herders:edit_profile'
+        self.helper.layout = Layout(
+            Div(
+                Field('summoner_name'),
+                Field('public'),
+                Field('timezone'),
+                Field('rep_monster'),
+            ),
+            Div(
+                FormActions(
+                    Submit('save', 'Save', css_class='btn btn-primary'),
+                    HTML("""<a href="{% url 'herders:profile' profile_name=profile_name %}" class="btn btn-link">Cancel</a>"""),
+                ),
+            ),
+        )
+
+    class Meta:
+        model = Summoner
+        fields = (
+            'summoner_name',
+            'public',
+            'timezone',
+            'rep_monster',
+        )
+        labels = {
+            'summoner_name': "Summoner's War Account Name",
+            'public': 'Make my collection and in-game account name visible to others',
+            'rep_monster': 'Account rep monster',
+        }
+
+
 class EditEssenceStorageForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditEssenceStorageForm, self).__init__(*args, **kwargs)
@@ -32,7 +82,7 @@ class EditEssenceStorageForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_action = 'herders:profile_storage'
-        self.helper.form_show_labels = False
+        self.helper.form_show_labels = True
         self.helper.layout = Layout(
             Div(
                 Div(
@@ -172,6 +222,26 @@ class EditEssenceStorageForm(ModelForm):
             'storage_dark_mid',
             'storage_dark_high',
         )
+        labels = {
+            'storage_magic_low': 'Magic Low',
+            'storage_magic_mid': 'Magic Mid',
+            'storage_magic_high': 'Magic High',
+            'storage_fire_low': 'Fire Low',
+            'storage_fire_mid': 'Fire Mid',
+            'storage_fire_high': 'Fire High',
+            'storage_water_low': 'Water Low',
+            'storage_water_mid': 'Water Mid',
+            'storage_water_high': 'Water High',
+            'storage_wind_low': 'Wind Low',
+            'storage_wind_mid': 'Wind Mid',
+            'storage_wind_high': 'Wind High',
+            'storage_light_low': 'Light Low',
+            'storage_light_mid': 'Light Mid',
+            'storage_light_high': 'Light High',
+            'storage_dark_low': 'Dark Low',
+            'storage_dark_mid': 'Dark Mid',
+            'storage_dark_high': 'Dark High',
+        }
 
 
 class AddMonsterInstanceForm(ModelForm):
@@ -231,6 +301,7 @@ class EditMonsterInstanceForm(ModelForm):
     class Meta:
         model = MonsterInstance
         exclude = ('owner', 'monster', 'fodder_for')
+
 
 class AwakenMonsterInstanceForm(forms.Form):
     subtract_materials = forms.BooleanField(

@@ -56,7 +56,7 @@
                             <li><a href="{% url 'herders:fusion' %}">Fusion Tracker</a></li>
                             <li><a href="{% url 'herders:teams' %}">Teams</a></li>
                         {% endif %}
-                        <li><a href="{% url 'herders:bestiary' %}">Monster Library</a></li>
+                        <li><a href="{% url 'herders:bestiary' %}">Monster Bestiary</a></li>
                         {% if user.is_staff %}
                             <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
                         {% endif %}
@@ -65,7 +65,7 @@
                     <div class="navbar-right">
                         {% if user.is_authenticated %}
                             {# Show the person's username and a logout link #}
-                            <p class="navbar-text">Signed in as {{ user.username }}. <a href="{% url 'herders:logout' %}" class="navbar-link">Log out.</a></p>
+                            <p class="navbar-text">Signed in as <a href="{% url 'herders:edit_profile' %}">{{ user.username }}</a>. <a href="{% url 'herders:logout' %}" class="navbar-link">Log out.</a></p>
                         {% else %}
                             {# Show login form and register button #}
                             <form class="navbar-form " role="search" action="{% url 'herders:login' %}" method="post">

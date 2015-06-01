@@ -12,6 +12,7 @@ urlpatterns = [
 
 
     # Profile viewing stuff
+    url(r'^profile/edit$', views.profile_edit, name='edit_profile'),
     url(r'^profile/(?P<profile_name>[a-zA-Z0-9_@.]+)/$',
         views.profile_redirect_to_view),  # Simple redirect to /view
 

@@ -1,0 +1,7 @@
+{% extends 'herders/profile/profile_base.html' %}
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+{% block profile %}
+    {% crispy profile_form %}
+{% endblock %}

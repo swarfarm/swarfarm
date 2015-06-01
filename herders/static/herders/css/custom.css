@@ -31,6 +31,8 @@ body {
 
 .monster-box {
     width: auto;
+    position: relative;
+    float: left;
 }
 
 .monster-image {

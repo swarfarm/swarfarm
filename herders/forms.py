@@ -247,7 +247,7 @@ class EditEssenceStorageForm(ModelForm):
 
 
 class AddMonsterInstanceForm(autocomplete_light.ModelForm):
-    monster = autocomplete_light.ChoiceField('MonsterAutocomplete',)
+    monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
 
     def __init__(self, *args, **kwargs):
         super(AddMonsterInstanceForm, self).__init__(*args, **kwargs)
@@ -257,7 +257,7 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
         self.helper.form_action = 'herders:add_monster_instance'
         self.helper.layout = Layout(
             Div(
-                Field('monster',),
+                Field('monster'),
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
                 Field('level', value=1),
                 Field('fodder', css_class='checkbox'),

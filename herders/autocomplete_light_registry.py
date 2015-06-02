@@ -3,7 +3,7 @@ from models import Monster
 
 autocomplete_light.register(
     Monster,
-    search_fields=['name', 'element'],
+    search_fields=['name'],
     attrs={
         'placeholder': 'Start typing monster name',
         'data-autocomplete-minimum-characters': 2,

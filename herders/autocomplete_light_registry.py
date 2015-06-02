@@ -10,5 +10,5 @@ autocomplete_light.register(
     },
     widget_attrs={
         'data-widget-maximum-values': 8,
-    }
+    },
 )

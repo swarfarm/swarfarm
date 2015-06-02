@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = (
     'suit',
+    'autocomplete_light',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -92,8 +93,10 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'swa_farm',
         'USER': 'swa_farmer',
+        #'USER': 'swa_devfarmer',
         'PASSWORD': 'J}%3wmX}PpF6',
         'HOST': 'sol.apisnetworks.com',
+        #'HOST': 'webdev',
         'PORT': '',
     }
 }

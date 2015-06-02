@@ -87,17 +87,17 @@ class EditEssenceStorageForm(ModelForm):
             Div(
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}magic_low.png" class="storage_icon" />"""),
-                    Field('storage_magic_low'),
+                    Field('storage_magic_low', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}magic_mid.png" class="storage_icon" />"""),
-                    Field('storage_magic_mid'),
+                    Field('storage_magic_mid', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}magic_high.png" class="storage_icon" />"""),
-                    Field('storage_magic_high'),
+                    Field('storage_magic_high', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 css_class='row',
@@ -105,17 +105,17 @@ class EditEssenceStorageForm(ModelForm):
             Div(
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}fire_low.png" class="storage_icon" />"""),
-                    Field('storage_fire_low'),
+                    Field('storage_fire_low', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}fire_mid.png" class="storage_icon" />"""),
-                    Field('storage_fire_mid'),
+                    Field('storage_fire_mid', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}fire_high.png" class="storage_icon" />"""),
-                    Field('storage_fire_high'),
+                    Field('storage_fire_high', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 css_class='row',
@@ -123,17 +123,17 @@ class EditEssenceStorageForm(ModelForm):
             Div(
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}water_low.png" class="storage_icon" />"""),
-                    Field('storage_water_low'),
+                    Field('storage_water_low', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}water_mid.png" class="storage_icon" />"""),
-                    Field('storage_water_mid'),
+                    Field('storage_water_mid', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}water_high.png" class="storage_icon" />"""),
-                    Field('storage_water_high'),
+                    Field('storage_water_high', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 css_class='row',
@@ -141,17 +141,17 @@ class EditEssenceStorageForm(ModelForm):
             Div(
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}wind_low.png" class="storage_icon" />"""),
-                    Field('storage_wind_low'),
+                    Field('storage_wind_low', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}wind_mid.png" class="storage_icon" />"""),
-                    Field('storage_wind_mid'),
+                    Field('storage_wind_mid', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}wind_high.png" class="storage_icon" />"""),
-                    Field('storage_wind_high'),
+                    Field('storage_wind_high', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 css_class='row',
@@ -159,17 +159,17 @@ class EditEssenceStorageForm(ModelForm):
             Div(
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}light_low.png" class="storage_icon" />"""),
-                    Field('storage_light_low'),
+                    Field('storage_light_low', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}light_mid.png" class="storage_icon" />"""),
-                    Field('storage_light_mid'),
+                    Field('storage_light_mid', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}light_high.png" class="storage_icon" />"""),
-                    Field('storage_light_high'),
+                    Field('storage_light_high', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 css_class='row',
@@ -177,17 +177,17 @@ class EditEssenceStorageForm(ModelForm):
             Div(
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}dark_low.png" class="storage_icon" />"""),
-                    Field('storage_dark_low'),
+                    Field('storage_dark_low', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}dark_mid.png" class="storage_icon" />"""),
-                    Field('storage_dark_mid'),
+                    Field('storage_dark_mid', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 Div(
                     HTML("""<img src="{{ essence_url_prefix }}dark_high.png" class="storage_icon" />"""),
-                    Field('storage_dark_high'),
+                    Field('storage_dark_high', min=0),
                     css_class='col-md-2 storage_group',
                 ),
                 css_class='row',

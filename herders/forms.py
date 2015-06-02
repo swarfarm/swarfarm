@@ -8,6 +8,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML
 from crispy_forms.bootstrap import FormActions
 
+import autocomplete_light
+
 
 class RegisterUserForm(forms.Form):
     username = forms.CharField(
@@ -244,7 +246,9 @@ class EditEssenceStorageForm(ModelForm):
         }
 
 
-class AddMonsterInstanceForm(ModelForm):
+class AddMonsterInstanceForm(autocomplete_light.ModelForm):
+    monster = autocomplete_light.ChoiceField('MonsterAutocomplete',)
+
     def __init__(self, *args, **kwargs):
         super(AddMonsterInstanceForm, self).__init__(*args, **kwargs)
 
@@ -273,7 +277,6 @@ class AddMonsterInstanceForm(ModelForm):
     class Meta:
         model = MonsterInstance
         fields = ('monster', 'stars', 'level', 'fodder', 'priority', 'notes')
-
 
 class EditMonsterInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):

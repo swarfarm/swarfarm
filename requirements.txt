@@ -4,3 +4,4 @@ django-crispy-forms
 django-suit
 django-markdown-deux
 django-feedback
+django-autocomplete-light

@@ -109,6 +109,14 @@ body {
     font-size: 200%;
 }
 
+.autocomplete-light-widget {
+  width: 100%;
+}
+
+.autocomplete-light-widget input, .autocomplete-light-widget input:focus {
+  width: 100%!important;
+}
+
 .image-plus {
     position: absolute;
     bottom: 1px;

@@ -24,31 +24,40 @@
                 </div>
             </div>
             <div class="panel-body">
-                {% for instance in monster_stable %}
-                <div class="monster-box">
-                    {% if is_owner %}
-                        <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">
-                    {% else %}
-                        <span>
+                {% for groupname, monsters in monster_stable.iteritems %}
+                    {% if monsters|length > 0 %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><strong>{{ groupname|capfirst }}</strong></div>
+                            <div class="panel-body">
+                                {% for instance in monsters %}
+                                    <div class="monster-box">
+                                        {% if is_owner %}
+                                            <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">
+                                        {% else %}
+                                            <span>
+                                        {% endif %}
+                                            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-box-thumb"/>
+                                            <span>
+                                                {% if instance.monster.is_awakened %}
+                                                    <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-awakened.png" class="monster-star" />
+                                                {% elif instance.monster.can_awaken %}
+                                                    <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-unawakened.png" class="monster-star" />
+                                                {% else %}
+                                                    <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-fodder.png" class="monster-star" />
+                                                {% endif %}
+                                            </span>
+                                            <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
+                                            <span class="image-plus image-plus-right">{{ instance.level }}</span>
+                                        {% if is_owner %}
+                                            </a>
+                                        {% else %}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     {% endif %}
-                        <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-box-thumb"/>
-                        <span>
-                            {% if instance.monster.is_awakened %}
-                                <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-awakened.png" class="monster-star" />
-                            {% elif instance.monster.can_awaken %}
-                                <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-unawakened.png" class="monster-star" />
-                            {% else %}
-                                <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-fodder.png" class="monster-star" />
-                            {% endif %}
-                        </span>
-                        <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
-                        <span class="image-plus image-plus-right">{{ instance.level }}</span>
-                    {% if is_owner %}
-                        </a>
-                    {% else %}
-                        </span>
-                    {% endif %}
-                </div>
                 {% endfor %}
             </div>
         </div>

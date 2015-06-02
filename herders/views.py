@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.core.urlresolvers import reverse
@@ -143,11 +145,26 @@ def profile_box(request, profile_name, sort_method='grade'):
             sort_method = sort_method.lower()
             context['sort_method'] = sort_method
             if sort_method == 'grade':
-                monster_stable = MonsterInstance.objects.filter(owner=summoner).order_by('-stars', '-level', 'monster__name')
+                monster_stable = OrderedDict()
+                monster_stable['1*'] = MonsterInstance.objects.filter(owner=summoner, stars=1).order_by('-level', 'monster__name')
+                monster_stable['2*'] = MonsterInstance.objects.filter(owner=summoner, stars=2).order_by('-level', 'monster__name')
+                monster_stable['3*'] = MonsterInstance.objects.filter(owner=summoner, stars=3).order_by('-level', 'monster__name')
+                monster_stable['4*'] = MonsterInstance.objects.filter(owner=summoner, stars=4).order_by('-level', 'monster__name')
+                monster_stable['5*'] = MonsterInstance.objects.filter(owner=summoner, stars=5).order_by('-level', 'monster__name')
+                monster_stable['6*'] = MonsterInstance.objects.filter(owner=summoner, stars=6).order_by('-level', 'monster__name')
             elif sort_method == 'level':
-                monster_stable = MonsterInstance.objects.filter(owner=summoner).order_by('-level', '-stars', 'monster__name')
+                monster_stable = OrderedDict()
+                monster_stable['1-10'] = MonsterInstance.objects.filter(owner=summoner, level__lte=10).order_by('-stars', '-level', 'monster__name')
+                monster_stable['11-20'] = MonsterInstance.objects.filter(owner=summoner, level__gt=10).filter(level__lte=20).order_by('-stars', '-level', 'monster__name')
+                monster_stable['21-30'] = MonsterInstance.objects.filter(owner=summoner, level__gt=20).filter(level__lte=30).order_by('-stars', '-level', 'monster__name')
+                monster_stable['31-40'] = MonsterInstance.objects.filter(owner=summoner, level__gt=30).order_by('-stars', '-level', 'monster__name')
             elif sort_method == 'attribute':
-                monster_stable = MonsterInstance.objects.filter(owner=summoner).order_by('monster__element', '-stars', '-level')
+                monster_stable = OrderedDict()
+                monster_stable['water'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_WATER).order_by('-stars', '-level', 'monster__name')
+                monster_stable['fire'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_FIRE).order_by('-stars', '-level', 'monster__name')
+                monster_stable['wind'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_WIND).order_by('-stars', '-level', 'monster__name')
+                monster_stable['light'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
+                monster_stable['dark'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
             else:
                 return Http404('Invalid sort method')
         else:

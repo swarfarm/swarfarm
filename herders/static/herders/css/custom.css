@@ -111,7 +111,7 @@ body {
 
 .image-plus {
     position: absolute;
-    bottom: 2px;
+    bottom: 1px;
     height: 14px;
     width: auto;
 
@@ -129,11 +129,11 @@ body {
 }
 
 .image-plus-left {
-    left: 2px;
+    left: 1px;
 }
 
 .image-plus-right {
-    right: 2px;
+    right: 1px;
 }
 
 .monster-form {

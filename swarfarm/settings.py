@@ -45,7 +45,6 @@ INSTALLED_APPS = (
     'herders',
     'crispy_forms',
     'markdown_deux',
-    'django_basic_feedback',
 )
 
 MIDDLEWARE_CLASSES = (

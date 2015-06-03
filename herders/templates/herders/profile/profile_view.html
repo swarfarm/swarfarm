@@ -23,8 +23,8 @@
                         <th>Element</th>
                         <th>Fodder</th>
                         <th>Priority</th>
+                        <th class="{sorter: false}">Notes</th>
                         {% if is_owner %}
-                            <th class="{sorter: false}">Notes</th>
                             <th class="{sorter: false}">Actions</th>
                         {% endif %}
                     </tr>
@@ -81,8 +81,8 @@
                                 <span class="hidden">{{ instance.priority }}</span>
                                 {{ instance.get_priority_display }}
                             </td>
+                            <td>{{ instance.notes }}</td>
                             {% if is_owner %}
-                                <td>{{ instance.notes }}</td>
                                 <td>
                                     <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">
                                         <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>

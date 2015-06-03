@@ -60,6 +60,7 @@ body {
 .monster-box-thumb {
     border-radius: 6px;
     border: 1px solid black;
+    margin: 1px;
 }
 
 .monster-star {

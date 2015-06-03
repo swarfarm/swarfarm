@@ -9,6 +9,6 @@ autocomplete_light.register(
         'data-autocomplete-minimum-characters': 2,
     },
     widget_attrs={
-        'data-widget-maximum-values': 8,
+        'data-widget-maximum-values': 10,
     },
 )

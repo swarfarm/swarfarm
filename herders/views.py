@@ -81,7 +81,7 @@ def log_out(request):
     return redirect('herders:index')
 
 
-def profile(request, profile_name=None, view_mode='list'):
+def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
     if profile_name is None:
         if request.user.is_authenticated():
             profile_name = request.user.username
@@ -93,11 +93,14 @@ def profile(request, profile_name=None, view_mode='list'):
     # Determine if the person logged in is the one requesting the view
     is_owner = request.user.is_authenticated() and summoner.user == request.user
 
+    print view_mode
+
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': profile_name,
         'is_owner': is_owner,
         'view_mode': view_mode,
+        'sort_method': sort_method,
     }
 
     # Decide to show read only or full interface
@@ -106,8 +109,6 @@ def profile(request, profile_name=None, view_mode='list'):
             context['monster_stable'] = MonsterInstance.objects.filter(owner=summoner)
             return render(request, 'herders/profile/profile_view.html', context)
         elif view_mode.lower() == 'box':
-            sort_method = 'grade'
-
             if sort_method == 'grade':
                 monster_stable = OrderedDict()
                 monster_stable['6*'] = MonsterInstance.objects.filter(owner=summoner, stars=6).order_by('-level', 'monster__name')
@@ -130,10 +131,12 @@ def profile(request, profile_name=None, view_mode='list'):
                 monster_stable['light'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
                 monster_stable['dark'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
             else:
-                return Http404('Invalid sort method')
+                raise Http404('Invalid sort method')
 
             context['monster_stable'] = monster_stable
             return render(request, 'herders/profile/profile_box.html', context)
+        else:
+            raise Http404('Unknown profile view mode')
     else:
         return render(request, 'herders/profile/not_public.html')
 

@@ -10,7 +10,7 @@ from crispy_forms.bootstrap import FormActions
 
 import autocomplete_light
 
-
+# TODO: Set ALL form_action in views in order to incorporate the profile_name and/or view_mode.
 class RegisterUserForm(forms.Form):
     username = forms.CharField(
         label='Username',

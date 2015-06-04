@@ -17,6 +17,7 @@ urlpatterns = [
         url(r'^edit/$', views.profile_edit, name='edit_profile'),
         url(r'^storage/$', views.profile_storage, name='profile_storage'),
         url(r'^view/$', views.profile),  # Legacy URL scheme ended in /view. Now represented by /list)
+        url(r'(?P<view_mode>[a-zA-Z]+)/(?P<sort_method>[a-zA-Z]+)/$', views.profile, name='profile_sorted'),
         url(r'(?P<view_mode>[a-zA-Z]+)/$', views.profile, name='profile'),
         url(r'^monster/', include([
             url(r'^add/$', views.monster_instance_add, name='monster_instance_add'),

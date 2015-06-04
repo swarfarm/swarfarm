@@ -52,12 +52,11 @@ class EditProfileForm(ModelForm):
                 Field('summoner_name'),
                 Field('public'),
                 Field('timezone'),
-                Field('rep_monster'),
             ),
             Div(
                 FormActions(
                     Submit('save', 'Save', css_class='btn btn-primary'),
-                    HTML("""<a href="{% url 'herders:profile' profile_name=profile_name %}" class="btn btn-link">Cancel</a>"""),
+                    HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
                 ),
             ),
         )
@@ -68,12 +67,10 @@ class EditProfileForm(ModelForm):
             'summoner_name',
             'public',
             'timezone',
-            'rep_monster',
         )
         labels = {
             'summoner_name': "Summoner's War Account Name",
             'public': 'Make my collection and in-game account name visible to others',
-            'rep_monster': 'Account rep monster',
         }
 
 
@@ -83,7 +80,6 @@ class EditEssenceStorageForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
-        self.helper.form_action = 'herders:profile_storage'
         self.helper.form_show_labels = True
         self.helper.layout = Layout(
             Div(
@@ -197,7 +193,7 @@ class EditEssenceStorageForm(ModelForm):
             Div(
                 FormActions(
                     Submit('save', 'Save', css_class='btn btn-primary'),
-                    HTML("""<a href="{% url 'herders:profile' profile_name=profile_name %}" class="btn btn-link">Cancel</a>"""),
+                    HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
                 ),
             )
         )
@@ -253,8 +249,7 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
         super(AddMonsterInstanceForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
-        self.helper.form_method = 'post'
-        self.helper.form_action = 'herders:add_monster_instance'
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
                 Field('monster'),
@@ -284,7 +279,6 @@ class EditMonsterInstanceForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
-        # self.helper.form_action must be set in view
         self.helper.layout = Layout(
             Div(
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
@@ -296,7 +290,7 @@ class EditMonsterInstanceForm(ModelForm):
             Div(
                 FormActions(
                     Submit('save', 'Save', css_class='btn btn-primary'),
-                    HTML("""<a href="{% url 'herders:profile' profile_name=profile_name %}" class="btn btn-link">Cancel</a>"""),
+                    HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
                 ),
             )
         )
@@ -322,7 +316,7 @@ class AwakenMonsterInstanceForm(forms.Form):
         Div(
             FormActions(
                 Submit('awaken', 'Awaken', css_class='btn btn-primary'),
-                HTML("""<a href="{% url 'herders:profile' profile_name=profile_name %}" class="btn btn-link">Cancel</a>"""),
+                HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
             ),
         )
     )

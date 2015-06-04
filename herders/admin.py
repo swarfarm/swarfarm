@@ -38,6 +38,11 @@ class MonsterAdmin(admin.ModelAdmin):
 
 admin.site.register(Monster, MonsterAdmin)
 
+class MonsterInstanceAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'owner')
+    search_fields = ['owner__username']
+
+admin.site.register(MonsterInstance, MonsterInstanceAdmin)
 
 # User management stuff
 class SummonerInline(admin.StackedInline):
@@ -51,10 +56,3 @@ class UserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-
-
-# Monster Instances stuff
-# class MonsterInstanceAdmin(admin.ModelAdmin):
-
-admin.site.register(MonsterInstance)
-# admin.site.register(MonsterInstance, MonsterInstanceAdmin)

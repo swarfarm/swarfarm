@@ -15,7 +15,6 @@ class Summoner(models.Model):
     public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
-    rep_monster = models.ForeignKey('MonsterInstance', null=True, blank=True)
     storage_magic_low = models.IntegerField(default=0)
     storage_magic_mid = models.IntegerField(default=0)
     storage_magic_high = models.IntegerField(default=0)

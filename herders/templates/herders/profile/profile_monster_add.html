@@ -1,0 +1,11 @@
+{% extends 'herders/profile/profile_base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block profile %}
+    <div class="monster-form">
+        <form method="post" action="{% url 'herders:monster_instance_add' profile_name=profile_name %}?next={{ return_path }}" >
+            {% crispy add_monster_form %}
+        </form>
+    </div>
+{% endblock profile %}

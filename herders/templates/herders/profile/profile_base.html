@@ -17,7 +17,7 @@
                     {% block subnav_view_button %}{% endblock %}
                     {% if is_owner %}
                         <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal"><span class="glyphicon glyphicon-plus"></span> Add Monster</button>
-                        <a href="{% url 'herders:profile_storage' profile_name=user.username %}" class="btn btn-default navbar-btn"><span class="fa fa-archive"></span> Material Storage</a>
+                        <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}" class="btn btn-default navbar-btn"><span class="fa fa-archive"></span> Material Storage</a>
                     {% endif %}
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
@@ -36,7 +36,9 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="modalAddMonsterTitle">Add Monster</h4>
                     </div>
-                    {% crispy add_monster_form %}
+                    <form method="post" action="{% url 'herders:monster_instance_add' profile_name=profile_name %}?next={{ request.path }}" >
+                        {% crispy add_monster_form %}
+                    </form>
                 </div>
             </div>
         </div>

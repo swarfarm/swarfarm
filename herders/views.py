@@ -154,10 +154,10 @@ def profile_box(request, profile_name, sort_method='grade'):
                 monster_stable['1*'] = MonsterInstance.objects.filter(owner=summoner, stars=1).order_by('-level', 'monster__name')
             elif sort_method == 'level':
                 monster_stable = OrderedDict()
-                monster_stable['1-10'] = MonsterInstance.objects.filter(owner=summoner, level__lte=10).order_by('-level', '-stars', 'monster__name')
-                monster_stable['11-20'] = MonsterInstance.objects.filter(owner=summoner, level__gt=10).filter(level__lte=20).order_by('-level', '-stars', 'monster__name')
-                monster_stable['21-30'] = MonsterInstance.objects.filter(owner=summoner, level__gt=20).filter(level__lte=30).order_by('-level', '-stars', 'monster__name')
-                monster_stable['31-40'] = MonsterInstance.objects.filter(owner=summoner, level__gt=30).order_by('-level', '-stars', 'monster__name')
+                monster_stable['40-31'] = MonsterInstance.objects.filter(owner=summoner, level__gt=30).order_by('-level', '-stars', 'monster__name')
+                monster_stable['30-21'] = MonsterInstance.objects.filter(owner=summoner, level__gt=20).filter(level__lte=30).order_by('-level', '-stars', 'monster__name')
+                monster_stable['20-11'] = MonsterInstance.objects.filter(owner=summoner, level__gt=10).filter(level__lte=20).order_by('-level', '-stars', 'monster__name')
+                monster_stable['10-1'] = MonsterInstance.objects.filter(owner=summoner, level__lte=10).order_by('-level', '-stars', 'monster__name')
             elif sort_method == 'attribute':
                 monster_stable = OrderedDict()
                 monster_stable['water'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_WATER).order_by('-stars', '-level', 'monster__name')

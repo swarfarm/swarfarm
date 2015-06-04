@@ -5,8 +5,21 @@
 {% block profile %}
     <div class="row">
         <div class="col-md-1">
-            {% static 'herders/images/' as img_url_prefix %}
-            <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}" class="monster-image-full"/>
+            <div class="monster-box">
+                {% static 'herders/images/' as img_url_prefix %}
+                <div class="monster-box-thumb">
+                    <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}" />
+                </div>
+                <div class="monster-box-actions">
+                    <span class="monster-box-actions">
+                        {% if instance.monster.can_awaken and not monster.monster.is_awakened %}
+                            <a href="{% url 'herders:awaken_monster_instance' instance_id=monster.pk.hex %}" data-toggle="tooltip" data-placement="top" title="Awaken"><span class="glyphicon glyphicon-star" style="color:purple"></span></a>
+                        {% endif %}
+                        <a href="{% url 'herders:power_up_monster_instance' instance_id=monster.pk.hex %}"><span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span></a>
+                        <a href="{% url 'herders:delete_monster_instance' instance_id=monster.pk.hex %}"><span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span></a>
+                    </span>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
             <h1>

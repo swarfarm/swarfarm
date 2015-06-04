@@ -29,10 +29,8 @@ body {
     z-index: 1000;
 }
 
-.monster-box {
-    width: auto;
-    position: relative;
-    float: left;
+.monster-table>tbody>tr>td{
+    vertical-align: middle;
 }
 
 .monster-image {
@@ -57,17 +55,32 @@ body {
     border-radius: 4px;
 }
 
-.monster-box-thumb {
-    border-radius: 6px;
-    border: 1px solid black;
-    margin: 1px;
-}
-
 .monster-star {
     position: absolute;
     top: 1px;
     left: 1px;
     height: 15px;
+}
+
+.monster-box {
+    width: auto;
+    position: relative;
+    float: left;
+    border: 1px solid black;
+    border-radius: 6px;
+    margin: 1px;
+}
+
+.monster-box-thumb {
+    position: relative;
+    border-bottom: 1px solid black;
+
+}
+
+.monster-box-actions {
+    position: relative;
+    text-align: center;
+    width: 100%;
 }
 
 .monster-element img {

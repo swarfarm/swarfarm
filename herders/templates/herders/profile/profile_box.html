@@ -31,28 +31,44 @@
                             <div class="panel-body">
                                 {% for instance in monsters %}
                                     <div class="monster-box">
-                                        {% if is_owner %}
-                                            <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">
-                                        {% else %}
-                                            <span>
-                                        {% endif %}
-                                            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-box-thumb"/>
-                                            <span>
-                                                {% if instance.monster.is_awakened %}
-                                                    <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-awakened.png" class="monster-star" />
-                                                {% elif instance.monster.can_awaken %}
-                                                    <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-unawakened.png" class="monster-star" />
-                                                {% else %}
-                                                    <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-fodder.png" class="monster-star" />
-                                                {% endif %}
-                                            </span>
-                                            <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
-                                            <span class="image-plus image-plus-right">{{ instance.level }}</span>
-                                        {% if is_owner %}
-                                            </a>
-                                        {% else %}
-                                            </span>
-                                        {% endif %}
+                                        <div class="monster-box-thumb">
+                                            {% if is_owner %}
+                                                <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">
+                                            {% else %}
+                                                <span>
+                                            {% endif %}
+                                                <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
+                                                <span>
+                                                    {% if instance.monster.is_awakened %}
+                                                        <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-awakened.png" class="monster-star" />
+                                                    {% elif instance.monster.can_awaken %}
+                                                        <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-unawakened.png" class="monster-star" />
+                                                    {% else %}
+                                                        <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-fodder.png" class="monster-star" />
+                                                    {% endif %}
+                                                </span>
+                                                <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
+                                                <span class="image-plus image-plus-right">{{ instance.level }}</span>
+                                            {% if is_owner %}
+                                                </a>
+                                            {% else %}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="monster-box-actions">
+                                            {% if is_owner %}
+                                                <span class="monster-box-actions">
+                                                    <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">
+                                                        <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
+                                                    </a>
+                                                    {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
+                                                        <a href="{% url 'herders:awaken_monster_instance' instance_id=instance.pk.hex %}" data-toggle="tooltip" data-placement="top" title="Awaken"><span class="glyphicon glyphicon-star" style="color:purple"></span></a>
+                                                    {% endif %}
+                                                    <a href="{% url 'herders:power_up_monster_instance' instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span></a>
+                                                    <a href="{% url 'herders:delete_monster_instance' instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span></a>
+                                                </span>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 {% endfor %}
                             </div>

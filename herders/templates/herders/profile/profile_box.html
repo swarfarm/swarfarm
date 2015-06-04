@@ -47,6 +47,9 @@
                                                         <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-fodder.png" class="monster-star" />
                                                     {% endif %}
                                                 </span>
+                                                {% if instance.monster.fusion_food %}
+                                                    <img class="image-plus-icon" src="{{ img_url_prefix }}/icons/fusion.png" />
+                                                {% endif %}
                                                 <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
                                                 <span class="image-plus image-plus-right">{{ instance.level }}</span>
                                             {% if is_owner %}

@@ -21,9 +21,9 @@
                         <th>Stars</th>
                         <th>Level</th>
                         <th>Element</th>
-                        <th>Fodder</th>
                         <th>Priority</th>
                         <th class="{sorter: false}">Notes</th>
+                        <th class="{sorter: false}"></th>
                         {% if is_owner %}
                             <th class="{sorter: false}">Actions</th>
                         {% endif %}
@@ -71,17 +71,20 @@
                                 <img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" />
                                 <span>{{ instance.monster.element }}</span>
                             </td>
-                            <td class="monster-fodder">
-                                {% if instance.fodder %}
-                                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                                    <span class="hidden">{{ instance.fodder }}</span>
-                                {% endif %}
-                            </td>
                             <td>
                                 <span class="hidden">{{ instance.priority }}</span>
                                 {{ instance.get_priority_display }}
                             </td>
                             <td>{{ instance.notes }}</td>
+                            <td class="monster-info-icons">
+                                {% if instance.fodder %}
+                                    <span class="fa fa-birthday-cake fa-2x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Marked as food"></span>
+                                    <span class="hidden">{{ instance.fodder }}</span>
+                                {% endif %}
+                                {% if instance.monster.fusion_food %}
+                                    <img src="{{ img_url_prefix }}/icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/>
+                                {% endif %}
+                            </td>
                             {% if is_owner %}
                                 <td>
                                     <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">

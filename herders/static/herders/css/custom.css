@@ -71,6 +71,10 @@ body {
     margin: 1px;
 }
 
+.monster-box .monster-star {
+    height: 25px;
+}
+
 .monster-box-thumb {
     position: relative;
     border-bottom: 1px solid black;
@@ -90,6 +94,11 @@ body {
 
 .monster-element span {
     display: none;
+}
+
+.monster-info-icons img {
+    width: 30px;
+    height: 30px;
 }
 
 .monster-awakens {
@@ -144,6 +153,13 @@ body {
     border-radius: 3px;
     border: 2px solid grey;
     font-weight: bold;
+}
+
+.image-plus-icon {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    height: 25px;
 }
 
 .image-plus-left {

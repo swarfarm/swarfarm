@@ -9,6 +9,9 @@
                 {% static 'herders/images/' as img_url_prefix %}
                 <div class="monster-box-thumb">
                     <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}" />
+                    {% if monster.monster.fusion_food %}
+                        <img class="image-plus-icon" src="{{ img_url_prefix }}/icons/fusion.png" />
+                    {% endif %}
                 </div>
                 <div class="monster-box-actions">
                     <span class="monster-box-actions">

@@ -9,7 +9,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="btn-group">
-                    <a href="{% url 'herders:profile_box' profile_name=profile_name %}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-th"></span> Box View</a>
+                    <a href="{% url 'herders:profile' profile_name=profile_name view_mode='box' %}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-th"></span> Box View</a>
                 </div>
             </div>
             {% static 'herders/images/' as img_url_prefix %}
@@ -34,7 +34,7 @@
                         <tr>
                             <td class="monster-image">
                                 {% if is_owner %}
-                                    <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">
+                                    <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}">
                                 {% else %}
                                     <span>
                                 {% endif %}
@@ -87,14 +87,14 @@
                             </td>
                             {% if is_owner %}
                                 <td>
-                                    <a href="{% url 'herders:view_monster_instance' instance_id=instance.pk.hex %}">
+                                    <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}">
                                         <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
                                     </a>
                                     {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
-                                        <a href="{% url 'herders:awaken_monster_instance' instance_id=instance.pk.hex %}" data-toggle="tooltip" data-placement="top" title="Awaken"><span class="glyphicon glyphicon-star" style="color:purple"></span></a>
+                                        <a href="{% url 'herders:monster_instance_awaken' profile_name=user.username instance_id=instance.pk.hex %}" data-toggle="tooltip" data-placement="top" title="Awaken"><span class="glyphicon glyphicon-star" style="color:purple"></span></a>
                                     {% endif %}
-                                    <a href="{% url 'herders:power_up_monster_instance' instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span></a>
-                                    <a href="{% url 'herders:delete_monster_instance' instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span></a>
+                                    <a href="{% url 'herders:monster_instance_power_up' profile_name=user.username instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span></a>
+                                    <a href="{% url 'herders:monster_instance_delete' profile_name=user.username instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span></a>
                                 </td>
                             {% endif %}
                         </tr>

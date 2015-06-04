@@ -49,9 +49,9 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'herders:profile' profile_name=user.username %}">My Monsters</a></li>
-                            <li><a href="{% url 'herders:fusion' %}">Fusion Tracker</a></li>
-                            <li><a href="{% url 'herders:teams' %}">Teams</a></li>
+                            <li><a href="{% url 'herders:profile' profile_name=user.username view_mode='list' %}">My Monsters</a></li>
+                            <li><a href="{% url 'herders:fusion' profile_name=user.username %}">Fusion Tracker</a></li>
+                            <li><a href="{% url 'herders:teams' profile_name=user.username %}">Teams</a></li>
                         {% endif %}
                         <li><a href="{% url 'herders:bestiary' %}">Monster Bestiary</a></li>
                         {% if user.is_staff %}
@@ -62,7 +62,7 @@
                     <div class="navbar-right">
                         {% if user.is_authenticated %}
                             {# Show the person's username and a logout link #}
-                            <p class="navbar-text">Signed in as <a href="{% url 'herders:edit_profile' %}">{{ user.username }}</a>. <a href="{% url 'herders:logout' %}" class="navbar-link">Log out.</a></p>
+                            <p class="navbar-text">Signed in as <a href="{% url 'herders:edit_profile' profile_name=user.username %}">{{ user.username }}</a>. <a href="{% url 'herders:logout' %}" class="navbar-link">Log out.</a></p>
                         {% else %}
                             {# Show login form and register button #}
                             <form class="navbar-form " role="search" action="{% url 'herders:login' %}" method="post">

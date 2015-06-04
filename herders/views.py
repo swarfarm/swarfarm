@@ -14,7 +14,10 @@ from .models import Monster, Summoner, MonsterInstance
 
 
 def index(request):
-    context = {}
+    context = {
+        'view_mode': 'list'
+    }
+
     return render(request, 'herders/index.html', context)
 
 
@@ -78,31 +81,13 @@ def log_out(request):
     return redirect('herders:index')
 
 
-@login_required
-def profile_edit(request):
-    context = {
-        'add_monster_form': AddMonsterInstanceForm(),
-        'is_owner': True,  # Because of @login_required decorator
-        'profile_name': request.user.username,
-    }
+def profile(request, profile_name=None, view_mode='list'):
+    if profile_name is None:
+        if request.user.is_authenticated():
+            profile_name = request.user.username
+        else:
+            raise Http404('No user profilespecified and not logged in. ')
 
-    form = EditProfileForm(request.POST or None, instance=request.user.summoner)
-    form.fields['rep_monster'].queryset = MonsterInstance.objects.filter(owner=request.user.summoner)
-
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        return redirect('herders:profile', profile_name=request.user.username)
-    else:
-        context['profile_form'] = form
-
-    return render(request, 'herders/profile/profile_edit.html', context)
-
-
-def profile_redirect_to_view(request, profile_name):
-    return redirect('herders:profile', profile_name=profile_name)
-
-
-def profile(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
 
     # Determine if the person logged in is the one requesting the view
@@ -112,38 +97,17 @@ def profile(request, profile_name):
         'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': profile_name,
         'is_owner': is_owner,
+        'view_mode': view_mode,
     }
 
     # Decide to show read only or full interface
-    if is_owner:
-        context['monster_stable'] = MonsterInstance.objects.filter(owner=request.user.summoner)
-
-        return render(request, 'herders/profile/profile_view.html', context)
-    else:
-        if summoner.public:
-            context['monster_stable'] = MonsterInstance.objects.filter(owner=summoner)
-
-            return render(request, 'herders/profile/profile_view.html', context)
-        else:
-            return render(request, 'herders/profile/not_public.html')
-
-
-def profile_box(request, profile_name, sort_method='grade'):
-    summoner = get_object_or_404(Summoner, user__username=profile_name)
-
-    # Determine if the person logged in is the one requesting the view
-    is_owner = request.user.is_authenticated() and summoner.user == request.user
-
-    context = {
-        'add_monster_form': AddMonsterInstanceForm(),
-        'profile_name': profile_name,
-        'is_owner': is_owner,
-    }
-
     if is_owner or summoner.public:
-        if sort_method:
-            sort_method = sort_method.lower()
-            context['sort_method'] = sort_method
+        if view_mode.lower() == 'list':
+            context['monster_stable'] = MonsterInstance.objects.filter(owner=summoner)
+            return render(request, 'herders/profile/profile_view.html', context)
+        elif view_mode.lower() == 'box':
+            sort_method = 'grade'
+
             if sort_method == 'grade':
                 monster_stable = OrderedDict()
                 monster_stable['6*'] = MonsterInstance.objects.filter(owner=summoner, stars=6).order_by('-level', 'monster__name')
@@ -167,21 +131,38 @@ def profile_box(request, profile_name, sort_method='grade'):
                 monster_stable['dark'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
             else:
                 return Http404('Invalid sort method')
-        else:
-            monster_stable = MonsterInstance.objects.filter(owner=summoner)
 
-        context['monster_stable'] = monster_stable
-
-        return render(request, 'herders/profile/profile_box.html', context)
+            context['monster_stable'] = monster_stable
+            return render(request, 'herders/profile/profile_box.html', context)
     else:
         return render(request, 'herders/profile/not_public.html')
+
+
+@login_required
+def profile_edit(request):
+    context = {
+        'add_monster_form': AddMonsterInstanceForm(),
+        'is_owner': True,  # Because of @login_required decorator
+        'profile_name': request.user.username,
+    }
+
+    form = EditProfileForm(request.POST or None, instance=request.user.summoner)
+    form.fields['rep_monster'].queryset = MonsterInstance.objects.filter(owner=request.user.summoner)
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('herders:profile', profile_name=request.user.username)
+    else:
+        context['profile_form'] = form
+
+    return render(request, 'herders/profile/profile_edit.html', context)
 
 
 @login_required
 def profile_storage(request):
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
-        'is_owner': True,  # Because of @login_required decorator
+        'is_owner': True,
         'profile_name': request.user.username,
     }
 
@@ -200,7 +181,7 @@ def profile_storage(request):
 
 
 @login_required()
-def add_monster_instance(request):
+def monster_instance_add(request, profile_name):
     form = AddMonsterInstanceForm(request.POST or None)
     if form.is_valid() and request.method == 'POST':
         # Create the monster instance
@@ -219,7 +200,11 @@ def add_monster_instance(request):
         return render(request, 'herders/profile/profile_view.html', context)
 
 
-def view_monster_instance(request, instance_id):
+def monster_instance_view(request, profile_name, instance_id):
+    return render(request, 'herders/unimplemented.html')
+
+
+def monster_instance_edit(request, profile_name, instance_id):
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': request.user.username,
@@ -261,7 +246,7 @@ def view_monster_instance(request, instance_id):
 
 
 @login_required()
-def delete_monster_instance(request, instance_id):
+def monster_instance_delete(request, profile_name, instance_id):
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
 
     # Check for proper owner before deleting
@@ -273,12 +258,12 @@ def delete_monster_instance(request, instance_id):
 
 
 @login_required()
-def power_up_monster_instance(request, instance_id):
+def monster_instance_power_up(request, profile_name, instance_id):
     return render(request, 'herders/unimplemented.html')
 
 
 @login_required()
-def awaken_monster_instance(request, instance_id):
+def monster_instance_awaken(request, profile_name, instance_id):
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': request.user.username,
@@ -388,6 +373,16 @@ def awaken_monster_instance(request, instance_id):
         return render(request, 'herders/profile/profile_awaken.html', context)
 
 
+@login_required
+def fusion(request):
+    return render(request, 'herders/unimplemented.html')
+
+
+@login_required
+def teams(request):
+    return render(request, 'herders/unimplemented.html')
+
+
 def bestiary(request, monster_element=None):
     context = dict()
 
@@ -403,14 +398,4 @@ def bestiary(request, monster_element=None):
 
 
 def bestiary_detail(request, monster_id):
-    return render(request, 'herders/unimplemented.html')
-
-
-@login_required
-def fusion(request):
-    return render(request, 'herders/unimplemented.html')
-
-
-@login_required
-def teams(request):
     return render(request, 'herders/unimplemented.html')

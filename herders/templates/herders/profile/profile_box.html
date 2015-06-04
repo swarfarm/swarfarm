@@ -11,15 +11,15 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="btn-group">
-                    <a href="{% url 'herders:profile' profile_name=profile_name%}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-th-list"></span> List View</a>
+                    <a href="{% url 'herders:profile' profile_name=profile_name view_mode='list' %}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-th-list"></span> List View</a>
                 </div>
                 <span>Sort by: </span>
                 <div class="btn-group">
-                    <a href="{% url 'herders:profile_box_sort' profile_name=profile_name sort_method='grade' %}" class="btn btn-default
+                    <a href="{% url 'herders:profile_sorted' profile_name=profile_name view_mode=view_mode sort_method='grade' %}" class="btn btn-default
                     {% if sort_method == 'grade' or sort_method == None %}btn-info{% endif %}">Grade</a>
-                    <a href="{% url 'herders:profile_box_sort' profile_name=profile_name sort_method='level' %}" class="btn btn-default
+                    <a href="{% url 'herders:profile_sorted' profile_name=profile_name view_mode=view_mode sort_method='level' %}" class="btn btn-default
                     {% if sort_method == 'level' %}btn-info{% endif %}">Level</a>
-                    <a href="{% url 'herders:profile_box_sort' profile_name=profile_name sort_method='attribute' %}" class="btn btn-default
+                    <a href="{% url 'herders:profile_sorted' profile_name=profile_name view_mode=view_mode sort_method='attribute' %}" class="btn btn-default
                     {% if sort_method == 'attribute' %}btn-info{% endif %}">Attribute</a>
                 </div>
             </div>

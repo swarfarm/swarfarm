@@ -1,9 +1,13 @@
 from django.conf.urls import url, include
+from django.views.generic.base import RedirectView
+from django.templatetags.static import static
 
 from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),  # Site root
+    url(r'^favicon\.ico$', RedirectView.as_view(url=static('herders/images/favicon.ico'))),
+
 
     # User management stuff
     url(r'^register/$', views.register, name='register'),  # Register new user

@@ -284,6 +284,7 @@ class EditMonsterInstanceForm(ModelForm):
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
                 Field('level'),
                 Field('fodder', css_class='checkbox'),
+                Field('in_storage', css_class='checkbox'),
                 Field('priority'),
                 Field('notes'),
             ),

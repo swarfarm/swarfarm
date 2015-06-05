@@ -87,6 +87,15 @@ body {
     width: 100%;
 }
 
+.monster-level-column {
+    text-align: center;
+    width: 65px;
+}
+
+.monster-element {
+    text-align: center;
+}
+
 .monster-element img {
     width: 30px;
     height: 30px;
@@ -96,9 +105,24 @@ body {
     display: none;
 }
 
-.monster-info-icons img {
-    width: 30px;
-    height: 30px;
+.monster-stars-column {
+    width: 65px;
+    text-align: center;
+}
+
+.monster-info-icons-column {
+    width: 25px;
+    text-align: center;
+}
+
+.monster-info-icons-column img {
+    height: 20px;
+}
+
+.monster-actions-column {
+    width: 10px;
+    padding-left: 2px!important;
+    padding-right: 2px!important;
 }
 
 .monster-awakens {

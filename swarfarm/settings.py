@@ -28,8 +28,8 @@ SECRET_KEY = 'orf+tgfh64$b7sfn9v+brfu@a9@b43+o+b4=@f^^c0i!t^x8qr'
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    '.swarfarm.com'
-    '.192.241.227.143'
+    '.swarfarm.com',
+    '.192.241.227.143',
 ]
 
 # Application definition

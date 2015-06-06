@@ -8,6 +8,7 @@ from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_page
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
     EditEssenceStorageForm, EditProfileForm
@@ -21,7 +22,7 @@ def index(request):
 
     return render(request, 'herders/index.html', context)
 
-
+@cache_page(60 * 10)
 def register(request):
     form = RegisterUserForm(request.POST or None
                             )
@@ -54,7 +55,7 @@ def register(request):
     context = {'form': form}
     return render(request, 'herders/register.html', context)
 
-
+@cache_page(60 * 10)
 def log_in(request):
     context = {}
 
@@ -396,7 +397,7 @@ def fusion(request, profile_name):
 def teams(request, profile_name):
     return render(request, 'herders/unimplemented.html')
 
-
+@cache_page(60 * 60)
 def bestiary(request, monster_element=None):
     context = dict()
 
@@ -411,5 +412,6 @@ def bestiary(request, monster_element=None):
     return render(request, 'herders/bestiary.html', context)
 
 
+@cache_page(60 * 60)
 def bestiary_detail(request, monster_id):
     return render(request, 'herders/unimplemented.html')

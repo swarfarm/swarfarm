@@ -29,6 +29,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     '.swarfarm.com'
+    '.192.241.227.143'
 ]
 
 # Application definition
@@ -92,11 +93,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'swa_farm',
-        'USER': 'swa_farmer',
-        #'USER': 'swa_devfarmer',
+        'USER': 'swarfarmer',
         'PASSWORD': 'J}%3wmX}PpF6',
-        'HOST': 'sol.apisnetworks.com',
-        #'HOST': 'webdev',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }
@@ -118,8 +117,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = 'http://static.swarfarm.com/'
-STATIC_ROOT = '/var/www/swarfarm_static'
+STATIC_URL = '/static/'
+STATIC_ROOT = '/home/peter/swarfarm/static/'
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
@@ -128,3 +127,10 @@ TEMPLATE_DIRS = (
 LOGIN_REDIRECT_URL = '/herders/profile/'
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}

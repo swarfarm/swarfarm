@@ -4,3 +4,5 @@ django-crispy-forms
 django-suit
 django-markdown-deux
 django-autocomplete-light==2.2.0
+python-memcached
+MySQL-python==1.2.5

@@ -25,7 +25,7 @@ os.environ['LANG'] = 'en_US.UTF-8'
 SECRET_KEY = 'orf+tgfh64$b7sfn9v+brfu@a9@b43+o+b4=@f^^c0i!t^x8qr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '.swarfarm.com',
@@ -93,7 +93,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'swa_farm',
-        'USER': 'swa_devfarmer',
+        'USER': 'swarfarmer',
         'PASSWORD': 'J}%3wmX}PpF6',
         'HOST': 'localhost',
         'PORT': '',
@@ -130,6 +130,7 @@ LOGOUT_URL = '/logout/'
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
     }
 }

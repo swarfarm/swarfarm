@@ -16,8 +16,14 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     {% block subnav_view_button %}{% endblock %}
                     {% if is_owner %}
-                        <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal"><span class="glyphicon glyphicon-plus"></span> Add Monster</button>
-                        <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}" class="btn btn-default navbar-btn"><span class="fa fa-archive"></span> Material Storage</a>
+                        <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal">
+                            <span class="glyphicon glyphicon-plus"></span>
+                             Add Monster
+                        </button>
+                        <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}" class="btn btn-default navbar-btn {% if profile_view == 'materials' %}active{% endif %}">
+                            <span class="fa fa-archive"></span>
+                            Material Storage
+                        </a>
                     {% endif %}
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->

@@ -3,6 +3,15 @@ body {
   padding-top: 50px;
 }
 
+.navbar img {
+    height: 20px;
+}
+
+.navbar .btn {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
 .navbar-right {
   margin-right: 5px;
 }

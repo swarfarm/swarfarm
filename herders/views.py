@@ -101,6 +101,7 @@ def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
         'view_mode': view_mode,
         'sort_method': sort_method,
         'return_path': request.path,
+        'view': 'profile',
     }
 
     if is_owner or summoner.public:
@@ -177,7 +178,9 @@ def profile_storage(request, profile_name):
         'add_monster_form': AddMonsterInstanceForm(),
         'is_owner': True,
         'profile_name': request.user.username,
-        'storage_form': form
+        'storage_form': form,
+        'view': 'profile',
+        'profile_view': 'materials',
     }
 
     if request.method == 'POST' and form.is_valid():
@@ -210,11 +213,15 @@ def monster_instance_add(request, profile_name):
             'add_monster_form': form,
             'return_path': return_path,
             'is_owner': True,
+            'view': 'profile',
         }
         return render(request, 'herders/profile/profile_monster_add.html', context)
 
 
 def monster_instance_view(request, profile_name, instance_id):
+    context = {
+        'view': 'profile',
+    }
     return render(request, 'herders/unimplemented.html')
 
 
@@ -237,6 +244,7 @@ def monster_instance_edit(request, profile_name, instance_id):
         'monster': monster,
         'is_owner': is_owner,
         'edit_monster_form': form,
+        'view': 'profile',
     }
 
     if request.method == 'POST':
@@ -273,6 +281,9 @@ def monster_instance_delete(request, profile_name, instance_id):
 
 @login_required()
 def monster_instance_power_up(request, profile_name, instance_id):
+    context = {
+        'view': 'profile',
+    }
     return render(request, 'herders/unimplemented.html')
 
 
@@ -390,16 +401,29 @@ def monster_instance_awaken(request, profile_name, instance_id):
 
 @login_required
 def fusion(request, profile_name):
-    return render(request, 'herders/unimplemented.html')
+    context = {
+        'view': 'fusion',
+    }
+
+    return render(request, 'herders/unimplemented.html', context)
 
 
 @login_required
 def teams(request, profile_name):
-    return render(request, 'herders/unimplemented.html')
+    context = {
+        'view': 'teams',
+    }
+
+    return render(request, 'herders/unimplemented.html', context)
 
 @cache_page(60 * 60)
 def bestiary(request, monster_element=None):
-    context = dict()
+    print monster_element
+
+    context = {
+        'view': 'bestiary',
+        'monster_element': monster_element,
+    }
 
     if monster_element is not None:
         if monster_element == 'all':
@@ -414,4 +438,7 @@ def bestiary(request, monster_element=None):
 
 @cache_page(60 * 60)
 def bestiary_detail(request, monster_id):
+    context = {
+        'view': 'bestiary',
+    }
     return render(request, 'herders/unimplemented.html')

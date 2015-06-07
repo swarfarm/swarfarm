@@ -24,8 +24,8 @@ def index(request):
 
 @cache_page(60 * 10)
 def register(request):
-    form = RegisterUserForm(request.POST or None
-                            )
+    form = RegisterUserForm(request.POST or None)
+
     if request.method == 'POST':
         if form.is_valid():
             try:
@@ -53,6 +53,7 @@ def register(request):
                 form.add_error('username', 'Username already taken')
 
     context = {'form': form}
+
     return render(request, 'herders/register.html', context)
 
 @cache_page(60 * 10)

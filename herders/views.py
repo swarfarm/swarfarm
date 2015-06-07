@@ -48,7 +48,7 @@ def register(request):
                 if user is not None:
                     if user.is_active:
                         login(request, user)
-                        return redirect('herders:profile', profile_name=user.username)
+                        return redirect('herders:profile', profile_name=user.username, view_mode='list')
             except IntegrityError:
                 form.add_error('username', 'Username already taken')
 

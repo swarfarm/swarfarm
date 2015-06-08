@@ -6,4 +6,3 @@ django-markdown-deux
 django-autocomplete-light==2.2.1
 python-memcached
 MySQL-python==1.2.5
-django-sslify

@@ -5,7 +5,11 @@
     {% for post in posts %}
         <h1>{{ post.title }}</h1>
         {{ post.body|markdown }}
-        <hr />
+        {% if forloop.last == False %}
+            <hr />
+        {% endif %}
+    {% empty %}
+        <p>No news yet!</p>
     {% endfor %}
 
     {% if user.is_staff %}

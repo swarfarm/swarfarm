@@ -8,6 +8,7 @@ from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.template.context_processors import csrf
 from django.views.decorators.cache import cache_page
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
@@ -49,9 +50,10 @@ def register(request):
 
     return render(request, 'herders/register.html', context)
 
-@cache_page(60 * 10)
+
 def log_in(request):
     context = {}
+    context.update(csrf(request))
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -74,6 +76,7 @@ def log_in(request):
 
 def log_out(request):
     logout(request)
+
     return redirect('news:latest_news')
 
 

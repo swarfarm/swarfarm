@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load markdown_deux_tags %}
+
+{% block content %}
+    {% for post in posts %}
+        <h1>{{ post.title }}</h1>
+        {{ post.body|markdown }}
+    {% endfor %}
+
+    {% if user.is_staff %}
+        <hr />
+        {% markdown_cheatsheet %}
+    {% endif %}
+{% endblock content %}

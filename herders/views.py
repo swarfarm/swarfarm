@@ -15,13 +15,6 @@ from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstance
 from .models import Monster, Summoner, MonsterInstance
 
 
-def index(request):
-    context = {
-        'view_mode': 'list'
-    }
-
-    return render(request, 'herders/index.html', context)
-
 @cache_page(60 * 10)
 def register(request):
     form = RegisterUserForm(request.POST or None)
@@ -81,7 +74,7 @@ def log_in(request):
 
 def log_out(request):
     logout(request)
-    return redirect('herders:index')
+    return redirect('news:latest_news')
 
 
 def profile(request, profile_name=None, view_mode='list', sort_method='grade'):

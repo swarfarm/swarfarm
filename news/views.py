@@ -5,7 +5,7 @@ from .models import Article
 
 @cache_page(60 * 60)
 def latest_news(request):
-    news_posts = Article.objects.all().order_by('created')
+    news_posts = Article.objects.all().order_by('-created')
 
     return render(request, 'news/latest_news.html', {'posts': news_posts})
 

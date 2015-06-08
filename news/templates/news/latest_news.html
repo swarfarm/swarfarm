@@ -5,6 +5,7 @@
     {% for post in posts %}
         <h1>{{ post.title }}</h1>
         {{ post.body|markdown }}
+        <hr />
     {% endfor %}
 
     {% if user.is_staff %}

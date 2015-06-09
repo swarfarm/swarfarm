@@ -16,6 +16,7 @@ from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstance
 from .models import Monster, Summoner, MonsterInstance
 
 
+@cache_page(60 * 10)
 def register(request):
     form = RegisterUserForm(request.POST or None)
 

@@ -413,7 +413,7 @@ def teams(request, profile_name):
 
     return render(request, 'herders/unimplemented.html', context)
 
-@cache_page(60 * 60)
+
 def bestiary(request, monster_element=None):
     print monster_element
 
@@ -433,7 +433,7 @@ def bestiary(request, monster_element=None):
     return render(request, 'herders/bestiary.html', context)
 
 
-@cache_page(60 * 60)
+
 def bestiary_detail(request, monster_id):
     context = {
         'view': 'bestiary',

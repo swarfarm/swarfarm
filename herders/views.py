@@ -781,7 +781,7 @@ def teams(request, profile_name):
         'view': 'teams',
     }
 
-    return render(request, 'herders/unimplemented.html', context)
+    #return render(request, 'herders/unimplemented.html', context)
 
 
 def bestiary(request, monster_element=None):

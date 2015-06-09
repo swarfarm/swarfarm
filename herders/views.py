@@ -415,8 +415,6 @@ def teams(request, profile_name):
 
 
 def bestiary(request, monster_element=None):
-    print monster_element
-
     context = {
         'view': 'bestiary',
         'monster_element': monster_element,
@@ -431,7 +429,6 @@ def bestiary(request, monster_element=None):
         context['no_filter'] = True
 
     return render(request, 'herders/bestiary.html', context)
-
 
 
 def bestiary_detail(request, monster_id):

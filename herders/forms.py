@@ -8,6 +8,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML
 from crispy_forms.bootstrap import FormActions
 
+from captcha.fields import ReCaptchaField
+
 import autocomplete_light
 
 
@@ -25,8 +27,9 @@ class RegisterUserForm(forms.Form):
     )
 
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput)
-    summoner_name = forms.CharField(label='Account Name', required=False)
-    is_public = forms.BooleanField(label='Public Profile', required=False)
+    summoner_name = forms.CharField(label="Summoner's War Account Name", required=False)
+    is_public = forms.BooleanField(label='Make my SWARFARM account visible to others', required=False)
+    captcha = ReCaptchaField()
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -36,6 +39,7 @@ class RegisterUserForm(forms.Form):
         Field('password', css_class='input-sm'),
         Field('summoner_name', css_class='input-sm'),
         Field('is_public'),
+        Field('captcha'),
         FormActions(Submit('register', 'Register', css_class='btn-lg btn-primary btn-block'))
     )
 
@@ -70,7 +74,7 @@ class EditProfileForm(ModelForm):
         )
         labels = {
             'summoner_name': "Summoner's War Account Name",
-            'public': 'Make my collection and in-game account name visible to others',
+            'public': 'Make my SWARFARM account visible to others',
         }
 
 

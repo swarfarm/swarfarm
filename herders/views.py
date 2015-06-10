@@ -413,8 +413,6 @@ def fusion(request, profile_name):
         [534, 236, 603, 336],
     )
 
-    print phoenix_progress['ingredients'][1]['owned'][0].monster.name
-
     # Valkyrja (Wind) - 5*, requires Baretta, Mikene, Arang, Shakan
     valkyrja_progress = fusion_progress(
         request.user.summoner,

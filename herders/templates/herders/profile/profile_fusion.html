@@ -1,101 +1,110 @@
 {% extends 'herders/profile/profile_base.html' %}
+{% load staticfiles %}
+{% load humanize %}
 
 {% block profile %}
-    {% if phoenix %}
-        {% for key,value in phoenix.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No phoenix progress available!
-    {% endif %}
+    {% static 'herders/images/' as img_url_prefix %}
 
-    <hr />
+    {% for fusion in fusions %}
+        <div class="panel panel-default">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>{{ fusion.instance.name }}</th>
+                        <th>Ingredients</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {# Fusion product #}
+                        <td class="fusion-product-image">
+                            <div class="monster-box {% if fusion.ready %}border-green{% endif %}">
+                                <div class="monster-box-thumb">
+                                    <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}"/>
+                                    <span>
+                                        {% if fusion.instance.is_awakened %}
+                                            <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-awakened.png" class="monster-star" />
+                                        {% elif fusion.instance.can_awaken %}
+                                            <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-unawakened.png" class="monster-star" />
+                                        {% else %}
+                                            <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-fodder.png" class="monster-star" />
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% if fusion.ready %}
+                                    <div class="monster-box-actions label-success">
+                                        <span class="monster-box-actions label label-success">Fusion Ready!</span>
+                                    </div>
+                                {% else %}
+                                    <div class="monster-box-actions label-default">
+                                        <span class="monster-box-actions label label-default">Not Yet</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div style="clear:both"><img src="{{ img_url_prefix }}icons/mana.png" class="monster-info-icons-column" /><strong>{{ fusion.cost|intcomma }}</strong></div>
+                        </td>
 
-    {% if valkyrja %}
-        {% for key,value in valkyrja.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No Valkyrja progress available!
-    {% endif %}
-
-    <hr />
-
-    {% if ifrit %}
-        {% for key,value in ifrit.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No Ifrit progress available!
-    {% endif %}
-
-    <hr />
-
-    {% if nine_tailed_fox %}
-        {% for key,value in nine_tailed_fox.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No Nine-Tailed Fox progress available!
-    {% endif %}
-
-    <hr />
-
-    {% if joker %}
-        {% for key,value in joker.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No Joker progress available!
-    {% endif %}
-
-    <hr />
-
-    {% if ninja %}
-        {% for key,value in ninja.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No Ninja progress available!
-    {% endif %}
-
-    <hr />
-
-    {% if sylph %}
-        {% for key,value in sylph.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No Sylph progress available!
-    {% endif %}
-
-    <hr />
-
-    {% if undine %}
-        {% for key,value in undine.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No Undine progress available!
-    {% endif %}
-
-    <hr />
-
-    {% if vampire %}
-        {% for key,value in vampire.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No Vampire progress available!
-    {% endif %}
-
-    <hr />
-
-    {% if succubus %}
-        {% for key,value in succubus.iteritems %}
-        <p>{{ key }} :: {{ value }}</p>
-        {% endfor %}
-    {% else %}
-        No Succubus progress available!
-    {% endif %}
+                        {# Fusion Ingredients #}
+                        <td>
+                            {% for ingredient in fusion.ingredients %}
+                                <div class="panel panel-default panel-horizontal">
+                                    <div class="panel-heading">
+                                        {# Required monster #}
+                                        <div class="monster-image-full
+                                            {% if ingredient.complete %}
+                                                border-green
+                                            {% elif ingredient.owned|length > 0 %}
+                                                border-yellow
+                                            {% else %}
+                                                border-red
+                                            {% endif %}
+                                        " data-toggle="tooltip" data-placement="top" title="{{ ingredient.instance.name }}">
+                                            <a href="{% url 'herders:bestiary_detail' monster_id=ingredient.instance.pk %}">
+                                                <img src="{{ img_url_prefix }}monsters/{{ ingredient.instance.image_filename }}" />
+                                                <span>
+                                                    {% if ingredient.instance.is_awakened %}
+                                                        <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-awakened.png" class="monster-star" />
+                                                    {% elif instance.monster.can_awaken %}
+                                                        <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-unawakened.png" class="monster-star" />
+                                                    {% else %}
+                                                        <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-fodder.png" class="monster-star" />
+                                                    {% endif %}
+                                                </span>
+                                                <span class="image-plus image-plus-right">{{ fusion.level }}</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    {# User's collection #}
+                                    <div class="panel-body">
+                                        <div>Your collection:</div>
+                                        <div class="fusion_ingredients_owned">
+                                            {% for owned in ingredient.owned %}
+                                                <div class="monster-image">
+                                                    <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}">
+                                                        <img src="{{ img_url_prefix }}monsters/{{ owned.monster.image_filename }}" class="monster-thumb"/>
+                                                        <span>
+                                                            {% if owned.monster.is_awakened %}
+                                                                <img src="{{ img_url_prefix }}stars/{{ owned.stars }}star-awakened.png" class="monster-star" />
+                                                            {% elif owned.monster.can_awaken %}
+                                                                <img src="{{ img_url_prefix }}stars/{{ owned.stars }}star-unawakened.png" class="monster-star" />
+                                                            {% else %}
+                                                                <img src="{{ img_url_prefix }}stars/{{ owned.stars }}star-fodder.png" class="monster-star" />
+                                                            {% endif %}
+                                                        </span>
+                                                        <span class="image-plus image-plus-right">{{ owned.level }}</span>
+                                                    </a>
+                                                </div>
+                                            {% empty %}
+                                                None!
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
 {% endblock profile %}

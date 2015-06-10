@@ -3,10 +3,11 @@
 {% load crispy_forms_tags %}
 
 {% block css %}
-    <link href="{% static 'herders/css/profile.css' %}" rel="stylesheet"/>
     <link href="{% static 'herders/css/bootstrap-rating.css' %}" rel="stylesheet" />
+    {% if is_owner %}
+        <link href="{% static 'herders/css/profile.css' %}" rel="stylesheet"/>
+    {% endif %}
 {% endblock css %}
-
 
 {% block subnav %}
     {% if is_owner %}
@@ -50,7 +51,7 @@
         </div>
     {% endif %}
 
-{% block profile %} {% endblock profile %}
+    {% block profile %} {% endblock profile %}
 
 {% endblock content %}
 

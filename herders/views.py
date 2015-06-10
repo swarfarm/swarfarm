@@ -772,7 +772,7 @@ def fusion(request, profile_name):
     }
     context['succubus'] = succubus_progress
 
-    return render(request, 'herders/fusion.html', context)
+    return render(request, 'herders/profile/profile_fusion.html', context)
 
 
 @login_required
@@ -781,7 +781,7 @@ def teams(request, profile_name):
         'view': 'teams',
     }
 
-    #return render(request, 'herders/unimplemented.html', context)
+    return render(request, 'herders/unimplemented.html', context)
 
 
 def bestiary(request, monster_element=None):

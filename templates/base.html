@@ -64,9 +64,9 @@
                                 </p>
                             </li>
                             <li>
-                                <p class="navbar-btn" data-toggle="tooltip" data-placement="bottom" title="Not yet implemented">
+                                <p class="navbar-btn">
                                     <a href="{% url 'herders:fusion' profile_name=user.username %}"
-                                       class="btn btn-default disabled {% if view == 'fusion' %}active{% endif %}">
+                                       class="btn btn-default {% if view == 'fusion' %}active{% endif %}">
                                         <img src="{% static 'herders/images/icons/fusion.png' %}" />
                                         Fusion Tracker
                                     </a>

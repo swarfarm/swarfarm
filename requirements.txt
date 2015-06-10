@@ -3,7 +3,8 @@ django-timezone-field
 django-crispy-forms
 django-suit
 django-markdown-deux
-django-autocomplete-light==2.2.1
+django-autocomplete-light==2.2.2
 django-recaptcha
+django-redis
 python-memcached
 MySQL-python==1.2.5

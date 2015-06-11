@@ -39,15 +39,6 @@ body {
     border-bottom-right-radius: 4px;
 }
 
-.panel-condensed > .panel-body {
-    padding: 0;
-}
-
-.panel-condensed > .panel-body > .panel {
-    margin-bottom: 0;
-    border: none;
-}
-
 .container {
     width: 95%;
 }
@@ -123,7 +114,6 @@ body {
 .monster-box-thumb {
     position: relative;
     border-bottom: 1px solid black;
-
 }
 
 .monster-box-actions {
@@ -288,31 +278,11 @@ body {
     border: 1px solid black;
 }
 
-.fusion-product {
-    width: auto;
-    position: relative;
-    border: 1px solid black;
-    border-radius: 6px;
-    margin: 1px;
+.fusion-checklist {
+    width: 65px;
+    text-align: center;
 }
 
-.fusion-product > .monster-box-thumb img {
-    width: 100%;
-}
-
-.fusion-ingredients-owned > div.monster-image {
-    float:left;
-    margin: 3px;
-}
-
-.border-red {
-    border: 4px solid red;
-}
-
-.border-yellow {
-    border: 4px solid yellow;
-}
-
-.border-green {
-    border: 4px solid #dff0d8;
+.fusion-ingredients-collection {
+    padding: 0!important;
 }

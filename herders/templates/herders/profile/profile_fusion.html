@@ -39,7 +39,7 @@
                         {# Fusion product #}
                         <div class="monster-box">
                             <div class="monster-box-thumb">
-                                <a href="#">
+                                <a href="{% url 'herders:bestiary_detail' monster_id=fusion.instance.pk %}">
                                     <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}"/>
                                     <span>
                                         {% if fusion.instance.is_awakened %}
@@ -134,7 +134,7 @@
                                         <td class="fusion-ingredients-collection">
                                             {% for owned in ingredient.owned %}
                                                 <div class="monster-image pull-left">
-                                                    <a href="#">
+                                                    <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}">
                                                         <img src="{{ img_url_prefix }}monsters/{{ owned.monster.image_filename }}" class="monster-thumb"/>
                                                         <span>
                                                             {% if owned.monster.is_awakened %}

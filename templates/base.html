@@ -33,20 +33,20 @@
             <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-mainnav">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="{% url 'news:latest_news' %}">
+                    <a class="navbar-brand hidden-sm hidden-md" href="{% url 'news:latest_news' %}">
                         <span><img src="{% static 'herders/images/site-logo.png' %}"/></span>
                         SWARFARM
                     </a>
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <div class="collapse navbar-collapse" id="bs-mainnav">
                     <ul class="nav navbar-nav">
                         {% if user.is_authenticated %}
                             <li>
@@ -95,7 +95,7 @@
                         {% endif %}
                     </ul>
 
-                    <div class="navbar-right">
+                    <div class="navbar-right hidden-sm">
                         {% if user.is_authenticated %}
                             {# Show the person's username and a logout link #}
                             <p class="navbar-text">Signed in as <a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">{{ user.username }}</a>. <a href="{% url 'herders:logout' %}" class="navbar-link">Log out.</a></p>

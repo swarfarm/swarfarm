@@ -399,9 +399,15 @@ def monster_instance_awaken(request, profile_name, instance_id):
 
 @login_required
 def fusion(request, profile_name):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:fusion', kwargs={'profile_name': profile_name})
+    )
+
     context = {
         'view': 'fusion',
         'profile_name': profile_name,
+        'return_path': return_path,
     }
 
     # Phoenix (Water) - 5*, requires Arang, Jojo, Susano, Mina

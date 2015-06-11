@@ -51,13 +51,7 @@
                         {% if user.is_authenticated %}
                             <li>
                                 <p class="navbar-btn">
-                                    <a href="
-                                    {% if return_path %}
-                                        {{ return_path }}
-                                    {% else %}
-                                        {% url 'herders:profile' profile_name=user.username view_mode='list' %}
-                                    {% endif %}
-                                    " class="btn btn-default {% if view == 'profile' %}active{% endif %}">
+                                    <a href="{% url 'herders:profile' profile_name=user.username view_mode='list' %}" class="btn btn-default {% if view == 'profile' %}active{% endif %}">
                                         <img src="{% static 'herders/images/icons/monster.png' %}" />
                                         My Monsters
                                     </a>

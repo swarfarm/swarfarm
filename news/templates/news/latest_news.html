@@ -9,11 +9,6 @@
             <hr />
         {% endif %}
     {% empty %}
-        <p>No news yet!</p>
+        <p>No news!</p>
     {% endfor %}
-
-    {% if user.is_staff %}
-        <hr />
-        {% markdown_cheatsheet %}
-    {% endif %}
 {% endblock content %}

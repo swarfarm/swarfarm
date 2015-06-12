@@ -6,6 +6,9 @@ from .models import Article
 def latest_news(request):
     news_posts = Article.objects.all().order_by('-created')
 
+    news_posts_ids = [o.id for o in news_posts if o.is_active()]
+    news_posts = news_posts.filter(id__in=news_posts_ids)
+
     return render(request, 'news/latest_news.html', {'posts': news_posts})
 
 def post(request, article_id):

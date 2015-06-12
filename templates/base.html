@@ -93,13 +93,6 @@
                                 </a>
                             </div>
                         </li>
-                        {% if user.is_staff %}
-                            <li>
-                                <div class="navbar-btn">
-                                    <a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a>
-                                </div>
-                            </li>
-                        {% endif %}
                     </ul>
 
                     <div class="navbar-right hidden-sm">
@@ -111,7 +104,10 @@
                                     <ul class="dropdown-menu" role="menu">
                                     <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
                                     <li><a href="{% url 'feedback:index' %}">Leave Feedback</a></li>
-                                    <li class="divider"></li>
+                                    {% if user.is_staff %}
+                                        <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
+                                    {% endif %}
+                                    <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>
                                     <li><a href="{% url 'herders:logout' %}">Log out</a></li>
                                 </ul>
                             </div>

@@ -301,6 +301,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
         'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': request.user.username,
         'is_owner': is_owner,  # Because of @login_required decorator
+        'return_path': return_path,
         'monster': monster,
         'awaken_monster_form': form,
     }

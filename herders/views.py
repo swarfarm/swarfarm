@@ -177,7 +177,7 @@ def profile_storage(request, profile_name):
         'is_owner': True,
         'profile_name': request.user.username,
         'storage_form': form,
-        'view': 'profile',
+        'view': 'storage',
         'profile_view': 'materials',
     }
 

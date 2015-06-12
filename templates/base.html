@@ -62,7 +62,7 @@
                                     <a href="{% url 'herders:fusion' profile_name=user.username %}"
                                        class="btn btn-default {% if view == 'fusion' %}active{% endif %}">
                                         <img src="{% static 'herders/images/icons/fusion.png' %}" />
-                                        Fusion Tracker
+                                        Fusion
                                     </a>
                                 </p>
                             </li>
@@ -75,17 +75,30 @@
                                     </a>
                                 </p>
                             </li>
+                            <li>
+                                <p class="navbar-btn">
+                                    <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}"
+                                       class="btn btn-default {% if view == 'storage' %}active{% endif %}">
+                                        <span class="fa fa-archive"></span>
+                                        Essence Storage
+                                    </a>
+                                </p>
+                            </li>
                         {% endif %}
                         <li>
                             <p class="navbar-btn">
                                 <a href="{% url 'herders:bestiary' %}" class="btn btn-default {% if view == 'bestiary' %}active{% endif %}">
                                     <span class="fa fa-book"></span>
-                                    Monster Bestiary
+                                    Bestiary
                                 </a>
                             </p>
                         </li>
                         {% if user.is_staff %}
-                            <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
+                            <li>
+                                <p class="navbar-btn">
+                                    <a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a>
+                                </p>
+                            </li>
                         {% endif %}
                     </ul>
 

@@ -104,8 +104,17 @@
 
                     <div class="navbar-right hidden-sm">
                         {% if user.is_authenticated %}
-                            {# Show the person's username and a logout link #}
-                            <p class="navbar-text">Signed in as <a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">{{ user.username }}</a>. <a href="{% url 'herders:logout' %}" class="navbar-link">Log out.</a></p>
+                            <div class="btn-group navbar-btn">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    {{ user.username }} <span class="caret"></span>
+                                </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                    <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
+                                    <li><a href="{% url 'feedback:index' %}">Leave Feedback</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="{% url 'herders:logout' %}">Log out</a></li>
+                                </ul>
+                            </div>
                         {% else %}
                             {# Show login form and register button #}
                             <form class="navbar-form " role="search" action="{% url 'herders:login' %}" method="post">

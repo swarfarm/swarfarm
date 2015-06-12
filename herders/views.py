@@ -186,7 +186,7 @@ def profile_storage(request, profile_name):
         return redirect(return_path)
 
     else:
-        return render(request, 'herders/profile/profile_storage.html', context)
+        return render(request, 'herders/essence_storage.html', context)
 
 
 @login_required()

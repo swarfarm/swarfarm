@@ -1,8 +1,8 @@
-{% extends 'herders/profile/profile_base.html' %}
+{% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load staticfiles %}
 
-{% block profile %}
+{% block content %}
     <div class="container-fluid">
         {# Unable to use static tag within crispy form, so we use it here to get path #}
         {% static 'herders/images/essences/' as essence_url_prefix %}

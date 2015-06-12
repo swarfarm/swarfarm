@@ -43,6 +43,20 @@ body {
     width: 95%;
 }
 
+.autocomplete-results>span {
+    height: 30px;
+    margin-left: 3px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.autocomplete-results>img {
+    height: 30px;
+    border: 1px solid black;
+    border-radius: 3px;
+    float: left;
+}
+
 .awakened {
     color: #CC00CC;
 }

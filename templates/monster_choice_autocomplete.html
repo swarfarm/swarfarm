@@ -1,0 +1,10 @@
+{% load i18n l10n %}
+{% load static %}
+
+{% spaceless %}
+    {% static 'herders/images/' as img_url_prefix %}
+    <div class="block autocomplete-results" data-value="{{ choice.pk|unlocalize }}">
+        <img src="{{ img_url_prefix }}monsters/{{ choice.image_filename }}"/>
+        <span>{{ choice }}</span>
+    </div>
+{% endspaceless %}

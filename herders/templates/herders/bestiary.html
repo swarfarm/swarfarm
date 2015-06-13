@@ -38,13 +38,13 @@
 {% endblock subnav %}
 
 {% block content %}
+    {% static 'herders/images/' as img_url_prefix %}
     {% if no_filter %}
         <div class="alert alert-info" role="alert">Please select an element filter.</div>
     {% endif %}
 
     {% if monster_list %}
         {% cache 1800 bestiary monster_element %}
-            {% static 'herders/images/' as img_url_prefix %}
             <table id="monster_table" class="table table-hover table-condensed monster-table">
                 <thead>
                     <tr>

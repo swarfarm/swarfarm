@@ -5,8 +5,14 @@ $(function () {
 
 
 //Modal management scripts
-var addMonsterModal = $('#addMonsterModal');
-
-addMonsterModal.on('shown.bs.modal', function () {
+$('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
 });
+
+//Select the
+$('#id_monster-autocomplete').bind('selectChoice',
+    function(e, choice, autocomplete) {
+        alert('You selected: ' + choice.dataset['value']);
+        //$('#id_stars'')
+    }
+);

@@ -1,4 +1,4 @@
-var api_url = 'http://swarfarm.com/api/';
+var api_url = 'https://swarfarm.com/api/';
 
 //Initialize all bootstrap tooltips
 $(function () {

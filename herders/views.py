@@ -1,7 +1,6 @@
 from collections import OrderedDict
-import json
 
-from django.http import Http404, HttpResponseForbidden, HttpResponse
+from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
@@ -214,24 +213,6 @@ def monster_instance_add(request, profile_name):
             'view': 'profile',
         }
         return render(request, 'herders/profile/profile_monster_add.html', context)
-
-def monster_get_stars(request, monster_id):
-    if request.method == 'POST':
-        response_data = {
-            'stars': Monster.objects.get(pk=monster_id).values('base_stars')
-        }
-
-        return HttpResponse(
-            json.dumps(response_data),
-            content_type="application/json"
-        )
-    else:
-        return HttpResponse(
-            json.dumps({'error': 'No ID specified'}),
-            content_type="application/json"
-        )
-
-
 
 def monster_instance_view(request, profile_name, instance_id):
     context = {

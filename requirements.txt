@@ -8,3 +8,4 @@ django-recaptcha
 django-redis
 django-suit
 django-timezone-field
+django_compressor

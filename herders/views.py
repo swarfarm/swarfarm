@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import csrf
-from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
     EditEssenceStorageForm, EditProfileForm
@@ -524,19 +524,25 @@ def teams(request, profile_name):
     return render(request, 'herders/unimplemented.html', context)
 
 
-def bestiary(request, monster_element=None):
+def bestiary(request, monster_element='all'):
     context = {
         'view': 'bestiary',
         'monster_element': monster_element,
     }
 
-    if monster_element is not None:
+    monster_list = cache.get('bestiary_' + monster_element)
+
+    if monster_list is None:
+        print "Not cached"
+
         if monster_element == 'all':
-            context['monster_list'] = Monster.objects.all()
+            monster_list = Monster.objects.all()
         else:
-            context['monster_list'] = get_list_or_404(Monster, element=monster_element)
-    else:
-        context['no_filter'] = True
+            monster_list = get_list_or_404(Monster, element=monster_element)
+
+        cache.set('bestiary_' + monster_element, monster_list, 30)
+
+    context['monster_list'] = monster_list
 
     return render(request, 'herders/bestiary.html', context)
 

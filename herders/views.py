@@ -540,7 +540,7 @@ def bestiary(request, monster_element='all'):
         else:
             monster_list = get_list_or_404(Monster, element=monster_element)
 
-        cache.set('bestiary_' + monster_element, monster_list, 30)
+        cache.set('bestiary_' + monster_element, monster_list, 86400)
 
     context['monster_list'] = monster_list
 

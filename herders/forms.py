@@ -258,7 +258,7 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
             Div(
                 Field('monster'),
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                Field('level', value=1),
+                Field('level', value=1, min=1, max=40),
                 Field('fodder', css_class='checkbox'),
                 Field('priority',),
                 Field('notes'),
@@ -286,7 +286,7 @@ class EditMonsterInstanceForm(ModelForm):
         self.helper.layout = Layout(
             Div(
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                Field('level'),
+                Field('level', min=1, max=40),
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
                 Field('priority'),

@@ -5,33 +5,57 @@
 {% block title %}My Monsters - {{ block.super }}{% endblock title %}
 
 {% block profile %}
+    {% static 'herders/images/' as img_url_prefix %}
+
     {% if monster_stable %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="btn-group">
                     <a href="{% url 'herders:profile' profile_name=profile_name view_mode='box' %}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-th"></span> Box View</a>
                 </div>
+                <span>Filters: </span>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="fire"><img src="{{ img_url_prefix }}elements/fire.png" /></button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="water"><img src="{{ img_url_prefix }}elements/water.png" /></button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="wind"><img src="{{ img_url_prefix }}elements/wind.png" /></button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="light"><img src="{{ img_url_prefix }}elements/light.png" /></button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="dark"><img src="{{ img_url_prefix }}elements/dark.png" /></button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Attack">Attack</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Defense">Defense</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Hp">HP</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Support">Support</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Material">Material</button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="High">High</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="Medium">Medium</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="Low">Low</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="Done">Done</button>
+                </div>
             </div>
-            {% static 'herders/images/' as img_url_prefix %}
+
             <div class="table-responsive">
                 <table id="monster_table" class="table table-hover table-condensed monster-table">
                     <thead>
                         <tr>
-                            <th class="{sorter: false}"></th>
+                            <th data-sorter="false"></th>
                             <th>Name</th>
                             <th class="monster-stars-column">Stars</th>
                             <th class="monster-level-column">Level</th>
                             <th class="monster-element">Element</th>
+                            <th>Archetype</th>
                             <th>Priority</th>
                             <th>Notes</th>
-                            <th class="monster-info-icons-column"><img src="{{ img_url_prefix }}/icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/></th>
+                            <th class="monster-info-icons-column"><img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/></th>
                             <th class="monster-info-icons-column"><span class="fa fa-birthday-cake" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Marked as food"></span></th>
                             <th class="monster-info-icons-column"><span class="fa fa-bed" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="In Monster Storage"></span></th>
                             {% if is_owner %}
-                                <th class="{sorter: false}"></th>
-                                <th class="{sorter: false}"></th>
-                                <th class="{sorter: false}"></th>
-                                <th class="{sorter: false}"></th>
+                                <th data-sorter="false"></th>
+                                <th data-sorter="false"></th>
+                                <th data-sorter="false"></th>
+                                <th data-sorter="false"></th>
                             {% endif %}
                         </tr>
                     </thead>
@@ -77,6 +101,7 @@
                                     <img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" />
                                     <span>{{ instance.monster.element }}</span>
                                 </td>
+                                <td>{{ instance.monster.archetype|title }}</td>
                                 <td>
                                     <span class="hidden">{{ instance.priority }}</span>
                                     {{ instance.get_priority_display }}
@@ -84,7 +109,7 @@
                                 <td>{{ instance.notes }}</td>
                                 <td class="monster-info-icons-column">
                                     {% if instance.monster.fusion_food %}
-                                        <img src="{{ img_url_prefix }}/icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/>
+                                        <img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/>
                                         <span class="hidden">0</span>
                                     {% else %}
                                         <span class="hidden">1</span>
@@ -134,12 +159,3 @@
         <p>No monsters in your profile.</p>
     {% endif %}
 {% endblock profile %}
-
-{% block javascript %}
-    {{ block.super }}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $("#monster_table").tablesorter({});
-        });
-    </script>
-{% endblock %}

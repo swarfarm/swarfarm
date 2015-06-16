@@ -145,9 +145,3 @@
         {% endcache %}
     {% endif %}
 {% endblock %}
-
-{% block javascript %}
-    <script type="text/javascript" src="{% static "herders/js/jquery.metadata.js" %}"></script>
-    <script type="text/javascript" src="{% static "herders/js/jquery.tablesorter.min.js" %}"></script>
-    <script type="text/javascript">$(document).ready(function() {$("#monster_table").tablesorter();});</script>
-{% endblock javascript %}

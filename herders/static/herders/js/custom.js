@@ -5,7 +5,6 @@ $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 });
 
-
 //Modal management scripts
 $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
@@ -20,3 +19,39 @@ $('#id_monster-autocomplete').bind('selectChoice',
             $('#id_stars').rating('rate', result[0].fields['base_stars']);
         });
     });
+
+$(document).ready(function() {
+    $('#monster_table').tablesorter({
+        widgets: ['filter'],
+        ignoreCase: true,
+        widgetOptions: {
+            filter_columnFilters: true,
+            filter_reset: 'button.reset',
+            filter_ignoreCase : true,
+            filter_liveSearch : true,
+            filter_searchDelay : 300
+        }
+    });
+
+    $('button.filter').click(function() {
+        $( this ).toggleClass('active');
+
+        var filters = $('#monster_table').find('input.tablesorter-filter'),
+            col = $(this).data('filter-column'),
+            txt = $(this).data('filter-text'),
+            cur = filters.eq(col).val(),
+            mult, i;
+
+        if (cur && txt !== '') {
+            mult = cur.split('|');
+            i = $.inArray(txt, mult);
+            if (i < 0) {
+                mult.push(txt);
+            } else {
+                mult.splice(i,1);
+            }
+            txt = mult.join('|');
+        }
+        filters.eq(col).val(txt).trigger('search', false);
+    });
+});

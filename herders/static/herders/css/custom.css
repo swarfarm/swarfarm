@@ -43,6 +43,10 @@ body {
     width: 95%;
 }
 
+.btn-group button img {
+    height: 20px;
+}
+
 .autocomplete-results>span {
     height: 30px;
     margin-left: 3px;
@@ -251,25 +255,49 @@ body {
     cursor: pointer;
 }
 
-.header:before {
+.tablesorter-headerUnSorted div:before {
     padding-right: 3px;
     font-family: 'Glyphicons Halflings';
     font-size: 0.7em;
     content: "\e150";
 }
 
-.headerSortUp:before {
+.tablesorter-headerAsc div:before {
     padding-right: 3px;
     font-family: 'Glyphicons Halflings';
     font-size: 0.7em;
     content: "\e114";
 }
 
-.headerSortDown:before {
+.tablesorter-headerDesc div:before {
     padding-right: 3px;
     font-family: "Glyphicons Halflings";
     font-size: 0.7em;
     content: "\e113";
+}
+
+.tablesorter-filter-row {
+    display: none;
+}
+
+tr.filtered {
+    display: none;
+}
+
+.sorter-false {
+    visibility: hidden;
+}
+
+
+
+button.filter:focus {
+    outline: none!important;
+    background-color: #ffffff;
+}
+
+button.active {
+    outline: none!important;
+    background-color: #e6e6e6!important;
 }
 
 .storage_group {

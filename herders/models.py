@@ -230,22 +230,3 @@ class MonsterInstance(models.Model):
 
     class Meta:
         ordering = ['-stars', '-level', '-priority', 'monster__name']
-
-
-class TeamGroup(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.TextField(max_length=30)
-
-
-class Team(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    group = models.ForeignKey(TeamGroup)
-    owner = models.ForeignKey(Summoner)
-    name = models.TextField(max_length=30)
-    favorite = models.BooleanField(blank=True)
-    description = models.TextField()
-    slot1 = models.ForeignKey(MonsterInstance, related_name='slot1', null=True, blank=True)
-    slot2 = models.ForeignKey(MonsterInstance, related_name='slot2', null=True, blank=True)
-    slot3 = models.ForeignKey(MonsterInstance, related_name='slot3', null=True, blank=True)
-    slot4 = models.ForeignKey(MonsterInstance, related_name='slot4', null=True, blank=True)
-    slot5 = models.ForeignKey(MonsterInstance, related_name='slot5', null=True, blank=True)

@@ -530,17 +530,10 @@ def bestiary(request, monster_element='all'):
         'monster_element': monster_element,
     }
 
-    monster_list = cache.get('bestiary_' + monster_element)
-
-    if monster_list is None:
-        print "Not cached"
-
-        if monster_element == 'all':
-            monster_list = Monster.objects.all()
-        else:
-            monster_list = get_list_or_404(Monster, element=monster_element)
-
-        cache.set('bestiary_' + monster_element, monster_list, 86400)
+    if monster_element == 'all':
+        monster_list = Monster.objects.all()
+    else:
+        monster_list = get_list_or_404(Monster, element=monster_element)
 
     context['monster_list'] = monster_list
 

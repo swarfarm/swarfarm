@@ -22,14 +22,15 @@ $('#id_monster-autocomplete').bind('selectChoice',
 
 $(document).ready(function() {
     $('#monster_table').tablesorter({
-        widgets: ['filter'],
+        widgets: ['filter', 'saveSort'],
         ignoreCase: true,
         widgetOptions: {
             filter_columnFilters: true,
-            filter_reset: 'button.reset',
+            filter_reset: 'button.filterreset',
             filter_ignoreCase : true,
             filter_liveSearch : true,
-            filter_searchDelay : 300
+            filter_searchDelay : 300,
+            filter_saveFilters : true
         }
     });
 
@@ -53,5 +54,13 @@ $(document).ready(function() {
             txt = mult.join('|');
         }
         filters.eq(col).val(txt).trigger('search', false);
+    });
+
+    $('button.filterreset').click(function() {
+        $('button.filter').toggleClass('active', false);
+    });
+
+    $('button.sortreset').click(function() {
+        $('#monster_table').trigger('saveSortReset').trigger("sortReset");
     });
 });

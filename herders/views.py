@@ -531,9 +531,12 @@ def bestiary(request, monster_element='all'):
     }
 
     if monster_element == 'all':
-        monster_list = Monster.objects.all()
+        monster_list = Monster.objects.select_related('awakens_from').all()
     else:
-        monster_list = get_list_or_404(Monster, element=monster_element)
+        monster_list = Monster.objects.select_related('awakens_from').filter(element=monster_element)
+
+    if monster_list.count() == 0:
+        raise Http404('Empty monster list. Possibly invalid filter element.')
 
     context['monster_list'] = monster_list
 

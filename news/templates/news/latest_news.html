@@ -2,13 +2,15 @@
 {% load markdown_deux_tags %}
 
 {% block content %}
-    {% for post in posts %}
-        <h1>{{ post.title }}</h1>
-        {{ post.body|markdown }}
-        {% if forloop.last == False %}
-            <hr />
-        {% endif %}
-    {% empty %}
-        <p>No news!</p>
-    {% endfor %}
+    {% cache 900 latest_news %}
+        {% for post in posts %}
+            <h1>{{ post.title }}</h1>
+            {{ post.body|markdown }}
+            {% if forloop.last == False %}
+                <hr />
+            {% endif %}
+        {% empty %}
+            <p>No news!</p>
+        {% endfor %}
+    {% endcache %}
 {% endblock content %}

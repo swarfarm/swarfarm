@@ -220,7 +220,7 @@ def monster_instance_view(request, profile_name, instance_id):
     }
     return render(request, 'herders/unimplemented.html')
 
-
+@login_required()
 def monster_instance_edit(request, profile_name, instance_id):
     return_path = request.GET.get(
         'next',
@@ -243,8 +243,8 @@ def monster_instance_edit(request, profile_name, instance_id):
         'view': 'profile',
     }
 
-    if request.method == 'POST':
-        if is_owner:
+    if is_owner:
+        if request.method == 'POST':
             if form.is_valid():
                 form.save()
                 return redirect(return_path)
@@ -254,9 +254,9 @@ def monster_instance_edit(request, profile_name, instance_id):
 
                 return render(request, 'herders/profile/profile_monster_edit.html', context)
         else:
-            raise PermissionDenied()
+            return render(request, 'herders/profile/profile_monster_edit.html', context)
     else:
-        return render(request, 'herders/profile/profile_monster_edit.html', context)
+        raise PermissionDenied()
 
 
 @login_required()

@@ -550,20 +550,3 @@ def bestiary_detail(request, monster_id):
     }
     return render(request, 'herders/unimplemented.html')
 
-
-def fixdb(request):
-    if request.user.is_staff:
-
-        unawakened = Monster.objects.filter(is_awakened=False)
-        for monster in unawakened:
-            monster.save()
-
-        awakened = Monster.objects.filter(is_awakened=True)
-        for monster in awakened:
-            if monster.awakens_from:
-                base_monster = monster.awakens_from
-                base_monster.awakens_to = monster
-                base_monster.save()
-            monster.save()
-
-    return redirect('herders:bestiary')

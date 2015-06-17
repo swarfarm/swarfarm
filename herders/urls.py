@@ -35,6 +35,4 @@ urlpatterns = [
         url(r'^(?P<monster_element>[a-zA-Z]+)/$', views.bestiary, name='bestiary_element'),
         url(r'^(?P<monster_id>[0-9]+)/$', views.bestiary_detail, name='bestiary_detail'),
     ])),
-
-    url(r'^fixdb/$', views.fixdb),
 ]

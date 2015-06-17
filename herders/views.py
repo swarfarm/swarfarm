@@ -103,30 +103,30 @@ def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
 
     if is_owner or summoner.public:
         if view_mode.lower() == 'list':
-            context['monster_stable'] = MonsterInstance.objects.filter(owner=summoner)
+            context['monster_stable'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner)
             return render(request, 'herders/profile/profile_view.html', context)
         elif view_mode.lower() == 'box':
             if sort_method == 'grade':
                 monster_stable = OrderedDict()
-                monster_stable['6*'] = MonsterInstance.objects.filter(owner=summoner, stars=6).order_by('-level', 'monster__name')
-                monster_stable['5*'] = MonsterInstance.objects.filter(owner=summoner, stars=5).order_by('-level', 'monster__name')
-                monster_stable['4*'] = MonsterInstance.objects.filter(owner=summoner, stars=4).order_by('-level', 'monster__name')
-                monster_stable['3*'] = MonsterInstance.objects.filter(owner=summoner, stars=3).order_by('-level', 'monster__name')
-                monster_stable['2*'] = MonsterInstance.objects.filter(owner=summoner, stars=2).order_by('-level', 'monster__name')
-                monster_stable['1*'] = MonsterInstance.objects.filter(owner=summoner, stars=1).order_by('-level', 'monster__name')
+                monster_stable['6*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=6).order_by('-level', 'monster__name')
+                monster_stable['5*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=5).order_by('-level', 'monster__name')
+                monster_stable['4*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=4).order_by('-level', 'monster__name')
+                monster_stable['3*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=3).order_by('-level', 'monster__name')
+                monster_stable['2*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=2).order_by('-level', 'monster__name')
+                monster_stable['1*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=1).order_by('-level', 'monster__name')
             elif sort_method == 'level':
                 monster_stable = OrderedDict()
-                monster_stable['40-31'] = MonsterInstance.objects.filter(owner=summoner, level__gt=30).order_by('-level', '-stars', 'monster__name')
-                monster_stable['30-21'] = MonsterInstance.objects.filter(owner=summoner, level__gt=20).filter(level__lte=30).order_by('-level', '-stars', 'monster__name')
-                monster_stable['20-11'] = MonsterInstance.objects.filter(owner=summoner, level__gt=10).filter(level__lte=20).order_by('-level', '-stars', 'monster__name')
-                monster_stable['10-1'] = MonsterInstance.objects.filter(owner=summoner, level__lte=10).order_by('-level', '-stars', 'monster__name')
+                monster_stable['40-31'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=30).order_by('-level', '-stars', 'monster__name')
+                monster_stable['30-21'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=20).filter(level__lte=30).order_by('-level', '-stars', 'monster__name')
+                monster_stable['20-11'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=10).filter(level__lte=20).order_by('-level', '-stars', 'monster__name')
+                monster_stable['10-1'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__lte=10).order_by('-level', '-stars', 'monster__name')
             elif sort_method == 'attribute':
                 monster_stable = OrderedDict()
-                monster_stable['water'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_WATER).order_by('-stars', '-level', 'monster__name')
-                monster_stable['fire'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_FIRE).order_by('-stars', '-level', 'monster__name')
-                monster_stable['wind'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_WIND).order_by('-stars', '-level', 'monster__name')
-                monster_stable['light'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
-                monster_stable['dark'] = MonsterInstance.objects.filter(owner=summoner, monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
+                monster_stable['water'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_WATER).order_by('-stars', '-level', 'monster__name')
+                monster_stable['fire'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_FIRE).order_by('-stars', '-level', 'monster__name')
+                monster_stable['wind'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_WIND).order_by('-stars', '-level', 'monster__name')
+                monster_stable['light'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
+                monster_stable['dark'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
             else:
                 raise Http404('Invalid sort method')
 
@@ -213,6 +213,7 @@ def monster_instance_add(request, profile_name):
             'view': 'profile',
         }
         return render(request, 'herders/profile/profile_monster_add.html', context)
+
 
 def monster_instance_view(request, profile_name, instance_id):
     context = {
@@ -355,7 +356,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
             summoner.save()
 
         # Perform the awakening by instance's monster source ID
-        monster.monster = monster.monster.awakens_to()
+        monster.monster = monster.monster.awakens_to
         monster.save()
 
         return redirect(return_path)
@@ -531,9 +532,9 @@ def bestiary(request, monster_element='all'):
     }
 
     if monster_element == 'all':
-        monster_list = Monster.objects.select_related('awakens_from').all()
+        monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').all()
     else:
-        monster_list = Monster.objects.select_related('awakens_from').filter(element=monster_element)
+        monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').filter(element=monster_element)
 
     if monster_list.count() == 0:
         raise Http404('Empty monster list. Possibly invalid filter element.')

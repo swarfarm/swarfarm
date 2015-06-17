@@ -123,12 +123,14 @@ class Monster(models.Model):
     )
 
     name = models.CharField(max_length=40)
+    image_filename = models.CharField(max_length=250, null=True, blank=True)
     element = models.CharField(max_length=6, choices=ELEMENT_CHOICES, default=ELEMENT_FIRE)
     archetype = models.CharField(max_length=10, choices=TYPE_CHOICES, default=TYPE_ATTACK)
     base_stars = models.IntegerField(choices=STAR_CHOICES)
     can_awaken = models.BooleanField(default=True)
     is_awakened = models.BooleanField(default=False)
-    awakens_from = models.ForeignKey('self', null=True, blank=True)
+    awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
+    awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awaken_ele_mats_low = models.IntegerField(null=True, blank=True)
     awaken_ele_mats_mid = models.IntegerField(null=True, blank=True)
     awaken_ele_mats_high = models.IntegerField(null=True, blank=True)
@@ -137,19 +139,20 @@ class Monster(models.Model):
     awaken_magic_mats_high = models.IntegerField(null=True, blank=True)
     fusion_food = models.BooleanField(default=False)
 
-    def image_filename(self):
-        # There are special cases where a monster is awakened but has no base monster. If that is the case the filename
-        # for awakened is <uniqueName>_<element>.png instead of normal awakened name
-        if self.is_awakened and self.awakens_from is not None:
-            return self.awakens_from.image_filename().replace('.png', '_awakened.png')
-        else:
-            return self.name.lower().replace(' ', '_') + '_' + str(self.element) + '.png'
-
     def image_url(self):
-        return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/monsters/' + self.image_filename()))
+        if self.image_filename:
+            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/monsters/' + self.image_filename))
+        else:
+            return 'No Image'
 
-    def awakens_to(self):
-        return self.monster_set.get()
+    def save(self, *args, **kwargs):
+        # Update image filename on save.
+        if self.is_awakened and self.awakens_from is not None:
+            self.image_filename = self.awakens_from.image_filename.replace('.png', '_awakened.png')
+        else:
+            self.image_filename = self.name.lower().replace(' ', '_') + '_' + str(self.element) + '.png'
+
+        super(Monster, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['name', 'element']

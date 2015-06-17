@@ -17,6 +17,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'can_awaken',
                 'is_awakened',
                 'awakens_from',
+                'awakens_to',
                 'fusion_food',
             )
         }),

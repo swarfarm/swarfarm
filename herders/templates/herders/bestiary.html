@@ -44,7 +44,6 @@
     {% endif %}
 
     {% if monster_list %}
-        {% cache 86400 bestiary monster_element %}
             <table id="monster_table" class="table table-hover table-condensed monster-table">
                 <thead>
                     <tr>
@@ -84,12 +83,7 @@
                         </td>
                         <td class="monster-type">{{ monster.archetype|title }}</td>
                         <td class="monster-awakens">
-                            {% if monster.awakens_to %}
-                                <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_to.pk %}">
-                                    <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_to.image_filename }}" />
-                                    {{ monster.awakens_to.name|title }}
-                                </a>
-                            {% endif %}
+
                         </td>
                         <td class="monster-awakens">
                             {% if monster.awakens_from %}
@@ -142,6 +136,5 @@
                     {% endfor %}
                 </tbody>
             </table>
-        {% endcache %}
     {% endif %}
 {% endblock %}

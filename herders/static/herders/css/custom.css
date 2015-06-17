@@ -284,11 +284,9 @@ tr.filtered {
     display: none;
 }
 
-.sorter-false {
-    visibility: hidden;
+.sorter-false div:before {
+    display: none;
 }
-
-
 
 button.filter:focus {
     outline: none!important;

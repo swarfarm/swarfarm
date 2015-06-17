@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load markdown_deux_tags %}
+{% load cache %}
 
 {% block content %}
     {% cache 900 latest_news %}

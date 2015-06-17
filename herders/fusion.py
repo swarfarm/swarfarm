@@ -14,7 +14,7 @@ def fusion_progress(summoner, product_monster_id, stars, cost, ingredient_monste
 
     # Indicate if already in summoner's collection
     fusion_complete = MonsterInstance.objects.filter(
-        Q(owner=summoner), Q(monster__pk=product_instance.pk) | Q(monster__pk=product_instance.awakens_to().pk)
+        Q(owner=summoner), Q(monster__pk=product_instance.pk) | Q(monster__pk=product_instance.awakens_to.pk)
     ).count() > 0,
 
     level = 10 + stars * 5

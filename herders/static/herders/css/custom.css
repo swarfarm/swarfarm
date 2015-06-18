@@ -288,7 +288,8 @@ tr.filtered {
     display: none;
 }
 
-button.filter:focus {
+button.filter:focus,
+button.reset:focus {
     outline: none!important;
     background-color: #ffffff;
 }

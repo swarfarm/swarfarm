@@ -504,24 +504,16 @@ def teams(request, profile_name):
     return render(request, 'herders/unimplemented.html', context)
 
 
-def bestiary(request, monster_element='all'):
+def bestiary(request):
     context = {
         'view': 'bestiary',
-        'monster_element': monster_element,
     }
 
-    monster_list = cache.get('bestiary' + monster_element)
+    monster_list = cache.get('bestiary')
 
     if monster_list is None:
-        if monster_element == 'all':
-            monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').all()
-        else:
-            monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').filter(element=monster_element)
-
-        cache.set('bestiary' + monster_element, monster_list, 300)
-
-    if monster_list.count() == 0:
-        raise Http404('Empty monster list. Possibly invalid filter element.')
+        monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').all()
+        cache.set('bestiary', monster_list, 300)
 
     context['monster_list'] = monster_list
 

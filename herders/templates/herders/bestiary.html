@@ -44,7 +44,7 @@
     {% endif %}
 
     {% if monster_list %}
-        {% cache 86400 bestiary monster_element %}
+        {% cache 300 bestiary monster_element %}
             <table id="monster_table" class="table table-hover table-condensed monster-table">
                 <thead>
                     <tr>

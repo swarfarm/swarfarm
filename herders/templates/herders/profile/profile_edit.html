@@ -9,7 +9,8 @@
         {% crispy summoner_form %}
         <div class="form-actions">
             <input type="submit" name="save" value="Save" class="btn btn-primary btn btn-primary" id="submit-id-save"/>
-            <input type="button" name="cancel" value="Cancel" class="btn btn btn-link" id="button-id-cancel"/>
+            <a href="{% url 'password_change' %}" class="btn btn-link">Change Password</a>
+            <input type="button" name="cancel" value="Cancel" class="btn btn-link pull-right" id="button-id-cancel"/>
         </div>
     </form>
 {% endblock %}

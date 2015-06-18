@@ -112,15 +112,15 @@
                                         <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
                                     {% endif %}
                                     <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>
-                                    <li><a href="{% url 'herders:logout' %}">Log out</a></li>
+                                    <li><a href="{% url 'logout' %}">Log out</a></li>
                                 </ul>
                             </div>
                         {% else %}
                             {# Show login form and register button #}
-                            <form class="navbar-form " role="search" action="{% url 'herders:login' %}" method="post">
+                            <form class="navbar-form " role="search" action="{% url 'login' %}" method="post">
                                 {% csrf_token %}
                                 <input type="text" class="form-control" placeholder="Username" name="username">
-                                <input type="password" class="form-control" name="userpass" placeholder="Password">
+                                <input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
                                 <button type="submit" class="btn btn-default">Sign in</button>
                                 <a href="{% url 'herders:register' %}" class="navbar-link">Register</a>
                             </form>

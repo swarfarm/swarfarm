@@ -51,30 +51,6 @@ def register(request):
 
     return render(request, 'herders/register.html', context)
 
-
-def log_in(request):
-    context = {}
-    context.update(csrf(request))
-
-    if request.method == 'POST':
-        username = request.POST['username']
-        userpass = request.POST['userpass']
-
-        user = authenticate(username=username, password=userpass)
-
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                return redirect('herders:profile', profile_name=user.username, view_mode='list')
-
-        # If the above falls through then the login failed
-        context['login_failure'] = True
-        context['username'] = username
-
-    # No data POSTed or the above login/auth failed.
-    return render(request, 'herders/login.html', context)
-
-
 def log_out(request):
     logout(request)
 
@@ -450,7 +426,7 @@ def fusion(request, profile_name):
     nine_tailed_fox_progress = fusion_progress(
         request.user.summoner,
         533,
-        5,
+        4,
         500000,
         [372, 350, 194, 56],
     )

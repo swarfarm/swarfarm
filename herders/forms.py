@@ -2,17 +2,70 @@ from django import forms
 from django.forms import ModelForm
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 
 from .models import MonsterInstance, Summoner
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML
+from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
 from crispy_forms.bootstrap import FormActions
 
 from captcha.fields import ReCaptchaField
 
 import autocomplete_light
 
+# User stuff
+class CrispyAuthenticationForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super(CrispyAuthenticationForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'login'
+        self.helper.layout = Layout(
+            Field('username'),
+            Field('password'),
+            Hidden('next', value='{{ next }}'),
+            FormActions(Submit('login', 'Log In', css_class='btn-lg btn-primary btn-block')),
+        )
+
+class CrispyPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super(CrispyPasswordChangeForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'password_change'
+        self.helper.layout = Layout(
+            Field('old_password'),
+            Field('new_password1'),
+            Field('new_password2'),
+            FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
+        )
+
+class CrispyPasswordResetForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super(CrispyPasswordResetForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'password_reset'
+        self.helper.layout = Layout(
+            Field('email'),
+            FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
+        )
+
+class CrispySetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(CrispySetPasswordForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Field('new_password1'),
+            Field('new_password2'),
+            FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
+        )
 
 class RegisterUserForm(forms.Form):
     username = forms.CharField(
@@ -93,6 +146,7 @@ class EditSummonerForm(ModelForm):
         }
 
 
+# SWARFARM forms
 class EditEssenceStorageForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditEssenceStorageForm, self).__init__(*args, **kwargs)

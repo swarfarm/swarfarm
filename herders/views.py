@@ -5,10 +5,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.template.context_processors import csrf
 from django.core.cache import cache
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
@@ -50,11 +49,6 @@ def register(request):
     context = {'form': form}
 
     return render(request, 'herders/register.html', context)
-
-def log_out(request):
-    logout(request)
-
-    return redirect('news:latest_news')
 
 
 def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
@@ -516,10 +510,15 @@ def bestiary(request, monster_element='all'):
         'monster_element': monster_element,
     }
 
-    if monster_element == 'all':
-        monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').all()
-    else:
-        monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').filter(element=monster_element)
+    monster_list = cache.get('bestiary' + monster_element)
+
+    if monster_list is None:
+        if monster_element == 'all':
+            monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').all()
+        else:
+            monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').filter(element=monster_element)
+
+        cache.set('bestiary' + monster_element, monster_list, 30)
 
     if monster_list.count() == 0:
         raise Http404('Empty monster list. Possibly invalid filter element.')

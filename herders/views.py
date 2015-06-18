@@ -427,7 +427,7 @@ def fusion(request, profile_name):
         request.user.summoner,
         533,
         4,
-        500000,
+        100000,
         [372, 350, 194, 56],
     )
 

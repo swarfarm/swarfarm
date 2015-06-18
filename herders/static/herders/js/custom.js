@@ -35,7 +35,7 @@ $(document).ready(function() {
         ignoreCase: true,
         widgetOptions: {
             filter_columnFilters: true,
-            filter_reset: 'button.filterreset',
+            filter_reset: 'button.reset',
             filter_ignoreCase : true,
             filter_liveSearch : true,
             filter_searchDelay : 300,
@@ -130,11 +130,8 @@ $(document).ready(function() {
         filters.eq(col).val(txt).trigger('search', false);
     });
 
-    $('button.filterreset').click(function() {
+    $('button.reset').click(function() {
         $('button.filter').toggleClass('active', false);
-    });
-
-    $('button.sortreset').click(function() {
         $('#monster_table').trigger('saveSortReset').trigger("sortReset");
     });
 });

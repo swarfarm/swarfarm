@@ -14,10 +14,7 @@
                     <a href="{% url 'herders:profile' profile_name=profile_name view_mode='box' %}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-th"></span> Box View</a>
                 </div>
                 <span>Filters: </span>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default sortreset">Reset Sort</button>
-                    <button type="button" class="btn btn-default filterreset">Reset Filters</button>
-                </div>
+                <button type="button" class="btn btn-default reset">Reset</button>
 
                 <div class="btn-group">
                     <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="fire"><img src="{{ img_url_prefix }}elements/fire.png" /></button>

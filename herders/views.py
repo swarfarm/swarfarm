@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from django.http import Http404, HttpResponseForbidden
-from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
@@ -12,7 +12,7 @@ from django.template.context_processors import csrf
 from django.core.cache import cache
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
-    EditEssenceStorageForm, EditProfileForm
+    EditEssenceStorageForm, EditSummonerForm, EditUserForm
 from .models import Monster, Summoner, MonsterInstance
 from .fusion import fusion_progress
 
@@ -27,6 +27,7 @@ def register(request):
                 new_user = User.objects.create_user(
                     username=form.cleaned_data['username'],
                     password=form.cleaned_data['password'],
+                    email=form.cleaned_data['email'],
                 )
                 new_user.save()
 
@@ -144,22 +145,30 @@ def profile_edit(request, profile_name):
         'next',
         reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
     )
-    form = EditProfileForm(request.POST or None, instance=request.user.summoner)
-    form.helper.form_action = request.path + '?next=' + return_path
+
+    is_owner = request.user.username == profile_name
+
+    user_form = EditUserForm(request.POST or None, instance=request.user)
+    summoner_form = EditSummonerForm(request.POST or None, instance=request.user.summoner)
 
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
-        'is_owner': True,  # Because of @login_required decorator
+        'is_owner': is_owner,
         'profile_name': profile_name,
         'return_path': return_path,
-        'profile_form': form,
+        'user_form': user_form,
+        'summoner_form': summoner_form,
     }
 
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        return redirect(return_path)
+    if is_owner:
+        if request.method == 'POST' and summoner_form.is_valid() and user_form.is_valid():
+            summoner_form.save()
+            user_form.save()
+            return redirect(return_path)
+        else:
+            return render(request, 'herders/profile/profile_edit.html', context)
     else:
-        return render(request, 'herders/profile/profile_edit.html', context)
+        return HttpResponseForbidden()
 
 
 @login_required

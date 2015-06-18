@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import User
 
 from .models import MonsterInstance, Summoner
 
@@ -26,6 +27,7 @@ class RegisterUserForm(forms.Form):
         ]
     )
 
+    email = forms.EmailField(required=True)
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput)
     summoner_name = forms.CharField(label="Summoner's War Account Name", required=False)
     is_public = forms.BooleanField(label='Make my SWARFARM account visible to others', required=False)
@@ -37,6 +39,7 @@ class RegisterUserForm(forms.Form):
     helper.layout = Layout(
         Field('username', css_class='input-sm'),
         Field('password', css_class='input-sm'),
+        Field('email', css_class='input-sm'),
         Field('summoner_name', css_class='input-sm'),
         Field('is_public'),
         Field('captcha'),
@@ -44,24 +47,36 @@ class RegisterUserForm(forms.Form):
     )
 
 
-class EditProfileForm(ModelForm):
+class EditUserForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(EditProfileForm, self).__init__(*args, **kwargs)
+        super(EditUserForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
-        self.helper.form_method = 'post'
-        self.helper.form_action = 'herders:edit_profile'
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Div(
+                Field('email'),
+            )
+        )
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+        )
+
+
+class EditSummonerForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditSummonerForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
                 Field('summoner_name'),
                 Field('public'),
                 Field('timezone'),
-            ),
-            Div(
-                FormActions(
-                    Submit('save', 'Save', css_class='btn btn-primary'),
-                    HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
-                ),
             ),
         )
 

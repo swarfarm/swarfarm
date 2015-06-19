@@ -293,6 +293,11 @@ button.reset:focus {
     outline: none!important;
 }
 
+button.filter:not(.active):focus {
+    background-color: #fff;
+}
+
+
 .storage_group {
     position: relative;
     padding: 0;

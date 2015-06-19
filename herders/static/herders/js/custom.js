@@ -30,7 +30,7 @@ $('#id_monster-autocomplete').bind('selectChoice',
 //Update filter buttons on page load
 var monster_table = $('#monster_table');
 var filter_buttons = $('button.filter');
-var active_filter_class = 'btn-info';
+var active_filter_class = 'active';
 
 monster_table.tablesorter({
     widgets: ['filter', 'saveSort'],
@@ -61,7 +61,7 @@ if (current_filters) {
 
 //Toggle text in filter field when button is pressed
 filter_buttons.click(function() {
-    $( this ).toggleClass('btn-info');
+    $( this ).toggleClass(active_filter_class);
 
     var filters = $('#monster_table').find('input.tablesorter-filter'),
         col = $(this).data('filter-column'),
@@ -84,6 +84,6 @@ filter_buttons.click(function() {
 
 //Reset filters
 $('button.reset').click(function() {
-    $('button.filter').toggleClass('btn-info', false);
+    $('button.filter').toggleClass(active_filter_class, false);
     $('#monster_table').trigger('saveSortReset').trigger("sortReset");
 });

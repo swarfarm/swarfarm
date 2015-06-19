@@ -31,10 +31,10 @@
                     <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Material">MAT</button>
                 </div>
                 <div class="btn-group priority-filters">
-                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="High">High</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="Medium">Medium</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="Low">Low</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="Done">Done</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*High*">High</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Medium*">Medium</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Low*">Low</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Done*">Done</button>
                 </div>
             </div>
 
@@ -104,10 +104,7 @@
                                     <span>{{ instance.monster.element }}</span>
                                 </td>
                                 <td>{{ instance.monster.archetype|title }}</td>
-                                <td>
-                                    <span class="hidden">{{ instance.priority }}</span>
-                                    {{ instance.get_priority_display }}
-                                </td>
+                                <td><span class="hidden">{{ instance.priority }}</span>{{ instance.get_priority_display }}</td>
                                 <td>{{ instance.notes }}</td>
                                 <td class="monster-info-icons-column">
                                     {% if instance.monster.fusion_food %}

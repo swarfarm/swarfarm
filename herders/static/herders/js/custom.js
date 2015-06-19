@@ -20,7 +20,7 @@ $('#id_monster-autocomplete').bind('selectChoice',
             $('#id_stars').rating('rate', result[0].fields['base_stars']);
             //Set fodder
             if (result[0].fields['archetype'] == 'material') {
-                $('#id_priority').val('Done');
+                $('#id_priority').val('0');
                 $('#id_fodder').prop('checked', true);
             }
         });

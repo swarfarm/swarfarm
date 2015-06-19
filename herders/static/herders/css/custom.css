@@ -291,12 +291,6 @@ tr.filtered {
 button.filter:focus,
 button.reset:focus {
     outline: none!important;
-    background-color: #ffffff;
-}
-
-button.active {
-    outline: none!important;
-    background-color: #e6e6e6!important;
 }
 
 .storage_group {

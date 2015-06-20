@@ -99,7 +99,6 @@ class RegisterUserForm(forms.Form):
         FormActions(Submit('register', 'Register', css_class='btn-lg btn-primary btn-block'))
     )
 
-
 class EditUserForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditUserForm, self).__init__(*args, **kwargs)
@@ -117,7 +116,6 @@ class EditUserForm(ModelForm):
         fields = (
             'email',
         )
-
 
 class EditSummonerForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -314,7 +312,6 @@ class EditEssenceStorageForm(ModelForm):
             'storage_dark_high': 'Dark High',
         }
 
-
 class AddMonsterInstanceForm(autocomplete_light.ModelForm):
     monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
 
@@ -373,6 +370,17 @@ class EditMonsterInstanceForm(ModelForm):
         model = MonsterInstance
         exclude = ('owner', 'monster', 'fodder_for')
 
+class PowerUpMonsterInstanceForm(forms.Form):
+    monster = autocomplete_light.ModelChoiceField('MonsterInstanceAutocomplete')
+    monster.label = 'Material Monster'
+    monster.required = False
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_tag = False
+    helper.layout = Layout(
+        Field('monster'),
+    )
 
 class AwakenMonsterInstanceForm(forms.Form):
     subtract_materials = forms.BooleanField(

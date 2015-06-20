@@ -3,6 +3,11 @@ body {
   padding-top: 70px;
 }
 
+.no-gutter {
+	padding-left:0;
+    padding-right:0;
+}
+
 .navbar img {
     height: 20px;
 }

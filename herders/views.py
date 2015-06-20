@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 from django.http import Http404, HttpResponseForbidden
-from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
@@ -9,9 +8,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.forms.formsets import formset_factory
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
-    EditEssenceStorageForm, EditSummonerForm, EditUserForm
+    PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm
 from .models import Monster, Summoner, MonsterInstance
 from .fusion import fusion_progress
 
@@ -231,12 +232,10 @@ def monster_instance_edit(request, profile_name, instance_id):
             else:
                 # Redisplay form with validation error messages
                 context['validation_errors'] = form.non_field_errors()
-
-                return render(request, 'herders/profile/profile_monster_edit.html', context)
-        else:
-            return render(request, 'herders/profile/profile_monster_edit.html', context)
     else:
         raise PermissionDenied()
+
+    return render(request, 'herders/profile/profile_monster_edit.html', context)
 
 
 @login_required()
@@ -257,10 +256,75 @@ def monster_instance_delete(request, profile_name, instance_id):
 
 @login_required()
 def monster_instance_power_up(request, profile_name, instance_id):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+    )
+
+    monster = get_object_or_404(MonsterInstance, pk=instance_id)
+    is_owner = monster.owner == request.user.summoner
+
+    PowerUpFormset = formset_factory(PowerUpMonsterInstanceForm, extra=5, max_num=5)
+
+    if request.method == 'POST':
+        formset = PowerUpFormset(request.POST)
+    else:
+        formset = PowerUpFormset()
+
     context = {
+        'add_monster_form': AddMonsterInstanceForm(),
+        'profile_name': request.user.username,
+        'return_path': return_path,
+        'monster': monster,
+        'is_owner': is_owner,
+        'power_up_formset_action': request.path + '?next=' + return_path,
+        'power_up_formset': formset,
         'view': 'profile',
     }
-    return render(request, 'herders/unimplemented.html')
+
+    if is_owner:
+        if request.method == 'POST':
+            if formset.is_valid():
+                # Do monster food validations
+                power_up_valid = True
+
+                if request.POST.get('evolve', False):
+                    # Make sure target monster is maxed and food monsters are appropriate star rating
+                    pass
+
+                if power_up_valid:
+                    # Delete the submitted monsters
+                    for instance in formset.cleaned_data:
+                        if instance:
+                            food_monster = instance['monster'].delete()
+                            if food_monster.owner == request.user.summoner:
+                                food_monster.delete()
+
+                    if request.POST.get('evolve', False):
+                        if monster.stars < 6:
+                            # Level up stars
+                            monster.stars += 1
+                            monster.level = 1
+                            monster.save()
+                        else:
+                            pass
+                    elif request.POST.get('power_up', False):
+                        return redirect(
+                            reverse('herders:monster_instance_edit', kwargs={'profile_name':profile_name, 'instance_id':instance_id}) +
+                            '?next=' + return_path
+                        )
+                    else:
+                        return redirect('herders:profile', profile_name=profile_name)
+                else:
+                    #Create errors? I guess
+                    pass
+            else:
+                # Redisplay form with validation error messages
+                context['validation_errors'] = formset.non_field_errors()
+    else:
+        raise PermissionDenied()
+
+    return render(request, 'herders/profile/profile_power_up.html', context)
 
 
 @login_required()

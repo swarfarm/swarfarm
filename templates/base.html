@@ -134,7 +134,19 @@
         {% block subnav %} {% endblock subnav %}
 
         <div class="container">
+            {% if messages %}
+                <div class="alert alert-dismissible alert-success" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <ul>
+                        {% for message in messages %}
+                            <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
             {% block content %} {% endblock content %}
+
             <hr>
             <footer>
                 <div>

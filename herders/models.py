@@ -229,7 +229,7 @@ class MonsterInstance(models.Model):
         super(MonsterInstance, self).clean()
 
     def __unicode__(self):
-        return str(self.monster) + ', ' + str(self.stars) + '*, lvl ' + str(self.level)
+        return str(self.monster) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level)
 
     class Meta:
         ordering = ['-stars', '-level', '-priority', 'monster__name']

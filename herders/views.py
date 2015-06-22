@@ -3,11 +3,12 @@ from collections import OrderedDict
 from django.http import Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
-from django.db import IntegrityError
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.db import IntegrityError
 from django.forms.formsets import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -135,6 +136,8 @@ def profile_edit(request, profile_name):
         if request.method == 'POST' and summoner_form.is_valid() and user_form.is_valid():
             summoner_form.save()
             user_form.save()
+
+            messages.success(request, 'Your profile has been updated.')
             return redirect(return_path)
         else:
             return render(request, 'herders/profile/profile_edit.html', context)
@@ -182,6 +185,7 @@ def monster_instance_add(request, profile_name):
         new_monster.owner = request.user.summoner
         new_monster.save()
 
+        messages.success(request, 'Added %s to your collection.' % new_monster)
         return redirect(return_path)
     else:
         # Re-show same page but with form filled in and errors shown
@@ -227,7 +231,10 @@ def monster_instance_edit(request, profile_name, instance_id):
     if is_owner:
         if request.method == 'POST':
             if form.is_valid():
-                form.save()
+                monster = form.save(commit=False)
+                monster.save()
+
+                messages.success(request, 'Saved changes to %s.' % monster)
                 return redirect(return_path)
             else:
                 # Redisplay form with validation error messages
@@ -301,11 +308,8 @@ def monster_instance_power_up(request, profile_name, instance_id):
 
                 # Perform validation checks for evolve action
                 if request.POST.get('evolve', False):
-                    print "Submitted evolve form"
                     # Check constraints on evolving (or not, if form element was set)
                     if not request.POST.get('ignore_errors', False):
-                        print "Performing evolve checks"
-
                         # Check monster level and stars
                         if monster.stars >= 6:
                             validation_errors['base_monster_stars'] = "%s is already at 6 stars." % monster.monster.name
@@ -332,12 +336,13 @@ def monster_instance_power_up(request, profile_name, instance_id):
                         monster.stars += 1
                         monster.level = 1
                         monster.save()
+                        messages.success(request, 'Successfully evolved %s to %s <span class="glyphicon glyphicon-star"></span>' % (monster.monster.name, monster.stars), extra_tags='safe')
 
                 if not validation_errors:
                     # Delete the submitted monsters
                     for food in food_monsters:
                         if food.owner == request.user.summoner:
-                            print "deleting food input %s" % food
+                            messages.success(request, 'Deleted %s' % food)
                             food.delete()
                         else:
                             raise PermissionDenied("Trying to delete a monster you don't own")
@@ -346,14 +351,14 @@ def monster_instance_power_up(request, profile_name, instance_id):
                         reverse('herders:monster_instance_edit', kwargs={'profile_name':profile_name, 'instance_id': instance_id}) +
                         '?next=' + return_path
                     )
-            else: context['form_errors'] = formset.non_field_errors()
+            else:
+                context['form_errors'] = formset.non_field_errors()  # Not sure if this will ever happen unless someone tries to be tricksy with form input values
 
     else:
         raise PermissionDenied("Trying to power up or evolve a monster you don't own")
 
     # Any errors in the form will fall through to here and be displayed
     context['validation_errors'] = validation_errors
-    print validation_errors
     return render(request, 'herders/profile/profile_power_up.html', context)
 
 

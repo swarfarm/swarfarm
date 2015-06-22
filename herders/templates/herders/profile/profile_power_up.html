@@ -6,6 +6,17 @@
 {% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
 
+    {% if validation_errors %}
+        <div class="alert alert-danger" role="alert">
+            Please fix the following errors:
+            <ul>
+                {% for error,error_string in validation_errors.iteritems %}
+                <li>{{ error_string }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     <div class="row">
         <div class="monster-box">
             <div class="monster-box-thumb">
@@ -50,6 +61,11 @@
         {% for form in power_up_formset %}
             {% crispy form %}
         {% endfor %}
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="ignore_errors" id="id-ignore-errors" {% if ignore_evolve_checked %}checked="checked"{% endif %}> Disable evolution error checking.
+            </label>
+        </div>
 
         <div class="form-actions">
             <input type="submit" name="power_up" value="Power Up" class="btn btn-primary" id="submit-id-power-up"/>

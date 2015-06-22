@@ -282,48 +282,78 @@ def monster_instance_power_up(request, profile_name, instance_id):
         'view': 'profile',
     }
 
+    food_monsters = []
+    validation_errors = {}
+
     if is_owner:
         if request.method == 'POST':
+            # return render(request, 'herders/view_post_data.html', {'post_data': request.POST})
             if formset.is_valid():
-                # Do monster food validations
-                power_up_valid = True
+                # Create list of submitted food monsters
+                for instance in formset.cleaned_data:
+                    # Some fields may be blank if user skipped a form input or didn't fill in all 5
+                    if instance:
+                        food_monsters.append(instance['monster'])
 
+                # Check that all food monsters are unique - This is done whether or not user bypassed evolution checks
+                if len(food_monsters) != len(set(food_monsters)):
+                    validation_errors['food_monster_unique'] = "You submitted duplicate food monsters. Please select unique monsters for each slot."
+
+                # Perform validation checks for evolve action
                 if request.POST.get('evolve', False):
-                    # Make sure target monster is maxed and food monsters are appropriate star rating
-                    pass
+                    print "Submitted evolve form"
+                    # Check constraints on evolving (or not, if form element was set)
+                    if not request.POST.get('ignore_errors', False):
+                        print "Performing evolve checks"
 
-                if power_up_valid:
-                    # Delete the submitted monsters
-                    for instance in formset.cleaned_data:
-                        if instance:
-                            food_monster = instance['monster'].delete()
-                            if food_monster.owner == request.user.summoner:
-                                food_monster.delete()
+                        # Check monster level and stars
+                        if monster.stars >= 6:
+                            validation_errors['base_monster_stars'] = "%s is already at 6 stars." % monster.monster.name
 
-                    if request.POST.get('evolve', False):
-                        if monster.stars < 6:
-                            # Level up stars
-                            monster.stars += 1
-                            monster.level = 1
-                            monster.save()
-                        else:
-                            pass
-                    elif request.POST.get('power_up', False):
-                        return redirect(
-                            reverse('herders:monster_instance_edit', kwargs={'profile_name':profile_name, 'instance_id':instance_id}) +
-                            '?next=' + return_path
-                        )
+                        if monster.level != monster.max_level_from_stars():
+                            validation_errors['base_monster_level'] = "%s is not at max level for the current star rating (Lvl %s)." % (monster.monster.name, monster.max_level_from_stars())
+
+                        # Check number of fodder monsters
+                        if len(food_monsters) < monster.stars:
+                            validation_errors['food_monster_quantity'] = "Evolution requres %s food monsters." % monster.stars
+
+                        # Check fodder star ratings - must be same as monster
+                        for food in food_monsters:
+                            if food.stars != monster.stars:
+                                if 'food_monster_stars' not in validation_errors:
+                                    validation_errors['food_monster_stars'] = "All food monsters must be %s stars." % monster.stars
                     else:
-                        return redirect('herders:profile', profile_name=profile_name)
-                else:
-                    #Create errors? I guess
-                    pass
-            else:
-                # Redisplay form with validation error messages
-                context['validation_errors'] = formset.non_field_errors()
-    else:
-        raise PermissionDenied()
+                        # Record state of ignore evolve rules for form redisplay
+                        context['ignore_evolve_checked'] = True
 
+                    # Perform the stars++ if no errors
+                    if not validation_errors:
+                        # Level up stars
+                        monster.stars += 1
+                        monster.level = 1
+                        monster.save()
+
+                if not validation_errors:
+                    # Delete the submitted monsters
+                    for food in food_monsters:
+                        if food.owner == request.user.summoner:
+                            print "deleting food input %s" % food
+                            food.delete()
+                        else:
+                            raise PermissionDenied("Trying to delete a monster you don't own")
+
+                    return redirect(
+                        reverse('herders:monster_instance_edit', kwargs={'profile_name':profile_name, 'instance_id': instance_id}) +
+                        '?next=' + return_path
+                    )
+            else: context['form_errors'] = formset.non_field_errors()
+
+    else:
+        raise PermissionDenied("Trying to power up or evolve a monster you don't own")
+
+    # Any errors in the form will fall through to here and be displayed
+    context['validation_errors'] = validation_errors
+    print validation_errors
     return render(request, 'herders/profile/profile_power_up.html', context)
 
 

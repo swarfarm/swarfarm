@@ -3,7 +3,7 @@
 {% load cache %}
 
 {% block content %}
-    {% cache 900 latest_news %}
+    {% cache 300 latest_news %}
         {% for post in posts %}
             <h1>{{ post.title }}</h1>
             {{ post.body|markdown }}

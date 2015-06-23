@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Monster, MonsterInstance, Summoner
+from .models import Monster, MonsterInstance, Summoner, Fusion
 
 
 # Monster Database stuff
@@ -44,6 +44,12 @@ class MonsterInstanceAdmin(admin.ModelAdmin):
     search_fields = ['owner__username']
 
 admin.site.register(MonsterInstance, MonsterInstanceAdmin)
+
+class FusionAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'stars', 'cost',)
+    filter_horizontal = ('ingredients',)
+
+admin.site.register(Fusion, FusionAdmin)
 
 # User management stuff
 class SummonerInline(admin.StackedInline):

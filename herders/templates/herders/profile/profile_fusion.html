@@ -1,4 +1,4 @@
-{% extends 'herders/profile/profile_base.html' %}
+{% extends 'base.html' %}
 {% load staticfiles %}
 {% load humanize %}
 {% load utils %}
@@ -34,7 +34,7 @@
     </nav>
 {% endblock subnav %}
 
-{% block profile %}
+{% block content %}
     {% static 'herders/images/' as img_url_prefix %}
     {% for fusion in fusions %}
         <div class="panel panel-default">
@@ -186,4 +186,4 @@
             </div>
         </div>
     {% endfor %}
-{% endblock profile %}
+{% endblock content %}

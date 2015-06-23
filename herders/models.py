@@ -233,3 +233,13 @@ class MonsterInstance(models.Model):
 
     class Meta:
         ordering = ['-stars', '-level', '-priority', 'monster__name']
+
+
+class Fusion(models.Model):
+    product = models.ForeignKey('Monster', related_name='product')
+    stars = models.IntegerField()
+    cost = models.IntegerField()
+    ingredients = models.ManyToManyField('Monster')
+
+    def __unicode__(self):
+        return str(self.product) + ' Fusion'

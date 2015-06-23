@@ -9,13 +9,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import IntegrityError
+from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
     PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm
-from .models import Monster, Summoner, MonsterInstance
-from .fusion import fusion_progress
+from .models import Monster, Summoner, MonsterInstance, Fusion
+from .fusion import essences_missing
 
 
 def register(request):
@@ -476,120 +477,84 @@ def monster_instance_awaken(request, profile_name, instance_id):
 
 
 @login_required
-def fusion(request, profile_name):
+def fusion_progress(request, profile_name):
     return_path = request.GET.get(
         'next',
         reverse('herders:fusion', kwargs={'profile_name': profile_name})
     )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = summoner == request.user.summoner
 
     context = {
         'view': 'fusion',
         'profile_name': profile_name,
         'return_path': return_path,
+        'is_owner': is_owner,
     }
 
-    # Phoenix (Water) - 5*, requires Arang, Jojo, Susano, Mina
-    phoenix_progress = fusion_progress(
-        request.user.summoner,
-        646,
-        5,
-        500000,
-        [534, 236, 603, 336],
-    )
+    fusions = Fusion.objects.all().select_related()
+    progress = []
 
-    # Valkyrja (Wind) - 5*, requires Baretta, Mikene, Arang, Shakan
-    valkyrja_progress = fusion_progress(
-        request.user.summoner,
-        584,
-        5,
-        500000,
-        [260, 623, 534, 398],
-    )
+    for fusion in fusions:
+        level = 10 + fusion.stars * 5
+        ingredients = []
 
-    # Ifrit (Dark) - 5*, requires Argen, Akia, Mikene, Kumae
-    ifrit_progress = fusion_progress(
-        request.user.summoner,
-        773,
-        5,
-        500000,
-        [557, 258, 623, 808],
-    )
+        # Check if fusion has been completed already
+        fusion_complete = MonsterInstance.objects.filter(
+            Q(owner=summoner), Q(monster=fusion.product) | Q(monster=fusion.product.awakens_to)
+        ).count() > 0
 
-    # Nine-tailed Fox (Wind) - 4*, requires Prilea, Hina, Kahli, Konamiya
-    nine_tailed_fox_progress = fusion_progress(
-        request.user.summoner,
-        533,
-        4,
-        100000,
-        [372, 350, 194, 56],
-    )
+        # Scan summoner's collection for instances each ingredient
+        for ingredient in fusion.ingredients.all():
+            owned_ingredients = MonsterInstance.objects.filter(
+                Q(owner=summoner),
+                Q(monster=ingredient) | Q(monster=ingredient.awakens_from),
+            ).order_by('-stars', '-level', '-monster__is_awakened')
 
-    # Joker (Fire) - 4*, requires Garoche, Cassandra, Kuhn, Chichi
-    joker_progress = fusion_progress(
-        request.user.summoner,
-        235,
-        4,
-        100000,
-        [226, 206, 314, 102],
-    )
+            # Determine if each individual requirement is met using highest evolved/leveled monster
+            if len(owned_ingredients) > 0:
+                acquired = True
+                evolved = owned_ingredients[0].stars >= fusion.stars
+                leveled = owned_ingredients[0].level >= level
+                awakened = owned_ingredients[0].monster == ingredient
+                complete = acquired & evolved & leveled & awakened
+            else:
+                acquired = False
+                evolved = False
+                leveled = False
+                awakened = False
+                complete = False
 
-    # Ninja (Water) - 4*, requires Icaru, Kahn, Dagorr, Tantra
-    ninja_progress = fusion_progress(
-        request.user.summoner,
-        602,
-        4,
-        100000,
-        [328, 316, 354, 35],
-    )
+            ingredient_progress = {
+                'instance': ingredient,
+                'owned': owned_ingredients,
+                'complete': complete,
+                'acquired': acquired,
+                'evolved': evolved,
+                'leveled': leveled,
+                'awakened': awakened,
+            }
+            ingredients.append(ingredient_progress)
 
-    # Sylph (Fire) - 4*, requires Fao, Mei, Sharron, Lukan
-    sylph_progress = fusion_progress(
-        request.user.summoner,
-        259,
-        4,
-        100000,
-        [218, 208, 334, 108],
-    )
+        fusion_ready = True
+        for i in ingredients:
+            if not i['complete']:
+                fusion_ready = False
 
-    # Undine (Water) - 4*, requires Gruda, Hemos, Anduril, Cogma
-    undine_progress = fusion_progress(
-        request.user.summoner,
-        622,
-        4,
-        100000,
-        [300, 318, 378, 29],
-    )
+        progress.append({
+            'instance': fusion.product,
+            'acquired': fusion_complete,
+            'stars': fusion.stars,
+            'level': level,
+            'cost': fusion.cost,
+            'ingredients': ingredients,
+            'essences_missing': essences_missing(summoner, ingredients),
+            'ready': fusion_ready,
+        })
 
-    # Vampire (Wind) - 4*, requires Eintau, Velfinodon, Iron, Kacey
-    vampire_progress = fusion_progress(
-        request.user.summoner,
-        556,
-        4,
-        100000,
-        [390, 384, 202, 66],
-    )
+        essences_missing(summoner, ingredients)
 
-    # Succubus (Fire) - 4*, requires Nangrim, Krakdon, Ramira, Seal
-    succubus_progress = fusion_progress(
-        request.user.summoner,
-        257,
-        4,
-        100000,
-        [178, 216, 320, 98],
-    )
-
-    context['fusions'] = [
-        phoenix_progress,
-        valkyrja_progress,
-        ifrit_progress,
-        nine_tailed_fox_progress,
-        joker_progress,
-        ninja_progress,
-        sylph_progress,
-        undine_progress,
-        vampire_progress,
-        succubus_progress,
-    ]
+    context['fusions'] = progress
 
     return render(request, 'herders/profile/profile_fusion.html', context)
 

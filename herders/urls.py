@@ -22,7 +22,7 @@ urlpatterns = [
             url(r'^powerup/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_power_up, name='monster_instance_power_up'),
             url(r'^awaken/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_awaken, name='monster_instance_awaken'),
         ])),
-        url(r'^fusion/$', views.fusion, name='fusion'),
+        url(r'^fusion/$', views.fusion_progress, name='fusion'),
         url(r'^teams/$', views.teams, name='teams'),
         url(r'^view/$', views.profile),  # Legacy URL scheme ended in /view. Now represented by /list)
         url(r'(?P<view_mode>[a-zA-Z]+)/(?P<sort_method>[a-zA-Z]+)/$', views.profile, name='profile_sorted'),

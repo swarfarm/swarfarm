@@ -243,3 +243,18 @@ class Fusion(models.Model):
 
     def __unicode__(self):
         return str(self.product) + ' Fusion'
+
+
+class TeamGroup(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.TextField(max_length=30)
+
+
+class Team(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    group = models.ForeignKey(TeamGroup)
+    owner = models.ForeignKey(Summoner)
+    name = models.TextField(max_length=30)
+    favorite = models.BooleanField(default=False, blank=True)
+    description = models.TextField()
+    roster = models.ManyToManyField('MonsterInstance')

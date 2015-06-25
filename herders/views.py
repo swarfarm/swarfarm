@@ -64,7 +64,7 @@ def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
 
     # Determine if the person logged in is the one requesting the view
-    is_owner = request.user.is_authenticated() and summoner.user == request.user
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': profile_name,
@@ -119,7 +119,7 @@ def profile_edit(request, profile_name):
         reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
     )
 
-    is_owner = request.user.username == profile_name
+    is_owner = request.user.username == profile_name or request.user.is_superuser
 
     user_form = EditUserForm(request.POST or None, instance=request.user)
     summoner_form = EditSummonerForm(request.POST or None, instance=request.user.summoner)
@@ -214,7 +214,7 @@ def monster_instance_edit(request, profile_name, instance_id):
     )
 
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    is_owner = monster.owner == request.user.summoner
+    is_owner = monster.owner == request.user.summoner or request.user.is_superuser
 
     form = EditMonsterInstanceForm(request.POST or None, instance=monster)
     form.helper.form_action = request.path + '?next=' + return_path
@@ -270,7 +270,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
     )
 
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    is_owner = monster.owner == request.user.summoner
+    is_owner = monster.owner == request.user.summoner or request.user.is_superuser
 
     PowerUpFormset = formset_factory(PowerUpMonsterInstanceForm, extra=5, max_num=5)
 
@@ -370,7 +370,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
         reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
     )
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    is_owner = monster.owner == request.user.summoner
+    is_owner = monster.owner == request.user.summoner or request.user.is_superuser
 
     form = AwakenMonsterInstanceForm(request.POST or None)
     form.helper.form_action = request.path + '?next=' + return_path
@@ -483,7 +483,7 @@ def fusion_progress(request, profile_name):
         reverse('herders:fusion', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = summoner == request.user.summoner
+    is_owner = summoner == request.user.summoner or request.user.is_superuser
 
     context = {
         'view': 'fusion',

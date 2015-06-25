@@ -61,7 +61,6 @@ class Migration(migrations.Migration):
                 ('in_storage', models.BooleanField(default=False)),
                 ('priority', models.IntegerField(default=2, choices=[(0, b'Done'), (1, b'Low'), (2, b'Medium'), (3, b'High')])),
                 ('notes', models.TextField(null=True, blank=True)),
-                ('fodder_for', models.ForeignKey(blank=True, to='herders.MonsterInstance', null=True)),
                 ('monster', models.ForeignKey(to='herders.Monster')),
             ],
             options={
@@ -171,6 +170,11 @@ class Migration(migrations.Migration):
             model_name='team',
             name='roster',
             field=models.ManyToManyField(to='herders.MonsterInstance'),
+        ),
+        migrations.AddField(
+            model_name='runeinstance',
+            name='owner',
+            field=models.ForeignKey(to='herders.Summoner'),
         ),
         migrations.AddField(
             model_name='monsterskill',

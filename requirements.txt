@@ -1,5 +1,5 @@
 python-memcached
-MySQL-python==1.2.5
+psycopg2
 Django==1.8.2
 django-autocomplete-light==2.2.2
 django-crispy-forms

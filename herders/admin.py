@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Monster, MonsterInstance, Summoner, Fusion
+from .models import Monster, MonsterInstance, Summoner, Fusion, TeamGroup, Team, RuneInstance
 
 
 # Monster Database stuff
@@ -44,6 +44,10 @@ class MonsterInstanceAdmin(admin.ModelAdmin):
     search_fields = ['owner__username']
 
 admin.site.register(MonsterInstance, MonsterInstanceAdmin)
+
+admin.site.register(Team)
+admin.site.register(TeamGroup)
+admin.site.register(RuneInstance)
 
 class FusionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'stars', 'cost',)

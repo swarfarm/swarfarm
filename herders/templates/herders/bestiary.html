@@ -69,15 +69,17 @@
                                 <td class="monster-image">
                                     <a href="{% url 'herders:bestiary_detail' monster_id=monster.pk %}">
                                         <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}" class="monster-thumb"/>
-                                        <div>
-                                            {% if monster.is_awakened %}
-                                                <img src="{{ img_url_prefix }}stars/{{ monster.base_stars }}star-awakened.png" class="monster-star" />
-                                            {% elif monster.can_awaken %}
-                                                <img src="{{ img_url_prefix }}stars/{{ monster.base_stars }}star-unawakened.png" class="monster-star" />
-                                            {% else %}
-                                                <img src="{{ img_url_prefix }}stars/{{ monster.base_stars }}star-fodder.png" class="monster-star" />
-                                            {% endif %}
-                                        </div>
+                                        <span>
+                                            {% for x in monster.base_stars|get_range %}
+                                                {% if monster.is_awakened %}
+                                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                {% elif monster.can_awaken %}
+                                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                {% else %}
+                                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
                                     </a>
                                 </td>
                                 <td class="monster-name">{{ monster.name|title }}</td>

@@ -113,13 +113,41 @@ body {
     border-radius: 4px;
 }
 
+
 .monster-star {
     position: absolute;
     top: 1px;
-    left: 1px;
-    height: 15px;
     width: auto;
 }
+
+.monster-image .monster-star {
+    height: 15px;
+}
+
+.monster-image .monster-star-1 {
+    left: 1px;
+}
+
+.monster-image .monster-star-2 {
+    left: 7px;
+}
+
+.monster-image .monster-star-3 {
+    left: 13px;
+}
+
+.monster-image .monster-star-4 {
+    left: 19px;
+}
+
+.monster-image .monster-star-5 {
+    left: 25px;
+}
+
+.monster-image .monster-star-6 {
+    left: 30px;
+}
+
 
 .monster-box {
     width: auto;
@@ -133,6 +161,38 @@ body {
 .monster-box .monster-star {
     height: 20px;
 }
+
+.monster-box .monster-star {
+    height: 20px;
+}
+
+.monster-box .monster-star-1 {
+    left: 1px;
+}
+
+.monster-box .monster-star-2 {
+    left: 11px;
+}
+
+.monster-box .monster-star-3 {
+    left: 21px;
+}
+
+.monster-box .monster-star-4 {
+    left: 31px;
+}
+
+.monster-box .monster-star-5 {
+    left: 41px;
+}
+
+.monster-box .monster-star-6 {
+    left: 51px;
+}
+
+
+
+
 
 .monster-box-thumb {
     position: relative;

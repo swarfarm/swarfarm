@@ -1,6 +1,7 @@
 {% extends 'herders/profile/profile_base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
+{% load utils %}
 
 {% block title %}My Monsters (Box View) - {{ block.super }}{% endblock title %}
 
@@ -39,13 +40,15 @@
                                             {% endif %}
                                                 <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
                                                 <span>
-                                                    {% if instance.monster.is_awakened %}
-                                                        <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-awakened.png" class="monster-star" />
-                                                    {% elif instance.monster.can_awaken %}
-                                                        <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-unawakened.png" class="monster-star" />
-                                                    {% else %}
-                                                        <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-fodder.png" class="monster-star" />
-                                                    {% endif %}
+                                                    {% for x in instance.stars|get_range %}
+                                                        {% if instance.monster.is_awakened %}
+                                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                        {% elif instance.monster.can_awaken %}
+                                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                        {% else %}
+                                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                        {% endif %}
+                                                    {% endfor %}
                                                 </span>
                                                 {% if instance.monster.fusion_food %}
                                                     <img class="image-plus-icon" src="{{ img_url_prefix }}icons/fusion.png" />

@@ -72,13 +72,15 @@
                                     {% endif %}
                                         <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
                                         <span>
-                                            {% if instance.monster.is_awakened %}
-                                                <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-awakened.png" class="monster-star" />
-                                            {% elif instance.monster.can_awaken %}
-                                                <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-unawakened.png" class="monster-star" />
-                                            {% else %}
-                                                <img src="{{ img_url_prefix }}stars/{{ instance.stars }}star-fodder.png" class="monster-star" />
-                                            {% endif %}
+                                            {% for x in instance.stars|get_range %}
+                                                {% if instance.monster.is_awakened %}
+                                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                {% elif instance.monster.can_awaken %}
+                                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                {% else %}
+                                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                {% endif %}
+                                            {% endfor %}
                                         </span>
                                         <span class="image-plus image-plus-right">{{ instance.level }}</span>
                                     {% if is_owner %}

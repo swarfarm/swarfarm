@@ -260,21 +260,27 @@ body {
     cursor: pointer;
 }
 
-.tablesorter-headerUnSorted div:before {
+.tablesorter-headerUnSorted,
+.tablesorter-headerAsc,
+.tablesorter-headerDesc {
+    cursor: pointer;
+}
+
+.tablesorter-headerUnSorted>div.tablesorter-header-inner:before {
     padding-right: 3px;
     font-family: 'Glyphicons Halflings';
     font-size: 0.7em;
     content: "\e150";
 }
 
-.tablesorter-headerAsc div:before {
+.tablesorter-headerAsc>div.tablesorter-header-inner:before {
     padding-right: 3px;
     font-family: 'Glyphicons Halflings';
     font-size: 0.7em;
     content: "\e114";
 }
 
-.tablesorter-headerDesc div:before {
+.tablesorter-headerDesc>div.tablesorter-header-inner:before {
     padding-right: 3px;
     font-family: "Glyphicons Halflings";
     font-size: 0.7em;

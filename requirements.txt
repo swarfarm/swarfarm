@@ -1,6 +1,5 @@
 python-memcached
 psycopg2
-django-cors-headers
 Django==1.8.2
 django-autocomplete-light==2.2.2
 django-crispy-forms

@@ -10,4 +10,4 @@ django-redis
 django-suit
 django-timezone-field
 django_compressor
-django[bcrypt]
+bcrypt

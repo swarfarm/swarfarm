@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% load crispy_forms_filters %}
+{% load utils %}
 
 {% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
@@ -23,13 +24,15 @@
                 <span>
                     <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}"/>
                     <span>
-                        {% if monster.monster.is_awakened %}
-                            <img src="{{ img_url_prefix }}stars/{{ monster.stars }}star-awakened.png" class="monster-star" />
-                        {% elif monster.monster.can_awaken %}
-                            <img src="{{ img_url_prefix }}stars/{{ monster.stars }}star-unawakened.png" class="monster-star" />
-                        {% else %}
-                            <img src="{{ img_url_prefix }}stars/{{ monster.stars }}star-fodder.png" class="monster-star" />
-                        {% endif %}
+                        {% for x in monster.stars|get_range %}
+                            {% if monster.monster.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif monster.monster.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% endif %}
+                        {% endfor %}
                     </span>
                     {% if monster.monster.fusion_food %}
                         <img class="image-plus-icon" src="{{ img_url_prefix }}icons/fusion.png" />

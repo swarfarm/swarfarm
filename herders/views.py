@@ -307,6 +307,11 @@ def monster_instance_power_up(request, profile_name, instance_id):
                 if len(food_monsters) != len(set(food_monsters)):
                     validation_errors['food_monster_unique'] = "You submitted duplicate food monsters. Please select unique monsters for each slot."
 
+                # Check that monster is not being fed to itself
+                for food in food_monsters:
+                    if food == monster:
+                        validation_errors['base_food_same'] = "You can't feed a monster to itself. "
+
                 # Perform validation checks for evolve action
                 if request.POST.get('evolve', False):
                     # Check constraints on evolving (or not, if form element was set)

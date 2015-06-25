@@ -5,7 +5,6 @@ django-autocomplete-light==2.2.2
 django-crispy-forms
 django-markdown-deux
 django-recaptcha
-django-redis
 django-suit
 django-timezone-field
 django_compressor

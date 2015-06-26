@@ -312,8 +312,11 @@ def monster_instance_power_up(request, profile_name, instance_id):
                     if food == monster:
                         validation_errors['base_food_same'] = "You can't feed a monster to itself. "
 
+                is_evolution = request.POST.get('evolve', False)
+
                 # Perform validation checks for evolve action
-                if request.POST.get('evolve', False):
+                if is_evolution:
+
                     # Check constraints on evolving (or not, if form element was set)
                     if not request.POST.get('ignore_errors', False):
                         # Check monster level and stars
@@ -342,7 +345,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
                         monster.stars += 1
                         monster.level = 1
                         monster.save()
-                        messages.success(request, 'Successfully evolved %s to %s <span class="glyphicon glyphicon-star"></span>' % (monster.monster.name, monster.stars), extra_tags='safe')
+                        messages.success(request, 'Successfully evolved %s to %s<span class="glyphicon glyphicon-star"></span>' % (monster.monster.name, monster.stars), extra_tags='safe')
 
                 if not validation_errors:
                     # Delete the submitted monsters
@@ -353,10 +356,14 @@ def monster_instance_power_up(request, profile_name, instance_id):
                         else:
                             raise PermissionDenied("Trying to delete a monster you don't own")
 
-                    return redirect(
-                        reverse('herders:monster_instance_edit', kwargs={'profile_name':profile_name, 'instance_id': instance_id}) +
-                        '?next=' + return_path
-                    )
+                    # Redirect back to return path if evolved, or go to edit screen if power up
+                    if is_evolution:
+                        return redirect(return_path)
+                    else:
+                        return redirect(
+                            reverse('herders:monster_instance_edit', kwargs={'profile_name':profile_name, 'instance_id': instance_id}) +
+                            '?next=' + return_path
+                        )
             else:
                 context['form_errors'] = formset.non_field_errors()  # Not sure if this will ever happen unless someone tries to be tricksy with form input values
 

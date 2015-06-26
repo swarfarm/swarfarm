@@ -43,13 +43,15 @@
                 <div class="monster-image pull-left">
                     <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}" class="monster-thumb"/>
                     <span>
-                        {% if fusion.instance.is_awakened %}
-                            <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-awakened.png" class="monster-star" />
-                        {% elif fusion.instance.can_awaken %}
-                            <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-unawakened.png" class="monster-star" />
-                        {% else %}
-                            <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-fodder.png" class="monster-star" />
-                        {% endif %}
+                        {% for x in fusion.stars|get_range %}
+                            {% if fusion.instance.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif fusion.instance.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% endif %}
+                        {% endfor %}
                     </span>
                 </div>
                 <h4 style="margin-left: 60px">
@@ -77,13 +79,15 @@
                                         <a href="{% url 'herders:bestiary_detail' monster_id=ingredient.instance.pk %}">
                                             <img src="{{ img_url_prefix }}monsters/{{ ingredient.instance.image_filename }}" class="monster-thumb"/>
                                             <span>
-                                                {% if ingredient.instance.is_awakened %}
-                                                    <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-awakened.png" class="monster-star" />
-                                                {% elif ingredient.instance.can_awaken %}
-                                                    <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-unawakened.png" class="monster-star" />
-                                                {% else %}
-                                                    <img src="{{ img_url_prefix }}stars/{{ fusion.stars }}star-fodder.png" class="monster-star" />
-                                                {% endif %}
+                                                {% for x in fusion.stars|get_range %}
+                                                    {% if ingredient.instance.is_awakened %}
+                                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                    {% elif ingredient.instance.can_awaken %}
+                                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                    {% else %}
+                                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                    {% endif %}
+                                                {% endfor %}
                                             </span>
                                             <span class="image-plus image-plus-right">{{ fusion.level }}</span>
                                         </a>
@@ -124,13 +128,15 @@
                                             <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}">
                                                 <img src="{{ img_url_prefix }}monsters/{{ owned.monster.image_filename }}" class="monster-thumb"/>
                                                 <span>
-                                                    {% if owned.monster.is_awakened %}
-                                                        <img src="{{ img_url_prefix }}stars/{{ owned.stars }}star-awakened.png" class="monster-star" />
-                                                    {% elif owned.monster.can_awaken %}
-                                                        <img src="{{ img_url_prefix }}stars/{{ owned.stars }}star-unawakened.png" class="monster-star" />
-                                                    {% else %}
-                                                        <img src="{{ img_url_prefix }}stars/{{ owned.stars }}star-fodder.png" class="monster-star" />
-                                                    {% endif %}
+                                                    {% for x in owned.stars|get_range %}
+                                                        {% if owned.monster.is_awakened %}
+                                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                        {% elif owned.monster.can_awaken %}
+                                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                        {% else %}
+                                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                        {% endif %}
+                                                    {% endfor %}
                                                 </span>
                                                 <span class="image-plus image-plus-right">{{ owned.level }}</span>
                                             </a>

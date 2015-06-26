@@ -485,7 +485,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
 
         context['available_materials'] = available_materials
 
-        return render(request, 'herders/profile/profile_awaken.html', context)
+        return render(request, 'herders/profile/profile_monster_awaken.html', context)
 
 
 @login_required
@@ -573,8 +573,18 @@ def fusion_progress(request, profile_name):
 
 @login_required
 def teams(request, profile_name):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:fusion', kwargs={'profile_name': profile_name})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = summoner == request.user.summoner or request.user.is_superuser
+
     context = {
         'view': 'teams',
+        'profile_name': profile_name,
+        'return_path': return_path,
+        'is_owner': is_owner,
     }
 
     return render(request, 'herders/unimplemented.html', context)

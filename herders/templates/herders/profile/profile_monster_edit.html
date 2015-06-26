@@ -1,8 +1,8 @@
-{% extends 'herders/profile/profile_base.html' %}
+{% extends 'base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
-{% block profile %}
+{% block content %}
     <div class="row">
         <div class="col-md-1">
             <div class="monster-box">
@@ -36,4 +36,4 @@
     <div class="monster-form">
         {% crispy edit_monster_form %}
     </div>
-{% endblock profile %}
+{% endblock content %}

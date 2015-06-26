@@ -1,10 +1,10 @@
-{% extends 'herders/profile/profile_base.html' %}
+{% extends 'base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
 {% block title %}Awaken {{ monster.monster.name|title }} - {{ block.super }}{% endblock title %}
 
-{% block profile %}
+{% block content %}
     {% static 'herders/images/' as img_url_prefix %}
     <div>
         <h2>
@@ -139,4 +139,4 @@
     <br />
 
     {% crispy awaken_monster_form %}
-{% endblock profile %}
+{% endblock content %}

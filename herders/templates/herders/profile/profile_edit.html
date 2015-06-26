@@ -1,8 +1,8 @@
-{% extends 'herders/profile/profile_base.html' %}
+{% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load staticfiles %}
 
-{% block profile %}
+{% block content %}
     <form action="{% url 'herders:edit_profile' profile_name=profile_name %}?next={{ return_path }}" method="post">
         {% csrf_token %}
         {% crispy user_form %}
@@ -13,4 +13,4 @@
             <input type="button" name="cancel" value="Cancel" class="btn btn-link pull-right" id="button-id-cancel"/>
         </div>
     </form>
-{% endblock %}
+{% endblock content %}

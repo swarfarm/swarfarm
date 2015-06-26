@@ -1,10 +1,10 @@
-{% extends 'herders/profile/profile_base.html' %}
+{% extends 'base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% load crispy_forms_filters %}
 {% load utils %}
 
-{% block profile %}
+{% block content %}
     {% static 'herders/images/' as img_url_prefix %}
 
     {% if validation_errors %}
@@ -81,6 +81,4 @@
             <p></p>
         </div>
     </form>
-
-
-{% endblock profile %}
+{% endblock content %}

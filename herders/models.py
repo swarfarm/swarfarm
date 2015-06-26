@@ -84,7 +84,10 @@ class Monster(models.Model):
         ordering = ['name', 'element']
 
     def __unicode__(self):
-        return self.name + ' (' + self.element.capitalize() + ')'
+        if self.is_awakened:
+            return self.name
+        else:
+            return self.name + ' (' + self.element.capitalize() + ')'
 
 
 class MonsterSkill(models.Model):

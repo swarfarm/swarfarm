@@ -15,7 +15,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
     PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm
-from .models import Monster, Summoner, MonsterInstance, Fusion
+from .models import Monster, Summoner, MonsterInstance, Fusion, TeamGroup, Team
 from .fusion import essences_missing
 
 
@@ -580,14 +580,18 @@ def teams(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = summoner == request.user.summoner or request.user.is_superuser
 
+    # Get team objects for the summoner
+    team_groups = TeamGroup.objects.filter(owner=summoner).select_related()
+
     context = {
         'view': 'teams',
         'profile_name': profile_name,
         'return_path': return_path,
         'is_owner': is_owner,
+        'team_groups': team_groups,
     }
 
-    return render(request, 'herders/unimplemented.html', context)
+    return render(request, 'herders/profile/profile_teams.html', context)
 
 
 def bestiary(request):

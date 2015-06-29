@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load utils %}
+
+{% block content %}
+    {% static 'herders/images/' as img_url_prefix %}
+    <div class="team-panel">
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            {% for group in team_groups %}
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        {{ group.name }}
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                        <ul>
+                        {% for team in group.team_set.all %}
+                            <li>{{ team.name }}</li>
+                        {% empty %}
+                            <li>Add a team</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <ul>
+    {% for group in team_groups %}
+        <li>{{ group.name }}</li>
+        <ul>
+        {% for team in group.team_set.all %}
+            <li>{{ team.name }}</li>
+            <ul>
+            {% for member in team.roster.all %}
+                <li>{{ member }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+    </ul>
+{% endblock %}

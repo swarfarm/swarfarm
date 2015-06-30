@@ -40,15 +40,17 @@
 {% endblock %}
 
 {% block javascript %}
-<script type="text/javascript">
-    $('a.team-link').click(function() {
-        var team_id = $(this).data('team-id');
-        $('#team-detail').load('/profile/porksmash/teams/detail/' + team_id + '/');
-    });
+    {% autoescape off %}
+    <script type="text/javascript">
+        $('a.team-link').click(function() {
+            var team_id = $(this).data('team-id');
+            $('#team-detail').load('/profile/{{ profile_name }}/teams/detail/' + team_id + '/');
+        });
 
-    var hashStr = location.hash.replace("#","");
-    if (hashStr) {
-        $('#team-detail').load('/profile/porksmash/teams/detail/' + hashStr + '/');
-    }
-</script>
+        var hashStr = location.hash.replace("#","");
+        if (hashStr) {
+            $('#team-detail').load('/profile/{{ profile_name }}/teams/detail/' + hashStr + '/');
+        }
+    </script>
+    {% endautoescape %}
 {% endblock javascript %}

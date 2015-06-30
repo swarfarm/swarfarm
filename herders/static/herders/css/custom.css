@@ -417,10 +417,19 @@ button.filter:not(.active):focus {
 }
 
 .team-list {
-    width: 315px;
+    width: 275px;
     float: left;
 }
 
 .team-detail {
-    margin-left: 320px;
+    margin-left: 300px;
+}
+
+td>h1,
+td>h2,
+td>h3,
+td>h4,
+td>h5,
+td>h6 {
+    margin: 0;
 }

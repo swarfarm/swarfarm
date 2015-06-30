@@ -374,6 +374,7 @@ class Team(models.Model):
     name = models.CharField(max_length=30)
     favorite = models.BooleanField(default=False, blank=True)
     description = models.TextField(null=True, blank=True)
+    leader = models.ForeignKey('MonsterInstance', related_name='team_leader', null=True, blank=True)
     roster = models.ManyToManyField('MonsterInstance')
 
     def __unicode__(self):

@@ -1,0 +1,101 @@
+{% load utils %}
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<h2>{{ team.group.name }} - {{ team.name }}</h2>
+<table class="table table-hover table-condensed monster-table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th class="monster-stars-column">Stars</th>
+            <th class="monster-level-column">Level</th>
+            <th class="monster-element">Element</th>
+            <th>Archetype</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td colspan="6"><h4>Leader</h4></td></tr>
+        <tr>
+            {% if team.leader %}
+            <td class="monster-image">
+                <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=team.leader.pk.hex %}?next={{ request.path }}">
+                    <img src="{{ img_url_prefix }}monsters/{{ team.leader.monster.image_filename }}" class="monster-thumb"/>
+                    <span>
+                        {% for x in team.leader.stars|get_range %}
+                            {% if team.leader.monster.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif team.leader.monster.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    <span class="image-plus image-plus-right">{{ team.leader.level }}</span>
+                </a>
+            </td>
+            <td>{{ team.leader.monster.name|title }}</td>
+            <td class="monster-stars-column">{{ team.leader.stars }}<span class="glyphicon glyphicon-star"></span></td>
+            <td>
+                {{ team.leader.level }}
+                {% if team.leader.is_max_level %}
+                    {% if team.leader.stars == 6 %}
+                        <span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span>
+                    {% else %}
+                        <span class="glyphicon glyphicon-upload" style="color:darkorange;" data-toggle="tooltip" data-placement="top" title="Ready for Evolution!"></span>
+                    {% endif %}
+                {% endif %}
+            </td>
+            <td class="monster-element">
+                <img src="{{ img_url_prefix }}elements/{{ team.leader.monster.element }}.png" />
+                <span>{{ team.leader.monster.element }}</span>
+            </td>
+            <td>{{ team.leader.monster.archetype|title }}</td>
+            {% else %}
+            <td colspan="6" class="monster-image">None</td>
+            {% endif %}
+        </tr>
+        <tr><td colspan="6"><h4>Members</h4></td></tr>
+        {% for instance in team.roster.all %}
+            <tr>
+                <td class="monster-image">
+                    <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
+                        <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
+                        <span>
+                            {% for x in instance.stars|get_range %}
+                                {% if instance.monster.is_awakened %}
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% elif instance.monster.can_awaken %}
+                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% else %}
+                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span class="image-plus image-plus-right">{{ instance.level }}</span>
+                    </a>
+                </td>
+                <td>{{ instance.monster.name|title }}</td>
+                <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>
+                <td>
+                    {{ instance.level }}
+                    {% if instance.is_max_level %}
+                        {% if instance.stars == 6 %}
+                            <span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span>
+                        {% else %}
+                            <span class="glyphicon glyphicon-upload" style="color:darkorange;" data-toggle="tooltip" data-placement="top" title="Ready for Evolution!"></span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td class="monster-element">
+                    <img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" />
+                    <span>{{ instance.monster.element }}</span>
+                </td>
+                <td>{{ instance.monster.archetype|title }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6" class="monster-image">No Members</td></tr>
+        {% endfor %}
+    </tbody>
+</table>

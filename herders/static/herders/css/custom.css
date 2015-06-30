@@ -1,6 +1,30 @@
+html, body {
+    height: 100%;
+}
 body {
-  min-height: 800px;
-  padding-top: 70px;
+    padding-top: 70px;
+}
+
+#wrap {
+    min-height: 100%;
+}
+
+.container {
+    min-height: 100%;
+    overflow: auto;
+    padding-bottom: 40px;
+}
+
+footer {
+    position: relative;
+	margin-top: -40px;
+	height: 40px;
+	clear: both;
+    width: 95%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .no-gutter {
@@ -148,7 +172,6 @@ body {
     left: 31px;
 }
 
-
 .monster-box {
     width: auto;
     position: relative;
@@ -189,10 +212,6 @@ body {
 .monster-box .monster-star-6 {
     left: 51px;
 }
-
-
-
-
 
 .monster-box-thumb {
     position: relative;
@@ -395,4 +414,13 @@ button.filter:not(.active):focus {
 
 .fusion-ingredients-collection {
     padding: 0!important;
+}
+
+.team-list {
+    width: 315px;
+    float: left;
+}
+
+.team-detail {
+    margin-left: 320px;
 }

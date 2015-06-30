@@ -29,132 +29,132 @@
         <![endif]-->
     </head>
     <body>
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+        <div id="wrap">
+            <!--[if lt IE 8]>
+                <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+            <![endif]-->
 
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-mainnav">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand hidden-sm hidden-md" href="{% url 'news:latest_news' %}">
-                        <span><img src="{% static 'herders/images/site-logo.png' %}"/></span>
-                        SWARFARM
-                    </a>
-                </div>
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-mainnav">
-                    <ul class="nav navbar-nav">
-                        {% if user.is_authenticated %}
-                            <li>
-                                <div class="navbar-btn">
-                                    <a href="{% url 'herders:profile' profile_name=user.username view_mode='list' %}" class="btn btn-default {% if view == 'profile' %}active{% endif %}">
-                                        <img src="{% static 'herders/images/icons/monster.png' %}" />
-                                        My Monsters
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="navbar-btn">
-                                    <a href="{% url 'herders:fusion' profile_name=user.username %}"
-                                       class="btn btn-default {% if view == 'fusion' %}active{% endif %}">
-                                        <img src="{% static 'herders/images/icons/fusion.png' %}" />
-                                        Fusion
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="navbar-btn" data-toggle="tooltip" data-placement="bottom" title="Not yet implemented">
-                                    <a href="{% url 'herders:teams' profile_name=user.username %}"
-                                       class="btn btn-default {% if view == 'teams' %}active{% endif %}">
-                                        <i class="fa fa-users"></i>
-                                        Teams
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="navbar-btn">
-                                    <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}"
-                                       class="btn btn-default {% if view == 'storage' %}active{% endif %}">
-                                        <span class="fa fa-archive"></span>
-                                        Essence Storage
-                                    </a>
-                                </div>
-                            </li>
-                        {% endif %}
-                        <li>
-                            <div class="navbar-btn">
-                                <a href="{% url 'herders:bestiary' %}" class="btn btn-default {% if view == 'bestiary' %}active{% endif %}">
-                                    <span class="fa fa-book"></span>
-                                    Bestiary
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
-
-                    <div class="navbar-right hidden-sm">
-                        {% if user.is_authenticated %}
-                            <div class="btn-group navbar-btn">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    {{ user.username }} <span class="caret"></span>
-                                </button>
-                                    <ul class="dropdown-menu" role="menu">
-                                    <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
-                                    <li><a href="{% url 'feedback:index' %}">Leave Feedback</a></li>
-                                    {% if user.is_staff %}
-                                        <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
-                                    {% endif %}
-                                    <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>
-                                    <li><a href="{% url 'logout' %}">Log out</a></li>
-                                </ul>
-                            </div>
-                        {% else %}
-                            {# Show login form and register button #}
-                            <form class="navbar-form " role="search" action="{% url 'login' %}" method="post">
-                                {% csrf_token %}
-                                <input type="text" class="form-control" placeholder="Username" name="username">
-                                <input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
-                                <button type="submit" class="btn btn-default">Sign in</button>
-                                <a href="{% url 'herders:register' %}" class="navbar-link">Register</a>
-                            </form>
-
-                        {% endif %}
+            <nav class="navbar navbar-default navbar-fixed-top">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-mainnav">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand hidden-sm hidden-md" href="{% url 'news:latest_news' %}">
+                            <span><img src="{% static 'herders/images/site-logo.png' %}"/></span>
+                            SWARFARM
+                        </a>
                     </div>
-                </div><!-- /.navbar-collapse -->
-            </div><!-- /.container-fluid -->
-        </nav>
 
-        {% block subnav %} {% endblock subnav %}
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-mainnav">
+                        <ul class="nav navbar-nav">
+                            {% if user.is_authenticated %}
+                                <li>
+                                    <div class="navbar-btn">
+                                        <a href="{% url 'herders:profile' profile_name=user.username view_mode='list' %}" class="btn btn-default {% if view == 'profile' %}active{% endif %}">
+                                            <img src="{% static 'herders/images/icons/monster.png' %}" />
+                                            My Monsters
+                                        </a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="navbar-btn">
+                                        <a href="{% url 'herders:fusion' profile_name=user.username %}"
+                                           class="btn btn-default {% if view == 'fusion' %}active{% endif %}">
+                                            <img src="{% static 'herders/images/icons/fusion.png' %}" />
+                                            Fusion
+                                        </a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="navbar-btn">
+                                        <a href="{% url 'herders:teams' profile_name=user.username %}"
+                                           class="btn btn-default disabled {% if view == 'teams' %}active{% endif %}">
+                                            <i class="fa fa-users"></i>
+                                            Teams
+                                        </a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="navbar-btn">
+                                        <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}"
+                                           class="btn btn-default {% if view == 'storage' %}active{% endif %}">
+                                            <span class="fa fa-archive"></span>
+                                            Essence Storage
+                                        </a>
+                                    </div>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <div class="navbar-btn">
+                                    <a href="{% url 'herders:bestiary' %}" class="btn btn-default {% if view == 'bestiary' %}active{% endif %}">
+                                        <span class="fa fa-book"></span>
+                                        Bestiary
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
 
-        <div class="container">
-            {% if messages %}
-                <div class="alert alert-dismissible alert-success" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <ul>
-                        {% for message in messages %}
-                            <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
-                        {% endfor %}
-                    </ul>
+                        <div class="navbar-right hidden-sm">
+                            {% if user.is_authenticated %}
+                                <div class="btn-group navbar-btn">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                        {{ user.username }} <span class="caret"></span>
+                                    </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                        <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
+                                        <li><a href="{% url 'feedback:index' %}">Leave Feedback</a></li>
+                                        {% if user.is_staff %}
+                                            <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
+                                        {% endif %}
+                                        <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>
+                                        <li><a href="{% url 'logout' %}">Log out</a></li>
+                                    </ul>
+                                </div>
+                            {% else %}
+                                {# Show login form and register button #}
+                                <form class="navbar-form " role="search" action="{% url 'login' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="text" class="form-control" placeholder="Username" name="username">
+                                    <input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
+                                    <button type="submit" class="btn btn-default">Sign in</button>
+                                    <a href="{% url 'herders:register' %}" class="navbar-link">Register</a>
+                                </form>
+
+                            {% endif %}
+                        </div>
+                    </div><!-- /.navbar-collapse -->
+                </div><!-- /.container-fluid -->
+            </nav>
+
+            {% block subnav %} {% endblock subnav %}
+
+            <div class="container">
+                {% if messages %}
+                    <div class="alert alert-dismissible alert-success" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <ul>
+                            {% for message in messages %}
+                                <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <div class="content">
+                    {% block content %}
+                    {% endblock content %}
                 </div>
-            {% endif %}
-
-            {% block content %} {% endblock content %}
-
-            <hr>
-            <footer>
-                <div>
-                    <span class="pull-left"><span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Porksmash 2015</span>
-                    <span class="pull-right">Images <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Com2Us</span>
-                </div>
-            </footer>
+            </div>
         </div>
+        <footer>
+            <span class="pull-left"><span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Porksmash 2015</span>
+            <span class="pull-right">Images <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Com2Us</span>
+        </footer>
         <!-- /container -->
 
         {# CDN scripts are not compressed #}
@@ -176,7 +176,7 @@
             <script type="text/javascript" src="{% static "herders/js/bootstrap.min.js" %}"></script>
             <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
             <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
-            {% block javascript %}{% endblock javascript %}
         {% endcompress %}
+        {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}
     </body>
 </html>

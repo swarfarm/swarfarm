@@ -581,7 +581,7 @@ def teams(request, profile_name):
     is_owner = summoner == request.user.summoner or request.user.is_superuser
 
     # Get team objects for the summoner
-    team_groups = TeamGroup.objects.filter(owner=summoner).select_related()
+    team_groups = TeamGroup.objects.filter(owner=summoner)
 
     context = {
         'view': 'teams',
@@ -591,8 +591,32 @@ def teams(request, profile_name):
         'team_groups': team_groups,
     }
 
-    return render(request, 'herders/profile/profile_teams.html', context)
+    return render(request, 'herders/profile/teams/teams_base.html', context)
 
+@login_required
+def team_detail(request, profile_name, team_id):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:fusion', kwargs={'profile_name': profile_name})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = summoner == request.user.summoner or request.user.is_superuser
+
+    team = get_object_or_404(Team, pk=team_id)
+
+    context = {
+        'view': 'teams',
+        'profile_name': profile_name,
+        'return_path': return_path,
+        'is_owner': is_owner,
+        'team': team,
+    }
+
+    return render(request, 'herders/profile/teams/team_detail.html', context)
+
+@login_required
+def team_edit(request, profile_name, team_id):
+    return render(request, 'herders/unimplemented.html')
 
 def bestiary(request):
     context = {

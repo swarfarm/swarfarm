@@ -80,9 +80,9 @@ class RegisterUserForm(forms.Form):
         ]
     )
 
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=True, help_text='Your email address will only be used for password resets and account expiration notices.')
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput)
-    summoner_name = forms.CharField(label="Summoner's War Account Name", required=False)
+    summoner_name = forms.CharField(label="Summoner's War Account Name", required=False, help_text='Not required. Visible to others if you make your SWARFARM account public.')
     is_public = forms.BooleanField(label='Make my SWARFARM account visible to others', required=False)
     captcha = ReCaptchaField()
 

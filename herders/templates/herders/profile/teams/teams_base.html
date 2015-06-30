@@ -40,7 +40,6 @@
 {% endblock %}
 
 {% block javascript %}
-    {% autoescape off %}
     <script type="text/javascript">
         $('a.team-link').click(function() {
             var team_id = $(this).data('team-id');
@@ -52,5 +51,4 @@
             $('#team-detail').load('/profile/{{ profile_name }}/teams/detail/' + hashStr + '/');
         }
     </script>
-    {% endautoescape %}
 {% endblock javascript %}

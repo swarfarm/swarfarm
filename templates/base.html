@@ -176,7 +176,7 @@
             <script type="text/javascript" src="{% static "herders/js/bootstrap.min.js" %}"></script>
             <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
             <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
-            {% block javascript %}{% endblock javascript %}
         {% endcompress %}
+        {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}
     </body>
 </html>

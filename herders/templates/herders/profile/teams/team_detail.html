@@ -1,8 +1,21 @@
 {% load utils %}
 {% load staticfiles %}
+{% load markdown_deux_tags %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<h2>{{ team.group.name }} - {{ team.name }}<small><a class="glyphicon glyphicon-pencil team-edit" href="#{{ team.pk.hex }}" data-team-id="{{ team.pk.hex }}"></a></small></h2>
+<div class="panel-heading">
+    <span class="panel-title">{{ team.group.name }} - {{ team.name }}</span>
+    <div class="btn-group pull-right">
+        <a href="#{{ team.pk.hex }}" class="btn btn-default team-edit" data-team-id="{{ team.pk.hex }}">
+            <span class="glyphicon glyphicon-pencil"></span> Edit Team
+        </a>
+    </div>
+</div>
+{% if team.description %}
+<div class="panel-body">
+   {{ team.description|markdown }}
+</div>
+{% endif %}
 <table class="table table-hover table-condensed monster-table">
     <thead>
         <tr>
@@ -53,7 +66,7 @@
             </td>
             <td>{{ team.leader.monster.archetype|title }}</td>
             {% else %}
-            <td colspan="6" class="monster-image">None</td>
+            <td colspan="6">None</td>
             {% endif %}
         </tr>
         <tr><td colspan="6"><h4>Members</h4></td></tr>
@@ -95,7 +108,7 @@
                 <td>{{ instance.monster.archetype|title }}</td>
             </tr>
         {% empty %}
-            <tr><td colspan="6" class="monster-image">No Members</td></tr>
+            <tr><td colspan="6">No Members</td></tr>
         {% endfor %}
     </tbody>
 </table>

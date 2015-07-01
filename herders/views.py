@@ -620,6 +620,9 @@ def team_edit(request, profile_name, team_id):
     is_owner = summoner == request.user.summoner or request.user.is_superuser
 
     form = EditTeamForm(request.POST or None, instance=team)
+
+    # Limit form choices to objects owned by the current user.
+    form.fields['group'].queryset = TeamGroup.objects.filter(owner=summoner)
     form.fields['leader'].queryset = MonsterInstance.objects.filter(owner=summoner)
     form.fields['roster'].queryset = MonsterInstance.objects.filter(owner=summoner)
     form.helper.form_action = request.path + '?next=' + return_path

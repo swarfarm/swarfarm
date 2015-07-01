@@ -6,37 +6,25 @@
 
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
-    <div>
-        <div class="team-list">
-            <div class="panel-group">
-                {% for group in team_groups %}
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingOne">
-                        <h4 class="panel-title">
-                            <a role="button" data-toggle="collapse" href="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapse{{ forloop.counter }}">
-                            {{ group.name }}
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                        <div class="panel-body">
-                            <ul>
-                            {% for team in group.team_set.all %}
-                                <li><a href="#{{ team.pk.hex }}" class="team-link" data-team-id="{{ team.pk.hex }}">{{ team.name }}</a></li>
-                            {% empty %}
-                                <li>Empty! Add a team.</li>
-                            {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+    <div class="team-list pull-left">
+        {% for group in team_groups %}
+            <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ group.name }}</button>
+            <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <ul>
+                {% for team in group.team_set.all %}
+                    <li><a href="#{{ team.pk.hex }}" class="team-link" data-team-id="{{ team.pk.hex }}">{{ team.name }}</a></li>
+                {% empty %}
+                    <li>Empty! Add a team.</li>
                 {% endfor %}
+                </ul>
             </div>
-        </div>
-        <div id="team-detail" class="team-detail">
-
-        </div>
+        {% endfor %}
     </div>
+
+    <div class="row team-detail">
+        <div id="team-detail" class="panel panel-default"></div>
+    </div>
+
 {% endblock %}
 
 {% block javascript %}

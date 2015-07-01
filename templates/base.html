@@ -74,7 +74,7 @@
                                 <li>
                                     <div class="navbar-btn">
                                         <a href="{% url 'herders:teams' profile_name=user.username %}"
-                                           class="btn btn-default disabled {% if view == 'teams' %}active{% endif %}">
+                                           class="btn btn-default {% if view == 'teams' %}active{% endif %}">
                                             <i class="fa fa-users"></i>
                                             Teams
                                         </a>

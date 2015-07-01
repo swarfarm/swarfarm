@@ -409,7 +409,22 @@ class EditTeamForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Field('group'),
+            Field('name'),
+            Field('favorite'),
+            Field('description'),
+            Field('leader'),
+            Field('Roster'),
+            FormActions(
+                Submit('awaken', 'Awaken', css_class='btn btn-primary'),
+                HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
+            ),
+        )
 
     class Meta:
         model = Team
         exclude = ('id',)
+        help_texts = {
+            'description': 'Markdown syntax enabled'
+        }

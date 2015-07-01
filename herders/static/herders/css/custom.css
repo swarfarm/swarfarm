@@ -422,7 +422,16 @@ button.filter:not(.active):focus {
 }
 
 .team-detail {
-    margin-left: 300px;
+    margin-left: 290px;
+}
+
+#team-detail>div.panel-body:after {
+    clear: none;
+}
+
+.team-list button {
+    width: 100%;
+    display: block;
 }
 
 td>h1,

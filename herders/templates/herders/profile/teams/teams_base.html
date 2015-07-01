@@ -41,14 +41,21 @@
 
 {% block javascript %}
     <script type="text/javascript">
+        team_detail = $('#team-detail');
+
         $('a.team-link').click(function() {
             var team_id = $(this).data('team-id');
-            $('#team-detail').load('/profile/{{ profile_name }}/teams/detail/' + team_id + '/');
+            team_detail.load('/profile/{{ profile_name }}/teams/detail/' + team_id + '/');
+        });
+
+        team_detail.on('click', 'a.team-edit', function() {
+            var team_id = $(this).data('team-id');
+            team_detail.load('/profile/{{ profile_name }}/teams/edit/' + team_id + '/');
         });
 
         var hashStr = location.hash.replace("#","");
         if (hashStr) {
-            $('#team-detail').load('/profile/{{ profile_name }}/teams/detail/' + hashStr + '/');
+            team_detail.load('/profile/{{ profile_name }}/teams/detail/' + hashStr + '/');
         }
     </script>
 {% endblock javascript %}

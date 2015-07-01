@@ -14,7 +14,7 @@ from django.forms.formsets import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
-    PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm
+    PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm, EditTeamForm
 from .models import Monster, Summoner, MonsterInstance, Fusion, TeamGroup, Team
 from .fusion import essences_missing
 
@@ -125,7 +125,6 @@ def profile_edit(request, profile_name):
     summoner_form = EditSummonerForm(request.POST or None, instance=request.user.summoner)
 
     context = {
-        'add_monster_form': AddMonsterInstanceForm(),
         'is_owner': is_owner,
         'profile_name': profile_name,
         'return_path': return_path,
@@ -156,7 +155,6 @@ def profile_storage(request, profile_name):
     form.helper.form_action = request.path + '?next=' + return_path
 
     context = {
-        'add_monster_form': AddMonsterInstanceForm(),
         'is_owner': True,
         'profile_name': request.user.username,
         'storage_form': form,
@@ -220,7 +218,6 @@ def monster_instance_edit(request, profile_name, instance_id):
     form.helper.form_action = request.path + '?next=' + return_path
 
     context = {
-        'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': request.user.username,
         'return_path': return_path,
         'monster': monster,
@@ -280,7 +277,6 @@ def monster_instance_power_up(request, profile_name, instance_id):
         formset = PowerUpFormset()
 
     context = {
-        'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': request.user.username,
         'return_path': return_path,
         'monster': monster,
@@ -388,7 +384,6 @@ def monster_instance_awaken(request, profile_name, instance_id):
     form.helper.form_action = request.path + '?next=' + return_path
 
     context = {
-        'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': request.user.username,
         'is_owner': is_owner,  # Because of @login_required decorator
         'return_path': return_path,
@@ -616,7 +611,44 @@ def team_detail(request, profile_name, team_id):
 
 @login_required
 def team_edit(request, profile_name, team_id):
-    return render(request, 'herders/unimplemented.html')
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:fusion', kwargs={'profile_name': profile_name})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    team = get_object_or_404(Team, pk=team_id)
+    is_owner = summoner == request.user.summoner or request.user.is_superuser
+
+    form = EditTeamForm(request.POST or None, instance=team)
+    form.fields['leader'].queryset = MonsterInstance.objects.filter(owner=summoner)
+    form.fields['roster'].queryset = MonsterInstance.objects.filter(owner=summoner)
+    form.helper.form_action = request.path + '?next=' + return_path
+
+    context = {
+        'profile_name': request.user.username,
+        'return_path': return_path,
+        'team': team,
+        'is_owner': is_owner,
+        'edit_team_form': form,
+        'view': 'teams',
+    }
+
+    if is_owner:
+        if request.method == 'POST':
+            if form.is_valid():
+                team = form.save(commit=False)
+                team.save()
+
+                messages.success(request, 'Saved changes to %s.' % team)
+                return redirect(return_path)
+            else:
+                # Redisplay form with validation error messages
+                context['validation_errors'] = form.non_field_errors()
+    else:
+        raise PermissionDenied()
+
+    return render(request, 'herders/profile/teams/team_edit.html', context)
+
 
 def bestiary(request):
     context = {

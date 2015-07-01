@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<h2>{{ team.group.name }} - {{ team.name }}</h2>
+<h2>{{ team.group.name }} - {{ team.name }}<small><a class="glyphicon glyphicon-pencil team-edit" href="#{{ team.pk.hex }}" data-team-id="{{ team.pk.hex }}"></a></small></h2>
 <table class="table table-hover table-condensed monster-table">
     <thead>
         <tr>

@@ -4,7 +4,7 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 
-from .models import MonsterInstance, Summoner
+from .models import MonsterInstance, Summoner, TeamGroup, Team
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
@@ -402,3 +402,14 @@ class AwakenMonsterInstanceForm(forms.Form):
             ),
         )
     )
+
+class EditTeamForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditTeamForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+
+    class Meta:
+        model = Team
+        exclude = ('id',)

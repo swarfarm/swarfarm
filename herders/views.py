@@ -14,7 +14,7 @@ from django.forms.formsets import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
-    PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm, EditTeamForm
+    PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm, EditTeamForm, AddTeamGroupForm
 from .models import Monster, Summoner, MonsterInstance, Fusion, TeamGroup, Team
 from .fusion import essences_missing
 
@@ -574,6 +574,7 @@ def teams(request, profile_name):
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = summoner == request.user.summoner or request.user.is_superuser
+    add_team_group_form = AddTeamGroupForm()
 
     # Get team objects for the summoner
     team_groups = TeamGroup.objects.filter(owner=summoner)
@@ -584,9 +585,26 @@ def teams(request, profile_name):
         'return_path': return_path,
         'is_owner': is_owner,
         'team_groups': team_groups,
+        'add_team_group_form': add_team_group_form,
     }
 
     return render(request, 'herders/profile/teams/teams_base.html', context)
+
+
+@login_required
+def team_group_add(request, profile_name):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:teams', kwargs={'profile_name': profile_name})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = summoner == request.user.summoner or request.user.is_superuser
+
+
+@login_required
+def team_add(request, profile_name):
+    return render(request, 'herders/unimplemented.html')
+
 
 @login_required
 def team_detail(request, profile_name, team_id):
@@ -648,6 +666,23 @@ def team_edit(request, profile_name, team_id):
         raise PermissionDenied()
 
     return render(request, 'herders/profile/teams/team_edit.html', context)
+
+
+@login_required
+def team_delete(request, profile_name, team_id):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:teams', kwargs={'profile_name': profile_name})
+    )
+    team = get_object_or_404(Team, pk=team_id)
+
+    # Check for proper owner before deleting
+    if request.user.summoner == team.group.owner:
+        team.delete()
+        messages.success(request, 'Deleted team %s - %s.' % (team.group, team))
+        return redirect(return_path)
+    else:
+        return HttpResponseForbidden()
 
 
 def bestiary(request):

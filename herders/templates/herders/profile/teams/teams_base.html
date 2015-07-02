@@ -5,20 +5,45 @@
 {% load utils %}
 
 {% block content %}
+    {% if is_owner %}
+        {# Add group modal #}
+        <div class="modal fade" id="addTeamGroupModal" tabindex="-1" role="dialog" aria-labelledby="modalAddTeamGroupTitle" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalAddTeamGroupTitle">Add Group</h4>
+                    </div>
+                    <form method="post" action="{% url 'herders:team_group_add' profile_name=profile_name %}?next={{ request.path }}" >
+                        {% crispy add_team_group_form %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     {% static 'herders/images/' as img_url_prefix %}
     <div class="team-list pull-left">
         {% for group in team_groups %}
-            <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ group.name }}</button>
-            <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                <ul>
-                {% for team in group.team_set.all %}
-                    <li><a href="#{{ team.pk.hex }}" class="team-link btn btn-default" data-team-id="{{ team.pk.hex }}">{{ team.name }}</a></li>
-                {% empty %}
-                    <li>Empty! Add a team.</li>
-                {% endfor %}
-                </ul>
+            <div class="list-group">
+                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">{{ group.name }}</button>
+                <div id="collapse{{ forloop.counter }}" class="collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    {% for team in group.team_set.all %}
+                        <a href="#{{ team.pk.hex }}" class="list-group-item team-link" data-team-id="{{ team.pk.hex }}">{{ team.name }}</a>
+                        {% if forloop.last %}
+                            <a href="{% url 'herders:team_add' profile_name=profile_name %}" class="list-group-item-text">Add a team.</a>
+                        {% endif %}
+                    {% empty %}
+                        <a href="{% url 'herders:team_add' profile_name=profile_name %}" class="list-group-item-text">Empty! Add a team.</a>
+                    {% endfor %}
+                </div>
             </div>
         {% endfor %}
+        <div class="list-group">
+            <a href="{% url 'herders:team_group_add' profile_name=profile_name %}" data-toggle="modal" data-target="#addTeamGroupModal">
+                <span class="glyphicon glyphicon-plus"></span> Add group
+            </a>
+        </div>
     </div>
 
     <div class="team-detail">
@@ -42,9 +67,15 @@
             team_detail.load('/profile/{{ profile_name }}/teams/edit/' + team_id + '/');
         });
 
-        var hashStr = location.hash.replace("#","");
-        if (hashStr) {
-            team_detail.load('/profile/{{ profile_name }}/teams/detail/' + hashStr + '/');
+        $(window).hashchange(load_new_team());
+        $(document).ready(load_new_team());
+
+        function load_new_team() {
+            var hashStr = location.hash.replace("#","");
+            if (hashStr) {
+                team_detail.load('/profile/{{ profile_name }}/teams/detail/' + hashStr + '/');
+            }
         }
+
     </script>
 {% endblock javascript %}

@@ -403,6 +403,31 @@ class AwakenMonsterInstanceForm(forms.Form):
         )
     )
 
+class AddTeamGroupForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AddTeamGroupForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        # helper.form_action must be set in view
+        self.helper.layout = Layout(
+            Div(
+                Field('name'),
+                css_class='modal-body',
+            ),
+            Div(
+                FormActions(
+                    Submit('save', 'Save', css_class='btn btn-primary'),
+                    Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+                ),
+                css_class='modal-footer',
+            )
+        )
+
+    class Meta:
+        model = TeamGroup
+        exclude = ('id', 'owner')
+
 class EditTeamForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditTeamForm, self).__init__(*args, **kwargs)

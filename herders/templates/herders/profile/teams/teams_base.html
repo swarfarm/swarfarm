@@ -12,7 +12,7 @@
             <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                 <ul>
                 {% for team in group.team_set.all %}
-                    <li><a href="#{{ team.pk.hex }}" class="team-link" data-team-id="{{ team.pk.hex }}">{{ team.name }}</a></li>
+                    <li><a href="#{{ team.pk.hex }}" class="team-link btn btn-default" data-team-id="{{ team.pk.hex }}">{{ team.name }}</a></li>
                 {% empty %}
                     <li>Empty! Add a team.</li>
                 {% endfor %}
@@ -21,17 +21,18 @@
         {% endfor %}
     </div>
 
-    <div class="row team-detail">
-        <div id="team-detail" class="panel panel-default"></div>
+    <div class="team-detail">
+        <div id="team-detail"></div>
     </div>
 
 {% endblock %}
 
 {% block javascript %}
     <script type="text/javascript">
-        team_detail = $('#team-detail');
+        var team_detail = $('#team-detail');
+        var page_content = $('div.content');
 
-        $('a.team-link').click(function() {
+        page_content.on('click', 'a.team-link', function() {
             var team_id = $(this).data('team-id');
             team_detail.load('/profile/{{ profile_name }}/teams/detail/' + team_id + '/');
         });

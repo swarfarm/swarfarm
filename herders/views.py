@@ -611,10 +611,8 @@ def team_detail(request, profile_name, team_id):
 
 @login_required
 def team_edit(request, profile_name, team_id):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:fusion', kwargs={'profile_name': profile_name})
-    )
+    return_path = reverse('herders:teams', kwargs={'profile_name': profile_name}) + '#' + team_id
+
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     team = get_object_or_404(Team, pk=team_id)
     is_owner = summoner == request.user.summoner or request.user.is_superuser
@@ -639,10 +637,9 @@ def team_edit(request, profile_name, team_id):
     if is_owner:
         if request.method == 'POST':
             if form.is_valid():
-                team = form.save(commit=False)
-                team.save()
+                team = form.save()
+                messages.success(request, 'Saved changes to %s - %s.' % (team.group, team))
 
-                messages.success(request, 'Saved changes to %s.' % team)
                 return redirect(return_path)
             else:
                 # Redisplay form with validation error messages

@@ -422,16 +422,43 @@ button.filter:not(.active):focus {
 }
 
 .team-detail {
-    margin-left: 290px;
+    margin-left: 300px;
 }
 
-#team-detail>div.panel-body:after {
+#team-detail>div.panel>div.panel-body:after {
     clear: none;
 }
 
 .team-list button {
     width: 100%;
     display: block;
+    text-align: left;
+}
+
+.team-list button:before {
+    padding-right: 5px;
+    float: left;
+    font-family: "Glyphicons Halflings";
+    content: "\e114";
+}
+
+.team-list button.collapsed:before {
+    padding-right: 5px;
+    float: left;
+    font-family: "Glyphicons Halflings";
+    content: "\e080";
+}
+
+.team-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.team-list a {
+    display: block;
+    padding-left: 10px;
+    height: 32px;
 }
 
 td>h1,

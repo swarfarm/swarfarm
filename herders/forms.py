@@ -410,21 +410,27 @@ class EditTeamForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
-            Field('group'),
-            Field('name'),
-            Field('favorite'),
+            Div(
+                Field('group'),
+                Field('name'),
+                Field('favorite'),
+            ),
             Field('description'),
             Field('leader'),
-            Field('Roster'),
+            Field('roster'),
             FormActions(
-                Submit('awaken', 'Awaken', css_class='btn btn-primary'),
-                HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
+                Submit('save', 'Save', css_class='btn btn-primary'),
+                HTML("""<a href="#{{ team.pk.hex }}" class="team-link" data-team-id="{{ team.pk.hex }}">Cancel</a>"""),
             ),
         )
 
     class Meta:
         model = Team
         exclude = ('id',)
+        widgets = {
+            'roster': autocomplete_light.MultipleChoiceWidget('MonsterInstanceAutocomplete'),
+            'leader': autocomplete_light.ChoiceWidget('MonsterInstanceAutocomplete'),
+        }
         help_texts = {
             'description': 'Markdown syntax enabled'
         }

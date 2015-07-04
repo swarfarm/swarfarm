@@ -428,6 +428,19 @@ class AddTeamGroupForm(ModelForm):
         model = TeamGroup
         exclude = ('id', 'owner')
 
+class DeleteTeamGroupForm(forms.Form):
+    reassign_group = forms.ModelChoiceField(
+        queryset=TeamGroup.objects.all()
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    # helper.form_action must be set in view
+    helper.layout = Layout(
+
+    )
+
+
 class EditTeamForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditTeamForm, self).__init__(*args, **kwargs)

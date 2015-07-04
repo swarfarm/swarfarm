@@ -600,6 +600,29 @@ def team_group_add(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = summoner == request.user.summoner or request.user.is_superuser
 
+    form = AddTeamGroupForm(request.POST or None)
+
+    if is_owner:
+        if form.is_valid() and request.method == 'POST':
+            # Create the monster instance
+            new_group = form.save(commit=False)
+            new_group.owner = request.user.summoner
+            new_group.save()
+
+        return redirect(return_path)
+    else:
+        return PermissionDenied("Attempting to add group to profile you don't own.")
+
+
+@login_required
+def team_group_delete(request, profile_name, group_id):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:teams', kwargs={'profile_name': profile_name})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = summoner == request.user.summoner or request.user.is_superuser
+
 
 @login_required
 def team_add(request, profile_name):

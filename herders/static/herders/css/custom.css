@@ -435,7 +435,7 @@ button.filter:not(.active):focus {
     text-align: left;
 }
 
-.team-list button:before {
+.team-list>.list-group>button:before {
     padding-right: 5px;
     float: left;
     font-family: "Glyphicons Halflings";
@@ -443,7 +443,7 @@ button.filter:not(.active):focus {
 }
 
 
-.team-list button.collapsed:before {
+.team-list>.list-group>button.collapsed:before {
     padding-right: 5px;
     float: left;
     font-family: "Glyphicons Halflings";

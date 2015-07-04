@@ -39,11 +39,9 @@
                 </div>
             </div>
         {% endfor %}
-        <div class="list-group">
-            <a href="{% url 'herders:team_group_add' profile_name=profile_name %}" data-toggle="modal" data-target="#addTeamGroupModal">
-                <span class="glyphicon glyphicon-plus"></span> Add group
-            </a>
-        </div>
+        <button class="btn btn-link" data-toggle="modal" data-target="#addTeamGroupModal">
+            <span class="glyphicon glyphicon-plus"></span> Add group
+        </button>
     </div>
 
     <div class="team-detail">

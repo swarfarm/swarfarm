@@ -430,16 +430,21 @@ class AddTeamGroupForm(ModelForm):
 
 class DeleteTeamGroupForm(forms.Form):
     reassign_group = forms.ModelChoiceField(
-        queryset=TeamGroup.objects.all()
+        queryset=TeamGroup.objects.all(),
+        required=False,
+        label="Reassign teams in this group to"
     )
 
     helper = FormHelper()
     helper.form_method = 'post'
     # helper.form_action must be set in view
     helper.layout = Layout(
-
+        Field('reassign_group', css_class='input-sm'),
+        FormActions(
+            Submit('apply', 'Apply', css_class='btn btn-primary'),
+            Submit('delete', 'Delete all teams', css_class='btn btn-danger'),
+        )
     )
-
 
 class EditTeamForm(ModelForm):
     def __init__(self, *args, **kwargs):

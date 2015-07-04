@@ -14,7 +14,8 @@ from django.forms.formsets import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
-    PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm, EditTeamForm, AddTeamGroupForm
+    PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm, EditTeamForm, AddTeamGroupForm, \
+    DeleteTeamGroupForm
 from .models import Monster, Summoner, MonsterInstance, Fusion, TeamGroup, Team
 from .fusion import essences_missing
 
@@ -620,13 +621,43 @@ def team_group_delete(request, profile_name, group_id):
         'next',
         reverse('herders:teams', kwargs={'profile_name': profile_name})
     )
+
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = summoner == request.user.summoner or request.user.is_superuser
+    team_group = TeamGroup.objects.get(pk=group_id)
 
+    form = DeleteTeamGroupForm(request.POST or None)
+    form.helper.form_action = request.path
+    form.fields['reassign_group'].queryset = TeamGroup.objects.filter(owner=summoner).exclude(pk=group_id)
 
-@login_required
-def team_add(request, profile_name):
-    return render(request, 'herders/unimplemented.html')
+    context = {
+        'view': 'teams',
+        'profile_name': profile_name,
+        'return_path': return_path,
+        'is_owner': is_owner,
+        'form': form,
+    }
+
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            team_list = Team.objects.filter(group__pk=group_id)
+
+            if request.POST.get('delete', False):
+                team_list.delete()
+            else:
+                new_group = form.cleaned_data['reassign_group']
+                for team in team_list:
+                    team.group = new_group
+                    team.save()
+
+        if team_group.team_set.count() > 0:
+            return render(request, 'herders/profile/teams/team_group_delete.html', context)
+        else:
+            messages.success(request, 'Deleted team group %s' % team_group.name)
+            team_group.delete()
+            return redirect(return_path)
+    else:
+        return PermissionDenied()
 
 
 @login_required
@@ -650,41 +681,43 @@ def team_detail(request, profile_name, team_id):
 
     return render(request, 'herders/profile/teams/team_detail.html', context)
 
+
 @login_required
-def team_edit(request, profile_name, team_id):
-    return_path = reverse('herders:teams', kwargs={'profile_name': profile_name}) + '#' + team_id
+def team_edit(request, profile_name, team_id=None):
+    return_path = reverse('herders:teams', kwargs={'profile_name': profile_name})
+    if team_id:
+        team = Team.objects.get(pk=team_id)
+        edit_form = EditTeamForm(request.POST or None, instance=team)
+    else:
+        edit_form = EditTeamForm(request.POST or None)
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    team = get_object_or_404(Team, pk=team_id)
     is_owner = summoner == request.user.summoner or request.user.is_superuser
 
-    form = EditTeamForm(request.POST or None, instance=team)
-
     # Limit form choices to objects owned by the current user.
-    form.fields['group'].queryset = TeamGroup.objects.filter(owner=summoner)
-    form.fields['leader'].queryset = MonsterInstance.objects.filter(owner=summoner)
-    form.fields['roster'].queryset = MonsterInstance.objects.filter(owner=summoner)
-    form.helper.form_action = request.path + '?next=' + return_path
+    edit_form.fields['group'].queryset = TeamGroup.objects.filter(owner=summoner)
+    edit_form.fields['leader'].queryset = MonsterInstance.objects.filter(owner=summoner)
+    edit_form.fields['roster'].queryset = MonsterInstance.objects.filter(owner=summoner)
+    edit_form.helper.form_action = request.path + '?next=' + return_path
 
     context = {
         'profile_name': request.user.username,
         'return_path': return_path,
-        'team': team,
         'is_owner': is_owner,
-        'edit_team_form': form,
+        'edit_team_form': edit_form,
         'view': 'teams',
     }
 
     if is_owner:
         if request.method == 'POST':
-            if form.is_valid():
-                team = form.save()
+            if edit_form.is_valid():
+                team = edit_form.save()
                 messages.success(request, 'Saved changes to %s - %s.' % (team.group, team))
 
-                return redirect(return_path)
+                return redirect(return_path + '#' + team.pk.hex)
             else:
                 # Redisplay form with validation error messages
-                context['validation_errors'] = form.non_field_errors()
+                context['validation_errors'] = edit_form.non_field_errors()
     else:
         raise PermissionDenied()
 

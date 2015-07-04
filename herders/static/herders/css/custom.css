@@ -72,6 +72,10 @@ footer {
     width: 95%;
 }
 
+.alert ul {
+    list-style: none;
+}
+
 .btn-group button img {
     height: 20px;
 }
@@ -435,22 +439,32 @@ button.filter:not(.active):focus {
     text-align: left;
 }
 
-.team-list>.list-group>button:before {
+.team-list-group {
+    position: relative;
+}
+
+.team-list-group>a {
+    color: #FFFFFF;
+    position: absolute;
+    top: 8px;
+    right: 10px;
+}
+
+.team-list-group>button:before {
     padding-right: 5px;
     float: left;
     font-family: "Glyphicons Halflings";
     content: "\e114";
 }
 
-
-.team-list>.list-group>button.collapsed:before {
+.team-list-group>button.collapsed:before {
     padding-right: 5px;
     float: left;
     font-family: "Glyphicons Halflings";
     content: "\e080";
 }
 
-.team-list a {
+.team-list>a {
     display: block;
     padding-left: 10px;
     padding-top: 0;

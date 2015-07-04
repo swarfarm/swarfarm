@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% load utils %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% static 'herders/images/' as img_url_prefix %}
+
+{% block content %}
+    <p>This group has teams in it. What do you want to do with them?</p>
+    {% crispy form %}
+{% endblock content %}

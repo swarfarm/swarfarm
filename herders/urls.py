@@ -25,11 +25,12 @@ urlpatterns = [
         url(r'^fusion/$', views.fusion_progress, name='fusion'),
         url(r'^teams/', include([
             url(r'^$', views.teams, name='teams'),
-            url(r'^add/$', views.team_add, name='team_add'),
+            url(r'^add/$', views.team_edit, name='team_add'),
             url(r'^add_group/$', views.team_group_add, name='team_group_add'),
             url(r'^detail/(?P<team_id>[0-9a-f]{32})/$', views.team_detail, name='team_detail'),
             url(r'^edit/(?P<team_id>[0-9a-f]{32})/$', views.team_edit, name='team_edit'),
             url(r'^delete/(?P<team_id>[0-9a-f]{32})/$', views.team_delete, name='team_delete'),
+            url(r'^delete_group/(?P<group_id>[0-9a-f]{32})/$', views.team_group_delete, name='team_group_delete'),
         ])),
         url(r'^view/$', views.profile),  # Legacy URL scheme ended in /view. Now represented by /list)
         url(r'(?P<view_mode>[a-zA-Z]+)/(?P<sort_method>[a-zA-Z]+)/$', views.profile, name='profile_sorted'),

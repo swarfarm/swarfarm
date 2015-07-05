@@ -579,22 +579,18 @@ def fusion_progress(request, profile_name):
 def teams(request, profile_name):
     return_path = request.GET.get(
         'next',
-        reverse('herders:fusion', kwargs={'profile_name': profile_name})
+        reverse('herders:teams', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     add_team_group_form = AddTeamGroupForm()
 
-    # Get team objects for the summoner
-    team_groups = TeamGroup.objects.filter(owner=summoner)
-
     context = {
         'view': 'teams',
         'profile_name': profile_name,
         'return_path': return_path,
         'is_owner': is_owner,
-        'team_groups': team_groups,
         'add_team_group_form': add_team_group_form,
     }
 
@@ -691,7 +687,7 @@ def team_group_delete(request, profile_name, group_id):
 def team_detail(request, profile_name, team_id):
     return_path = request.GET.get(
         'next',
-        reverse('herders:fusion', kwargs={'profile_name': profile_name})
+        reverse('herders:teams', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)

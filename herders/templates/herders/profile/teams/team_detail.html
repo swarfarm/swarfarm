@@ -54,7 +54,7 @@
                     {% if team.leader %}
                     <td class="monster-image">
                         {% if is_owner %}
-                            <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=team.leader.pk.hex %}?next={{ request.path }}">
+                            <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=team.leader.pk.hex %}?next={% url 'herders:teams' profile_name=profile_name %}">
                         {% endif %}
                             <img src="{{ img_url_prefix }}monsters/{{ team.leader.monster.image_filename }}" class="monster-thumb"/>
                             <span>
@@ -99,7 +99,7 @@
                     <tr>
                         <td class="monster-image">
                             {% if is_owner %}
-                                <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
+                                <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={% url 'herders:teams' profile_name=profile_name %}">
                             {% endif %}
                                 <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
                                 <span>

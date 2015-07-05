@@ -12,6 +12,7 @@ class SummonerInline(admin.StackedInline):
 
 
 class UserAdmin(UserAdmin):
+    list_display = ('username', 'email', 'last_login', 'date_joined')
     inlines = (SummonerInline,)
 
 admin.site.unregister(User)

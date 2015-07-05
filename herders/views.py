@@ -649,7 +649,7 @@ def team_group_delete(request, profile_name, group_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    team_group = TeamGroup.objects.get(pk=group_id)
+    team_group = get_object_or_404(TeamGroup, pk=group_id)
 
     form = DeleteTeamGroupForm(request.POST or None)
     form.helper.form_action = request.path

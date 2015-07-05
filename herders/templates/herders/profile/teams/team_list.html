@@ -1,3 +1,6 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
 {% for group in team_groups %}
     <div class="list-group">
         <div class="team-list-group">
@@ -12,7 +15,13 @@
         </div>
         <div id="collapse{{ forloop.counter }}" class="collapse in" role="tabpanel" aria-labelledby="headingOne">
             {% for team in group.team_set.all %}
-                <a href="#{{ team.pk.hex }}" class="list-group-item team-link" data-team-id="{{ team.pk.hex }}">{{ team.name }}</a>
+
+                <a href="#{{ team.pk.hex }}" class="list-group-item team-link" data-team-id="{{ team.pk.hex }}">
+                    {{ team.name }}
+                    {% if team.favorite %}
+                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" />
+                    {% endif %}
+                </a>
             {% empty %}
                 <p>Empty!</p>
             {% endfor %}

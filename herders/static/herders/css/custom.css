@@ -450,6 +450,13 @@ button.filter:not(.active):focus {
     right: 10px;
 }
 
+.list-group-item>img {
+    position: absolute;
+    width: 20px;
+    top: 8px;
+    right: 10px;
+}
+
 .team-list-group>button:before {
     padding-right: 5px;
     float: left;

@@ -383,5 +383,8 @@ class Team(models.Model):
     class Meta:
         ordering = ['name']
 
+    def owner(self):
+        return self.group.owner
+
     def __unicode__(self):
         return self.name

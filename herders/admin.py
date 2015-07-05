@@ -64,10 +64,14 @@ class MonsterInstanceAdmin(admin.ModelAdmin):
 admin.site.register(MonsterInstance, MonsterInstanceAdmin)
 
 class TeamAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'group', 'owner')
     filter_horizontal = ('roster',)
 
 admin.site.register(Team, TeamAdmin)
 
-admin.site.register(TeamGroup)
+class TeamGroupAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'owner')
+
+admin.site.register(TeamGroup, TeamGroupAdmin)
 
 admin.site.register(RuneInstance)

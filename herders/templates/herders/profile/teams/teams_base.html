@@ -81,10 +81,12 @@
             if (hashStr) {
                 team_detail.load('/profile/{{ profile_name }}/teams/detail/' + hashStr + '/');
             }
+            $('.autocomplete-light-widget').remove();
         }
 
         function update_team_list() {
             team_list.load('/profile/{{ profile_name }}/teams/list');
+            $('.autocomplete-light-widget').remove();
         }
 
     </script>

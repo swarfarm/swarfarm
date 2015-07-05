@@ -41,18 +41,20 @@
             <div class="panel-heading">
                 <a id="#{{ fusion.instance.name }}" name="{{ fusion.instance.name }}" class="profile-anchor-offset"></a>
                 <div class="monster-image pull-left">
-                    <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}" class="monster-thumb"/>
-                    <span>
-                        {% for x in fusion.stars|get_range %}
-                            {% if fusion.instance.is_awakened %}
-                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% elif fusion.instance.can_awaken %}
-                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% else %}
-                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% endif %}
-                        {% endfor %}
-                    </span>
+                    <a href="{% url 'herders:bestiary_detail' monster_id=fusion.instance.pk %}">
+                        <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}" class="monster-thumb"/>
+                        <span>
+                            {% for x in fusion.stars|get_range %}
+                                {% if fusion.instance.is_awakened %}
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% elif fusion.instance.can_awaken %}
+                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% else %}
+                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    </a>
                 </div>
                 <h4 style="margin-left: 60px">
                     <strong>{{ fusion.instance.name }}</strong><br />
@@ -125,7 +127,9 @@
                                 <td class="fusion-ingredients-collection">
                                     {% for owned in ingredient.owned %}
                                         <div class="monster-image pull-left">
-                                            <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}">
+                                            {% if is_owner %}
+                                                <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}">
+                                            {% endif %}
                                                 <img src="{{ img_url_prefix }}monsters/{{ owned.monster.image_filename }}" class="monster-thumb"/>
                                                 <span>
                                                     {% for x in owned.stars|get_range %}
@@ -139,7 +143,9 @@
                                                     {% endfor %}
                                                 </span>
                                                 <span class="image-plus image-plus-right">{{ owned.level }}</span>
-                                            </a>
+                                            {% if is_owner %}
+                                                </a>
+                                            {% endif %}
                                         </div>
                                     {% endfor %}
                                 </td>

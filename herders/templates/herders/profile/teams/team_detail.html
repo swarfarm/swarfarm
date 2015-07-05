@@ -3,6 +3,19 @@
 {% load markdown_deux_tags %}
 {% static 'herders/images/' as img_url_prefix %}
 
+{# We duplicate the messages here because the page is not reloaded and base.html will not display them #}
+{% if messages %}
+    <div class="alert alert-dismissible alert-success" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <ul>
+            {% for message in messages %}
+                <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+
 <div class="panel panel-default">
     <div class="panel-body">
         <div>
@@ -40,7 +53,9 @@
                 <tr>
                     {% if team.leader %}
                     <td class="monster-image">
-                        <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=team.leader.pk.hex %}?next={{ request.path }}">
+                        {% if is_owner %}
+                            <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=team.leader.pk.hex %}?next={{ request.path }}">
+                        {% endif %}
                             <img src="{{ img_url_prefix }}monsters/{{ team.leader.monster.image_filename }}" class="monster-thumb"/>
                             <span>
                                 {% for x in team.leader.stars|get_range %}
@@ -54,7 +69,9 @@
                                 {% endfor %}
                             </span>
                             <span class="image-plus image-plus-right">{{ team.leader.level }}</span>
-                        </a>
+                        {% if is_owner %}
+                            </a>
+                        {% endif %}
                     </td>
                     <td>{{ team.leader.monster.name|title }}</td>
                     <td class="monster-stars-column">{{ team.leader.stars }}<span class="glyphicon glyphicon-star"></span></td>
@@ -81,7 +98,9 @@
                 {% for instance in team.roster.all %}
                     <tr>
                         <td class="monster-image">
-                            <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
+                            {% if is_owner %}
+                                <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
+                            {% endif %}
                                 <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
                                 <span>
                                     {% for x in instance.stars|get_range %}
@@ -95,7 +114,9 @@
                                     {% endfor %}
                                 </span>
                                 <span class="image-plus image-plus-right">{{ instance.level }}</span>
-                            </a>
+                            {% if is_owner %}
+                                </a>
+                            {% endif %}
                         </td>
                         <td>{{ instance.monster.name|title }}</td>
                         <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>

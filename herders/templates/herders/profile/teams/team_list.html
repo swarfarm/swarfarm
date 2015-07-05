@@ -1,0 +1,27 @@
+{% for group in team_groups %}
+    <div class="list-group">
+        <div class="team-list-group">
+            <a href="{% url 'herders:team_group_delete' profile_name=profile_name group_id=group.pk.hex %}">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
+            <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">
+                {{ group.name }}
+            </button>
+        </div>
+        <div id="collapse{{ forloop.counter }}" class="collapse in" role="tabpanel" aria-labelledby="headingOne">
+            {% for team in group.team_set.all %}
+                <a href="#{{ team.pk.hex }}" class="list-group-item team-link" data-team-id="{{ team.pk.hex }}">{{ team.name }}</a>
+            {% empty %}
+                <p>Empty!</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+{% if is_owner %}
+    <button class="btn btn-link" data-toggle="modal" data-target="#addTeamGroupModal">
+        <span class="glyphicon glyphicon-plus"></span> Add group
+    </button>
+    <button class="btn btn-link team-edit">
+        <span class="glyphicon glyphicon-plus"></span> Add team
+    </button>
+{% endif %}

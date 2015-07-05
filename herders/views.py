@@ -593,6 +593,22 @@ def teams(request, profile_name):
 
 
 @login_required
+def team_list(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = summoner == request.user.summoner or request.user.is_superuser
+
+    # Get team objects for the summoner
+    team_groups = TeamGroup.objects.filter(owner=summoner)
+
+    context = {
+        'profile_name': profile_name,
+        'is_owner': is_owner,
+        'team_groups': team_groups,
+    }
+
+    return render(request, 'herders/profile/teams/team_list.html', context)
+
+@login_required
 def team_group_add(request, profile_name):
     return_path = request.GET.get(
         'next',
@@ -704,23 +720,19 @@ def team_edit(request, profile_name, team_id=None):
         'profile_name': request.user.username,
         'return_path': return_path,
         'is_owner': is_owner,
-        'edit_team_form': edit_form,
         'view': 'teams',
     }
 
     if is_owner:
-        if request.method == 'POST':
-            if edit_form.is_valid():
-                team = edit_form.save()
-                messages.success(request, 'Saved changes to %s - %s.' % (team.group, team))
+        if request.method == 'POST' and edit_form.is_valid():
+            team = edit_form.save()
+            messages.success(request, 'Saved changes to %s - %s.' % (team.group, team))
 
-                return redirect(return_path + '#' + team.pk.hex)
-            else:
-                # Redisplay form with validation error messages
-                context['validation_errors'] = edit_form.non_field_errors()
+            return team_detail(request, profile_name, team.pk.hex)
     else:
         raise PermissionDenied()
 
+    context['edit_team_form'] = edit_form
     return render(request, 'herders/profile/teams/team_edit.html', context)
 
 

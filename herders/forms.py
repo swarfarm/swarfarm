@@ -431,7 +431,7 @@ class AddTeamGroupForm(ModelForm):
 class DeleteTeamGroupForm(forms.Form):
     reassign_group = forms.ModelChoiceField(
         queryset=TeamGroup.objects.all(),
-        required=False,
+        required=True,
         label="Reassign teams in this group to"
     )
 
@@ -452,6 +452,7 @@ class EditTeamForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
+        self.helper.form_id = 'EditTeamForm'
         self.helper.layout = Layout(
             Div(
                 Field('group'),
@@ -463,7 +464,6 @@ class EditTeamForm(ModelForm):
             Field('roster'),
             FormActions(
                 Submit('save', 'Save', css_class='btn btn-primary'),
-                HTML("""<a href="#{{ team.pk.hex }}" class="team-link" data-team-id="{{ team.pk.hex }}">Cancel</a>"""),
             ),
         )
 
@@ -477,3 +477,21 @@ class EditTeamForm(ModelForm):
         help_texts = {
             'description': 'Markdown syntax enabled'
         }
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        # Check that leader is not also in the roster
+        leader = self.cleaned_data.get('leader')
+        roster = self.cleaned_data.get('roster')
+
+        print leader
+        print roster
+
+        if leader in roster:
+            raise ValidationError(
+                'Leader cannot be included in the roster as well',
+                code='leader_in_roster'
+            )
+
+        super(EditTeamForm, self).clean()

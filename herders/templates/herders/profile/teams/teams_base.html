@@ -20,43 +20,14 @@
                 </div>
             </div>
         </div>
-
-        {# Add team modal #}
     {% endif %}
 
-    {% static 'herders/images/' as img_url_prefix %}
-    <div class="team-list pull-left">
-        {% for group in team_groups %}
-            <div class="list-group">
-                <div class="team-list-group">
-                    <a href="{% url 'herders:team_group_delete' profile_name=profile_name group_id=group.pk.hex %}">
-                        <span class="glyphicon glyphicon-remove"></span>
-                    </a>
-                    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">
-                        {{ group.name }}
-                    </button>
-                </div>
-                <div id="collapse{{ forloop.counter }}" class="collapse in" role="tabpanel" aria-labelledby="headingOne">
-                    {% for team in group.team_set.all %}
-                        <a href="#{{ team.pk.hex }}" class="list-group-item team-link" data-team-id="{{ team.pk.hex }}">{{ team.name }}</a>
-                    {% empty %}
-                        <p>Empty!</p>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endfor %}
-        {% if is_owner %}
-            <button class="btn btn-link" data-toggle="modal" data-target="#addTeamGroupModal">
-                <span class="glyphicon glyphicon-plus"></span> Add group
-            </button>
-            <button class="btn btn-link team-edit">
-                <span class="glyphicon glyphicon-plus"></span> Add team
-            </button>
-        {% endif %}
-    </div>
+    <div id="team-list" class="team-list pull-left"></div>
 
     <div class="team-detail">
-        <div id="team-detail"></div>
+        <div id="team-detail">
+            <p>Pick a team from the list!</p>
+        </div>
     </div>
 
 {% endblock %}
@@ -64,6 +35,7 @@
 {% block javascript %}
     <script type="text/javascript">
         var team_detail = $('#team-detail');
+        var team_list = $('#team-list');
         var page_content = $('div.content');
 
         page_content.on('click', '.team-link', function() {
@@ -81,14 +53,38 @@
             }
         });
 
+        page_content.on('submit', '#EditTeamForm', function() {
+            var frm = $('#EditTeamForm');
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                success: function (data) {
+                    team_detail.html(data);
+                    update_team_list();
+                },
+                error: function () {
+                    alert("Sorry, something didn't work.");
+                }
+            });
+            return false;
+        });
+
         $(window).hashchange(load_new_team());
-        $(document).ready(load_new_team());
+        $(document).ready(function() {
+            load_new_team();
+            update_team_list();
+        });
 
         function load_new_team() {
             var hashStr = location.hash.replace("#","");
             if (hashStr) {
                 team_detail.load('/profile/{{ profile_name }}/teams/detail/' + hashStr + '/');
             }
+        }
+
+        function update_team_list() {
+            team_list.load('/profile/{{ profile_name }}/teams/list');
         }
 
     </script>

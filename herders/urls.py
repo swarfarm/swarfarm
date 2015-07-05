@@ -25,6 +25,7 @@ urlpatterns = [
         url(r'^fusion/$', views.fusion_progress, name='fusion'),
         url(r'^teams/', include([
             url(r'^$', views.teams, name='teams'),
+            url(r'^list/$', views.team_list),
             url(r'^add/$', views.team_edit, name='team_add'),
             url(r'^add_group/$', views.team_group_add, name='team_group_add'),
             url(r'^detail/(?P<team_id>[0-9a-f]{32})/$', views.team_detail, name='team_detail'),

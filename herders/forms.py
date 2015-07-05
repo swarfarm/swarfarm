@@ -431,8 +431,8 @@ class AddTeamGroupForm(ModelForm):
 class DeleteTeamGroupForm(forms.Form):
     reassign_group = forms.ModelChoiceField(
         queryset=TeamGroup.objects.all(),
-        required=True,
-        label="Reassign teams in this group to"
+        required=False,
+        label="Reassign teams in this group to:"
     )
 
     helper = FormHelper()

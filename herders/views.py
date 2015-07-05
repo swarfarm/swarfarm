@@ -119,8 +119,8 @@ def profile_edit(request, profile_name):
         'next',
         reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
     )
-
-    is_owner = request.user.username == profile_name or request.user.is_superuser
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
 
     user_form = EditUserForm(request.POST or None, instance=request.user)
     summoner_form = EditSummonerForm(request.POST or None, instance=request.user.summoner)
@@ -152,11 +152,14 @@ def profile_storage(request, profile_name):
         'next',
         reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
     )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
+
     form = EditEssenceStorageForm(request.POST or None, instance=request.user.summoner)
     form.helper.form_action = request.path + '?next=' + return_path
 
     context = {
-        'is_owner': True,
+        'is_owner': is_owner,
         'profile_name': request.user.username,
         'storage_form': form,
         'view': 'storage',
@@ -177,6 +180,9 @@ def monster_instance_add(request, profile_name):
         'next',
         reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
     )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
+
     form = AddMonsterInstanceForm(request.POST or None)
 
     if form.is_valid() and request.method == 'POST':
@@ -193,7 +199,7 @@ def monster_instance_add(request, profile_name):
             'profile_name': profile_name,
             'add_monster_form': form,
             'return_path': return_path,
-            'is_owner': True,
+            'is_owner': is_owner,
             'view': 'profile',
         }
         return render(request, 'herders/profile/profile_monster_add.html', context)
@@ -211,9 +217,10 @@ def monster_instance_edit(request, profile_name, instance_id):
         'next',
         reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
     )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
 
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    is_owner = monster.owner == request.user.summoner or request.user.is_superuser
 
     form = EditMonsterInstanceForm(request.POST or None, instance=monster)
     form.helper.form_action = request.path + '?next=' + return_path
@@ -266,9 +273,10 @@ def monster_instance_power_up(request, profile_name, instance_id):
         'next',
         reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
     )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
 
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    is_owner = monster.owner == request.user.summoner or request.user.is_superuser
 
     PowerUpFormset = formset_factory(PowerUpMonsterInstanceForm, extra=5, max_num=5)
 
@@ -378,8 +386,10 @@ def monster_instance_awaken(request, profile_name, instance_id):
         'next',
         reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
     )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
+
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    is_owner = monster.owner == request.user.summoner or request.user.is_superuser
 
     form = AwakenMonsterInstanceForm(request.POST or None)
     form.helper.form_action = request.path + '?next=' + return_path
@@ -484,14 +494,13 @@ def monster_instance_awaken(request, profile_name, instance_id):
         return render(request, 'herders/profile/profile_monster_awaken.html', context)
 
 
-@login_required
 def fusion_progress(request, profile_name):
     return_path = request.GET.get(
         'next',
         reverse('herders:fusion', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = summoner == request.user.summoner or request.user.is_superuser
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
 
     context = {
         'view': 'fusion',
@@ -567,14 +576,14 @@ def fusion_progress(request, profile_name):
     return render(request, 'herders/profile/profile_fusion.html', context)
 
 
-@login_required
 def teams(request, profile_name):
     return_path = request.GET.get(
         'next',
         reverse('herders:fusion', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = summoner == request.user.summoner or request.user.is_superuser
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
+
     add_team_group_form = AddTeamGroupForm()
 
     # Get team objects for the summoner
@@ -592,10 +601,9 @@ def teams(request, profile_name):
     return render(request, 'herders/profile/teams/teams_base.html', context)
 
 
-@login_required
 def team_list(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = summoner == request.user.summoner or request.user.is_superuser
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
 
     # Get team objects for the summoner
     team_groups = TeamGroup.objects.filter(owner=summoner)
@@ -608,6 +616,7 @@ def team_list(request, profile_name):
 
     return render(request, 'herders/profile/teams/team_list.html', context)
 
+
 @login_required
 def team_group_add(request, profile_name):
     return_path = request.GET.get(
@@ -615,7 +624,7 @@ def team_group_add(request, profile_name):
         reverse('herders:teams', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = summoner == request.user.summoner or request.user.is_superuser
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
 
     form = AddTeamGroupForm(request.POST or None)
 
@@ -637,9 +646,9 @@ def team_group_delete(request, profile_name, group_id):
         'next',
         reverse('herders:teams', kwargs={'profile_name': profile_name})
     )
-
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = summoner == request.user.summoner or request.user.is_superuser
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
+
     team_group = TeamGroup.objects.get(pk=group_id)
 
     form = DeleteTeamGroupForm(request.POST or None)
@@ -676,14 +685,13 @@ def team_group_delete(request, profile_name, group_id):
         return PermissionDenied()
 
 
-@login_required
 def team_detail(request, profile_name, team_id):
     return_path = request.GET.get(
         'next',
         reverse('herders:fusion', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = summoner == request.user.summoner or request.user.is_superuser
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
 
     team = get_object_or_404(Team, pk=team_id)
 
@@ -708,7 +716,7 @@ def team_edit(request, profile_name, team_id=None):
         edit_form = EditTeamForm(request.POST or None)
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = summoner == request.user.summoner or request.user.is_superuser
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user) or request.user.is_superuser
 
     # Limit form choices to objects owned by the current user.
     edit_form.fields['group'].queryset = TeamGroup.objects.filter(owner=summoner)

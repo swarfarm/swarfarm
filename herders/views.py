@@ -665,15 +665,18 @@ def team_group_delete(request, profile_name, group_id):
 
     if is_owner:
         if request.method == 'POST' and form.is_valid():
-            team_list = Team.objects.filter(group__pk=group_id)
+            list_of_teams = Team.objects.filter(group__pk=group_id)
 
             if request.POST.get('delete', False):
-                team_list.delete()
+                list_of_teams.delete()
             else:
                 new_group = form.cleaned_data['reassign_group']
-                for team in team_list:
-                    team.group = new_group
-                    team.save()
+                if new_group:
+                    for team in list_of_teams:
+                        team.group = new_group
+                        team.save()
+                else:
+                    context['validation_errors'] = 'Please specify a group to reassign to.'
 
         if team_group.team_set.count() > 0:
             return render(request, 'herders/profile/teams/team_group_delete.html', context)

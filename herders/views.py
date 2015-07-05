@@ -211,6 +211,7 @@ def monster_instance_view(request, profile_name, instance_id):
     }
     return render(request, 'herders/unimplemented.html')
 
+
 @login_required()
 def monster_instance_edit(request, profile_name, instance_id):
     return_path = request.GET.get(
@@ -390,6 +391,9 @@ def monster_instance_awaken(request, profile_name, instance_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
+
+    if monster.monster.is_awakened:
+        return redirect(return_path)
 
     form = AwakenMonsterInstanceForm(request.POST or None)
     form.helper.form_action = request.path + '?next=' + return_path

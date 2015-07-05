@@ -364,6 +364,9 @@ class TeamGroup(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=30)
 
+    class Meta:
+        ordering = ['name']
+
     def __unicode__(self):
         return self.name
 
@@ -376,6 +379,9 @@ class Team(models.Model):
     description = models.TextField(null=True, blank=True)
     leader = models.ForeignKey('MonsterInstance', related_name='team_leader', null=True, blank=True)
     roster = models.ManyToManyField('MonsterInstance', blank=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __unicode__(self):
         return self.name

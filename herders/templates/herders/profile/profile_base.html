@@ -12,6 +12,29 @@
 {% block subnav %}{% endblock subnav %}
 
 {% block content %}
+    {% if not is_owner %}
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <span class="lead">{{ summoner.user.username }}'s profile </span>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'herders:profile' profile_name=summoner.user.username view_mode='list' %}" class="btn btn-default {% if view == 'profile' %}active{% endif %}">
+                        <img src="{% static 'herders/images/icons/monster.png' %}" />
+                        Monsters
+                    </a>
+                    <a href="{% url 'herders:fusion' profile_name=summoner.user.username %}"
+                       class="btn btn-default {% if view == 'fusion' %}active{% endif %}">
+                        <img src="{% static 'herders/images/icons/fusion.png' %}" />
+                        Fusion
+                    </a>
+                    <a href="{% url 'herders:teams' profile_name=summoner.user.username %}"
+                       class="btn btn-default {% if view == 'teams' %}active{% endif %}">
+                        <i class="fa fa-users"></i>
+                        Teams
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     {% if is_owner and add_monster_form %}
         {# Add monster modal #}
         <div class="modal fade" id="addMonsterModal" tabindex="-1" role="dialog" aria-labelledby="modalAddMonsterTitle" aria-hidden="true">

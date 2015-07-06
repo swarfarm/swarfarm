@@ -32,8 +32,8 @@ footer {
     padding-right:0;
 }
 
-.navbar img {
-    height: 20px;
+.navbar img, .btn-group img {
+    height: 18px;
 }
 
 .navbar .btn {

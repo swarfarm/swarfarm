@@ -69,6 +69,7 @@ def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': profile_name,
+        'summoner': summoner,
         'is_owner': is_owner,
         'view_mode': view_mode,
         'sort_method': sort_method,
@@ -128,6 +129,7 @@ def profile_edit(request, profile_name):
     context = {
         'is_owner': is_owner,
         'profile_name': profile_name,
+        'summoner': summoner,
         'return_path': return_path,
         'user_form': user_form,
         'summoner_form': summoner_form,
@@ -161,6 +163,7 @@ def profile_storage(request, profile_name):
     context = {
         'is_owner': is_owner,
         'profile_name': request.user.username,
+        'summoner': summoner,
         'storage_form': form,
         'view': 'storage',
         'profile_view': 'materials',
@@ -197,6 +200,7 @@ def monster_instance_add(request, profile_name):
         # Re-show same page but with form filled in and errors shown
         context = {
             'profile_name': profile_name,
+            'summoner': summoner,
             'add_monster_form': form,
             'return_path': return_path,
             'is_owner': is_owner,
@@ -228,6 +232,7 @@ def monster_instance_edit(request, profile_name, instance_id):
 
     context = {
         'profile_name': request.user.username,
+        'summoner': summoner,
         'return_path': return_path,
         'monster': monster,
         'is_owner': is_owner,
@@ -509,6 +514,7 @@ def fusion_progress(request, profile_name):
     context = {
         'view': 'fusion',
         'profile_name': profile_name,
+        'summoner': summoner,
         'return_path': return_path,
         'is_owner': is_owner,
     }
@@ -593,6 +599,7 @@ def teams(request, profile_name):
     context = {
         'view': 'teams',
         'profile_name': profile_name,
+        'summoner': summoner,
         'return_path': return_path,
         'is_owner': is_owner,
         'add_team_group_form': add_team_group_form,

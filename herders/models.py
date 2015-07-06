@@ -93,7 +93,8 @@ class Monster(models.Model):
 class MonsterSkill(models.Model):
     name = models.CharField(max_length=40)
     description = models.TextField()
-    skill_effect = models.ManyToManyField('MonsterSkillEffects')
+    skill_effect = models.ManyToManyField('MonsterSkillEffect')
+    general_leader = models.BooleanField(default=False)
     dungeon_leader = models.BooleanField(default=False)
     arena_leader = models.BooleanField(default=False)
     guild_leader = models.BooleanField(default=False)
@@ -101,12 +102,30 @@ class MonsterSkill(models.Model):
     level_progress_description = models.TextField()
     icon_filename = models.CharField(max_length=100)
 
+    def image_url(self):
+        if self.icon_filename:
+            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/skills/' + self.icon_filename))
+        else:
+            return 'No Image'
 
-class MonsterSkillEffects(models.Model):
+    def __unicode__(self):
+        return self.name
+
+
+class MonsterSkillEffect(models.Model):
     is_buff = models.BooleanField(default=True)
     name = models.CharField(max_length=40)
     description = models.TextField()
     icon_filename = models.CharField(max_length=100)
+
+    def image_url(self):
+        if self.icon_filename:
+            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/buffs/' + self.icon_filename))
+        else:
+            return 'No Image'
+
+    def __unicode__(self):
+        return self.name
 
 
 class Fusion(models.Model):

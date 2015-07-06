@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Monster, MonsterInstance, Summoner, Fusion, TeamGroup, Team, RuneInstance
+from .models import *
+
 
 # User management stuff
 class SummonerInline(admin.StackedInline):
@@ -51,6 +52,15 @@ class MonsterAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 admin.site.register(Monster, MonsterAdmin)
+
+class MonsterSkillAdmin(admin.ModelAdmin):
+    list_display = ('image_url', 'name', 'description', 'general_leader', 'dungeon_leader', 'arena_leader', 'guild_leader')
+    filter_horizontal = ('skill_effect',)
+admin.site.register(MonsterSkill, MonsterSkillAdmin)
+
+class MonsterSkillEffectAdmin(admin.ModelAdmin):
+    list_display = ('image_url', 'name', 'description', 'is_buff')
+admin.site.register(MonsterSkillEffect, MonsterSkillEffectAdmin)
 
 class FusionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'stars', 'cost',)

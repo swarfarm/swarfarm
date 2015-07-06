@@ -1,8 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'herders/profile/profile_base.html' %}
 {% load staticfiles %}
 
 {# TODO: Fix layout in this template. #}
-{% block content %}
+{% block profile %}
     <div>
         <div class="monster-image">
             {% static 'herders/images/' as img_url_prefix %}
@@ -26,4 +26,4 @@
             <span>{{ monster.monster.name }}</span>
         </div>
     </div>
-{% endblock content %}
+{% endblock profile %}

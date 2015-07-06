@@ -4,6 +4,21 @@
 
 {% block title %}My Monsters - {{ block.super }}{% endblock title %}
 
+{% block subnav %}
+    {% if is_owner %}
+        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+            <div class="container-fluid">
+                {% if is_owner %}
+                    <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal">
+                        <span class="glyphicon glyphicon-plus"></span>
+                         Add Monster
+                    </button>
+                {% endif %}
+            </div><!-- /.container-fluid -->
+        </nav>
+    {% endif %}
+{% endblock subnav %}
+
 {% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
 

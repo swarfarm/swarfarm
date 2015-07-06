@@ -1,6 +1,6 @@
 var team_detail = $('#team-detail');
 var team_list = $('#team-list');
-var page_content = $('div.content');
+var page_content = $('#wrap');
 
 page_content.on('click', '.team-link', function() {
     var team_id = $(this).data('team-id');
@@ -49,6 +49,10 @@ function load_new_team() {
 }
 
 function update_team_list() {
-    team_list.load('/profile/' + PROFILE_NAME + '/teams/list');
+    team_list.load('/profile/' + PROFILE_NAME + '/teams/list', function() {
+        var isEmpty = team_list.children('p:contains("Group list is empty!")').length > 0;
+        $('.navbar .team-edit').toggleClass('disabled', isEmpty);
+    });
+
     $('.autocomplete-light-widget').remove();
 }

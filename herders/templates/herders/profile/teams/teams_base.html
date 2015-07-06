@@ -1,10 +1,25 @@
-{% extends 'base.html' %}
+{% extends 'herders/profile/profile_base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% load crispy_forms_filters %}
 {% load utils %}
 
-{% block content %}
+{% block subnav %}
+    {% if is_owner %}
+        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+            <div class="container-fluid">
+                <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addTeamGroupModal">
+                    <span class="glyphicon glyphicon-plus"></span> Add group
+                </button>
+                <button class="btn btn-default navbar-btn team-edit">
+                    <span class="glyphicon glyphicon-plus"></span> Add team
+                </button>
+            </div>
+        </nav>
+    {% endif %}
+{% endblock subnav %}
+
+{% block profile %}
     {% if is_owner %}
         {# Add group modal #}
         <div class="modal fade" id="addTeamGroupModal" tabindex="-1" role="dialog" aria-labelledby="modalAddTeamGroupTitle" aria-hidden="true">
@@ -25,12 +40,10 @@
     <div id="team-list" class="team-list pull-left"></div>
 
     <div class="team-detail">
-        <div id="team-detail">
-            <p>Pick a team from the list!</p>
-        </div>
+        <div id="team-detail"></div>
     </div>
 
-{% endblock %}
+{% endblock profile %}
 
 {% block javascript %}
     <script type="text/javascript">

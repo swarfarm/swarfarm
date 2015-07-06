@@ -522,68 +522,71 @@ def fusion_progress(request, profile_name):
     fusions = Fusion.objects.all().select_related()
     progress = []
 
-    for fusion in fusions:
-        level = 10 + fusion.stars * 5
-        ingredients = []
+    if is_owner or summoner.public:
+        for fusion in fusions:
+            level = 10 + fusion.stars * 5
+            ingredients = []
 
-        # Check if fusion has been completed already
-        fusion_complete = MonsterInstance.objects.filter(
-            Q(owner=summoner), Q(monster=fusion.product) | Q(monster=fusion.product.awakens_to)
-        ).count() > 0
+            # Check if fusion has been completed already
+            fusion_complete = MonsterInstance.objects.filter(
+                Q(owner=summoner), Q(monster=fusion.product) | Q(monster=fusion.product.awakens_to)
+            ).count() > 0
 
-        # Scan summoner's collection for instances each ingredient
-        for ingredient in fusion.ingredients.all():
-            owned_ingredients = MonsterInstance.objects.filter(
-                Q(owner=summoner),
-                Q(monster=ingredient) | Q(monster=ingredient.awakens_from),
-            ).order_by('-stars', '-level', '-monster__is_awakened')
+            # Scan summoner's collection for instances each ingredient
+            for ingredient in fusion.ingredients.all():
+                owned_ingredients = MonsterInstance.objects.filter(
+                    Q(owner=summoner),
+                    Q(monster=ingredient) | Q(monster=ingredient.awakens_from),
+                ).order_by('-stars', '-level', '-monster__is_awakened')
 
-            # Determine if each individual requirement is met using highest evolved/leveled monster
-            if len(owned_ingredients) > 0:
-                acquired = True
-                evolved = owned_ingredients[0].stars >= fusion.stars
-                leveled = owned_ingredients[0].level >= level
-                awakened = owned_ingredients[0].monster == ingredient
-                complete = acquired & evolved & leveled & awakened
-            else:
-                acquired = False
-                evolved = False
-                leveled = False
-                awakened = False
-                complete = False
+                # Determine if each individual requirement is met using highest evolved/leveled monster
+                if len(owned_ingredients) > 0:
+                    acquired = True
+                    evolved = owned_ingredients[0].stars >= fusion.stars
+                    leveled = owned_ingredients[0].level >= level
+                    awakened = owned_ingredients[0].monster == ingredient
+                    complete = acquired & evolved & leveled & awakened
+                else:
+                    acquired = False
+                    evolved = False
+                    leveled = False
+                    awakened = False
+                    complete = False
 
-            ingredient_progress = {
-                'instance': ingredient,
-                'owned': owned_ingredients,
-                'complete': complete,
-                'acquired': acquired,
-                'evolved': evolved,
-                'leveled': leveled,
-                'awakened': awakened,
-            }
-            ingredients.append(ingredient_progress)
+                ingredient_progress = {
+                    'instance': ingredient,
+                    'owned': owned_ingredients,
+                    'complete': complete,
+                    'acquired': acquired,
+                    'evolved': evolved,
+                    'leveled': leveled,
+                    'awakened': awakened,
+                }
+                ingredients.append(ingredient_progress)
 
-        fusion_ready = True
-        for i in ingredients:
-            if not i['complete']:
-                fusion_ready = False
+            fusion_ready = True
+            for i in ingredients:
+                if not i['complete']:
+                    fusion_ready = False
 
-        progress.append({
-            'instance': fusion.product,
-            'acquired': fusion_complete,
-            'stars': fusion.stars,
-            'level': level,
-            'cost': fusion.cost,
-            'ingredients': ingredients,
-            'essences_missing': essences_missing(summoner, ingredients),
-            'ready': fusion_ready,
-        })
+            progress.append({
+                'instance': fusion.product,
+                'acquired': fusion_complete,
+                'stars': fusion.stars,
+                'level': level,
+                'cost': fusion.cost,
+                'ingredients': ingredients,
+                'essences_missing': essences_missing(summoner, ingredients),
+                'ready': fusion_ready,
+            })
 
-        essences_missing(summoner, ingredients)
+            essences_missing(summoner, ingredients)
 
-    context['fusions'] = progress
+        context['fusions'] = progress
 
-    return render(request, 'herders/profile/profile_fusion.html', context)
+        return render(request, 'herders/profile/profile_fusion.html', context)
+    else:
+        return render(request, 'herders/profile/not_public.html', context)
 
 
 def teams(request, profile_name):
@@ -605,7 +608,10 @@ def teams(request, profile_name):
         'add_team_group_form': add_team_group_form,
     }
 
-    return render(request, 'herders/profile/teams/teams_base.html', context)
+    if is_owner or summoner.public:
+        return render(request, 'herders/profile/teams/teams_base.html', context)
+    else:
+        return render(request, 'herders/profile/not_public.html', context)
 
 
 def team_list(request, profile_name):

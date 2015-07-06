@@ -68,7 +68,7 @@
                                         <a href="{% url 'herders:fusion' profile_name=user.username %}"
                                            class="btn btn-default {% if view == 'fusion'  and is_owner %}active{% endif %}">
                                             <img src="{% static 'herders/images/icons/fusion.png' %}" />
-                                            Fusion
+                                            My Fusion
                                         </a>
                                     </div>
                                 </li>
@@ -77,7 +77,7 @@
                                         <a href="{% url 'herders:teams' profile_name=user.username %}"
                                            class="btn btn-default {% if view == 'teams' and is_owner %}active{% endif %}">
                                             <i class="fa fa-users"></i>
-                                            Teams
+                                            My Teams
                                         </a>
                                     </div>
                                 </li>
@@ -86,7 +86,7 @@
                                         <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}"
                                            class="btn btn-default {% if view == 'storage'  and is_owner %}active{% endif %}">
                                             <span class="fa fa-archive"></span>
-                                            Essence Storage
+                                            My Essence Storage
                                         </a>
                                     </div>
                                 </li>

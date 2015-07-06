@@ -100,7 +100,7 @@ class MonsterSkill(models.Model):
     guild_leader = models.BooleanField(default=False)
     max_level = models.IntegerField()
     level_progress_description = models.TextField()
-    icon_filename = models.CharField(max_length=100)
+    icon_filename = models.CharField(max_length=100, null=True, blank=True)
 
     def image_url(self):
         if self.icon_filename:
@@ -116,7 +116,7 @@ class MonsterSkillEffect(models.Model):
     is_buff = models.BooleanField(default=True)
     name = models.CharField(max_length=40)
     description = models.TextField()
-    icon_filename = models.CharField(max_length=100)
+    icon_filename = models.CharField(max_length=100, null=True, blank=True)
 
     def image_url(self):
         if self.icon_filename:

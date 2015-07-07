@@ -44,11 +44,17 @@ class MonsterAdmin(admin.ModelAdmin):
                 'awaken_ele_mats_mid',
                 'awaken_ele_mats_high',
             )
+        }),
+        ('Skills', {
+            'fields': (
+                'skills',
+            )
         })
     ]
 
     list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'awakens_from')
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened')
+    filter_horizontal = ('skills',)
     search_fields = ['name']
 
 admin.site.register(Monster, MonsterAdmin)

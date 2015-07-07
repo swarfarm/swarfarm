@@ -93,6 +93,7 @@ class Monster(models.Model):
 class MonsterSkill(models.Model):
     name = models.CharField(max_length=40)
     description = models.TextField()
+    slot = models.IntegerField(default=1)
     skill_effect = models.ManyToManyField('MonsterSkillEffect')
     general_leader = models.BooleanField(default=False)
     dungeon_leader = models.BooleanField(default=False)

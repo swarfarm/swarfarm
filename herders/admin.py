@@ -60,7 +60,7 @@ class MonsterAdmin(admin.ModelAdmin):
 admin.site.register(Monster, MonsterAdmin)
 
 class MonsterSkillAdmin(admin.ModelAdmin):
-    list_display = ('image_url', 'name', 'description', 'general_leader', 'dungeon_leader', 'arena_leader', 'guild_leader')
+    list_display = ('image_url', 'name', 'description', 'slot', 'passive', 'general_leader', 'dungeon_leader', 'arena_leader', 'guild_leader')
     filter_horizontal = ('skill_effect',)
 admin.site.register(MonsterSkill, MonsterSkillAdmin)
 

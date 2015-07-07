@@ -94,13 +94,14 @@ class MonsterSkill(models.Model):
     name = models.CharField(max_length=40)
     description = models.TextField()
     slot = models.IntegerField(default=1)
-    skill_effect = models.ManyToManyField('MonsterSkillEffect')
+    skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
     general_leader = models.BooleanField(default=False)
     dungeon_leader = models.BooleanField(default=False)
     arena_leader = models.BooleanField(default=False)
     guild_leader = models.BooleanField(default=False)
+    passive = models.BooleanField(default=False)
     max_level = models.IntegerField()
-    level_progress_description = models.TextField()
+    level_progress_description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
 
     def image_url(self):

@@ -54,7 +54,15 @@ class Monster(models.Model):
     base_stars = models.IntegerField(choices=STAR_CHOICES)
     can_awaken = models.BooleanField(default=True)
     is_awakened = models.BooleanField(default=False)
-    skills = models.ManyToManyField('MonsterSkill')
+    skills = models.ManyToManyField('MonsterSkill', blank=True)
+    base_hp = models.IntegerField(null=True, blank=True)
+    base_attack = models.IntegerField(null=True, blank=True)
+    base_defense = models.IntegerField(null=True, blank=True)
+    base_speed = models.IntegerField(null=True, blank=True)
+    base_crit_rate = models.IntegerField(null=True, blank=True)
+    base_crit_damage = models.IntegerField(null=True, blank=True)
+    base_resistance = models.IntegerField(null=True, blank=True)
+    base_accuracy = models.IntegerField(null=True, blank=True)
     awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awaken_ele_mats_low = models.IntegerField(null=True, blank=True)
@@ -70,6 +78,75 @@ class Monster(models.Model):
             return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/monsters/' + self.image_filename))
         else:
             return 'No Image'
+
+    def get_stats(self, grade, level):
+        # Check that base stats exist first
+        if not self.base_hp or not self.base_attack or not self.base_defense:
+            return {
+                'hp': -1,
+                'atk': -1,
+                'def': -1,
+            }
+
+        max_lvl = 10 + grade * 5
+
+        # Awakened monster base grade is considered as 1 higher than unawakened base grade from here
+        if self.is_awakened:
+            stat_base_grade = self.base_stars + 1
+        else:
+            stat_base_grade = self.base_stars
+
+        weight = float(self.base_hp / 15 + self.base_attack + self.base_defense)
+        hp_base = round((self.base_hp / 15 * (105 + (15 * stat_base_grade))) / weight, 0)
+        atk_base = round((self.base_attack * (105 + (15 * stat_base_grade))) / weight, 0)
+        def_base = round((self.base_defense * (105 + (15 * stat_base_grade))) / weight, 0)
+
+        print 'weight: ' + str(weight)
+        print 'hp_base: ' + str(hp_base)
+        print 'atk_base: ' + str(atk_base)
+        print 'def_base: ' + str(def_base)
+
+        magic_multipliers = [
+            {'1': 1.0, 'max': 1.9958},
+            {'1': 1.5966, 'max': 3.03050646},
+            {'1': 2.4242774, 'max': 4.364426603},
+            {'1': 3.4914444, 'max': 5.941390935},
+            {'1': 4.7529032, 'max': 8.072330795},
+            {'1': 6.4582449, 'max': 10.97901633},
+        ]
+
+        hp_lvl_1 = 15 * round(hp_base * magic_multipliers[grade - 1]['1'], 0)
+        hp_lvl_max = 15 * round(hp_base * magic_multipliers[grade - 1]['max'], 0)
+        atk_lvl_1 = round(atk_base * magic_multipliers[grade - 1]['1'], 0)
+        atk_lvl_max = round(atk_base * magic_multipliers[grade - 1]['max'], 0)
+        def_lvl_1 = round(def_base * magic_multipliers[grade - 1]['1'], 0)
+        def_lvl_max = round(def_base * magic_multipliers[grade - 1]['max'], 0)
+
+        if level == 1:
+            actual_hp = hp_lvl_1
+            actual_atk = atk_lvl_1
+            actual_def = def_lvl_1
+        elif level == max_lvl:
+            actual_hp = hp_lvl_max
+            actual_atk = atk_lvl_max
+            actual_def = def_lvl_max
+        else:
+            # Use exponential function in format value=ae^(bx)
+            # a=stat_lvl_1*e^(-b)
+            from math import log, exp
+            hp_b_coeff = log(hp_lvl_max / hp_lvl_1) / (max_lvl - 1)
+            atk_b_coeff = log(atk_lvl_max / atk_lvl_1) / (max_lvl - 1)
+            def_b_coeff = log(def_lvl_max / def_lvl_1) / (max_lvl - 1)
+
+            actual_hp = round((hp_lvl_1 * exp(-hp_b_coeff)) * exp(hp_b_coeff * level) / 15, 0) * 15
+            actual_atk = round((atk_lvl_1 * exp(-atk_b_coeff)) * exp(atk_b_coeff * level), 0)
+            actual_def = round((def_lvl_1 * exp(-def_b_coeff)) * exp(def_b_coeff * level), 0)
+
+        return {
+            'hp': actual_hp,
+            'atk': actual_atk,
+            'def': actual_def,
+        }
 
     def save(self, *args, **kwargs):
         # Update image filename on save.
@@ -249,6 +326,9 @@ class MonsterInstance(models.Model):
 
     def is_max_level(self):
         return self.level == self.max_level_from_stars()
+
+    def get_stats(self):
+        return self.monster.get_stats(self.stars, self.level)
 
     def clean(self):
         from django.core.exceptions import ValidationError

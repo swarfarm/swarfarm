@@ -27,12 +27,24 @@ class MonsterAdmin(admin.ModelAdmin):
                 'name',
                 'element',
                 'archetype',
-                'base_stars',
                 'can_awaken',
                 'is_awakened',
                 'awakens_from',
                 'awakens_to',
                 'fusion_food',
+            )
+        }),
+        ('Stats', {
+            'fields': (
+                'base_stars',
+                'base_hp',
+                'base_attack',
+                'base_defense',
+                'base_speed',
+                'base_crit_rate',
+                'base_crit_damage',
+                'base_resistance',
+                'base_accuracy',
             )
         }),
         ('Awakening Materials', {

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load utils %}
+{% load cache %}
+
+{% block title %}Monster Library - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="monster-box">
+                <span>
+                    <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}"/>
+                    {% for x in monster.base_stars|get_range %}
+                        {% if monster.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% elif monster.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+
+            <h1><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" /> {{ monster.name }}</h1>
+        </div>
+    </div>
+{% endblock content %}

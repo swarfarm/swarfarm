@@ -58,11 +58,11 @@ class Monster(models.Model):
     base_hp = models.IntegerField(null=True, blank=True)
     base_attack = models.IntegerField(null=True, blank=True)
     base_defense = models.IntegerField(null=True, blank=True)
-    base_speed = models.IntegerField(null=True, blank=True)
-    base_crit_rate = models.IntegerField(null=True, blank=True)
-    base_crit_damage = models.IntegerField(null=True, blank=True)
-    base_resistance = models.IntegerField(null=True, blank=True)
-    base_accuracy = models.IntegerField(null=True, blank=True)
+    speed = models.IntegerField(null=True, blank=True)
+    crit_rate = models.IntegerField(null=True, blank=True)
+    crit_damage = models.IntegerField(null=True, blank=True)
+    resistance = models.IntegerField(null=True, blank=True)
+    accuracy = models.IntegerField(null=True, blank=True)
     awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awaken_ele_mats_low = models.IntegerField(null=True, blank=True)
@@ -79,33 +79,39 @@ class Monster(models.Model):
         else:
             return 'No Image'
 
-    def get_stats(self, grade, level):
-        # Check that base stats exist first
-        if not self.base_hp or not self.base_attack or not self.base_defense:
-            return {
-                'hp': -1,
-                'atk': -1,
-                'def': -1,
-            }
+    def actual_hp(self, grade, level):
+        # Check that base stat exists first
+        if not self.base_hp:
+            return -1
+        else:
+            return self._calculate_actual_stat(self.base_hp / 15, grade, level) * 15
 
+    def actual_attack(self, grade=base_stars, level=1):
+        # Check that base stat exists first
+        if not self.base_attack:
+            return -1
+        else:
+            return self._calculate_actual_stat(self.base_attack, grade, level)
+
+    def actual_defense(self, grade=base_stars, level=1):
+        # Check that base stat exists first
+        if not self.base_defense:
+            return -1
+        else:
+            return self._calculate_actual_stat(self.base_defense, grade, level)
+
+    def _calculate_actual_stat(self, stat, grade, level):
         max_lvl = 10 + grade * 5
 
-        # Awakened monster base grade is considered as 1 higher than unawakened base grade from here
         if self.is_awakened:
             stat_base_grade = self.base_stars + 1
         else:
             stat_base_grade = self.base_stars
 
         weight = float(self.base_hp / 15 + self.base_attack + self.base_defense)
-        hp_base = round((self.base_hp / 15 * (105 + (15 * stat_base_grade))) / weight, 0)
-        atk_base = round((self.base_attack * (105 + (15 * stat_base_grade))) / weight, 0)
-        def_base = round((self.base_defense * (105 + (15 * stat_base_grade))) / weight, 0)
+        base_value = round((stat * (105 + (15 * stat_base_grade))) / weight, 0)
 
-        print 'weight: ' + str(weight)
-        print 'hp_base: ' + str(hp_base)
-        print 'atk_base: ' + str(atk_base)
-        print 'def_base: ' + str(def_base)
-
+        # Magic multipliers taken from summoner's war wikia calculator. Used to calculate stats for lvl 1 and lvl MAX
         magic_multipliers = [
             {'1': 1.0, 'max': 1.9958},
             {'1': 1.5966, 'max': 3.03050646},
@@ -115,38 +121,29 @@ class Monster(models.Model):
             {'1': 6.4582449, 'max': 10.97901633},
         ]
 
-        hp_lvl_1 = 15 * round(hp_base * magic_multipliers[grade - 1]['1'], 0)
-        hp_lvl_max = 15 * round(hp_base * magic_multipliers[grade - 1]['max'], 0)
-        atk_lvl_1 = round(atk_base * magic_multipliers[grade - 1]['1'], 0)
-        atk_lvl_max = round(atk_base * magic_multipliers[grade - 1]['max'], 0)
-        def_lvl_1 = round(def_base * magic_multipliers[grade - 1]['1'], 0)
-        def_lvl_max = round(def_base * magic_multipliers[grade - 1]['max'], 0)
+        stat_lvl_1 = round(base_value * magic_multipliers[grade - 1]['1'], 0)
+        stat_lvl_max = round(base_value * magic_multipliers[grade - 1]['max'], 0)
 
         if level == 1:
-            actual_hp = hp_lvl_1
-            actual_atk = atk_lvl_1
-            actual_def = def_lvl_1
+            return int(stat_lvl_1)
         elif level == max_lvl:
-            actual_hp = hp_lvl_max
-            actual_atk = atk_lvl_max
-            actual_def = def_lvl_max
+            return int(stat_lvl_max)
         else:
             # Use exponential function in format value=ae^(bx)
             # a=stat_lvl_1*e^(-b)
             from math import log, exp
-            hp_b_coeff = log(hp_lvl_max / hp_lvl_1) / (max_lvl - 1)
-            atk_b_coeff = log(atk_lvl_max / atk_lvl_1) / (max_lvl - 1)
-            def_b_coeff = log(def_lvl_max / def_lvl_1) / (max_lvl - 1)
+            b_coeff = log(stat_lvl_max / stat_lvl_1) / (max_lvl - 1)
 
-            actual_hp = round((hp_lvl_1 * exp(-hp_b_coeff)) * exp(hp_b_coeff * level) / 15, 0) * 15
-            actual_atk = round((atk_lvl_1 * exp(-atk_b_coeff)) * exp(atk_b_coeff * level), 0)
-            actual_def = round((def_lvl_1 * exp(-def_b_coeff)) * exp(def_b_coeff * level), 0)
+            return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 
-        return {
-            'hp': actual_hp,
-            'atk': actual_atk,
-            'def': actual_def,
-        }
+    def monster_family(self):
+        # Get unawakened monsters which are in the same family
+        if self.is_awakened:
+            unawakened_name = self.awakens_from.name
+        else:
+            unawakened_name = self.name
+
+        return Monster.objects.filter(name=unawakened_name).order_by('element')
 
     def save(self, *args, **kwargs):
         # Update image filename on save.
@@ -327,8 +324,30 @@ class MonsterInstance(models.Model):
     def is_max_level(self):
         return self.level == self.max_level_from_stars()
 
-    def get_stats(self):
-        return self.monster.get_stats(self.stars, self.level)
+    # Stat callables. Will integrate rune numbers here too eventually.
+    def hp(self):
+        return self.monster.actual_hp(self.stars, self.level)
+
+    def attack(self):
+        return self.monster.actual_attack(self.stars, self.level)
+
+    def defense(self):
+        return self.monster.actual_defense(self.stars, self.level)
+
+    def speed(self):
+        return self.monster.speed
+
+    def crit_rate(self):
+        return self.monster.crit_rate
+
+    def crit_damage(self):
+        return self.monster.crit_damage
+
+    def resistance(self):
+        return self.monster.resistance
+
+    def accuracy(self):
+        return self.monster.accuracy
 
     def clean(self):
         from django.core.exceptions import ValidationError

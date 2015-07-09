@@ -210,10 +210,24 @@ def monster_instance_add(request, profile_name):
 
 
 def monster_instance_view(request, profile_name, instance_id):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    monster = get_object_or_404(MonsterInstance, pk=instance_id)
+
     context = {
+        'profile_name': request.user.username,
+        'return_path': return_path,
+        'monster': monster,
+        'is_owner': is_owner,
         'view': 'profile',
     }
-    return render(request, 'herders/unimplemented.html')
+
+    return render(request, 'herders/profile/profile_monster_view.html', context)
 
 
 @login_required()
@@ -794,8 +808,12 @@ def bestiary(request):
 
 
 def bestiary_detail(request, monster_id):
+    monster = get_object_or_404(Monster, pk=monster_id)
+
     context = {
         'view': 'bestiary',
+        'monster': monster,
     }
-    return render(request, 'herders/unimplemented.html')
+
+    return render(request, 'herders/bestiary_detail.html', context)
 

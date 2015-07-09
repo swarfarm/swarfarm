@@ -1,29 +1,57 @@
 {% extends 'herders/profile/profile_base.html' %}
 {% load staticfiles %}
+{% load utils %}
 
-{# TODO: Fix layout in this template. #}
 {% block profile %}
-    <div>
-        <div class="monster-image">
-            {% static 'herders/images/' as img_url_prefix %}
-            <span>
-                <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}" class="monster-image-full"/>
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <div class="row">
+        <div class="monster-box">
+            <div class="monster-box-thumb">
                 <span>
-                    {% if monster.monster.is_awakened %}
-                        <img src="{{ img_url_prefix }}stars/{{ monster.stars }}star-awakened.png" class="monster-star-full" />
-                    {% elif monster.monster.can_awaken %}
-                        <img src="{{ img_url_prefix }}stars/{{ monster.stars }}star-unawakened.png" class="monster-star-full" />
-                    {% else %}
-                        <img src="{{ img_url_prefix }}stars/{{ monster.stars }}star-fodder.png" class="monster-star-full" />
+                    <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}"/>
+                    <span>
+                        {% for x in monster.stars|get_range %}
+                            {% if monster.monster.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif monster.monster.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    {% if monster.monster.fusion_food %}
+                        <img class="image-plus-icon" src="{{ img_url_prefix }}icons/fusion.png" />
                     {% endif %}
+                    <span class="image-plus image-plus-left">{{ monster.monster.name }}</span>
+                    <span class="image-plus image-plus-right">{{ monster.level }}</span>
                 </span>
-                <span class="image-plus image-plus-left">{{ monster.monster.name }}</span>
-                <span class="image-plus image-plus-right">{{ monster.level }}</span>
-            </span>
+            </div>
+            <div class="monster-box-actions">
+                {% if is_owner %}
+                    <span class="monster-box-actions">
+                        <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
+                        </a>
+                        {% if monster.monster.can_awaken and not monster.monster.is_awakened %}
+                            <a href="{% url 'herders:monster_instance_awaken' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Awaken"><span class="glyphicon glyphicon-star" style="color:purple"></span></a>
+                        {% endif %}
+                        <a href="{% url 'herders:monster_instance_power_up' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}"><span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span></a>
+                        <a href="{% url 'herders:monster_instance_delete' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}"><span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span></a>
+                    </span>
+                {% endif %}
+            </div>
         </div>
-        <div>
-            <img src="{{ img_url_prefix }}elements/{{ monster.monster.element }}.png" />
-            <span>{{ monster.monster.name }}</span>
-        </div>
+    </div>
+    <div class="row">
+    HP: {{ monster.hp }}<br />
+    ATK: {{ monster.attack }}<br />
+    DEF: {{ monster.defense }}<br />
+    SPD: {{ monster.speed }}<br />
+    CRI Rate: {{ monster.crit_rate }}%<br />
+    CRI DMG: {{ monster.crit_damage }}%<br />
+    Resistance: {{ monster.resistance }}%<br />
+    Accuracy: {{ monster.accuracy }}%<br />
     </div>
 {% endblock profile %}

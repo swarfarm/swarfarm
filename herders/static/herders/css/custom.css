@@ -492,3 +492,22 @@ td>h5,
 td>h6 {
     margin: 0;
 }
+
+.bestiary-detail {
+    margin-left: 125px;
+}
+
+.bestiary-detail table img {
+    height: 20px;
+}
+
+.bestiary-detail-stats {
+    float: left;
+    width: 45%;
+}
+
+.bestiary-detail-family {
+    clear: both;
+    padding-top: 5px;
+    width: 102px;
+}

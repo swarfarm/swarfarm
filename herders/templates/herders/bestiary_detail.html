@@ -7,25 +7,119 @@
 
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
-
     <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" /> {{ monster.name }}</h2>
+        </div>
         <div class="panel-body">
-            <div class="monster-box">
-                <span>
-                    <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}"/>
-                    {% for x in monster.base_stars|get_range %}
-                        {% if monster.is_awakened %}
-                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                        {% elif monster.can_awaken %}
-                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                        {% else %}
-                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                        {% endif %}
-                    {% endfor %}
-                </span>
+            <div class="pull-left">
+                <div class="monster-box">
+                    <span>
+                        <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}"/>
+                        {% for x in monster.base_stars|get_range %}
+                            {% if monster.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif monster.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+
+                <div class="bestiary-detail-family">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">Family</p>
+                        </div>
+                        <table class="table">
+                            <tbody>
+                            {% for related_monster in monster.monster_family %}
+                            <tr>
+                                <td class="monster-image">
+                                    <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.pk %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ related_monster.image_filename }}" class="monster-thumb"/>
+                                    </a>
+                                </td>
+                                <td class="monster-image">
+                                    {% if related_monster.awakens_to %}
+                                    <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.awakens_to.pk %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ related_monster.awakens_to.image_filename }}" class="monster-thumb"/>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <h1><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" /> {{ monster.name }}</h1>
+            <div class="bestiary-detail">
+                <div class="bestiary-detail-stats">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">Base Stats</p>
+                        </div>
+                        <table class="table table-condensed">
+                            <tbody>
+                                <tr>
+                                    <td>Base Stars</td>
+                                    <td>
+                                        {% for x in monster.base_stars|get_range %}
+                                            {% if monster.is_awakened %}
+                                                <img src="{{ img_url_prefix }}stars/star-awakened.png" />
+                                            {% elif monster.can_awaken %}
+                                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" />
+                                            {% else %}
+                                                <img src="{{ img_url_prefix }}stars/star-fodder.png" />
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Archetype</td>
+                                    <td>{{ monster.archetype|capfirst }}</td>
+                                </tr>
+                                <tr>
+                                    <td>HP</td>
+                                    <td>{{ monster.base_hp }}</td>
+                                </tr>
+                                <tr>
+                                    <td>ATK</td>
+                                    <td>{{ monster.base_attack }}</td>
+                                </tr>
+                                <tr>
+                                    <td>DEF</td>
+                                    <td>{{ monster.base_defense }}</td>
+                                </tr>
+                                <tr>
+                                    <td>SPD</td>
+                                    <td>{{ monster.speed }}</td>
+                                </tr>
+                                <tr>
+                                    <td>CRIT Rate</td>
+                                    <td>{{ monster.crit_rate }}%</td>
+                                </tr>
+                                <tr>
+                                    <td>CRIT DMG</td>
+                                    <td>{{ monster.crit_damage }}%</td>
+                                </tr>
+                                <tr>
+                                    <td>Accuracy</td>
+                                    <td>{{ monster.accuracy }}%</td>
+                                </tr>
+                                <tr>
+                                    <td>Resistance</td>
+                                    <td>{{ monster.resistance }}%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock content %}

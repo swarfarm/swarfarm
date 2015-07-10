@@ -107,40 +107,22 @@
                                 </td>
                                 <td class="monster-awaken-materials">
                                     {% if monster.awaken_ele_mats_high %}
-                                        <div>
-                                            <img src="{{ img_url_prefix }}essences/{{ monster.element }}_high.png" />
-                                            <span class="image-plus image-plus-right">{{ monster.awaken_ele_mats_high }}</span>
-                                        </div>
+                                        {% include 'herders/essence_fragment.html' with element=monster.element size='high' count=monster.awaken_ele_mats_high only %}
                                     {% endif %}
                                     {% if monster.awaken_ele_mats_mid %}
-                                        <div>
-                                            <img src="{{ img_url_prefix }}essences/{{ monster.element }}_mid.png" />
-                                            <span class="image-plus image-plus-right">{{ monster.awaken_ele_mats_mid }}</span>
-                                        </div>
+                                        {% include 'herders/essence_fragment.html' with element=monster.element size='mid' count=monster.awaken_ele_mats_mid only %}
                                     {% endif %}
                                     {% if monster.awaken_ele_mats_low %}
-                                        <div>
-                                            <img src="{{ img_url_prefix }}essences/{{ monster.element }}_low.png" />
-                                            <span class="image-plus image-plus-right">{{ monster.awaken_ele_mats_low }}</span>
-                                        </div>
+                                        {% include 'herders/essence_fragment.html' with element=monster.element size='low' count=monster.awaken_ele_mats_low only %}
                                     {% endif %}
                                     {% if monster.awaken_magic_mats_high %}
-                                        <div>
-                                            <img src="{{ img_url_prefix }}essences/magic_high.png" />
-                                            <span class="image-plus image-plus-right">{{ monster.awaken_magic_mats_high }}</span>
-                                        </div>
+                                        {% include 'herders/essence_fragment.html' with element='magic' size='high' count=monster.awaken_magic_mats_high only %}
                                     {% endif %}
                                     {% if monster.awaken_magic_mats_mid %}
-                                        <div>
-                                            <img src="{{ img_url_prefix }}essences/magic_mid.png" />
-                                            <span class="image-plus image-plus-right">{{ monster.awaken_magic_mats_mid }}</span>
-                                        </div>
+                                        {% include 'herders/essence_fragment.html' with element='magic' size='mid' count=monster.awaken_magic_mats_mid only %}
                                     {% endif %}
                                     {% if monster.awaken_magic_mats_low %}
-                                        <div>
-                                            <img src="{{ img_url_prefix }}essences/magic_low.png" />
-                                            <span class="image-plus image-plus-right">{{ monster.awaken_magic_mats_low }}</span>
-                                        </div>
+                                        {% include 'herders/essence_fragment.html' with element='magic' size='low' count=monster.awaken_magic_mats_low only %}
                                     {% endif %}
                                 </td>
                                 <td></td>

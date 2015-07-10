@@ -169,10 +169,7 @@
                                 {% for element,sizes in fusion.essences_missing.max_leveled.items %}
                                     {% for size,count in sizes.items %}
                                         {% if count < 0 %}
-                                            <div>
-                                                <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" />
-                                                <span class="image-plus image-plus-right">{{ count|absolute }}</span>
-                                            </div>
+                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
                                         {% endif %}
                                     {% endfor %}
                                 {% endfor %}
@@ -184,10 +181,7 @@
                                 {% for element,sizes in fusion.essences_missing.use_awakened.items %}
                                     {% for size,count in sizes.items %}
                                         {% if count < 0 %}
-                                            <div>
-                                                <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" />
-                                                <span class="image-plus image-plus-right">{{ count|absolute }}</span>
-                                            </div>
+                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
                                         {% endif %}
                                     {% endfor %}
                                 {% endfor %}

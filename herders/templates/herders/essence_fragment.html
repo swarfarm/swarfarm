@@ -1,0 +1,7 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div data-toggle="tooltip" data-placement="top" data-container="body" title="{{ element|capfirst }} {{ size|capfirst }}">
+    <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" />
+    {% if count %}<span class="image-plus image-plus-right">{{ count }}</span>{% endif %}
+</div>

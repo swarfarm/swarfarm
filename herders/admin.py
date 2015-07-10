@@ -19,6 +19,7 @@ class UserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
+
 # Monster Database stuff
 class MonsterAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -40,11 +41,11 @@ class MonsterAdmin(admin.ModelAdmin):
                 'base_hp',
                 'base_attack',
                 'base_defense',
-                'base_speed',
-                'base_crit_rate',
-                'base_crit_damage',
-                'base_resistance',
-                'base_accuracy',
+                'speed',
+                'crit_rate',
+                'crit_damage',
+                'resistance',
+                'accuracy',
             )
         }),
         ('Awakening Materials', {
@@ -71,14 +72,17 @@ class MonsterAdmin(admin.ModelAdmin):
 
 admin.site.register(Monster, MonsterAdmin)
 
+
 class MonsterSkillAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'slot', 'passive', 'general_leader', 'dungeon_leader', 'arena_leader', 'guild_leader')
     filter_horizontal = ('skill_effect',)
 admin.site.register(MonsterSkill, MonsterSkillAdmin)
 
+
 class MonsterSkillEffectAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'is_buff')
 admin.site.register(MonsterSkillEffect, MonsterSkillEffectAdmin)
+
 
 class FusionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'stars', 'cost',)
@@ -86,17 +90,20 @@ class FusionAdmin(admin.ModelAdmin):
 
 admin.site.register(Fusion, FusionAdmin)
 
+
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')
     search_fields = ['owner__username']
 
 admin.site.register(MonsterInstance, MonsterInstanceAdmin)
 
+
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'group', 'owner')
     filter_horizontal = ('roster',)
 
 admin.site.register(Team, TeamAdmin)
+
 
 class TeamGroupAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')

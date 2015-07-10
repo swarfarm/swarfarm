@@ -18,95 +18,39 @@
         </h2>
     </div>
 
-    <div>
-        <h3>Essences Required:</h3>
-        <div class="monster-awaken-materials">
-            {% with mats=monster.monster.get_awakening_materials %}
-                {% for element,essences in mats.iteritems %}
-                    {% for size,count in essences.iteritems %}
-                        {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+    {% with mats=monster.monster.get_awakening_materials %}
+        <div>
+            <h3>Essences Required:</h3>
+            <div class="monster-awaken-materials">
+
+                    {% for element,essences in mats.iteritems %}
+                        {% for size,count in essences.iteritems %}
+                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                        {% endfor %}
                     {% endfor %}
+            </div>
+        </div>
+        <div>
+            <h3>Essences Available:</h3>
+            <div class="monster-awaken-materials">
+            {% for element, essences in available_essences.iteritems %}
+                {% for size, count in essences.iteritems %}
+                    <div>
+                        <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" style="
+                        {% if available_materials.storage_magic_high >= monster.monster.awaken_magic_mats_high %}
+                            border: 5px solid green
+                        {% else %}
+                            border: 5px solid red
+                        {% endif %}
+                        "/>
+                        <span class="image-plus image-plus-right">{{ count }}</span>
+                    </div>
                 {% endfor %}
-            {% endwith %}
+            {% endfor %}
+            </div>
         </div>
-    </div>
-    <div>
-        <h3>Essences Available:</h3>
-        <div class="monster-awaken-materials">
-            {% if monster.monster.awaken_ele_mats_high %}
-                <div>
-                    <img src="{{ img_url_prefix }}essences/{{ monster.monster.element }}_high.png" style="
-                    {% if available_materials.storage_ele_high >= monster.monster.awaken_ele_mats_high %}
-                        border: 5px solid green
-                    {% else %}
-                        border: 5px solid red
-                    {% endif %}
-                    "/>
-                    <span class="image-plus image-plus-right">{{ available_materials.storage_ele_high }}</span>
-                </div>
-            {% endif %}
-            {% if monster.monster.awaken_ele_mats_mid %}
-                <div>
-                    <img src="{{ img_url_prefix }}essences/{{ monster.monster.element }}_mid.png" style="
-                    {% if available_materials.storage_ele_mid >= monster.monster.awaken_ele_mats_mid %}
-                        border: 5px solid green
-                    {% else %}
-                        border: 5px solid red
-                    {% endif %}
-                    "/>
-                    <span class="image-plus image-plus-right">{{ available_materials.storage_ele_mid }}</span>
-                </div>
-            {% endif %}
-            {% if monster.monster.awaken_ele_mats_low %}
-                <div>
-                    <img src="{{ img_url_prefix }}essences/{{ monster.monster.element }}_low.png" style="
-                    {% if available_materials.storage_ele_low >= monster.monster.awaken_ele_mats_low %}
-                        border: 5px solid green
-                    {% else %}
-                        border: 5px solid red
-                    {% endif %}
-                    "/>
-                    <span class="image-plus image-plus-right">{{ available_materials.storage_ele_low }}</span>
-                </div>
-            {% endif %}
-            {% if monster.monster.awaken_magic_mats_high %}
-                <div>
-                    <img src="{{ img_url_prefix }}essences/magic_high.png" style="
-                    {% if available_materials.storage_magic_high >= monster.monster.awaken_magic_mats_high %}
-                        border: 5px solid green
-                    {% else %}
-                        border: 5px solid red
-                    {% endif %}
-                    "/>
-                    <span class="image-plus image-plus-right">{{ available_materials.storage_magic_high }}</span>
-                </div>
-            {% endif %}
-            {% if monster.monster.awaken_magic_mats_mid %}
-                <div>
-                    <img src="{{ img_url_prefix }}essences/magic_mid.png" style="
-                    {% if available_materials.storage_magic_mid >= monster.monster.awaken_magic_mats_mid %}
-                        border: 5px solid green
-                    {% else %}
-                        border: 5px solid red
-                    {% endif %}
-                    "/>
-                    <span class="image-plus image-plus-right">{{ available_materials.storage_magic_mid }}</span>
-                </div>
-            {% endif %}
-            {% if monster.monster.awaken_magic_mats_low %}
-                <div>
-                    <img src="{{ img_url_prefix }}essences/magic_low.png" style="
-                    {% if available_materials.storage_magic_low >= monster.monster.awaken_magic_mats_low %}
-                        border: 3px solid green
-                    {% else %}
-                        border: 5px solid red
-                    {% endif %}
-                    "/>
-                    <span class="image-plus image-plus-right">{{ available_materials.storage_magic_low }}</span>
-                </div>
-            {% endif %}
-        </div>
-    </div>
+    {% endwith %}
+
     <br />
 
     {% crispy awaken_monster_form %}

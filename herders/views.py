@@ -418,6 +418,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
 
     context = {
         'profile_name': request.user.username,
+        'summoner': summoner,
         'is_owner': is_owner,  # Because of @login_required decorator
         'return_path': return_path,
         'monster': monster,
@@ -481,37 +482,15 @@ def monster_instance_awaken(request, profile_name, instance_id):
         return redirect(return_path)
 
     else:
-        # Retreive list of awakening materials from summoner profile
-        summoner = Summoner.objects.get(user=request.user)
+        storage = summoner.get_storage()
+        available_essences = OrderedDict()
 
-        available_materials = {
-            'storage_magic_low': summoner.storage_magic_low,
-            'storage_magic_mid': summoner.storage_magic_mid,
-            'storage_magic_high': summoner.storage_magic_high
-        }
+        for element, essences in monster.monster.get_awakening_materials().iteritems():
+            available_essences[element] = OrderedDict()
+            for size in essences:
+                available_essences[element][size] = storage[element][size]
 
-        if monster.monster.element == Monster.ELEMENT_FIRE:
-            available_materials['storage_ele_low'] = summoner.storage_fire_low
-            available_materials['storage_ele_mid'] = summoner.storage_fire_mid
-            available_materials['storage_ele_high'] = summoner.storage_fire_high
-        elif monster.monster.element == Monster.ELEMENT_WATER:
-            available_materials['storage_ele_low'] = summoner.storage_water_low
-            available_materials['storage_ele_mid'] = summoner.storage_water_mid
-            available_materials['storage_ele_high'] = summoner.storage_water_high
-        elif monster.monster.element == Monster.ELEMENT_WIND:
-            available_materials['storage_ele_low'] = summoner.storage_wind_low
-            available_materials['storage_ele_mid'] = summoner.storage_wind_mid
-            available_materials['storage_ele_high'] = summoner.storage_wind_high
-        elif monster.monster.element == Monster.ELEMENT_DARK:
-            available_materials['storage_ele_low'] = summoner.storage_dark_low
-            available_materials['storage_ele_mid'] = summoner.storage_dark_mid
-            available_materials['storage_ele_high'] = summoner.storage_dark_high
-        elif monster.monster.element == Monster.ELEMENT_LIGHT:
-            available_materials['storage_ele_low'] = summoner.storage_light_low
-            available_materials['storage_ele_mid'] = summoner.storage_light_mid
-            available_materials['storage_ele_high'] = summoner.storage_light_high
-
-        context['available_materials'] = available_materials
+        context['available_essences'] = available_essences
 
         return render(request, 'herders/profile/profile_monster_awaken.html', context)
 

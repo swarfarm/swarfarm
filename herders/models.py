@@ -315,38 +315,33 @@ class Summoner(models.Model):
     storage_dark_high = models.IntegerField(default=0)
 
     def get_storage(self):
-        return OrderedDict({
-            'magic': {
-                'low': self.storage_magic_low,
-                'mid': self.storage_magic_mid,
-                'high': self.storage_magic_high,
-            },
-            'fire': {
-                'low': self.storage_fire_low,
-                'mid': self.storage_fire_mid,
-                'high': self.storage_fire_high,
-            },
-            'water': {
-                'low': self.storage_water_low,
-                'mid': self.storage_water_mid,
-                'high': self.storage_water_high,
-            },
-            'wind': {
-                'low': self.storage_wind_low,
-                'mid': self.storage_wind_mid,
-                'high': self.storage_wind_high,
-            },
-            'light': {
-                'low': self.storage_light_low,
-                'mid': self.storage_light_mid,
-                'high': self.storage_light_high,
-            },
-            'dark': {
-                'low': self.storage_dark_low,
-                'mid': self.storage_dark_mid,
-                'high': self.storage_dark_high,
-            },
-        })
+        storage = OrderedDict()
+        storage['magic'] = OrderedDict()
+        storage['magic']['high'] = self.storage_magic_high
+        storage['magic']['mid'] = self.storage_magic_mid
+        storage['magic']['low'] = self.storage_magic_low
+        storage['fire'] = OrderedDict()
+        storage['fire']['high'] = self.storage_fire_high
+        storage['fire']['mid'] = self.storage_fire_mid
+        storage['fire']['low'] = self.storage_fire_low
+        storage['water'] = OrderedDict()
+        storage['water']['high'] = self.storage_water_high
+        storage['water']['mid'] = self.storage_water_mid
+        storage['water']['low'] = self.storage_water_low
+        storage['wind'] = OrderedDict()
+        storage['wind']['high'] = self.storage_wind_high
+        storage['wind']['mid'] = self.storage_wind_mid
+        storage['wind']['low'] = self.storage_wind_low
+        storage['light'] = OrderedDict()
+        storage['light']['high'] = self.storage_light_high
+        storage['light']['mid'] = self.storage_light_mid
+        storage['light']['low'] = self.storage_light_low
+        storage['dark'] = OrderedDict()
+        storage['dark']['high'] = self.storage_dark_high
+        storage['dark']['mid'] = self.storage_dark_mid
+        storage['dark']['low'] = self.storage_dark_low
+
+        return storage
 
     def save(self, *args, **kwargs):
         # Bounds checks on essences

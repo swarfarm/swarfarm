@@ -9,7 +9,7 @@
     {% static 'herders/images/' as img_url_prefix %}
 
     {% if monster_list %}
-        {% cache 5 bestiary %}
+        {% cache 1800 bestiary %}
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <span>Filters: </span>

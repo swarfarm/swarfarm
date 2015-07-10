@@ -21,7 +21,7 @@
     <div>
         <h3>Essences Required:</h3>
         <div class="monster-awaken-materials">
-            {% with mats=monster.get_awakening_materials %}
+            {% with mats=monster.monster.get_awakening_materials %}
                 {% for element,essences in mats.iteritems %}
                     {% for size,count in essences.iteritems %}
                         {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}

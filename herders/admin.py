@@ -93,7 +93,7 @@ admin.site.register(Fusion, FusionAdmin)
 
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')
-    search_fields = ['owner__username']
+    search_fields = ['owner']
 
 admin.site.register(MonsterInstance, MonsterInstanceAdmin)
 

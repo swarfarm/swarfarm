@@ -341,14 +341,13 @@ def monster_instance_power_up(request, profile_name, instance_id):
 
                 # Perform validation checks for evolve action
                 if is_evolution:
-
                     # Check constraints on evolving (or not, if form element was set)
                     if not request.POST.get('ignore_errors', False):
                         # Check monster level and stars
                         if monster.stars >= 6:
                             validation_errors['base_monster_stars'] = "%s is already at 6 stars." % monster.monster.name
 
-                        if monster.level != monster.monster.max_level_from_stars():
+                        if monster.level != monster.max_level_from_stars():
                             validation_errors['base_monster_level'] = "%s is not at max level for the current star rating (Lvl %s)." % (monster.monster.name, monster.monster.max_level_from_stars())
 
                         # Check number of fodder monsters

@@ -363,7 +363,10 @@ class MonsterInstance(models.Model):
     notes = models.TextField(null=True, blank=True)
 
     def is_max_level(self):
-        return self.level == self.monster.max_level_from_stars()
+        return self.level == self.monster.max_level_from_stars(self.stars)
+
+    def max_level_from_stars(self):
+        return self.monster.max_level_from_stars(self.stars)
 
     # Stat callables. Will integrate rune numbers here too eventually.
     def hp(self):

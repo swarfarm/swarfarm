@@ -79,37 +79,81 @@ class Monster(models.Model):
         else:
             return 'No Image'
 
+    def max_level_from_stars(self, stars=None):
+        if stars:
+            return 10 + stars * 5
+        else:
+            return 10 + self.base_stars * 5
+
+    def get_stats(self):
+        from collections import OrderedDict
+
+        start_grade = self.base_stars
+        stats_list = OrderedDict()
+
+        if self.is_awakened:
+            start_grade -= 1
+
+        for grade in range(1, 7):
+            max_level = self.max_level_from_stars(grade)
+
+            if grade < start_grade:
+                # Add blanks for grades lower than possible range
+                stats_list[str(grade)] = {
+                    '1': {
+                        'HP': '',
+                        'ATK': '',
+                        'DEF': '',
+                    },
+                    str(max_level): {
+                        'HP': '',
+                        'ATK': '',
+                        'DEF': '',
+                    },
+                }
+            else:
+                # Add the actual calculated stats
+                stats_list[str(grade)] = {
+                    '1': {
+                        'HP': self.actual_hp(grade, 1),
+                        'ATK': self.actual_attack(grade, 1),
+                        'DEF': self.actual_defense(grade, 1),
+                    },
+                    str(max_level): {
+                        'HP': self.actual_hp(grade, max_level),
+                        'ATK': self.actual_attack(grade, max_level),
+                        'DEF': self.actual_defense(grade, max_level),
+                    },
+                }
+
+        return stats_list
+
     def actual_hp(self, grade, level):
         # Check that base stat exists first
         if not self.base_hp:
-            return -1
+            return None
         else:
             return self._calculate_actual_stat(self.base_hp / 15, grade, level) * 15
 
     def actual_attack(self, grade=base_stars, level=1):
         # Check that base stat exists first
         if not self.base_attack:
-            return -1
+            return None
         else:
             return self._calculate_actual_stat(self.base_attack, grade, level)
 
     def actual_defense(self, grade=base_stars, level=1):
         # Check that base stat exists first
         if not self.base_defense:
-            return -1
+            return None
         else:
             return self._calculate_actual_stat(self.base_defense, grade, level)
 
     def _calculate_actual_stat(self, stat, grade, level):
         max_lvl = 10 + grade * 5
 
-        if self.is_awakened:
-            stat_base_grade = self.base_stars + 1
-        else:
-            stat_base_grade = self.base_stars
-
         weight = float(self.base_hp / 15 + self.base_attack + self.base_defense)
-        base_value = round((stat * (105 + (15 * stat_base_grade))) / weight, 0)
+        base_value = round((stat * (105 + 15 * self.base_stars)) / weight, 0)
 
         # Magic multipliers taken from summoner's war wikia calculator. Used to calculate stats for lvl 1 and lvl MAX
         magic_multipliers = [
@@ -318,11 +362,8 @@ class MonsterInstance(models.Model):
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_MED)
     notes = models.TextField(null=True, blank=True)
 
-    def max_level_from_stars(self):
-        return 10 + self.stars * 5
-
     def is_max_level(self):
-        return self.level == self.max_level_from_stars()
+        return self.level == self.monster.max_level_from_stars()
 
     # Stat callables. Will integrate rune numbers here too eventually.
     def hp(self):
@@ -362,7 +403,7 @@ class MonsterInstance(models.Model):
         if self.level > 10 + self.stars * 5:
             raise ValidationError(
                 'Level exceeds max for given star rating (Max: %(value)s)',
-                params={'value': self.max_level_from_stars()},
+                params={'value': self.monster.max_level_from_stars()},
                 code='invalid_level'
             )
 

@@ -14,6 +14,7 @@ from captcha.fields import ReCaptchaField
 
 import autocomplete_light
 
+
 # User stuff
 class CrispyAuthenticationForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -29,6 +30,7 @@ class CrispyAuthenticationForm(AuthenticationForm):
             FormActions(Submit('login', 'Log In', css_class='btn-lg btn-primary btn-block')),
         )
 
+
 class CrispyPasswordChangeForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super(CrispyPasswordChangeForm, self).__init__(*args, **kwargs)
@@ -43,6 +45,7 @@ class CrispyPasswordChangeForm(PasswordChangeForm):
             FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
         )
 
+
 class CrispyPasswordResetForm(PasswordResetForm):
     def __init__(self, *args, **kwargs):
         super(CrispyPasswordResetForm, self).__init__(*args, **kwargs)
@@ -55,6 +58,7 @@ class CrispyPasswordResetForm(PasswordResetForm):
             FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
         )
 
+
 class CrispySetPasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super(CrispySetPasswordForm, self).__init__(*args, **kwargs)
@@ -66,6 +70,7 @@ class CrispySetPasswordForm(SetPasswordForm):
             Field('new_password2'),
             FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
         )
+
 
 class RegisterUserForm(forms.Form):
     username = forms.CharField(
@@ -99,6 +104,7 @@ class RegisterUserForm(forms.Form):
         FormActions(Submit('register', 'Register', css_class='btn-lg btn-primary btn-block'))
     )
 
+
 class EditUserForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditUserForm, self).__init__(*args, **kwargs)
@@ -116,6 +122,7 @@ class EditUserForm(ModelForm):
         fields = (
             'email',
         )
+
 
 class EditSummonerForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -312,6 +319,7 @@ class EditEssenceStorageForm(ModelForm):
             'storage_dark_high': 'Dark High',
         }
 
+
 class AddMonsterInstanceForm(autocomplete_light.ModelForm):
     monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
 
@@ -344,6 +352,7 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
         model = MonsterInstance
         fields = ('monster', 'stars', 'level', 'fodder', 'in_storage', 'priority', 'notes')
 
+
 class EditMonsterInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditMonsterInstanceForm, self).__init__(*args, **kwargs)
@@ -371,6 +380,7 @@ class EditMonsterInstanceForm(ModelForm):
         model = MonsterInstance
         exclude = ('owner', 'monster', 'fodder_for')
 
+
 class PowerUpMonsterInstanceForm(forms.Form):
     monster = autocomplete_light.ModelChoiceField('MonsterInstanceAutocomplete')
     monster.label = 'Material Monster'
@@ -382,6 +392,7 @@ class PowerUpMonsterInstanceForm(forms.Form):
     helper.layout = Layout(
         Field('monster'),
     )
+
 
 class AwakenMonsterInstanceForm(forms.Form):
     subtract_materials = forms.BooleanField(
@@ -403,6 +414,7 @@ class AwakenMonsterInstanceForm(forms.Form):
             ),
         )
     )
+
 
 class AddTeamGroupForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -429,6 +441,7 @@ class AddTeamGroupForm(ModelForm):
         model = TeamGroup
         exclude = ('id', 'owner')
 
+
 class DeleteTeamGroupForm(forms.Form):
     reassign_group = forms.ModelChoiceField(
         queryset=TeamGroup.objects.all(),
@@ -446,6 +459,7 @@ class DeleteTeamGroupForm(forms.Form):
             Submit('delete', 'Delete all teams', css_class='btn btn-danger'),
         )
     )
+
 
 class EditTeamForm(ModelForm):
     def __init__(self, *args, **kwargs):

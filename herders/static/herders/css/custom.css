@@ -497,13 +497,21 @@ td>h6 {
     margin-left: 125px;
 }
 
+.bestiary-detail th,
+.bestiary-detail td {
+    text-align: center;
+}
+
+.bestiary-stat-column {
+    width: 50px;
+}
+
 .bestiary-detail table img {
     height: 20px;
 }
 
 .bestiary-detail-stats {
     float: left;
-    width: 45%;
 }
 
 .bestiary-detail-family {

@@ -7,6 +7,7 @@
 
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
+
     <div class="panel panel-default">
         <div class="panel-heading">
             <h2><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" /> {{ monster.name }}</h2>
@@ -63,60 +64,74 @@
                         <div class="panel-heading">
                             <p class="panel-title">Base Stats</p>
                         </div>
-                        <table class="table table-condensed">
+                        {% with stats=monster.get_stats %}
+                        <table class="table table-condensed table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Grade</th>
+                                    {% for key,value in stats.iteritems %}
+                                        <th colspan="2">
+                                            {{ key }}<span class="glyphicon glyphicon-star"></span>
+                                        </th>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <th>Level</th>
+                                    {% for grade,levels in stats.iteritems %}
+                                        {% for level,stats in levels.iteritems %}
+                                            <th>{{ level }}</th>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tr>
+                            </thead>
                             <tbody>
                                 <tr>
-                                    <td>Base Stars</td>
-                                    <td>
-                                        {% for x in monster.base_stars|get_range %}
-                                            {% if monster.is_awakened %}
-                                                <img src="{{ img_url_prefix }}stars/star-awakened.png" />
-                                            {% elif monster.can_awaken %}
-                                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" />
-                                            {% else %}
-                                                <img src="{{ img_url_prefix }}stars/star-fodder.png" />
-                                            {% endif %}
-                                        {% endfor %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Archetype</td>
-                                    <td>{{ monster.archetype|capfirst }}</td>
-                                </tr>
-                                <tr>
                                     <td>HP</td>
-                                    <td>{{ monster.base_hp }}</td>
+                                    {% for grade,levels in stats.iteritems %}
+                                        {% for level,stats in levels.iteritems %}
+                                            <td class="bestiary-stat-column">{{ stats.HP }}</td>
+                                        {% endfor %}
+                                    {% endfor %}
                                 </tr>
                                 <tr>
                                     <td>ATK</td>
-                                    <td>{{ monster.base_attack }}</td>
+                                    {% for grade,levels in stats.iteritems %}
+                                        {% for level,stats in levels.iteritems %}
+                                            <td class="bestiary-stat-column">{{ stats.ATK }}</td>
+                                        {% endfor %}
+                                    {% endfor %}
                                 </tr>
                                 <tr>
                                     <td>DEF</td>
-                                    <td>{{ monster.base_defense }}</td>
+                                    {% for grade,levels in stats.iteritems %}
+                                        {% for level,stats in levels.iteritems %}
+                                            <td class="bestiary-stat-column">{{ stats.DEF }}</td>
+                                        {% endfor %}
+                                    {% endfor %}
                                 </tr>
                                 <tr>
                                     <td>SPD</td>
-                                    <td>{{ monster.speed }}</td>
+                                    <td colspan="12">{{ monster.speed }}</td>
                                 </tr>
                                 <tr>
                                     <td>CRIT Rate</td>
-                                    <td>{{ monster.crit_rate }}%</td>
+                                    <td colspan="12">{{ monster.crit_rate }}%</td>
                                 </tr>
                                 <tr>
                                     <td>CRIT DMG</td>
-                                    <td>{{ monster.crit_damage }}%</td>
+                                    <td colspan="12">{{ monster.crit_damage }}%</td>
                                 </tr>
                                 <tr>
                                     <td>Accuracy</td>
-                                    <td>{{ monster.accuracy }}%</td>
+                                    <td colspan="12">{{ monster.accuracy }}%</td>
                                 </tr>
                                 <tr>
                                     <td>Resistance</td>
-                                    <td>{{ monster.resistance }}%</td>
+                                    <td colspan="12">{{ monster.resistance }}%</td>
                                 </tr>
                             </tbody>
                         </table>
+                        {% endwith %}
                     </div>
                 </div>
             </div>

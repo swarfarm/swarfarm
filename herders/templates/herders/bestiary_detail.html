@@ -6,6 +6,7 @@
 {% block title %}Monster Library - {{ block.super }}{% endblock title %}
 
 {% block content %}
+    {% cache 600 bestiary_detail monster.pk %}
     {% static 'herders/images/' as img_url_prefix %}
 
     <div class="panel panel-default">
@@ -137,4 +138,5 @@
             </div>
         </div>
     </div>
+    {% endcache %}
 {% endblock content %}

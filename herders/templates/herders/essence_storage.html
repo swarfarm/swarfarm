@@ -2,6 +2,8 @@
 {% load crispy_forms_tags %}
 {% load staticfiles %}
 
+{% block title %}Essence Storage - {{ block.super }}{% endblock title %}
+
 {% block content %}
     <div class="container-fluid">
         {# Unable to use static tag within crispy form, so we use it here to get path #}

@@ -3,7 +3,13 @@
 {% load crispy_forms_tags %}
 {% load utils %}
 
-{% block title %}My Monsters (Box View) - {{ block.super }}{% endblock title %}
+{% block title %}
+    {% if is_owner %}
+        My Monsters - {{ block.super }}
+    {% else %}
+        {{ profile_name }}'s Monsters - {{ block.super }}
+    {% endif %}
+{% endblock title %}
 
 {% block subnav %}
     {% if is_owner %}

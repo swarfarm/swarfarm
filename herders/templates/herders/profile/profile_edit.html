@@ -2,6 +2,8 @@
 {% load crispy_forms_tags %}
 {% load staticfiles %}
 
+{% block title %}Edit Profile - {{ block.super }}{% endblock title %}
+
 {% block profile %}
     <form action="{% url 'herders:edit_profile' profile_name=profile_name %}?next={{ return_path }}" method="post">
         {% csrf_token %}

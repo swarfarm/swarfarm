@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+
+{% block title %}Not Public - {{ block.super }}{% endblock title %}
+
 {% block content %}
-<p>Sorry, this user's profile is not public.</p>
+    <p>Sorry, this user's profile is not public.</p>
 {% endblock content %}

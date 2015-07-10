@@ -21,24 +21,13 @@
     <div>
         <h3>Essences Required:</h3>
         <div class="monster-awaken-materials">
-            {% if monster.monster.awaken_ele_mats_high %}
-                {% include 'herders/essence_fragment.html' with element=monster.monster.element size='high' count=monster.monster.awaken_ele_mats_high only %}
-            {% endif %}
-            {% if monster.monster.awaken_ele_mats_mid %}
-                {% include 'herders/essence_fragment.html' with element=monster.monster.element size='mid' count=monster.monster.awaken_ele_mats_mid only %}
-            {% endif %}
-            {% if monster.monster.awaken_ele_mats_low %}
-                {% include 'herders/essence_fragment.html' with element=monster.monster.element size='low' count=monster.monster.awaken_ele_mats_low only %}
-            {% endif %}
-            {% if monster.monster.awaken_magic_mats_high %}
-                {% include 'herders/essence_fragment.html' with element='magic' size='high' count=monster.monster.awaken_magic_mats_high only %}
-            {% endif %}
-            {% if monster.monster.awaken_magic_mats_mid %}
-                {% include 'herders/essence_fragment.html' with element='magic' size='mid' count=monster.monster.awaken_magic_mats_mid only %}
-            {% endif %}
-            {% if monster.monster.awaken_magic_mats_low %}
-                {% include 'herders/essence_fragment.html' with element='magic' size='low' count=monster.monster.awaken_magic_mats_low only %}
-            {% endif %}
+            {% with mats=monster.get_awakening_materials %}
+                {% for element,essences in mats.iteritems %}
+                    {% for size,count in essences.iteritems %}
+                        {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                    {% endfor %}
+                {% endfor %}
+            {% endwith %}
         </div>
     </div>
     <div>

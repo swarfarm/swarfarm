@@ -2,7 +2,13 @@
 {% load staticfiles %}
 {% load utils %}
 
-{% block title %}My Monsters - {{ block.super }}{% endblock title %}
+{% block title %}
+    {% if is_owner %}
+        My Monsters - {{ block.super }}
+    {% else %}
+        {{ profile_name }}'s Monsters - {{ block.super }}
+    {% endif %}
+{% endblock title %}
 
 {% block subnav %}
     {% if is_owner %}
@@ -81,7 +87,7 @@
                             <tr>
                                 <td class="monster-image">
                                     {% if is_owner %}
-                                        <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
+                                        <a href="{% url 'herders:monster_instance_view' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
                                     {% else %}
                                         <span>
                                     {% endif %}

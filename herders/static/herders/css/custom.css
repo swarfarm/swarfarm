@@ -495,6 +495,7 @@ td>h6 {
 
 .bestiary-detail {
     margin-left: 125px;
+    display: table;
 }
 
 .bestiary-detail th,
@@ -511,10 +512,14 @@ td>h6 {
 }
 
 .bestiary-detail-stats {
-    float: left;
+    width: 100%;
 }
 
-.bestiary-detail-family {
+.bestiary-detail-awakening {
+    width: 100%;
+}
+
+.bestiary-family {
     clear: both;
     padding-top: 5px;
     width: 102px;

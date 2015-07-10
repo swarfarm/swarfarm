@@ -552,12 +552,14 @@ def fusion_progress(request, profile_name):
                     Q(monster=ingredient) | Q(monster=ingredient.awakens_from),
                 ).order_by('-stars', '-level', '-monster__is_awakened')
 
+                sub_fusion_available = Fusion.objects.filter(product=ingredient.awakens_from).exists()
+
                 # Determine if each individual requirement is met using highest evolved/leveled monster
                 if len(owned_ingredients) > 0:
                     acquired = True
                     evolved = owned_ingredients[0].stars >= fusion.stars
                     leveled = owned_ingredients[0].level >= level
-                    awakened = owned_ingredients[0].monster == ingredient
+                    awakened = owned_ingredients[0].monster.is_awakened
                     complete = acquired & evolved & leveled & awakened
                 else:
                     acquired = False
@@ -568,6 +570,7 @@ def fusion_progress(request, profile_name):
 
                 ingredient_progress = {
                     'instance': ingredient,
+                    'sub_fusion_available': sub_fusion_available,
                     'owned': owned_ingredients,
                     'complete': complete,
                     'acquired': acquired,
@@ -589,11 +592,9 @@ def fusion_progress(request, profile_name):
                 'level': level,
                 'cost': fusion.cost,
                 'ingredients': ingredients,
-                'essences_missing': essences_missing(summoner, ingredients),
+                'essences_missing': essences_missing(summoner.get_storage(), ingredients),
                 'ready': fusion_ready,
             })
-
-            essences_missing(summoner, ingredients)
 
         context['fusions'] = progress
 

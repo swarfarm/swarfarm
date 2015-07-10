@@ -7,6 +7,14 @@
     <link href="{% static 'herders/css/profile.css' %}" rel="stylesheet"/>
 {% endblock css %}
 
+{% block title %}
+    {% if is_owner %}
+        My Fusion Progress - {{ block.super }}
+    {% else %}
+        {{ profile_name }}'s Fusion Progress - {{ block.super }}
+    {% endif %}
+{% endblock title %}
+
 {% block subnav %}
     {% static 'herders/images/' as img_url_prefix %}
     <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
@@ -71,6 +79,7 @@
                             <th class="fusion-checklist">Leveled</th>
                             <th class="fusion-checklist">Awakened</th>
                             <th>Your Collection</th>
+                            <th>Fuseable?</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -149,6 +158,13 @@
                                         </div>
                                     {% endfor %}
                                 </td>
+                                <td>
+                                    {% if ingredient.sub_fusion_available %}
+                                    <a href="#{{ ingredient.instance.awakens_from.name }}"><span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span> Yes</a>
+                                    {% else %}
+                                    <span class="glyphicon glyphicon-remove-circle" style="color: darkred"></span> No
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -158,13 +174,13 @@
                 <table class="table table-condensed monster-table fusion-ingredients">
                     <thead>
                         <tr>
-                            <th width="300px">Awakening Essences Missing</th>
-                            <th></th>
+                            <th colspan="2">Awakening Essences Missing</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>To awaken highest leveled ingredients</td>
+                            {# <td width="200px">Awaken these ingredients</td> #}
+                            {# Todo: Add another row with sub-fusion essences missing #}
                             <td class="monster-awaken-materials">
                                 {% for element,sizes in fusion.essences_missing.max_leveled.items %}
                                     {% for size,count in sizes.items %}
@@ -174,18 +190,7 @@
                                     {% endfor %}
                                 {% endfor %}
                             </td>
-                        </tr>
-                        <tr>
-                            <td>Using already awakened ingredients</td>
-                            <td class="monster-awaken-materials">
-                                {% for element,sizes in fusion.essences_missing.use_awakened.items %}
-                                    {% for size,count in sizes.items %}
-                                        {% if count < 0 %}
-                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endfor %}
-                            </td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>

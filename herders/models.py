@@ -1,4 +1,5 @@
 import uuid
+from collections import OrderedDict
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -84,6 +85,34 @@ class Monster(models.Model):
             return 10 + stars * 5
         else:
             return 10 + self.base_stars * 5
+
+    def get_awakening_materials(self):
+        if self.is_awakened and self.awakens_from is not None:
+            return self.awakens_from.get_awakening_materials()
+        else:
+            mats = OrderedDict()
+            mats['magic'] = OrderedDict()
+            mats[self.element] = OrderedDict()
+
+            if self.awaken_magic_mats_high:
+                mats['magic']['high'] = self.awaken_magic_mats_high
+
+            if self.awaken_magic_mats_mid:
+                mats['magic']['mid'] = self.awaken_magic_mats_mid
+
+            if self.awaken_magic_mats_low:
+                mats['magic']['low'] = self.awaken_magic_mats_low
+
+            if self.awaken_ele_mats_high:
+                mats[self.element]['high'] = self.awaken_ele_mats_high
+
+            if self.awaken_ele_mats_mid:
+                mats[self.element]['mid'] = self.awaken_ele_mats_mid
+
+            if self.awaken_ele_mats_low:
+                mats[self.element]['low'] = self.awaken_ele_mats_low
+
+            return mats
 
     def get_stats(self):
         from collections import OrderedDict
@@ -285,6 +314,40 @@ class Summoner(models.Model):
     storage_dark_mid = models.IntegerField(default=0)
     storage_dark_high = models.IntegerField(default=0)
 
+    def get_storage(self):
+        return OrderedDict({
+            'magic': {
+                'low': self.storage_magic_low,
+                'mid': self.storage_magic_mid,
+                'high': self.storage_magic_high,
+            },
+            'fire': {
+                'low': self.storage_fire_low,
+                'mid': self.storage_fire_mid,
+                'high': self.storage_fire_high,
+            },
+            'water': {
+                'low': self.storage_water_low,
+                'mid': self.storage_water_mid,
+                'high': self.storage_water_high,
+            },
+            'wind': {
+                'low': self.storage_wind_low,
+                'mid': self.storage_wind_mid,
+                'high': self.storage_wind_high,
+            },
+            'light': {
+                'low': self.storage_light_low,
+                'mid': self.storage_light_mid,
+                'high': self.storage_light_high,
+            },
+            'dark': {
+                'low': self.storage_dark_low,
+                'mid': self.storage_dark_mid,
+                'high': self.storage_dark_high,
+            },
+        })
+
     def save(self, *args, **kwargs):
         # Bounds checks on essences
         if self.storage_magic_low < 0:
@@ -406,7 +469,7 @@ class MonsterInstance(models.Model):
         if self.level > 10 + self.stars * 5:
             raise ValidationError(
                 'Level exceeds max for given star rating (Max: %(value)s)',
-                params={'value': self.monster.max_level_from_stars()},
+                params={'value': 10 + self.stars * 5},
                 code='invalid_level'
             )
 

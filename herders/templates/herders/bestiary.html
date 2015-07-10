@@ -3,7 +3,7 @@
 {% load utils %}
 {% load cache %}
 
-{% block title %}Monster Library - {{ block.super }}{% endblock title %}
+{% block title %}Bestiary - {{ block.super }}{% endblock title %}
 
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
@@ -106,24 +106,13 @@
                                     {% endif %}
                                 </td>
                                 <td class="monster-awaken-materials">
-                                    {% if monster.awaken_ele_mats_high %}
-                                        {% include 'herders/essence_fragment.html' with element=monster.element size='high' count=monster.awaken_ele_mats_high only %}
-                                    {% endif %}
-                                    {% if monster.awaken_ele_mats_mid %}
-                                        {% include 'herders/essence_fragment.html' with element=monster.element size='mid' count=monster.awaken_ele_mats_mid only %}
-                                    {% endif %}
-                                    {% if monster.awaken_ele_mats_low %}
-                                        {% include 'herders/essence_fragment.html' with element=monster.element size='low' count=monster.awaken_ele_mats_low only %}
-                                    {% endif %}
-                                    {% if monster.awaken_magic_mats_high %}
-                                        {% include 'herders/essence_fragment.html' with element='magic' size='high' count=monster.awaken_magic_mats_high only %}
-                                    {% endif %}
-                                    {% if monster.awaken_magic_mats_mid %}
-                                        {% include 'herders/essence_fragment.html' with element='magic' size='mid' count=monster.awaken_magic_mats_mid only %}
-                                    {% endif %}
-                                    {% if monster.awaken_magic_mats_low %}
-                                        {% include 'herders/essence_fragment.html' with element='magic' size='low' count=monster.awaken_magic_mats_low only %}
-                                    {% endif %}
+                                    {% with mats=monster.get_awakening_materials %}
+                                        {% for element,essences in mats.iteritems %}
+                                            {% for size,count in essences.iteritems %}
+                                                {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                    {% endwith %}
                                 </td>
                                 <td></td>
                             </tr>

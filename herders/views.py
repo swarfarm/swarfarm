@@ -575,6 +575,21 @@ def fusion_progress(request, profile_name):
                 'ready': fusion_ready,
             })
 
+        # Run through again to calculate total missing essences for fuseable monsters
+        # Easier to loop through after initial calculations and then add essences together
+        for fusion in progress:
+            for ingredient in fusion['ingredients']:
+                if ingredient['sub_fusion_available']:
+                    print 'Sub fusion for ' + str(ingredient['instance']) + ' available! Searching...'
+                    # Find the missing cost of the ingredient fusion and add it here
+                    combined_missing = OrderedDict()
+
+                    for sub_fusion in progress:
+                        print 'Checking against ' + str(sub_fusion['instance']) + '...'
+                        if ingredient['instance'].awakens_from == sub_fusion['instance']:
+                            print 'Found sub-fusion!'
+
+
         context['fusions'] = progress
 
         return render(request, 'herders/profile/profile_fusion.html', context)

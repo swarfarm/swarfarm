@@ -512,7 +512,7 @@ def fusion_progress(request, profile_name):
     }
 
     fusions = Fusion.objects.all().select_related()
-    progress = []
+    progress = OrderedDict()
 
     if is_owner or summoner.public:
         for fusion in fusions:
@@ -564,31 +564,37 @@ def fusion_progress(request, profile_name):
                 if not i['complete']:
                     fusion_ready = False
 
-            progress.append({
+            progress[fusion.product.name] = {
                 'instance': fusion.product,
                 'acquired': fusion_complete,
                 'stars': fusion.stars,
                 'level': level,
                 'cost': fusion.cost,
                 'ingredients': ingredients,
-                'essences_missing': essences_missing(summoner.get_storage(), ingredients),
+                'essences_missing': {
+                    'max_leveled': essences_missing(summoner.get_storage(), ingredients),
+                },
                 'ready': fusion_ready,
-            })
+            }
 
-        # Run through again to calculate total missing essences for fuseable monsters
-        # Easier to loop through after initial calculations and then add essences together
-        for fusion in progress:
+        # Iterate through again and find any sub-fusions that are possible. Add their missing essences together for a total count
+        for monster, fusion in progress.iteritems():
+            combined_missing = OrderedDict()
+
+            # Check if ingredients for this fusion are fuseable themselves
             for ingredient in fusion['ingredients']:
-                if ingredient['sub_fusion_available']:
-                    print 'Sub fusion for ' + str(ingredient['instance']) + ' available! Searching...'
-                    # Find the missing cost of the ingredient fusion and add it here
-                    combined_missing = OrderedDict()
+                if ingredient['sub_fusion_available'] and not ingredient['awakened']:
+                    sub_fusion = progress.get(ingredient['instance'].awakens_from.name, None)
 
-                    for sub_fusion in progress:
-                        print 'Checking against ' + str(sub_fusion['instance']) + '...'
-                        if ingredient['instance'].awakens_from == sub_fusion['instance']:
-                            print 'Found sub-fusion!'
+                    # Add each element's sizes together
+                    for element, sizes in dict(fusion['essences_missing']['max_leveled']).iteritems():
+                        if not combined_missing.get(element, None):
+                            combined_missing[element] = OrderedDict()
 
+                        for size in set(sizes.keys() + sub_fusion['essences_missing']['max_leveled'][element].keys()):
+                            combined_missing[element][size] = sizes.get(size, 0) + sub_fusion['essences_missing']['max_leveled'][element].get(size, 0)
+
+            fusion['essences_missing']['combined'] = combined_missing
 
         context['fusions'] = progress
 

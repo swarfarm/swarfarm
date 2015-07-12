@@ -33,6 +33,4 @@ def essences_missing(summoner_storage, ingredients):
     for element in total_awakening_cost.keys():
         total_missing[element] = {key: summoner_storage[element][key] - total_awakening_cost[element][key] for key in total_awakening_cost[element].keys()}
 
-    return {
-        'max_leveled': total_missing,
-    }
+    return total_missing

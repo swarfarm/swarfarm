@@ -31,7 +31,7 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-subnav">
-                {% for fusion in fusions %}
+                {% for monster, fusion in fusions.iteritems %}
                     <a href="#{{ fusion.instance.name }}" class="btn {% if fusion.ready %}btn-success{% else %}btn-default{% endif %} navbar-btn">
                         <img src="{{ img_url_prefix }}elements/{{ fusion.instance.element }}.png" />
                         {{ fusion.instance.name }}
@@ -44,7 +44,7 @@
 
 {% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
-    {% for fusion in fusions %}
+    {% for monster, fusion in fusions.iteritems %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <a id="#{{ fusion.instance.name }}" name="{{ fusion.instance.name }}" class="profile-anchor-offset"></a>
@@ -179,8 +179,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            {# <td width="200px">Awaken these ingredients</td> #}
-                            {# Todo: Add another row with sub-fusion essences missing #}
+                            <td width="240px">This fusion only</td>
                             <td class="monster-awaken-materials">
                                 {% for element,sizes in fusion.essences_missing.max_leveled.items %}
                                     {% for size,count in sizes.items %}
@@ -190,8 +189,21 @@
                                     {% endfor %}
                                 {% endfor %}
                             </td>
-                            <td></td>
                         </tr>
+                        {% if fusion.essences_missing.combined %}
+                            <tr>
+                                <td>Including missing ingredient fusions</td>
+                                <td class="monster-awaken-materials">
+                                    {% for element, sizes in fusion.essences_missing.combined.iteritems %}
+                                        {% for size,count in sizes.iteritems %}
+                                            {% if count < 0 %}
+                                                {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>

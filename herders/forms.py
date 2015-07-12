@@ -271,7 +271,6 @@ class EditEssenceStorageForm(ModelForm):
             Div(
                 FormActions(
                     Submit('save', 'Save', css_class='btn btn-primary'),
-                    HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
                 ),
             )
         )

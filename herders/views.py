@@ -580,33 +580,26 @@ def fusion_progress(request, profile_name):
         # Iterate through again and find any sub-fusions that are possible. Add their missing essences together for a total count
         from copy import deepcopy
         for monster, fusion in progress.iteritems():
-            print 'Checking sub-fusions for ' + str(fusion['instance'])
             combined_missing = deepcopy(fusion['essences_missing']['max_leveled'])
+            sub_fusions_found = False
 
             # Check if ingredients for this fusion are fuseable themselves
             for ingredient in fusion['ingredients']:
-                print '    Checking ingredient ' + str(ingredient['instance']) + '...'
+                if ingredient['sub_fusion_available']:
+                    sub_fusions_found = True
+                    if not ingredient['awakened']:
+                        # Get the totals for the sub-fusions and add to the current fusion cost
+                        sub_fusion = progress.get(ingredient['instance'].awakens_from.name, None)
 
-                if ingredient['sub_fusion_available'] and not ingredient['awakened']:
-                    sub_fusion = progress.get(ingredient['instance'].awakens_from.name, None)
-                    print '        Found sub-fusion! Adding essences together...'
+                        for element, sizes in fusion['essences_missing']['max_leveled'].iteritems():
+                            if element not in combined_missing:
+                                combined_missing[element] = OrderedDict()
 
-                    for element, sizes in fusion['essences_missing']['max_leveled'].iteritems():
-                        print '            element: ' + element
-                        if element not in combined_missing:
-                            print '                ' + element + ' not in combined dict yet.'
-                            combined_missing[element] = OrderedDict()
+                            for size in set(sizes.keys() + sub_fusion['essences_missing']['max_leveled'][element].keys()):
+                                combined_missing[element][size] = combined_missing[element].get(size, 0) + sub_fusion['essences_missing']['max_leveled'][element].get(size, 0)
 
-                        for size in set(sizes.keys() + sub_fusion['essences_missing']['max_leveled'][element].keys()):
-                            combined_missing[element][size] = combined_missing[element].get(size, 0) + sub_fusion['essences_missing']['max_leveled'][element].get(size, 0)
-                            print '                ' + size
-                            print '                    Current: ' + str(sizes.get(size, 0))
-                            print '                    Sub-fusion: ' + str(sub_fusion['essences_missing']['max_leveled'][element].get(size, 0))
-                            print '                    Combined: ' + str(combined_missing[element][size])
-
-            fusion['essences_missing']['combined'] = combined_missing
-            print "Here's the totals for " + str(fusion['instance'])
-            print fusion['essences_missing']['combined']
+            if sub_fusions_found:
+                fusion['essences_missing']['combined'] = combined_missing
 
         context['fusions'] = progress
 

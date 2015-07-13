@@ -537,9 +537,9 @@ def fusion_progress(request, profile_name):
                 for owned_ingredient in owned_ingredients:
                     if not owned_ingredient.ignore_for_fusion:
                         acquired = True
-                        evolved = owned_ingredients[0].stars >= fusion.stars
-                        leveled = owned_ingredients[0].level >= level
-                        awakened = owned_ingredients[0].monster.is_awakened
+                        evolved = owned_ingredient.stars >= fusion.stars
+                        leveled = owned_ingredient.level >= level
+                        awakened = owned_ingredient.monster.is_awakened
                         complete = acquired & evolved & leveled & awakened
                         break
                 else:

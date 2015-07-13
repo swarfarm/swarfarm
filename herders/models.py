@@ -258,7 +258,7 @@ class MonsterSkill(models.Model):
             return 'No Image'
 
     def __unicode__(self):
-        return self.name
+        return self.name + ' - ' + self.icon_filename
 
 
 class MonsterSkillEffect(models.Model):
@@ -274,7 +274,7 @@ class MonsterSkillEffect(models.Model):
             return 'No Image'
 
     def __unicode__(self):
-        return self.name + ' - ' + self.icon_filename
+        return self.name
 
 
 class Fusion(models.Model):

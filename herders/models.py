@@ -274,7 +274,7 @@ class MonsterSkillEffect(models.Model):
             return 'No Image'
 
     def __unicode__(self):
-        return self.name
+        return self.name + ' - ' + self.icon_filename
 
 
 class Fusion(models.Model):

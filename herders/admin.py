@@ -67,7 +67,7 @@ class MonsterAdmin(admin.ModelAdmin):
 
     list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'awakens_from')
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened')
-    filter_horizontal = ('skills',)
+    filter_vertical = ('skills',)
     search_fields = ['name']
 
 admin.site.register(Monster, MonsterAdmin)
@@ -75,7 +75,7 @@ admin.site.register(Monster, MonsterAdmin)
 
 class MonsterSkillAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive', 'general_leader', 'dungeon_leader', 'arena_leader', 'guild_leader')
-    filter_horizontal = ('skill_effect',)
+    filter_vertical = ('skill_effect',)
     save_as = True
 admin.site.register(MonsterSkill, MonsterSkillAdmin)
 

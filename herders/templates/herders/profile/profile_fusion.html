@@ -152,6 +152,9 @@
                                                     {% endfor %}
                                                 </span>
                                                 <span class="image-plus image-plus-right">{{ owned.level }}</span>
+                                                {% if owned.ignore_for_fusion %}
+                                                    <div class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Ignored for fusion progress"></div>
+                                                {% endif %}
                                             {% if is_owner %}
                                                 </a>
                                             {% endif %}

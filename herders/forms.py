@@ -334,6 +334,7 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
                 Field('level', value=1, min=1, max=40),
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
+                Field('ignore_for_fusion', css_class='checkbox'),
                 Field('priority',),
                 Field('notes'),
                 css_class='modal-body',
@@ -349,7 +350,7 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
 
     class Meta:
         model = MonsterInstance
-        fields = ('monster', 'stars', 'level', 'fodder', 'in_storage', 'priority', 'notes')
+        fields = ('monster', 'stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes')
 
 
 class EditMonsterInstanceForm(ModelForm):
@@ -364,6 +365,7 @@ class EditMonsterInstanceForm(ModelForm):
                 Field('level', min=1, max=40),
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
+                Field('ignore_for_fusion', css_class='checkbox'),
                 Field('priority'),
                 Field('notes'),
             ),
@@ -377,7 +379,7 @@ class EditMonsterInstanceForm(ModelForm):
 
     class Meta:
         model = MonsterInstance
-        exclude = ('owner', 'monster', 'fodder_for')
+        exclude = ('owner', 'monster')
 
 
 class PowerUpMonsterInstanceForm(forms.Form):

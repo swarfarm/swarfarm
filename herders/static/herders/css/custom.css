@@ -420,6 +420,16 @@ button.filter:not(.active):focus {
     padding: 0!important;
 }
 
+div.disabled {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: #000000;
+    opacity: 0.6;
+}
+
 .team-list {
     width: 275px;
     float: left;

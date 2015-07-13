@@ -417,6 +417,7 @@ class MonsterInstance(models.Model):
     skill_4_level = models.IntegerField(null=True, blank=True)
     fodder = models.BooleanField(default=False)
     in_storage = models.BooleanField(default=False)
+    ignore_for_fusion = models.BooleanField(default=False)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_MED)
     notes = models.TextField(null=True, blank=True)
 

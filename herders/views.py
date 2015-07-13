@@ -533,13 +533,15 @@ def fusion_progress(request, profile_name):
 
                 sub_fusion_available = Fusion.objects.filter(product=ingredient.awakens_from).exists()
 
-                # Determine if each individual requirement is met using highest evolved/leveled monster
-                if len(owned_ingredients) > 0:
-                    acquired = True
-                    evolved = owned_ingredients[0].stars >= fusion.stars
-                    leveled = owned_ingredients[0].level >= level
-                    awakened = owned_ingredients[0].monster.is_awakened
-                    complete = acquired & evolved & leveled & awakened
+                # Determine if each individual requirement is met using highest evolved/leveled monster that is not ignored for fusion
+                for owned_ingredient in owned_ingredients:
+                    if not owned_ingredient.ignore_for_fusion:
+                        acquired = True
+                        evolved = owned_ingredients[0].stars >= fusion.stars
+                        leveled = owned_ingredients[0].level >= level
+                        awakened = owned_ingredients[0].monster.is_awakened
+                        complete = acquired & evolved & leveled & awakened
+                        break
                 else:
                     acquired = False
                     evolved = False

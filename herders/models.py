@@ -211,7 +211,7 @@ class Monster(models.Model):
 
     def monster_family(self):
         # Get unawakened monsters which are in the same family
-        if self.is_awakened:
+        if self.is_awakened and self.awakens_from is not None:
             unawakened_name = self.awakens_from.name
         else:
             unawakened_name = self.name

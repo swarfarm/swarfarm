@@ -1,7 +1,7 @@
 python-memcached
 psycopg2
 Django==1.8.2
-django-autocomplete-light==2.2.2
+django-autocomplete-light==2.2.3
 django-crispy-forms
 django-markdown-deux
 django-recaptcha

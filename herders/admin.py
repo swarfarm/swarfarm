@@ -76,6 +76,8 @@ admin.site.register(Monster, MonsterAdmin)
 class MonsterSkillAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive', 'general_leader', 'dungeon_leader', 'arena_leader', 'guild_leader')
     filter_vertical = ('skill_effect',)
+    list_filter = ('general_leader', 'dungeon_leader', 'arena_leader', 'guild_leader')
+    search_fields = ['name', 'icon_filename']
     save_as = True
 admin.site.register(MonsterSkill, MonsterSkillAdmin)
 

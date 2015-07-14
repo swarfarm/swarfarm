@@ -260,6 +260,9 @@ class MonsterSkill(models.Model):
     def __unicode__(self):
         return self.name + ' - ' + self.icon_filename
 
+    class Meta:
+        ordering = ['name', 'icon_filename']
+
 
 class MonsterSkillEffect(models.Model):
     is_buff = models.BooleanField(default=True)
@@ -275,6 +278,9 @@ class MonsterSkillEffect(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['-is_buff', 'name']
 
 
 class Fusion(models.Model):

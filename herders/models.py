@@ -243,6 +243,7 @@ class MonsterSkill(models.Model):
     slot = models.IntegerField(default=1)
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
     general_leader = models.BooleanField(default=False)
+    element_leader = models.BooleanField(default=False)
     dungeon_leader = models.BooleanField(default=False)
     arena_leader = models.BooleanField(default=False)
     guild_leader = models.BooleanField(default=False)

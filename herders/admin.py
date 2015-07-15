@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
 
 from .models import *
 
@@ -21,9 +20,10 @@ admin.site.register(User, UserAdmin)
 
 
 # Monster Database stuff
+@admin.register(Monster)
 class MonsterAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Basic Information',  {
+        ('Basic Information', {
             'fields': (
                 'name',
                 'element',
@@ -60,6 +60,7 @@ class MonsterAdmin(admin.ModelAdmin):
         }),
         ('Skills', {
             'fields': (
+                'leader_skill',
                 'skills',
             )
         })
@@ -70,47 +71,47 @@ class MonsterAdmin(admin.ModelAdmin):
     filter_vertical = ('skills',)
     search_fields = ['name']
 
-admin.site.register(Monster, MonsterAdmin)
 
-
+@admin.register(MonsterSkill)
 class MonsterSkillAdmin(admin.ModelAdmin):
-    list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive', 'general_leader', 'element_leader', 'dungeon_leader', 'arena_leader', 'guild_leader')
+    list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
     filter_vertical = ('skill_effect',)
-    list_filter = ('general_leader', 'dungeon_leader', 'arena_leader', 'guild_leader')
     search_fields = ['name', 'icon_filename']
     save_as = True
-admin.site.register(MonsterSkill, MonsterSkillAdmin)
 
 
+@admin.register(MonsterLeaderSkill)
+class MonsterLeaderSkillAdmin(admin.ModelAdmin):
+    list_display = ('image_url', 'attribute', 'amount', 'skill_string', 'dungeon_skill', 'element_skill', 'arena_skill', 'guild_skill')
+    list_filter = ('attribute', 'dungeon_skill', 'element_skill', 'arena_skill', 'guild_skill')
+
+
+@admin.register(MonsterSkillEffect)
 class MonsterSkillEffectAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'is_buff')
-admin.site.register(MonsterSkillEffect, MonsterSkillEffectAdmin)
 
 
+@admin.register(Fusion)
 class FusionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'stars', 'cost',)
     filter_horizontal = ('ingredients',)
 
-admin.site.register(Fusion, FusionAdmin)
 
-
+@admin.register(MonsterInstance)
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')
     search_fields = ['owner']
 
-admin.site.register(MonsterInstance, MonsterInstanceAdmin)
 
-
+@admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'group', 'owner')
     filter_horizontal = ('roster',)
 
-admin.site.register(Team, TeamAdmin)
 
-
+@admin.register(TeamGroup)
 class TeamGroupAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')
 
-admin.site.register(TeamGroup, TeamGroupAdmin)
 
 admin.site.register(RuneInstance)

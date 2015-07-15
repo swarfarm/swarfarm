@@ -323,13 +323,13 @@ class MonsterLeaderSkill(models.Model):
 
     def __unicode__(self):
         if self.dungeon_skill:
-            condition = 'in the Dungeons '
+            condition = ' Dungeon'
         elif self.arena_skill:
-            condition = 'in the Arena '
+            condition = ' Arena'
         elif self.guild_skill:
-            condition = 'in the Guild Battle '
+            condition = ' Guild'
         elif self.element_skill:
-            condition = 'with {} attribute'.format(self.get_element_display())
+            condition = self.get_element_display()
         else:
             condition = ''
 

@@ -1,15 +1,29 @@
 from django.shortcuts import render, get_object_or_404
-from django.views.decorators.cache import cache_page
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Article
 
+
 def latest_news(request):
-    news_posts = Article.objects.all().order_by('-created')
+    news_posts = Article.objects.all().order_by('-sticky', '-created')
 
-    news_posts_ids = [o.id for o in news_posts if o.is_active()]
-    news_posts = news_posts.filter(id__in=news_posts_ids)
+    paginator = Paginator(news_posts, 5)
+    page = request.GET.get('page')
 
-    return render(request, 'news/latest_news.html', {'posts': news_posts})
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+    context = {
+        'posts': posts,
+        'page_range': paginator.page_range,
+    }
+
+    return render(request, 'news/latest_news.html', context)
+
 
 def post(request, article_id):
     article = get_object_or_404(Article, pk=article_id)

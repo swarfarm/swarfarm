@@ -1,14 +1,14 @@
 from django.db import models
 from django.utils import timezone
 
+
 class Article(models.Model):
     title = models.CharField(max_length=60)
     body = models.TextField()
-    created = models.DateTimeField(auto_now_add=True)
-    display_until = models.DateTimeField(blank=True, null=True)\
+    created = models.DateTimeField(default=timezone.now)
+    sticky = models.BooleanField(default=False)
 
-
-    def is_active(self):
+    def is_frontpage(self):
         if self.display_until is None:
             return True
         else:
@@ -16,3 +16,6 @@ class Article(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    class Meta:
+        ordering = ('-sticky', 'created')

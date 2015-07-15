@@ -1,17 +1,55 @@
 {% extends 'base.html' %}
 {% load markdown_deux_tags %}
-{% load cache %}
 
 {% block content %}
-    {% cache 300 latest_news %}
-        {% for post in posts %}
-            <h1>{{ post.title }}</h1>
-            {{ post.body|markdown }}
-            {% if forloop.last == False %}
-                <hr />
+    {% for post in posts %}
+        <h1>
+            {{ post.title }}
+            <small>{{ post.created|date:"DATE_FORMAT" }}</small>
+        </h1>
+        {{ post.body|markdown }}
+        {% if forloop.last == False %}
+            <hr />
+        {% endif %}
+    {% empty %}
+        <p>No news!</p>
+    {% endfor %}
+
+    <nav>
+        <ul class="pagination">
+            {% if posts.has_previous %}
+                <li>
+                    <a href="?page={{ posts.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="disabled">
+                    <span aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </span>
+                </li>
             {% endif %}
-        {% empty %}
-            <p>No news!</p>
-        {% endfor %}
-    {% endcache %}
+
+            {% for page_num in page_range %}
+                <li {% if page_num == posts.number %}class="active"{% endif %}>
+                    <a href="{% url 'news:latest_news' %}?page={{ page_num }}">{{ page_num }}</a>
+                </li>
+            {% endfor %}
+
+            {% if posts.has_next %}
+                <li>
+                    <a href="?page={{ posts.next_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="disabled">
+                    <span aria-label="Previous">
+                        <span aria-hidden="true">&raquo;</span>
+                    </span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 {% endblock content %}

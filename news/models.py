@@ -8,12 +8,6 @@ class Article(models.Model):
     created = models.DateTimeField(default=timezone.now)
     sticky = models.BooleanField(default=False)
 
-    def is_frontpage(self):
-        if self.display_until is None:
-            return True
-        else:
-            return self.display_until >= timezone.now()
-
     def __unicode__(self):
         return self.title
 

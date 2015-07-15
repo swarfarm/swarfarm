@@ -329,7 +329,7 @@ class MonsterLeaderSkill(models.Model):
         elif self.guild_skill:
             condition = ' Guild'
         elif self.element_skill:
-            condition = self.get_element_display()
+            condition = ' ' + self.get_element_display()
         else:
             condition = ''
 

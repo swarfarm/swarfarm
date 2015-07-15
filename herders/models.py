@@ -55,7 +55,9 @@ class Monster(models.Model):
     base_stars = models.IntegerField(choices=STAR_CHOICES)
     can_awaken = models.BooleanField(default=True)
     is_awakened = models.BooleanField(default=False)
+    awaken_bonus = models.TextField(blank=True)
     skills = models.ManyToManyField('MonsterSkill', blank=True)
+    leader_skill = models.ForeignKey('MonsterLeaderSkill', null=True, blank=True)
     base_hp = models.IntegerField(null=True, blank=True)
     base_attack = models.IntegerField(null=True, blank=True)
     base_defense = models.IntegerField(null=True, blank=True)
@@ -242,11 +244,6 @@ class MonsterSkill(models.Model):
     description = models.TextField()
     slot = models.IntegerField(default=1)
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
-    general_leader = models.BooleanField(default=False)
-    element_leader = models.BooleanField(default=False)
-    dungeon_leader = models.BooleanField(default=False)
-    arena_leader = models.BooleanField(default=False)
-    guild_leader = models.BooleanField(default=False)
     passive = models.BooleanField(default=False)
     max_level = models.IntegerField()
     level_progress_description = models.TextField(null=True, blank=True)
@@ -263,6 +260,84 @@ class MonsterSkill(models.Model):
 
     class Meta:
         ordering = ['name', 'icon_filename']
+
+
+class MonsterLeaderSkill(models.Model):
+    ATTRIBUTE_HP = 1
+    ATTRIBUTE_ATK = 2
+    ATTRIBUTE_DEF = 3
+    ATTRIBUTE_SPD = 4
+    ATTRIBUTE_CRIT_RATE = 5
+    ATTRIBUTE_RESIST = 6
+    ATTRIBUTE_ACCURACY = 7
+
+    ATTRIBUTE_CHOICES = (
+        (ATTRIBUTE_HP, 'HP'),
+        (ATTRIBUTE_ATK, 'Attack Power'),
+        (ATTRIBUTE_DEF, 'Defense'),
+        (ATTRIBUTE_SPD, 'Attack Speed'),
+        (ATTRIBUTE_CRIT_RATE, 'Critical Rate'),
+        (ATTRIBUTE_RESIST, 'Resistance'),
+        (ATTRIBUTE_ACCURACY, 'Accuracy'),
+    )
+
+    attribute = models.IntegerField(choices=ATTRIBUTE_CHOICES)
+    amount = models.IntegerField()
+    dungeon_skill = models.BooleanField(default=False)
+    element_skill = models.BooleanField(default=False)
+    element = models.CharField(max_length=6, null=True, blank=True, choices=Monster.ELEMENT_CHOICES)
+    arena_skill = models.BooleanField(default=False)
+    guild_skill = models.BooleanField(default=False)
+
+    def skill_string(self):
+        if self.dungeon_skill:
+            condition = 'in the Dungeons '
+        elif self.arena_skill:
+            condition = 'in the Arena '
+        elif self.guild_skill:
+            condition = 'in the Guild Battles '
+        elif self.element_skill:
+            condition = 'with {} attribute '.format(self.get_element_display())
+        else:
+            condition = ''
+
+        return "Increase the {0} of ally monsters {1}by {2}%".format(self.get_attribute_display(), condition, self.amount)
+
+    def icon_filename(self):
+        if self.dungeon_skill:
+            suffix = '_Dungeon'
+        elif self.arena_skill:
+            suffix = '_Arena'
+        elif self.guild_skill:
+            suffix = '_Guild'
+        elif self.element_skill:
+            suffix = '_{}'.format(self.get_element_display())
+        else:
+            suffix = ''
+
+        return 'leader_skill_{0}{1}.png'.format(self.get_attribute_display().replace(' ', '_'), suffix)
+
+    def image_url(self):
+        return mark_safe('<img src="{}" height="42" width="42"/>'.format(
+            static('herders/images/skills/leader/' + self.icon_filename())
+        ))
+
+    def __unicode__(self):
+        if self.dungeon_skill:
+            condition = ' Dungeon'
+        elif self.arena_skill:
+            condition = ' Arena'
+        elif self.guild_skill:
+            condition = ' Guild'
+        elif self.element_skill:
+            condition = ' ' + self.get_element_display()
+        else:
+            condition = ''
+
+        return self.get_attribute_display() + ' ' + str(self.amount) + condition
+
+    class Meta:
+        ordering = ['attribute', 'amount', 'element']
 
 
 class MonsterSkillEffect(models.Model):

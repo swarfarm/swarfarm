@@ -86,6 +86,7 @@ class MonsterLeaderSkillAdmin(admin.ModelAdmin):
     list_filter = ('attribute', 'dungeon_skill', 'element_skill', 'arena_skill', 'guild_skill')
 
 
+
 @admin.register(MonsterSkillEffect)
 class MonsterSkillEffectAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'is_buff')

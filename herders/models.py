@@ -335,6 +335,9 @@ class MonsterLeaderSkill(models.Model):
 
         return self.get_attribute_display() + ' ' + str(self.amount) + condition
 
+    class Meta:
+        ordering = ['attribute', 'amount', 'element']
+
 
 class MonsterSkillEffect(models.Model):
     is_buff = models.BooleanField(default=True)

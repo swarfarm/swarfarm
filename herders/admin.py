@@ -30,6 +30,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'archetype',
                 'can_awaken',
                 'is_awakened',
+                'awaken_bonus',
                 'awakens_from',
                 'awakens_to',
                 'fusion_food',

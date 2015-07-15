@@ -55,6 +55,7 @@ class Monster(models.Model):
     base_stars = models.IntegerField(choices=STAR_CHOICES)
     can_awaken = models.BooleanField(default=True)
     is_awakened = models.BooleanField(default=False)
+    awaken_bonus = models.TextField(blank=True)
     skills = models.ManyToManyField('MonsterSkill', blank=True)
     leader_skill = models.ForeignKey('MonsterLeaderSkill', null=True, blank=True)
     base_hp = models.IntegerField(null=True, blank=True)

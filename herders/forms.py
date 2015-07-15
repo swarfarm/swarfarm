@@ -329,7 +329,14 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
-                Field('monster'),
+                Field(
+                    'monster',
+                    data_toggle='popover',
+                    data_trigger='focus',
+                    data_container='body',
+                    title='Autocomplete Tips',
+                    data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
+                ),
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
                 Field('level', value=1, min=1, max=40),
                 Field('fodder', css_class='checkbox'),

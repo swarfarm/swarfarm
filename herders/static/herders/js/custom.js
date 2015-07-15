@@ -1,8 +1,12 @@
 var api_url = 'https://swarfarm.com/api/';
 
-//Initialize all bootstrap tooltips
+//Initialize all bootstrap tooltips and popovers
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
+});
+
+$(function () {
+  $('[data-toggle="popover"]').popover()
 });
 
 //Modal management scripts

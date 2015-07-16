@@ -7,7 +7,7 @@ def essences_missing(summoner_storage, total_cost):
     total_missing = deepcopy(total_cost)
 
     for element in total_cost.keys():
-        total_missing[element] = {key: summoner_storage[element][key] - total_cost[element][key] if summoner_storage[element][key] - total_cost[element][key] < 0 else 0 for key in total_cost[element].keys()}
+        total_missing[element] = {key: summoner_storage[element][key] - total_cost[element].get(key, 0) if summoner_storage[element][key] - total_cost[element].get(key, 0) < 0 else 0 for key in summoner_storage[element].keys()}
 
     return total_missing
 

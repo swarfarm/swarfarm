@@ -177,12 +177,24 @@
                 <table class="table table-condensed monster-table fusion-ingredients">
                     <thead>
                         <tr>
-                            <th colspan="2">Awakening Essences Missing</th>
+                            <th colspan="2">Awakening Essences</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% comment 'Adding this adds confusion, but clarifies missing costs. Will leave out for now until someone complains' %}
                         <tr>
-                            <td width="240px">This fusion only</td>
+                            <td width="240px">Total Essence Cost</td>
+                            <td class="monster-awaken-materials">
+                                {% for element,sizes in fusion.awakening_materials.total_cost.items %}
+                                    {% for size,count in sizes.items %}
+                                        {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endcomment %}
+                        <tr>
+                            <td width="240px">Missing for this fusion only</td>
                             <td class="monster-awaken-materials">
                                 {% for element,sizes in fusion.awakening_materials.missing.items %}
                                     {% for size,count in sizes.items %}
@@ -195,7 +207,7 @@
                         </tr>
                         {% if fusion.awakening_materials.combined %}
                             <tr>
-                                <td>Including missing ingredient fusions</td>
+                                <td>Missing including ingredient fusions</td>
                                 <td class="monster-awaken-materials">
                                     {% for element, sizes in fusion.awakening_materials.combined.iteritems %}
                                         {% for size,count in sizes.iteritems %}

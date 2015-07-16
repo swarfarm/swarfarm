@@ -4,7 +4,20 @@ from collections import OrderedDict
 
 def essences_missing(summoner_storage, ingredients):
     # Calculate how many essences are missing to awaken all ingredients
-    total_awakening_cost = OrderedDict({
+    total_cost = total_awakening_cost(ingredients)
+    total_missing = deepcopy(total_cost)
+
+    for element in total_cost.keys():
+        total_missing[element] = {key: summoner_storage[element][key] - total_cost[element][key] if summoner_storage[element][key] - total_cost[element][key] < 0 else 0 for key in total_cost[element].keys()}
+
+    return {
+        'total_cost': total_cost,
+        'missing': total_missing,
+    }
+
+
+def total_awakening_cost(ingredients):
+    total_cost = OrderedDict({
         'magic': {},
         'fire': {},
         'water': {},
@@ -12,8 +25,6 @@ def essences_missing(summoner_storage, ingredients):
         'dark': {},
         'light': {},
     })
-
-    total_missing = deepcopy(total_awakening_cost)
 
     # Method 1: Assume user wants to awaken the highest star/level ingredient
     for ingredient in ingredients:
@@ -28,9 +39,6 @@ def essences_missing(summoner_storage, ingredients):
 
             for element, essences in awakening_cost.iteritems():
                 for size in awakening_cost[element].keys():
-                    total_awakening_cost[element][size] = total_awakening_cost[element].get(size, 0) + awakening_cost[element][size]
+                    total_cost[element][size] = total_cost[element].get(size, 0) + awakening_cost[element][size]
 
-    for element in total_awakening_cost.keys():
-        total_missing[element] = {key: summoner_storage[element][key] - total_awakening_cost[element][key] if summoner_storage[element][key] - total_awakening_cost[element][key] < 0 else 0 for key in total_awakening_cost[element].keys()}
-
-    return total_missing
+    return total_cost

@@ -184,7 +184,7 @@
                         <tr>
                             <td width="240px">This fusion only</td>
                             <td class="monster-awaken-materials">
-                                {% for element,sizes in fusion.essences_missing.max_leveled.items %}
+                                {% for element,sizes in fusion.awakening_materials.missing.items %}
                                     {% for size,count in sizes.items %}
                                         {% if count < 0 %}
                                             {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
@@ -193,11 +193,11 @@
                                 {% endfor %}
                             </td>
                         </tr>
-                        {% if fusion.essences_missing.combined %}
+                        {% if fusion.awakening_materials.combined %}
                             <tr>
                                 <td>Including missing ingredient fusions</td>
                                 <td class="monster-awaken-materials">
-                                    {% for element, sizes in fusion.essences_missing.combined.iteritems %}
+                                    {% for element, sizes in fusion.awakening_materials.combined.iteritems %}
                                         {% for size,count in sizes.iteritems %}
                                             {% if count < 0 %}
                                                 {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}

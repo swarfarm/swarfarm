@@ -586,7 +586,7 @@ def fusion_progress(request, profile_name):
 
             # Check if ingredients for this fusion are fuseable themselves
             for ingredient in fusion['ingredients']:
-                if ingredient['sub_fusion_available'] and not ingredient['awakened']:
+                if ingredient['sub_fusion_available'] and not ingredient['acquired']:
                     sub_fusions_found = True
                     print '    Found sub-fusion for ' + str(ingredient['instance'])
                     # Get the totals for the sub-fusions and add to the current fusion cost

@@ -31,6 +31,6 @@ def essences_missing(summoner_storage, ingredients):
                     total_awakening_cost[element][size] = total_awakening_cost[element].get(size, 0) + awakening_cost[element][size]
 
     for element in total_awakening_cost.keys():
-        total_missing[element] = {key: summoner_storage[element][key] - total_awakening_cost[element][key] for key in total_awakening_cost[element].keys()}
+        total_missing[element] = {key: summoner_storage[element][key] - total_awakening_cost[element][key] if summoner_storage[element][key] - total_awakening_cost[element][key] < 0 else 0 for key in total_awakening_cost[element].keys()}
 
     return total_missing

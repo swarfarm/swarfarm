@@ -17,7 +17,7 @@ from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstance
     PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm, EditTeamForm, AddTeamGroupForm, \
     DeleteTeamGroupForm
 from .models import Monster, Summoner, MonsterInstance, Fusion, TeamGroup, Team
-from .fusion import essences_missing
+from .fusion import essences_missing, total_awakening_cost
 
 
 def register(request):
@@ -566,6 +566,9 @@ def fusion_progress(request, profile_name):
                 if not i['complete']:
                     fusion_ready = False
 
+            total_cost = total_awakening_cost(ingredients)
+            total_missing = essences_missing(summoner.get_storage(), total_cost)
+
             progress[fusion.product.name] = {
                 'instance': fusion.product,
                 'acquired': fusion_complete,
@@ -573,7 +576,10 @@ def fusion_progress(request, profile_name):
                 'level': level,
                 'cost': fusion.cost,
                 'ingredients': ingredients,
-                'awakening_materials': essences_missing(summoner.get_storage(), ingredients),
+                'awakening_materials': {
+                    'total_cost': total_cost,
+                    'missing': total_missing,
+                },
                 'ready': fusion_ready,
             }
 
@@ -581,7 +587,7 @@ def fusion_progress(request, profile_name):
         from copy import deepcopy
         for monster, fusion in progress.iteritems():
             print 'Checking sub-fusions for ' + monster
-            combined_missing = deepcopy(fusion['awakening_materials']['missing'])
+            combined_missing = deepcopy(fusion['awakening_materials']['total_cost'])
             sub_fusions_found = False
 
             # Check if ingredients for this fusion are fuseable themselves
@@ -591,21 +597,22 @@ def fusion_progress(request, profile_name):
                     print '    Found sub-fusion for ' + str(ingredient['instance'])
                     # Get the totals for the sub-fusions and add to the current fusion cost
                     sub_fusion = progress.get(ingredient['instance'].awakens_from.name, None)
-
                     for element, sizes in fusion['awakening_materials']['total_cost'].iteritems():
                         print '        element: ' + str(element)
                         if element not in combined_missing:
                             combined_missing[element] = OrderedDict()
 
+                        #print sub_fusion['awakening_materials']['missing']
+
                         for size in set(sizes.keys() + sub_fusion['awakening_materials']['missing'][element].keys()):
                             print '        size: ' + size
                             print '            sub fusion:               ' + str(sub_fusion['awakening_materials']['total_cost'][element].get(size, 0))
                             print '            current combined_missing: ' + str(combined_missing[element].get(size, 0))
-                            combined_missing[element][size] = combined_missing[element].get(size, 0) - sub_fusion['awakening_materials']['total_cost'][element].get(size, 0)
+                            combined_missing[element][size] = combined_missing[element].get(size, 0) + sub_fusion['awakening_materials']['total_cost'][element].get(size, 0)
                             print '            new     combined_missing: ' + str(combined_missing[element][size])
 
             if sub_fusions_found:
-                fusion['awakening_materials']['combined'] = combined_missing
+                fusion['awakening_materials']['combined'] = essences_missing(summoner.get_storage(), combined_missing)
 
         context['fusions'] = progress
 

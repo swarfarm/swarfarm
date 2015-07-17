@@ -16,6 +16,11 @@
                 {% for error,error_string in validation_errors.iteritems %}
                 <li>{{ error_string }}</li>
                 {% endfor %}
+                {% for dict in form_errors %}
+                    {% for error in dict.values %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
             </ul>
         </div>
     {% endif %}

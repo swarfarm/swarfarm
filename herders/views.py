@@ -389,7 +389,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
                             '?next=' + return_path
                         )
             else:
-                context['form_errors'] = formset.non_field_errors()  # Not sure if this will ever happen unless someone tries to be tricksy with form input values
+                context['form_errors'] = formset.errors
 
     else:
         raise PermissionDenied("Trying to power up or evolve a monster you don't own")

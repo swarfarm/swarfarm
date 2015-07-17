@@ -101,7 +101,7 @@ class FusionAdmin(admin.ModelAdmin):
 @admin.register(MonsterInstance)
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')
-    search_fields = ['owner']
+    search_fields = ['id',]
 
 
 @admin.register(Team)

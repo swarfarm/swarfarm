@@ -71,6 +71,7 @@ class MonsterAdmin(admin.ModelAdmin):
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened')
     filter_vertical = ('skills',)
     search_fields = ['name']
+    save_as = True
 
 
 @admin.register(MonsterSkill)

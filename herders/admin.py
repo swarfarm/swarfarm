@@ -67,7 +67,7 @@ class MonsterAdmin(admin.ModelAdmin):
         })
     ]
 
-    list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'awakens_from')
+    list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'awakens_from', 'awakens_to')
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened')
     filter_vertical = ('skills',)
     search_fields = ['name']

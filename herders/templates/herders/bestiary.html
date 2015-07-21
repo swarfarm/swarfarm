@@ -9,118 +9,116 @@
     {% static 'herders/images/' as img_url_prefix %}
 
     {% if monster_list %}
-        {% cache 900 bestiary %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span>Filters: </span>
-                    <button type="button" class="btn btn-default reset">Reset</button>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span>Filters: </span>
+                <button type="button" class="btn btn-default reset">Reset</button>
 
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="1">
-                            1<span class="glyphicon glyphicon-star"></span>
-                        </button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="2">
-                            2<span class="glyphicon glyphicon-star"></span>
-                        </button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="3">
-                            3<span class="glyphicon glyphicon-star"></span>
-                        </button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="4">
-                            4<span class="glyphicon glyphicon-star"></span>
-                        </button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="5">
-                            5<span class="glyphicon glyphicon-star"></span>
-                        </button>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="fire"><img src="{{ img_url_prefix }}elements/fire.png" /></button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="water"><img src="{{ img_url_prefix }}elements/water.png" /></button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="wind"><img src="{{ img_url_prefix }}elements/wind.png" /></button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="light"><img src="{{ img_url_prefix }}elements/light.png" /></button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="dark"><img src="{{ img_url_prefix }}elements/dark.png" /></button>
-                    </div>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Attack">ATK</button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Defense">DEF</button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Hp">HP</button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Support">SUP</button>
-                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Material">MAT</button>
-                    </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="1">
+                        1<span class="glyphicon glyphicon-star"></span>
+                    </button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="2">
+                        2<span class="glyphicon glyphicon-star"></span>
+                    </button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="3">
+                        3<span class="glyphicon glyphicon-star"></span>
+                    </button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="4">
+                        4<span class="glyphicon glyphicon-star"></span>
+                    </button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="5">
+                        5<span class="glyphicon glyphicon-star"></span>
+                    </button>
                 </div>
-                <div class="table-responsive">
-                    <table id="monster_table" class="table table-hover table-condensed monster-table">
-                        <thead>
-                            <tr>
-                                <th class="{sorter: false}"></th>
-                                <th>Name</th>
-                                <th>Stars</th>
-                                <th>Element</th>
-                                <th>Type</th>
-                                <th class="{sorter: false}">Awakens To</th>
-                                <th class="{sorter: false}">Awakens From</th>
-                                <th class="{sorter: false}">Awakening Materials</th>
-                                <th class="{sorter: false}"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for monster in monster_list %}
-                            <tr>
-                                <td class="monster-image">
-                                    <a href="{% url 'herders:bestiary_detail' monster_id=monster.pk %}">
-                                        <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}" class="monster-thumb"/>
-                                        <span>
-                                            {% for x in monster.base_stars|get_range %}
-                                                {% if monster.is_awakened %}
-                                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                {% elif monster.can_awaken %}
-                                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                {% else %}
-                                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                {% endif %}
-                                            {% endfor %}
-                                        </span>
-                                    </a>
-                                </td>
-                                <td class="monster-name">{{ monster.name|title }}</td>
-                                <td class="monster-stars-column">{{ monster.base_stars }}<span class="glyphicon glyphicon-star"></span></td>
-                                <td class="monster-element">
-                                    <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" />
-                                    <span>{{ monster.element }}</span>
-                                </td>
-                                <td class="monster-type">{{ monster.archetype|title }}</td>
-                                <td class="monster-awakens">
-                                    {% if monster.awakens_to %}
-                                        <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_to.pk %}">
-                                            <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_to.image_filename }}" />
-                                            {{ monster.awakens_to.name|title }}
-                                        </a>
-                                    {% endif %}
-                                </td>
-                                <td class="monster-awakens">
-                                    {% if monster.awakens_from %}
-                                        <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_from.pk %}">
-                                            <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_from.image_filename }}" />
-                                            {{ monster.awakens_from.name|title }}
-                                        </a>
-                                    {% endif %}
-                                </td>
-                                <td class="monster-awaken-materials">
-                                    {% with mats=monster.get_awakening_materials %}
-                                        {% for element,essences in mats.iteritems %}
-                                            {% for size,count in essences.iteritems %}
-                                                {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
-                                            {% endfor %}
-                                        {% endfor %}
-                                    {% endwith %}
-                                </td>
-                                <td></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="fire"><img src="{{ img_url_prefix }}elements/fire.png" /></button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="water"><img src="{{ img_url_prefix }}elements/water.png" /></button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="wind"><img src="{{ img_url_prefix }}elements/wind.png" /></button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="light"><img src="{{ img_url_prefix }}elements/light.png" /></button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="dark"><img src="{{ img_url_prefix }}elements/dark.png" /></button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Attack">ATK</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Defense">DEF</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Hp">HP</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Support">SUP</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Material">MAT</button>
                 </div>
             </div>
-        {% endcache %}
+            <div class="table-responsive">
+                <table id="monster_table" class="table table-hover table-condensed monster-table">
+                    <thead>
+                        <tr>
+                            <th class="{sorter: false}"></th>
+                            <th>Name</th>
+                            <th>Stars</th>
+                            <th>Element</th>
+                            <th>Type</th>
+                            <th class="{sorter: false}">Awakens To</th>
+                            <th class="{sorter: false}">Awakens From</th>
+                            <th class="{sorter: false}">Awakening Materials</th>
+                            <th class="{sorter: false}"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for monster in monster_list %}
+                        <tr>
+                            <td class="monster-image">
+                                <a href="{% url 'herders:bestiary_detail' monster_id=monster.pk %}">
+                                    <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}" class="monster-thumb"/>
+                                    <span>
+                                        {% for x in monster.base_stars|get_range %}
+                                            {% if monster.is_awakened %}
+                                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                            {% elif monster.can_awaken %}
+                                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                            {% else %}
+                                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </a>
+                            </td>
+                            <td class="monster-name">{{ monster.name|title }}</td>
+                            <td class="monster-stars-column">{{ monster.base_stars }}<span class="glyphicon glyphicon-star"></span></td>
+                            <td class="monster-element">
+                                <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" />
+                                <span>{{ monster.element }}</span>
+                            </td>
+                            <td class="monster-type">{{ monster.archetype|title }}</td>
+                            <td class="monster-awakens">
+                                {% if monster.awakens_to %}
+                                    <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_to.pk %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_to.image_filename }}" />
+                                        {{ monster.awakens_to.name|title }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td class="monster-awakens">
+                                {% if monster.awakens_from %}
+                                    <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_from.pk %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_from.image_filename }}" />
+                                        {{ monster.awakens_from.name|title }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td class="monster-awaken-materials">
+                                {% with mats=monster.get_awakening_materials %}
+                                    {% for element,essences in mats.iteritems %}
+                                        {% for size,count in essences.iteritems %}
+                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endwith %}
+                            </td>
+                            <td></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>x
     {% endif %}
 {% endblock %}

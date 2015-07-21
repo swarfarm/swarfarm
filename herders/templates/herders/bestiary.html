@@ -6,6 +6,7 @@
 {% block title %}Bestiary - {{ block.super }}{% endblock title %}
 
 {% block content %}
+{% cache 900 bestiary %}
     {% static 'herders/images/' as img_url_prefix %}
 
     {% if monster_list %}
@@ -119,6 +120,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>x
+        </div>
     {% endif %}
+{% endcache %}
 {% endblock %}

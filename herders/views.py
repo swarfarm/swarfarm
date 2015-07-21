@@ -818,7 +818,7 @@ def bestiary(request):
 
     if monster_list is None:
         monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').all()
-        cache.set('bestiary_data', monster_list, 900)
+        # cache.set('bestiary_data', monster_list, 900)
 
     context['monster_list'] = monster_list
 

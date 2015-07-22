@@ -6,10 +6,10 @@
 {% block title %}Bestiary - {{ block.super }}{% endblock title %}
 
 {% block content %}
-{% cache 900 bestiary_view %}
     {% static 'herders/images/' as img_url_prefix %}
 
     {% if monster_list %}
+    {% cache 900 bestiary_view %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span>Filters: </span>
@@ -121,6 +121,7 @@
                 </table>
             </div>
         </div>
+
+    {% endcache %}
     {% endif %}
-{% endcache %}
 {% endblock %}

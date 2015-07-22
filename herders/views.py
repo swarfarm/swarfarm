@@ -495,6 +495,25 @@ def monster_instance_awaken(request, profile_name, instance_id):
         return render(request, 'herders/profile/profile_monster_awaken.html', context)
 
 
+@login_required()
+def monster_instance_duplicate(request, profile_name, instance_id):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+    )
+    monster = get_object_or_404(MonsterInstance, pk=instance_id)
+
+    # Check for proper owner before copying
+    if request.user.summoner == monster.owner:
+        newmonster = monster
+        newmonster.pk = None
+        newmonster.save()
+
+        return redirect(return_path)
+    else:
+        return HttpResponseForbidden()
+
+
 def fusion_progress(request, profile_name):
     return_path = request.GET.get(
         'next',
@@ -818,7 +837,7 @@ def bestiary(request):
 
     if monster_list is None:
         monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').all()
-        # cache.set('bestiary_data', monster_list, 900)
+        cache.set('bestiary_data', monster_list, 900)
 
     context['monster_list'] = monster_list
 

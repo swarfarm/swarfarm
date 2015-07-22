@@ -17,11 +17,20 @@
                 </div>
                 <div class="monster-box-actions">
                     <span class="monster-box-actions">
+                        <a href="{% url 'herders:monster_instance_power_up' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}">
+                            <span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span>
+                        </a>
+                        <a href="{% url 'herders:monster_instance_duplicate' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Copy">
+                            <span class="glyphicon glyphicon-copy" data-toggle="tooltip" data-placement="top" title="Copy"></span>
+                        </a>
                         {% if monster.monster.can_awaken and not monster.monster.is_awakened %}
-                            <a href="{% url 'herders:monster_instance_awaken' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Awaken"><span class="glyphicon glyphicon-star" style="color:purple"></span></a>
+                            <a href="{% url 'herders:monster_instance_awaken' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Awaken">
+                                <span class="glyphicon glyphicon-star" style="color:purple"></span>
+                            </a>
                         {% endif %}
-                        <a href="{% url 'herders:monster_instance_power_up' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}"><span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span></a>
-                        <a href="{% url 'herders:monster_instance_delete' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}"><span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span></a>
+                        <a href="{% url 'herders:monster_instance_delete' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
+                        </a>
                     </span>
                 </div>
             </div>

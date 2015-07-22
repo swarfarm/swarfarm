@@ -57,6 +57,17 @@
                     <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Low*">Low</button>
                     <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Done*">Done</button>
                 </div>
+                <div class="btn-group info-filters">
+                    <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="0">
+                        <img src="{{ img_url_prefix }}icons/fusion.png" />
+                    </button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="9" data-filter-text="0">
+                        <span class="fa fa-birthday-cake" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="10" data-filter-text="0">
+                        <span class="fa fa-bed" aria-hidden="true"></span>
+                    </button>
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -75,6 +86,7 @@
                             <th class="monster-info-icons-column"><span class="fa fa-birthday-cake" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Marked as food"></span></th>
                             <th class="monster-info-icons-column"><span class="fa fa-bed" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="In Monster Storage"></span></th>
                             {% if is_owner %}
+                                <th data-sorter="false"></th>
                                 <th data-sorter="false"></th>
                                 <th data-sorter="false"></th>
                                 <th data-sorter="false"></th>
@@ -155,20 +167,23 @@
                                 </td>
                                 {% if is_owner %}
                                     <td class="monster-actions-column">
-                                        <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}">
+                                        <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}">
                                             <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
                                         </a>
                                     </td>
                                     <td class="monster-actions-column">
-                                        <a href="{% url 'herders:monster_instance_power_up' profile_name=user.username instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span></a>
+                                        <a href="{% url 'herders:monster_instance_power_up' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}"><span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span></a>
+                                    </td>
+                                    <td class="monster-actions-column">
+                                        <a href="{% url 'herders:monster_instance_duplicate' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Copy"><span class="glyphicon glyphicon-copy" data-toggle="tooltip" data-placement="top" title="Copy"></span></a>
                                     </td>
                                     <td class="monster-actions-column">
                                         {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
-                                            <a href="{% url 'herders:monster_instance_awaken' profile_name=user.username instance_id=instance.pk.hex %}" data-toggle="tooltip" data-placement="top" title="Awaken"><span class="glyphicon glyphicon-star" style="color:purple"></span></a>
+                                            <a href="{% url 'herders:monster_instance_awaken' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Awaken"><span class="glyphicon glyphicon-star" style="color:purple"></span></a>
                                         {% endif %}
                                     </td>
                                     <td class="monster-actions-column">
-                                        <a href="{% url 'herders:monster_instance_delete' profile_name=user.username instance_id=instance.pk.hex %}"><span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span></a>
+                                        <a href="{% url 'herders:monster_instance_delete' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}"><span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span></a>
                                     </td>
                                 {% endif %}
                             </tr>

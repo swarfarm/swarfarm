@@ -1,11 +1,12 @@
-python-memcached
-psycopg2
 Django==1.8.2
-django-autocomplete-light==2.2.3
+psycopg2
+bcrypt
+redis
+django-redis-cache
+django-autocomplete-light==2.2.4
 django-crispy-forms
 django-markdown-deux
 django-recaptcha
 django-suit
 django-timezone-field
 django_compressor
-bcrypt

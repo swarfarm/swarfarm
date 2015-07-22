@@ -270,6 +270,7 @@ class MonsterLeaderSkill(models.Model):
     ATTRIBUTE_CRIT_RATE = 5
     ATTRIBUTE_RESIST = 6
     ATTRIBUTE_ACCURACY = 7
+    ATTRIBUTE_CRIT_DMG = 8
 
     ATTRIBUTE_CHOICES = (
         (ATTRIBUTE_HP, 'HP'),
@@ -279,6 +280,7 @@ class MonsterLeaderSkill(models.Model):
         (ATTRIBUTE_CRIT_RATE, 'Critical Rate'),
         (ATTRIBUTE_RESIST, 'Resistance'),
         (ATTRIBUTE_ACCURACY, 'Accuracy'),
+        (ATTRIBUTE_CRIT_DMG, 'Critical DMG'),
     )
 
     attribute = models.IntegerField(choices=ATTRIBUTE_CHOICES)

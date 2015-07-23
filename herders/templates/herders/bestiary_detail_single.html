@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load utils %}
+{% load cache %}
+
+{% block title %}Bestiary - {{ base_monster.name }} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    {% cache 600 bestiary_detail base_monster.pk %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2><img src="{{ img_url_prefix }}elements/{{ base_monster.element }}.png" /> {{ base_monster.name }}</h2>
+        </div>
+        <div class="panel-body">
+            <div class="pull-left">
+                <div class="monster-box">
+                    <span>
+                        <img src="{{ img_url_prefix }}monsters/{{ base_monster.image_filename }}"/>
+                        {% for x in base_monster.base_stars|get_range %}
+                            {% if base_monster.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif base_monster.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+
+                <div class="bestiary-family">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">Family</p>
+                        </div>
+                        <table class="table">
+                            <tbody>
+                            {% for related_monster in base_monster.monster_family %}
+                            <tr>
+                                <td class="monster-image">
+                                    <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.pk %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ related_monster.image_filename }}" class="monster-thumb"/>
+                                    </a>
+                                </td>
+                                <td class="monster-image">
+                                    {% if related_monster.awakens_to %}
+                                    <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.awakens_to.pk %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ related_monster.awakens_to.image_filename }}" class="monster-thumb"/>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bestiary-detail">
+                <div class="bestiary-detail-stats panel panel-default">
+                    <div class="panel-heading">
+                        <p class="panel-title">Unawakened Stats</p>
+                    </div>
+                    {% with stats=base_monster.get_stats %}
+                    <table class="table table-condensed table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                {% for key,value in stats.iteritems %}
+                                    <th colspan="2">
+                                        {{ key }}<span class="glyphicon glyphicon-star"></span>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th>Level</th>
+                                {% for grade,levels in stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <th>{{ level }}</th>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>HP</td>
+                                {% for grade,levels in stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">{{ stats.HP }}</td>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>ATK</td>
+                                {% for grade,levels in stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">{{ stats.ATK }}</td>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>DEF</td>
+                                {% for grade,levels in stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">{{ stats.DEF }}</td>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>SPD</td>
+                                <td colspan="12">{{ base_monster.speed }}</td>
+                            </tr>
+                            <tr>
+                                <td>CRIT Rate</td>
+                                <td colspan="12">{{ base_monster.crit_rate }}%</td>
+                            </tr>
+                            <tr>
+                                <td>CRIT DMG</td>
+                                <td colspan="12">{{ base_monster.crit_damage }}%</td>
+                            </tr>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td colspan="12">{{ base_monster.accuracy }}%</td>
+                            </tr>
+                            <tr>
+                                <td>Resistance</td>
+                                <td colspan="12">{{ base_monster.resistance }}%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% endwith %}
+                </div>
+
+                {% if base_monster.can_awaken %}
+                    <div class="bestiary-detail-awakening panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">Awakening Essences</p>
+                        </div>
+                        <div class="panel-body">
+                            <div class="monster-awaken-materials">
+                                {% with mats=base_monster.get_awakening_materials %}
+                                    {% for element,essences in mats.iteritems %}
+                                        {% for size,count in essences.iteritems %}
+                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endcache %}
+{% endblock content %}

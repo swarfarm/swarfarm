@@ -3,25 +3,40 @@
 {% load utils %}
 {% load cache %}
 
-{% block title %}Bestiary - {{ monster.name }} - {{ block.super }}{% endblock title %}
+{% block title %}Bestiary - {{ base_monster.name }} - {{ block.super }}{% endblock title %}
 
 {% block content %}
-    {% cache 600 bestiary_detail monster.pk %}
+    {% cache 600 bestiary_detail base_monster.pk %}
     {% static 'herders/images/' as img_url_prefix %}
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h2><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" /> {{ monster.name }}</h2>
+            <h2><img src="{{ img_url_prefix }}elements/{{ base_monster.element }}.png" /> {{ base_monster.name }} - {{ awakened_monster.name }}</h2>
         </div>
         <div class="panel-body">
             <div class="pull-left">
                 <div class="monster-box">
                     <span>
-                        <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}"/>
-                        {% for x in monster.base_stars|get_range %}
-                            {% if monster.is_awakened %}
+                        <img src="{{ img_url_prefix }}monsters/{{ base_monster.image_filename }}"/>
+                        {% for x in base_monster.base_stars|get_range %}
+                            {% if base_monster.is_awakened %}
                                 <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% elif monster.can_awaken %}
+                            {% elif base_monster.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="monster-box">
+                    <span>
+                        <img src="{{ img_url_prefix }}monsters/{{ awakened_monster.image_filename }}"/>
+                        {% for x in awakened_monster.base_stars|get_range %}
+                            {% if awakened_monster.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif awakened_monster.can_awaken %}
                                 <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
                             {% else %}
                                 <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
@@ -37,7 +52,7 @@
                         </div>
                         <table class="table">
                             <tbody>
-                            {% for related_monster in monster.monster_family %}
+                            {% for related_monster in base_monster.monster_family %}
                             <tr>
                                 <td class="monster-image">
                                     <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.pk %}">
@@ -62,14 +77,14 @@
             <div class="bestiary-detail">
                 <div class="bestiary-detail-stats panel panel-default">
                     <div class="panel-heading">
-                        <p class="panel-title">Base Stats</p>
+                        <p class="panel-title">Unawakened Stats</p>
                     </div>
-                    {% with stats=monster.get_stats %}
+
                     <table class="table table-condensed table-bordered">
                         <thead>
                             <tr>
                                 <th>Grade</th>
-                                {% for key,value in stats.iteritems %}
+                                {% for key,value in base_monster_stats.iteritems %}
                                     <th colspan="2">
                                         {{ key }}<span class="glyphicon glyphicon-star"></span>
                                     </th>
@@ -77,7 +92,7 @@
                             </tr>
                             <tr>
                                 <th>Level</th>
-                                {% for grade,levels in stats.iteritems %}
+                                {% for grade,levels in base_monster_stats.iteritems %}
                                     {% for level,stats in levels.iteritems %}
                                         <th>{{ level }}</th>
                                     {% endfor %}
@@ -87,7 +102,7 @@
                         <tbody>
                             <tr>
                                 <td>HP</td>
-                                {% for grade,levels in stats.iteritems %}
+                                {% for grade,levels in base_monster_stats.iteritems %}
                                     {% for level,stats in levels.iteritems %}
                                         <td class="bestiary-stat-column">{{ stats.HP }}</td>
                                     {% endfor %}
@@ -95,7 +110,7 @@
                             </tr>
                             <tr>
                                 <td>ATK</td>
-                                {% for grade,levels in stats.iteritems %}
+                                {% for grade,levels in base_monster_stats.iteritems %}
                                     {% for level,stats in levels.iteritems %}
                                         <td class="bestiary-stat-column">{{ stats.ATK }}</td>
                                     {% endfor %}
@@ -103,7 +118,7 @@
                             </tr>
                             <tr>
                                 <td>DEF</td>
-                                {% for grade,levels in stats.iteritems %}
+                                {% for grade,levels in base_monster_stats.iteritems %}
                                     {% for level,stats in levels.iteritems %}
                                         <td class="bestiary-stat-column">{{ stats.DEF }}</td>
                                     {% endfor %}
@@ -111,35 +126,152 @@
                             </tr>
                             <tr>
                                 <td>SPD</td>
-                                <td colspan="12">{{ monster.speed }}</td>
+                                <td colspan="12">{{ base_monster.speed }}</td>
                             </tr>
                             <tr>
                                 <td>CRIT Rate</td>
-                                <td colspan="12">{{ monster.crit_rate }}%</td>
+                                <td colspan="12">{{ base_monster.crit_rate }}%</td>
                             </tr>
                             <tr>
                                 <td>CRIT DMG</td>
-                                <td colspan="12">{{ monster.crit_damage }}%</td>
+                                <td colspan="12">{{ base_monster.crit_damage }}%</td>
                             </tr>
                             <tr>
                                 <td>Accuracy</td>
-                                <td colspan="12">{{ monster.accuracy }}%</td>
+                                <td colspan="12">{{ base_monster.accuracy }}%</td>
                             </tr>
                             <tr>
                                 <td>Resistance</td>
-                                <td colspan="12">{{ monster.resistance }}%</td>
+                                <td colspan="12">{{ base_monster.resistance }}%</td>
                             </tr>
                         </tbody>
                     </table>
-                    {% endwith %}
                 </div>
+
+                <div class="bestiary-detail-stats panel panel-default">
+                    <div class="panel-heading">
+                        <p class="panel-title">Awakened Stats</p>
+                    </div>
+
+                    <table class="table table-condensed table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                {% for key,value in awakened_monster_stats.iteritems %}
+                                    <th colspan="2">
+                                        {{ key }}<span class="glyphicon glyphicon-star"></span>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th>Level</th>
+                                {% for grade,levels in awakened_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <th>{{ level }}</th>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>HP</td>
+                                {% for grade,levels in awakened_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">
+                                            {% if stats.HP %}
+                                                {{ stats.HP }}
+                                                {% if stats.delta.HP > 0 %}
+                                                    (<span class="text-success">+{{ stats.delta.HP }}%</span>)
+                                                {% else %}
+                                                    (<span class="text-danger">{{ stats.delta.HP }}%</span>)
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>ATK</td>
+                                {% for grade,levels in awakened_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">
+                                            {% if stats.ATK %}
+                                                {{ stats.ATK }}
+                                                {% if stats.delta.ATK > 0 %}
+                                                    (<span class="text-success">+{{ stats.delta.ATK }}%</span>)
+                                                {% else %}
+                                                    (<span class="text-danger">{{ stats.delta.ATK }}%</span>)
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>DEF</td>
+                                {% for grade,levels in awakened_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">
+                                            {% if stats.DEF %}
+                                                {{ stats.DEF }}
+                                                {% if stats.delta.DEF > 0 %}
+                                                    (<span class="text-success">+{{ stats.delta.DEF }}%</span>)
+                                                {% else %}
+                                                    (<span class="text-danger">{{ stats.delta.DEF }}%</span>)
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>SPD</td>
+                                <td colspan="12">
+                                    {{ awakened_monster.speed }}
+                                    {% if awakened_monster_stats_deltas.speed %}
+                                        {% if awakened_monster_stats_deltas.speed > 0 %}
+                                            (<span class="text-success">+{{ awakened_monster_stats_deltas.speed }})</span>
+                                        {% else %}
+                                            (<span class="text-danger">{{ awakened_monster_stats_deltas.speed }})</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CRIT Rate</td>
+                                <td colspan="12">
+                                    {{ awakened_monster.crit_rate }}%
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CRIT DMG</td>
+                                <td colspan="12">
+                                    {{ awakened_monster.crit_damage }}%
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td colspan="12">
+                                    {{ awakened_monster.accuracy }}%
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Resistance</td>
+                                <td colspan="12">
+                                    {{ awakened_monster.resistance }}%
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <div class="bestiary-detail-awakening panel panel-default">
                     <div class="panel-heading">
                         <p class="panel-title">Awakening Essences</p>
                     </div>
                     <div class="panel-body">
                         <div class="monster-awaken-materials">
-                            {% with mats=monster.get_awakening_materials %}
+                            {% with mats=base_monster.get_awakening_materials %}
                                 {% for element,essences in mats.iteritems %}
                                     {% for size,count in essences.iteritems %}
                                         {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
@@ -150,6 +282,8 @@
                     </div>
                 </div>
             </div>
+
+
         </div>
     </div>
     {% endcache %}

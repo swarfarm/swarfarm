@@ -871,7 +871,7 @@ def bestiary_detail(request, monster_id):
             awakened_stats[grade][level]['delta'] = OrderedDict()
 
             for stat, base_value in stats.iteritems():
-                if base_value != '':
+                if base_value != '' and base_value != awakened_stats[grade][level][stat]:
                     awakened_stats[grade][level]['delta'][stat] = int(round((awakened_stats[grade][level][stat] / float(base_value)) * 100 - 100))
 
             print awakened_stats[grade][level]['delta']

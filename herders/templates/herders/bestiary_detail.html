@@ -180,10 +180,12 @@
                                         <td class="bestiary-stat-column">
                                             {% if stats.HP %}
                                                 {{ stats.HP }}
-                                                {% if stats.delta.HP > 0 %}
-                                                    (<span class="text-success">+{{ stats.delta.HP }}%</span>)
-                                                {% else %}
-                                                    (<span class="text-danger">{{ stats.delta.HP }}%</span>)
+                                                {% if stats.delta.HP %}
+                                                    {% if stats.delta.HP > 0 %}
+                                                        (<span class="text-success">+{{ stats.delta.HP }}%</span>)
+                                                    {% else %}
+                                                        (<span class="text-danger">{{ stats.delta.HP }}%</span>)
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endif %}
                                         </td>
@@ -197,10 +199,12 @@
                                         <td class="bestiary-stat-column">
                                             {% if stats.ATK %}
                                                 {{ stats.ATK }}
-                                                {% if stats.delta.ATK > 0 %}
-                                                    (<span class="text-success">+{{ stats.delta.ATK }}%</span>)
-                                                {% else %}
-                                                    (<span class="text-danger">{{ stats.delta.ATK }}%</span>)
+                                                {% if stats.delta.ATK %}
+                                                    {% if stats.delta.ATK > 0 %}
+                                                        (<span class="text-success">+{{ stats.delta.ATK }}%</span>)
+                                                    {% else %}
+                                                        (<span class="text-danger">{{ stats.delta.ATK }}%</span>)
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endif %}
                                         </td>
@@ -214,10 +218,12 @@
                                         <td class="bestiary-stat-column">
                                             {% if stats.DEF %}
                                                 {{ stats.DEF }}
-                                                {% if stats.delta.DEF > 0 %}
-                                                    (<span class="text-success">+{{ stats.delta.DEF }}%</span>)
-                                                {% else %}
-                                                    (<span class="text-danger">{{ stats.delta.DEF }}%</span>)
+                                                {% if stats.delta.DEF %}
+                                                    {% if stats.delta.DEF > 0 %}
+                                                        (<span class="text-success">+{{ stats.delta.DEF }}%</span>)
+                                                    {% else %}
+                                                        (<span class="text-danger">{{ stats.delta.DEF }}%</span>)
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endif %}
                                         </td>

@@ -505,7 +505,6 @@ td>h6 {
 
 .bestiary-detail {
     margin-left: 125px;
-    display: table;
 }
 
 .bestiary-detail th,
@@ -521,11 +520,8 @@ td>h6 {
     height: 20px;
 }
 
-.bestiary-detail-stats {
-    width: 100%;
-}
-
-.bestiary-detail-awakening {
+.bestiary-detail-subpanel {
+    display: inline-block;
     width: 100%;
 }
 

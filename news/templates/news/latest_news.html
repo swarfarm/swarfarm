@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
+{% load cache %}
 {% load markdown_deux_tags %}
 
 {% block content %}
+    {% cache 60 latest_news posts.number %}
     {% for post in posts %}
         <h1>
             {{ post.title }}
@@ -52,4 +54,5 @@
             {% endif %}
         </ul>
     </nav>
+    {% endcache %}
 {% endblock content %}

@@ -129,23 +129,23 @@
                                 </tr>
                                 <tr>
                                     <td>SPD</td>
-                                    <td colspan="12">{{ base_monster.speed }}</td>
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.speed }}</td>
                                 </tr>
                                 <tr>
                                     <td>CRIT Rate</td>
-                                    <td colspan="12">{{ base_monster.crit_rate }}%</td>
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.crit_rate }}%</td>
                                 </tr>
                                 <tr>
                                     <td>CRIT DMG</td>
-                                    <td colspan="12">{{ base_monster.crit_damage }}%</td>
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.crit_damage }}%</td>
                                 </tr>
                                 <tr>
                                     <td>Accuracy</td>
-                                    <td colspan="12">{{ base_monster.accuracy }}%</td>
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.accuracy }}%</td>
                                 </tr>
                                 <tr>
                                     <td>Resistance</td>
-                                    <td colspan="12">{{ base_monster.resistance }}%</td>
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.resistance }}%</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -313,7 +313,7 @@
                                 </tr>
                                 <tr>
                                     <td>SPD</td>
-                                    <td colspan="12">
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                         {{ awakened_monster.speed }}
                                         {% if awakened_monster_stats_deltas.speed %}
                                             {% if awakened_monster_stats_deltas.speed > 0 %}
@@ -326,25 +326,25 @@
                                 </tr>
                                 <tr>
                                     <td>CRIT Rate</td>
-                                    <td colspan="12">
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                         {{ awakened_monster.crit_rate }}%
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>CRIT DMG</td>
-                                    <td colspan="12">
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                         {{ awakened_monster.crit_damage }}%
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Accuracy</td>
-                                    <td colspan="12">
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                         {{ awakened_monster.accuracy }}%
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Resistance</td>
-                                    <td colspan="12">
+                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                         {{ awakened_monster.resistance }}%
                                     </td>
                                 </tr>

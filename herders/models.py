@@ -125,37 +125,22 @@ class Monster(models.Model):
         if self.is_awakened:
             start_grade -= 1
 
-        for grade in range(1, 7):
+        for grade in range(start_grade, 7):
             max_level = self.max_level_from_stars(grade)
 
-            if grade < start_grade:
-                # Add blanks for grades lower than possible range
-                stats_list[str(grade)] = {
-                    '1': {
-                        'HP': '',
-                        'ATK': '',
-                        'DEF': '',
-                    },
-                    str(max_level): {
-                        'HP': '',
-                        'ATK': '',
-                        'DEF': '',
-                    },
-                }
-            else:
-                # Add the actual calculated stats
-                stats_list[str(grade)] = {
-                    '1': {
-                        'HP': self.actual_hp(grade, 1),
-                        'ATK': self.actual_attack(grade, 1),
-                        'DEF': self.actual_defense(grade, 1),
-                    },
-                    str(max_level): {
-                        'HP': self.actual_hp(grade, max_level),
-                        'ATK': self.actual_attack(grade, max_level),
-                        'DEF': self.actual_defense(grade, max_level),
-                    },
-                }
+            # Add the actual calculated stats
+            stats_list[str(grade)] = {
+                '1': {
+                    'HP': self.actual_hp(grade, 1),
+                    'ATK': self.actual_attack(grade, 1),
+                    'DEF': self.actual_defense(grade, 1),
+                },
+                str(max_level): {
+                    'HP': self.actual_hp(grade, max_level),
+                    'ATK': self.actual_attack(grade, max_level),
+                    'DEF': self.actual_defense(grade, max_level),
+                },
+            }
 
         return stats_list
 

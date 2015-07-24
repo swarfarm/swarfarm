@@ -7,6 +7,17 @@ register = template.Library()
 def get_range(value):
     return range(value)
 
+
 @register.filter
 def absolute(value):
     return abs(value)
+
+
+@register.filter
+def subtract(value, arg):
+    return value - arg
+
+
+@register.filter
+def multiply(value, arg):
+    return value * arg

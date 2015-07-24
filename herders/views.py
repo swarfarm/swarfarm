@@ -876,8 +876,6 @@ def bestiary_detail(request, monster_id):
                         if base_value != '' and base_value != awakened_stats[grade][level][stat]:
                             awakened_stats[grade][level]['delta'][stat] = int(round((awakened_stats[grade][level][stat] / float(base_value)) * 100 - 100))
 
-                    print awakened_stats[grade][level]['delta']
-
             awakened_stats_deltas = dict()
             if base_monster.speed != awakened_monster.speed:
                 awakened_stats_deltas['speed'] = awakened_monster.speed - base_monster.speed

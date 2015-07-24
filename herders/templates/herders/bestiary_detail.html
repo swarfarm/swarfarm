@@ -193,7 +193,9 @@
                                 <td width="100">
                                     {% for effect in skill.skill_effect.all %}
                                         {% if effect.icon_filename %}
-                                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left" />
+                                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                                />
                                         {% endif %}
                                     {% endfor %}
                                 </td>
@@ -391,7 +393,9 @@
                                 <td width="100">
                                     {% for effect in skill.skill_effect.all %}
                                         {% if effect.icon_filename %}
-                                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left" />
+                                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                                />
                                         {% endif %}
                                     {% endfor %}
                                 </td>

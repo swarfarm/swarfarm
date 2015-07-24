@@ -6,7 +6,7 @@
 {% block title %}Bestiary - {{ base_monster.name }} - {{ block.super }}{% endblock title %}
 
 {% block content %}
-    {% cache 600 bestiary_detail base_monster.pk %}
+    {% cache 60 bestiary_detail base_monster.pk %}
     {% static 'herders/images/' as img_url_prefix %}
 
     <div class="panel panel-default">

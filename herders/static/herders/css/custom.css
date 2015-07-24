@@ -32,6 +32,14 @@ footer {
     padding-right:0;
 }
 
+.no-left-gutter {
+    padding-left: 0;
+}
+
+.no-right-gutter {
+    padding-right: 0;
+}
+
 .navbar img, .btn-group img {
     height: 18px;
 }
@@ -113,6 +121,8 @@ footer {
 
 .monster-table>tbody>tr>td{
     vertical-align: middle;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .monster-image {
@@ -516,9 +526,6 @@ td>h6 {
     width: 50px;
 }
 
-.bestiary-detail table img {
-    height: 20px;
-}
 
 .bestiary-detail-subpanel {
     display: inline-block;
@@ -529,4 +536,22 @@ td>h6 {
     clear: both;
     padding-top: 5px;
     width: 102px;
+}
+
+.skill-table {
+    vertical-align: middle;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.skill-table>tbody>tr>td {
+    vertical-align: middle;
+    text-align: left;
+}
+
+img.skill-effect {
+    width: 25px;
+    height: 25px;
+    margin-right: 1px;
+    border-radius: 3px;
 }

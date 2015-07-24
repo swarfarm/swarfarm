@@ -850,54 +850,55 @@ def bestiary_detail(request, monster_id):
         'view': 'bestiary',
     }
 
-    if monster.is_awakened and monster.awakens_from is not None:
+    if monster.is_awakened:
         base_monster = monster.awakens_from
         awakened_monster = monster
-    elif not monster.is_awakened and monster.awakens_to is not None:
+    else:
         base_monster = monster
         awakened_monster = monster.awakens_to
-    else:
-        # Monster doesn't awaken or has no unawakened version
-        context['base_monster'] = monster
-
-        return render(request, 'herders/bestiary_detail_single.html', context)
 
     # Run some calcs to provide stat deltas between awakened and unawakened
     base_stats = base_monster.get_stats()
-    awakened_stats = awakened_monster.get_stats()
-
-    if base_stats['6']['1']['HP'] is not None:
-        for grade, levels in base_stats.iteritems():
-            for level, stats in levels.iteritems():
-                awakened_stats[grade][level]['delta'] = OrderedDict()
-
-                for stat, base_value in stats.iteritems():
-                    if base_value != '' and base_value != awakened_stats[grade][level][stat]:
-                        awakened_stats[grade][level]['delta'][stat] = int(round((awakened_stats[grade][level][stat] / float(base_value)) * 100 - 100))
-
-                print awakened_stats[grade][level]['delta']
-
-        awakened_stats_deltas = dict()
-        if base_monster.speed != awakened_monster.speed:
-            awakened_stats_deltas['speed'] = awakened_monster.speed - base_monster.speed
-
-        if base_monster.crit_rate != awakened_monster.crit_rate:
-            awakened_stats_deltas['crit_rate_delta'] = awakened_monster.speed - base_monster.speed
-
-        if base_monster.crit_damage != awakened_monster.crit_damage:
-            awakened_stats_deltas['crit_damage_delta'] = awakened_monster.speed - base_monster.speed
-
-        if base_monster.accuracy != awakened_monster.accuracy:
-            awakened_stats_deltas['accuracy_delta'] = awakened_monster.speed - base_monster.speed
-
-        if base_monster.resistance != awakened_monster.resistance:
-            awakened_stats_deltas['resistance_delta'] = awakened_monster.speed - base_monster.speed
-
-        context['awakened_monster_stats_deltas'] = awakened_stats_deltas
-
     context['base_monster'] = base_monster
     context['base_monster_stats'] = base_stats
-    context['awakened_monster'] = awakened_monster
-    context['awakened_monster_stats'] = awakened_stats
+    context['base_monster_leader_skill'] = base_monster.leader_skill
+    context['base_monster_skills'] = base_monster.skills.all().order_by('slot')
+
+    if base_monster.awakens_to:
+        awakened_stats = awakened_monster.get_stats()
+
+        if base_stats['6']['1']['HP'] is not None:
+            for grade, levels in base_stats.iteritems():
+                for level, stats in levels.iteritems():
+                    awakened_stats[grade][level]['delta'] = OrderedDict()
+
+                    for stat, base_value in stats.iteritems():
+                        if base_value != '' and base_value != awakened_stats[grade][level][stat]:
+                            awakened_stats[grade][level]['delta'][stat] = int(round((awakened_stats[grade][level][stat] / float(base_value)) * 100 - 100))
+
+                    print awakened_stats[grade][level]['delta']
+
+            awakened_stats_deltas = dict()
+            if base_monster.speed != awakened_monster.speed:
+                awakened_stats_deltas['speed'] = awakened_monster.speed - base_monster.speed
+
+            if base_monster.crit_rate != awakened_monster.crit_rate:
+                awakened_stats_deltas['crit_rate_delta'] = awakened_monster.speed - base_monster.speed
+
+            if base_monster.crit_damage != awakened_monster.crit_damage:
+                awakened_stats_deltas['crit_damage_delta'] = awakened_monster.speed - base_monster.speed
+
+            if base_monster.accuracy != awakened_monster.accuracy:
+                awakened_stats_deltas['accuracy_delta'] = awakened_monster.speed - base_monster.speed
+
+            if base_monster.resistance != awakened_monster.resistance:
+                awakened_stats_deltas['resistance_delta'] = awakened_monster.speed - base_monster.speed
+
+            context['awakened_monster_stats_deltas'] = awakened_stats_deltas
+
+        context['awakened_monster'] = awakened_monster
+        context['awakened_monster_stats'] = awakened_stats
+        context['awakened_monster_leader_skill'] = awakened_monster.leader_skill
+        context['awakened_monster_skills'] = awakened_monster.skills.all().order_by('slot')
 
     return render(request, 'herders/bestiary_detail.html', context)

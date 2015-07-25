@@ -680,3 +680,54 @@ class Team(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+# Game event calendar stuff
+class GameEvent(models.Model):
+    TYPE_ELEMENT_DUNGEON = 1
+    TYPE_SPECIAL_EVENT = 2
+
+    EVENT_TYPES = (
+        (TYPE_ELEMENT_DUNGEON, "Elemental Dungeon"),
+        (TYPE_SPECIAL_EVENT, "Special Event"),
+    )
+
+    DAY_MONDAY = 0
+    DAY_TUESDAY = 1
+    DAY_WEDNESDAY = 2
+    DAY_THURSDAY = 3
+    DAY_FRIDAY = 4
+    DAY_SATURDAY = 5
+    DAY_SUNDAY = 6
+
+    DAYS_OF_WEEK = (
+        (DAY_SUNDAY, 'Sunday'),
+        (DAY_MONDAY, 'Monday'),
+        (DAY_TUESDAY, 'Tuesday'),
+        (DAY_WEDNESDAY, 'Wednesday'),
+        (DAY_THURSDAY, 'Thursday'),
+        (DAY_FRIDAY, 'Friday'),
+        (DAY_SATURDAY, 'Saturday'),
+    )
+
+    name = models.CharField(max_length=100)
+    type = models.IntegerField(choices=EVENT_TYPES)
+    element_affinity = models.CharField(choices=Monster.ELEMENT_CHOICES, max_length=10, null=True)
+    description = models.TextField(null=True, blank=True)
+    link = models.TextField(null=True, blank=True)
+    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK, null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    timezone = TimeZoneField(default='America/Los_Angeles')
+    all_day = models.BooleanField()
+
+    def is_active(self):
+        import datetime
+
+        if self.day_of_week:
+            return datetime.datetime.today().weekday() == self.day_of_week
+
+    def __unicode__(self):
+        return self.name

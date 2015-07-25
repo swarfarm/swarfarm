@@ -117,3 +117,5 @@ class TeamGroupAdmin(admin.ModelAdmin):
 
 
 admin.site.register(RuneInstance)
+
+admin.site.register(GameEvent)

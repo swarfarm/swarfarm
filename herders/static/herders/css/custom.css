@@ -514,7 +514,7 @@ td>h6 {
 }
 
 .bestiary-detail {
-    margin-left: 125px;
+    margin-left: 115px;
 }
 
 .bestiary-detail th,
@@ -522,14 +522,19 @@ td>h6 {
     text-align: center;
 }
 
+.bestiary-detail .panel-title>img {
+    height: 25px;
+    padding-right: 5px;
+}
+
 .bestiary-stat-column {
     width: 50px;
 }
 
-
-.bestiary-detail-subpanel {
-    display: inline-block;
-    width: 100%;
+.bestiary-portraits {
+    position: absolute;
+    top: 70px;
+    left: 60px;
 }
 
 .bestiary-family {

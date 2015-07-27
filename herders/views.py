@@ -867,30 +867,27 @@ def bestiary_detail(request, monster_id):
     if base_monster.awakens_to:
         awakened_stats = awakened_monster.get_stats()
 
+        # Calculate change in stats as monster undergoes awakening
         if base_stats['6']['1']['HP'] is not None:
-            for grade, levels in base_stats.iteritems():
-                for level, stats in levels.iteritems():
-                    awakened_stats[grade][level]['delta'] = OrderedDict()
-
-                    for stat, base_value in stats.iteritems():
-                        if base_value != '' and base_value != awakened_stats[grade][level][stat]:
-                            awakened_stats[grade][level]['delta'][stat] = int(round((awakened_stats[grade][level][stat] / float(base_value)) * 100 - 100))
-
             awakened_stats_deltas = dict()
+
+            for stat, value in base_stats['6']['40'].iteritems():
+                awakened_stats_deltas[stat] = int(round((awakened_stats['6']['40'][stat] / float(value)) * 100 - 100))
+
             if base_monster.speed != awakened_monster.speed:
-                awakened_stats_deltas['speed'] = awakened_monster.speed - base_monster.speed
+                awakened_stats_deltas['SPD'] = awakened_monster.speed - base_monster.speed
 
             if base_monster.crit_rate != awakened_monster.crit_rate:
-                awakened_stats_deltas['crit_rate_delta'] = awakened_monster.speed - base_monster.speed
+                awakened_stats_deltas['CRIT_Rate'] = awakened_monster.speed - base_monster.speed
 
             if base_monster.crit_damage != awakened_monster.crit_damage:
-                awakened_stats_deltas['crit_damage_delta'] = awakened_monster.speed - base_monster.speed
+                awakened_stats_deltas['CRIT_DMG'] = awakened_monster.speed - base_monster.speed
 
             if base_monster.accuracy != awakened_monster.accuracy:
-                awakened_stats_deltas['accuracy_delta'] = awakened_monster.speed - base_monster.speed
+                awakened_stats_deltas['Accuracy'] = awakened_monster.speed - base_monster.speed
 
             if base_monster.resistance != awakened_monster.resistance:
-                awakened_stats_deltas['resistance_delta'] = awakened_monster.speed - base_monster.speed
+                awakened_stats_deltas['Resistance'] = awakened_monster.speed - base_monster.speed
 
             context['awakened_monster_stats_deltas'] = awakened_stats_deltas
 

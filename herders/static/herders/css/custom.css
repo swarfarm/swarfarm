@@ -10,6 +10,7 @@ body {
 }
 
 .container {
+    position: relative;
     min-height: 100%;
     overflow: auto;
     padding-bottom: 40px;
@@ -533,8 +534,8 @@ td>h6 {
 
 .bestiary-portraits {
     position: absolute;
-    top: 70px;
-    left: 60px;
+    top: 0;
+    left: 15px;
 }
 
 .bestiary-family {

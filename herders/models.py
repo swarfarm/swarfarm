@@ -122,7 +122,7 @@ class Monster(models.Model):
         start_grade = self.base_stars
         stats_list = OrderedDict()
 
-        if self.is_awakened:
+        if self.is_awakened and self.base_stars > 1:
             start_grade -= 1
 
         for grade in range(start_grade, 7):
@@ -204,6 +204,13 @@ class Monster(models.Model):
             unawakened_name = self.name
 
         return Monster.objects.filter(name=unawakened_name).order_by('element')
+
+    def skill_ups_to_max(self):
+        if self.skills is not None:
+            skill_list = self.skills.values_list('max_level', flat=True)
+            return sum(skill_list) - len(skill_list)
+        else:
+            return None
 
     def save(self, *args, **kwargs):
         # Update image filename on save.

@@ -868,7 +868,7 @@ def bestiary_detail(request, monster_id):
         'view': 'bestiary',
     }
 
-    if monster.is_awakened:
+    if monster.is_awakened and monster.awakens_from is not None:
         base_monster = monster.awakens_from
         awakened_monster = monster
     else:

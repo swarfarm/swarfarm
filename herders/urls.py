@@ -16,6 +16,7 @@ urlpatterns = [
         url(r'^storage/$', views.profile_storage, name='profile_storage'),
         url(r'^monster/', include([
             url(r'^add/$', views.monster_instance_add, name='monster_instance_add'),
+            url(r'^quick_add/(?P<monster_id>[0-9]+)/(?P<stars>[0-9])/(?P<level>[0-9]+)/$', views.monster_instance_quick_add, name='monster_instance_quick_add'),
             url(r'^view/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_view, name='monster_instance_view'),
             url(r'^edit/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_edit, name='monster_instance_edit'),
             url(r'^delete/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_delete, name='monster_instance_delete'),
@@ -34,7 +35,6 @@ urlpatterns = [
             url(r'^delete/(?P<team_id>[0-9a-f]{32})/$', views.team_delete, name='team_delete'),
             url(r'^delete_group/(?P<group_id>[0-9a-f]{32})/$', views.team_group_delete, name='team_group_delete'),
         ])),
-        url(r'^view/$', views.profile),  # Legacy URL scheme ended in /view. Now represented by /list)
         url(r'(?P<view_mode>[a-zA-Z]+)/(?P<sort_method>[a-zA-Z]+)/$', views.profile, name='profile_sorted'),
         url(r'(?P<view_mode>[a-zA-Z]+)/$', views.profile, name='profile'),
     ])),

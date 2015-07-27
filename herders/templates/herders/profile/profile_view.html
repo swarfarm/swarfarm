@@ -14,12 +14,28 @@
     {% if is_owner %}
         <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
             <div class="container-fluid">
-                {% if is_owner %}
-                    <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal">
-                        <span class="glyphicon glyphicon-plus"></span>
-                         Add Monster
+                <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal">
+                    <span class="glyphicon glyphicon-plus"></span>
+                     Add Monster
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        Quick Fodder <span class="caret"></span>
                     </button>
-                {% endif %}
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=799 stars=2 level=20 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                Rainbowmon 2<span class="glyphicon glyphicon-star"></span> Lvl. MAX
+                            </a>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=799 stars=3 level=25 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                Rainbowmon 3<span class="glyphicon glyphicon-star"></span> Lvl. MAX
+                            </a>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=799 stars=4 level=30 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                Rainbowmon 4<span class="glyphicon glyphicon-star"></span> Lvl. MAX
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div><!-- /.container-fluid -->
         </nav>
     {% endif %}
@@ -32,41 +48,43 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="btn-group">
-                    <a href="{% url 'herders:profile' profile_name=profile_name view_mode='box' %}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-th"></span> Box View</a>
+                    <a role="button" href="{% url 'herders:profile' profile_name=profile_name view_mode='box' %}" class="btn btn-default navbar-btn">
+                        <span class="glyphicon glyphicon-th"></span> Box View
+                    </a>
                 </div>
-                <span>Filters: </span>
-                <button type="button" class="btn btn-default reset">Reset</button>
-
-                <div class="btn-group element-filters">
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="fire"><img src="{{ img_url_prefix }}elements/fire.png" /></button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="water"><img src="{{ img_url_prefix }}elements/water.png" /></button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="wind"><img src="{{ img_url_prefix }}elements/wind.png" /></button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="light"><img src="{{ img_url_prefix }}elements/light.png" /></button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="dark"><img src="{{ img_url_prefix }}elements/dark.png" /></button>
-                </div>
-                <div class="btn-group archetype-filters">
-                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Attack">ATK</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Defense">DEF</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Hp">HP</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Support">SUP</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Material">MAT</button>
-                </div>
-                <div class="btn-group priority-filters">
-                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*High*">High</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Medium*">Medium</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Low*">Low</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Done*">Done</button>
-                </div>
-                <div class="btn-group info-filters">
-                    <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="0">
-                        <img src="{{ img_url_prefix }}icons/fusion.png" />
-                    </button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="9" data-filter-text="0">
-                        <span class="fa fa-birthday-cake" aria-hidden="true"></span>
-                    </button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="10" data-filter-text="0">
-                        <span class="fa fa-bed" aria-hidden="true"></span>
-                    </button>
+                <div class="btn-toolbar">
+                    <button type="button" class="btn btn-default reset">Reset Filters</button>
+                    <div class="btn-group element-filters">
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="fire"><img src="{{ img_url_prefix }}elements/fire.png" /></button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="water"><img src="{{ img_url_prefix }}elements/water.png" /></button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="wind"><img src="{{ img_url_prefix }}elements/wind.png" /></button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="light"><img src="{{ img_url_prefix }}elements/light.png" /></button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="dark"><img src="{{ img_url_prefix }}elements/dark.png" /></button>
+                    </div>
+                    <div class="btn-group archetype-filters">
+                        <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Attack">ATK</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Defense">DEF</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Hp">HP</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Support">SUP</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="5" data-filter-text="Material">MAT</button>
+                    </div>
+                    <div class="btn-group priority-filters">
+                        <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*High*">High</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Medium*">Medium</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Low*">Low</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="6" data-filter-text="*Done*">Done</button>
+                    </div>
+                    <div class="btn-group info-filters">
+                        <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="0">
+                            <img src="{{ img_url_prefix }}icons/fusion.png" />
+                        </button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="9" data-filter-text="0">
+                            <span class="fa fa-birthday-cake" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="10" data-filter-text="0">
+                            <span class="fa fa-bed" aria-hidden="true"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
 

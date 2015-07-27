@@ -209,6 +209,24 @@ def monster_instance_add(request, profile_name):
         return render(request, 'herders/profile/profile_monster_add.html', context)
 
 
+@login_required()
+def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    monster_to_add = get_object_or_404(Monster, pk=monster_id)
+
+    if is_owner:
+        MonsterInstance.objects.create(owner=summoner, monster=monster_to_add, stars=stars, level=level, fodder=True, notes='', priority=MonsterInstance.PRIORITY_DONE)
+        return redirect(return_path)
+    else:
+        return HttpResponseForbidden()
+
+
 def monster_instance_view(request, profile_name, instance_id):
     return_path = request.GET.get(
         'next',

@@ -108,7 +108,7 @@
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                         {{ user.username }} <span class="caret"></span>
                                     </button>
-                                        <ul class="dropdown-menu" role="menu">
+                                    <ul class="dropdown-menu" role="menu">
                                         <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
                                         <li><a href="{% url 'feedback:index' %}">Leave Feedback</a></li>
                                         {% if user.is_staff %}

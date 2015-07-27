@@ -338,54 +338,56 @@
                     </div>
 
                     <div class="col-lg-6 no-right-gutter">
-                        <table class="table table-condensed skill-table">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th width="125">Skill</th>
-                                <th>Description</th>
-                                <th>Effects</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% if awakened_monster_leader_skill %}
-                            <tr>
-                                <td class="monster-image"><img src="{{ img_url_prefix }}/skills/leader/{{ awakened_monster_leader_skill.icon_filename }}"  class="monster-thumb"/></td>
-                                <td>Leader Skill</td>
-                                <td>{{ awakened_monster_leader_skill.skill_string }}</td>
-                                <td></td>
-                            </tr>
-                            {% endif %}
-                            {% for skill in awakened_monster_skills %}
-                            <tr>
-                                <td class="monster-image"
-                                {% if not skill.passive %}
-                                data-toggle="popover" data-trigger="hover" data-container="body" title="Skill-Up Effects" data-placement="left" data-content="{{ skill.level_progress_description|linebreaksbr }}"
+                        <div class="panel panel-default">
+                            <table class="table table-condensed skill-table">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th width="125">Skill</th>
+                                    <th>Description</th>
+                                    <th>Effects</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if awakened_monster_leader_skill %}
+                                <tr>
+                                    <td class="monster-image"><img src="{{ img_url_prefix }}/skills/leader/{{ awakened_monster_leader_skill.icon_filename }}"  class="monster-thumb"/></td>
+                                    <td>Leader Skill</td>
+                                    <td>{{ awakened_monster_leader_skill.skill_string }}</td>
+                                    <td></td>
+                                </tr>
                                 {% endif %}
-                                >
-                                    <div style="position:relative">
-                                        <img src="{{ img_url_prefix }}/skills/{{ skill.icon_filename }}" class="monster-thumb" />
-                                        {% if not skill.passive %}
-                                        <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
-                                        {% endif %}
-                                    </div>
-                                <td>{{ skill.name }} {% if skill.passive %}(Passive){% endif %}</td>
-                                <td>{{ skill.description }}</td>
-                                <td width="100">
-                                    {% for effect in skill.skill_effect.all %}
-                                        {% if effect.icon_filename %}
-                                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
-                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                                />
-                                        {% endif %}
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                                <tr><td colspan="4">No skills entered yet!</td></tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                                {% for skill in awakened_monster_skills %}
+                                <tr>
+                                    <td class="monster-image"
+                                    {% if not skill.passive %}
+                                    data-toggle="popover" data-trigger="hover" data-container="body" title="Skill-Up Effects" data-placement="left" data-content="{{ skill.level_progress_description|linebreaksbr }}"
+                                    {% endif %}
+                                    >
+                                        <div style="position:relative">
+                                            <img src="{{ img_url_prefix }}/skills/{{ skill.icon_filename }}" class="monster-thumb" />
+                                            {% if not skill.passive %}
+                                            <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+                                            {% endif %}
+                                        </div>
+                                    <td>{{ skill.name }} {% if skill.passive %}(Passive){% endif %}</td>
+                                    <td>{{ skill.description }}</td>
+                                    <td width="100">
+                                        {% for effect in skill.skill_effect.all %}
+                                            {% if effect.icon_filename %}
+                                            <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                                                    data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                                    />
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                    <tr><td colspan="4">No skills entered yet!</td></tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
 
                         {% if awakened_monster.skill_ups_to_max %}
                         <div class="col-sm-4 no-left-gutter">

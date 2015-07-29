@@ -212,6 +212,14 @@ class Monster(models.Model):
         else:
             return None
 
+    def all_skill_effects(self):
+        effects = MonsterSkillEffect.objects.filter(pk__in=self.skills.all().values_list('skill_effect', flat=True))
+
+        if len(effects) > 0:
+            return effects
+        else:
+            return None
+
     def save(self, *args, **kwargs):
         # Update image filename on save.
         if self.is_awakened and self.awakens_from is not None:

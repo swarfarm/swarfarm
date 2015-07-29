@@ -92,7 +92,8 @@ def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
                 monster_stable['1*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=1).order_by('-level', 'monster__name')
             elif sort_method == 'level':
                 monster_stable = OrderedDict()
-                monster_stable['40-31'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=30).order_by('-level', '-stars', 'monster__name')
+                monster_stable['40'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level=40).order_by('-level', '-stars', 'monster__name')
+                monster_stable['39-31'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=30).filter(level__lt=40).order_by('-level', '-stars', 'monster__name')
                 monster_stable['30-21'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=20).filter(level__lte=30).order_by('-level', '-stars', 'monster__name')
                 monster_stable['20-11'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=10).filter(level__lte=20).order_by('-level', '-stars', 'monster__name')
                 monster_stable['10-1'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__lte=10).order_by('-level', '-stars', 'monster__name')

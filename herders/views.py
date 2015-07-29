@@ -894,22 +894,23 @@ def bestiary_detail(request, monster_id):
             awakened_stats_deltas = dict()
 
             for stat, value in base_stats['6']['40'].iteritems():
-                awakened_stats_deltas[stat] = int(round((awakened_stats['6']['40'][stat] / float(value)) * 100 - 100))
+                if awakened_stats['6']['40'][stat] != value:
+                    awakened_stats_deltas[stat] = int(round((awakened_stats['6']['40'][stat] / float(value)) * 100 - 100))
 
             if base_monster.speed != awakened_monster.speed:
                 awakened_stats_deltas['SPD'] = awakened_monster.speed - base_monster.speed
 
             if base_monster.crit_rate != awakened_monster.crit_rate:
-                awakened_stats_deltas['CRIT_Rate'] = awakened_monster.speed - base_monster.speed
+                awakened_stats_deltas['CRIT_Rate'] = awakened_monster.crit_rate - base_monster.crit_rate
 
             if base_monster.crit_damage != awakened_monster.crit_damage:
-                awakened_stats_deltas['CRIT_DMG'] = awakened_monster.speed - base_monster.speed
+                awakened_stats_deltas['CRIT_DMG'] = awakened_monster.crit_damage - base_monster.crit_damage
 
             if base_monster.accuracy != awakened_monster.accuracy:
-                awakened_stats_deltas['Accuracy'] = awakened_monster.speed - base_monster.speed
+                awakened_stats_deltas['Accuracy'] = awakened_monster.accuracy - base_monster.accuracy
 
             if base_monster.resistance != awakened_monster.resistance:
-                awakened_stats_deltas['Resistance'] = awakened_monster.speed - base_monster.speed
+                awakened_stats_deltas['Resistance'] = awakened_monster.resistance - base_monster.resistance
 
             context['awakened_monster_stats_deltas'] = awakened_stats_deltas
 

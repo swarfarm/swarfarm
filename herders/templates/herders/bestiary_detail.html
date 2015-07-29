@@ -213,10 +213,12 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        {% if awakened_monster_stats_deltas.HP > 0 %}
-                                            <span class="text-success">+{{ awakened_monster_stats_deltas.HP }}%</span>
-                                        {% else %}
-                                            <span class="text-danger">{{ awakened_monster_stats_deltas.HP }}%</span>
+                                        {% if awakened_monster_stats_deltas.HP %}
+                                            {% if awakened_monster_stats_deltas.HP > 0 %}
+                                                <span class="text-success">+{{ awakened_monster_stats_deltas.HP }}%</span>
+                                            {% else %}
+                                                <span class="text-danger">{{ awakened_monster_stats_deltas.HP }}%</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>HP</td>
@@ -232,10 +234,12 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        {% if awakened_monster_stats_deltas.ATK > 0 %}
-                                            <span class="text-success">+{{ awakened_monster_stats_deltas.ATK }}%</span>
-                                        {% else %}
-                                            <span class="text-danger">{{ awakened_monster_stats_deltas.ATK }}%</span>
+                                        {% if awakened_monster_stats_deltas.ATK %}
+                                            {% if awakened_monster_stats_deltas.ATK > 0 %}
+                                                <span class="text-success">+{{ awakened_monster_stats_deltas.ATK }}%</span>
+                                            {% else %}
+                                                <span class="text-danger">{{ awakened_monster_stats_deltas.ATK }}%</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>ATK</td>
@@ -251,10 +255,12 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        {% if awakened_monster_stats_deltas.DEF > 0 %}
-                                            <span class="text-success">+{{ awakened_monster_stats_deltas.DEF }}%</span>
-                                        {% else %}
-                                            <span class="text-danger">{{ awakened_monster_stats_deltas.DEF }}%</span>
+                                        {% if awakened_monster_stats_deltas.DEF %}
+                                            {% if awakened_monster_stats_deltas.DEF > 0 %}
+                                                <span class="text-success">+{{ awakened_monster_stats_deltas.DEF }}%</span>
+                                            {% else %}
+                                                <span class="text-danger">-{{ awakened_monster_stats_deltas.DEF }}%</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>DEF</td>
@@ -270,10 +276,12 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        {% if awakened_monster_stats_deltas.SPD > 0 %}
-                                            <span class="text-success">+{{ awakened_monster_stats_deltas.SPD }}</span>
-                                        {% else %}
-                                            <span class="text-danger">{{ awakened_monster_stats_deltas.SPD }}</span>
+                                        {% if awakened_monster_stats_deltas.SPD %}
+                                            {% if awakened_monster_stats_deltas.SPD > 0 %}
+                                                <span class="text-success">+{{ awakened_monster_stats_deltas.SPD }}</span>
+                                            {% else %}
+                                                <span class="text-danger">-{{ awakened_monster_stats_deltas.SPD }}</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>SPD</td>
@@ -283,10 +291,12 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        {% if awakened_monster_stats_deltas.CRIT_Rate > 0 %}
-                                            <span class="text-success">+{{ awakened_monster_stats_deltas.CRIT_Rate }}</span>
-                                        {% else %}
-                                            <span class="text-danger">{{ awakened_monster_stats_deltas.CRIT_Rate }}</span>
+                                        {% if awakened_monster_stats_deltas.CRIT_Rate %}
+                                            {% if awakened_monster_stats_deltas.CRIT_Rate > 0 %}
+                                                <span class="text-success">+{{ awakened_monster_stats_deltas.CRIT_Rate }}%</span>
+                                            {% else %}
+                                                <span class="text-danger">{{ awakened_monster_stats_deltas.CRIT_Rate }}%</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>CRIT Rate</td>
@@ -296,10 +306,12 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        {% if awakened_monster_stats_deltas.CRIT_DMG > 0 %}
-                                            <span class="text-success">+{{ awakened_monster_stats_deltas.CRIT_DMG }}</span>
-                                        {% else %}
-                                            <span class="text-danger">{{ awakened_monster_stats_deltas.CRIT_DMG }}</span>
+                                        {% if awakened_monster_stats_deltas.CRIT_DMG %}
+                                            {% if awakened_monster_stats_deltas.CRIT_DMG > 0 %}
+                                                <span class="text-success">+{{ awakened_monster_stats_deltas.CRIT_DMG }}%</span>
+                                            {% else %}
+                                                <span class="text-danger">{{ awakened_monster_stats_deltas.CRIT_DMG }}%</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>CRIT DMG</td>
@@ -309,10 +321,12 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        {% if awakened_monster_stats_deltas.Accuracy > 0 %}
-                                            <span class="text-success">+{{ awakened_monster_stats_deltas.Accuracy }}</span>
-                                        {% else %}
-                                            <span class="text-danger">{{ awakened_monster_stats_deltas.Accuracy }}</span>
+                                        {% if awakened_monster_stats_deltas.Accuracy %}
+                                            {% if awakened_monster_stats_deltas.Accuracy > 0 %}
+                                                <span class="text-success">+{{ awakened_monster_stats_deltas.Accuracy }}%</span>
+                                            {% else %}
+                                                <span class="text-danger">{{ awakened_monster_stats_deltas.Accuracy }}%</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>Accuracy</td>
@@ -322,10 +336,12 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        {% if awakened_monster_stats_deltas.Resistance > 0 %}
-                                            <span class="text-success">+{{ awakened_monster_stats_deltas.Resistance }}</span>
-                                        {% else %}
-                                            <span class="text-danger">{{ awakened_monster_stats_deltas.Resistance }}</span>
+                                        {% if awakened_monster_stats_deltas.Resistance %}
+                                            {% if awakened_monster_stats_deltas.Resistance > 0 %}
+                                                <span class="text-success">+{{ awakened_monster_stats_deltas.Resistance }}%</span>
+                                            {% else %}
+                                                <span class="text-danger">{{ awakened_monster_stats_deltas.Resistance }}%</span>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>Resistance</td>

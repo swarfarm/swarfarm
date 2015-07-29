@@ -59,8 +59,8 @@
                             <th>Type</th>
                             <th class="{sorter: false}">Awakens To</th>
                             <th class="{sorter: false}">Awakens From</th>
-                            <th class="{sorter: false}">Awakening Materials</th>
                             <th class="{sorter: false}">Skill Effects</th>
+                            <th class="{sorter: false}">Awakening Materials</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -107,8 +107,20 @@
                             </td>
                             <td class="monster-awaken-materials">
                                 {% for effect in monster.all_skill_effects %}
-                                    {% if effect.icon_filename %} <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}" /> {% endif %}
+                                    {% if effect.icon_filename %}
+                                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}" />
+                                        <span class="hidden">{{ effect.name }} </span>
+                                    {% endif %}
                                 {% endfor %}
+                            </td>
+                            <td class="monster-awaken-materials">
+                                {% with mats=monster.get_awakening_materials %}
+                                    {% for element,essences in mats.iteritems %}
+                                        {% for size,count in essences.iteritems %}
+                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endwith %}
                             </td>
                         </tr>
                         {% endfor %}

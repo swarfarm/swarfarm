@@ -505,9 +505,12 @@ def monster_instance_awaken(request, profile_name, instance_id):
 
         for element, essences in monster.monster.get_awakening_materials().iteritems():
             available_essences[element] = OrderedDict()
-            for size in essences:
-                available_essences[element][size] = storage[element][size]
+            for size, cost in essences.iteritems():
+                available_essences[element][size] = dict()
+                available_essences[element][size]['qty'] = storage[element][size]
+                available_essences[element][size]['sufficient'] = storage[element][size] >= cost
 
+        print available_essences
         context['available_essences'] = available_essences
 
         return render(request, 'herders/profile/profile_monster_awaken.html', context)

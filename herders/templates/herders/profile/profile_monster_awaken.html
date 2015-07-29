@@ -36,13 +36,13 @@
                 {% for size, count in essences.iteritems %}
                     <div>
                         <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" style="
-                        {% if available_materials.storage_magic_high >= monster.monster.awaken_magic_mats_high %}
+                        {% if count.sufficient %}
                             border: 5px solid green
                         {% else %}
                             border: 5px solid red
                         {% endif %}
                         "/>
-                        <span class="image-plus image-plus-right">{{ count }}</span>
+                        <span class="image-plus image-plus-right">{{ count.qty }}</span>
                     </div>
                 {% endfor %}
             {% endfor %}

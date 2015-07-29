@@ -156,7 +156,7 @@
                                     <img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" />
                                     <span>{{ instance.monster.element }}</span>
                                 </td>
-                                <td>{{ instance.monster.archetype|title }}</td>
+                                <td>{{ instance.monster.get_archetype_display }}</td>
                                 <td><span class="hidden">{{ instance.priority }}</span>{{ instance.get_priority_display }}</td>
                                 <td>{{ instance.notes }}</td>
                                 <td class="monster-info-icons-column">

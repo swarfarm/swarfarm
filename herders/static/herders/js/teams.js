@@ -4,7 +4,9 @@ var page_content = $('#wrap');
 
 page_content.on('click', '.team-link', function() {
     var team_id = $(this).data('team-id');
-    team_detail.load('/profile/' + PROFILE_NAME + '/teams/detail/' + team_id + '/');
+    team_detail.load('/profile/' + PROFILE_NAME + '/teams/detail/' + team_id + '/', function() {
+        $('[data-toggle="popover"]').popover();
+    });
 });
 
 page_content.on('click', '.team-edit', function() {
@@ -43,7 +45,9 @@ $(document).ready(function() {
 function load_new_team() {
     var hashStr = location.hash.replace("#","");
     if (hashStr) {
-        team_detail.load('/profile/' + PROFILE_NAME + '/teams/detail/' + hashStr + '/');
+        team_detail.load('/profile/' + PROFILE_NAME + '/teams/detail/' + hashStr + '/', function() {
+            $('[data-toggle="popover"]').popover();
+        });
     }
     $('.autocomplete-light-widget').remove();
 }
@@ -53,6 +57,5 @@ function update_team_list() {
         var isEmpty = team_list.children('p:contains("Group list is empty!")').length > 0;
         $('.navbar .team-edit').toggleClass('disabled', isEmpty);
     });
-
     $('.autocomplete-light-widget').remove();
 }

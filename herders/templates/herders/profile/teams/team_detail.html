@@ -46,10 +46,11 @@
                     <th class="monster-level-column">Level</th>
                     <th class="monster-element">Element</th>
                     <th>Archetype</th>
+                    <th>Skill Effects</th>
                 </tr>
             </thead>
             <tbody>
-                <tr><td colspan="6"><h4>Leader</h4></td></tr>
+                <tr><td colspan="7"><h4>Leader</h4></td></tr>
                 <tr>
                     {% if team.leader %}
                     <td class="monster-image">
@@ -90,11 +91,22 @@
                         <span>{{ team.leader.monster.element }}</span>
                     </td>
                     <td>{{ team.leader.monster.archetype|title }}</td>
+                    <td class="monster-awaken-materials">
+                        {% for effect in team.leader.monster.all_skill_effects %}
+                            {% if effect.icon_filename %}
+                                <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
+                                        data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                        />
+                                <span class="hidden">{{ effect.name }} </span>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
                     {% else %}
-                    <td colspan="6">None</td>
+                    <td colspan="7">None</td>
                     {% endif %}
                 </tr>
-                <tr><td colspan="6"><h4>Members</h4></td></tr>
+                <tr><td colspan="7"><h4>Members</h4></td></tr>
                 {% for instance in team.roster.all %}
                     <tr>
                         <td class="monster-image">
@@ -135,9 +147,19 @@
                             <span>{{ instance.monster.element }}</span>
                         </td>
                         <td>{{ instance.monster.archetype|title }}</td>
+                        <td class="monster-awaken-materials">
+                            {% for effect in instance.monster.all_skill_effects %}
+                                {% if effect.icon_filename %}
+                                    <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
+                                            data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                            />
+                                    <span class="hidden">{{ effect.name }} </span>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="6">No Members</td></tr>
+                    <tr><td colspan="7">No Members</td></tr>
                 {% endfor %}
             </tbody>
         </table>

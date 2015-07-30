@@ -784,12 +784,25 @@ def team_detail(request, profile_name, team_id):
 
     team = get_object_or_404(Team, pk=team_id)
 
+    team_effects = []
+    if team.leader.monster.all_skill_effects():
+        for effect in team.leader.monster.all_skill_effects():
+            if effect not in team_effects:
+                team_effects.append(effect)
+
+    for team_member in team.roster.all():
+        if team_member.monster.all_skill_effects():
+            for effect in team_member.monster.all_skill_effects():
+                if effect not in team_effects:
+                    team_effects.append(effect)
+
     context = {
         'view': 'teams',
         'profile_name': profile_name,
         'return_path': return_path,
         'is_owner': is_owner,
         'team': team,
+        'team_buffs': team_effects,
     }
 
     return render(request, 'herders/profile/teams/team_detail.html', context)

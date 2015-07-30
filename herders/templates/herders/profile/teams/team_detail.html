@@ -37,6 +37,21 @@
            {{ team.description|markdown }}
         </div>
         {% endif %}
+        {% if team_buffs %}
+        <table class="table table-condensed monster-table">
+            <td width="225px">Combined Team Buffs/Debuffs:</td>
+            <td class="monster-awaken-materials">
+                {% for effect in team_buffs %}
+                    {% if effect.icon_filename %}
+                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
+                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                />
+                        <span class="hidden">{{ effect.name }} </span>
+                    {% endif %}
+                {% endfor %}
+            </td>
+        </table>
+        {% endif %}
         <table class="table table-hover table-condensed monster-table">
             <thead>
                 <tr>

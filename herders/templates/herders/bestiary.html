@@ -12,40 +12,43 @@
     {% cache 43200 bestiary_view %}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <span>Filters: </span>
-                <button type="button" class="btn btn-default reset">Reset</button>
+                <div class="btn-toolbar">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default reset">Reset Filters</button>
+                    </div>
 
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="1">
-                        1<span class="glyphicon glyphicon-star"></span>
-                    </button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="2">
-                        2<span class="glyphicon glyphicon-star"></span>
-                    </button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="3">
-                        3<span class="glyphicon glyphicon-star"></span>
-                    </button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="4">
-                        4<span class="glyphicon glyphicon-star"></span>
-                    </button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="5">
-                        5<span class="glyphicon glyphicon-star"></span>
-                    </button>
-                </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="1">
+                            1<span class="glyphicon glyphicon-star"></span>
+                        </button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="2">
+                            2<span class="glyphicon glyphicon-star"></span>
+                        </button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="3">
+                            3<span class="glyphicon glyphicon-star"></span>
+                        </button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="4">
+                            4<span class="glyphicon glyphicon-star"></span>
+                        </button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="5">
+                            5<span class="glyphicon glyphicon-star"></span>
+                        </button>
+                    </div>
 
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="fire"><img src="{{ img_url_prefix }}elements/fire.png" /></button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="water"><img src="{{ img_url_prefix }}elements/water.png" /></button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="wind"><img src="{{ img_url_prefix }}elements/wind.png" /></button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="light"><img src="{{ img_url_prefix }}elements/light.png" /></button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="dark"><img src="{{ img_url_prefix }}elements/dark.png" /></button>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Attack">ATK</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Defense">DEF</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Hp">HP</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Support">SUP</button>
-                    <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Material">MAT</button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="fire"><img src="{{ img_url_prefix }}elements/fire.png" /></button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="water"><img src="{{ img_url_prefix }}elements/water.png" /></button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="wind"><img src="{{ img_url_prefix }}elements/wind.png" /></button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="light"><img src="{{ img_url_prefix }}elements/light.png" /></button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="3" data-filter-text="dark"><img src="{{ img_url_prefix }}elements/dark.png" /></button>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Attack">ATK</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Defense">DEF</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Hp">HP</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Support">SUP</button>
+                        <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Material">MAT</button>
+                    </div>
                 </div>
             </div>
             <div class="table-responsive">

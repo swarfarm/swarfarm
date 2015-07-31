@@ -511,7 +511,6 @@ def monster_instance_awaken(request, profile_name, instance_id):
                 available_essences[element][size]['qty'] = storage[element][size]
                 available_essences[element][size]['sufficient'] = storage[element][size] >= cost
 
-        print available_essences
         context['available_essences'] = available_essences
 
         return render(request, 'herders/profile/profile_monster_awaken.html', context)
@@ -785,7 +784,7 @@ def team_detail(request, profile_name, team_id):
     team = get_object_or_404(Team, pk=team_id)
 
     team_effects = []
-    if team.leader.monster.all_skill_effects():
+    if team.leader and team.leader.monster.all_skill_effects():
         for effect in team.leader.monster.all_skill_effects():
             if effect not in team_effects:
                 team_effects.append(effect)

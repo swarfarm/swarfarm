@@ -976,6 +976,10 @@ def bestiary_sanity_checks(request):
                 if skill.monster_set.first().archetype != Monster.TYPE_MATERIAL:
                     skill_errors.append('passive not in slot 3')
 
+            # Check missing skill description
+            if 'Missing' in skill.level_progress_description:
+                skill_errors.append('missing level-up description and possibly max level.')
+
             if len(skill_errors) > 0:
                 errors[str(skill)] = skill_errors
 

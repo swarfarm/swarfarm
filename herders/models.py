@@ -74,6 +74,7 @@ class Monster(models.Model):
     awaken_magic_mats_low = models.IntegerField(null=True, blank=True)
     awaken_magic_mats_mid = models.IntegerField(null=True, blank=True)
     awaken_magic_mats_high = models.IntegerField(null=True, blank=True)
+    source = models.ManyToManyField('MonsterSource', blank=True)
     fusion_food = models.BooleanField(default=False)
 
     def image_url(self):
@@ -359,6 +360,25 @@ class MonsterSkillEffect(models.Model):
 
     class Meta:
         ordering = ['-is_buff', 'name']
+
+
+class MonsterSource(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    icon_filename = models.CharField(max_length=100, null=True, blank=True)
+    farmable_source = models.BooleanField(default=False)
+
+    def image_url(self):
+        if self.icon_filename:
+            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/icons/' + self.icon_filename))
+        else:
+            return 'No Image'
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
 
 
 class Fusion(models.Model):

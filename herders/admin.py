@@ -64,12 +64,18 @@ class MonsterAdmin(admin.ModelAdmin):
                 'leader_skill',
                 'skills',
             )
-        })
+        }),
+        ('Source', {
+            'fields': (
+                'source',
+            )
+        }),
     ]
 
     list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'awakens_from', 'awakens_to')
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened')
     filter_vertical = ('skills',)
+    filter_horizontal = ('source',)
     search_fields = ['name']
     save_as = True
 
@@ -91,6 +97,11 @@ class MonsterLeaderSkillAdmin(admin.ModelAdmin):
 @admin.register(MonsterSkillEffect)
 class MonsterSkillEffectAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'is_buff')
+
+
+@admin.register(MonsterSource)
+class MonsterSourceAdmin(admin.ModelAdmin):
+    list_display = ('image_url', 'name')
 
 
 @admin.register(Fusion)

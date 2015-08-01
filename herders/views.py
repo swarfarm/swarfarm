@@ -934,7 +934,7 @@ def bestiary_detail(request, monster_id):
     return render(request, 'herders/bestiary_detail.html', context)
 
 
-def skill_sanity_checks(request):
+def bestiary_sanity_checks(request):
     from .models import MonsterSkill
 
     if request.user.is_staff:
@@ -942,15 +942,19 @@ def skill_sanity_checks(request):
         monsters = Monster.objects.all()
 
         for monster in monsters:
-            slot_errors = []
+            monster_errors = []
+
+            # Check for missing skills
+            if monster.skills.count() == 0:
+                monster_errors.append('Missing skills')
 
             # Check for same slot
             for slot in range(1,5):
                 if monster.skills.all().filter(slot=slot).count() > 1:
-                    slot_errors.append("More than one skill in slot " + str(slot))
+                    monster_errors.append("More than one skill in slot " + str(slot))
 
-            if len(slot_errors) > 0:
-                errors[str(monster)] = slot_errors
+            if len(monster_errors) > 0:
+                errors[str(monster)] = monster_errors
 
         for skill in MonsterSkill.objects.all():
             print skill

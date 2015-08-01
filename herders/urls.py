@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     # User management stuff
     url(r'^register/$', views.register, name='register'),  # Register new user
-    url(r'^skill_debug/$', views.skill_sanity_checks, name='skill_checks'),
+    url(r'^skill_debug/$', views.bestiary_sanity_checks, name='skill_checks'),
 
 
     # User profiles and monster views

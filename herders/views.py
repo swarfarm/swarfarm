@@ -932,3 +932,47 @@ def bestiary_detail(request, monster_id):
         context['awakened_monster_skills'] = awakened_monster.skills.all().order_by('slot')
 
     return render(request, 'herders/bestiary_detail.html', context)
+
+
+def skill_sanity_checks(request):
+    from .models import MonsterSkill
+
+    if request.user.is_staff:
+        errors = OrderedDict()
+        monsters = Monster.objects.all()
+
+        for monster in monsters:
+            slot_errors = []
+
+            # Check for same slot
+            for slot in range(1,5):
+                if monster.skills.all().filter(slot=slot).count() > 1:
+                    slot_errors.append("More than one skill in slot " + str(slot))
+
+            if len(slot_errors) > 0:
+                errors[str(monster)] = slot_errors
+
+        for skill in MonsterSkill.objects.all():
+            print skill
+            skill_errors = []
+            # Check max level of skill = num lines in level up progress + 1
+            if skill.max_level > 1:
+                line_count = len(skill.level_progress_description.split('\r\n'))
+                print 'level up progress text len: ' + str(line_count) + '. Max level: ' + str(skill.max_level)
+
+                if skill.max_level != line_count + 1:
+                    skill_errors.append('inconsistent level up text and max level')
+
+            # Check that skill is used
+            if skill.monster_set.count() == 0:
+                skill_errors.append('unused skill')
+
+            # Check passives are in slot 3 (with some exceptions)
+            if skill.passive and skill.slot != 3:
+                if skill.monster_set.first().archetype != Monster.TYPE_MATERIAL:
+                    skill_errors.append('passive not in slot 3')
+
+            if len(skill_errors) > 0:
+                errors[str(skill)] = skill_errors
+
+        return render(request, 'herders/skill_debug.html', {'errors': errors})

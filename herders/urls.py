@@ -5,8 +5,7 @@ from . import views
 urlpatterns = [
     # User management stuff
     url(r'^register/$', views.register, name='register'),  # Register new user
-    # url(r'^login/$', views.log_in, name='login'),  # Log in user and redirect to profile
-    # url(r'^logout/$', views.log_out, name='logout'),  # Log in user and redirect to index
+    url(r'^skill_debug/$', views.skill_sanity_checks, name='skill_checks'),
 
 
     # User profiles and monster views

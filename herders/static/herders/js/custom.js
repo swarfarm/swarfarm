@@ -48,7 +48,8 @@ monster_table.tablesorter({
         filter_ignoreCase : true,
         filter_liveSearch : true,
         filter_searchDelay : 300,
-        filter_saveFilters : true
+        filter_saveFilters : true,
+        filter_searchFiltered : true
     }
 });
 

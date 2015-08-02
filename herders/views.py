@@ -16,7 +16,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
     PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm, EditTeamForm, AddTeamGroupForm, \
     DeleteTeamGroupForm
-from .models import Monster, Summoner, MonsterInstance, Fusion, TeamGroup, Team
+from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
 from .fusion import essences_missing, total_awakening_cost
 
 
@@ -874,6 +874,9 @@ def bestiary(request):
         cache.set('bestiary_data', monster_list, 900)
 
     context['monster_list'] = monster_list
+    context['buff_list'] = MonsterSkillEffect.objects.filter(is_buff=True).exclude(icon_filename='').order_by('name')
+    context['debuff_list'] = MonsterSkillEffect.objects.filter(is_buff=False).exclude(icon_filename='').order_by('name')
+    context['other_effect_list'] = MonsterSkillEffect.objects.filter(icon_filename='').order_by('name')
 
     return render(request, 'herders/bestiary.html', context)
 

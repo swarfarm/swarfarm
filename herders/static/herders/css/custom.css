@@ -561,3 +561,14 @@ img.skill-effect {
     margin-right: 1px;
     border-radius: 3px;
 }
+
+.filter-group {
+    padding-bottom: 5px;
+}
+
+.filter-description {
+    padding-right: 10px;
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+}

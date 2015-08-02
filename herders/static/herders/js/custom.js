@@ -44,6 +44,7 @@ monster_table.tablesorter({
     widgetOptions: {
         filter_columnFilters: true,
         filter_reset: 'button.reset',
+        filter_external : '.search',
         filter_ignoreCase : true,
         filter_liveSearch : true,
         filter_searchDelay : 300,

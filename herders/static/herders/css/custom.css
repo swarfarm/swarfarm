@@ -304,7 +304,6 @@ footer {
     height: 50px;
     border: 1px solid black;
     border-radius: 15%;
-    margin: 0 1px;
 }
 
 .rating-symbol .glyphicon {
@@ -557,8 +556,6 @@ td>h6 {
     vertical-align: middle;
     text-align: left;
 }
-
-
 
 .filter-group {
     padding-bottom: 5px;

@@ -123,6 +123,51 @@
                         </div>
                     </div>
 
+                    <div class="filter-group">
+                        <span class="filter-description">Buffs:</span>
+                        <div class="btn-group buff-filters">
+                            {% for buff in buff_list %}
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ buff.pk }}-{{ buff.name|slugify }}" data-filter-function=" && ">
+                                {% if buff.icon_filename %}
+                                <img src="{{ img_url_prefix }}/buffs/{{ buff.icon_filename }}" />
+                                {% else %}
+                                <span>{{ buff.name }}</span>
+                                {% endif %}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="filter-description">Debuffs:</span>
+                        <div class="btn-group buff-filters">
+                            {% for debuff in debuff_list %}
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ debuff.pk }}-{{ debuff.name|slugify }}" data-filter-function=" && ">
+                                {% if debuff.icon_filename %}
+                                <img src="{{ img_url_prefix }}/buffs/{{ debuff.icon_filename }}" />
+                                {% else %}
+                                <span>{{ debuff.name }}</span>
+                                {% endif %}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="filter-description">Other:</span>
+                        <div class="btn-group buff-filters">
+                            {% for effect in other_effect_list %}
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ effect.pk }}-{{ effect.name|slugify }}" data-filter-function=" && ">
+                                {% if effect.icon_filename %}
+                                <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}" />
+                                {% else %}
+                                <span>{{ effect.name }} </span>
+                                {% endif %}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
                     <div class="btn-group">
                         <button type="button" class="btn btn-danger reset">Reset Filters</button>
                     </div>
@@ -140,6 +185,7 @@
                             <th class="monster-element">Element</th>
                             <th>Archetype</th>
                             <th>Priority</th>
+                            <th data-sorter="false">Skill Effects</th>
                             <th>Notes</th>
                             <th class="monster-info-icons-column"><img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/></th>
                             <th class="monster-info-icons-column"><span class="fa fa-birthday-cake" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Marked as food"></span></th>
@@ -199,6 +245,16 @@
                                 </td>
                                 <td>{{ instance.monster.get_archetype_display }}</td>
                                 <td><span class="hidden">{{ instance.priority }}</span>{{ instance.get_priority_display }}</td>
+                                <td class="monster-awaken-materials">
+                                {% for effect in instance.monster.all_skill_effects %}
+                                    {% if effect.icon_filename %}
+                                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
+                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                                />
+                                    {% endif %}
+                                    <span class="hidden">{{ effect.pk }}-{{ effect.name|slugify }}</span>
+                                {% endfor %}
+                                </td>
                                 <td>{{ instance.notes }}</td>
                                 <td class="monster-info-icons-column">
                                     {% if instance.monster.fusion_food %}

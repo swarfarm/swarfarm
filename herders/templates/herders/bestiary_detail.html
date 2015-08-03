@@ -263,7 +263,7 @@
                                             {% if awakened_monster_stats_deltas.DEF > 0 %}
                                                 <span class="text-success">+{{ awakened_monster_stats_deltas.DEF }}%</span>
                                             {% else %}
-                                                <span class="text-danger">-{{ awakened_monster_stats_deltas.DEF }}%</span>
+                                                <span class="text-danger">{{ awakened_monster_stats_deltas.DEF }}%</span>
                                             {% endif %}
                                         {% endif %}
                                     </td>
@@ -284,7 +284,7 @@
                                             {% if awakened_monster_stats_deltas.SPD > 0 %}
                                                 <span class="text-success">+{{ awakened_monster_stats_deltas.SPD }}</span>
                                             {% else %}
-                                                <span class="text-danger">-{{ awakened_monster_stats_deltas.SPD }}</span>
+                                                <span class="text-danger">{{ awakened_monster_stats_deltas.SPD }}</span>
                                             {% endif %}
                                         {% endif %}
                                     </td>

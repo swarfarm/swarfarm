@@ -127,6 +127,10 @@
                                             <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
                                                     data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
                                                     />
+                                            {% else %}
+                                                <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                                    <span>{{ effect.name }}</span>
+                                                </span>
                                             {% endif %}
                                         {% endfor %}
                                     </td>

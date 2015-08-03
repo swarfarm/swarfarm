@@ -295,13 +295,16 @@ footer {
 .monster-awaken-materials div {
     position: relative;
     display: inline-block;
+    margin: 0 2px;
 }
+
 
 .monster-awaken-materials img {
     width: 50px;
     height: 50px;
     border: 1px solid black;
     border-radius: 15%;
+    margin: 0 2px;
 }
 
 .rating-symbol .glyphicon {
@@ -555,12 +558,7 @@ td>h6 {
     text-align: left;
 }
 
-img.skill-effect {
-    width: 25px;
-    height: 25px;
-    margin-right: 1px;
-    border-radius: 3px;
-}
+
 
 .filter-group {
     padding-bottom: 5px;
@@ -571,4 +569,40 @@ img.skill-effect {
     display: inline-block;
     width: 80px;
     text-align: right;
+}
+
+.skill-effect {
+    display: inline-table;
+    float: left;
+    width: 50px;
+    height: 50px;
+    line-height: 1;
+    font-size: 12px;
+    text-align: center;
+    margin: 0 2px;
+    cursor: default;
+}
+
+img.skill-effect {
+    width: 50px;
+    height: 50px;
+    margin-right: 1px;
+    border-radius: 3px;
+}
+
+.skill-effect>span {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.skill-effect-buff {
+    color: #fff;
+    background-color: #052576;
+    border-radius: 5px;
+}
+
+.skill-effect-debuff {
+    color: #fff;
+    background-color: #C30F0F;
+    border-radius: 5px;
 }

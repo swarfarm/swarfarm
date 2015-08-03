@@ -178,8 +178,11 @@
                                 {% for effect in monster.all_skill_effects %}
                                     {% if effect.icon_filename %}
                                         <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
-                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                                />
+                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
+                                    {% else %}
+                                        <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                            <span>{{ effect.name }}</span>
+                                        </span>
                                     {% endif %}
                                     <span class="hidden">{{ effect.pk }}-{{ effect.name|slugify }}</span>
                                 {% endfor %}

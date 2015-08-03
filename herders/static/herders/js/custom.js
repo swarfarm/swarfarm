@@ -74,18 +74,23 @@ filter_buttons.click(function() {
     var filters = $('#monster_table').find('input.tablesorter-filter'),
         col = $(this).data('filter-column'),
         txt = $(this).data('filter-text'),
+        filt = $(this).data('filter-function'),
         cur = filters.eq(col).val(),
         mult, i;
 
+    if (!filt) {
+        filt = '|';
+    }
+
     if (cur && txt !== '') {
-        mult = cur.split('|');
+        mult = cur.split(filt);
         i = $.inArray(String(txt), mult);
         if (i < 0) {
             mult.push(String(txt));
         } else {
             mult.splice(String(i),1);
         }
-        txt = mult.join('|');
+        txt = mult.join(filt);
     }
     filters.eq(col).val(txt).trigger('search', false);
 });

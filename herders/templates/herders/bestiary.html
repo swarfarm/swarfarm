@@ -60,17 +60,17 @@
                         <div class="btn-group archetype-filters">
                             <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Attack">ATK</button>
                             <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Defense">DEF</button>
-                            <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Hp">HP</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="HP">HP</button>
                             <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Support">SUP</button>
                             <button type="button" class="btn btn-default filter" data-filter-column="4" data-filter-text="Material">MAT</button>
                         </div>
                     </div>
-                    {% comment %}
+
                     <div class="filter-group">
                         <span class="filter-description">Buffs:</span>
                         <div class="btn-group buff-filters">
                             {% for buff in buff_list %}
-                            <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="{{ buff.pk }}-{{ buff.name|slugify }}*">
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ buff.pk }}-{{ buff.name|slugify }}" data-filter-function=" && ">
                                 {% if buff.icon_filename %}
                                 <img src="{{ img_url_prefix }}/buffs/{{ buff.icon_filename }}" />
                                 {% else %}
@@ -85,7 +85,7 @@
                         <span class="filter-description">Debuffs:</span>
                         <div class="btn-group buff-filters">
                             {% for debuff in debuff_list %}
-                            <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="{{ debuff.pk }}-{{ debuff.name|slugify }}*">
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ debuff.pk }}-{{ debuff.name|slugify }}" data-filter-function=" && ">
                                 {% if debuff.icon_filename %}
                                 <img src="{{ img_url_prefix }}/buffs/{{ debuff.icon_filename }}" />
                                 {% else %}
@@ -100,7 +100,7 @@
                         <span class="filter-description">Other:</span>
                         <div class="btn-group buff-filters">
                             {% for effect in other_effect_list %}
-                            <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="{{ effect.pk }}-{{ effect.name|slugify }}*">
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ effect.pk }}-{{ effect.name|slugify }}" data-filter-function=" && ">
                                 {% if effect.icon_filename %}
                                 <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}" />
                                 {% else %}
@@ -110,7 +110,6 @@
                             {% endfor %}
                         </div>
                     </div>
-                    {% endcomment %}
 
                     <div class="btn-group">
                         <button type="button" class="btn btn-danger reset">Reset Filters</button>

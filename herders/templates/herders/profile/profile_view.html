@@ -245,7 +245,7 @@
                                 </td>
                                 <td>{{ instance.monster.get_archetype_display }}</td>
                                 <td><span class="hidden">{{ instance.priority }}</span>{{ instance.get_priority_display }}</td>
-                                <td class="monster-awaken-materials">
+                                <td class="monster-skill-effects">
                                 {% for effect in instance.monster.all_skill_effects %}
                                     {% if effect.icon_filename %}
                                         <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"

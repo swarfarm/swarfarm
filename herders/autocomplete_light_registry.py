@@ -14,7 +14,7 @@ class MonsterAutocomplete(autocomplete_light.AutocompleteModelTemplate):
     }
 
     def choices_for_request(self):
-        self.choices = self.choices.order_by('element', 'is_awakened')
+        self.choices = self.choices.filter(obtainable=True).order_by('element', 'is_awakened')
         return super(MonsterAutocomplete, self).choices_for_request()
 
 autocomplete_light.register(MonsterAutocomplete)

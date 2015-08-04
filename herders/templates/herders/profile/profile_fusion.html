@@ -34,7 +34,7 @@
                 {% for monster, fusion in fusions.iteritems %}
                     <a href="#{{ fusion.instance.name }}" class="btn {% if fusion.ready %}btn-success{% else %}btn-default{% endif %} navbar-btn">
                         <img src="{{ img_url_prefix }}elements/{{ fusion.instance.element }}.png" />
-                        {{ fusion.instance.name }}
+                        {{ fusion.instance.name }} {% if fusion.acquired %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}
                     </a>
                 {% endfor %}
             </div><!-- /.navbar-collapse -->
@@ -45,9 +45,10 @@
 {% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
     {% for monster, fusion in fusions.iteritems %}
-        <div class="panel panel-default">
+        <div class="panel {% if fusion.acquired %}panel-success{% else %}panel-default{% endif %}">
             <div class="panel-heading">
                 <a id="#{{ fusion.instance.name }}" name="{{ fusion.instance.name }}" class="profile-anchor-offset"></a>
+                <button class="btn btn-default pull-right" type="button" data-toggle="collapse" data-target="#{{ fusion.instance.name|slugify }}-fusion" aria-controls="{{ fusion.instance.name }}-fusion">Toggle Requirements</button>
                 <div class="monster-image pull-left">
                     <div>
                         <a href="{% url 'herders:bestiary_detail' monster_id=fusion.instance.pk %}">
@@ -67,154 +68,142 @@
                     </div>
                 </div>
                 <h4 style="margin-left: 60px">
-                    <strong>{{ fusion.instance.name }}</strong><br />
+                    <strong>{{ fusion.instance.name }}</strong>{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}<br />
                     <small><img src="{{ img_url_prefix }}icons/mana.png" width="18px"/>{{ fusion.cost }}</small>
                 </h4>
             </div>
-            <div class="panel-body {% if fusion.ready %}bg-success{% endif %}">
-                <table class="table table-condensed monster-table fusion-ingredients">
-                    <thead>
-                        <tr>
-                            <th colspan="2">Ingredient</th>
-                            <th class="fusion-checklist">Acquired</th>
-                            <th class="fusion-checklist">{{ fusion.stars }}<span class="glyphicon glyphicon-star" aria-hidden="true"></span></th>
-                            <th class="fusion-checklist">Leveled</th>
-                            <th class="fusion-checklist">Awakened</th>
-                            <th>Your Collection</th>
-                            <th>Fuseable?</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for ingredient in fusion.ingredients %}
-                            <tr {% if ingredient.complete %}class="success"{% endif %}>
-                                <td class="monster-image">
-                                    <div class="pull-left">
-                                        <a href="{% url 'herders:bestiary_detail' monster_id=ingredient.instance.pk %}">
-                                            <img src="{{ img_url_prefix }}monsters/{{ ingredient.instance.image_filename }}" class="monster-thumb"/>
-                                            <span>
-                                                {% for x in fusion.stars|get_range %}
-                                                    {% if ingredient.instance.is_awakened %}
-                                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                    {% elif ingredient.instance.can_awaken %}
-                                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                    {% else %}
-                                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </span>
-                                            <span class="image-plus image-plus-right">{{ fusion.level }}</span>
-                                        </a>
-                                    </div>
-                                </td>
-                                <td>{{ ingredient.instance.name|title }}</td>
-                                <td class="fusion-checklist">
-                                    {% if ingredient.acquired %}
-                                        <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-                                    {% else %}
-                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
-                                    {% endif %}
-                                </td>
-                                <td class="fusion-checklist">
-                                    {% if ingredient.evolved %}
-                                        <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-                                    {% else %}
-                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
-                                    {% endif %}
-                                </td>
-                                <td class="fusion-checklist">
-                                    {% if ingredient.leveled %}
-                                        <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-                                    {% else %}
-                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
-                                    {% endif %}
-                                </td>
-                                <td class="fusion-checklist">
-                                    {% if ingredient.awakened %}
-                                        <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-                                    {% else %}
-                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
-                                    {% endif %}
-                                </td>
-                                <td class="fusion-ingredients-collection">
-                                    {% for owned in ingredient.owned %}
-                                        <div class="monster-image pull-left">
-                                            <div>
-                                                {% if is_owner %}
-                                                    <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}">
-                                                {% endif %}
-                                                    <img src="{{ img_url_prefix }}monsters/{{ owned.monster.image_filename }}" class="monster-thumb"/>
-                                                    <span>
-                                                        {% for x in owned.stars|get_range %}
-                                                            {% if owned.monster.is_awakened %}
-                                                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                            {% elif owned.monster.can_awaken %}
-                                                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                            {% else %}
-                                                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </span>
-                                                    <span class="image-plus image-plus-right">{{ owned.level }}</span>
-                                                    {% if owned.ignore_for_fusion %}
-                                                        <div class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Ignored for fusion progress"></div>
-                                                    {% endif %}
-                                                {% if is_owner %}
-                                                    </a>
-                                                {% endif %}
-                                            </div>
+            <div id="{{ fusion.instance.name|slugify }}-fusion" class="collapse{% if not fusion.acquired %} in{% endif %}">
+                <div class="panel-body{% if fusion.ready %} bg-success{% endif %}">
+                    <table class="table table-condensed monster-table fusion-ingredients">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Ingredient</th>
+                                <th class="fusion-checklist">Acquired</th>
+                                <th class="fusion-checklist">{{ fusion.stars }}<span class="glyphicon glyphicon-star" aria-hidden="true"></span></th>
+                                <th class="fusion-checklist">Leveled</th>
+                                <th class="fusion-checklist">Awakened</th>
+                                <th>Your Collection</th>
+                                <th>Fuseable?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ingredient in fusion.ingredients %}
+                                <tr {% if ingredient.complete %}class="success"{% endif %}>
+                                    <td class="monster-image">
+                                        <div class="pull-left">
+                                            <a href="{% url 'herders:bestiary_detail' monster_id=ingredient.instance.pk %}">
+                                                <img src="{{ img_url_prefix }}monsters/{{ ingredient.instance.image_filename }}" class="monster-thumb"/>
+                                                <span>
+                                                    {% for x in fusion.stars|get_range %}
+                                                        {% if ingredient.instance.is_awakened %}
+                                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                        {% elif ingredient.instance.can_awaken %}
+                                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                        {% else %}
+                                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </span>
+                                                <span class="image-plus image-plus-right">{{ fusion.level }}</span>
+                                            </a>
                                         </div>
+                                    </td>
+                                    <td>{{ ingredient.instance.name|title }}</td>
+                                    <td class="fusion-checklist">
+                                        {% if ingredient.acquired %}
+                                            <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+                                        {% else %}
+                                            <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="fusion-checklist">
+                                        {% if ingredient.evolved %}
+                                            <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+                                        {% else %}
+                                            <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="fusion-checklist">
+                                        {% if ingredient.leveled %}
+                                            <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+                                        {% else %}
+                                            <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="fusion-checklist">
+                                        {% if ingredient.awakened %}
+                                            <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+                                        {% else %}
+                                            <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="fusion-ingredients-collection">
+                                        {% for owned in ingredient.owned %}
+                                            <div class="monster-image pull-left">
+                                                <div>
+                                                    {% if is_owner %}
+                                                        <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}">
+                                                    {% endif %}
+                                                        <img src="{{ img_url_prefix }}monsters/{{ owned.monster.image_filename }}" class="monster-thumb"/>
+                                                        <span>
+                                                            {% for x in owned.stars|get_range %}
+                                                                {% if owned.monster.is_awakened %}
+                                                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                                {% elif owned.monster.can_awaken %}
+                                                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                                {% else %}
+                                                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </span>
+                                                        <span class="image-plus image-plus-right">{{ owned.level }}</span>
+                                                        {% if owned.ignore_for_fusion %}
+                                                            <div class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Ignored for fusion progress"></div>
+                                                        {% endif %}
+                                                    {% if is_owner %}
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </td>
+                                    <td width="100px">
+                                        {% if ingredient.sub_fusion_available %}
+                                        <a href="#{{ ingredient.instance.awakens_from.name }}"><span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span> Yes</a>
+                                        {% else %}
+                                        <span class="glyphicon glyphicon-remove-circle" style="color: darkred"></span> No
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    {# Essences required #}
+                    <table class="table table-condensed monster-table fusion-ingredients">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Awakening Essences</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% comment 'Adding this adds confusion, but clarifies missing costs. Will leave out for now until someone complains' %}
+                            <tr>
+                                <td width="240px">Total Essence Cost</td>
+                                <td class="monster-awaken-materials">
+                                    {% for element,sizes in fusion.awakening_materials.total_cost.items %}
+                                        {% for size,count in sizes.items %}
+                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
+                                        {% endfor %}
                                     {% endfor %}
-                                </td>
-                                <td width="100px">
-                                    {% if ingredient.sub_fusion_available %}
-                                    <a href="#{{ ingredient.instance.awakens_from.name }}"><span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span> Yes</a>
-                                    {% else %}
-                                    <span class="glyphicon glyphicon-remove-circle" style="color: darkred"></span> No
-                                    {% endif %}
                                 </td>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-
-                {# Essences required #}
-                <table class="table table-condensed monster-table fusion-ingredients">
-                    <thead>
-                        <tr>
-                            <th colspan="2">Awakening Essences</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% comment 'Adding this adds confusion, but clarifies missing costs. Will leave out for now until someone complains' %}
-                        <tr>
-                            <td width="240px">Total Essence Cost</td>
-                            <td class="monster-awaken-materials">
-                                {% for element,sizes in fusion.awakening_materials.total_cost.items %}
-                                    {% for size,count in sizes.items %}
-                                        {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
-                                    {% endfor %}
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        {% endcomment %}
-                        <tr>
-                            <td width="240px">Missing for this fusion only</td>
-                            <td class="monster-awaken-materials">
-                                {% for element,sizes in fusion.awakening_materials.missing.items %}
-                                    {% for size,count in sizes.items %}
-                                        {% if count < 0 %}
-                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        {% if fusion.awakening_materials.combined %}
+                            {% endcomment %}
                             <tr>
-                                <td>Missing including ingredient fusions</td>
+                                <td width="240px">Missing for this fusion only</td>
                                 <td class="monster-awaken-materials">
-                                    {% for element, sizes in fusion.awakening_materials.combined.iteritems %}
-                                        {% for size,count in sizes.iteritems %}
+                                    {% for element,sizes in fusion.awakening_materials.missing.items %}
+                                        {% for size,count in sizes.items %}
                                             {% if count < 0 %}
                                                 {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
                                             {% endif %}
@@ -222,9 +211,23 @@
                                     {% endfor %}
                                 </td>
                             </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+                            {% if fusion.awakening_materials.combined %}
+                                <tr>
+                                    <td>Missing including ingredient fusions</td>
+                                    <td class="monster-awaken-materials">
+                                        {% for element, sizes in fusion.awakening_materials.combined.iteritems %}
+                                            {% for size,count in sizes.iteritems %}
+                                                {% if count < 0 %}
+                                                    {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     {% endfor %}

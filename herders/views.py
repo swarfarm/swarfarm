@@ -909,7 +909,7 @@ def bestiary_detail(request, monster_id):
         awakened_stats = awakened_monster.get_stats()
 
         # Calculate change in stats as monster undergoes awakening
-        if base_stats['6']['1']['HP'] is not None and awakened_stats is not None:
+        if base_stats['6']['1']['HP'] is not None and awakened_stats['6']['1']['HP'] is not None:
             awakened_stats_deltas = dict()
 
             for stat, value in base_stats['6']['40'].iteritems():

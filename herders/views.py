@@ -960,6 +960,25 @@ def bestiary_sanity_checks(request):
                 if monster.skills.all().filter(slot=slot).count() > 1:
                     monster_errors.append("More than one skill in slot " + str(slot))
 
+            # Check for missing stats
+            if monster.base_hp is None:
+                monster_errors.append('Missing base HP')
+
+            if monster.base_attack is None:
+                monster_errors.append('Missing base ATK')
+            if monster.base_defense is None:
+                monster_errors.append('Missing base DEF')
+            if monster.speed is None:
+                monster_errors.append('Missing SPD')
+            if monster.crit_damage is None:
+                monster_errors.append('Missing crit DMG')
+            if monster.crit_rate is None:
+                monster_errors.append('Missing crit rate')
+            if monster.resistance is None:
+                monster_errors.append('Missing resistance')
+            if monster.accuracy is None:
+                monster_errors.append('Missing accuracy')
+
             if len(monster_errors) > 0:
                 errors[str(monster)] = monster_errors
 

@@ -205,7 +205,7 @@ class Monster(models.Model):
         else:
             unawakened_name = self.name
 
-        return Monster.objects.filter(name=unawakened_name).order_by('element')
+        return Monster.objects.filter(name=unawakened_name).filter(obtainable=True).order_by('element')
 
     def skill_ups_to_max(self):
         if self.skills is not None:

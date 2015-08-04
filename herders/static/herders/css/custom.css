@@ -128,10 +128,13 @@ footer {
 
 .monster-image {
     padding: 0 !important;
-    position: relative;
     width: 50px;
     height: 50px;
     border-radius: 15%;
+}
+
+.monster-image>div {
+    position: relative;
 }
 
 .monster-image-full {
@@ -568,9 +571,13 @@ td>h6 {
     text-align: right;
 }
 
+.monster-skill-effects {
+    min-width: 150px;
+}
+
 .monster-skill-effects img {
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     border: 1px solid black;
     border-radius: 15%;
     margin-right: 1px;
@@ -580,18 +587,16 @@ td>h6 {
 .skill-effect {
     display: inline-table;
     float: left;
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     line-height: 1;
-    font-size: 12px;
+    font-size: 0.7em;
     text-align: center;
     margin-right: 1px;
     cursor: default;
 }
 
 img.skill-effect {
-    width: 50px;
-    height: 50px;
     margin-right: 1px;
     border-radius: 3px;
 }

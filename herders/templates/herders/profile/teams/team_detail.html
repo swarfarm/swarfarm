@@ -40,13 +40,15 @@
         {% if team_buffs %}
         <table class="table table-condensed monster-table">
             <td width="225px">Combined Team Buffs/Debuffs:</td>
-            <td class="monster-awaken-materials">
+            <td class="monster-skill-effects">
                 {% for effect in team_buffs %}
                     {% if effect.icon_filename %}
                         <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
-                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                />
-                        <span class="hidden">{{ effect.name }} </span>
+                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
+                    {% else %}
+                        <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                            <span>{{ effect.name }}</span>
+                        </span>
                     {% endif %}
                 {% endfor %}
             </td>
@@ -69,25 +71,27 @@
                 <tr>
                     {% if team.leader %}
                     <td class="monster-image">
-                        {% if is_owner %}
-                            <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=team.leader.pk.hex %}?next={% url 'herders:teams' profile_name=profile_name %}">
-                        {% endif %}
-                            <img src="{{ img_url_prefix }}monsters/{{ team.leader.monster.image_filename }}" class="monster-thumb"/>
-                            <span>
-                                {% for x in team.leader.stars|get_range %}
-                                    {% if team.leader.monster.is_awakened %}
-                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% elif team.leader.monster.can_awaken %}
-                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% else %}
-                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% endif %}
-                                {% endfor %}
-                            </span>
-                            <span class="image-plus image-plus-right">{{ team.leader.level }}</span>
-                        {% if is_owner %}
-                            </a>
-                        {% endif %}
+                        <div>
+                            {% if is_owner %}
+                                <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=team.leader.pk.hex %}?next={% url 'herders:teams' profile_name=profile_name %}">
+                            {% endif %}
+                                <img src="{{ img_url_prefix }}monsters/{{ team.leader.monster.image_filename }}" class="monster-thumb"/>
+                                <span>
+                                    {% for x in team.leader.stars|get_range %}
+                                        {% if team.leader.monster.is_awakened %}
+                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        {% elif team.leader.monster.can_awaken %}
+                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        {% else %}
+                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="image-plus image-plus-right">{{ team.leader.level }}</span>
+                            {% if is_owner %}
+                                </a>
+                            {% endif %}
+                        </div>
                     </td>
                     <td>{{ team.leader.monster.name|title }}</td>
                     <td class="monster-stars-column">{{ team.leader.stars }}<span class="glyphicon glyphicon-star"></span></td>
@@ -106,13 +110,15 @@
                         <span>{{ team.leader.monster.element }}</span>
                     </td>
                     <td>{{ team.leader.monster.archetype|title }}</td>
-                    <td class="monster-awaken-materials">
+                    <td class="monster-skill-effects">
                         {% for effect in team.leader.monster.all_skill_effects %}
                             {% if effect.icon_filename %}
-                                <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
-                                        data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                        />
-                                <span class="hidden">{{ effect.name }} </span>
+                            <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
+                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
+                            {% else %}
+                                <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                    <span>{{ effect.name }}</span>
+                                </span>
                             {% endif %}
                         {% endfor %}
                     </td>
@@ -125,9 +131,10 @@
                 {% for instance in team.roster.all %}
                     <tr>
                         <td class="monster-image">
-                            {% if is_owner %}
+                            <div>
+                                {% if is_owner %}
                                 <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={% url 'herders:teams' profile_name=profile_name %}">
-                            {% endif %}
+                                {% endif %}
                                 <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
                                 <span>
                                     {% for x in instance.stars|get_range %}
@@ -141,9 +148,10 @@
                                     {% endfor %}
                                 </span>
                                 <span class="image-plus image-plus-right">{{ instance.level }}</span>
-                            {% if is_owner %}
+                                {% if is_owner %}
                                 </a>
-                            {% endif %}
+                                {% endif %}
+                            </div>
                         </td>
                         <td>{{ instance.monster.name|title }}</td>
                         <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>
@@ -162,13 +170,15 @@
                             <span>{{ instance.monster.element }}</span>
                         </td>
                         <td>{{ instance.monster.archetype|title }}</td>
-                        <td class="monster-awaken-materials">
+                        <td class="monster-skill-effects">
                             {% for effect in instance.monster.all_skill_effects %}
                                 {% if effect.icon_filename %}
                                     <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
-                                            data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                            />
-                                    <span class="hidden">{{ effect.name }} </span>
+                                            data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
+                                {% else %}
+                                    <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                        <span>{{ effect.name }}</span>
+                                    </span>
                                 {% endif %}
                             {% endfor %}
                         </td>

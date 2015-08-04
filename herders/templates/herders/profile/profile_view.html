@@ -203,29 +203,31 @@
                         {% for instance in monster_stable %}
                             <tr>
                                 <td class="monster-image">
-                                    {% if is_owner %}
-                                        <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
-                                    {% else %}
-                                        <span>
-                                    {% endif %}
-                                        <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
-                                        <span>
-                                            {% for x in instance.stars|get_range %}
-                                                {% if instance.monster.is_awakened %}
-                                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                {% elif instance.monster.can_awaken %}
-                                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                {% else %}
-                                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                {% endif %}
-                                            {% endfor %}
-                                        </span>
-                                        <span class="image-plus image-plus-right">{{ instance.level }}</span>
-                                    {% if is_owner %}
-                                        </a>
-                                    {% else %}
-                                        </span>
-                                    {% endif %}
+                                    <div>
+                                        {% if is_owner %}
+                                            <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
+                                        {% else %}
+                                            <span>
+                                        {% endif %}
+                                            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
+                                            <span>
+                                                {% for x in instance.stars|get_range %}
+                                                    {% if instance.monster.is_awakened %}
+                                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                    {% elif instance.monster.can_awaken %}
+                                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                    {% else %}
+                                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </span>
+                                            <span class="image-plus image-plus-right">{{ instance.level }}</span>
+                                        {% if is_owner %}
+                                            </a>
+                                        {% else %}
+                                            </span>
+                                        {% endif %}
+                                    </div>
                                 </td>
                                 <td>{{ instance.monster.name|title }}</td>
                                 <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>

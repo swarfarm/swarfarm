@@ -34,6 +34,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'awakens_from',
                 'awakens_to',
                 'fusion_food',
+                'obtainable',
             )
         }),
         ('Stats', {

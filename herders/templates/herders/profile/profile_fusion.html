@@ -49,20 +49,22 @@
             <div class="panel-heading">
                 <a id="#{{ fusion.instance.name }}" name="{{ fusion.instance.name }}" class="profile-anchor-offset"></a>
                 <div class="monster-image pull-left">
-                    <a href="{% url 'herders:bestiary_detail' monster_id=fusion.instance.pk %}">
-                        <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}" class="monster-thumb"/>
-                        <span>
-                            {% for x in fusion.stars|get_range %}
-                                {% if fusion.instance.is_awakened %}
-                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                {% elif fusion.instance.can_awaken %}
-                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                {% else %}
-                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                {% endif %}
-                            {% endfor %}
-                        </span>
-                    </a>
+                    <div>
+                        <a href="{% url 'herders:bestiary_detail' monster_id=fusion.instance.pk %}">
+                            <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}" class="monster-thumb"/>
+                            <span>
+                                {% for x in fusion.stars|get_range %}
+                                    {% if fusion.instance.is_awakened %}
+                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% elif fusion.instance.can_awaken %}
+                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% else %}
+                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                        </a>
+                    </div>
                 </div>
                 <h4 style="margin-left: 60px">
                     <strong>{{ fusion.instance.name }}</strong><br />
@@ -86,7 +88,7 @@
                         {% for ingredient in fusion.ingredients %}
                             <tr {% if ingredient.complete %}class="success"{% endif %}>
                                 <td class="monster-image">
-                                    <div class="monster-image pull-left">
+                                    <div class="pull-left">
                                         <a href="{% url 'herders:bestiary_detail' monster_id=ingredient.instance.pk %}">
                                             <img src="{{ img_url_prefix }}monsters/{{ ingredient.instance.image_filename }}" class="monster-thumb"/>
                                             <span>
@@ -136,28 +138,30 @@
                                 <td class="fusion-ingredients-collection">
                                     {% for owned in ingredient.owned %}
                                         <div class="monster-image pull-left">
-                                            {% if is_owner %}
-                                                <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}">
-                                            {% endif %}
-                                                <img src="{{ img_url_prefix }}monsters/{{ owned.monster.image_filename }}" class="monster-thumb"/>
-                                                <span>
-                                                    {% for x in owned.stars|get_range %}
-                                                        {% if owned.monster.is_awakened %}
-                                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                        {% elif owned.monster.can_awaken %}
-                                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                        {% else %}
-                                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </span>
-                                                <span class="image-plus image-plus-right">{{ owned.level }}</span>
-                                                {% if owned.ignore_for_fusion %}
-                                                    <div class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Ignored for fusion progress"></div>
+                                            <div>
+                                                {% if is_owner %}
+                                                    <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}">
                                                 {% endif %}
-                                            {% if is_owner %}
-                                                </a>
-                                            {% endif %}
+                                                    <img src="{{ img_url_prefix }}monsters/{{ owned.monster.image_filename }}" class="monster-thumb"/>
+                                                    <span>
+                                                        {% for x in owned.stars|get_range %}
+                                                            {% if owned.monster.is_awakened %}
+                                                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                            {% elif owned.monster.can_awaken %}
+                                                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                            {% else %}
+                                                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </span>
+                                                    <span class="image-plus image-plus-right">{{ owned.level }}</span>
+                                                    {% if owned.ignore_for_fusion %}
+                                                        <div class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Ignored for fusion progress"></div>
+                                                    {% endif %}
+                                                {% if is_owner %}
+                                                    </a>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     {% endfor %}
                                 </td>

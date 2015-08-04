@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
+from django.templatetags.static import static
 
 from .models import MonsterInstance, Summoner, TeamGroup, Team
 
@@ -14,6 +15,8 @@ from captcha.fields import ReCaptchaField
 
 import autocomplete_light
 
+
+STATIC_URL_PREFIX = static('herders/images/')
 
 # User stuff
 class CrispyAuthenticationForm(AuthenticationForm):
@@ -162,90 +165,90 @@ class EditEssenceStorageForm(ModelForm):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    PrependedText('storage_magic_low', """<img src="/static/herders/images/essences/magic_low.png" />""", min=0),
+                    PrependedText('storage_magic_low', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_low.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    PrependedText('storage_magic_mid', """<img src="/static/herders/images/essences/magic_mid.png" />""", min=0),
+                    PrependedText('storage_magic_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_mid.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    PrependedText('storage_magic_high', """<img src="/static/herders/images/essences/magic_high.png" />""", min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                css_class='row',
-            ),
-            Div(
-                Div(
-                    PrependedText('storage_fire_low', """<img src="/static/herders/images/essences/fire_low.png" />""", min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                Div(
-                    PrependedText('storage_fire_mid', """<img src="/static/herders/images/essences/fire_mid.png" />""", min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                Div(
-                    PrependedText('storage_fire_high', """<img src="/static/herders/images/essences/fire_high.png" />""", min=0),
+                    PrependedText('storage_magic_high', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_high.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    PrependedText('storage_water_low', """<img src="/static/herders/images/essences/water_low.png" />""", min=0),
+                    PrependedText('storage_fire_low', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_low.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    PrependedText('storage_water_mid', """<img src="/static/herders/images/essences/water_mid.png" />""", min=0),
+                    PrependedText('storage_fire_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_mid.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    PrependedText('storage_water_high', """<img src="/static/herders/images/essences/water_high.png" />""", min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                css_class='row',
-            ),
-            Div(
-                Div(
-                    PrependedText('storage_wind_low', """<img src="/static/herders/images/essences/wind_low.png" />""", min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                Div(
-                    PrependedText('storage_wind_mid', """<img src="/static/herders/images/essences/wind_mid.png" />""", min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                Div(
-                    PrependedText('storage_wind_high', """<img src="/static/herders/images/essences/wind_high.png" />""", min=0),
+                    PrependedText('storage_fire_high', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_high.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    PrependedText('storage_light_low', """<img src="/static/herders/images/essences/light_low.png" />""", min=0),
+                    PrependedText('storage_water_low', '<img src="' + STATIC_URL_PREFIX + 'essences/water_low.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    PrependedText('storage_light_mid', """<img src="/static/herders/images/essences/light_mid.png" />""", min=0),
+                    PrependedText('storage_water_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/water_mid.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    PrependedText('storage_light_high', """<img src="/static/herders/images/essences/light_high.png" />""", min=0),
+                    PrependedText('storage_water_high', '<img src="' + STATIC_URL_PREFIX + 'essences/water_high.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    PrependedText('storage_dark_low', """<img src="/static/herders/images/essences/dark_low.png" />""", min=0),
+                    PrependedText('storage_wind_low', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_low.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    PrependedText('storage_dark_mid', """<img src="/static/herders/images/essences/dark_mid.png" />""", min=0),
+                    PrependedText('storage_wind_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_mid.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    PrependedText('storage_dark_high', """<img src="/static/herders/images/essences/dark_high.png" />""", min=0),
+                    PrependedText('storage_wind_high', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_high.png" />', min=0),
+                    css_class='col-lg-1 storage_group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    PrependedText('storage_light_low', '<img src="' + STATIC_URL_PREFIX + 'essences/light_low.png" />', min=0),
+                    css_class='col-lg-1 storage_group',
+                ),
+                Div(
+                    PrependedText('storage_light_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/light_mid.png" />', min=0),
+                    css_class='col-lg-1 storage_group',
+                ),
+                Div(
+                    PrependedText('storage_light_high', '<img src="' + STATIC_URL_PREFIX + 'essences/light_high.png" />', min=0),
+                    css_class='col-lg-1 storage_group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    PrependedText('storage_dark_low', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_low.png" />', min=0),
+                    css_class='col-lg-1 storage_group',
+                ),
+                Div(
+                    PrependedText('storage_dark_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_mid.png" />', min=0),
+                    css_class='col-lg-1 storage_group',
+                ),
+                Div(
+                    PrependedText('storage_dark_high', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_high.png" />', min=0),
                     css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',

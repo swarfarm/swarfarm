@@ -53,6 +53,7 @@ class Monster(models.Model):
     element = models.CharField(max_length=6, choices=ELEMENT_CHOICES, default=ELEMENT_FIRE)
     archetype = models.CharField(max_length=10, choices=TYPE_CHOICES, default=TYPE_ATTACK)
     base_stars = models.IntegerField(choices=STAR_CHOICES)
+    obtainable = models.BooleanField(default=True)
     can_awaken = models.BooleanField(default=True)
     is_awakened = models.BooleanField(default=False)
     awaken_bonus = models.TextField(blank=True)

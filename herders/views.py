@@ -84,7 +84,7 @@ def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
             context['debuff_list'] = MonsterSkillEffect.objects.filter(is_buff=False).exclude(icon_filename='').order_by('name')
             context['other_effect_list'] = MonsterSkillEffect.objects.filter(icon_filename='').order_by('name')
 
-            return render(request, 'herders/profile/profile_view.html', context)
+            return render(request, 'herders/profile/profile_list_view.html', context)
         elif view_mode.lower() == 'box':
             if sort_method == 'grade':
                 monster_stable = OrderedDict()

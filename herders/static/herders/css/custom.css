@@ -413,18 +413,15 @@ button.filter:not(.active):focus {
     margin: 5px;
 }
 
-.storage_group .form-control {
-    padding-left: 40px;
-}
-
-.storage_icon {
-    position: absolute;
-    left: 0;
-    bottom: 15px;
-    height: 34px;
+.storage_group img {
+    height: 32px;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
     border: 1px solid black;
+}
+
+.storage_group .input-group-addon {
+    padding: 0!important;
 }
 
 .fusion-checklist {

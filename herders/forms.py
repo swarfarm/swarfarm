@@ -8,7 +8,7 @@ from .models import MonsterInstance, Summoner, TeamGroup, Team
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
-from crispy_forms.bootstrap import FormActions
+from crispy_forms.bootstrap import FormActions, PrependedText
 
 from captcha.fields import ReCaptchaField
 
@@ -162,109 +162,91 @@ class EditEssenceStorageForm(ModelForm):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}magic_low.png" class="storage_icon" />"""),
-                    Field('storage_magic_low', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_magic_low', """<img src="/static/herders/images/essences/magic_low.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}magic_mid.png" class="storage_icon" />"""),
-                    Field('storage_magic_mid', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_magic_mid', """<img src="/static/herders/images/essences/magic_mid.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}magic_high.png" class="storage_icon" />"""),
-                    Field('storage_magic_high', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_magic_high', """<img src="/static/herders/images/essences/magic_high.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}fire_low.png" class="storage_icon" />"""),
-                    Field('storage_fire_low', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_fire_low', """<img src="/static/herders/images/essences/fire_low.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}fire_mid.png" class="storage_icon" />"""),
-                    Field('storage_fire_mid', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_fire_mid', """<img src="/static/herders/images/essences/fire_mid.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}fire_high.png" class="storage_icon" />"""),
-                    Field('storage_fire_high', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_fire_high', """<img src="/static/herders/images/essences/fire_high.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}water_low.png" class="storage_icon" />"""),
-                    Field('storage_water_low', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_water_low', """<img src="/static/herders/images/essences/water_low.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}water_mid.png" class="storage_icon" />"""),
-                    Field('storage_water_mid', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_water_mid', """<img src="/static/herders/images/essences/water_mid.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}water_high.png" class="storage_icon" />"""),
-                    Field('storage_water_high', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_water_high', """<img src="/static/herders/images/essences/water_high.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}wind_low.png" class="storage_icon" />"""),
-                    Field('storage_wind_low', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_wind_low', """<img src="/static/herders/images/essences/wind_low.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}wind_mid.png" class="storage_icon" />"""),
-                    Field('storage_wind_mid', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_wind_mid', """<img src="/static/herders/images/essences/wind_mid.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}wind_high.png" class="storage_icon" />"""),
-                    Field('storage_wind_high', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_wind_high', """<img src="/static/herders/images/essences/wind_high.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}light_low.png" class="storage_icon" />"""),
-                    Field('storage_light_low', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_light_low', """<img src="/static/herders/images/essences/light_low.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}light_mid.png" class="storage_icon" />"""),
-                    Field('storage_light_mid', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_light_mid', """<img src="/static/herders/images/essences/light_mid.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}light_high.png" class="storage_icon" />"""),
-                    Field('storage_light_high', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_light_high', """<img src="/static/herders/images/essences/light_high.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}dark_low.png" class="storage_icon" />"""),
-                    Field('storage_dark_low', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_dark_low', """<img src="/static/herders/images/essences/dark_low.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}dark_mid.png" class="storage_icon" />"""),
-                    Field('storage_dark_mid', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_dark_mid', """<img src="/static/herders/images/essences/dark_mid.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 Div(
-                    HTML("""<img src="{{ essence_url_prefix }}dark_high.png" class="storage_icon" />"""),
-                    Field('storage_dark_high', min=0),
-                    css_class='col-md-1 storage_group',
+                    PrependedText('storage_dark_high', """<img src="/static/herders/images/essences/dark_high.png" />""", min=0),
+                    css_class='col-lg-1 storage_group',
                 ),
                 css_class='row',
             ),

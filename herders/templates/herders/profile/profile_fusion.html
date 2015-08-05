@@ -78,6 +78,8 @@
                         <thead>
                             <tr>
                                 <th colspan="2">Ingredient</th>
+                                <th>Farmable</th>
+                                <th>Acquired From</th>
                                 <th class="fusion-checklist">Acquired</th>
                                 <th class="fusion-checklist">{{ fusion.stars }}<span class="glyphicon glyphicon-star" aria-hidden="true"></span></th>
                                 <th class="fusion-checklist">Leveled</th>
@@ -109,6 +111,26 @@
                                         </div>
                                     </td>
                                     <td>{{ ingredient.instance.name|title }}</td>
+                                    <td class="fusion-checklist">
+                                        {% if ingredient.instance.farmable %}
+                                        <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+                                        {% else %}
+                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="monster-sources">
+                                        {% for source in ingredient.instance.awakens_from.source.all %}
+                                            {% if source.icon_filename %}
+                                            <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
+                                                 class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
+                                            {% else %}
+                                            <span class="monster-source"><span>{{ source }}</span></span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+
+
                                     <td class="fusion-checklist">
                                         {% if ingredient.acquired %}
                                             <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>

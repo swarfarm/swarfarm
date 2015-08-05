@@ -222,6 +222,9 @@ class Monster(models.Model):
         else:
             return None
 
+    def farmable(self):
+        return self.source.filter(farmable_source=True).count() > 0
+
     def save(self, *args, **kwargs):
         # Update image filename on save.
         if self.is_awakened and self.awakens_from is not None:

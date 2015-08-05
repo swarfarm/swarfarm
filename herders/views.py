@@ -569,7 +569,7 @@ def fusion_progress(request, profile_name):
             ).count() > 0
 
             # Scan summoner's collection for instances each ingredient
-            for ingredient in fusion.ingredients.all():
+            for ingredient in fusion.ingredients.all().select_related('awakens_from', 'awakens_to'):
                 owned_ingredients = MonsterInstance.objects.filter(
                     Q(owner=summoner),
                     Q(monster=ingredient) | Q(monster=ingredient.awakens_from),

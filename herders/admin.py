@@ -102,12 +102,12 @@ class MonsterSkillEffectAdmin(admin.ModelAdmin):
 
 @admin.register(MonsterSource)
 class MonsterSourceAdmin(admin.ModelAdmin):
-    list_display = ('image_url', 'name')
+    list_display = ('image_url', 'name', 'meta_order',)
 
 
 @admin.register(Fusion)
 class FusionAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'stars', 'cost',)
+    list_display = ('__unicode__', 'stars', 'cost', 'meta_order')
     filter_horizontal = ('ingredients',)
 
 

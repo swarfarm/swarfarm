@@ -374,6 +374,7 @@ class MonsterSource(models.Model):
     description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
     farmable_source = models.BooleanField(default=False)
+    meta_order = models.IntegerField(db_index=True, default=0)
 
     def image_url(self):
         if self.icon_filename:
@@ -385,7 +386,7 @@ class MonsterSource(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['icon_filename', 'name']
+        ordering = ['meta_order', 'icon_filename', 'name']
 
 
 class Fusion(models.Model):
@@ -393,9 +394,13 @@ class Fusion(models.Model):
     stars = models.IntegerField()
     cost = models.IntegerField()
     ingredients = models.ManyToManyField('Monster')
+    meta_order = models.IntegerField(db_index=True, default=0)
 
     def __unicode__(self):
         return str(self.product) + ' Fusion'
+
+    class Meta:
+        ordering = ['meta_order']
 
 
 # Individual user/monster collection models

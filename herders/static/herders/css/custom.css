@@ -615,6 +615,10 @@ img.skill-effect {
     border-radius: 5px;
 }
 
+.monster-sources {
+    width: 350px;
+}
+
 .monster-source {
     display: inline-table;
     float: left;

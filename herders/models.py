@@ -223,7 +223,10 @@ class Monster(models.Model):
             return None
 
     def farmable(self):
-        return self.source.filter(farmable_source=True).count() > 0
+        if self.is_awakened and self.awakens_from is not None:
+            return self.awakens_from.source.filter(farmable_source=True).count() > 0
+        else:
+            return self.source.filter(farmable_source=True).count() > 0
 
     def save(self, *args, **kwargs):
         # Update image filename on save.
@@ -382,7 +385,7 @@ class MonsterSource(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['name']
+        ordering = ['icon_filename', 'name']
 
 
 class Fusion(models.Model):

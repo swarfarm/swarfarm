@@ -79,13 +79,14 @@
                             <tr>
                                 <th colspan="2">Ingredient</th>
                                 <th>Farmable</th>
+                                <th>Fuseable</th>
                                 <th>Acquired From</th>
                                 <th class="fusion-checklist">Acquired</th>
                                 <th class="fusion-checklist">{{ fusion.stars }}<span class="glyphicon glyphicon-star" aria-hidden="true"></span></th>
                                 <th class="fusion-checklist">Leveled</th>
                                 <th class="fusion-checklist">Awakened</th>
                                 <th>Your Collection</th>
-                                <th>Fuseable?</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -110,12 +111,20 @@
                                             </a>
                                         </div>
                                     </td>
-                                    <td>{{ ingredient.instance.name|title }}</td>
+                                    <td width="150px">{{ ingredient.instance.name|title }}</td>
                                     <td class="fusion-checklist">
                                         {% if ingredient.instance.farmable %}
                                         <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
                                         {% else %}
                                         <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td width="100px">
+                                        {% if ingredient.sub_fusion_available %}
+                                        <a href="#{{ ingredient.instance.awakens_from.name }}"><span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></a>
+                                        {% else %}
+                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true">
                                         {% endif %}
                                     </td>
 
@@ -188,13 +197,6 @@
                                                 </div>
                                             </div>
                                         {% endfor %}
-                                    </td>
-                                    <td width="100px">
-                                        {% if ingredient.sub_fusion_available %}
-                                        <a href="#{{ ingredient.instance.awakens_from.name }}"><span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span> Yes</a>
-                                        {% else %}
-                                        <span class="glyphicon glyphicon-remove-circle" style="color: darkred"></span> No
-                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}

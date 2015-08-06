@@ -1,8 +1,8 @@
 Django==1.8.3
 psycopg2
 bcrypt
-redis==2.10.1
-django-redis-cache==1.5.3
+redis
+django-redis-cache
 django-autocomplete-light
 django-crispy-forms
 django-markdown-deux

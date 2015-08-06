@@ -1,12 +1,14 @@
-Django==1.8.2
+Django==1.8.3
 psycopg2
 bcrypt
 redis
 django-redis-cache
-django-autocomplete-light==2.2.4
+django-autocomplete-light
 django-crispy-forms
 django-markdown-deux
 django-recaptcha
 django-suit
 django-timezone-field
 django_compressor
+djangorestframework
+django-filter

@@ -181,5 +181,9 @@
             <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
             <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
         {% endcompress %}
+        <script type="text/javascript">
+            {% if profile_name %}var PROFILE_NAME = '{{ profile_name }}';{% endif %}
+            var API_URL = '{% url 'api-root' %}';
+        </script>
     </body>
 </html>

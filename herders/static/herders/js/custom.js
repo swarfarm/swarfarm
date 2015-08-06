@@ -1,5 +1,3 @@
-var api_url = 'https://swarfarm.com/api/';
-
 //Initialize all bootstrap tooltips and popovers
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
@@ -21,11 +19,21 @@ $('#id_monster-autocomplete').bind('selectChoice',
     function(e, choice, autocomplete) {
         var monster_id = choice[0].dataset['value'];
 
-        $.getJSON(api_url + 'bestiary/' + monster_id, function(result){
+        $.ajax({
+            url: API_URL + 'monster/' + monster_id + '/',
+            accepts: 'application/json'
+        }).done(function (result) {
             //Set stars
-            $('#id_stars').rating('rate', result[0].fields['base_stars']);
+            if (result.is_awakened && result.base_stars > 1) {
+                //Awakened is -1 star to get actual base
+                $('#id_stars').rating('rate', result.base_stars - 1);
+            }
+            else {
+                $('#id_stars').rating('rate', result.base_stars);
+            }
+
             //Set fodder
-            if (result[0].fields['archetype'] == 'material') {
+            if (result.archetype == 'material') {
                 $('#id_priority').val('0');
                 $('#id_fodder').prop('checked', true);
             }

@@ -4,15 +4,13 @@ from django.contrib.auth import views as auth_views
 
 from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, CrispyPasswordResetForm, CrispySetPasswordForm
 
-
 urlpatterns = [
     # AJAX-y stuff first
     url(r'^autocomplete/', include('autocomplete_light.urls')),
-    url(r'^api/', include('api.urls', namespace='api')),
+    url(r'^api/', include('api.urls')),
 
     # Django stuff
     url(r'^admin/', include(admin.site.urls)),
-    # url('^', include('django.contrib.auth.urls')),
     url(r'^login/$', auth_views.login, {'authentication_form': CrispyAuthenticationForm}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': 'news:latest_news'}, name='logout'),
     url(r'^password_change/$', auth_views.password_change,
@@ -41,4 +39,5 @@ urlpatterns = [
     url(r'^feedback/', include('feedback.urls', namespace='feedback')),
     url(r'^', include('herders.urls', namespace='herders')),
     url(r'^', include('news.urls', namespace='news')),
+
 ]

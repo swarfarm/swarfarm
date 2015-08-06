@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import IntegrityError
@@ -33,7 +33,7 @@ def register(request):
                     email=form.cleaned_data['email'],
                 )
                 new_user.save()
-
+                new_user.groups.add(Group.objects.get(name='Summoners'))
                 new_summoner = Summoner.objects.create(
                     user=new_user,
                     summoner_name=form.cleaned_data['summoner_name'],

@@ -13,7 +13,7 @@
             {% if base_monster %}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <p class="panel-title"><img src="{{ img_url_prefix }}elements/{{ base_monster.element }}.png" /> {{ base_monster.name }}{% if not base_monster.is_awakened %} (Unawakened){% endif %}</p>
+                    <p class="panel-title"><img src="{{ img_url_prefix }}elements/{{ base_monster.element }}.png" /> <strong>{{ base_monster.name }}{% if not base_monster.is_awakened %} (Unawakened){% endif %}</strong></p>
                 </div>
                 <div class="panel-body">
                     <div class="col-lg-6 no-left-gutter">
@@ -190,7 +190,7 @@
             {% if awakened_monster %}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <p class="panel-title"><img src="{{ img_url_prefix }}elements/{{ awakened_monster.element }}.png" /> {{ awakened_monster.name }}</p>
+                    <p class="panel-title"><img src="{{ img_url_prefix }}elements/{{ awakened_monster.element }}.png" /> <strong>{{ awakened_monster.name }}</strong></p>
                 </div>
                 <div class="panel-body">
                     <div class="col-lg-6 no-left-gutter">

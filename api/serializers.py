@@ -18,6 +18,8 @@ class MonsterSkillEffectSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
+    skill_effect = MonsterSkillEffectSerializer(many=True, read_only=True)
+
     class Meta:
         model = MonsterSkill
         exclude = ('icon_filename',)

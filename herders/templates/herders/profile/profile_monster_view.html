@@ -37,7 +37,7 @@
                         <a href="{% url 'herders:monster_instance_power_up' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}">
                             <span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span>
                         </a>
-                        <a href="{% url 'herders:monster_instance_duplicate' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Copy">
+                        <a href="{% url 'herders:monster_instance_duplicate' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Copy">
                             <span class="glyphicon glyphicon-copy" data-toggle="tooltip" data-placement="top" title="Copy"></span>
                         </a>
                         {% if monster.monster.can_awaken and not monster.monster.is_awakened %}

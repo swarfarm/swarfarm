@@ -66,6 +66,7 @@ def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
 
     # Determine if the person logged in is the one requesting the view
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': profile_name,

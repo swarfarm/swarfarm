@@ -20,7 +20,7 @@ $('#id_monster-autocomplete').bind('selectChoice',
         var monster_id = choice[0].dataset['value'];
 
         $.ajax({
-            url: API_URL + 'monster/' + monster_id + '/',
+            url: API_URL + 'bestiary/monster/' + monster_id + '/',
             accepts: 'application/json'
         }).done(function (result) {
             //Set stars

@@ -185,6 +185,7 @@
                             <th class="monster-element">Element</th>
                             <th>Archetype</th>
                             <th>Priority</th>
+                            <th data-sorter="false">Leader Skill</th>
                             <th data-sorter="false">Skill Effects</th>
                             <th>Notes</th>
                             <th class="monster-info-icons-column"><img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/></th>
@@ -247,6 +248,12 @@
                                 </td>
                                 <td>{{ instance.monster.get_archetype_display }}</td>
                                 <td><span class="hidden">{{ instance.priority }}</span>{{ instance.get_priority_display }}</td>
+                                <td class="monster-leader-skill">
+                                    {% if instance.monster.leader_skill %}
+                                    <img src="{{ img_url_prefix }}/skills/leader/{{ instance.monster.leader_skill.icon_filename }}"
+                                         data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
+                                    {% endif %}
+                                </td>
                                 <td class="monster-skill-effects">
                                 {% for effect in instance.monster.all_skill_effects %}
                                     {% if effect.icon_filename %}

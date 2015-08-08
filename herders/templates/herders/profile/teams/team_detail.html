@@ -41,15 +41,19 @@
         <table class="table table-condensed monster-table">
             <td width="225px">Combined Team Buffs/Debuffs:</td>
             <td class="monster-skill-effects">
+                {% if team.leader.monster.leader_skill %}
+                <img src="{{ img_url_prefix }}/skills/leader/{{ team.leader.monster.leader_skill.icon_filename }}"
+                     data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ team.leader.monster.leader_skill.skill_string }}" />
+                {% endif %}
                 {% for effect in team_buffs %}
-                    {% if effect.icon_filename %}
-                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
-                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
-                    {% else %}
-                        <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                            <span>{{ effect.name }}</span>
-                        </span>
-                    {% endif %}
+                {% if effect.icon_filename %}
+                <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
+                        data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
+                {% else %}
+                <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                    <span>{{ effect.name }}</span>
+                </span>
+                {% endif %}
                 {% endfor %}
             </td>
         </table>
@@ -63,11 +67,12 @@
                     <th class="monster-level-column">Level</th>
                     <th class="monster-element">Element</th>
                     <th>Archetype</th>
+                    <th>Leader Skill</th>
                     <th>Skill Effects</th>
                 </tr>
             </thead>
             <tbody>
-                <tr><td colspan="7"><h4>Leader</h4></td></tr>
+                <tr><td colspan="8"><h4>Leader</h4></td></tr>
                 <tr>
                     {% if team.leader %}
                     <td class="monster-image">
@@ -110,6 +115,12 @@
                         <span>{{ team.leader.monster.element }}</span>
                     </td>
                     <td>{{ team.leader.monster.archetype|title }}</td>
+                    <td class="monster-leader-skill">
+                        {% if team.leader.monster.leader_skill %}
+                        <img src="{{ img_url_prefix }}/skills/leader/{{ team.leader.monster.leader_skill.icon_filename }}"
+                             data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ team.leader.monster.leader_skill.skill_string }}" />
+                        {% endif %}
+                    </td>
                     <td class="monster-skill-effects">
                         {% for effect in team.leader.monster.all_skill_effects %}
                             {% if effect.icon_filename %}
@@ -124,10 +135,10 @@
                     </td>
 
                     {% else %}
-                    <td colspan="7">None</td>
+                    <td colspan="8">None</td>
                     {% endif %}
                 </tr>
-                <tr><td colspan="7"><h4>Members</h4></td></tr>
+                <tr><td colspan="8"><h4>Members</h4></td></tr>
                 {% for instance in team.roster.all %}
                     <tr>
                         <td class="monster-image">
@@ -170,6 +181,12 @@
                             <span>{{ instance.monster.element }}</span>
                         </td>
                         <td>{{ instance.monster.archetype|title }}</td>
+                        <td class="monster-leader-skill">
+                            {% if instance.monster.leader_skill %}
+                            <img src="{{ img_url_prefix }}/skills/leader/{{ instance.monster.leader_skill.icon_filename }}"
+                                 data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
+                            {% endif %}
+                        </td>
                         <td class="monster-skill-effects">
                             {% for effect in instance.monster.all_skill_effects %}
                                 {% if effect.icon_filename %}
@@ -184,7 +201,7 @@
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="7">No Members</td></tr>
+                    <tr><td colspan="8">No Members</td></tr>
                 {% endfor %}
             </tbody>
         </table>

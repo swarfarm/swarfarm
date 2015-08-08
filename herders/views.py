@@ -984,12 +984,10 @@ def bestiary_sanity_checks(request):
                 errors[str(monster)] = monster_errors
 
         for skill in MonsterSkill.objects.all():
-            print skill
             skill_errors = []
             # Check max level of skill = num lines in level up progress + 1
             if skill.max_level > 1:
                 line_count = len(skill.level_progress_description.split('\r\n'))
-                print 'level up progress text len: ' + str(line_count) + '. Max level: ' + str(skill.max_level)
 
                 if skill.max_level != line_count + 1:
                     skill_errors.append('inconsistent level up text and max level')

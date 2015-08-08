@@ -1,5 +1,6 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 
 from herders.models import Monster, MonsterSkill, MonsterSkillEffect, MonsterLeaderSkill, MonsterSource, \
@@ -8,10 +9,22 @@ from .serializers import MonsterSerializer, MonsterSkillSerializer, MonsterLeade
     SummonerSerializer, MonsterInstanceSerializer, RuneInstanceSerializer, TeamGroupSerializer, TeamSerializer
 
 
+# Pagination classes
+class PersonalCollectionSetPagination(PageNumberPagination):
+    page_size = 1000
+
+
+class BestiarySetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
 # Django REST framework views
 class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
     serializer_class = MonsterSerializer
+    pagination_class = BestiarySetPagination
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('element', 'archetype', 'base_stars', 'obtainable', 'is_awakened')
     search_fields = ('base_hp')
@@ -20,21 +33,25 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
 class MonsterSkillViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterSkill.objects.all()
     serializer_class = MonsterSkillSerializer
+    pagination_class = BestiarySetPagination
 
 
 class MonsterLeaderSkillViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterLeaderSkill.objects.all()
     serializer_class = MonsterLeaderSkillSerializer
+    pagination_class = BestiarySetPagination
 
 
 class MonsterSkillEffectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterSkillEffect.objects.all()
     serializer_class = MonsterSkillEffectSerializer
+    pagination_class = BestiarySetPagination
 
 
 class MonsterSourceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterSource.objects.all()
     serializer_class = MonsterSourceSerializer
+    pagination_class = BestiarySetPagination
 
 
 class SummonerViewSet(viewsets.ReadOnlyModelViewSet):
@@ -45,6 +62,7 @@ class SummonerViewSet(viewsets.ReadOnlyModelViewSet):
 class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterInstance.objects.none()
     serializer_class = MonsterInstanceSerializer
+    pagination_class = PersonalCollectionSetPagination
 
     def get_queryset(self):
         profile_name = self.kwargs.get('profile_name', None)
@@ -68,13 +86,16 @@ class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 class RuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = RuneInstance.objects.all()
     serializer_class = RuneInstanceSerializer
+    pagination_class = PersonalCollectionSetPagination
 
 
 class TeamGroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = TeamGroup.objects.all()
     serializer_class = TeamGroupSerializer
+    pagination_class = PersonalCollectionSetPagination
 
 
 class TeamViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
+    pagination_class = PersonalCollectionSetPagination

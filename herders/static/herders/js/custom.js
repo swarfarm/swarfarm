@@ -18,10 +18,10 @@ $('#addMonsterModal').on('shown.bs.modal', function () {
 $('#id_monster-autocomplete').bind('selectChoice',
     function(e, choice, autocomplete) {
         var monster_id = choice[0].dataset['value'];
+        var url = API_URL + 'bestiary/' + monster_id + '.json';
 
         $.ajax({
-            url: API_URL + 'bestiary/monster/' + monster_id + '/',
-            accepts: 'application/json'
+            url: url
         }).done(function (result) {
             //Set stars
             if (result.is_awakened && result.base_stars > 1) {

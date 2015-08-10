@@ -30,13 +30,51 @@ class MonsterLeaderSkillSerializer(serializers.HyperlinkedModelSerializer):
         model = MonsterLeaderSkill
 
 
+# Small serializer for necessary info for awakens_from/to on main MonsterSerializer
+class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Monster
+        fields = (
+            'pk', 'name', 'image_filename'
+        )
+
+
 class MonsterSerializer(serializers.HyperlinkedModelSerializer):
     skills = MonsterSkillSerializer(many=True, read_only=True)
     source = MonsterSourceSerializer(many=True, read_only=True)
+    awakens_from = AwakensMonsterSerializer(read_only=True)
+    awakens_to = AwakensMonsterSerializer(read_only=True)
 
     class Meta:
         model = Monster
-        exclude = ('image_filename',)
+        fields = (
+            'pk', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
+            'obtainable', 'can_awaken', 'is_awakened', 'awaken_bonus',
+            'skills', 'leader_skill',
+            'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
+            'awakens_from', 'awakens_to',
+            'awaken_ele_mats_low', 'awaken_ele_mats_mid', 'awaken_ele_mats_high',
+            'awaken_magic_mats_low', 'awaken_magic_mats_mid', 'awaken_magic_mats_high',
+            'source', 'fusion_food'
+        )
+
+
+# Limited fields for displaying list view sort of display.
+class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
+    awakens_from = AwakensMonsterSerializer(read_only=True)
+    awakens_to = AwakensMonsterSerializer(read_only=True)
+
+    class Meta:
+        model = Monster
+        fields = (
+            'pk', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
+            'obtainable', 'can_awaken', 'is_awakened',
+            'awakens_from', 'awakens_to',
+            'awaken_ele_mats_low', 'awaken_ele_mats_mid', 'awaken_ele_mats_high',
+            'awaken_magic_mats_low', 'awaken_magic_mats_mid', 'awaken_magic_mats_high',
+            'fusion_food',
+        )
+
 
 
 # Individual collection stuff

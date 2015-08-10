@@ -3,15 +3,14 @@ from rest_framework import routers
 
 from . import views
 
-router = routers.DefaultRouter()
-router.register(r'bestiary/monster', views.MonsterViewSet)
-router.register(r'bestiary/monster/skill', views.MonsterSkillViewSet)
-router.register(r'bestiary/monster/skill/leader', views.MonsterLeaderSkillViewSet)
-router.register(r'bestiary/monster/skill/effect', views.MonsterSkillEffectViewSet)
-router.register(r'bestiary/monster/source', views.MonsterSourceViewSet)
+router = routers.DefaultRouter(trailing_slash=False)
+router.register(r'bestiary', views.MonsterViewSet)
+router.register(r'bestiary/skill', views.MonsterSkillViewSet)
+router.register(r'bestiary/skill/leader', views.MonsterLeaderSkillViewSet)
+router.register(r'bestiary/skill/effect', views.MonsterSkillEffectViewSet)
+router.register(r'bestiary/source', views.MonsterSourceViewSet)
 
 router.register(r'summoner', views.SummonerViewSet)
-#router.register(r'monster', views.MonsterInstanceViewSet)
 router.register(r'runes', views.RuneInstanceViewSet)
 router.register(r'group', views.TeamGroupViewSet)
 router.register(r'team', views.TeamViewSet)

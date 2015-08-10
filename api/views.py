@@ -1,11 +1,11 @@
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters, status, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 
 from herders.models import Monster, MonsterSkill, MonsterSkillEffect, MonsterLeaderSkill, MonsterSource, \
     Summoner, MonsterInstance, RuneInstance, TeamGroup, Team
-from .serializers import MonsterSerializer, MonsterSkillSerializer, MonsterLeaderSkillSerializer, MonsterSkillEffectSerializer, MonsterSourceSerializer, \
+from .serializers import MonsterSerializer, MonsterSummarySerializer, MonsterSkillSerializer, MonsterLeaderSkillSerializer, MonsterSkillEffectSerializer, MonsterSourceSerializer, \
     SummonerSerializer, MonsterInstanceSerializer, RuneInstanceSerializer, TeamGroupSerializer, TeamSerializer
 
 
@@ -23,11 +23,32 @@ class BestiarySetPagination(PageNumberPagination):
 # Django REST framework views
 class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
-    serializer_class = MonsterSerializer
+    renderer_classes = (renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
+
     pagination_class = BestiarySetPagination
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('element', 'archetype', 'base_stars', 'obtainable', 'is_awakened')
-    search_fields = ('base_hp')
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return MonsterSummarySerializer
+        else:
+            return MonsterSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super(MonsterViewSet, self).list(request, *args, **kwargs)
+
+        if request.accepted_renderer.format == 'html':
+            return Response({'data': response.data}, template_name='api/bestiary/table_rows.html')
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super(MonsterViewSet, self).retrieve(request, *args, **kwargs)
+
+        if request.accepted_renderer.format == 'html':
+            return Response({'monster': response.data}, template_name='api/bestiary/detail.html')
+        return response
+
 
 
 class MonsterSkillViewSet(viewsets.ReadOnlyModelViewSet):

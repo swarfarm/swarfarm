@@ -103,6 +103,7 @@ class RegisterUserForm(forms.Form):
     username = forms.CharField(
         label='Username',
         required=True,
+        help_text='Used to link to your profile to others: http://swarfarm.com/&lt;username&gt;/view',
         validators=[
             RegexValidator(
                 regex='^[a-zA-Z0-9_]+$',

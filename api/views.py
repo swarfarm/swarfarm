@@ -1,6 +1,8 @@
 from rest_framework import viewsets, filters, status, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
+from rest_framework_extensions.cache.decorators import cache_response
 from django.shortcuts import get_object_or_404
 
 from herders.models import Monster, MonsterSkill, MonsterSkillEffect, MonsterLeaderSkill, MonsterSource, \
@@ -35,6 +37,7 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             return MonsterSerializer
 
+    @cache_response(6 * 60 * 60, cache_errors=False)
     def list(self, request, *args, **kwargs):
         response = super(MonsterViewSet, self).list(request, *args, **kwargs)
 
@@ -42,6 +45,7 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({'data': response.data['results']}, template_name='api/bestiary/table_rows.html')
         return response
 
+    @cache_response(1 * 60 * 60, cache_errors=False)
     def retrieve(self, request, *args, **kwargs):
         response = super(MonsterViewSet, self).retrieve(request, *args, **kwargs)
 
@@ -50,25 +54,25 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
         return response
 
 
-class MonsterSkillViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = MonsterSkill.objects.all()
     serializer_class = MonsterSkillSerializer
     pagination_class = BestiarySetPagination
 
 
-class MonsterLeaderSkillViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterLeaderSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = MonsterLeaderSkill.objects.all()
     serializer_class = MonsterLeaderSkillSerializer
     pagination_class = BestiarySetPagination
 
 
-class MonsterSkillEffectViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterSkillEffectViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = MonsterSkillEffect.objects.all()
     serializer_class = MonsterSkillEffectSerializer
     pagination_class = BestiarySetPagination
 
 
-class MonsterSourceViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterSourceViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = MonsterSource.objects.all()
     serializer_class = MonsterSourceSerializer
     pagination_class = BestiarySetPagination

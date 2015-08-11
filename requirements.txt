@@ -11,4 +11,5 @@ django-suit
 django-timezone-field
 django_compressor
 djangorestframework
+drf-extensions
 django-filter

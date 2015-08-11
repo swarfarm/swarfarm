@@ -45,7 +45,7 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({'data': response.data['results']}, template_name='api/bestiary/table_rows.html')
         return response
 
-    @cache_response(1 * 60 * 60, cache_errors=False)
+    # @cache_response(1 * 60 * 60, cache_errors=False)
     def retrieve(self, request, *args, **kwargs):
         response = super(MonsterViewSet, self).retrieve(request, *args, **kwargs)
 

@@ -127,7 +127,7 @@ footer {
 }
 
 .monster-image {
-    padding: 0 !important;
+    padding: 0!important;
     width: 50px;
     height: 50px;
     border-radius: 15%;
@@ -284,11 +284,8 @@ footer {
     padding: 0 !important;
 }
 
-.monster-awakens img {
-    width: 50px;
-    height: 50px;
-    border: 1px solid black;
-    border-radius: 15%;
+.monster-awakens * {
+    vertical-align: middle;
 }
 
 .monster-awaken-materials {

@@ -21,3 +21,8 @@ def subtract(value, arg):
 @register.filter
 def multiply(value, arg):
     return value * arg
+
+
+@register.filter
+def remove_extension(string):
+    return string.replace('.png', '')

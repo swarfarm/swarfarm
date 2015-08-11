@@ -15,7 +15,7 @@ class PersonalCollectionSetPagination(PageNumberPagination):
 
 
 class BestiarySetPagination(PageNumberPagination):
-    page_size = 100
+    page_size = 1000
     page_size_query_param = 'page_size'
     max_page_size = 1000
 
@@ -23,7 +23,7 @@ class BestiarySetPagination(PageNumberPagination):
 # Django REST framework views
 class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
-    renderer_classes = (renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
 
     pagination_class = BestiarySetPagination
     filter_backends = (filters.DjangoFilterBackend,)
@@ -39,7 +39,7 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
         response = super(MonsterViewSet, self).list(request, *args, **kwargs)
 
         if request.accepted_renderer.format == 'html':
-            return Response({'data': response.data}, template_name='api/bestiary/table_rows.html')
+            return Response({'data': response.data['results']}, template_name='api/bestiary/table_rows.html')
         return response
 
     def retrieve(self, request, *args, **kwargs):
@@ -48,7 +48,6 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
         if request.accepted_renderer.format == 'html':
             return Response({'monster': response.data}, template_name='api/bestiary/detail.html')
         return response
-
 
 
 class MonsterSkillViewSet(viewsets.ReadOnlyModelViewSet):

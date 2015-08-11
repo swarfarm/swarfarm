@@ -18,6 +18,7 @@ import autocomplete_light
 
 STATIC_URL_PREFIX = static('herders/images/')
 
+
 # User stuff
 class CrispyAuthenticationForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -73,6 +74,29 @@ class CrispySetPasswordForm(SetPasswordForm):
             Field('new_password2'),
             FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
         )
+
+
+class CrispyChangeUsernameForm(forms.Form):
+    username = forms.CharField(
+        label='New Username',
+        required=True,
+        help_text='This will change the username used to log in and the URL used to access your profile.',
+        validators=[
+            RegexValidator(
+                regex='^[a-zA-Z0-9_]+$',
+                message='Username must contain only alphanumeric characters and underscore.',
+                code='invalid_username'
+            ),
+        ]
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_action = 'username_change'
+    helper.layout = Layout(
+        Field('username', css_class='input-sm'),
+        FormActions(Submit('change', 'Change', css_class='btn-lg btn-primary btn-block'))
+    )
 
 
 class RegisterUserForm(forms.Form):

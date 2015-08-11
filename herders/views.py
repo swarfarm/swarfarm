@@ -13,7 +13,7 @@ from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import RegisterUserForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
+from .forms import RegisterUserForm, CrispyChangeUsernameForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
     PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm, EditTeamForm, AddTeamGroupForm, \
     DeleteTeamGroupForm
 from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
@@ -53,6 +53,30 @@ def register(request):
     context = {'form': form}
 
     return render(request, 'herders/register.html', context)
+
+
+def change_username(request):
+    user = request.user
+    form = CrispyChangeUsernameForm(request.POST or None)
+
+    context = {
+        'form': form,
+    }
+
+    if request.method == 'POST' and form.is_valid():
+        try:
+            user.username = form.cleaned_data['username']
+            user.save()
+
+            return redirect('username_change_complete')
+        except IntegrityError:
+                form.add_error('username', 'Username already taken')
+
+    return render(request, 'registration/change_username.html', context)
+
+
+def change_username_complete(request):
+    return render(request, 'registration/change_username_complete.html')
 
 
 def profile(request, profile_name=None, view_mode='list', sort_method='grade'):

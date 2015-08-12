@@ -14,6 +14,12 @@ $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
 });
 
+//Calculate max level based on stars currently entered
+$('#set_max_level').click(function() {
+    var stars = $('#id_stars').val();
+    $('#id_level').val(10 + stars * 5);
+});
+
 //Automatically set attributes based on monster info
 $('#id_monster-autocomplete').bind('selectChoice',
     function(e, choice, autocomplete) {

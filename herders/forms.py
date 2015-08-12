@@ -9,7 +9,7 @@ from .models import MonsterInstance, Summoner, TeamGroup, Team
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
-from crispy_forms.bootstrap import FormActions, PrependedText
+from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton
 
 from captcha.fields import ReCaptchaField
 
@@ -348,7 +348,11 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
                     data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
                 ),
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                Field('level', value=1, min=1, max=40),
+                FieldWithButtons(
+                    'level',
+                    StrictButton("Max", name="Set_Max_Level", id="set_max_level"),
+                    value=1, min=1, max=40,
+                ),
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
                 Field('ignore_for_fusion', css_class='checkbox'),
@@ -379,7 +383,11 @@ class EditMonsterInstanceForm(ModelForm):
         self.helper.layout = Layout(
             Div(
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                Field('level', min=1, max=40),
+                FieldWithButtons(
+                    'level',
+                    StrictButton("Max", name="Set_Max_Level", id="set_max_level"),
+                    value=1, min=1, max=40,
+                ),
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
                 Field('ignore_for_fusion', css_class='checkbox'),

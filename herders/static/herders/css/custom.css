@@ -120,21 +120,26 @@ footer {
     z-index: 1000;
 }
 
-.monster-table>tbody>tr>td{
+.monster-table>tbody>tr>td {
     vertical-align: middle;
     padding-top: 0;
     padding-bottom: 0;
+}
+
+.monster-image>div {
+    position: relative;
 }
 
 .monster-image {
     padding: 0!important;
     width: 50px;
     height: 50px;
-    border-radius: 15%;
 }
 
-.monster-image>div {
+div.sprite {
     position: relative;
+    border: 1px solid black;
+    border-radius: 10%;
 }
 
 .monster-image-full {
@@ -297,7 +302,6 @@ footer {
     display: inline-block;
     margin-right: 1px;
 }
-
 
 .monster-awaken-materials img {
     width: 50px;

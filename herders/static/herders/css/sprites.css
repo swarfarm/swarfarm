@@ -1,1 +1,3775 @@
-.sprite-amazon_dark,.sprite-amazon_dark_awakened,.sprite-amazon_fire,.sprite-amazon_fire_awakened,.sprite-amazon_light,.sprite-amazon_light_awakened,.sprite-amazon_water,.sprite-amazon_water_awakened,.sprite-amazon_wind,.sprite-amazon_wind_awakened,.sprite-angelmon_dark,.sprite-angelmon_dark_awakened,.sprite-angelmon_fire,.sprite-angelmon_fire_awakened,.sprite-angelmon_light,.sprite-angelmon_light_awakened,.sprite-angelmon_water,.sprite-angelmon_water_awakened,.sprite-angelmon_wind,.sprite-angelmon_wind_awakened,.sprite-archangel_dark,.sprite-archangel_dark_awakened,.sprite-archangel_fire,.sprite-archangel_fire_awakened,.sprite-archangel_light_awakened,.sprite-archangel_water,.sprite-archangel_water_awakened,.sprite-archangel_wind,.sprite-archangel_wind_awakened,.sprite-assassin_dark,.sprite-assassin_dark_awakened,.sprite-assassin_fire,.sprite-assassin_fire_awakened,.sprite-assassin_light,.sprite-assassin_light_awakened,.sprite-assassin_water,.sprite-assassin_water_awakened,.sprite-assassin_wind,.sprite-assassin_wind_awakened,.sprite-barbaric_king_dark,.sprite-barbaric_king_dark_awakened,.sprite-barbaric_king_fire,.sprite-barbaric_king_fire_awakened,.sprite-barbaric_king_light,.sprite-barbaric_king_light_awakened,.sprite-barbaric_king_water,.sprite-barbaric_king_water_awakened,.sprite-barbaric_king_wind{background-image:url(/static/herders/images/monsters/sprite/1.png);width:50px;height:50px}.sprite{background-repeat:no-repeat;display:inline-block}.sprite-amazon_dark{background-position:0 0}.sprite-amazon_dark_awakened{background-position:-50px 0}.sprite-amazon_fire{background-position:-100px 0}.sprite-amazon_fire_awakened{background-position:-150px 0}.sprite-amazon_light{background-position:-200px 0}.sprite-amazon_light_awakened{background-position:-250px 0}.sprite-amazon_water{background-position:-300px 0}.sprite-amazon_water_awakened{background-position:0 -50px}.sprite-amazon_wind{background-position:-50px -50px}.sprite-amazon_wind_awakened{background-position:-100px -50px}.sprite-angelmon_dark{background-position:-150px -50px}.sprite-angelmon_dark_awakened{background-position:-200px -50px}.sprite-angelmon_fire{background-position:-250px -50px}.sprite-angelmon_fire_awakened{background-position:-300px -50px}.sprite-angelmon_light{background-position:0 -100px}.sprite-angelmon_light_awakened{background-position:-50px -100px}.sprite-angelmon_water{background-position:-100px -100px}.sprite-angelmon_water_awakened{background-position:-150px -100px}.sprite-angelmon_wind{background-position:-200px -100px}.sprite-angelmon_wind_awakened{background-position:-250px -100px}.sprite-archangel_dark{background-position:-300px -100px}.sprite-archangel_dark_awakened{background-position:0 -150px}.sprite-archangel_fire{background-position:-50px -150px}.sprite-archangel_fire_awakened{background-position:-100px -150px}.sprite-archangel_light{background-image:url(/static/herders/images/monsters/sprite/1.png);width:50px;height:50px;background-position:-150px -150px}.sprite-archangel_light_awakened{background-position:-200px -150px}.sprite-archangel_water{background-position:-250px -150px}.sprite-archangel_water_awakened{background-position:-300px -150px}.sprite-archangel_wind{background-position:0 -200px}.sprite-archangel_wind_awakened{background-position:-50px -200px}.sprite-assassin_dark{background-position:-100px -200px}.sprite-assassin_dark_awakened{background-position:-150px -200px}.sprite-assassin_fire{background-position:-200px -200px}.sprite-assassin_fire_awakened{background-position:-250px -200px}.sprite-assassin_light{background-position:-300px -200px}.sprite-assassin_light_awakened{background-position:0 -250px}.sprite-assassin_water{background-position:-50px -250px}.sprite-assassin_water_awakened{background-position:-100px -250px}.sprite-assassin_wind{background-position:-150px -250px}.sprite-assassin_wind_awakened{background-position:-200px -250px}.sprite-barbaric_king_dark{background-position:-250px -250px}.sprite-barbaric_king_dark_awakened{background-position:-300px -250px}.sprite-barbaric_king_fire{background-position:0 -300px}.sprite-barbaric_king_fire_awakened{background-position:-50px -300px}.sprite-barbaric_king_light{background-position:-100px -300px}.sprite-barbaric_king_light_awakened{background-position:-150px -300px}.sprite-barbaric_king_water{background-position:-200px -300px}.sprite-barbaric_king_water_awakened{background-position:-250px -300px}.sprite-barbaric_king_wind{background-position:-300px -300px}.sprite-barbaric_king_wind_awakened,.sprite-battle_mammoth_dark,.sprite-battle_mammoth_dark_awakened,.sprite-battle_mammoth_fire,.sprite-battle_mammoth_fire_awakened,.sprite-battle_mammoth_light,.sprite-battle_mammoth_light_awakened,.sprite-battle_mammoth_water,.sprite-battle_mammoth_water_awakened,.sprite-battle_mammoth_wind,.sprite-battle_mammoth_wind_awakened,.sprite-battle_scorpion_fire,.sprite-battle_scorpion_water,.sprite-battle_scorpion_wind,.sprite-bearman_dark,.sprite-bearman_dark_awakened,.sprite-bearman_fire,.sprite-bearman_fire_awakened,.sprite-bearman_light,.sprite-bearman_light_awakened,.sprite-bearman_water,.sprite-bearman_water_awakened,.sprite-bearman_wind,.sprite-bearman_wind_awakened,.sprite-beast_hunter_dark_awakened,.sprite-beast_hunter_fire,.sprite-beast_hunter_fire_awakened,.sprite-beast_hunter_light,.sprite-beast_hunter_light_awakened,.sprite-beast_hunter_water,.sprite-beast_hunter_water_awakened,.sprite-beast_hunter_wind,.sprite-beast_hunter_wind_awakened,.sprite-beast_monk_dark,.sprite-beast_monk_dark_awakened,.sprite-beast_monk_fire,.sprite-beast_monk_fire_awakened,.sprite-beast_monk_light,.sprite-beast_monk_light_awakened,.sprite-beast_monk_water,.sprite-beast_monk_water_awakened,.sprite-beast_monk_wind,.sprite-beast_monk_wind_awakened,.sprite-bounty_hunter_dark,.sprite-bounty_hunter_dark_awakened,.sprite-bounty_hunter_fire,.sprite-bounty_hunter_fire_awakened,.sprite-bounty_hunter_light{background-image:url(/static/herders/images/monsters/sprite/2.png);width:50px;height:50px}.sprite-barbaric_king_wind_awakened{background-position:0 0}.sprite-battle_mammoth_dark{background-position:-50px 0}.sprite-battle_mammoth_dark_awakened{background-position:-100px 0}.sprite-battle_mammoth_fire{background-position:-150px 0}.sprite-battle_mammoth_fire_awakened{background-position:-200px 0}.sprite-battle_mammoth_light{background-position:-250px 0}.sprite-battle_mammoth_light_awakened{background-position:-300px 0}.sprite-battle_mammoth_water{background-position:0 -50px}.sprite-battle_mammoth_water_awakened{background-position:-50px -50px}.sprite-battle_mammoth_wind{background-position:-100px -50px}.sprite-battle_mammoth_wind_awakened{background-position:-150px -50px}.sprite-battle_scorpion_fire{background-position:-200px -50px}.sprite-battle_scorpion_water{background-position:-250px -50px}.sprite-battle_scorpion_wind{background-position:-300px -50px}.sprite-bearman_dark{background-position:0 -100px}.sprite-bearman_dark_awakened{background-position:-50px -100px}.sprite-bearman_fire{background-position:-100px -100px}.sprite-bearman_fire_awakened{background-position:-150px -100px}.sprite-bearman_light{background-position:-200px -100px}.sprite-bearman_light_awakened{background-position:-250px -100px}.sprite-bearman_water{background-position:-300px -100px}.sprite-bearman_water_awakened{background-position:0 -150px}.sprite-bearman_wind{background-position:-50px -150px}.sprite-bearman_wind_awakened{background-position:-100px -150px}.sprite-beast_hunter_dark{background-image:url(/static/herders/images/monsters/sprite/2.png);width:50px;height:50px;background-position:-150px -150px}.sprite-beast_hunter_dark_awakened{background-position:-200px -150px}.sprite-beast_hunter_fire{background-position:-250px -150px}.sprite-beast_hunter_fire_awakened{background-position:-300px -150px}.sprite-beast_hunter_light{background-position:0 -200px}.sprite-beast_hunter_light_awakened{background-position:-50px -200px}.sprite-beast_hunter_water{background-position:-100px -200px}.sprite-beast_hunter_water_awakened{background-position:-150px -200px}.sprite-beast_hunter_wind{background-position:-200px -200px}.sprite-beast_hunter_wind_awakened{background-position:-250px -200px}.sprite-beast_monk_dark{background-position:-300px -200px}.sprite-beast_monk_dark_awakened{background-position:0 -250px}.sprite-beast_monk_fire{background-position:-50px -250px}.sprite-beast_monk_fire_awakened{background-position:-100px -250px}.sprite-beast_monk_light{background-position:-150px -250px}.sprite-beast_monk_light_awakened{background-position:-200px -250px}.sprite-beast_monk_water{background-position:-250px -250px}.sprite-beast_monk_water_awakened{background-position:-300px -250px}.sprite-beast_monk_wind{background-position:0 -300px}.sprite-beast_monk_wind_awakened{background-position:-50px -300px}.sprite-bounty_hunter_dark{background-position:-100px -300px}.sprite-bounty_hunter_dark_awakened{background-position:-150px -300px}.sprite-bounty_hunter_fire{background-position:-200px -300px}.sprite-bounty_hunter_fire_awakened{background-position:-250px -300px}.sprite-bounty_hunter_light{background-position:-300px -300px}.sprite-bounty_hunter_light_awakened,.sprite-bounty_hunter_water,.sprite-bounty_hunter_water_awakened,.sprite-bounty_hunter_wind,.sprite-bounty_hunter_wind_awakened,.sprite-brownie_magician_dark,.sprite-brownie_magician_dark_awakened,.sprite-brownie_magician_fire,.sprite-brownie_magician_fire_awakened,.sprite-brownie_magician_light,.sprite-brownie_magician_light_awakened,.sprite-brownie_magician_water,.sprite-brownie_magician_water_awakened,.sprite-brownie_magician_wind,.sprite-brownie_magician_wind_awakened,.sprite-charger_shark_dark,.sprite-charger_shark_dark_awakened,.sprite-charger_shark_fire,.sprite-charger_shark_fire_awakened,.sprite-charger_shark_light,.sprite-charger_shark_light_awakened,.sprite-charger_shark_water,.sprite-charger_shark_water_awakened,.sprite-charger_shark_wind,.sprite-chimera_dark,.sprite-chimera_dark_awakened,.sprite-chimera_fire,.sprite-chimera_fire_awakened,.sprite-chimera_light,.sprite-chimera_light_awakened,.sprite-chimera_water,.sprite-chimera_water_awakened,.sprite-chimera_wind,.sprite-chimera_wind_awakened,.sprite-cow_girl_dark,.sprite-cow_girl_dark_awakened,.sprite-cow_girl_fire,.sprite-cow_girl_fire_awakened,.sprite-cow_girl_light,.sprite-cow_girl_light_awakened,.sprite-cow_girl_water,.sprite-cow_girl_water_awakened,.sprite-cow_girl_wind,.sprite-cow_girl_wind_awakened,.sprite-death_knight_dark,.sprite-death_knight_dark_awakened,.sprite-death_knight_fire,.sprite-death_knight_fire_awakened{background-image:url(/static/herders/images/monsters/sprite/3.png);width:50px;height:50px}.sprite-bounty_hunter_light_awakened{background-position:0 0}.sprite-bounty_hunter_water{background-position:-50px 0}.sprite-bounty_hunter_water_awakened{background-position:-100px 0}.sprite-bounty_hunter_wind{background-position:-150px 0}.sprite-bounty_hunter_wind_awakened{background-position:-200px 0}.sprite-brownie_magician_dark{background-position:-250px 0}.sprite-brownie_magician_dark_awakened{background-position:-300px 0}.sprite-brownie_magician_fire{background-position:0 -50px}.sprite-brownie_magician_fire_awakened{background-position:-50px -50px}.sprite-brownie_magician_light{background-position:-100px -50px}.sprite-brownie_magician_light_awakened{background-position:-150px -50px}.sprite-brownie_magician_water{background-position:-200px -50px}.sprite-brownie_magician_water_awakened{background-position:-250px -50px}.sprite-brownie_magician_wind{background-position:-300px -50px}.sprite-brownie_magician_wind_awakened{background-position:0 -100px}.sprite-charger_shark_dark{background-position:-50px -100px}.sprite-charger_shark_dark_awakened{background-position:-100px -100px}.sprite-charger_shark_fire{background-position:-150px -100px}.sprite-charger_shark_fire_awakened{background-position:-200px -100px}.sprite-charger_shark_light{background-position:-250px -100px}.sprite-charger_shark_light_awakened{background-position:-300px -100px}.sprite-charger_shark_water{background-position:0 -150px}.sprite-charger_shark_water_awakened{background-position:-50px -150px}.sprite-charger_shark_wind{background-position:-100px -150px}.sprite-charger_shark_wind_awakened{background-image:url(/static/herders/images/monsters/sprite/3.png);width:50px;height:50px;background-position:-150px -150px}.sprite-chimera_dark{background-position:-200px -150px}.sprite-chimera_dark_awakened{background-position:-250px -150px}.sprite-chimera_fire{background-position:-300px -150px}.sprite-chimera_fire_awakened{background-position:0 -200px}.sprite-chimera_light{background-position:-50px -200px}.sprite-chimera_light_awakened{background-position:-100px -200px}.sprite-chimera_water{background-position:-150px -200px}.sprite-chimera_water_awakened{background-position:-200px -200px}.sprite-chimera_wind{background-position:-250px -200px}.sprite-chimera_wind_awakened{background-position:-300px -200px}.sprite-cow_girl_dark{background-position:0 -250px}.sprite-cow_girl_dark_awakened{background-position:-50px -250px}.sprite-cow_girl_fire{background-position:-100px -250px}.sprite-cow_girl_fire_awakened{background-position:-150px -250px}.sprite-cow_girl_light{background-position:-200px -250px}.sprite-cow_girl_light_awakened{background-position:-250px -250px}.sprite-cow_girl_water{background-position:-300px -250px}.sprite-cow_girl_water_awakened{background-position:0 -300px}.sprite-cow_girl_wind{background-position:-50px -300px}.sprite-cow_girl_wind_awakened{background-position:-100px -300px}.sprite-death_knight_dark{background-position:-150px -300px}.sprite-death_knight_dark_awakened{background-position:-200px -300px}.sprite-death_knight_fire{background-position:-250px -300px}.sprite-death_knight_fire_awakened{background-position:-300px -300px}.sprite-death_knight_light,.sprite-death_knight_light_awakened,.sprite-death_knight_water,.sprite-death_knight_water_awakened,.sprite-death_knight_wind,.sprite-death_knight_wind_awakened,.sprite-devilmon_dark,.sprite-dragon_dark,.sprite-dragon_dark_awakened,.sprite-dragon_fire,.sprite-dragon_fire_awakened,.sprite-dragon_knight_dark,.sprite-dragon_knight_dark_awakened,.sprite-dragon_knight_fire,.sprite-dragon_knight_fire_awakened,.sprite-dragon_knight_light,.sprite-dragon_knight_light_awakened,.sprite-dragon_knight_water,.sprite-dragon_knight_water_awakened,.sprite-dragon_knight_wind,.sprite-dragon_knight_wind_awakened,.sprite-dragon_light,.sprite-dragon_light_awakened,.sprite-dragon_water,.sprite-dragon_wind,.sprite-dragon_wind_awakened,.sprite-drunken_master_dark,.sprite-drunken_master_dark_awakened,.sprite-drunken_master_fire,.sprite-drunken_master_fire_awakened,.sprite-drunken_master_light,.sprite-drunken_master_light_awakened,.sprite-drunken_master_water,.sprite-drunken_master_water_awakened,.sprite-drunken_master_wind,.sprite-drunken_master_wind_awakened,.sprite-elemental_dark,.sprite-elemental_dark_awakened,.sprite-elemental_fire,.sprite-elemental_fire_awakened,.sprite-elemental_light,.sprite-elemental_light_awakened,.sprite-elemental_water,.sprite-elemental_water_awakened,.sprite-elemental_wind,.sprite-elemental_wind_awakened,.sprite-epikion_priest_dark,.sprite-epikion_priest_dark_awakened{background-image:url(/static/herders/images/monsters/sprite/4.png);width:50px;height:50px}.sprite-death_knight_light{background-position:0 0}.sprite-death_knight_light_awakened{background-position:-50px 0}.sprite-death_knight_water{background-position:-100px 0}.sprite-death_knight_water_awakened{background-position:-150px 0}.sprite-death_knight_wind{background-position:-200px 0}.sprite-death_knight_wind_awakened{background-position:-250px 0}.sprite-devilmon_dark{background-position:-300px 0}.sprite-dragon_dark{background-position:0 -50px}.sprite-dragon_dark_awakened{background-position:-50px -50px}.sprite-dragon_fire{background-position:-100px -50px}.sprite-dragon_fire_awakened{background-position:-150px -50px}.sprite-dragon_knight_dark{background-position:-200px -50px}.sprite-dragon_knight_dark_awakened{background-position:-250px -50px}.sprite-dragon_knight_fire{background-position:-300px -50px}.sprite-dragon_knight_fire_awakened{background-position:0 -100px}.sprite-dragon_knight_light{background-position:-50px -100px}.sprite-dragon_knight_light_awakened{background-position:-100px -100px}.sprite-dragon_knight_water{background-position:-150px -100px}.sprite-dragon_knight_water_awakened{background-position:-200px -100px}.sprite-dragon_knight_wind{background-position:-250px -100px}.sprite-dragon_knight_wind_awakened{background-position:-300px -100px}.sprite-dragon_light{background-position:0 -150px}.sprite-dragon_light_awakened{background-position:-50px -150px}.sprite-dragon_water{background-position:-100px -150px}.sprite-dragon_water_awakened{background-image:url(/static/herders/images/monsters/sprite/4.png);width:50px;height:50px;background-position:-150px -150px}.sprite-dragon_wind{background-position:-200px -150px}.sprite-dragon_wind_awakened{background-position:-250px -150px}.sprite-drunken_master_dark{background-position:-300px -150px}.sprite-drunken_master_dark_awakened{background-position:0 -200px}.sprite-drunken_master_fire{background-position:-50px -200px}.sprite-drunken_master_fire_awakened{background-position:-100px -200px}.sprite-drunken_master_light{background-position:-150px -200px}.sprite-drunken_master_light_awakened{background-position:-200px -200px}.sprite-drunken_master_water{background-position:-250px -200px}.sprite-drunken_master_water_awakened{background-position:-300px -200px}.sprite-drunken_master_wind{background-position:0 -250px}.sprite-drunken_master_wind_awakened{background-position:-50px -250px}.sprite-elemental_dark{background-position:-100px -250px}.sprite-elemental_dark_awakened{background-position:-150px -250px}.sprite-elemental_fire{background-position:-200px -250px}.sprite-elemental_fire_awakened{background-position:-250px -250px}.sprite-elemental_light{background-position:-300px -250px}.sprite-elemental_light_awakened{background-position:0 -300px}.sprite-elemental_water{background-position:-50px -300px}.sprite-elemental_water_awakened{background-position:-100px -300px}.sprite-elemental_wind{background-position:-150px -300px}.sprite-elemental_wind_awakened{background-position:-200px -300px}.sprite-epikion_priest_dark{background-position:-250px -300px}.sprite-epikion_priest_dark_awakened{background-position:-300px -300px}.sprite-epikion_priest_fire,.sprite-epikion_priest_fire_awakened,.sprite-epikion_priest_light,.sprite-epikion_priest_light_awakened,.sprite-epikion_priest_water,.sprite-epikion_priest_water_awakened,.sprite-epikion_priest_wind,.sprite-epikion_priest_wind_awakened,.sprite-fairy_dark,.sprite-fairy_dark_awakened,.sprite-fairy_fire,.sprite-fairy_fire_awakened,.sprite-fairy_light,.sprite-fairy_light_awakened,.sprite-fairy_queen_light,.sprite-fairy_queen_light_awakened,.sprite-fairy_water,.sprite-fairy_water_awakened,.sprite-fairy_wind,.sprite-fairy_wind_awakened,.sprite-forest_keeper_fire,.sprite-forest_keeper_water,.sprite-forest_keeper_wind,.sprite-garuda_dark,.sprite-garuda_fire,.sprite-garuda_fire_awakened,.sprite-garuda_light,.sprite-garuda_light_awakened,.sprite-garuda_water,.sprite-garuda_water_awakened,.sprite-garuda_wind,.sprite-garuda_wind_awakened,.sprite-ghost_dark,.sprite-ghost_fire,.sprite-ghost_water,.sprite-ghost_wind,.sprite-golem_dark,.sprite-golem_dark_awakened,.sprite-golem_fire,.sprite-golem_fire_awakened,.sprite-golem_light,.sprite-golem_light_awakened,.sprite-golem_water,.sprite-golem_water_awakened,.sprite-golem_wind,.sprite-golem_wind_awakened,.sprite-griffon_dark,.sprite-griffon_dark_awakened{background-image:url(/static/herders/images/monsters/sprite/5.png);width:50px;height:50px}.sprite-epikion_priest_fire{background-position:0 0}.sprite-epikion_priest_fire_awakened{background-position:-50px 0}.sprite-epikion_priest_light{background-position:-100px 0}.sprite-epikion_priest_light_awakened{background-position:-150px 0}.sprite-epikion_priest_water{background-position:-200px 0}.sprite-epikion_priest_water_awakened{background-position:-250px 0}.sprite-epikion_priest_wind{background-position:-300px 0}.sprite-epikion_priest_wind_awakened{background-position:0 -50px}.sprite-fairy_dark{background-position:-50px -50px}.sprite-fairy_dark_awakened{background-position:-100px -50px}.sprite-fairy_fire{background-position:-150px -50px}.sprite-fairy_fire_awakened{background-position:-200px -50px}.sprite-fairy_light{background-position:-250px -50px}.sprite-fairy_light_awakened{background-position:-300px -50px}.sprite-fairy_queen_light{background-position:0 -100px}.sprite-fairy_queen_light_awakened{background-position:-50px -100px}.sprite-fairy_water{background-position:-100px -100px}.sprite-fairy_water_awakened{background-position:-150px -100px}.sprite-fairy_wind{background-position:-200px -100px}.sprite-fairy_wind_awakened{background-position:-250px -100px}.sprite-forest_keeper_fire{background-position:-300px -100px}.sprite-forest_keeper_water{background-position:0 -150px}.sprite-forest_keeper_wind{background-position:-50px -150px}.sprite-garuda_dark{background-position:-100px -150px}.sprite-garuda_dark_awakened{background-image:url(/static/herders/images/monsters/sprite/5.png);width:50px;height:50px;background-position:-150px -150px}.sprite-garuda_fire{background-position:-200px -150px}.sprite-garuda_fire_awakened{background-position:-250px -150px}.sprite-garuda_light{background-position:-300px -150px}.sprite-garuda_light_awakened{background-position:0 -200px}.sprite-garuda_water{background-position:-50px -200px}.sprite-garuda_water_awakened{background-position:-100px -200px}.sprite-garuda_wind{background-position:-150px -200px}.sprite-garuda_wind_awakened{background-position:-200px -200px}.sprite-ghost_dark{background-position:-250px -200px}.sprite-ghost_fire{background-position:-300px -200px}.sprite-ghost_water{background-position:0 -250px}.sprite-ghost_wind{background-position:-50px -250px}.sprite-golem_dark{background-position:-100px -250px}.sprite-golem_dark_awakened{background-position:-150px -250px}.sprite-golem_fire{background-position:-200px -250px}.sprite-golem_fire_awakened{background-position:-250px -250px}.sprite-golem_light{background-position:-300px -250px}.sprite-golem_light_awakened{background-position:0 -300px}.sprite-golem_water{background-position:-50px -300px}.sprite-golem_water_awakened{background-position:-100px -300px}.sprite-golem_wind{background-position:-150px -300px}.sprite-golem_wind_awakened{background-position:-200px -300px}.sprite-griffon_dark{background-position:-250px -300px}.sprite-griffon_dark_awakened{background-position:-300px -300px}.sprite-griffon_fire,.sprite-griffon_fire_awakened,.sprite-griffon_light,.sprite-griffon_light_awakened,.sprite-griffon_water,.sprite-griffon_water_awakened,.sprite-griffon_wind,.sprite-griffon_wind_awakened,.sprite-grim_reaper_dark,.sprite-grim_reaper_dark_awakened,.sprite-grim_reaper_fire,.sprite-grim_reaper_fire_awakened,.sprite-grim_reaper_light,.sprite-grim_reaper_light_awakened,.sprite-grim_reaper_water,.sprite-grim_reaper_water_awakened,.sprite-grim_reaper_wind,.sprite-grim_reaper_wind_awakened,.sprite-harpu_dark,.sprite-harpu_dark_awakened,.sprite-harpu_fire,.sprite-harpu_fire_awakened,.sprite-harpu_light,.sprite-harpu_light_awakened,.sprite-harpu_water_awakened,.sprite-harpu_wind,.sprite-harpu_wind_awakened,.sprite-harpy_dark,.sprite-harpy_dark_awakened,.sprite-harpy_fire,.sprite-harpy_fire_awakened,.sprite-harpy_light,.sprite-harpy_light_awakened,.sprite-harpy_water,.sprite-harpy_water_awakened,.sprite-harpy_wind,.sprite-harpy_wind_awakened,.sprite-hell_lady_dark,.sprite-hell_lady_dark_awakened,.sprite-hell_lady_fire,.sprite-hell_lady_fire_awakened,.sprite-hell_lady_light,.sprite-hell_lady_light_awakened,.sprite-hell_lady_water,.sprite-hell_lady_water_awakened,.sprite-hell_lady_wind,.sprite-hell_lady_wind_awakened,.sprite-hellhound_dark{background-image:url(/static/herders/images/monsters/sprite/6.png);width:50px;height:50px}.sprite-griffon_fire{background-position:0 0}.sprite-griffon_fire_awakened{background-position:-50px 0}.sprite-griffon_light{background-position:-100px 0}.sprite-griffon_light_awakened{background-position:-150px 0}.sprite-griffon_water{background-position:-200px 0}.sprite-griffon_water_awakened{background-position:-250px 0}.sprite-griffon_wind{background-position:-300px 0}.sprite-griffon_wind_awakened{background-position:0 -50px}.sprite-grim_reaper_dark{background-position:-50px -50px}.sprite-grim_reaper_dark_awakened{background-position:-100px -50px}.sprite-grim_reaper_fire{background-position:-150px -50px}.sprite-grim_reaper_fire_awakened{background-position:-200px -50px}.sprite-grim_reaper_light{background-position:-250px -50px}.sprite-grim_reaper_light_awakened{background-position:-300px -50px}.sprite-grim_reaper_water{background-position:0 -100px}.sprite-grim_reaper_water_awakened{background-position:-50px -100px}.sprite-grim_reaper_wind{background-position:-100px -100px}.sprite-grim_reaper_wind_awakened{background-position:-150px -100px}.sprite-harpu_dark{background-position:-200px -100px}.sprite-harpu_dark_awakened{background-position:-250px -100px}.sprite-harpu_fire{background-position:-300px -100px}.sprite-harpu_fire_awakened{background-position:0 -150px}.sprite-harpu_light{background-position:-50px -150px}.sprite-harpu_light_awakened{background-position:-100px -150px}.sprite-harpu_water{background-image:url(/static/herders/images/monsters/sprite/6.png);width:50px;height:50px;background-position:-150px -150px}.sprite-harpu_water_awakened{background-position:-200px -150px}.sprite-harpu_wind{background-position:-250px -150px}.sprite-harpu_wind_awakened{background-position:-300px -150px}.sprite-harpy_dark{background-position:0 -200px}.sprite-harpy_dark_awakened{background-position:-50px -200px}.sprite-harpy_fire{background-position:-100px -200px}.sprite-harpy_fire_awakened{background-position:-150px -200px}.sprite-harpy_light{background-position:-200px -200px}.sprite-harpy_light_awakened{background-position:-250px -200px}.sprite-harpy_water{background-position:-300px -200px}.sprite-harpy_water_awakened{background-position:0 -250px}.sprite-harpy_wind{background-position:-50px -250px}.sprite-harpy_wind_awakened{background-position:-100px -250px}.sprite-hell_lady_dark{background-position:-150px -250px}.sprite-hell_lady_dark_awakened{background-position:-200px -250px}.sprite-hell_lady_fire{background-position:-250px -250px}.sprite-hell_lady_fire_awakened{background-position:-300px -250px}.sprite-hell_lady_light{background-position:0 -300px}.sprite-hell_lady_light_awakened{background-position:-50px -300px}.sprite-hell_lady_water{background-position:-100px -300px}.sprite-hell_lady_water_awakened{background-position:-150px -300px}.sprite-hell_lady_wind{background-position:-200px -300px}.sprite-hell_lady_wind_awakened{background-position:-250px -300px}.sprite-hellhound_dark{background-position:-300px -300px}.sprite-hellhound_dark_awakened,.sprite-hellhound_fire,.sprite-hellhound_fire_awakened,.sprite-hellhound_light,.sprite-hellhound_light_awakened,.sprite-hellhound_water,.sprite-hellhound_water_awakened,.sprite-hellhound_wind,.sprite-hellhound_wind_awakened,.sprite-high_elemental_dark,.sprite-high_elemental_dark_awakened,.sprite-high_elemental_fire,.sprite-high_elemental_fire_awakened,.sprite-high_elemental_light,.sprite-high_elemental_light_awakened,.sprite-high_elemental_water,.sprite-high_elemental_water_awakened,.sprite-high_elemental_wind,.sprite-high_elemental_wind_awakened,.sprite-horned_frog_dark,.sprite-horned_frog_fire,.sprite-horned_frog_water,.sprite-horned_frog_wind,.sprite-howl_dark,.sprite-howl_fire,.sprite-howl_fire_awakened,.sprite-howl_light,.sprite-howl_light_awakened,.sprite-howl_water,.sprite-howl_water_awakened,.sprite-howl_wind,.sprite-howl_wind_awakened,.sprite-ifrit_dark,.sprite-ifrit_dark_awakened,.sprite-ifrit_fire,.sprite-ifrit_fire_awakened,.sprite-ifrit_light,.sprite-ifrit_light_awakened,.sprite-ifrit_water,.sprite-ifrit_water_awakened,.sprite-ifrit_wind,.sprite-ifrit_wind_awakened,.sprite-imp_champion_dark,.sprite-imp_champion_dark_awakened,.sprite-imp_champion_fire,.sprite-imp_champion_fire_awakened,.sprite-imp_champion_light,.sprite-imp_champion_light_awakened{background-image:url(/static/herders/images/monsters/sprite/7.png);width:50px;height:50px}.sprite-hellhound_dark_awakened{background-position:0 0}.sprite-hellhound_fire{background-position:-50px 0}.sprite-hellhound_fire_awakened{background-position:-100px 0}.sprite-hellhound_light{background-position:-150px 0}.sprite-hellhound_light_awakened{background-position:-200px 0}.sprite-hellhound_water{background-position:-250px 0}.sprite-hellhound_water_awakened{background-position:-300px 0}.sprite-hellhound_wind{background-position:0 -50px}.sprite-hellhound_wind_awakened{background-position:-50px -50px}.sprite-high_elemental_dark{background-position:-100px -50px}.sprite-high_elemental_dark_awakened{background-position:-150px -50px}.sprite-high_elemental_fire{background-position:-200px -50px}.sprite-high_elemental_fire_awakened{background-position:-250px -50px}.sprite-high_elemental_light{background-position:-300px -50px}.sprite-high_elemental_light_awakened{background-position:0 -100px}.sprite-high_elemental_water{background-position:-50px -100px}.sprite-high_elemental_water_awakened{background-position:-100px -100px}.sprite-high_elemental_wind{background-position:-150px -100px}.sprite-high_elemental_wind_awakened{background-position:-200px -100px}.sprite-horned_frog_dark{background-position:-250px -100px}.sprite-horned_frog_fire{background-position:-300px -100px}.sprite-horned_frog_water{background-position:0 -150px}.sprite-horned_frog_wind{background-position:-50px -150px}.sprite-howl_dark{background-position:-100px -150px}.sprite-howl_dark_awakened{background-image:url(/static/herders/images/monsters/sprite/7.png);width:50px;height:50px;background-position:-150px -150px}.sprite-howl_fire{background-position:-200px -150px}.sprite-howl_fire_awakened{background-position:-250px -150px}.sprite-howl_light{background-position:-300px -150px}.sprite-howl_light_awakened{background-position:0 -200px}.sprite-howl_water{background-position:-50px -200px}.sprite-howl_water_awakened{background-position:-100px -200px}.sprite-howl_wind{background-position:-150px -200px}.sprite-howl_wind_awakened{background-position:-200px -200px}.sprite-ifrit_dark{background-position:-250px -200px}.sprite-ifrit_dark_awakened{background-position:-300px -200px}.sprite-ifrit_fire{background-position:0 -250px}.sprite-ifrit_fire_awakened{background-position:-50px -250px}.sprite-ifrit_light{background-position:-100px -250px}.sprite-ifrit_light_awakened{background-position:-150px -250px}.sprite-ifrit_water{background-position:-200px -250px}.sprite-ifrit_water_awakened{background-position:-250px -250px}.sprite-ifrit_wind{background-position:-300px -250px}.sprite-ifrit_wind_awakened{background-position:0 -300px}.sprite-imp_champion_dark{background-position:-50px -300px}.sprite-imp_champion_dark_awakened{background-position:-100px -300px}.sprite-imp_champion_fire{background-position:-150px -300px}.sprite-imp_champion_fire_awakened{background-position:-200px -300px}.sprite-imp_champion_light{background-position:-250px -300px}.sprite-imp_champion_light_awakened{background-position:-300px -300px}.sprite-imp_champion_water,.sprite-imp_champion_water_awakened,.sprite-imp_champion_wind,.sprite-imp_champion_wind_awakened,.sprite-imp_dark,.sprite-imp_dark_awakened,.sprite-imp_fire,.sprite-imp_fire_awakened,.sprite-imp_light,.sprite-imp_light_awakened,.sprite-imp_water,.sprite-imp_water_awakened,.sprite-imp_wind,.sprite-imp_wind_awakened,.sprite-inferno_dark,.sprite-inferno_dark_awakened,.sprite-inferno_fire,.sprite-inferno_fire_awakened,.sprite-inferno_light,.sprite-inferno_light_awakened,.sprite-inferno_water,.sprite-inferno_water_awakened,.sprite-inferno_wind,.sprite-inferno_wind_awakened,.sprite-inugami_dark_awakened,.sprite-inugami_fire,.sprite-inugami_fire_awakened,.sprite-inugami_light,.sprite-inugami_light_awakened,.sprite-inugami_water,.sprite-inugami_water_awakened,.sprite-inugami_wind,.sprite-inugami_wind_awakened,.sprite-joker_dark,.sprite-joker_dark_awakened,.sprite-joker_fire,.sprite-joker_fire_awakened,.sprite-joker_light,.sprite-joker_light_awakened,.sprite-joker_water,.sprite-joker_water_awakened,.sprite-joker_wind,.sprite-joker_wind_awakened,.sprite-king_angelmon_dark,.sprite-king_angelmon_dark_awakened,.sprite-king_angelmon_fire,.sprite-king_angelmon_fire_awakened,.sprite-king_angelmon_light{background-image:url(/static/herders/images/monsters/sprite/8.png);width:50px;height:50px}.sprite-imp_champion_water{background-position:0 0}.sprite-imp_champion_water_awakened{background-position:-50px 0}.sprite-imp_champion_wind{background-position:-100px 0}.sprite-imp_champion_wind_awakened{background-position:-150px 0}.sprite-imp_dark{background-position:-200px 0}.sprite-imp_dark_awakened{background-position:-250px 0}.sprite-imp_fire{background-position:-300px 0}.sprite-imp_fire_awakened{background-position:0 -50px}.sprite-imp_light{background-position:-50px -50px}.sprite-imp_light_awakened{background-position:-100px -50px}.sprite-imp_water{background-position:-150px -50px}.sprite-imp_water_awakened{background-position:-200px -50px}.sprite-imp_wind{background-position:-250px -50px}.sprite-imp_wind_awakened{background-position:-300px -50px}.sprite-inferno_dark{background-position:0 -100px}.sprite-inferno_dark_awakened{background-position:-50px -100px}.sprite-inferno_fire{background-position:-100px -100px}.sprite-inferno_fire_awakened{background-position:-150px -100px}.sprite-inferno_light{background-position:-200px -100px}.sprite-inferno_light_awakened{background-position:-250px -100px}.sprite-inferno_water{background-position:-300px -100px}.sprite-inferno_water_awakened{background-position:0 -150px}.sprite-inferno_wind{background-position:-50px -150px}.sprite-inferno_wind_awakened{background-position:-100px -150px}.sprite-inugami_dark{background-image:url(/static/herders/images/monsters/sprite/8.png);width:50px;height:50px;background-position:-150px -150px}.sprite-inugami_dark_awakened{background-position:-200px -150px}.sprite-inugami_fire{background-position:-250px -150px}.sprite-inugami_fire_awakened{background-position:-300px -150px}.sprite-inugami_light{background-position:0 -200px}.sprite-inugami_light_awakened{background-position:-50px -200px}.sprite-inugami_water{background-position:-100px -200px}.sprite-inugami_water_awakened{background-position:-150px -200px}.sprite-inugami_wind{background-position:-200px -200px}.sprite-inugami_wind_awakened{background-position:-250px -200px}.sprite-joker_dark{background-position:-300px -200px}.sprite-joker_dark_awakened{background-position:0 -250px}.sprite-joker_fire{background-position:-50px -250px}.sprite-joker_fire_awakened{background-position:-100px -250px}.sprite-joker_light{background-position:-150px -250px}.sprite-joker_light_awakened{background-position:-200px -250px}.sprite-joker_water{background-position:-250px -250px}.sprite-joker_water_awakened{background-position:-300px -250px}.sprite-joker_wind{background-position:0 -300px}.sprite-joker_wind_awakened{background-position:-50px -300px}.sprite-king_angelmon_dark{background-position:-100px -300px}.sprite-king_angelmon_dark_awakened{background-position:-150px -300px}.sprite-king_angelmon_fire{background-position:-200px -300px}.sprite-king_angelmon_fire_awakened{background-position:-250px -300px}.sprite-king_angelmon_light{background-position:-300px -300px}.sprite-king_angelmon_light_awakened,.sprite-king_angelmon_water,.sprite-king_angelmon_water_awakened,.sprite-king_angelmon_wind,.sprite-king_angelmon_wind_awakened,.sprite-kobold_bomber_dark,.sprite-kobold_bomber_dark_awakened,.sprite-kobold_bomber_fire,.sprite-kobold_bomber_fire_awakened,.sprite-kobold_bomber_light,.sprite-kobold_bomber_light_awakened,.sprite-kobold_bomber_water,.sprite-kobold_bomber_water_awakened,.sprite-kobold_bomber_wind,.sprite-kobold_bomber_wind_awakened,.sprite-kung_fu_girl_dark,.sprite-kung_fu_girl_dark_awakened,.sprite-kung_fu_girl_fire,.sprite-kung_fu_girl_fire_awakened,.sprite-kung_fu_girl_light,.sprite-kung_fu_girl_light_awakened,.sprite-kung_fu_girl_water,.sprite-kung_fu_girl_water_awakened,.sprite-kung_fu_girl_wind,.sprite-lich_dark,.sprite-lich_dark_awakened,.sprite-lich_fire,.sprite-lich_fire_awakened,.sprite-lich_light,.sprite-lich_light_awakened,.sprite-lich_water,.sprite-lich_water_awakened,.sprite-lich_wind,.sprite-lich_wind_awakened,.sprite-living_armor_dark,.sprite-living_armor_dark_awakened,.sprite-living_armor_fire,.sprite-living_armor_fire_awakened,.sprite-living_armor_light,.sprite-living_armor_light_awakened,.sprite-living_armor_water,.sprite-living_armor_water_awakened,.sprite-living_armor_wind,.sprite-living_armor_wind_awakened,.sprite-lizardman_dark,.sprite-lizardman_dark_awakened,.sprite-lizardman_fire,.sprite-lizardman_fire_awakened{background-image:url(/static/herders/images/monsters/sprite/9.png);width:50px;height:50px}.sprite-king_angelmon_light_awakened{background-position:0 0}.sprite-king_angelmon_water{background-position:-50px 0}.sprite-king_angelmon_water_awakened{background-position:-100px 0}.sprite-king_angelmon_wind{background-position:-150px 0}.sprite-king_angelmon_wind_awakened{background-position:-200px 0}.sprite-kobold_bomber_dark{background-position:-250px 0}.sprite-kobold_bomber_dark_awakened{background-position:-300px 0}.sprite-kobold_bomber_fire{background-position:0 -50px}.sprite-kobold_bomber_fire_awakened{background-position:-50px -50px}.sprite-kobold_bomber_light{background-position:-100px -50px}.sprite-kobold_bomber_light_awakened{background-position:-150px -50px}.sprite-kobold_bomber_water{background-position:-200px -50px}.sprite-kobold_bomber_water_awakened{background-position:-250px -50px}.sprite-kobold_bomber_wind{background-position:-300px -50px}.sprite-kobold_bomber_wind_awakened{background-position:0 -100px}.sprite-kung_fu_girl_dark{background-position:-50px -100px}.sprite-kung_fu_girl_dark_awakened{background-position:-100px -100px}.sprite-kung_fu_girl_fire{background-position:-150px -100px}.sprite-kung_fu_girl_fire_awakened{background-position:-200px -100px}.sprite-kung_fu_girl_light{background-position:-250px -100px}.sprite-kung_fu_girl_light_awakened{background-position:-300px -100px}.sprite-kung_fu_girl_water{background-position:0 -150px}.sprite-kung_fu_girl_water_awakened{background-position:-50px -150px}.sprite-kung_fu_girl_wind{background-position:-100px -150px}.sprite-kung_fu_girl_wind_awakened{background-image:url(/static/herders/images/monsters/sprite/9.png);width:50px;height:50px;background-position:-150px -150px}.sprite-lich_dark{background-position:-200px -150px}.sprite-lich_dark_awakened{background-position:-250px -150px}.sprite-lich_fire{background-position:-300px -150px}.sprite-lich_fire_awakened{background-position:0 -200px}.sprite-lich_light{background-position:-50px -200px}.sprite-lich_light_awakened{background-position:-100px -200px}.sprite-lich_water{background-position:-150px -200px}.sprite-lich_water_awakened{background-position:-200px -200px}.sprite-lich_wind{background-position:-250px -200px}.sprite-lich_wind_awakened{background-position:-300px -200px}.sprite-living_armor_dark{background-position:0 -250px}.sprite-living_armor_dark_awakened{background-position:-50px -250px}.sprite-living_armor_fire{background-position:-100px -250px}.sprite-living_armor_fire_awakened{background-position:-150px -250px}.sprite-living_armor_light{background-position:-200px -250px}.sprite-living_armor_light_awakened{background-position:-250px -250px}.sprite-living_armor_water{background-position:-300px -250px}.sprite-living_armor_water_awakened{background-position:0 -300px}.sprite-living_armor_wind{background-position:-50px -300px}.sprite-living_armor_wind_awakened{background-position:-100px -300px}.sprite-lizardman_dark{background-position:-150px -300px}.sprite-lizardman_dark_awakened{background-position:-200px -300px}.sprite-lizardman_fire{background-position:-250px -300px}.sprite-lizardman_fire_awakened{background-position:-300px -300px}.sprite-lizardman_light,.sprite-lizardman_light_awakened,.sprite-lizardman_water,.sprite-lizardman_water_awakened,.sprite-lizardman_wind,.sprite-lizardman_wind_awakened,.sprite-low_elemental_dark,.sprite-low_elemental_dark_awakened,.sprite-low_elemental_fire,.sprite-low_elemental_fire_awakened,.sprite-low_elemental_water,.sprite-low_elemental_water_awakened,.sprite-low_elemental_wind,.sprite-low_elemental_wind_awakened,.sprite-magic_knight_dark,.sprite-magic_knight_dark_awakened,.sprite-magic_knight_fire,.sprite-magic_knight_fire_awakened,.sprite-magic_knight_light,.sprite-magic_knight_light_awakened,.sprite-magic_knight_water,.sprite-magic_knight_water_awakened,.sprite-magic_knight_wind,.sprite-magic_knight_wind_awakened,.sprite-magical_archer__fami__light_awakened,.sprite-magical_archer_dark,.sprite-magical_archer_dark_awakened,.sprite-magical_archer_fire,.sprite-magical_archer_fire_awakened,.sprite-magical_archer_light,.sprite-magical_archer_light_awakened,.sprite-magical_archer_water,.sprite-magical_archer_water_awakened,.sprite-magical_archer_wind,.sprite-magical_archer_wind_awakened,.sprite-maned_boar_fire,.sprite-maned_boar_water,.sprite-maned_boar_wind,.sprite-martial_artist_dark,.sprite-martial_artist_dark_awakened,.sprite-martial_artist_fire,.sprite-martial_artist_fire_awakened,.sprite-martial_artist_light,.sprite-martial_artist_light_awakened,.sprite-martial_artist_water,.sprite-martial_artist_water_awakened,.sprite-martial_artist_wind,.sprite-martial_artist_wind_awakened{background-image:url(/static/herders/images/monsters/sprite/10.png);width:50px;height:50px}.sprite-lizardman_light{background-position:0 0}.sprite-lizardman_light_awakened{background-position:-50px 0}.sprite-lizardman_water{background-position:-100px 0}.sprite-lizardman_water_awakened{background-position:-150px 0}.sprite-lizardman_wind{background-position:-200px 0}.sprite-lizardman_wind_awakened{background-position:-250px 0}.sprite-low_elemental_dark{background-position:-300px 0}.sprite-low_elemental_dark_awakened{background-position:0 -50px}.sprite-low_elemental_fire{background-position:-50px -50px}.sprite-low_elemental_fire_awakened{background-position:-100px -50px}.sprite-low_elemental_water{background-position:-150px -50px}.sprite-low_elemental_water_awakened{background-position:-200px -50px}.sprite-low_elemental_wind{background-position:-250px -50px}.sprite-low_elemental_wind_awakened{background-position:-300px -50px}.sprite-magic_knight_dark{background-position:0 -100px}.sprite-magic_knight_dark_awakened{background-position:-50px -100px}.sprite-magic_knight_fire{background-position:-100px -100px}.sprite-magic_knight_fire_awakened{background-position:-150px -100px}.sprite-magic_knight_light{background-position:-200px -100px}.sprite-magic_knight_light_awakened{background-position:-250px -100px}.sprite-magic_knight_water{background-position:-300px -100px}.sprite-magic_knight_water_awakened{background-position:0 -150px}.sprite-magic_knight_wind{background-position:-50px -150px}.sprite-magic_knight_wind_awakened{background-position:-100px -150px}.sprite-magical_archer__fami__light{background-image:url(/static/herders/images/monsters/sprite/10.png);width:50px;height:50px;background-position:-150px -150px}.sprite-magical_archer__fami__light_awakened{background-position:-200px -150px}.sprite-magical_archer_dark{background-position:-250px -150px}.sprite-magical_archer_dark_awakened{background-position:-300px -150px}.sprite-magical_archer_fire{background-position:0 -200px}.sprite-magical_archer_fire_awakened{background-position:-50px -200px}.sprite-magical_archer_light{background-position:-100px -200px}.sprite-magical_archer_light_awakened{background-position:-150px -200px}.sprite-magical_archer_water{background-position:-200px -200px}.sprite-magical_archer_water_awakened{background-position:-250px -200px}.sprite-magical_archer_wind{background-position:-300px -200px}.sprite-magical_archer_wind_awakened{background-position:0 -250px}.sprite-maned_boar_fire{background-position:-50px -250px}.sprite-maned_boar_water{background-position:-100px -250px}.sprite-maned_boar_wind{background-position:-150px -250px}.sprite-martial_artist_dark{background-position:-200px -250px}.sprite-martial_artist_dark_awakened{background-position:-250px -250px}.sprite-martial_artist_fire{background-position:-300px -250px}.sprite-martial_artist_fire_awakened{background-position:0 -300px}.sprite-martial_artist_light{background-position:-50px -300px}.sprite-martial_artist_light_awakened{background-position:-100px -300px}.sprite-martial_artist_water{background-position:-150px -300px}.sprite-martial_artist_water_awakened{background-position:-200px -300px}.sprite-martial_artist_wind{background-position:-250px -300px}.sprite-martial_artist_wind_awakened{background-position:-300px -300px}.sprite-martial_cat_dark,.sprite-martial_cat_dark_awakened,.sprite-martial_cat_fire,.sprite-martial_cat_fire_awakened,.sprite-martial_cat_light,.sprite-martial_cat_light_awakened,.sprite-martial_cat_water,.sprite-martial_cat_water_awakened,.sprite-martial_cat_wind,.sprite-martial_cat_wind_awakened,.sprite-mermaid_dark,.sprite-mermaid_dark_awakened,.sprite-mermaid_fire,.sprite-mermaid_fire_awakened,.sprite-mermaid_light,.sprite-mermaid_light_awakened,.sprite-mermaid_water,.sprite-mermaid_water_awakened,.sprite-mermaid_wind,.sprite-mermaid_wind_awakened,.sprite-mimick_dark,.sprite-mimick_fire,.sprite-mimick_water,.sprite-mimick_wind,.sprite-minotauros_dark_awakened,.sprite-minotauros_fire,.sprite-minotauros_fire_awakened,.sprite-minotauros_light,.sprite-minotauros_light_awakened,.sprite-minotauros_water,.sprite-minotauros_water_awakened,.sprite-minotauros_wind,.sprite-minotauros_wind_awakened,.sprite-mischievous_bat_fire,.sprite-mischievous_bat_water,.sprite-mischievous_bat_wind,.sprite-monkey_king_dark,.sprite-monkey_king_dark_awakened,.sprite-monkey_king_fire,.sprite-monkey_king_fire_awakened,.sprite-monkey_king_light,.sprite-monkey_king_light_awakened,.sprite-monkey_king_water,.sprite-monkey_king_water_awakened,.sprite-monkey_king_wind,.sprite-monkey_king_wind_awakened,.sprite-monster_flower_dark,.sprite-monster_flower_fire{background-image:url(/static/herders/images/monsters/sprite/11.png);width:50px;height:50px}.sprite-martial_cat_dark{background-position:0 0}.sprite-martial_cat_dark_awakened{background-position:-50px 0}.sprite-martial_cat_fire{background-position:-100px 0}.sprite-martial_cat_fire_awakened{background-position:-150px 0}.sprite-martial_cat_light{background-position:-200px 0}.sprite-martial_cat_light_awakened{background-position:-250px 0}.sprite-martial_cat_water{background-position:-300px 0}.sprite-martial_cat_water_awakened{background-position:0 -50px}.sprite-martial_cat_wind{background-position:-50px -50px}.sprite-martial_cat_wind_awakened{background-position:-100px -50px}.sprite-mermaid_dark{background-position:-150px -50px}.sprite-mermaid_dark_awakened{background-position:-200px -50px}.sprite-mermaid_fire{background-position:-250px -50px}.sprite-mermaid_fire_awakened{background-position:-300px -50px}.sprite-mermaid_light{background-position:0 -100px}.sprite-mermaid_light_awakened{background-position:-50px -100px}.sprite-mermaid_water{background-position:-100px -100px}.sprite-mermaid_water_awakened{background-position:-150px -100px}.sprite-mermaid_wind{background-position:-200px -100px}.sprite-mermaid_wind_awakened{background-position:-250px -100px}.sprite-mimick_dark{background-position:-300px -100px}.sprite-mimick_fire{background-position:0 -150px}.sprite-mimick_water{background-position:-50px -150px}.sprite-mimick_wind{background-position:-100px -150px}.sprite-minotauros_dark{background-image:url(/static/herders/images/monsters/sprite/11.png);width:50px;height:50px;background-position:-150px -150px}.sprite-minotauros_dark_awakened{background-position:-200px -150px}.sprite-minotauros_fire{background-position:-250px -150px}.sprite-minotauros_fire_awakened{background-position:-300px -150px}.sprite-minotauros_light{background-position:0 -200px}.sprite-minotauros_light_awakened{background-position:-50px -200px}.sprite-minotauros_water{background-position:-100px -200px}.sprite-minotauros_water_awakened{background-position:-150px -200px}.sprite-minotauros_wind{background-position:-200px -200px}.sprite-minotauros_wind_awakened{background-position:-250px -200px}.sprite-mischievous_bat_fire{background-position:-300px -200px}.sprite-mischievous_bat_water{background-position:0 -250px}.sprite-mischievous_bat_wind{background-position:-50px -250px}.sprite-monkey_king_dark{background-position:-100px -250px}.sprite-monkey_king_dark_awakened{background-position:-150px -250px}.sprite-monkey_king_fire{background-position:-200px -250px}.sprite-monkey_king_fire_awakened{background-position:-250px -250px}.sprite-monkey_king_light{background-position:-300px -250px}.sprite-monkey_king_light_awakened{background-position:0 -300px}.sprite-monkey_king_water{background-position:-50px -300px}.sprite-monkey_king_water_awakened{background-position:-100px -300px}.sprite-monkey_king_wind{background-position:-150px -300px}.sprite-monkey_king_wind_awakened{background-position:-200px -300px}.sprite-monster_flower_dark{background-position:-250px -300px}.sprite-monster_flower_fire{background-position:-300px -300px}.sprite-monster_flower_water,.sprite-monster_flower_wind,.sprite-mushroom_fire,.sprite-mushroom_water,.sprite-mushroom_wind,.sprite-mystic_witch_dark,.sprite-mystic_witch_dark_awakened,.sprite-mystic_witch_fire,.sprite-mystic_witch_fire_awakened,.sprite-mystic_witch_light,.sprite-mystic_witch_light_awakened,.sprite-mystic_witch_water,.sprite-mystic_witch_water_awakened,.sprite-mystic_witch_wind,.sprite-mystic_witch_wind_awakened,.sprite-neostone_agent_dark,.sprite-neostone_agent_dark_awakened,.sprite-neostone_agent_fire,.sprite-neostone_agent_fire_awakened,.sprite-neostone_agent_light,.sprite-neostone_agent_light_awakened,.sprite-neostone_agent_water,.sprite-neostone_agent_water_awakened,.sprite-neostone_agent_wind,.sprite-neostone_fighter_dark,.sprite-neostone_fighter_dark_awakened,.sprite-neostone_fighter_fire,.sprite-neostone_fighter_fire_awakened,.sprite-neostone_fighter_light,.sprite-neostone_fighter_light_awakened,.sprite-neostone_fighter_water,.sprite-neostone_fighter_water_awakened,.sprite-neostone_fighter_wind,.sprite-neostone_fighter_wind_awakened,.sprite-nine-tailed_fox_dark,.sprite-nine-tailed_fox_dark_awakened,.sprite-nine-tailed_fox_fire,.sprite-nine-tailed_fox_fire_awakened,.sprite-nine-tailed_fox_light,.sprite-nine-tailed_fox_light_awakened,.sprite-nine-tailed_fox_water,.sprite-nine-tailed_fox_water_awakened,.sprite-nine-tailed_fox_wind,.sprite-nine-tailed_fox_wind_awakened,.sprite-ninja_dark,.sprite-ninja_dark_awakened,.sprite-ninja_fire,.sprite-ninja_fire_awakened{background-image:url(/static/herders/images/monsters/sprite/12.png);width:50px;height:50px}.sprite-monster_flower_water{background-position:0 0}.sprite-monster_flower_wind{background-position:-50px 0}.sprite-mushroom_fire{background-position:-100px 0}.sprite-mushroom_water{background-position:-150px 0}.sprite-mushroom_wind{background-position:-200px 0}.sprite-mystic_witch_dark{background-position:-250px 0}.sprite-mystic_witch_dark_awakened{background-position:-300px 0}.sprite-mystic_witch_fire{background-position:0 -50px}.sprite-mystic_witch_fire_awakened{background-position:-50px -50px}.sprite-mystic_witch_light{background-position:-100px -50px}.sprite-mystic_witch_light_awakened{background-position:-150px -50px}.sprite-mystic_witch_water{background-position:-200px -50px}.sprite-mystic_witch_water_awakened{background-position:-250px -50px}.sprite-mystic_witch_wind{background-position:-300px -50px}.sprite-mystic_witch_wind_awakened{background-position:0 -100px}.sprite-neostone_agent_dark{background-position:-50px -100px}.sprite-neostone_agent_dark_awakened{background-position:-100px -100px}.sprite-neostone_agent_fire{background-position:-150px -100px}.sprite-neostone_agent_fire_awakened{background-position:-200px -100px}.sprite-neostone_agent_light{background-position:-250px -100px}.sprite-neostone_agent_light_awakened{background-position:-300px -100px}.sprite-neostone_agent_water{background-position:0 -150px}.sprite-neostone_agent_water_awakened{background-position:-50px -150px}.sprite-neostone_agent_wind{background-position:-100px -150px}.sprite-neostone_agent_wind_awakened{background-image:url(/static/herders/images/monsters/sprite/12.png);width:50px;height:50px;background-position:-150px -150px}.sprite-neostone_fighter_dark{background-position:-200px -150px}.sprite-neostone_fighter_dark_awakened{background-position:-250px -150px}.sprite-neostone_fighter_fire{background-position:-300px -150px}.sprite-neostone_fighter_fire_awakened{background-position:0 -200px}.sprite-neostone_fighter_light{background-position:-50px -200px}.sprite-neostone_fighter_light_awakened{background-position:-100px -200px}.sprite-neostone_fighter_water{background-position:-150px -200px}.sprite-neostone_fighter_water_awakened{background-position:-200px -200px}.sprite-neostone_fighter_wind{background-position:-250px -200px}.sprite-neostone_fighter_wind_awakened{background-position:-300px -200px}.sprite-nine-tailed_fox_dark{background-position:0 -250px}.sprite-nine-tailed_fox_dark_awakened{background-position:-50px -250px}.sprite-nine-tailed_fox_fire{background-position:-100px -250px}.sprite-nine-tailed_fox_fire_awakened{background-position:-150px -250px}.sprite-nine-tailed_fox_light{background-position:-200px -250px}.sprite-nine-tailed_fox_light_awakened{background-position:-250px -250px}.sprite-nine-tailed_fox_water{background-position:-300px -250px}.sprite-nine-tailed_fox_water_awakened{background-position:0 -300px}.sprite-nine-tailed_fox_wind{background-position:-50px -300px}.sprite-nine-tailed_fox_wind_awakened{background-position:-100px -300px}.sprite-ninja_dark{background-position:-150px -300px}.sprite-ninja_dark_awakened{background-position:-200px -300px}.sprite-ninja_fire{background-position:-250px -300px}.sprite-ninja_fire_awakened{background-position:-300px -300px}.sprite-ninja_light,.sprite-ninja_light_awakened,.sprite-ninja_water,.sprite-ninja_water_awakened,.sprite-ninja_wind,.sprite-ninja_wind_awakened,.sprite-occult_girl_dark,.sprite-occult_girl_dark_awakened,.sprite-occult_girl_fire,.sprite-occult_girl_fire_awakened,.sprite-occult_girl_light,.sprite-occult_girl_light_awakened,.sprite-occult_girl_water,.sprite-occult_girl_water_awakened,.sprite-occult_girl_wind,.sprite-occult_girl_wind_awakened,.sprite-oracle_dark,.sprite-oracle_dark_awakened,.sprite-oracle_fire,.sprite-oracle_fire_awakened,.sprite-oracle_light,.sprite-oracle_light_awakened,.sprite-oracle_water,.sprite-oracle_water_awakened,.sprite-oracle_wind_awakened,.sprite-penguin_knight_dark,.sprite-penguin_knight_dark_awakened,.sprite-penguin_knight_fire,.sprite-penguin_knight_fire_awakened,.sprite-penguin_knight_light,.sprite-penguin_knight_light_awakened,.sprite-penguin_knight_water,.sprite-penguin_knight_water_awakened,.sprite-penguin_knight_wind,.sprite-penguin_knight_wind_awakened,.sprite-phantom_thief_dark,.sprite-phantom_thief_dark_awakened,.sprite-phantom_thief_fire,.sprite-phantom_thief_fire_awakened,.sprite-phantom_thief_light,.sprite-phantom_thief_light_awakened,.sprite-phantom_thief_water,.sprite-phantom_thief_water_awakened,.sprite-phantom_thief_wind,.sprite-phantom_thief_wind_awakened,.sprite-phoenix_dark,.sprite-phoenix_dark_awakened,.sprite-phoenix_fire{background-image:url(/static/herders/images/monsters/sprite/13.png);width:50px;height:50px}.sprite-ninja_light{background-position:0 0}.sprite-ninja_light_awakened{background-position:-50px 0}.sprite-ninja_water{background-position:-100px 0}.sprite-ninja_water_awakened{background-position:-150px 0}.sprite-ninja_wind{background-position:-200px 0}.sprite-ninja_wind_awakened{background-position:-250px 0}.sprite-occult_girl_dark{background-position:-300px 0}.sprite-occult_girl_dark_awakened{background-position:0 -50px}.sprite-occult_girl_fire{background-position:-50px -50px}.sprite-occult_girl_fire_awakened{background-position:-100px -50px}.sprite-occult_girl_light{background-position:-150px -50px}.sprite-occult_girl_light_awakened{background-position:-200px -50px}.sprite-occult_girl_water{background-position:-250px -50px}.sprite-occult_girl_water_awakened{background-position:-300px -50px}.sprite-occult_girl_wind{background-position:0 -100px}.sprite-occult_girl_wind_awakened{background-position:-50px -100px}.sprite-oracle_dark{background-position:-100px -100px}.sprite-oracle_dark_awakened{background-position:-150px -100px}.sprite-oracle_fire{background-position:-200px -100px}.sprite-oracle_fire_awakened{background-position:-250px -100px}.sprite-oracle_light{background-position:-300px -100px}.sprite-oracle_light_awakened{background-position:0 -150px}.sprite-oracle_water{background-position:-50px -150px}.sprite-oracle_water_awakened{background-position:-100px -150px}.sprite-oracle_wind{background-image:url(/static/herders/images/monsters/sprite/13.png);width:50px;height:50px;background-position:-150px -150px}.sprite-oracle_wind_awakened{background-position:-200px -150px}.sprite-penguin_knight_dark{background-position:-250px -150px}.sprite-penguin_knight_dark_awakened{background-position:-300px -150px}.sprite-penguin_knight_fire{background-position:0 -200px}.sprite-penguin_knight_fire_awakened{background-position:-50px -200px}.sprite-penguin_knight_light{background-position:-100px -200px}.sprite-penguin_knight_light_awakened{background-position:-150px -200px}.sprite-penguin_knight_water{background-position:-200px -200px}.sprite-penguin_knight_water_awakened{background-position:-250px -200px}.sprite-penguin_knight_wind{background-position:-300px -200px}.sprite-penguin_knight_wind_awakened{background-position:0 -250px}.sprite-phantom_thief_dark{background-position:-50px -250px}.sprite-phantom_thief_dark_awakened{background-position:-100px -250px}.sprite-phantom_thief_fire{background-position:-150px -250px}.sprite-phantom_thief_fire_awakened{background-position:-200px -250px}.sprite-phantom_thief_light{background-position:-250px -250px}.sprite-phantom_thief_light_awakened{background-position:-300px -250px}.sprite-phantom_thief_water{background-position:0 -300px}.sprite-phantom_thief_water_awakened{background-position:-50px -300px}.sprite-phantom_thief_wind{background-position:-100px -300px}.sprite-phantom_thief_wind_awakened{background-position:-150px -300px}.sprite-phoenix_dark{background-position:-200px -300px}.sprite-phoenix_dark_awakened{background-position:-250px -300px}.sprite-phoenix_fire{background-position:-300px -300px}.sprite-phoenix_fire_awakened,.sprite-phoenix_light,.sprite-phoenix_light_awakened,.sprite-phoenix_water,.sprite-phoenix_water_awakened,.sprite-phoenix_wind,.sprite-phoenix_wind_awakened,.sprite-pierret_dark,.sprite-pierret_dark_awakened,.sprite-pierret_fire,.sprite-pierret_fire_awakened,.sprite-pierret_light,.sprite-pierret_light_awakened,.sprite-pierret_water,.sprite-pierret_water_awakened,.sprite-pierret_wind,.sprite-pierret_wind_awakened,.sprite-pioneer_dark,.sprite-pioneer_dark_awakened,.sprite-pioneer_fire,.sprite-pioneer_fire_awakened,.sprite-pioneer_light,.sprite-pioneer_light_awakened,.sprite-pioneer_water,.sprite-pioneer_wind,.sprite-pioneer_wind_awakened,.sprite-pirate_captain_dark,.sprite-pirate_captain_dark_awakened,.sprite-pirate_captain_fire,.sprite-pirate_captain_fire_awakened,.sprite-pirate_captain_light,.sprite-pirate_captain_light_awakened,.sprite-pirate_captain_water,.sprite-pirate_captain_water_awakened,.sprite-pirate_captain_wind,.sprite-pirate_captain_wind_awakened,.sprite-pixie_dark,.sprite-pixie_dark_awakened,.sprite-pixie_fire,.sprite-pixie_fire_awakened,.sprite-pixie_light,.sprite-pixie_light_awakened,.sprite-pixie_water,.sprite-pixie_water_awakened,.sprite-pixie_wind,.sprite-pixie_wind_awakened,.sprite-polar_queen_dark,.sprite-polar_queen_dark_awakened{background-image:url(/static/herders/images/monsters/sprite/14.png);width:50px;height:50px}.sprite-phoenix_fire_awakened{background-position:0 0}.sprite-phoenix_light{background-position:-50px 0}.sprite-phoenix_light_awakened{background-position:-100px 0}.sprite-phoenix_water{background-position:-150px 0}.sprite-phoenix_water_awakened{background-position:-200px 0}.sprite-phoenix_wind{background-position:-250px 0}.sprite-phoenix_wind_awakened{background-position:-300px 0}.sprite-pierret_dark{background-position:0 -50px}.sprite-pierret_dark_awakened{background-position:-50px -50px}.sprite-pierret_fire{background-position:-100px -50px}.sprite-pierret_fire_awakened{background-position:-150px -50px}.sprite-pierret_light{background-position:-200px -50px}.sprite-pierret_light_awakened{background-position:-250px -50px}.sprite-pierret_water{background-position:-300px -50px}.sprite-pierret_water_awakened{background-position:0 -100px}.sprite-pierret_wind{background-position:-50px -100px}.sprite-pierret_wind_awakened{background-position:-100px -100px}.sprite-pioneer_dark{background-position:-150px -100px}.sprite-pioneer_dark_awakened{background-position:-200px -100px}.sprite-pioneer_fire{background-position:-250px -100px}.sprite-pioneer_fire_awakened{background-position:-300px -100px}.sprite-pioneer_light{background-position:0 -150px}.sprite-pioneer_light_awakened{background-position:-50px -150px}.sprite-pioneer_water{background-position:-100px -150px}.sprite-pioneer_water_awakened{background-image:url(/static/herders/images/monsters/sprite/14.png);width:50px;height:50px;background-position:-150px -150px}.sprite-pioneer_wind{background-position:-200px -150px}.sprite-pioneer_wind_awakened{background-position:-250px -150px}.sprite-pirate_captain_dark{background-position:-300px -150px}.sprite-pirate_captain_dark_awakened{background-position:0 -200px}.sprite-pirate_captain_fire{background-position:-50px -200px}.sprite-pirate_captain_fire_awakened{background-position:-100px -200px}.sprite-pirate_captain_light{background-position:-150px -200px}.sprite-pirate_captain_light_awakened{background-position:-200px -200px}.sprite-pirate_captain_water{background-position:-250px -200px}.sprite-pirate_captain_water_awakened{background-position:-300px -200px}.sprite-pirate_captain_wind{background-position:0 -250px}.sprite-pirate_captain_wind_awakened{background-position:-50px -250px}.sprite-pixie_dark{background-position:-100px -250px}.sprite-pixie_dark_awakened{background-position:-150px -250px}.sprite-pixie_fire{background-position:-200px -250px}.sprite-pixie_fire_awakened{background-position:-250px -250px}.sprite-pixie_light{background-position:-300px -250px}.sprite-pixie_light_awakened{background-position:0 -300px}.sprite-pixie_water{background-position:-50px -300px}.sprite-pixie_water_awakened{background-position:-100px -300px}.sprite-pixie_wind{background-position:-150px -300px}.sprite-pixie_wind_awakened{background-position:-200px -300px}.sprite-polar_queen_dark{background-position:-250px -300px}.sprite-polar_queen_dark_awakened{background-position:-300px -300px}.sprite-polar_queen_fire,.sprite-polar_queen_fire_awakened,.sprite-polar_queen_light,.sprite-polar_queen_light_awakened,.sprite-polar_queen_water,.sprite-polar_queen_water_awakened,.sprite-polar_queen_wind,.sprite-polar_queen_wind_awakened,.sprite-rainbowmon_light,.sprite-rakshasa_dark,.sprite-rakshasa_dark_awakened,.sprite-rakshasa_fire,.sprite-rakshasa_fire_awakened,.sprite-rakshasa_light,.sprite-rakshasa_light_awakened,.sprite-rakshasa_water,.sprite-rakshasa_water_awakened,.sprite-rakshasa_wind,.sprite-rakshasa_wind_awakened,.sprite-salamander_dark,.sprite-salamander_dark_awakened,.sprite-salamander_fire,.sprite-salamander_fire_awakened,.sprite-salamander_light,.sprite-salamander_water,.sprite-salamander_water_awakened,.sprite-salamander_wind,.sprite-salamander_wind_awakened,.sprite-samurai_dark,.sprite-samurai_dark_awakened,.sprite-samurai_fire,.sprite-samurai_fire_awakened,.sprite-samurai_light,.sprite-samurai_light_awakened,.sprite-samurai_water,.sprite-samurai_water_awakened,.sprite-samurai_wind,.sprite-samurai_wind_awakened,.sprite-sandman_dark,.sprite-sandman_fire,.sprite-sandman_water,.sprite-sandman_wind,.sprite-sea_emperor_dark,.sprite-sea_emperor_dark_awakened,.sprite-sea_emperor_fire,.sprite-sea_emperor_fire_awakened,.sprite-sea_emperor_light,.sprite-sea_emperor_light_awakened{background-image:url(/static/herders/images/monsters/sprite/15.png);width:50px;height:50px}.sprite-polar_queen_fire{background-position:0 0}.sprite-polar_queen_fire_awakened{background-position:-50px 0}.sprite-polar_queen_light{background-position:-100px 0}.sprite-polar_queen_light_awakened{background-position:-150px 0}.sprite-polar_queen_water{background-position:-200px 0}.sprite-polar_queen_water_awakened{background-position:-250px 0}.sprite-polar_queen_wind{background-position:-300px 0}.sprite-polar_queen_wind_awakened{background-position:0 -50px}.sprite-rainbowmon_light{background-position:-50px -50px}.sprite-rakshasa_dark{background-position:-100px -50px}.sprite-rakshasa_dark_awakened{background-position:-150px -50px}.sprite-rakshasa_fire{background-position:-200px -50px}.sprite-rakshasa_fire_awakened{background-position:-250px -50px}.sprite-rakshasa_light{background-position:-300px -50px}.sprite-rakshasa_light_awakened{background-position:0 -100px}.sprite-rakshasa_water{background-position:-50px -100px}.sprite-rakshasa_water_awakened{background-position:-100px -100px}.sprite-rakshasa_wind{background-position:-150px -100px}.sprite-rakshasa_wind_awakened{background-position:-200px -100px}.sprite-salamander_dark{background-position:-250px -100px}.sprite-salamander_dark_awakened{background-position:-300px -100px}.sprite-salamander_fire{background-position:0 -150px}.sprite-salamander_fire_awakened{background-position:-50px -150px}.sprite-salamander_light{background-position:-100px -150px}.sprite-salamander_light_awakened{background-image:url(/static/herders/images/monsters/sprite/15.png);width:50px;height:50px;background-position:-150px -150px}.sprite-salamander_water{background-position:-200px -150px}.sprite-salamander_water_awakened{background-position:-250px -150px}.sprite-salamander_wind{background-position:-300px -150px}.sprite-salamander_wind_awakened{background-position:0 -200px}.sprite-samurai_dark{background-position:-50px -200px}.sprite-samurai_dark_awakened{background-position:-100px -200px}.sprite-samurai_fire{background-position:-150px -200px}.sprite-samurai_fire_awakened{background-position:-200px -200px}.sprite-samurai_light{background-position:-250px -200px}.sprite-samurai_light_awakened{background-position:-300px -200px}.sprite-samurai_water{background-position:0 -250px}.sprite-samurai_water_awakened{background-position:-50px -250px}.sprite-samurai_wind{background-position:-100px -250px}.sprite-samurai_wind_awakened{background-position:-150px -250px}.sprite-sandman_dark{background-position:-200px -250px}.sprite-sandman_fire{background-position:-250px -250px}.sprite-sandman_water{background-position:-300px -250px}.sprite-sandman_wind{background-position:0 -300px}.sprite-sea_emperor_dark{background-position:-50px -300px}.sprite-sea_emperor_dark_awakened{background-position:-100px -300px}.sprite-sea_emperor_fire{background-position:-150px -300px}.sprite-sea_emperor_fire_awakened{background-position:-200px -300px}.sprite-sea_emperor_light{background-position:-250px -300px}.sprite-sea_emperor_light_awakened{background-position:-300px -300px}.sprite-sea_emperor_water,.sprite-sea_emperor_water_awakened,.sprite-sea_emperor_wind,.sprite-sea_emperor_wind_awakened,.sprite-serpent_dark,.sprite-serpent_dark_awakened,.sprite-serpent_fire,.sprite-serpent_fire_awakened,.sprite-serpent_light,.sprite-serpent_light_awakened,.sprite-serpent_water,.sprite-serpent_water_awakened,.sprite-serpent_wind,.sprite-serpent_wind_awakened,.sprite-skull_soldier_fire,.sprite-skull_soldier_water,.sprite-skull_soldier_wind,.sprite-sky_dancer_dark,.sprite-sky_dancer_dark_awakened,.sprite-sky_dancer_fire,.sprite-sky_dancer_fire_awakened,.sprite-sky_dancer_light,.sprite-sky_dancer_light_awakened,.sprite-sky_dancer_water,.sprite-sky_dancer_wind,.sprite-sky_dancer_wind_awakened,.sprite-slime_fire,.sprite-slime_water,.sprite-slime_wind,.sprite-succubus_dark,.sprite-succubus_dark_awakened,.sprite-succubus_fire,.sprite-succubus_fire_awakened,.sprite-succubus_light,.sprite-succubus_light_awakened,.sprite-succubus_water,.sprite-succubus_water_awakened,.sprite-succubus_wind,.sprite-succubus_wind_awakened,.sprite-surprise_box_dark,.sprite-surprise_box_fire,.sprite-surprise_box_light,.sprite-surprise_box_water,.sprite-surprise_box_wind,.sprite-sylph_dark,.sprite-sylph_dark_awakened,.sprite-sylph_fire,.sprite-sylph_fire_awakened{background-image:url(/static/herders/images/monsters/sprite/16.png);width:50px;height:50px}.sprite-sea_emperor_water{background-position:0 0}.sprite-sea_emperor_water_awakened{background-position:-50px 0}.sprite-sea_emperor_wind{background-position:-100px 0}.sprite-sea_emperor_wind_awakened{background-position:-150px 0}.sprite-serpent_dark{background-position:-200px 0}.sprite-serpent_dark_awakened{background-position:-250px 0}.sprite-serpent_fire{background-position:-300px 0}.sprite-serpent_fire_awakened{background-position:0 -50px}.sprite-serpent_light{background-position:-50px -50px}.sprite-serpent_light_awakened{background-position:-100px -50px}.sprite-serpent_water{background-position:-150px -50px}.sprite-serpent_water_awakened{background-position:-200px -50px}.sprite-serpent_wind{background-position:-250px -50px}.sprite-serpent_wind_awakened{background-position:-300px -50px}.sprite-skull_soldier_fire{background-position:0 -100px}.sprite-skull_soldier_water{background-position:-50px -100px}.sprite-skull_soldier_wind{background-position:-100px -100px}.sprite-sky_dancer_dark{background-position:-150px -100px}.sprite-sky_dancer_dark_awakened{background-position:-200px -100px}.sprite-sky_dancer_fire{background-position:-250px -100px}.sprite-sky_dancer_fire_awakened{background-position:-300px -100px}.sprite-sky_dancer_light{background-position:0 -150px}.sprite-sky_dancer_light_awakened{background-position:-50px -150px}.sprite-sky_dancer_water{background-position:-100px -150px}.sprite-sky_dancer_water_awakened{background-image:url(/static/herders/images/monsters/sprite/16.png);width:50px;height:50px;background-position:-150px -150px}.sprite-sky_dancer_wind{background-position:-200px -150px}.sprite-sky_dancer_wind_awakened{background-position:-250px -150px}.sprite-slime_fire{background-position:-300px -150px}.sprite-slime_water{background-position:0 -200px}.sprite-slime_wind{background-position:-50px -200px}.sprite-succubus_dark{background-position:-100px -200px}.sprite-succubus_dark_awakened{background-position:-150px -200px}.sprite-succubus_fire{background-position:-200px -200px}.sprite-succubus_fire_awakened{background-position:-250px -200px}.sprite-succubus_light{background-position:-300px -200px}.sprite-succubus_light_awakened{background-position:0 -250px}.sprite-succubus_water{background-position:-50px -250px}.sprite-succubus_water_awakened{background-position:-100px -250px}.sprite-succubus_wind{background-position:-150px -250px}.sprite-succubus_wind_awakened{background-position:-200px -250px}.sprite-surprise_box_dark{background-position:-250px -250px}.sprite-surprise_box_fire{background-position:-300px -250px}.sprite-surprise_box_light{background-position:0 -300px}.sprite-surprise_box_water{background-position:-50px -300px}.sprite-surprise_box_wind{background-position:-100px -300px}.sprite-sylph_dark{background-position:-150px -300px}.sprite-sylph_dark_awakened{background-position:-200px -300px}.sprite-sylph_fire{background-position:-250px -300px}.sprite-sylph_fire_awakened{background-position:-300px -300px}.sprite-sylph_light,.sprite-sylph_light_awakened,.sprite-sylph_water,.sprite-sylph_water_awakened,.sprite-sylph_wind,.sprite-sylph_wind_awakened,.sprite-sylphid_dark,.sprite-sylphid_dark_awakened,.sprite-sylphid_fire,.sprite-sylphid_fire_awakened,.sprite-sylphid_light,.sprite-sylphid_light_awakened,.sprite-sylphid_water,.sprite-sylphid_water_awakened,.sprite-sylphid_wind,.sprite-sylphid_wind_awakened,.sprite-taoist_dark,.sprite-taoist_dark_awakened,.sprite-taoist_fire,.sprite-taoist_fire_awakened,.sprite-taoist_light,.sprite-taoist_light_awakened,.sprite-taoist_water,.sprite-taoist_water_awakened,.sprite-taoist_wind_awakened,.sprite-undine_dark,.sprite-undine_dark_awakened,.sprite-undine_fire,.sprite-undine_fire_awakened,.sprite-undine_light,.sprite-undine_light_awakened,.sprite-undine_water,.sprite-undine_water_awakened,.sprite-undine_wind,.sprite-undine_wind_awakened,.sprite-vagabond_dark,.sprite-vagabond_dark_awakened,.sprite-vagabond_fire,.sprite-vagabond_fire_awakened,.sprite-vagabond_light,.sprite-vagabond_light_awakened,.sprite-vagabond_water,.sprite-vagabond_water_awakened,.sprite-vagabond_wind,.sprite-vagabond_wind_awakened,.sprite-valkyrja_dark,.sprite-valkyrja_dark_awakened,.sprite-valkyrja_fire{background-image:url(/static/herders/images/monsters/sprite/17.png);width:50px;height:50px}.sprite-sylph_light{background-position:0 0}.sprite-sylph_light_awakened{background-position:-50px 0}.sprite-sylph_water{background-position:-100px 0}.sprite-sylph_water_awakened{background-position:-150px 0}.sprite-sylph_wind{background-position:-200px 0}.sprite-sylph_wind_awakened{background-position:-250px 0}.sprite-sylphid_dark{background-position:-300px 0}.sprite-sylphid_dark_awakened{background-position:0 -50px}.sprite-sylphid_fire{background-position:-50px -50px}.sprite-sylphid_fire_awakened{background-position:-100px -50px}.sprite-sylphid_light{background-position:-150px -50px}.sprite-sylphid_light_awakened{background-position:-200px -50px}.sprite-sylphid_water{background-position:-250px -50px}.sprite-sylphid_water_awakened{background-position:-300px -50px}.sprite-sylphid_wind{background-position:0 -100px}.sprite-sylphid_wind_awakened{background-position:-50px -100px}.sprite-taoist_dark{background-position:-100px -100px}.sprite-taoist_dark_awakened{background-position:-150px -100px}.sprite-taoist_fire{background-position:-200px -100px}.sprite-taoist_fire_awakened{background-position:-250px -100px}.sprite-taoist_light{background-position:-300px -100px}.sprite-taoist_light_awakened{background-position:0 -150px}.sprite-taoist_water{background-position:-50px -150px}.sprite-taoist_water_awakened{background-position:-100px -150px}.sprite-taoist_wind{background-image:url(/static/herders/images/monsters/sprite/17.png);width:50px;height:50px;background-position:-150px -150px}.sprite-taoist_wind_awakened{background-position:-200px -150px}.sprite-undine_dark{background-position:-250px -150px}.sprite-undine_dark_awakened{background-position:-300px -150px}.sprite-undine_fire{background-position:0 -200px}.sprite-undine_fire_awakened{background-position:-50px -200px}.sprite-undine_light{background-position:-100px -200px}.sprite-undine_light_awakened{background-position:-150px -200px}.sprite-undine_water{background-position:-200px -200px}.sprite-undine_water_awakened{background-position:-250px -200px}.sprite-undine_wind{background-position:-300px -200px}.sprite-undine_wind_awakened{background-position:0 -250px}.sprite-vagabond_dark{background-position:-50px -250px}.sprite-vagabond_dark_awakened{background-position:-100px -250px}.sprite-vagabond_fire{background-position:-150px -250px}.sprite-vagabond_fire_awakened{background-position:-200px -250px}.sprite-vagabond_light{background-position:-250px -250px}.sprite-vagabond_light_awakened{background-position:-300px -250px}.sprite-vagabond_water{background-position:0 -300px}.sprite-vagabond_water_awakened{background-position:-50px -300px}.sprite-vagabond_wind{background-position:-100px -300px}.sprite-vagabond_wind_awakened{background-position:-150px -300px}.sprite-valkyrja_dark{background-position:-200px -300px}.sprite-valkyrja_dark_awakened{background-position:-250px -300px}.sprite-valkyrja_fire{background-position:-300px -300px}.sprite-valkyrja_fire_awakened,.sprite-valkyrja_light,.sprite-valkyrja_light_awakened,.sprite-valkyrja_water,.sprite-valkyrja_water_awakened,.sprite-valkyrja_wind,.sprite-valkyrja_wind_awakened,.sprite-vampire_dark,.sprite-vampire_dark_awakened,.sprite-vampire_fire,.sprite-vampire_fire_awakened,.sprite-vampire_light,.sprite-vampire_light_awakened,.sprite-vampire_water,.sprite-vampire_water_awakened,.sprite-vampire_wind,.sprite-vampire_wind_awakened,.sprite-varis_light,.sprite-viking_dark,.sprite-viking_dark_awakened,.sprite-viking_fire,.sprite-viking_fire_awakened,.sprite-viking_light,.sprite-viking_light_awakened,.sprite-viking_water_awakened,.sprite-viking_wind,.sprite-viking_wind_awakened,.sprite-warbear_dark,.sprite-warbear_dark_awakened,.sprite-warbear_fire,.sprite-warbear_fire_awakened,.sprite-warbear_light,.sprite-warbear_light_awakened,.sprite-warbear_water,.sprite-warbear_water_awakened,.sprite-warbear_wind,.sprite-warbear_wind_awakened,.sprite-werewolf_dark,.sprite-werewolf_dark_awakened,.sprite-werewolf_fire,.sprite-werewolf_fire_awakened,.sprite-werewolf_light,.sprite-werewolf_light_awakened,.sprite-werewolf_water,.sprite-werewolf_water_awakened,.sprite-werewolf_wind,.sprite-werewolf_wind_awakened,.sprite-yeti_dark{background-image:url(/static/herders/images/monsters/sprite/18.png);width:50px;height:50px}.sprite-valkyrja_fire_awakened{background-position:0 0}.sprite-valkyrja_light{background-position:-50px 0}.sprite-valkyrja_light_awakened{background-position:-100px 0}.sprite-valkyrja_water{background-position:-150px 0}.sprite-valkyrja_water_awakened{background-position:-200px 0}.sprite-valkyrja_wind{background-position:-250px 0}.sprite-valkyrja_wind_awakened{background-position:-300px 0}.sprite-vampire_dark{background-position:0 -50px}.sprite-vampire_dark_awakened{background-position:-50px -50px}.sprite-vampire_fire{background-position:-100px -50px}.sprite-vampire_fire_awakened{background-position:-150px -50px}.sprite-vampire_light{background-position:-200px -50px}.sprite-vampire_light_awakened{background-position:-250px -50px}.sprite-vampire_water{background-position:-300px -50px}.sprite-vampire_water_awakened{background-position:0 -100px}.sprite-vampire_wind{background-position:-50px -100px}.sprite-vampire_wind_awakened{background-position:-100px -100px}.sprite-varis_light{background-position:-150px -100px}.sprite-viking_dark{background-position:-200px -100px}.sprite-viking_dark_awakened{background-position:-250px -100px}.sprite-viking_fire{background-position:-300px -100px}.sprite-viking_fire_awakened{background-position:0 -150px}.sprite-viking_light{background-position:-50px -150px}.sprite-viking_light_awakened{background-position:-100px -150px}.sprite-viking_water{background-image:url(/static/herders/images/monsters/sprite/18.png);width:50px;height:50px;background-position:-150px -150px}.sprite-viking_water_awakened{background-position:-200px -150px}.sprite-viking_wind{background-position:-250px -150px}.sprite-viking_wind_awakened{background-position:-300px -150px}.sprite-warbear_dark{background-position:0 -200px}.sprite-warbear_dark_awakened{background-position:-50px -200px}.sprite-warbear_fire{background-position:-100px -200px}.sprite-warbear_fire_awakened{background-position:-150px -200px}.sprite-warbear_light{background-position:-200px -200px}.sprite-warbear_light_awakened{background-position:-250px -200px}.sprite-warbear_water{background-position:-300px -200px}.sprite-warbear_water_awakened{background-position:0 -250px}.sprite-warbear_wind{background-position:-50px -250px}.sprite-warbear_wind_awakened{background-position:-100px -250px}.sprite-werewolf_dark{background-position:-150px -250px}.sprite-werewolf_dark_awakened{background-position:-200px -250px}.sprite-werewolf_fire{background-position:-250px -250px}.sprite-werewolf_fire_awakened{background-position:-300px -250px}.sprite-werewolf_light{background-position:0 -300px}.sprite-werewolf_light_awakened{background-position:-50px -300px}.sprite-werewolf_water{background-position:-100px -300px}.sprite-werewolf_water_awakened{background-position:-150px -300px}.sprite-werewolf_wind{background-position:-200px -300px}.sprite-werewolf_wind_awakened{background-position:-250px -300px}.sprite-yeti_dark{background-position:-300px -300px}.sprite-yeti_dark_awakened,.sprite-yeti_fire,.sprite-yeti_fire_awakened,.sprite-yeti_light,.sprite-yeti_light_awakened,.sprite-yeti_water,.sprite-yeti_water_awakened,.sprite-yeti_wind,.sprite-yeti_wind_awakened{background-image:url(/static/herders/images/monsters/sprite/19.png);width:50px;height:50px}.sprite-yeti_dark_awakened{background-position:0 0}.sprite-yeti_fire{background-position:-50px 0}.sprite-yeti_fire_awakened{background-position:-100px 0}.sprite-yeti_light{background-position:0 -50px}.sprite-yeti_light_awakened{background-position:-50px -50px}.sprite-yeti_water{background-position:-100px -50px}.sprite-yeti_water_awakened{background-position:0 -100px}.sprite-yeti_wind{background-position:-50px -100px}.sprite-yeti_wind_awakened{background-position:-100px -100px}
+.sprite-amazon_dark,
+.sprite-amazon_dark_awakened,
+.sprite-amazon_fire,
+.sprite-amazon_fire_awakened,
+.sprite-amazon_light,
+.sprite-amazon_light_awakened,
+.sprite-amazon_water,
+.sprite-amazon_water_awakened,
+.sprite-amazon_wind,
+.sprite-amazon_wind_awakened,
+.sprite-angelmon_dark,
+.sprite-angelmon_dark_awakened,
+.sprite-angelmon_fire,
+.sprite-angelmon_fire_awakened,
+.sprite-angelmon_light,
+.sprite-angelmon_light_awakened,
+.sprite-angelmon_water,
+.sprite-angelmon_water_awakened,
+.sprite-angelmon_wind,
+.sprite-angelmon_wind_awakened,
+.sprite-archangel_dark,
+.sprite-archangel_dark_awakened,
+.sprite-archangel_fire,
+.sprite-archangel_fire_awakened,
+.sprite-archangel_light_awakened,
+.sprite-archangel_water,
+.sprite-archangel_water_awakened,
+.sprite-archangel_wind,
+.sprite-archangel_wind_awakened,
+.sprite-assassin_dark,
+.sprite-assassin_dark_awakened,
+.sprite-assassin_fire,
+.sprite-assassin_fire_awakened,
+.sprite-assassin_light,
+.sprite-assassin_light_awakened,
+.sprite-assassin_water,
+.sprite-assassin_water_awakened,
+.sprite-assassin_wind,
+.sprite-assassin_wind_awakened,
+.sprite-barbaric_king_dark,
+.sprite-barbaric_king_dark_awakened,
+.sprite-barbaric_king_fire,
+.sprite-barbaric_king_fire_awakened,
+.sprite-barbaric_king_light,
+.sprite-barbaric_king_light_awakened,
+.sprite-barbaric_king_water,
+.sprite-barbaric_king_water_awakened,
+.sprite-barbaric_king_wind {
+    background-image: url(/static/herders/images/monsters/sprite/1.png);
+    width: 50px;
+    height: 50px
+}
+.sprite {
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+.sprite-amazon_dark {
+    background-position: 0 0
+}
+.sprite-amazon_dark_awakened {
+    background-position: -50px 0
+}
+.sprite-amazon_fire {
+    background-position: -100px 0
+}
+.sprite-amazon_fire_awakened {
+    background-position: -150px 0
+}
+.sprite-amazon_light {
+    background-position: -200px 0
+}
+.sprite-amazon_light_awakened {
+    background-position: -250px 0
+}
+.sprite-amazon_water {
+    background-position: -300px 0
+}
+.sprite-amazon_water_awakened {
+    background-position: 0 -50px
+}
+.sprite-amazon_wind {
+    background-position: -50px -50px
+}
+.sprite-amazon_wind_awakened {
+    background-position: -100px -50px
+}
+.sprite-angelmon_dark {
+    background-position: -150px -50px
+}
+.sprite-angelmon_dark_awakened {
+    background-position: -200px -50px
+}
+.sprite-angelmon_fire {
+    background-position: -250px -50px
+}
+.sprite-angelmon_fire_awakened {
+    background-position: -300px -50px
+}
+.sprite-angelmon_light {
+    background-position: 0 -100px
+}
+.sprite-angelmon_light_awakened {
+    background-position: -50px -100px
+}
+.sprite-angelmon_water {
+    background-position: -100px -100px
+}
+.sprite-angelmon_water_awakened {
+    background-position: -150px -100px
+}
+.sprite-angelmon_wind {
+    background-position: -200px -100px
+}
+.sprite-angelmon_wind_awakened {
+    background-position: -250px -100px
+}
+.sprite-archangel_dark {
+    background-position: -300px -100px
+}
+.sprite-archangel_dark_awakened {
+    background-position: 0 -150px
+}
+.sprite-archangel_fire {
+    background-position: -50px -150px
+}
+.sprite-archangel_fire_awakened {
+    background-position: -100px -150px
+}
+.sprite-archangel_light {
+    background-image: url(/static/herders/images/monsters/sprite/1.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-archangel_light_awakened {
+    background-position: -200px -150px
+}
+.sprite-archangel_water {
+    background-position: -250px -150px
+}
+.sprite-archangel_water_awakened {
+    background-position: -300px -150px
+}
+.sprite-archangel_wind {
+    background-position: 0 -200px
+}
+.sprite-archangel_wind_awakened {
+    background-position: -50px -200px
+}
+.sprite-assassin_dark {
+    background-position: -100px -200px
+}
+.sprite-assassin_dark_awakened {
+    background-position: -150px -200px
+}
+.sprite-assassin_fire {
+    background-position: -200px -200px
+}
+.sprite-assassin_fire_awakened {
+    background-position: -250px -200px
+}
+.sprite-assassin_light {
+    background-position: -300px -200px
+}
+.sprite-assassin_light_awakened {
+    background-position: 0 -250px
+}
+.sprite-assassin_water {
+    background-position: -50px -250px
+}
+.sprite-assassin_water_awakened {
+    background-position: -100px -250px
+}
+.sprite-assassin_wind {
+    background-position: -150px -250px
+}
+.sprite-assassin_wind_awakened {
+    background-position: -200px -250px
+}
+.sprite-barbaric_king_dark {
+    background-position: -250px -250px
+}
+.sprite-barbaric_king_dark_awakened {
+    background-position: -300px -250px
+}
+.sprite-barbaric_king_fire {
+    background-position: 0 -300px
+}
+.sprite-barbaric_king_fire_awakened {
+    background-position: -50px -300px
+}
+.sprite-barbaric_king_light {
+    background-position: -100px -300px
+}
+.sprite-barbaric_king_light_awakened {
+    background-position: -150px -300px
+}
+.sprite-barbaric_king_water {
+    background-position: -200px -300px
+}
+.sprite-barbaric_king_water_awakened {
+    background-position: -250px -300px
+}
+.sprite-barbaric_king_wind {
+    background-position: -300px -300px
+}
+.sprite-barbaric_king_wind_awakened,
+.sprite-battle_mammoth_dark,
+.sprite-battle_mammoth_dark_awakened,
+.sprite-battle_mammoth_fire,
+.sprite-battle_mammoth_fire_awakened,
+.sprite-battle_mammoth_light,
+.sprite-battle_mammoth_light_awakened,
+.sprite-battle_mammoth_water,
+.sprite-battle_mammoth_water_awakened,
+.sprite-battle_mammoth_wind,
+.sprite-battle_mammoth_wind_awakened,
+.sprite-battle_scorpion_fire,
+.sprite-battle_scorpion_water,
+.sprite-battle_scorpion_wind,
+.sprite-bearman_dark,
+.sprite-bearman_dark_awakened,
+.sprite-bearman_fire,
+.sprite-bearman_fire_awakened,
+.sprite-bearman_light,
+.sprite-bearman_light_awakened,
+.sprite-bearman_water,
+.sprite-bearman_water_awakened,
+.sprite-bearman_wind,
+.sprite-bearman_wind_awakened,
+.sprite-beast_hunter_dark_awakened,
+.sprite-beast_hunter_fire,
+.sprite-beast_hunter_fire_awakened,
+.sprite-beast_hunter_light,
+.sprite-beast_hunter_light_awakened,
+.sprite-beast_hunter_water,
+.sprite-beast_hunter_water_awakened,
+.sprite-beast_hunter_wind,
+.sprite-beast_hunter_wind_awakened,
+.sprite-beast_monk_dark,
+.sprite-beast_monk_dark_awakened,
+.sprite-beast_monk_fire,
+.sprite-beast_monk_fire_awakened,
+.sprite-beast_monk_light,
+.sprite-beast_monk_light_awakened,
+.sprite-beast_monk_water,
+.sprite-beast_monk_water_awakened,
+.sprite-beast_monk_wind,
+.sprite-beast_monk_wind_awakened,
+.sprite-bounty_hunter_dark,
+.sprite-bounty_hunter_dark_awakened,
+.sprite-bounty_hunter_fire,
+.sprite-bounty_hunter_fire_awakened,
+.sprite-bounty_hunter_light {
+    background-image: url(/static/herders/images/monsters/sprite/2.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-barbaric_king_wind_awakened {
+    background-position: 0 0
+}
+.sprite-battle_mammoth_dark {
+    background-position: -50px 0
+}
+.sprite-battle_mammoth_dark_awakened {
+    background-position: -100px 0
+}
+.sprite-battle_mammoth_fire {
+    background-position: -150px 0
+}
+.sprite-battle_mammoth_fire_awakened {
+    background-position: -200px 0
+}
+.sprite-battle_mammoth_light {
+    background-position: -250px 0
+}
+.sprite-battle_mammoth_light_awakened {
+    background-position: -300px 0
+}
+.sprite-battle_mammoth_water {
+    background-position: 0 -50px
+}
+.sprite-battle_mammoth_water_awakened {
+    background-position: -50px -50px
+}
+.sprite-battle_mammoth_wind {
+    background-position: -100px -50px
+}
+.sprite-battle_mammoth_wind_awakened {
+    background-position: -150px -50px
+}
+.sprite-battle_scorpion_fire {
+    background-position: -200px -50px
+}
+.sprite-battle_scorpion_water {
+    background-position: -250px -50px
+}
+.sprite-battle_scorpion_wind {
+    background-position: -300px -50px
+}
+.sprite-bearman_dark {
+    background-position: 0 -100px
+}
+.sprite-bearman_dark_awakened {
+    background-position: -50px -100px
+}
+.sprite-bearman_fire {
+    background-position: -100px -100px
+}
+.sprite-bearman_fire_awakened {
+    background-position: -150px -100px
+}
+.sprite-bearman_light {
+    background-position: -200px -100px
+}
+.sprite-bearman_light_awakened {
+    background-position: -250px -100px
+}
+.sprite-bearman_water {
+    background-position: -300px -100px
+}
+.sprite-bearman_water_awakened {
+    background-position: 0 -150px
+}
+.sprite-bearman_wind {
+    background-position: -50px -150px
+}
+.sprite-bearman_wind_awakened {
+    background-position: -100px -150px
+}
+.sprite-beast_hunter_dark {
+    background-image: url(/static/herders/images/monsters/sprite/2.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-beast_hunter_dark_awakened {
+    background-position: -200px -150px
+}
+.sprite-beast_hunter_fire {
+    background-position: -250px -150px
+}
+.sprite-beast_hunter_fire_awakened {
+    background-position: -300px -150px
+}
+.sprite-beast_hunter_light {
+    background-position: 0 -200px
+}
+.sprite-beast_hunter_light_awakened {
+    background-position: -50px -200px
+}
+.sprite-beast_hunter_water {
+    background-position: -100px -200px
+}
+.sprite-beast_hunter_water_awakened {
+    background-position: -150px -200px
+}
+.sprite-beast_hunter_wind {
+    background-position: -200px -200px
+}
+.sprite-beast_hunter_wind_awakened {
+    background-position: -250px -200px
+}
+.sprite-beast_monk_dark {
+    background-position: -300px -200px
+}
+.sprite-beast_monk_dark_awakened {
+    background-position: 0 -250px
+}
+.sprite-beast_monk_fire {
+    background-position: -50px -250px
+}
+.sprite-beast_monk_fire_awakened {
+    background-position: -100px -250px
+}
+.sprite-beast_monk_light {
+    background-position: -150px -250px
+}
+.sprite-beast_monk_light_awakened {
+    background-position: -200px -250px
+}
+.sprite-beast_monk_water {
+    background-position: -250px -250px
+}
+.sprite-beast_monk_water_awakened {
+    background-position: -300px -250px
+}
+.sprite-beast_monk_wind {
+    background-position: 0 -300px
+}
+.sprite-beast_monk_wind_awakened {
+    background-position: -50px -300px
+}
+.sprite-bounty_hunter_dark {
+    background-position: -100px -300px
+}
+.sprite-bounty_hunter_dark_awakened {
+    background-position: -150px -300px
+}
+.sprite-bounty_hunter_fire {
+    background-position: -200px -300px
+}
+.sprite-bounty_hunter_fire_awakened {
+    background-position: -250px -300px
+}
+.sprite-bounty_hunter_light {
+    background-position: -300px -300px
+}
+.sprite-bounty_hunter_light_awakened,
+.sprite-bounty_hunter_water,
+.sprite-bounty_hunter_water_awakened,
+.sprite-bounty_hunter_wind,
+.sprite-bounty_hunter_wind_awakened,
+.sprite-brownie_magician_dark,
+.sprite-brownie_magician_dark_awakened,
+.sprite-brownie_magician_fire,
+.sprite-brownie_magician_fire_awakened,
+.sprite-brownie_magician_light,
+.sprite-brownie_magician_light_awakened,
+.sprite-brownie_magician_water,
+.sprite-brownie_magician_water_awakened,
+.sprite-brownie_magician_wind,
+.sprite-brownie_magician_wind_awakened,
+.sprite-charger_shark_dark,
+.sprite-charger_shark_dark_awakened,
+.sprite-charger_shark_fire,
+.sprite-charger_shark_fire_awakened,
+.sprite-charger_shark_light,
+.sprite-charger_shark_light_awakened,
+.sprite-charger_shark_water,
+.sprite-charger_shark_water_awakened,
+.sprite-charger_shark_wind,
+.sprite-chimera_dark,
+.sprite-chimera_dark_awakened,
+.sprite-chimera_fire,
+.sprite-chimera_fire_awakened,
+.sprite-chimera_light,
+.sprite-chimera_light_awakened,
+.sprite-chimera_water,
+.sprite-chimera_water_awakened,
+.sprite-chimera_wind,
+.sprite-chimera_wind_awakened,
+.sprite-cow_girl_dark,
+.sprite-cow_girl_dark_awakened,
+.sprite-cow_girl_fire,
+.sprite-cow_girl_fire_awakened,
+.sprite-cow_girl_light,
+.sprite-cow_girl_light_awakened,
+.sprite-cow_girl_water,
+.sprite-cow_girl_water_awakened,
+.sprite-cow_girl_wind,
+.sprite-cow_girl_wind_awakened,
+.sprite-death_knight_dark,
+.sprite-death_knight_dark_awakened,
+.sprite-death_knight_fire,
+.sprite-death_knight_fire_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/3.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-bounty_hunter_light_awakened {
+    background-position: 0 0
+}
+.sprite-bounty_hunter_water {
+    background-position: -50px 0
+}
+.sprite-bounty_hunter_water_awakened {
+    background-position: -100px 0
+}
+.sprite-bounty_hunter_wind {
+    background-position: -150px 0
+}
+.sprite-bounty_hunter_wind_awakened {
+    background-position: -200px 0
+}
+.sprite-brownie_magician_dark {
+    background-position: -250px 0
+}
+.sprite-brownie_magician_dark_awakened {
+    background-position: -300px 0
+}
+.sprite-brownie_magician_fire {
+    background-position: 0 -50px
+}
+.sprite-brownie_magician_fire_awakened {
+    background-position: -50px -50px
+}
+.sprite-brownie_magician_light {
+    background-position: -100px -50px
+}
+.sprite-brownie_magician_light_awakened {
+    background-position: -150px -50px
+}
+.sprite-brownie_magician_water {
+    background-position: -200px -50px
+}
+.sprite-brownie_magician_water_awakened {
+    background-position: -250px -50px
+}
+.sprite-brownie_magician_wind {
+    background-position: -300px -50px
+}
+.sprite-brownie_magician_wind_awakened {
+    background-position: 0 -100px
+}
+.sprite-charger_shark_dark {
+    background-position: -50px -100px
+}
+.sprite-charger_shark_dark_awakened {
+    background-position: -100px -100px
+}
+.sprite-charger_shark_fire {
+    background-position: -150px -100px
+}
+.sprite-charger_shark_fire_awakened {
+    background-position: -200px -100px
+}
+.sprite-charger_shark_light {
+    background-position: -250px -100px
+}
+.sprite-charger_shark_light_awakened {
+    background-position: -300px -100px
+}
+.sprite-charger_shark_water {
+    background-position: 0 -150px
+}
+.sprite-charger_shark_water_awakened {
+    background-position: -50px -150px
+}
+.sprite-charger_shark_wind {
+    background-position: -100px -150px
+}
+.sprite-charger_shark_wind_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/3.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-chimera_dark {
+    background-position: -200px -150px
+}
+.sprite-chimera_dark_awakened {
+    background-position: -250px -150px
+}
+.sprite-chimera_fire {
+    background-position: -300px -150px
+}
+.sprite-chimera_fire_awakened {
+    background-position: 0 -200px
+}
+.sprite-chimera_light {
+    background-position: -50px -200px
+}
+.sprite-chimera_light_awakened {
+    background-position: -100px -200px
+}
+.sprite-chimera_water {
+    background-position: -150px -200px
+}
+.sprite-chimera_water_awakened {
+    background-position: -200px -200px
+}
+.sprite-chimera_wind {
+    background-position: -250px -200px
+}
+.sprite-chimera_wind_awakened {
+    background-position: -300px -200px
+}
+.sprite-cow_girl_dark {
+    background-position: 0 -250px
+}
+.sprite-cow_girl_dark_awakened {
+    background-position: -50px -250px
+}
+.sprite-cow_girl_fire {
+    background-position: -100px -250px
+}
+.sprite-cow_girl_fire_awakened {
+    background-position: -150px -250px
+}
+.sprite-cow_girl_light {
+    background-position: -200px -250px
+}
+.sprite-cow_girl_light_awakened {
+    background-position: -250px -250px
+}
+.sprite-cow_girl_water {
+    background-position: -300px -250px
+}
+.sprite-cow_girl_water_awakened {
+    background-position: 0 -300px
+}
+.sprite-cow_girl_wind {
+    background-position: -50px -300px
+}
+.sprite-cow_girl_wind_awakened {
+    background-position: -100px -300px
+}
+.sprite-death_knight_dark {
+    background-position: -150px -300px
+}
+.sprite-death_knight_dark_awakened {
+    background-position: -200px -300px
+}
+.sprite-death_knight_fire {
+    background-position: -250px -300px
+}
+.sprite-death_knight_fire_awakened {
+    background-position: -300px -300px
+}
+.sprite-death_knight_light,
+.sprite-death_knight_light_awakened,
+.sprite-death_knight_water,
+.sprite-death_knight_water_awakened,
+.sprite-death_knight_wind,
+.sprite-death_knight_wind_awakened,
+.sprite-devilmon_dark,
+.sprite-dragon_dark,
+.sprite-dragon_dark_awakened,
+.sprite-dragon_fire,
+.sprite-dragon_fire_awakened,
+.sprite-dragon_knight_dark,
+.sprite-dragon_knight_dark_awakened,
+.sprite-dragon_knight_fire,
+.sprite-dragon_knight_fire_awakened,
+.sprite-dragon_knight_light,
+.sprite-dragon_knight_light_awakened,
+.sprite-dragon_knight_water,
+.sprite-dragon_knight_water_awakened,
+.sprite-dragon_knight_wind,
+.sprite-dragon_knight_wind_awakened,
+.sprite-dragon_light,
+.sprite-dragon_light_awakened,
+.sprite-dragon_water,
+.sprite-dragon_wind,
+.sprite-dragon_wind_awakened,
+.sprite-drunken_master_dark,
+.sprite-drunken_master_dark_awakened,
+.sprite-drunken_master_fire,
+.sprite-drunken_master_fire_awakened,
+.sprite-drunken_master_light,
+.sprite-drunken_master_light_awakened,
+.sprite-drunken_master_water,
+.sprite-drunken_master_water_awakened,
+.sprite-drunken_master_wind,
+.sprite-drunken_master_wind_awakened,
+.sprite-elemental_dark,
+.sprite-elemental_dark_awakened,
+.sprite-elemental_fire,
+.sprite-elemental_fire_awakened,
+.sprite-elemental_light,
+.sprite-elemental_light_awakened,
+.sprite-elemental_water,
+.sprite-elemental_water_awakened,
+.sprite-elemental_wind,
+.sprite-elemental_wind_awakened,
+.sprite-epikion_priest_dark,
+.sprite-epikion_priest_dark_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/4.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-death_knight_light {
+    background-position: 0 0
+}
+.sprite-death_knight_light_awakened {
+    background-position: -50px 0
+}
+.sprite-death_knight_water {
+    background-position: -100px 0
+}
+.sprite-death_knight_water_awakened {
+    background-position: -150px 0
+}
+.sprite-death_knight_wind {
+    background-position: -200px 0
+}
+.sprite-death_knight_wind_awakened {
+    background-position: -250px 0
+}
+.sprite-devilmon_dark {
+    background-position: -300px 0
+}
+.sprite-dragon_dark {
+    background-position: 0 -50px
+}
+.sprite-dragon_dark_awakened {
+    background-position: -50px -50px
+}
+.sprite-dragon_fire {
+    background-position: -100px -50px
+}
+.sprite-dragon_fire_awakened {
+    background-position: -150px -50px
+}
+.sprite-dragon_knight_dark {
+    background-position: -200px -50px
+}
+.sprite-dragon_knight_dark_awakened {
+    background-position: -250px -50px
+}
+.sprite-dragon_knight_fire {
+    background-position: -300px -50px
+}
+.sprite-dragon_knight_fire_awakened {
+    background-position: 0 -100px
+}
+.sprite-dragon_knight_light {
+    background-position: -50px -100px
+}
+.sprite-dragon_knight_light_awakened {
+    background-position: -100px -100px
+}
+.sprite-dragon_knight_water {
+    background-position: -150px -100px
+}
+.sprite-dragon_knight_water_awakened {
+    background-position: -200px -100px
+}
+.sprite-dragon_knight_wind {
+    background-position: -250px -100px
+}
+.sprite-dragon_knight_wind_awakened {
+    background-position: -300px -100px
+}
+.sprite-dragon_light {
+    background-position: 0 -150px
+}
+.sprite-dragon_light_awakened {
+    background-position: -50px -150px
+}
+.sprite-dragon_water {
+    background-position: -100px -150px
+}
+.sprite-dragon_water_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/4.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-dragon_wind {
+    background-position: -200px -150px
+}
+.sprite-dragon_wind_awakened {
+    background-position: -250px -150px
+}
+.sprite-drunken_master_dark {
+    background-position: -300px -150px
+}
+.sprite-drunken_master_dark_awakened {
+    background-position: 0 -200px
+}
+.sprite-drunken_master_fire {
+    background-position: -50px -200px
+}
+.sprite-drunken_master_fire_awakened {
+    background-position: -100px -200px
+}
+.sprite-drunken_master_light {
+    background-position: -150px -200px
+}
+.sprite-drunken_master_light_awakened {
+    background-position: -200px -200px
+}
+.sprite-drunken_master_water {
+    background-position: -250px -200px
+}
+.sprite-drunken_master_water_awakened {
+    background-position: -300px -200px
+}
+.sprite-drunken_master_wind {
+    background-position: 0 -250px
+}
+.sprite-drunken_master_wind_awakened {
+    background-position: -50px -250px
+}
+.sprite-elemental_dark {
+    background-position: -100px -250px
+}
+.sprite-elemental_dark_awakened {
+    background-position: -150px -250px
+}
+.sprite-elemental_fire {
+    background-position: -200px -250px
+}
+.sprite-elemental_fire_awakened {
+    background-position: -250px -250px
+}
+.sprite-elemental_light {
+    background-position: -300px -250px
+}
+.sprite-elemental_light_awakened {
+    background-position: 0 -300px
+}
+.sprite-elemental_water {
+    background-position: -50px -300px
+}
+.sprite-elemental_water_awakened {
+    background-position: -100px -300px
+}
+.sprite-elemental_wind {
+    background-position: -150px -300px
+}
+.sprite-elemental_wind_awakened {
+    background-position: -200px -300px
+}
+.sprite-epikion_priest_dark {
+    background-position: -250px -300px
+}
+.sprite-epikion_priest_dark_awakened {
+    background-position: -300px -300px
+}
+.sprite-epikion_priest_fire,
+.sprite-epikion_priest_fire_awakened,
+.sprite-epikion_priest_light,
+.sprite-epikion_priest_light_awakened,
+.sprite-epikion_priest_water,
+.sprite-epikion_priest_water_awakened,
+.sprite-epikion_priest_wind,
+.sprite-epikion_priest_wind_awakened,
+.sprite-fairy_dark,
+.sprite-fairy_dark_awakened,
+.sprite-fairy_fire,
+.sprite-fairy_fire_awakened,
+.sprite-fairy_light,
+.sprite-fairy_light_awakened,
+.sprite-fairy_queen_light,
+.sprite-fairy_queen_light_awakened,
+.sprite-fairy_water,
+.sprite-fairy_water_awakened,
+.sprite-fairy_wind,
+.sprite-fairy_wind_awakened,
+.sprite-forest_keeper_fire,
+.sprite-forest_keeper_water,
+.sprite-forest_keeper_wind,
+.sprite-garuda_dark,
+.sprite-garuda_fire,
+.sprite-garuda_fire_awakened,
+.sprite-garuda_light,
+.sprite-garuda_light_awakened,
+.sprite-garuda_water,
+.sprite-garuda_water_awakened,
+.sprite-garuda_wind,
+.sprite-garuda_wind_awakened,
+.sprite-ghost_dark,
+.sprite-ghost_fire,
+.sprite-ghost_water,
+.sprite-ghost_wind,
+.sprite-golem_dark,
+.sprite-golem_dark_awakened,
+.sprite-golem_fire,
+.sprite-golem_fire_awakened,
+.sprite-golem_light,
+.sprite-golem_light_awakened,
+.sprite-golem_water,
+.sprite-golem_water_awakened,
+.sprite-golem_wind,
+.sprite-golem_wind_awakened,
+.sprite-griffon_dark,
+.sprite-griffon_dark_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/5.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-epikion_priest_fire {
+    background-position: 0 0
+}
+.sprite-epikion_priest_fire_awakened {
+    background-position: -50px 0
+}
+.sprite-epikion_priest_light {
+    background-position: -100px 0
+}
+.sprite-epikion_priest_light_awakened {
+    background-position: -150px 0
+}
+.sprite-epikion_priest_water {
+    background-position: -200px 0
+}
+.sprite-epikion_priest_water_awakened {
+    background-position: -250px 0
+}
+.sprite-epikion_priest_wind {
+    background-position: -300px 0
+}
+.sprite-epikion_priest_wind_awakened {
+    background-position: 0 -50px
+}
+.sprite-fairy_dark {
+    background-position: -50px -50px
+}
+.sprite-fairy_dark_awakened {
+    background-position: -100px -50px
+}
+.sprite-fairy_fire {
+    background-position: -150px -50px
+}
+.sprite-fairy_fire_awakened {
+    background-position: -200px -50px
+}
+.sprite-fairy_light {
+    background-position: -250px -50px
+}
+.sprite-fairy_light_awakened {
+    background-position: -300px -50px
+}
+.sprite-fairy_queen_light {
+    background-position: 0 -100px
+}
+.sprite-fairy_queen_light_awakened {
+    background-position: -50px -100px
+}
+.sprite-fairy_water {
+    background-position: -100px -100px
+}
+.sprite-fairy_water_awakened {
+    background-position: -150px -100px
+}
+.sprite-fairy_wind {
+    background-position: -200px -100px
+}
+.sprite-fairy_wind_awakened {
+    background-position: -250px -100px
+}
+.sprite-forest_keeper_fire {
+    background-position: -300px -100px
+}
+.sprite-forest_keeper_water {
+    background-position: 0 -150px
+}
+.sprite-forest_keeper_wind {
+    background-position: -50px -150px
+}
+.sprite-garuda_dark {
+    background-position: -100px -150px
+}
+.sprite-garuda_dark_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/5.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-garuda_fire {
+    background-position: -200px -150px
+}
+.sprite-garuda_fire_awakened {
+    background-position: -250px -150px
+}
+.sprite-garuda_light {
+    background-position: -300px -150px
+}
+.sprite-garuda_light_awakened {
+    background-position: 0 -200px
+}
+.sprite-garuda_water {
+    background-position: -50px -200px
+}
+.sprite-garuda_water_awakened {
+    background-position: -100px -200px
+}
+.sprite-garuda_wind {
+    background-position: -150px -200px
+}
+.sprite-garuda_wind_awakened {
+    background-position: -200px -200px
+}
+.sprite-ghost_dark {
+    background-position: -250px -200px
+}
+.sprite-ghost_fire {
+    background-position: -300px -200px
+}
+.sprite-ghost_water {
+    background-position: 0 -250px
+}
+.sprite-ghost_wind {
+    background-position: -50px -250px
+}
+.sprite-golem_dark {
+    background-position: -100px -250px
+}
+.sprite-golem_dark_awakened {
+    background-position: -150px -250px
+}
+.sprite-golem_fire {
+    background-position: -200px -250px
+}
+.sprite-golem_fire_awakened {
+    background-position: -250px -250px
+}
+.sprite-golem_light {
+    background-position: -300px -250px
+}
+.sprite-golem_light_awakened {
+    background-position: 0 -300px
+}
+.sprite-golem_water {
+    background-position: -50px -300px
+}
+.sprite-golem_water_awakened {
+    background-position: -100px -300px
+}
+.sprite-golem_wind {
+    background-position: -150px -300px
+}
+.sprite-golem_wind_awakened {
+    background-position: -200px -300px
+}
+.sprite-griffon_dark {
+    background-position: -250px -300px
+}
+.sprite-griffon_dark_awakened {
+    background-position: -300px -300px
+}
+.sprite-griffon_fire,
+.sprite-griffon_fire_awakened,
+.sprite-griffon_light,
+.sprite-griffon_light_awakened,
+.sprite-griffon_water,
+.sprite-griffon_water_awakened,
+.sprite-griffon_wind,
+.sprite-griffon_wind_awakened,
+.sprite-grim_reaper_dark,
+.sprite-grim_reaper_dark_awakened,
+.sprite-grim_reaper_fire,
+.sprite-grim_reaper_fire_awakened,
+.sprite-grim_reaper_light,
+.sprite-grim_reaper_light_awakened,
+.sprite-grim_reaper_water,
+.sprite-grim_reaper_water_awakened,
+.sprite-grim_reaper_wind,
+.sprite-grim_reaper_wind_awakened,
+.sprite-harpu_dark,
+.sprite-harpu_dark_awakened,
+.sprite-harpu_fire,
+.sprite-harpu_fire_awakened,
+.sprite-harpu_light,
+.sprite-harpu_light_awakened,
+.sprite-harpu_water_awakened,
+.sprite-harpu_wind,
+.sprite-harpu_wind_awakened,
+.sprite-harpy_dark,
+.sprite-harpy_dark_awakened,
+.sprite-harpy_fire,
+.sprite-harpy_fire_awakened,
+.sprite-harpy_light,
+.sprite-harpy_light_awakened,
+.sprite-harpy_water,
+.sprite-harpy_water_awakened,
+.sprite-harpy_wind,
+.sprite-harpy_wind_awakened,
+.sprite-hell_lady_dark,
+.sprite-hell_lady_dark_awakened,
+.sprite-hell_lady_fire,
+.sprite-hell_lady_fire_awakened,
+.sprite-hell_lady_light,
+.sprite-hell_lady_light_awakened,
+.sprite-hell_lady_water,
+.sprite-hell_lady_water_awakened,
+.sprite-hell_lady_wind,
+.sprite-hell_lady_wind_awakened,
+.sprite-hellhound_dark {
+    background-image: url(/static/herders/images/monsters/sprite/6.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-griffon_fire {
+    background-position: 0 0
+}
+.sprite-griffon_fire_awakened {
+    background-position: -50px 0
+}
+.sprite-griffon_light {
+    background-position: -100px 0
+}
+.sprite-griffon_light_awakened {
+    background-position: -150px 0
+}
+.sprite-griffon_water {
+    background-position: -200px 0
+}
+.sprite-griffon_water_awakened {
+    background-position: -250px 0
+}
+.sprite-griffon_wind {
+    background-position: -300px 0
+}
+.sprite-griffon_wind_awakened {
+    background-position: 0 -50px
+}
+.sprite-grim_reaper_dark {
+    background-position: -50px -50px
+}
+.sprite-grim_reaper_dark_awakened {
+    background-position: -100px -50px
+}
+.sprite-grim_reaper_fire {
+    background-position: -150px -50px
+}
+.sprite-grim_reaper_fire_awakened {
+    background-position: -200px -50px
+}
+.sprite-grim_reaper_light {
+    background-position: -250px -50px
+}
+.sprite-grim_reaper_light_awakened {
+    background-position: -300px -50px
+}
+.sprite-grim_reaper_water {
+    background-position: 0 -100px
+}
+.sprite-grim_reaper_water_awakened {
+    background-position: -50px -100px
+}
+.sprite-grim_reaper_wind {
+    background-position: -100px -100px
+}
+.sprite-grim_reaper_wind_awakened {
+    background-position: -150px -100px
+}
+.sprite-harpu_dark {
+    background-position: -200px -100px
+}
+.sprite-harpu_dark_awakened {
+    background-position: -250px -100px
+}
+.sprite-harpu_fire {
+    background-position: -300px -100px
+}
+.sprite-harpu_fire_awakened {
+    background-position: 0 -150px
+}
+.sprite-harpu_light {
+    background-position: -50px -150px
+}
+.sprite-harpu_light_awakened {
+    background-position: -100px -150px
+}
+.sprite-harpu_water {
+    background-image: url(/static/herders/images/monsters/sprite/6.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-harpu_water_awakened {
+    background-position: -200px -150px
+}
+.sprite-harpu_wind {
+    background-position: -250px -150px
+}
+.sprite-harpu_wind_awakened {
+    background-position: -300px -150px
+}
+.sprite-harpy_dark {
+    background-position: 0 -200px
+}
+.sprite-harpy_dark_awakened {
+    background-position: -50px -200px
+}
+.sprite-harpy_fire {
+    background-position: -100px -200px
+}
+.sprite-harpy_fire_awakened {
+    background-position: -150px -200px
+}
+.sprite-harpy_light {
+    background-position: -200px -200px
+}
+.sprite-harpy_light_awakened {
+    background-position: -250px -200px
+}
+.sprite-harpy_water {
+    background-position: -300px -200px
+}
+.sprite-harpy_water_awakened {
+    background-position: 0 -250px
+}
+.sprite-harpy_wind {
+    background-position: -50px -250px
+}
+.sprite-harpy_wind_awakened {
+    background-position: -100px -250px
+}
+.sprite-hell_lady_dark {
+    background-position: -150px -250px
+}
+.sprite-hell_lady_dark_awakened {
+    background-position: -200px -250px
+}
+.sprite-hell_lady_fire {
+    background-position: -250px -250px
+}
+.sprite-hell_lady_fire_awakened {
+    background-position: -300px -250px
+}
+.sprite-hell_lady_light {
+    background-position: 0 -300px
+}
+.sprite-hell_lady_light_awakened {
+    background-position: -50px -300px
+}
+.sprite-hell_lady_water {
+    background-position: -100px -300px
+}
+.sprite-hell_lady_water_awakened {
+    background-position: -150px -300px
+}
+.sprite-hell_lady_wind {
+    background-position: -200px -300px
+}
+.sprite-hell_lady_wind_awakened {
+    background-position: -250px -300px
+}
+.sprite-hellhound_dark {
+    background-position: -300px -300px
+}
+.sprite-hellhound_dark_awakened,
+.sprite-hellhound_fire,
+.sprite-hellhound_fire_awakened,
+.sprite-hellhound_light,
+.sprite-hellhound_light_awakened,
+.sprite-hellhound_water,
+.sprite-hellhound_water_awakened,
+.sprite-hellhound_wind,
+.sprite-hellhound_wind_awakened,
+.sprite-high_elemental_dark,
+.sprite-high_elemental_dark_awakened,
+.sprite-high_elemental_fire,
+.sprite-high_elemental_fire_awakened,
+.sprite-high_elemental_light,
+.sprite-high_elemental_light_awakened,
+.sprite-high_elemental_water,
+.sprite-high_elemental_water_awakened,
+.sprite-high_elemental_wind,
+.sprite-high_elemental_wind_awakened,
+.sprite-horned_frog_dark,
+.sprite-horned_frog_fire,
+.sprite-horned_frog_water,
+.sprite-horned_frog_wind,
+.sprite-howl_dark,
+.sprite-howl_fire,
+.sprite-howl_fire_awakened,
+.sprite-howl_light,
+.sprite-howl_light_awakened,
+.sprite-howl_water,
+.sprite-howl_water_awakened,
+.sprite-howl_wind,
+.sprite-howl_wind_awakened,
+.sprite-ifrit_dark,
+.sprite-ifrit_dark_awakened,
+.sprite-ifrit_fire,
+.sprite-ifrit_fire_awakened,
+.sprite-ifrit_light,
+.sprite-ifrit_light_awakened,
+.sprite-ifrit_water,
+.sprite-ifrit_water_awakened,
+.sprite-ifrit_wind,
+.sprite-ifrit_wind_awakened,
+.sprite-imp_champion_dark,
+.sprite-imp_champion_dark_awakened,
+.sprite-imp_champion_fire,
+.sprite-imp_champion_fire_awakened,
+.sprite-imp_champion_light,
+.sprite-imp_champion_light_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/7.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-hellhound_dark_awakened {
+    background-position: 0 0
+}
+.sprite-hellhound_fire {
+    background-position: -50px 0
+}
+.sprite-hellhound_fire_awakened {
+    background-position: -100px 0
+}
+.sprite-hellhound_light {
+    background-position: -150px 0
+}
+.sprite-hellhound_light_awakened {
+    background-position: -200px 0
+}
+.sprite-hellhound_water {
+    background-position: -250px 0
+}
+.sprite-hellhound_water_awakened {
+    background-position: -300px 0
+}
+.sprite-hellhound_wind {
+    background-position: 0 -50px
+}
+.sprite-hellhound_wind_awakened {
+    background-position: -50px -50px
+}
+.sprite-high_elemental_dark {
+    background-position: -100px -50px
+}
+.sprite-high_elemental_dark_awakened {
+    background-position: -150px -50px
+}
+.sprite-high_elemental_fire {
+    background-position: -200px -50px
+}
+.sprite-high_elemental_fire_awakened {
+    background-position: -250px -50px
+}
+.sprite-high_elemental_light {
+    background-position: -300px -50px
+}
+.sprite-high_elemental_light_awakened {
+    background-position: 0 -100px
+}
+.sprite-high_elemental_water {
+    background-position: -50px -100px
+}
+.sprite-high_elemental_water_awakened {
+    background-position: -100px -100px
+}
+.sprite-high_elemental_wind {
+    background-position: -150px -100px
+}
+.sprite-high_elemental_wind_awakened {
+    background-position: -200px -100px
+}
+.sprite-horned_frog_dark {
+    background-position: -250px -100px
+}
+.sprite-horned_frog_fire {
+    background-position: -300px -100px
+}
+.sprite-horned_frog_water {
+    background-position: 0 -150px
+}
+.sprite-horned_frog_wind {
+    background-position: -50px -150px
+}
+.sprite-howl_dark {
+    background-position: -100px -150px
+}
+.sprite-howl_dark_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/7.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-howl_fire {
+    background-position: -200px -150px
+}
+.sprite-howl_fire_awakened {
+    background-position: -250px -150px
+}
+.sprite-howl_light {
+    background-position: -300px -150px
+}
+.sprite-howl_light_awakened {
+    background-position: 0 -200px
+}
+.sprite-howl_water {
+    background-position: -50px -200px
+}
+.sprite-howl_water_awakened {
+    background-position: -100px -200px
+}
+.sprite-howl_wind {
+    background-position: -150px -200px
+}
+.sprite-howl_wind_awakened {
+    background-position: -200px -200px
+}
+.sprite-ifrit_dark {
+    background-position: -250px -200px
+}
+.sprite-ifrit_dark_awakened {
+    background-position: -300px -200px
+}
+.sprite-ifrit_fire {
+    background-position: 0 -250px
+}
+.sprite-ifrit_fire_awakened {
+    background-position: -50px -250px
+}
+.sprite-ifrit_light {
+    background-position: -100px -250px
+}
+.sprite-ifrit_light_awakened {
+    background-position: -150px -250px
+}
+.sprite-ifrit_water {
+    background-position: -200px -250px
+}
+.sprite-ifrit_water_awakened {
+    background-position: -250px -250px
+}
+.sprite-ifrit_wind {
+    background-position: -300px -250px
+}
+.sprite-ifrit_wind_awakened {
+    background-position: 0 -300px
+}
+.sprite-imp_champion_dark {
+    background-position: -50px -300px
+}
+.sprite-imp_champion_dark_awakened {
+    background-position: -100px -300px
+}
+.sprite-imp_champion_fire {
+    background-position: -150px -300px
+}
+.sprite-imp_champion_fire_awakened {
+    background-position: -200px -300px
+}
+.sprite-imp_champion_light {
+    background-position: -250px -300px
+}
+.sprite-imp_champion_light_awakened {
+    background-position: -300px -300px
+}
+.sprite-imp_champion_water,
+.sprite-imp_champion_water_awakened,
+.sprite-imp_champion_wind,
+.sprite-imp_champion_wind_awakened,
+.sprite-imp_dark,
+.sprite-imp_dark_awakened,
+.sprite-imp_fire,
+.sprite-imp_fire_awakened,
+.sprite-imp_light,
+.sprite-imp_light_awakened,
+.sprite-imp_water,
+.sprite-imp_water_awakened,
+.sprite-imp_wind,
+.sprite-imp_wind_awakened,
+.sprite-inferno_dark,
+.sprite-inferno_dark_awakened,
+.sprite-inferno_fire,
+.sprite-inferno_fire_awakened,
+.sprite-inferno_light,
+.sprite-inferno_light_awakened,
+.sprite-inferno_water,
+.sprite-inferno_water_awakened,
+.sprite-inferno_wind,
+.sprite-inferno_wind_awakened,
+.sprite-inugami_dark_awakened,
+.sprite-inugami_fire,
+.sprite-inugami_fire_awakened,
+.sprite-inugami_light,
+.sprite-inugami_light_awakened,
+.sprite-inugami_water,
+.sprite-inugami_water_awakened,
+.sprite-inugami_wind,
+.sprite-inugami_wind_awakened,
+.sprite-joker_dark,
+.sprite-joker_dark_awakened,
+.sprite-joker_fire,
+.sprite-joker_fire_awakened,
+.sprite-joker_light,
+.sprite-joker_light_awakened,
+.sprite-joker_water,
+.sprite-joker_water_awakened,
+.sprite-joker_wind,
+.sprite-joker_wind_awakened,
+.sprite-king_angelmon_dark,
+.sprite-king_angelmon_dark_awakened,
+.sprite-king_angelmon_fire,
+.sprite-king_angelmon_fire_awakened,
+.sprite-king_angelmon_light {
+    background-image: url(/static/herders/images/monsters/sprite/8.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-imp_champion_water {
+    background-position: 0 0
+}
+.sprite-imp_champion_water_awakened {
+    background-position: -50px 0
+}
+.sprite-imp_champion_wind {
+    background-position: -100px 0
+}
+.sprite-imp_champion_wind_awakened {
+    background-position: -150px 0
+}
+.sprite-imp_dark {
+    background-position: -200px 0
+}
+.sprite-imp_dark_awakened {
+    background-position: -250px 0
+}
+.sprite-imp_fire {
+    background-position: -300px 0
+}
+.sprite-imp_fire_awakened {
+    background-position: 0 -50px
+}
+.sprite-imp_light {
+    background-position: -50px -50px
+}
+.sprite-imp_light_awakened {
+    background-position: -100px -50px
+}
+.sprite-imp_water {
+    background-position: -150px -50px
+}
+.sprite-imp_water_awakened {
+    background-position: -200px -50px
+}
+.sprite-imp_wind {
+    background-position: -250px -50px
+}
+.sprite-imp_wind_awakened {
+    background-position: -300px -50px
+}
+.sprite-inferno_dark {
+    background-position: 0 -100px
+}
+.sprite-inferno_dark_awakened {
+    background-position: -50px -100px
+}
+.sprite-inferno_fire {
+    background-position: -100px -100px
+}
+.sprite-inferno_fire_awakened {
+    background-position: -150px -100px
+}
+.sprite-inferno_light {
+    background-position: -200px -100px
+}
+.sprite-inferno_light_awakened {
+    background-position: -250px -100px
+}
+.sprite-inferno_water {
+    background-position: -300px -100px
+}
+.sprite-inferno_water_awakened {
+    background-position: 0 -150px
+}
+.sprite-inferno_wind {
+    background-position: -50px -150px
+}
+.sprite-inferno_wind_awakened {
+    background-position: -100px -150px
+}
+.sprite-inugami_dark {
+    background-image: url(/static/herders/images/monsters/sprite/8.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-inugami_dark_awakened {
+    background-position: -200px -150px
+}
+.sprite-inugami_fire {
+    background-position: -250px -150px
+}
+.sprite-inugami_fire_awakened {
+    background-position: -300px -150px
+}
+.sprite-inugami_light {
+    background-position: 0 -200px
+}
+.sprite-inugami_light_awakened {
+    background-position: -50px -200px
+}
+.sprite-inugami_water {
+    background-position: -100px -200px
+}
+.sprite-inugami_water_awakened {
+    background-position: -150px -200px
+}
+.sprite-inugami_wind {
+    background-position: -200px -200px
+}
+.sprite-inugami_wind_awakened {
+    background-position: -250px -200px
+}
+.sprite-joker_dark {
+    background-position: -300px -200px
+}
+.sprite-joker_dark_awakened {
+    background-position: 0 -250px
+}
+.sprite-joker_fire {
+    background-position: -50px -250px
+}
+.sprite-joker_fire_awakened {
+    background-position: -100px -250px
+}
+.sprite-joker_light {
+    background-position: -150px -250px
+}
+.sprite-joker_light_awakened {
+    background-position: -200px -250px
+}
+.sprite-joker_water {
+    background-position: -250px -250px
+}
+.sprite-joker_water_awakened {
+    background-position: -300px -250px
+}
+.sprite-joker_wind {
+    background-position: 0 -300px
+}
+.sprite-joker_wind_awakened {
+    background-position: -50px -300px
+}
+.sprite-king_angelmon_dark {
+    background-position: -100px -300px
+}
+.sprite-king_angelmon_dark_awakened {
+    background-position: -150px -300px
+}
+.sprite-king_angelmon_fire {
+    background-position: -200px -300px
+}
+.sprite-king_angelmon_fire_awakened {
+    background-position: -250px -300px
+}
+.sprite-king_angelmon_light {
+    background-position: -300px -300px
+}
+.sprite-king_angelmon_light_awakened,
+.sprite-king_angelmon_water,
+.sprite-king_angelmon_water_awakened,
+.sprite-king_angelmon_wind,
+.sprite-king_angelmon_wind_awakened,
+.sprite-kobold_bomber_dark,
+.sprite-kobold_bomber_dark_awakened,
+.sprite-kobold_bomber_fire,
+.sprite-kobold_bomber_fire_awakened,
+.sprite-kobold_bomber_light,
+.sprite-kobold_bomber_light_awakened,
+.sprite-kobold_bomber_water,
+.sprite-kobold_bomber_water_awakened,
+.sprite-kobold_bomber_wind,
+.sprite-kobold_bomber_wind_awakened,
+.sprite-kung_fu_girl_dark,
+.sprite-kung_fu_girl_dark_awakened,
+.sprite-kung_fu_girl_fire,
+.sprite-kung_fu_girl_fire_awakened,
+.sprite-kung_fu_girl_light,
+.sprite-kung_fu_girl_light_awakened,
+.sprite-kung_fu_girl_water,
+.sprite-kung_fu_girl_water_awakened,
+.sprite-kung_fu_girl_wind,
+.sprite-lich_dark,
+.sprite-lich_dark_awakened,
+.sprite-lich_fire,
+.sprite-lich_fire_awakened,
+.sprite-lich_light,
+.sprite-lich_light_awakened,
+.sprite-lich_water,
+.sprite-lich_water_awakened,
+.sprite-lich_wind,
+.sprite-lich_wind_awakened,
+.sprite-living_armor_dark,
+.sprite-living_armor_dark_awakened,
+.sprite-living_armor_fire,
+.sprite-living_armor_fire_awakened,
+.sprite-living_armor_light,
+.sprite-living_armor_light_awakened,
+.sprite-living_armor_water,
+.sprite-living_armor_water_awakened,
+.sprite-living_armor_wind,
+.sprite-living_armor_wind_awakened,
+.sprite-lizardman_dark,
+.sprite-lizardman_dark_awakened,
+.sprite-lizardman_fire,
+.sprite-lizardman_fire_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/9.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-king_angelmon_light_awakened {
+    background-position: 0 0
+}
+.sprite-king_angelmon_water {
+    background-position: -50px 0
+}
+.sprite-king_angelmon_water_awakened {
+    background-position: -100px 0
+}
+.sprite-king_angelmon_wind {
+    background-position: -150px 0
+}
+.sprite-king_angelmon_wind_awakened {
+    background-position: -200px 0
+}
+.sprite-kobold_bomber_dark {
+    background-position: -250px 0
+}
+.sprite-kobold_bomber_dark_awakened {
+    background-position: -300px 0
+}
+.sprite-kobold_bomber_fire {
+    background-position: 0 -50px
+}
+.sprite-kobold_bomber_fire_awakened {
+    background-position: -50px -50px
+}
+.sprite-kobold_bomber_light {
+    background-position: -100px -50px
+}
+.sprite-kobold_bomber_light_awakened {
+    background-position: -150px -50px
+}
+.sprite-kobold_bomber_water {
+    background-position: -200px -50px
+}
+.sprite-kobold_bomber_water_awakened {
+    background-position: -250px -50px
+}
+.sprite-kobold_bomber_wind {
+    background-position: -300px -50px
+}
+.sprite-kobold_bomber_wind_awakened {
+    background-position: 0 -100px
+}
+.sprite-kung_fu_girl_dark {
+    background-position: -50px -100px
+}
+.sprite-kung_fu_girl_dark_awakened {
+    background-position: -100px -100px
+}
+.sprite-kung_fu_girl_fire {
+    background-position: -150px -100px
+}
+.sprite-kung_fu_girl_fire_awakened {
+    background-position: -200px -100px
+}
+.sprite-kung_fu_girl_light {
+    background-position: -250px -100px
+}
+.sprite-kung_fu_girl_light_awakened {
+    background-position: -300px -100px
+}
+.sprite-kung_fu_girl_water {
+    background-position: 0 -150px
+}
+.sprite-kung_fu_girl_water_awakened {
+    background-position: -50px -150px
+}
+.sprite-kung_fu_girl_wind {
+    background-position: -100px -150px
+}
+.sprite-kung_fu_girl_wind_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/9.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-lich_dark {
+    background-position: -200px -150px
+}
+.sprite-lich_dark_awakened {
+    background-position: -250px -150px
+}
+.sprite-lich_fire {
+    background-position: -300px -150px
+}
+.sprite-lich_fire_awakened {
+    background-position: 0 -200px
+}
+.sprite-lich_light {
+    background-position: -50px -200px
+}
+.sprite-lich_light_awakened {
+    background-position: -100px -200px
+}
+.sprite-lich_water {
+    background-position: -150px -200px
+}
+.sprite-lich_water_awakened {
+    background-position: -200px -200px
+}
+.sprite-lich_wind {
+    background-position: -250px -200px
+}
+.sprite-lich_wind_awakened {
+    background-position: -300px -200px
+}
+.sprite-living_armor_dark {
+    background-position: 0 -250px
+}
+.sprite-living_armor_dark_awakened {
+    background-position: -50px -250px
+}
+.sprite-living_armor_fire {
+    background-position: -100px -250px
+}
+.sprite-living_armor_fire_awakened {
+    background-position: -150px -250px
+}
+.sprite-living_armor_light {
+    background-position: -200px -250px
+}
+.sprite-living_armor_light_awakened {
+    background-position: -250px -250px
+}
+.sprite-living_armor_water {
+    background-position: -300px -250px
+}
+.sprite-living_armor_water_awakened {
+    background-position: 0 -300px
+}
+.sprite-living_armor_wind {
+    background-position: -50px -300px
+}
+.sprite-living_armor_wind_awakened {
+    background-position: -100px -300px
+}
+.sprite-lizardman_dark {
+    background-position: -150px -300px
+}
+.sprite-lizardman_dark_awakened {
+    background-position: -200px -300px
+}
+.sprite-lizardman_fire {
+    background-position: -250px -300px
+}
+.sprite-lizardman_fire_awakened {
+    background-position: -300px -300px
+}
+.sprite-lizardman_light,
+.sprite-lizardman_light_awakened,
+.sprite-lizardman_water,
+.sprite-lizardman_water_awakened,
+.sprite-lizardman_wind,
+.sprite-lizardman_wind_awakened,
+.sprite-low_elemental_dark,
+.sprite-low_elemental_dark_awakened,
+.sprite-low_elemental_fire,
+.sprite-low_elemental_fire_awakened,
+.sprite-low_elemental_water,
+.sprite-low_elemental_water_awakened,
+.sprite-low_elemental_wind,
+.sprite-low_elemental_wind_awakened,
+.sprite-magic_knight_dark,
+.sprite-magic_knight_dark_awakened,
+.sprite-magic_knight_fire,
+.sprite-magic_knight_fire_awakened,
+.sprite-magic_knight_light,
+.sprite-magic_knight_light_awakened,
+.sprite-magic_knight_water,
+.sprite-magic_knight_water_awakened,
+.sprite-magic_knight_wind,
+.sprite-magic_knight_wind_awakened,
+.sprite-magical_archer__fami__light_awakened,
+.sprite-magical_archer_dark,
+.sprite-magical_archer_dark_awakened,
+.sprite-magical_archer_fire,
+.sprite-magical_archer_fire_awakened,
+.sprite-magical_archer_light,
+.sprite-magical_archer_light_awakened,
+.sprite-magical_archer_water,
+.sprite-magical_archer_water_awakened,
+.sprite-magical_archer_wind,
+.sprite-magical_archer_wind_awakened,
+.sprite-maned_boar_fire,
+.sprite-maned_boar_water,
+.sprite-maned_boar_wind,
+.sprite-martial_artist_dark,
+.sprite-martial_artist_dark_awakened,
+.sprite-martial_artist_fire,
+.sprite-martial_artist_fire_awakened,
+.sprite-martial_artist_light,
+.sprite-martial_artist_light_awakened,
+.sprite-martial_artist_water,
+.sprite-martial_artist_water_awakened,
+.sprite-martial_artist_wind,
+.sprite-martial_artist_wind_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/10.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-lizardman_light {
+    background-position: 0 0
+}
+.sprite-lizardman_light_awakened {
+    background-position: -50px 0
+}
+.sprite-lizardman_water {
+    background-position: -100px 0
+}
+.sprite-lizardman_water_awakened {
+    background-position: -150px 0
+}
+.sprite-lizardman_wind {
+    background-position: -200px 0
+}
+.sprite-lizardman_wind_awakened {
+    background-position: -250px 0
+}
+.sprite-low_elemental_dark {
+    background-position: -300px 0
+}
+.sprite-low_elemental_dark_awakened {
+    background-position: 0 -50px
+}
+.sprite-low_elemental_fire {
+    background-position: -50px -50px
+}
+.sprite-low_elemental_fire_awakened {
+    background-position: -100px -50px
+}
+.sprite-low_elemental_water {
+    background-position: -150px -50px
+}
+.sprite-low_elemental_water_awakened {
+    background-position: -200px -50px
+}
+.sprite-low_elemental_wind {
+    background-position: -250px -50px
+}
+.sprite-low_elemental_wind_awakened {
+    background-position: -300px -50px
+}
+.sprite-magic_knight_dark {
+    background-position: 0 -100px
+}
+.sprite-magic_knight_dark_awakened {
+    background-position: -50px -100px
+}
+.sprite-magic_knight_fire {
+    background-position: -100px -100px
+}
+.sprite-magic_knight_fire_awakened {
+    background-position: -150px -100px
+}
+.sprite-magic_knight_light {
+    background-position: -200px -100px
+}
+.sprite-magic_knight_light_awakened {
+    background-position: -250px -100px
+}
+.sprite-magic_knight_water {
+    background-position: -300px -100px
+}
+.sprite-magic_knight_water_awakened {
+    background-position: 0 -150px
+}
+.sprite-magic_knight_wind {
+    background-position: -50px -150px
+}
+.sprite-magic_knight_wind_awakened {
+    background-position: -100px -150px
+}
+.sprite-magical_archer__fami__light {
+    background-image: url(/static/herders/images/monsters/sprite/10.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-magical_archer__fami__light_awakened {
+    background-position: -200px -150px
+}
+.sprite-magical_archer_dark {
+    background-position: -250px -150px
+}
+.sprite-magical_archer_dark_awakened {
+    background-position: -300px -150px
+}
+.sprite-magical_archer_fire {
+    background-position: 0 -200px
+}
+.sprite-magical_archer_fire_awakened {
+    background-position: -50px -200px
+}
+.sprite-magical_archer_light {
+    background-position: -100px -200px
+}
+.sprite-magical_archer_light_awakened {
+    background-position: -150px -200px
+}
+.sprite-magical_archer_water {
+    background-position: -200px -200px
+}
+.sprite-magical_archer_water_awakened {
+    background-position: -250px -200px
+}
+.sprite-magical_archer_wind {
+    background-position: -300px -200px
+}
+.sprite-magical_archer_wind_awakened {
+    background-position: 0 -250px
+}
+.sprite-maned_boar_fire {
+    background-position: -50px -250px
+}
+.sprite-maned_boar_water {
+    background-position: -100px -250px
+}
+.sprite-maned_boar_wind {
+    background-position: -150px -250px
+}
+.sprite-martial_artist_dark {
+    background-position: -200px -250px
+}
+.sprite-martial_artist_dark_awakened {
+    background-position: -250px -250px
+}
+.sprite-martial_artist_fire {
+    background-position: -300px -250px
+}
+.sprite-martial_artist_fire_awakened {
+    background-position: 0 -300px
+}
+.sprite-martial_artist_light {
+    background-position: -50px -300px
+}
+.sprite-martial_artist_light_awakened {
+    background-position: -100px -300px
+}
+.sprite-martial_artist_water {
+    background-position: -150px -300px
+}
+.sprite-martial_artist_water_awakened {
+    background-position: -200px -300px
+}
+.sprite-martial_artist_wind {
+    background-position: -250px -300px
+}
+.sprite-martial_artist_wind_awakened {
+    background-position: -300px -300px
+}
+.sprite-martial_cat_dark,
+.sprite-martial_cat_dark_awakened,
+.sprite-martial_cat_fire,
+.sprite-martial_cat_fire_awakened,
+.sprite-martial_cat_light,
+.sprite-martial_cat_light_awakened,
+.sprite-martial_cat_water,
+.sprite-martial_cat_water_awakened,
+.sprite-martial_cat_wind,
+.sprite-martial_cat_wind_awakened,
+.sprite-mermaid_dark,
+.sprite-mermaid_dark_awakened,
+.sprite-mermaid_fire,
+.sprite-mermaid_fire_awakened,
+.sprite-mermaid_light,
+.sprite-mermaid_light_awakened,
+.sprite-mermaid_water,
+.sprite-mermaid_water_awakened,
+.sprite-mermaid_wind,
+.sprite-mermaid_wind_awakened,
+.sprite-mimick_dark,
+.sprite-mimick_fire,
+.sprite-mimick_water,
+.sprite-mimick_wind,
+.sprite-minotauros_dark_awakened,
+.sprite-minotauros_fire,
+.sprite-minotauros_fire_awakened,
+.sprite-minotauros_light,
+.sprite-minotauros_light_awakened,
+.sprite-minotauros_water,
+.sprite-minotauros_water_awakened,
+.sprite-minotauros_wind,
+.sprite-minotauros_wind_awakened,
+.sprite-mischievous_bat_fire,
+.sprite-mischievous_bat_water,
+.sprite-mischievous_bat_wind,
+.sprite-monkey_king_dark,
+.sprite-monkey_king_dark_awakened,
+.sprite-monkey_king_fire,
+.sprite-monkey_king_fire_awakened,
+.sprite-monkey_king_light,
+.sprite-monkey_king_light_awakened,
+.sprite-monkey_king_water,
+.sprite-monkey_king_water_awakened,
+.sprite-monkey_king_wind,
+.sprite-monkey_king_wind_awakened,
+.sprite-monster_flower_dark,
+.sprite-monster_flower_fire {
+    background-image: url(/static/herders/images/monsters/sprite/11.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-martial_cat_dark {
+    background-position: 0 0
+}
+.sprite-martial_cat_dark_awakened {
+    background-position: -50px 0
+}
+.sprite-martial_cat_fire {
+    background-position: -100px 0
+}
+.sprite-martial_cat_fire_awakened {
+    background-position: -150px 0
+}
+.sprite-martial_cat_light {
+    background-position: -200px 0
+}
+.sprite-martial_cat_light_awakened {
+    background-position: -250px 0
+}
+.sprite-martial_cat_water {
+    background-position: -300px 0
+}
+.sprite-martial_cat_water_awakened {
+    background-position: 0 -50px
+}
+.sprite-martial_cat_wind {
+    background-position: -50px -50px
+}
+.sprite-martial_cat_wind_awakened {
+    background-position: -100px -50px
+}
+.sprite-mermaid_dark {
+    background-position: -150px -50px
+}
+.sprite-mermaid_dark_awakened {
+    background-position: -200px -50px
+}
+.sprite-mermaid_fire {
+    background-position: -250px -50px
+}
+.sprite-mermaid_fire_awakened {
+    background-position: -300px -50px
+}
+.sprite-mermaid_light {
+    background-position: 0 -100px
+}
+.sprite-mermaid_light_awakened {
+    background-position: -50px -100px
+}
+.sprite-mermaid_water {
+    background-position: -100px -100px
+}
+.sprite-mermaid_water_awakened {
+    background-position: -150px -100px
+}
+.sprite-mermaid_wind {
+    background-position: -200px -100px
+}
+.sprite-mermaid_wind_awakened {
+    background-position: -250px -100px
+}
+.sprite-mimick_dark {
+    background-position: -300px -100px
+}
+.sprite-mimick_fire {
+    background-position: 0 -150px
+}
+.sprite-mimick_water {
+    background-position: -50px -150px
+}
+.sprite-mimick_wind {
+    background-position: -100px -150px
+}
+.sprite-minotauros_dark {
+    background-image: url(/static/herders/images/monsters/sprite/11.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-minotauros_dark_awakened {
+    background-position: -200px -150px
+}
+.sprite-minotauros_fire {
+    background-position: -250px -150px
+}
+.sprite-minotauros_fire_awakened {
+    background-position: -300px -150px
+}
+.sprite-minotauros_light {
+    background-position: 0 -200px
+}
+.sprite-minotauros_light_awakened {
+    background-position: -50px -200px
+}
+.sprite-minotauros_water {
+    background-position: -100px -200px
+}
+.sprite-minotauros_water_awakened {
+    background-position: -150px -200px
+}
+.sprite-minotauros_wind {
+    background-position: -200px -200px
+}
+.sprite-minotauros_wind_awakened {
+    background-position: -250px -200px
+}
+.sprite-mischievous_bat_fire {
+    background-position: -300px -200px
+}
+.sprite-mischievous_bat_water {
+    background-position: 0 -250px
+}
+.sprite-mischievous_bat_wind {
+    background-position: -50px -250px
+}
+.sprite-monkey_king_dark {
+    background-position: -100px -250px
+}
+.sprite-monkey_king_dark_awakened {
+    background-position: -150px -250px
+}
+.sprite-monkey_king_fire {
+    background-position: -200px -250px
+}
+.sprite-monkey_king_fire_awakened {
+    background-position: -250px -250px
+}
+.sprite-monkey_king_light {
+    background-position: -300px -250px
+}
+.sprite-monkey_king_light_awakened {
+    background-position: 0 -300px
+}
+.sprite-monkey_king_water {
+    background-position: -50px -300px
+}
+.sprite-monkey_king_water_awakened {
+    background-position: -100px -300px
+}
+.sprite-monkey_king_wind {
+    background-position: -150px -300px
+}
+.sprite-monkey_king_wind_awakened {
+    background-position: -200px -300px
+}
+.sprite-monster_flower_dark {
+    background-position: -250px -300px
+}
+.sprite-monster_flower_fire {
+    background-position: -300px -300px
+}
+.sprite-monster_flower_water,
+.sprite-monster_flower_wind,
+.sprite-mushroom_fire,
+.sprite-mushroom_water,
+.sprite-mushroom_wind,
+.sprite-mystic_witch_dark,
+.sprite-mystic_witch_dark_awakened,
+.sprite-mystic_witch_fire,
+.sprite-mystic_witch_fire_awakened,
+.sprite-mystic_witch_light,
+.sprite-mystic_witch_light_awakened,
+.sprite-mystic_witch_water,
+.sprite-mystic_witch_water_awakened,
+.sprite-mystic_witch_wind,
+.sprite-mystic_witch_wind_awakened,
+.sprite-neostone_agent_dark,
+.sprite-neostone_agent_dark_awakened,
+.sprite-neostone_agent_fire,
+.sprite-neostone_agent_fire_awakened,
+.sprite-neostone_agent_light,
+.sprite-neostone_agent_light_awakened,
+.sprite-neostone_agent_water,
+.sprite-neostone_agent_water_awakened,
+.sprite-neostone_agent_wind,
+.sprite-neostone_fighter_dark,
+.sprite-neostone_fighter_dark_awakened,
+.sprite-neostone_fighter_fire,
+.sprite-neostone_fighter_fire_awakened,
+.sprite-neostone_fighter_light,
+.sprite-neostone_fighter_light_awakened,
+.sprite-neostone_fighter_water,
+.sprite-neostone_fighter_water_awakened,
+.sprite-neostone_fighter_wind,
+.sprite-neostone_fighter_wind_awakened,
+.sprite-nine-tailed_fox_dark,
+.sprite-nine-tailed_fox_dark_awakened,
+.sprite-nine-tailed_fox_fire,
+.sprite-nine-tailed_fox_fire_awakened,
+.sprite-nine-tailed_fox_light,
+.sprite-nine-tailed_fox_light_awakened,
+.sprite-nine-tailed_fox_water,
+.sprite-nine-tailed_fox_water_awakened,
+.sprite-nine-tailed_fox_wind,
+.sprite-nine-tailed_fox_wind_awakened,
+.sprite-ninja_dark,
+.sprite-ninja_dark_awakened,
+.sprite-ninja_fire,
+.sprite-ninja_fire_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/12.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-monster_flower_water {
+    background-position: 0 0
+}
+.sprite-monster_flower_wind {
+    background-position: -50px 0
+}
+.sprite-mushroom_fire {
+    background-position: -100px 0
+}
+.sprite-mushroom_water {
+    background-position: -150px 0
+}
+.sprite-mushroom_wind {
+    background-position: -200px 0
+}
+.sprite-mystic_witch_dark {
+    background-position: -250px 0
+}
+.sprite-mystic_witch_dark_awakened {
+    background-position: -300px 0
+}
+.sprite-mystic_witch_fire {
+    background-position: 0 -50px
+}
+.sprite-mystic_witch_fire_awakened {
+    background-position: -50px -50px
+}
+.sprite-mystic_witch_light {
+    background-position: -100px -50px
+}
+.sprite-mystic_witch_light_awakened {
+    background-position: -150px -50px
+}
+.sprite-mystic_witch_water {
+    background-position: -200px -50px
+}
+.sprite-mystic_witch_water_awakened {
+    background-position: -250px -50px
+}
+.sprite-mystic_witch_wind {
+    background-position: -300px -50px
+}
+.sprite-mystic_witch_wind_awakened {
+    background-position: 0 -100px
+}
+.sprite-neostone_agent_dark {
+    background-position: -50px -100px
+}
+.sprite-neostone_agent_dark_awakened {
+    background-position: -100px -100px
+}
+.sprite-neostone_agent_fire {
+    background-position: -150px -100px
+}
+.sprite-neostone_agent_fire_awakened {
+    background-position: -200px -100px
+}
+.sprite-neostone_agent_light {
+    background-position: -250px -100px
+}
+.sprite-neostone_agent_light_awakened {
+    background-position: -300px -100px
+}
+.sprite-neostone_agent_water {
+    background-position: 0 -150px
+}
+.sprite-neostone_agent_water_awakened {
+    background-position: -50px -150px
+}
+.sprite-neostone_agent_wind {
+    background-position: -100px -150px
+}
+.sprite-neostone_agent_wind_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/12.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-neostone_fighter_dark {
+    background-position: -200px -150px
+}
+.sprite-neostone_fighter_dark_awakened {
+    background-position: -250px -150px
+}
+.sprite-neostone_fighter_fire {
+    background-position: -300px -150px
+}
+.sprite-neostone_fighter_fire_awakened {
+    background-position: 0 -200px
+}
+.sprite-neostone_fighter_light {
+    background-position: -50px -200px
+}
+.sprite-neostone_fighter_light_awakened {
+    background-position: -100px -200px
+}
+.sprite-neostone_fighter_water {
+    background-position: -150px -200px
+}
+.sprite-neostone_fighter_water_awakened {
+    background-position: -200px -200px
+}
+.sprite-neostone_fighter_wind {
+    background-position: -250px -200px
+}
+.sprite-neostone_fighter_wind_awakened {
+    background-position: -300px -200px
+}
+.sprite-nine-tailed_fox_dark {
+    background-position: 0 -250px
+}
+.sprite-nine-tailed_fox_dark_awakened {
+    background-position: -50px -250px
+}
+.sprite-nine-tailed_fox_fire {
+    background-position: -100px -250px
+}
+.sprite-nine-tailed_fox_fire_awakened {
+    background-position: -150px -250px
+}
+.sprite-nine-tailed_fox_light {
+    background-position: -200px -250px
+}
+.sprite-nine-tailed_fox_light_awakened {
+    background-position: -250px -250px
+}
+.sprite-nine-tailed_fox_water {
+    background-position: -300px -250px
+}
+.sprite-nine-tailed_fox_water_awakened {
+    background-position: 0 -300px
+}
+.sprite-nine-tailed_fox_wind {
+    background-position: -50px -300px
+}
+.sprite-nine-tailed_fox_wind_awakened {
+    background-position: -100px -300px
+}
+.sprite-ninja_dark {
+    background-position: -150px -300px
+}
+.sprite-ninja_dark_awakened {
+    background-position: -200px -300px
+}
+.sprite-ninja_fire {
+    background-position: -250px -300px
+}
+.sprite-ninja_fire_awakened {
+    background-position: -300px -300px
+}
+.sprite-ninja_light,
+.sprite-ninja_light_awakened,
+.sprite-ninja_water,
+.sprite-ninja_water_awakened,
+.sprite-ninja_wind,
+.sprite-ninja_wind_awakened,
+.sprite-occult_girl_dark,
+.sprite-occult_girl_dark_awakened,
+.sprite-occult_girl_fire,
+.sprite-occult_girl_fire_awakened,
+.sprite-occult_girl_light,
+.sprite-occult_girl_light_awakened,
+.sprite-occult_girl_water,
+.sprite-occult_girl_water_awakened,
+.sprite-occult_girl_wind,
+.sprite-occult_girl_wind_awakened,
+.sprite-oracle_dark,
+.sprite-oracle_dark_awakened,
+.sprite-oracle_fire,
+.sprite-oracle_fire_awakened,
+.sprite-oracle_light,
+.sprite-oracle_light_awakened,
+.sprite-oracle_water,
+.sprite-oracle_water_awakened,
+.sprite-oracle_wind_awakened,
+.sprite-penguin_knight_dark,
+.sprite-penguin_knight_dark_awakened,
+.sprite-penguin_knight_fire,
+.sprite-penguin_knight_fire_awakened,
+.sprite-penguin_knight_light,
+.sprite-penguin_knight_light_awakened,
+.sprite-penguin_knight_water,
+.sprite-penguin_knight_water_awakened,
+.sprite-penguin_knight_wind,
+.sprite-penguin_knight_wind_awakened,
+.sprite-phantom_thief_dark,
+.sprite-phantom_thief_dark_awakened,
+.sprite-phantom_thief_fire,
+.sprite-phantom_thief_fire_awakened,
+.sprite-phantom_thief_light,
+.sprite-phantom_thief_light_awakened,
+.sprite-phantom_thief_water,
+.sprite-phantom_thief_water_awakened,
+.sprite-phantom_thief_wind,
+.sprite-phantom_thief_wind_awakened,
+.sprite-phoenix_dark,
+.sprite-phoenix_dark_awakened,
+.sprite-phoenix_fire {
+    background-image: url(/static/herders/images/monsters/sprite/13.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-ninja_light {
+    background-position: 0 0
+}
+.sprite-ninja_light_awakened {
+    background-position: -50px 0
+}
+.sprite-ninja_water {
+    background-position: -100px 0
+}
+.sprite-ninja_water_awakened {
+    background-position: -150px 0
+}
+.sprite-ninja_wind {
+    background-position: -200px 0
+}
+.sprite-ninja_wind_awakened {
+    background-position: -250px 0
+}
+.sprite-occult_girl_dark {
+    background-position: -300px 0
+}
+.sprite-occult_girl_dark_awakened {
+    background-position: 0 -50px
+}
+.sprite-occult_girl_fire {
+    background-position: -50px -50px
+}
+.sprite-occult_girl_fire_awakened {
+    background-position: -100px -50px
+}
+.sprite-occult_girl_light {
+    background-position: -150px -50px
+}
+.sprite-occult_girl_light_awakened {
+    background-position: -200px -50px
+}
+.sprite-occult_girl_water {
+    background-position: -250px -50px
+}
+.sprite-occult_girl_water_awakened {
+    background-position: -300px -50px
+}
+.sprite-occult_girl_wind {
+    background-position: 0 -100px
+}
+.sprite-occult_girl_wind_awakened {
+    background-position: -50px -100px
+}
+.sprite-oracle_dark {
+    background-position: -100px -100px
+}
+.sprite-oracle_dark_awakened {
+    background-position: -150px -100px
+}
+.sprite-oracle_fire {
+    background-position: -200px -100px
+}
+.sprite-oracle_fire_awakened {
+    background-position: -250px -100px
+}
+.sprite-oracle_light {
+    background-position: -300px -100px
+}
+.sprite-oracle_light_awakened {
+    background-position: 0 -150px
+}
+.sprite-oracle_water {
+    background-position: -50px -150px
+}
+.sprite-oracle_water_awakened {
+    background-position: -100px -150px
+}
+.sprite-oracle_wind {
+    background-image: url(/static/herders/images/monsters/sprite/13.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-oracle_wind_awakened {
+    background-position: -200px -150px
+}
+.sprite-penguin_knight_dark {
+    background-position: -250px -150px
+}
+.sprite-penguin_knight_dark_awakened {
+    background-position: -300px -150px
+}
+.sprite-penguin_knight_fire {
+    background-position: 0 -200px
+}
+.sprite-penguin_knight_fire_awakened {
+    background-position: -50px -200px
+}
+.sprite-penguin_knight_light {
+    background-position: -100px -200px
+}
+.sprite-penguin_knight_light_awakened {
+    background-position: -150px -200px
+}
+.sprite-penguin_knight_water {
+    background-position: -200px -200px
+}
+.sprite-penguin_knight_water_awakened {
+    background-position: -250px -200px
+}
+.sprite-penguin_knight_wind {
+    background-position: -300px -200px
+}
+.sprite-penguin_knight_wind_awakened {
+    background-position: 0 -250px
+}
+.sprite-phantom_thief_dark {
+    background-position: -50px -250px
+}
+.sprite-phantom_thief_dark_awakened {
+    background-position: -100px -250px
+}
+.sprite-phantom_thief_fire {
+    background-position: -150px -250px
+}
+.sprite-phantom_thief_fire_awakened {
+    background-position: -200px -250px
+}
+.sprite-phantom_thief_light {
+    background-position: -250px -250px
+}
+.sprite-phantom_thief_light_awakened {
+    background-position: -300px -250px
+}
+.sprite-phantom_thief_water {
+    background-position: 0 -300px
+}
+.sprite-phantom_thief_water_awakened {
+    background-position: -50px -300px
+}
+.sprite-phantom_thief_wind {
+    background-position: -100px -300px
+}
+.sprite-phantom_thief_wind_awakened {
+    background-position: -150px -300px
+}
+.sprite-phoenix_dark {
+    background-position: -200px -300px
+}
+.sprite-phoenix_dark_awakened {
+    background-position: -250px -300px
+}
+.sprite-phoenix_fire {
+    background-position: -300px -300px
+}
+.sprite-phoenix_fire_awakened,
+.sprite-phoenix_light,
+.sprite-phoenix_light_awakened,
+.sprite-phoenix_water,
+.sprite-phoenix_water_awakened,
+.sprite-phoenix_wind,
+.sprite-phoenix_wind_awakened,
+.sprite-pierret_dark,
+.sprite-pierret_dark_awakened,
+.sprite-pierret_fire,
+.sprite-pierret_fire_awakened,
+.sprite-pierret_light,
+.sprite-pierret_light_awakened,
+.sprite-pierret_water,
+.sprite-pierret_water_awakened,
+.sprite-pierret_wind,
+.sprite-pierret_wind_awakened,
+.sprite-pioneer_dark,
+.sprite-pioneer_dark_awakened,
+.sprite-pioneer_fire,
+.sprite-pioneer_fire_awakened,
+.sprite-pioneer_light,
+.sprite-pioneer_light_awakened,
+.sprite-pioneer_water,
+.sprite-pioneer_wind,
+.sprite-pioneer_wind_awakened,
+.sprite-pirate_captain_dark,
+.sprite-pirate_captain_dark_awakened,
+.sprite-pirate_captain_fire,
+.sprite-pirate_captain_fire_awakened,
+.sprite-pirate_captain_light,
+.sprite-pirate_captain_light_awakened,
+.sprite-pirate_captain_water,
+.sprite-pirate_captain_water_awakened,
+.sprite-pirate_captain_wind,
+.sprite-pirate_captain_wind_awakened,
+.sprite-pixie_dark,
+.sprite-pixie_dark_awakened,
+.sprite-pixie_fire,
+.sprite-pixie_fire_awakened,
+.sprite-pixie_light,
+.sprite-pixie_light_awakened,
+.sprite-pixie_water,
+.sprite-pixie_water_awakened,
+.sprite-pixie_wind,
+.sprite-pixie_wind_awakened,
+.sprite-polar_queen_dark,
+.sprite-polar_queen_dark_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/14.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-phoenix_fire_awakened {
+    background-position: 0 0
+}
+.sprite-phoenix_light {
+    background-position: -50px 0
+}
+.sprite-phoenix_light_awakened {
+    background-position: -100px 0
+}
+.sprite-phoenix_water {
+    background-position: -150px 0
+}
+.sprite-phoenix_water_awakened {
+    background-position: -200px 0
+}
+.sprite-phoenix_wind {
+    background-position: -250px 0
+}
+.sprite-phoenix_wind_awakened {
+    background-position: -300px 0
+}
+.sprite-pierret_dark {
+    background-position: 0 -50px
+}
+.sprite-pierret_dark_awakened {
+    background-position: -50px -50px
+}
+.sprite-pierret_fire {
+    background-position: -100px -50px
+}
+.sprite-pierret_fire_awakened {
+    background-position: -150px -50px
+}
+.sprite-pierret_light {
+    background-position: -200px -50px
+}
+.sprite-pierret_light_awakened {
+    background-position: -250px -50px
+}
+.sprite-pierret_water {
+    background-position: -300px -50px
+}
+.sprite-pierret_water_awakened {
+    background-position: 0 -100px
+}
+.sprite-pierret_wind {
+    background-position: -50px -100px
+}
+.sprite-pierret_wind_awakened {
+    background-position: -100px -100px
+}
+.sprite-pioneer_dark {
+    background-position: -150px -100px
+}
+.sprite-pioneer_dark_awakened {
+    background-position: -200px -100px
+}
+.sprite-pioneer_fire {
+    background-position: -250px -100px
+}
+.sprite-pioneer_fire_awakened {
+    background-position: -300px -100px
+}
+.sprite-pioneer_light {
+    background-position: 0 -150px
+}
+.sprite-pioneer_light_awakened {
+    background-position: -50px -150px
+}
+.sprite-pioneer_water {
+    background-position: -100px -150px
+}
+.sprite-pioneer_water_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/14.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-pioneer_wind {
+    background-position: -200px -150px
+}
+.sprite-pioneer_wind_awakened {
+    background-position: -250px -150px
+}
+.sprite-pirate_captain_dark {
+    background-position: -300px -150px
+}
+.sprite-pirate_captain_dark_awakened {
+    background-position: 0 -200px
+}
+.sprite-pirate_captain_fire {
+    background-position: -50px -200px
+}
+.sprite-pirate_captain_fire_awakened {
+    background-position: -100px -200px
+}
+.sprite-pirate_captain_light {
+    background-position: -150px -200px
+}
+.sprite-pirate_captain_light_awakened {
+    background-position: -200px -200px
+}
+.sprite-pirate_captain_water {
+    background-position: -250px -200px
+}
+.sprite-pirate_captain_water_awakened {
+    background-position: -300px -200px
+}
+.sprite-pirate_captain_wind {
+    background-position: 0 -250px
+}
+.sprite-pirate_captain_wind_awakened {
+    background-position: -50px -250px
+}
+.sprite-pixie_dark {
+    background-position: -100px -250px
+}
+.sprite-pixie_dark_awakened {
+    background-position: -150px -250px
+}
+.sprite-pixie_fire {
+    background-position: -200px -250px
+}
+.sprite-pixie_fire_awakened {
+    background-position: -250px -250px
+}
+.sprite-pixie_light {
+    background-position: -300px -250px
+}
+.sprite-pixie_light_awakened {
+    background-position: 0 -300px
+}
+.sprite-pixie_water {
+    background-position: -50px -300px
+}
+.sprite-pixie_water_awakened {
+    background-position: -100px -300px
+}
+.sprite-pixie_wind {
+    background-position: -150px -300px
+}
+.sprite-pixie_wind_awakened {
+    background-position: -200px -300px
+}
+.sprite-polar_queen_dark {
+    background-position: -250px -300px
+}
+.sprite-polar_queen_dark_awakened {
+    background-position: -300px -300px
+}
+.sprite-polar_queen_fire,
+.sprite-polar_queen_fire_awakened,
+.sprite-polar_queen_light,
+.sprite-polar_queen_light_awakened,
+.sprite-polar_queen_water,
+.sprite-polar_queen_water_awakened,
+.sprite-polar_queen_wind,
+.sprite-polar_queen_wind_awakened,
+.sprite-rainbowmon_light,
+.sprite-rakshasa_dark,
+.sprite-rakshasa_dark_awakened,
+.sprite-rakshasa_fire,
+.sprite-rakshasa_fire_awakened,
+.sprite-rakshasa_light,
+.sprite-rakshasa_light_awakened,
+.sprite-rakshasa_water,
+.sprite-rakshasa_water_awakened,
+.sprite-rakshasa_wind,
+.sprite-rakshasa_wind_awakened,
+.sprite-salamander_dark,
+.sprite-salamander_dark_awakened,
+.sprite-salamander_fire,
+.sprite-salamander_fire_awakened,
+.sprite-salamander_light,
+.sprite-salamander_water,
+.sprite-salamander_water_awakened,
+.sprite-salamander_wind,
+.sprite-salamander_wind_awakened,
+.sprite-samurai_dark,
+.sprite-samurai_dark_awakened,
+.sprite-samurai_fire,
+.sprite-samurai_fire_awakened,
+.sprite-samurai_light,
+.sprite-samurai_light_awakened,
+.sprite-samurai_water,
+.sprite-samurai_water_awakened,
+.sprite-samurai_wind,
+.sprite-samurai_wind_awakened,
+.sprite-sandman_dark,
+.sprite-sandman_fire,
+.sprite-sandman_water,
+.sprite-sandman_wind,
+.sprite-sea_emperor_dark,
+.sprite-sea_emperor_dark_awakened,
+.sprite-sea_emperor_fire,
+.sprite-sea_emperor_fire_awakened,
+.sprite-sea_emperor_light,
+.sprite-sea_emperor_light_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/15.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-polar_queen_fire {
+    background-position: 0 0
+}
+.sprite-polar_queen_fire_awakened {
+    background-position: -50px 0
+}
+.sprite-polar_queen_light {
+    background-position: -100px 0
+}
+.sprite-polar_queen_light_awakened {
+    background-position: -150px 0
+}
+.sprite-polar_queen_water {
+    background-position: -200px 0
+}
+.sprite-polar_queen_water_awakened {
+    background-position: -250px 0
+}
+.sprite-polar_queen_wind {
+    background-position: -300px 0
+}
+.sprite-polar_queen_wind_awakened {
+    background-position: 0 -50px
+}
+.sprite-rainbowmon_light {
+    background-position: -50px -50px
+}
+.sprite-rakshasa_dark {
+    background-position: -100px -50px
+}
+.sprite-rakshasa_dark_awakened {
+    background-position: -150px -50px
+}
+.sprite-rakshasa_fire {
+    background-position: -200px -50px
+}
+.sprite-rakshasa_fire_awakened {
+    background-position: -250px -50px
+}
+.sprite-rakshasa_light {
+    background-position: -300px -50px
+}
+.sprite-rakshasa_light_awakened {
+    background-position: 0 -100px
+}
+.sprite-rakshasa_water {
+    background-position: -50px -100px
+}
+.sprite-rakshasa_water_awakened {
+    background-position: -100px -100px
+}
+.sprite-rakshasa_wind {
+    background-position: -150px -100px
+}
+.sprite-rakshasa_wind_awakened {
+    background-position: -200px -100px
+}
+.sprite-salamander_dark {
+    background-position: -250px -100px
+}
+.sprite-salamander_dark_awakened {
+    background-position: -300px -100px
+}
+.sprite-salamander_fire {
+    background-position: 0 -150px
+}
+.sprite-salamander_fire_awakened {
+    background-position: -50px -150px
+}
+.sprite-salamander_light {
+    background-position: -100px -150px
+}
+.sprite-salamander_light_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/15.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-salamander_water {
+    background-position: -200px -150px
+}
+.sprite-salamander_water_awakened {
+    background-position: -250px -150px
+}
+.sprite-salamander_wind {
+    background-position: -300px -150px
+}
+.sprite-salamander_wind_awakened {
+    background-position: 0 -200px
+}
+.sprite-samurai_dark {
+    background-position: -50px -200px
+}
+.sprite-samurai_dark_awakened {
+    background-position: -100px -200px
+}
+.sprite-samurai_fire {
+    background-position: -150px -200px
+}
+.sprite-samurai_fire_awakened {
+    background-position: -200px -200px
+}
+.sprite-samurai_light {
+    background-position: -250px -200px
+}
+.sprite-samurai_light_awakened {
+    background-position: -300px -200px
+}
+.sprite-samurai_water {
+    background-position: 0 -250px
+}
+.sprite-samurai_water_awakened {
+    background-position: -50px -250px
+}
+.sprite-samurai_wind {
+    background-position: -100px -250px
+}
+.sprite-samurai_wind_awakened {
+    background-position: -150px -250px
+}
+.sprite-sandman_dark {
+    background-position: -200px -250px
+}
+.sprite-sandman_fire {
+    background-position: -250px -250px
+}
+.sprite-sandman_water {
+    background-position: -300px -250px
+}
+.sprite-sandman_wind {
+    background-position: 0 -300px
+}
+.sprite-sea_emperor_dark {
+    background-position: -50px -300px
+}
+.sprite-sea_emperor_dark_awakened {
+    background-position: -100px -300px
+}
+.sprite-sea_emperor_fire {
+    background-position: -150px -300px
+}
+.sprite-sea_emperor_fire_awakened {
+    background-position: -200px -300px
+}
+.sprite-sea_emperor_light {
+    background-position: -250px -300px
+}
+.sprite-sea_emperor_light_awakened {
+    background-position: -300px -300px
+}
+.sprite-sea_emperor_water,
+.sprite-sea_emperor_water_awakened,
+.sprite-sea_emperor_wind,
+.sprite-sea_emperor_wind_awakened,
+.sprite-serpent_dark,
+.sprite-serpent_dark_awakened,
+.sprite-serpent_fire,
+.sprite-serpent_fire_awakened,
+.sprite-serpent_light,
+.sprite-serpent_light_awakened,
+.sprite-serpent_water,
+.sprite-serpent_water_awakened,
+.sprite-serpent_wind,
+.sprite-serpent_wind_awakened,
+.sprite-skull_soldier_fire,
+.sprite-skull_soldier_water,
+.sprite-skull_soldier_wind,
+.sprite-sky_dancer_dark,
+.sprite-sky_dancer_dark_awakened,
+.sprite-sky_dancer_fire,
+.sprite-sky_dancer_fire_awakened,
+.sprite-sky_dancer_light,
+.sprite-sky_dancer_light_awakened,
+.sprite-sky_dancer_water,
+.sprite-sky_dancer_wind,
+.sprite-sky_dancer_wind_awakened,
+.sprite-slime_fire,
+.sprite-slime_water,
+.sprite-slime_wind,
+.sprite-succubus_dark,
+.sprite-succubus_dark_awakened,
+.sprite-succubus_fire,
+.sprite-succubus_fire_awakened,
+.sprite-succubus_light,
+.sprite-succubus_light_awakened,
+.sprite-succubus_water,
+.sprite-succubus_water_awakened,
+.sprite-succubus_wind,
+.sprite-succubus_wind_awakened,
+.sprite-surprise_box_dark,
+.sprite-surprise_box_fire,
+.sprite-surprise_box_light,
+.sprite-surprise_box_water,
+.sprite-surprise_box_wind,
+.sprite-sylph_dark,
+.sprite-sylph_dark_awakened,
+.sprite-sylph_fire,
+.sprite-sylph_fire_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/16.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-sea_emperor_water {
+    background-position: 0 0
+}
+.sprite-sea_emperor_water_awakened {
+    background-position: -50px 0
+}
+.sprite-sea_emperor_wind {
+    background-position: -100px 0
+}
+.sprite-sea_emperor_wind_awakened {
+    background-position: -150px 0
+}
+.sprite-serpent_dark {
+    background-position: -200px 0
+}
+.sprite-serpent_dark_awakened {
+    background-position: -250px 0
+}
+.sprite-serpent_fire {
+    background-position: -300px 0
+}
+.sprite-serpent_fire_awakened {
+    background-position: 0 -50px
+}
+.sprite-serpent_light {
+    background-position: -50px -50px
+}
+.sprite-serpent_light_awakened {
+    background-position: -100px -50px
+}
+.sprite-serpent_water {
+    background-position: -150px -50px
+}
+.sprite-serpent_water_awakened {
+    background-position: -200px -50px
+}
+.sprite-serpent_wind {
+    background-position: -250px -50px
+}
+.sprite-serpent_wind_awakened {
+    background-position: -300px -50px
+}
+.sprite-skull_soldier_fire {
+    background-position: 0 -100px
+}
+.sprite-skull_soldier_water {
+    background-position: -50px -100px
+}
+.sprite-skull_soldier_wind {
+    background-position: -100px -100px
+}
+.sprite-sky_dancer_dark {
+    background-position: -150px -100px
+}
+.sprite-sky_dancer_dark_awakened {
+    background-position: -200px -100px
+}
+.sprite-sky_dancer_fire {
+    background-position: -250px -100px
+}
+.sprite-sky_dancer_fire_awakened {
+    background-position: -300px -100px
+}
+.sprite-sky_dancer_light {
+    background-position: 0 -150px
+}
+.sprite-sky_dancer_light_awakened {
+    background-position: -50px -150px
+}
+.sprite-sky_dancer_water {
+    background-position: -100px -150px
+}
+.sprite-sky_dancer_water_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/16.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-sky_dancer_wind {
+    background-position: -200px -150px
+}
+.sprite-sky_dancer_wind_awakened {
+    background-position: -250px -150px
+}
+.sprite-slime_fire {
+    background-position: -300px -150px
+}
+.sprite-slime_water {
+    background-position: 0 -200px
+}
+.sprite-slime_wind {
+    background-position: -50px -200px
+}
+.sprite-succubus_dark {
+    background-position: -100px -200px
+}
+.sprite-succubus_dark_awakened {
+    background-position: -150px -200px
+}
+.sprite-succubus_fire {
+    background-position: -200px -200px
+}
+.sprite-succubus_fire_awakened {
+    background-position: -250px -200px
+}
+.sprite-succubus_light {
+    background-position: -300px -200px
+}
+.sprite-succubus_light_awakened {
+    background-position: 0 -250px
+}
+.sprite-succubus_water {
+    background-position: -50px -250px
+}
+.sprite-succubus_water_awakened {
+    background-position: -100px -250px
+}
+.sprite-succubus_wind {
+    background-position: -150px -250px
+}
+.sprite-succubus_wind_awakened {
+    background-position: -200px -250px
+}
+.sprite-surprise_box_dark {
+    background-position: -250px -250px
+}
+.sprite-surprise_box_fire {
+    background-position: -300px -250px
+}
+.sprite-surprise_box_light {
+    background-position: 0 -300px
+}
+.sprite-surprise_box_water {
+    background-position: -50px -300px
+}
+.sprite-surprise_box_wind {
+    background-position: -100px -300px
+}
+.sprite-sylph_dark {
+    background-position: -150px -300px
+}
+.sprite-sylph_dark_awakened {
+    background-position: -200px -300px
+}
+.sprite-sylph_fire {
+    background-position: -250px -300px
+}
+.sprite-sylph_fire_awakened {
+    background-position: -300px -300px
+}
+.sprite-sylph_light,
+.sprite-sylph_light_awakened,
+.sprite-sylph_water,
+.sprite-sylph_water_awakened,
+.sprite-sylph_wind,
+.sprite-sylph_wind_awakened,
+.sprite-sylphid_dark,
+.sprite-sylphid_dark_awakened,
+.sprite-sylphid_fire,
+.sprite-sylphid_fire_awakened,
+.sprite-sylphid_light,
+.sprite-sylphid_light_awakened,
+.sprite-sylphid_water,
+.sprite-sylphid_water_awakened,
+.sprite-sylphid_wind,
+.sprite-sylphid_wind_awakened,
+.sprite-taoist_dark,
+.sprite-taoist_dark_awakened,
+.sprite-taoist_fire,
+.sprite-taoist_fire_awakened,
+.sprite-taoist_light,
+.sprite-taoist_light_awakened,
+.sprite-taoist_water,
+.sprite-taoist_water_awakened,
+.sprite-taoist_wind_awakened,
+.sprite-undine_dark,
+.sprite-undine_dark_awakened,
+.sprite-undine_fire,
+.sprite-undine_fire_awakened,
+.sprite-undine_light,
+.sprite-undine_light_awakened,
+.sprite-undine_water,
+.sprite-undine_water_awakened,
+.sprite-undine_wind,
+.sprite-undine_wind_awakened,
+.sprite-vagabond_dark,
+.sprite-vagabond_dark_awakened,
+.sprite-vagabond_fire,
+.sprite-vagabond_fire_awakened,
+.sprite-vagabond_light,
+.sprite-vagabond_light_awakened,
+.sprite-vagabond_water,
+.sprite-vagabond_water_awakened,
+.sprite-vagabond_wind,
+.sprite-vagabond_wind_awakened,
+.sprite-valkyrja_dark,
+.sprite-valkyrja_dark_awakened,
+.sprite-valkyrja_fire {
+    background-image: url(/static/herders/images/monsters/sprite/17.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-sylph_light {
+    background-position: 0 0
+}
+.sprite-sylph_light_awakened {
+    background-position: -50px 0
+}
+.sprite-sylph_water {
+    background-position: -100px 0
+}
+.sprite-sylph_water_awakened {
+    background-position: -150px 0
+}
+.sprite-sylph_wind {
+    background-position: -200px 0
+}
+.sprite-sylph_wind_awakened {
+    background-position: -250px 0
+}
+.sprite-sylphid_dark {
+    background-position: -300px 0
+}
+.sprite-sylphid_dark_awakened {
+    background-position: 0 -50px
+}
+.sprite-sylphid_fire {
+    background-position: -50px -50px
+}
+.sprite-sylphid_fire_awakened {
+    background-position: -100px -50px
+}
+.sprite-sylphid_light {
+    background-position: -150px -50px
+}
+.sprite-sylphid_light_awakened {
+    background-position: -200px -50px
+}
+.sprite-sylphid_water {
+    background-position: -250px -50px
+}
+.sprite-sylphid_water_awakened {
+    background-position: -300px -50px
+}
+.sprite-sylphid_wind {
+    background-position: 0 -100px
+}
+.sprite-sylphid_wind_awakened {
+    background-position: -50px -100px
+}
+.sprite-taoist_dark {
+    background-position: -100px -100px
+}
+.sprite-taoist_dark_awakened {
+    background-position: -150px -100px
+}
+.sprite-taoist_fire {
+    background-position: -200px -100px
+}
+.sprite-taoist_fire_awakened {
+    background-position: -250px -100px
+}
+.sprite-taoist_light {
+    background-position: -300px -100px
+}
+.sprite-taoist_light_awakened {
+    background-position: 0 -150px
+}
+.sprite-taoist_water {
+    background-position: -50px -150px
+}
+.sprite-taoist_water_awakened {
+    background-position: -100px -150px
+}
+.sprite-taoist_wind {
+    background-image: url(/static/herders/images/monsters/sprite/17.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-taoist_wind_awakened {
+    background-position: -200px -150px
+}
+.sprite-undine_dark {
+    background-position: -250px -150px
+}
+.sprite-undine_dark_awakened {
+    background-position: -300px -150px
+}
+.sprite-undine_fire {
+    background-position: 0 -200px
+}
+.sprite-undine_fire_awakened {
+    background-position: -50px -200px
+}
+.sprite-undine_light {
+    background-position: -100px -200px
+}
+.sprite-undine_light_awakened {
+    background-position: -150px -200px
+}
+.sprite-undine_water {
+    background-position: -200px -200px
+}
+.sprite-undine_water_awakened {
+    background-position: -250px -200px
+}
+.sprite-undine_wind {
+    background-position: -300px -200px
+}
+.sprite-undine_wind_awakened {
+    background-position: 0 -250px
+}
+.sprite-vagabond_dark {
+    background-position: -50px -250px
+}
+.sprite-vagabond_dark_awakened {
+    background-position: -100px -250px
+}
+.sprite-vagabond_fire {
+    background-position: -150px -250px
+}
+.sprite-vagabond_fire_awakened {
+    background-position: -200px -250px
+}
+.sprite-vagabond_light {
+    background-position: -250px -250px
+}
+.sprite-vagabond_light_awakened {
+    background-position: -300px -250px
+}
+.sprite-vagabond_water {
+    background-position: 0 -300px
+}
+.sprite-vagabond_water_awakened {
+    background-position: -50px -300px
+}
+.sprite-vagabond_wind {
+    background-position: -100px -300px
+}
+.sprite-vagabond_wind_awakened {
+    background-position: -150px -300px
+}
+.sprite-valkyrja_dark {
+    background-position: -200px -300px
+}
+.sprite-valkyrja_dark_awakened {
+    background-position: -250px -300px
+}
+.sprite-valkyrja_fire {
+    background-position: -300px -300px
+}
+.sprite-valkyrja_fire_awakened,
+.sprite-valkyrja_light,
+.sprite-valkyrja_light_awakened,
+.sprite-valkyrja_water,
+.sprite-valkyrja_water_awakened,
+.sprite-valkyrja_wind,
+.sprite-valkyrja_wind_awakened,
+.sprite-vampire_dark,
+.sprite-vampire_dark_awakened,
+.sprite-vampire_fire,
+.sprite-vampire_fire_awakened,
+.sprite-vampire_light,
+.sprite-vampire_light_awakened,
+.sprite-vampire_water,
+.sprite-vampire_water_awakened,
+.sprite-vampire_wind,
+.sprite-vampire_wind_awakened,
+.sprite-varis_light,
+.sprite-viking_dark,
+.sprite-viking_dark_awakened,
+.sprite-viking_fire,
+.sprite-viking_fire_awakened,
+.sprite-viking_light,
+.sprite-viking_light_awakened,
+.sprite-viking_water_awakened,
+.sprite-viking_wind,
+.sprite-viking_wind_awakened,
+.sprite-warbear_dark,
+.sprite-warbear_dark_awakened,
+.sprite-warbear_fire,
+.sprite-warbear_fire_awakened,
+.sprite-warbear_light,
+.sprite-warbear_light_awakened,
+.sprite-warbear_water,
+.sprite-warbear_water_awakened,
+.sprite-warbear_wind,
+.sprite-warbear_wind_awakened,
+.sprite-werewolf_dark,
+.sprite-werewolf_dark_awakened,
+.sprite-werewolf_fire,
+.sprite-werewolf_fire_awakened,
+.sprite-werewolf_light,
+.sprite-werewolf_light_awakened,
+.sprite-werewolf_water,
+.sprite-werewolf_water_awakened,
+.sprite-werewolf_wind,
+.sprite-werewolf_wind_awakened,
+.sprite-yeti_dark {
+    background-image: url(/static/herders/images/monsters/sprite/18.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-valkyrja_fire_awakened {
+    background-position: 0 0
+}
+.sprite-valkyrja_light {
+    background-position: -50px 0
+}
+.sprite-valkyrja_light_awakened {
+    background-position: -100px 0
+}
+.sprite-valkyrja_water {
+    background-position: -150px 0
+}
+.sprite-valkyrja_water_awakened {
+    background-position: -200px 0
+}
+.sprite-valkyrja_wind {
+    background-position: -250px 0
+}
+.sprite-valkyrja_wind_awakened {
+    background-position: -300px 0
+}
+.sprite-vampire_dark {
+    background-position: 0 -50px
+}
+.sprite-vampire_dark_awakened {
+    background-position: -50px -50px
+}
+.sprite-vampire_fire {
+    background-position: -100px -50px
+}
+.sprite-vampire_fire_awakened {
+    background-position: -150px -50px
+}
+.sprite-vampire_light {
+    background-position: -200px -50px
+}
+.sprite-vampire_light_awakened {
+    background-position: -250px -50px
+}
+.sprite-vampire_water {
+    background-position: -300px -50px
+}
+.sprite-vampire_water_awakened {
+    background-position: 0 -100px
+}
+.sprite-vampire_wind {
+    background-position: -50px -100px
+}
+.sprite-vampire_wind_awakened {
+    background-position: -100px -100px
+}
+.sprite-varis_light {
+    background-position: -150px -100px
+}
+.sprite-viking_dark {
+    background-position: -200px -100px
+}
+.sprite-viking_dark_awakened {
+    background-position: -250px -100px
+}
+.sprite-viking_fire {
+    background-position: -300px -100px
+}
+.sprite-viking_fire_awakened {
+    background-position: 0 -150px
+}
+.sprite-viking_light {
+    background-position: -50px -150px
+}
+.sprite-viking_light_awakened {
+    background-position: -100px -150px
+}
+.sprite-viking_water {
+    background-image: url(/static/herders/images/monsters/sprite/18.png);
+    width: 50px;
+    height: 50px;
+    background-position: -150px -150px
+}
+.sprite-viking_water_awakened {
+    background-position: -200px -150px
+}
+.sprite-viking_wind {
+    background-position: -250px -150px
+}
+.sprite-viking_wind_awakened {
+    background-position: -300px -150px
+}
+.sprite-warbear_dark {
+    background-position: 0 -200px
+}
+.sprite-warbear_dark_awakened {
+    background-position: -50px -200px
+}
+.sprite-warbear_fire {
+    background-position: -100px -200px
+}
+.sprite-warbear_fire_awakened {
+    background-position: -150px -200px
+}
+.sprite-warbear_light {
+    background-position: -200px -200px
+}
+.sprite-warbear_light_awakened {
+    background-position: -250px -200px
+}
+.sprite-warbear_water {
+    background-position: -300px -200px
+}
+.sprite-warbear_water_awakened {
+    background-position: 0 -250px
+}
+.sprite-warbear_wind {
+    background-position: -50px -250px
+}
+.sprite-warbear_wind_awakened {
+    background-position: -100px -250px
+}
+.sprite-werewolf_dark {
+    background-position: -150px -250px
+}
+.sprite-werewolf_dark_awakened {
+    background-position: -200px -250px
+}
+.sprite-werewolf_fire {
+    background-position: -250px -250px
+}
+.sprite-werewolf_fire_awakened {
+    background-position: -300px -250px
+}
+.sprite-werewolf_light {
+    background-position: 0 -300px
+}
+.sprite-werewolf_light_awakened {
+    background-position: -50px -300px
+}
+.sprite-werewolf_water {
+    background-position: -100px -300px
+}
+.sprite-werewolf_water_awakened {
+    background-position: -150px -300px
+}
+.sprite-werewolf_wind {
+    background-position: -200px -300px
+}
+.sprite-werewolf_wind_awakened {
+    background-position: -250px -300px
+}
+.sprite-yeti_dark {
+    background-position: -300px -300px
+}
+.sprite-yeti_dark_awakened,
+.sprite-yeti_fire,
+.sprite-yeti_fire_awakened,
+.sprite-yeti_light,
+.sprite-yeti_light_awakened,
+.sprite-yeti_water,
+.sprite-yeti_water_awakened,
+.sprite-yeti_wind,
+.sprite-yeti_wind_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/19.png);
+    width: 50px;
+    height: 50px
+}
+.sprite-yeti_dark_awakened {
+    background-position: 0 0
+}
+.sprite-yeti_fire {
+    background-position: -50px 0
+}
+.sprite-yeti_fire_awakened {
+    background-position: -100px 0
+}
+.sprite-yeti_light {
+    background-position: 0 -50px
+}
+.sprite-yeti_light_awakened {
+    background-position: -50px -50px
+}
+.sprite-yeti_water {
+    background-position: -100px -50px
+}
+.sprite-yeti_water_awakened {
+    background-position: 0 -100px
+}
+.sprite-yeti_wind {
+    background-position: -50px -100px
+}
+.sprite-yeti_wind_awakened {
+    background-position: -100px -100px
+}
+
+.sprite-dark_high,
+.sprite-dark_low,
+.sprite-dark_mid,
+.sprite-fire_high,
+.sprite-fire_low,
+.sprite-fire_mid,
+.sprite-light_high,
+.sprite-light_low,
+.sprite-light_mid,
+.sprite-magic_high,
+.sprite-magic_low,
+.sprite-magic_mid,
+.sprite-water_high,
+.sprite-water_low,
+.sprite-water_mid,
+.sprite-wind_high,
+.sprite-wind_low,
+.sprite-wind_mid {
+    background-image: url(/static/herders/images/essences/sprite/1.png);
+    width: 50px;
+    height: 50px;
+}
+
+.sprite-dark_high {
+    background-position: 0 0;
+}
+
+.sprite-dark_low {
+    background-position: -50px 0;
+}
+
+.sprite-dark_mid {
+    background-position: -100px 0;
+}
+
+.sprite-fire_high {
+    background-position: -150px 0;
+}
+
+.sprite-fire_low {
+    background-position: 0 -50px;
+}
+
+.sprite-fire_mid {
+    background-position: -50px -50px;
+}
+
+.sprite-light_high {
+    background-position: -100px -50px;
+}
+
+.sprite-light_low {
+    background-position: -150px -50px;
+}
+
+.sprite-light_mid {
+    background-position: 0 -100px;
+}
+
+.sprite-magic_high {
+    background-position: -50px -100px;
+}
+
+.sprite-magic_low {
+    background-position: -100px -100px;
+}
+
+.sprite-magic_mid {
+    background-position: -150px -100px;
+}
+
+.sprite-water_high {
+    background-position: 0 -150px;
+}
+
+.sprite-water_low {
+    background-position: -50px -150px;
+}
+
+.sprite-water_mid {
+    background-position: -100px -150px;
+}
+
+.sprite-wind_high {
+    background-position: -150px -150px;
+}
+
+.sprite-wind_low {
+    background-position: -200px 0;
+}
+
+.sprite-wind_mid {
+    background-position: -200px -50px;
+}

@@ -5,16 +5,16 @@ from herders.models import Monster, MonsterSkill, MonsterLeaderSkill, MonsterSki
 
 
 # Read-only monster database stuff.
-class MonsterSourceSerializer(serializers.HyperlinkedModelSerializer):
+class MonsterSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonsterSource
-        exclude = ('icon_filename', 'meta_order')
+        exclude = 'meta_order'
 
 
-class MonsterSkillEffectSerializer(serializers.HyperlinkedModelSerializer):
+class MonsterSkillEffectSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonsterSkillEffect
-        exclude = ('icon_filename',)
+        fields = ('pk', 'name', 'is_buff', 'description', 'icon_filename')
 
 
 class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
@@ -22,7 +22,6 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = MonsterSkill
-        exclude = ('icon_filename',)
 
 
 class MonsterLeaderSkillSerializer(serializers.HyperlinkedModelSerializer):
@@ -34,16 +33,15 @@ class MonsterLeaderSkillSerializer(serializers.HyperlinkedModelSerializer):
 class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Monster
-        fields = (
-            'pk', 'name', 'image_filename'
-        )
+        fields = ('pk', 'name', 'image_filename')
 
 
 class MonsterSerializer(serializers.HyperlinkedModelSerializer):
-    skills = MonsterSkillSerializer(many=True, read_only=True)
-    source = MonsterSourceSerializer(many=True, read_only=True)
     awakens_from = AwakensMonsterSerializer(read_only=True)
     awakens_to = AwakensMonsterSerializer(read_only=True)
+    source = MonsterSourceSerializer(many=True, read_only=True)
+    skills = MonsterSkillSerializer(many=True, read_only=True)
+    # all_skill_effects = MonsterSkillEffectSerializer(many=True, read_only=True)
 
     class Meta:
         model = Monster
@@ -63,18 +61,15 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
 class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
     awakens_from = AwakensMonsterSerializer(read_only=True)
     awakens_to = AwakensMonsterSerializer(read_only=True)
+    all_skill_effects = MonsterSkillEffectSerializer(many=True, read_only=True)
 
     class Meta:
         model = Monster
         fields = (
             'pk', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
-            'obtainable', 'can_awaken', 'is_awakened',
-            'awakens_from', 'awakens_to',
-            'awaken_ele_mats_low', 'awaken_ele_mats_mid', 'awaken_ele_mats_high',
-            'awaken_magic_mats_low', 'awaken_magic_mats_mid', 'awaken_magic_mats_high',
-            'fusion_food',
+            'obtainable', 'can_awaken', 'is_awakened', 'awakens_from', 'awakens_to', 'get_awakening_materials',
+            'fusion_food', 'all_skill_effects',
         )
-
 
 
 # Individual collection stuff

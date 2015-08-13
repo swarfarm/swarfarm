@@ -215,12 +215,12 @@ class Monster(models.Model):
             return None
 
     def all_skill_effects(self):
-        effects = MonsterSkillEffect.objects.filter(pk__in=self.skills.all().values_list('skill_effect', flat=True))
+        return MonsterSkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))
 
-        if len(effects) > 0:
-            return effects
-        else:
-            return None
+#        if len(effects) > 0:
+#            return effects
+#        else:
+#            return None
 
     def farmable(self):
         if self.is_awakened and self.awakens_from is not None:

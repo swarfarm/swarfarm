@@ -5,44 +5,29 @@
 {% for monster in data %}
 <tr>
     <td class="monster-image">
-        <div>
-            <a href="{% url 'herders:bestiary_detail' monster_id=monster.pk %}">
-                <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}" class="monster-thumb"/>
-                <span>
-                    {% for x in monster.base_stars|get_range %}
-                        {% if monster.is_awakened %}
-                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                        {% elif monster.can_awaken %}
-                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                        {% else %}
-                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                        {% endif %}
-                    {% endfor %}
-                </span>
-            </a>
-        </div>
+        <a href="{% url 'herders:bestiary_detail' monster_id=monster.pk %}">
+            <span class="sprite sprite-{{ monster.image_filename|remove_extension }}"></span>
+        </a>
     </td>
-    <td class="monster-name">{{ monster.name|title }}</td>
-    <td class="monster-stars-column">{{ monster.base_stars }}<span class="glyphicon glyphicon-star"></span></td>
-    <td class="monster-element">
-        <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" />
-        <span>{{ monster.element }}</span>
+    <td><a href="{% url 'herders:bestiary_detail' monster_id=monster.pk %}">{{ monster.name|title }}</a></td>
+    <td>{{ monster.base_stars }}<span class="glyphicon glyphicon-star"></span></td>
+    <td>
+        <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" class="monster-element" />
+        <span class="hidden">{{ monster.element }}</span>
     </td>
     <td class="monster-type">{{ monster.archetype|title }}</td>
     <td class="monster-awakens">
         {% if monster.awakens_to %}
-            <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_to.pk %}">
-                <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_to.image_filename }}" />
-                {{ monster.awakens_to.name|title }}
-            </a>
+        <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_to.pk %}">
+            <span class="sprite sprite-{{ monster.awakens_to.image_filename|remove_extension }}"></span>{{ monster.awakens_to.name|title }}
+        </a>
         {% endif %}
     </td>
     <td class="monster-awakens">
         {% if monster.awakens_from %}
-            <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_from.pk %}">
-                <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_from.image_filename }}" />
-                {{ monster.awakens_from.name|title }}
-            </a>
+        <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_from.pk %}">
+            <span class="sprite sprite-{{ monster.awakens_from.image_filename|remove_extension }}"></span>{{ monster.awakens_from.name|title }}
+        </a>
         {% endif %}
     </td>
     <td class="monster-skill-effects">

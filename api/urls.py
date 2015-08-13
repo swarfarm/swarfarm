@@ -5,10 +5,10 @@ from . import views
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'bestiary', views.MonsterViewSet)
-router.register(r'bestiary/skill', views.MonsterSkillViewSet)
-router.register(r'bestiary/skill/leader', views.MonsterLeaderSkillViewSet)
-router.register(r'bestiary/skill/effect', views.MonsterSkillEffectViewSet)
-router.register(r'bestiary/source', views.MonsterSourceViewSet)
+router.register(r'skill', views.MonsterSkillViewSet)
+router.register(r'skill_effect', views.MonsterSkillEffectViewSet)
+router.register(r'leader_skill', views.MonsterLeaderSkillViewSet)
+router.register(r'source', views.MonsterSourceViewSet)
 
 router.register(r'summoner', views.SummonerViewSet)
 router.register(r'runes', views.RuneInstanceViewSet)

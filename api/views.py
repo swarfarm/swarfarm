@@ -24,7 +24,7 @@ class BestiarySetPagination(PageNumberPagination):
 
 # Django REST framework views
 class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Monster.objects.all()
+    queryset = Monster.objects.all()[:50]
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
 
     pagination_class = BestiarySetPagination
@@ -66,7 +66,7 @@ class MonsterLeaderSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSe
     pagination_class = BestiarySetPagination
 
 
-class MonsterSkillEffectViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
+class MonsterSkillEffectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterSkillEffect.objects.all()
     serializer_class = MonsterSkillEffectSerializer
     pagination_class = BestiarySetPagination

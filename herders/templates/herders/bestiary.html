@@ -148,7 +148,7 @@
                                 <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" class="monster-element" />
                                 <span class="hidden">{{ monster.element }}</span>
                             </td>
-                            <td class="monster-type">{{ monster.archetype|title }}</td>
+                            <td class="monster-type">{{ monster.get_archetype_display }}</td>
                             <td class="monster-awakens">
                                 {% if monster.awakens_to %}
                                 <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_to.pk %}">

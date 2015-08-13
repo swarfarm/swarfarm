@@ -8,7 +8,7 @@ from herders.models import Monster, MonsterSkill, MonsterLeaderSkill, MonsterSki
 class MonsterSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonsterSource
-        exclude = 'meta_order'
+        exclude = ['meta_order', ]
 
 
 class MonsterSkillEffectSerializer(serializers.ModelSerializer):

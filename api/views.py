@@ -24,7 +24,7 @@ class BestiarySetPagination(PageNumberPagination):
 
 # Django REST framework views
 class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Monster.objects.all()[:50]
+    queryset = Monster.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
 
     pagination_class = BestiarySetPagination

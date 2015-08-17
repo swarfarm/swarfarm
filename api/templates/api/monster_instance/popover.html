@@ -1,0 +1,46 @@
+{% load staticfiles %}
+{% load utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="row">
+    <table class="table table-condensed">
+        <tbody>
+        <tr>
+            <td>Level</td>
+            <td>{{ instance.level }} / {{ instance.stars|multiply:5|add:10 }}</td>
+        </tr>
+        <tr>
+            <td>HP</td>
+            <td>{{ instance.hp }}</td>
+        </tr>
+        <tr>
+            <td>ATK</td>
+            <td>{{ instance.attack }}</td>
+        </tr>
+        <tr>
+            <td>DEF</td>
+            <td>{{ instance.defense }}</td>
+        </tr>
+        <tr>
+            <td>SPD</td>
+            <td>{{ instance.speed }}</td>
+        </tr>
+        <tr>
+            <td>CRI Rate</td>
+            <td>{{ instance.crit_rate }}</td>
+        </tr>
+        <tr>
+            <td>CRI Dmg</td>
+            <td>{{ instance.crit_damage }}</td>
+        </tr>
+        <tr>
+            <td>Resistance</td>
+            <td>{{ instance.resistance }}</td>
+        </tr>
+        <tr>
+            <td>Accuracy</td>
+            <td>{{ instance.accuracy }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

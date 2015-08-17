@@ -87,24 +87,23 @@ class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterInstance.objects.none()
     serializer_class = MonsterInstanceSerializer
     pagination_class = PersonalCollectionSetPagination
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
 
     def get_queryset(self):
-        profile_name = self.kwargs.get('profile_name', None)
-        instance_id = self.kwargs.get('instance_id', None)
+        # We do not want to allow retrieving all instances
+        instance_id = self.kwargs.get('pk', None)
 
-        if profile_name:
-            summoner = get_object_or_404(Summoner, user__username=profile_name)
-            is_owner = (self.request.user.is_authenticated() and summoner.user == self.request.user)
-
-            if is_owner or summoner.public:
-                if instance_id:
-                    # Return single monster
-                    return get_object_or_404(MonsterInstance, pk=instance_id)
-                else:
-                    # Return list of monsters owned
-                    return MonsterInstance.objects.filter(owner=summoner)
+        if instance_id:
+            return MonsterInstance.objects.filter(pk=instance_id)
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return MonsterInstance.objects.none()
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super(MonsterInstanceViewSet, self).retrieve(request, *args, **kwargs)
+
+        if request.accepted_renderer.format == 'html':
+            return Response({'instance': response.data}, template_name='api/monster_instance/popover.html')
+        return response
 
 
 class RuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):

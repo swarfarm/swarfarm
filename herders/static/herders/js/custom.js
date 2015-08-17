@@ -9,6 +9,24 @@ $(function () {
   })
 });
 
+//Custom popovers for loading AJAX content
+$('body').on('hover', '*[data-instance-id]', function(event){
+    if (event.type === 'mouseenter') {
+        var el=$(this);
+        var url = API_URL + 'instance/' + e.data('instance-id') + '.html';
+        $.get(url, function(d) {
+            el.popover({
+                trigger: 'hover',
+                content: d,
+                html: true
+            }).popover('show');
+        });
+    }
+    else {
+        $(this).popover('hide');
+    }
+});
+
 //Modal management scripts
 $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()

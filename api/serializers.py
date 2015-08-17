@@ -73,25 +73,11 @@ class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 # Individual collection stuff
+
 class SummonerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Summoner
         fields = ('id', 'summoner_name', 'global_server',)
-
-
-class MonsterInstanceSerializer(serializers.ModelSerializer):
-    monster = MonsterSerializer(read_only=True)
-
-    class Meta:
-        model = MonsterInstance
-        fields = (
-            'pk', 'monster', 'stars', 'level',
-            'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
-            'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes',
-            'hp', 'attack', 'defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
-            'team_leader', 'team_set', 'runeinstance_set'
-        )
-        depth = 1
 
 
 class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
@@ -107,3 +93,21 @@ class TeamGroupSerializer(serializers.HyperlinkedModelSerializer):
 class TeamSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Team
+
+
+class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
+    monster = MonsterSerializer(read_only=True)
+    # team_leader = TeamSerializer(many=True)
+    # team_set = TeamSerializer(many=True)
+    # runeinstance_set = RuneInstanceSerializer(many=True)
+
+    class Meta:
+        model = MonsterInstance
+        fields = (
+            'pk', 'monster', 'stars', 'level',
+            'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
+            'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes',
+            'hp', 'attack', 'defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
+            # 'team_leader', 'team_set', 'runeinstance_set'
+        )
+        depth = 1

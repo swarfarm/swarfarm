@@ -267,7 +267,7 @@ class MonsterSkill(models.Model):
         return self.name + ' - ' + self.icon_filename
 
     class Meta:
-        ordering = ['name', 'icon_filename']
+        ordering = ['slot', 'name']
 
 
 class MonsterLeaderSkill(models.Model):

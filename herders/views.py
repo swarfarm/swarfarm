@@ -1007,8 +1007,15 @@ def bestiary_sanity_checks(request):
             if len(monster_errors) > 0:
                 errors[str(monster)] = monster_errors
 
+        prev_skill_slot = 0
         for skill in MonsterSkill.objects.all():
             skill_errors = []
+
+            # Check that skill slots are not skipped
+            if skill.slot - prev_skill_slot > 1 and prev_skill_slot >= 1:
+                skill_errors.append('slot skipped from previous skill')
+            prev_skill_slot = skill.slot
+
             # Check max level of skill = num lines in level up progress + 1
             if skill.max_level > 1:
                 line_count = len(skill.level_progress_description.split('\r\n'))

@@ -206,7 +206,7 @@
                         {% for instance in monster_stable %}
                             <tr>
                                 <td class="monster-image">
-                                    <div>
+                                    <div data-instance-id="{{ instance.pk.hex }}">
                                         {% if is_owner %}
                                             <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
                                         {% else %}

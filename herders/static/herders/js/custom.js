@@ -10,19 +10,25 @@ $(function () {
 });
 
 //Custom popovers for loading AJAX content
-$('body').on('hover', '*[data-instance-id]', function(event){
+$('*[data-instance-id]').hover(function(event) {
     if (event.type === 'mouseenter') {
-        var el=$(this);
-        var url = API_URL + 'instance/' + e.data('instance-id') + '.html';
-        $.get(url, function(d) {
+        var el = $(this);
+        var url = API_URL + 'instance/' + el.data('instance-id') + '.html';
+        $.get(url, function (d) {
             el.popover({
-                trigger: 'hover',
+                trigger: 'manual',
+                title: 'Stats',
                 content: d,
-                html: true
-            }).popover('show');
+                html: true,
+                container: 'body',
+                template: '<div class="monster-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+            });
+
+            if (el.is(":hover")) {
+                el.popover('show');
+            }
         });
-    }
-    else {
+    } else {
         $(this).popover('hide');
     }
 });

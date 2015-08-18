@@ -2,13 +2,9 @@
 {% load utils %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="row">
+<div class="">
     <table class="table table-condensed">
         <tbody>
-        <tr>
-            <td>Level</td>
-            <td>{{ instance.level }} / {{ instance.stars|multiply:5|add:10 }}</td>
-        </tr>
         <tr>
             <td>HP</td>
             <td>{{ instance.hp }}</td>
@@ -27,20 +23,23 @@
         </tr>
         <tr>
             <td>CRI Rate</td>
-            <td>{{ instance.crit_rate }}</td>
+            <td>{{ instance.crit_rate }}%</td>
         </tr>
         <tr>
             <td>CRI Dmg</td>
-            <td>{{ instance.crit_damage }}</td>
+            <td>{{ instance.crit_damage }}%</td>
         </tr>
         <tr>
             <td>Resistance</td>
-            <td>{{ instance.resistance }}</td>
+            <td>{{ instance.resistance }}%</td>
         </tr>
         <tr>
             <td>Accuracy</td>
-            <td>{{ instance.accuracy }}</td>
+            <td>{{ instance.accuracy }}%</td>
         </tr>
         </tbody>
     </table>
+</div>
+<div class="">
+
 </div>

@@ -656,3 +656,11 @@ span.monster-source>span {
     background-color: #245269;
     color: #fff;
 }
+
+.monster-stats>.popover-content {
+    padding: 0;
+}
+
+.monster-stats table {
+    margin-bottom: 0;
+}

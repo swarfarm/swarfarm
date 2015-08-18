@@ -403,7 +403,7 @@ class EditMonsterInstanceForm(ModelForm):
 
     class Meta:
         model = MonsterInstance
-        exclude = ('owner', 'monster', 'level_1_skill', 'level_2_skill', 'level_3_skill', 'level_4_skill')
+        exclude = ('owner', 'monster', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level')
 
 
 class PowerUpMonsterInstanceForm(forms.Form):

@@ -74,7 +74,7 @@
                             {% for buff in buff_list %}
                             <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ buff.pk }}-{{ buff.name|slugify }}" data-filter-function=" && ">
                                 {% if buff.icon_filename %}
-                                <img src="{{ img_url_prefix }}/buffs/{{ buff.icon_filename }}" />
+                                <img src="{{ img_url_prefix }}buffs/{{ buff.icon_filename }}" />
                                 {% else %}
                                 <span>{{ buff.name }}</span>
                                 {% endif %}
@@ -89,7 +89,7 @@
                             {% for debuff in debuff_list %}
                             <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ debuff.pk }}-{{ debuff.name|slugify }}" data-filter-function=" && ">
                                 {% if debuff.icon_filename %}
-                                <img src="{{ img_url_prefix }}/buffs/{{ debuff.icon_filename }}" />
+                                <img src="{{ img_url_prefix }}buffs/{{ debuff.icon_filename }}" />
                                 {% else %}
                                 <span>{{ debuff.name }}</span>
                                 {% endif %}
@@ -104,7 +104,7 @@
                             {% for effect in other_effect_list %}
                             <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ effect.pk }}-{{ effect.name|slugify }}" data-filter-function=" && ">
                                 {% if effect.icon_filename %}
-                                <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}" />
+                                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" />
                                 {% else %}
                                 <span>{{ effect.name }} </span>
                                 {% endif %}
@@ -166,7 +166,7 @@
                             <td class="monster-skill-effects">
                                 {% for effect in monster.all_skill_effects %}
                                     {% if effect.icon_filename %}
-                                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
+                                        <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"
                                                 data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
                                     {% else %}
                                         <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">

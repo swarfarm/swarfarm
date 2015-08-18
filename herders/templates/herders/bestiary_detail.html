@@ -99,7 +99,7 @@
                                 <tbody>
                                 {% if base_monster_leader_skill %}
                                 <tr>
-                                    <td class="monster-image"><img src="{{ img_url_prefix }}/skills/leader/{{ base_monster_leader_skill.icon_filename }}" class="monster-thumb"/></td>
+                                    <td class="monster-image"><img src="{{ img_url_prefix }}skills/leader/{{ base_monster_leader_skill.icon_filename }}" class="monster-thumb"/></td>
                                     <td>Leader Skill</td>
                                     <td>{{ base_monster_leader_skill.skill_string }}</td>
                                     <td></td>
@@ -113,7 +113,7 @@
                                     {% endif %}
                                     >
                                         <div style="position:relative">
-                                            <img src="{{ img_url_prefix }}/skills/{{ skill.icon_filename }}" class="monster-thumb" />
+                                            <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" />
                                             {% if not skill.passive %}
                                             <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
                                             {% endif %}
@@ -124,7 +124,7 @@
                                     <td width="100">
                                         {% for effect in skill.skill_effect.all %}
                                             {% if effect.icon_filename %}
-                                            <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                                            <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
                                                     data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
                                                     />
                                             {% else %}
@@ -372,7 +372,7 @@
                                 <tbody>
                                 {% if awakened_monster_leader_skill %}
                                 <tr>
-                                    <td class="monster-image"><img src="{{ img_url_prefix }}/skills/leader/{{ awakened_monster_leader_skill.icon_filename }}"  class="monster-thumb"/></td>
+                                    <td class="monster-image"><img src="{{ img_url_prefix }}skills/leader/{{ awakened_monster_leader_skill.icon_filename }}"  class="monster-thumb"/></td>
                                     <td>Leader Skill</td>
                                     <td>{{ awakened_monster_leader_skill.skill_string }}</td>
                                     <td></td>
@@ -386,7 +386,7 @@
                                     {% endif %}
                                     >
                                         <div style="position:relative">
-                                            <img src="{{ img_url_prefix }}/skills/{{ skill.icon_filename }}" class="monster-thumb" />
+                                            <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" />
                                             {% if not skill.passive %}
                                             <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
                                             {% endif %}
@@ -396,7 +396,7 @@
                                     <td width="100">
                                         {% for effect in skill.skill_effect.all %}
                                             {% if effect.icon_filename %}
-                                            <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                                            <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
                                                     data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
                                                     />
                                             {% else %}

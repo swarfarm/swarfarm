@@ -17,7 +17,7 @@ $('*[data-instance-id]').hover(function(event) {
         $.get(url, function (d) {
             el.popover({
                 trigger: 'manual',
-                title: 'Stats',
+                //title: 'Stats',
                 content: d,
                 html: true,
                 container: 'body',

@@ -131,7 +131,7 @@
                             {% for buff in buff_list %}
                             <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="{{ buff.pk }}-{{ buff.name|slugify }}" data-filter-function=" && ">
                                 {% if buff.icon_filename %}
-                                <img src="{{ img_url_prefix }}/buffs/{{ buff.icon_filename }}" />
+                                <img src="{{ img_url_prefix }}buffs/{{ buff.icon_filename }}" />
                                 {% else %}
                                 <span>{{ buff.name }}</span>
                                 {% endif %}
@@ -146,7 +146,7 @@
                             {% for debuff in debuff_list %}
                             <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="{{ debuff.pk }}-{{ debuff.name|slugify }}" data-filter-function=" && ">
                                 {% if debuff.icon_filename %}
-                                <img src="{{ img_url_prefix }}/buffs/{{ debuff.icon_filename }}" />
+                                <img src="{{ img_url_prefix }}buffs/{{ debuff.icon_filename }}" />
                                 {% else %}
                                 <span>{{ debuff.name }}</span>
                                 {% endif %}
@@ -161,7 +161,7 @@
                             {% for effect in other_effect_list %}
                             <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="{{ effect.pk }}-{{ effect.name|slugify }}" data-filter-function=" && ">
                                 {% if effect.icon_filename %}
-                                <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}" />
+                                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" />
                                 {% else %}
                                 <span>{{ effect.name }} </span>
                                 {% endif %}
@@ -206,7 +206,7 @@
                         {% for instance in monster_stable %}
                             <tr>
                                 <td class="monster-image">
-                                    <div data-instance-id="{{ instance.pk.hex }}">
+                                    <div data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }}">
                                         {% if is_owner %}
                                             <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ request.path }}">
                                         {% else %}
@@ -252,14 +252,14 @@
                                 <td><span class="hidden">{{ instance.priority }}</span>{{ instance.get_priority_display }}</td>
                                 <td class="monster-leader-skill">
                                     {% if instance.monster.leader_skill %}
-                                    <img src="{{ img_url_prefix }}/skills/leader/{{ instance.monster.leader_skill.icon_filename }}"
+                                    <img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}"
                                          data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
                                     {% endif %}
                                 </td>
                                 <td class="monster-skill-effects">
                                 {% for effect in instance.monster.all_skill_effects %}
                                     {% if effect.icon_filename %}
-                                        <img src="{{ img_url_prefix }}/buffs/{{ effect.icon_filename }}"
+                                        <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"
                                                 data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
                                                 />
                                     {% else %}

@@ -126,8 +126,10 @@ footer {
     padding-bottom: 0;
 }
 
-.monster-image>div {
+.monster-image>div,
+div.monster-image {
     position: relative;
+    display: inline-block;
 }
 
 .monster-image {
@@ -662,5 +664,13 @@ span.monster-source>span {
 }
 
 .monster-stats table {
-    margin-bottom: 0;
+    margin: 3px;
+}
+
+.monster-stats td {
+    padding: 3px 0;
+}
+
+.monster-stats>.popover-title {
+    padding: 6px 3px;
 }

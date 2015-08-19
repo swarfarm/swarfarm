@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 from .forms import FeedbackForm
 
+
 @login_required
 def index(request):
     form = FeedbackForm(request.POST or None)

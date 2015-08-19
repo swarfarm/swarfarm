@@ -1,16 +1,15 @@
-from django import forms
 from django.forms import ModelForm
-from django.core.validators import RegexValidator
 
 from .models import Feedback
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML
+from crispy_forms.layout import Submit, Div, Layout, Field
 from crispy_forms.bootstrap import FormActions
 
 from captcha.fields import ReCaptchaField
 
-class FeedbackForm(forms.ModelForm):
+
+class FeedbackForm(ModelForm):
     captcha = ReCaptchaField()
 
     def __init__(self, *args, **kwargs):
@@ -22,7 +21,6 @@ class FeedbackForm(forms.ModelForm):
         self.helper.layout = Layout(
             Div(
                 Field('topic'),
-                Field('level'),
                 Field('subject'),
                 Field('feedback'),
                 Field('captcha'),

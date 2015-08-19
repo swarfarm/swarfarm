@@ -177,7 +177,6 @@
               ga('create', 'UA-63688026-1', 'auto');
               ga('send', 'pageview');
             </script>
-            {% include 'autocomplete_light/static.html' %}
             <script type="text/javascript" src="{% static "herders/js/bootstrap.min.js" %}"></script>
             <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
             <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
@@ -186,5 +185,7 @@
             {% if profile_name %}var PROFILE_NAME = '{{ profile_name }}';{% endif %}
             var API_URL = '{% url 'api-root' %}';
         </script>
+
+        {% include 'autocomplete_light/static.html' %}
     </body>
 </html>

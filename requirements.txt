@@ -4,7 +4,7 @@ bcrypt
 redis
 django-redis-cache
 django-autocomplete-light
-django-crispy-forms
+django-crispy-forms==1.5.0
 django-markdown-deux
 django-recaptcha
 django-suit

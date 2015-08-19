@@ -310,9 +310,6 @@ def monster_instance_edit(request, profile_name, instance_id):
 
                 messages.success(request, 'Saved changes to %s.' % monster)
                 return redirect(return_path)
-            else:
-                # Redisplay form with validation error messages
-                context['validation_errors'] = form.non_field_errors()
     else:
         raise PermissionDenied()
 
@@ -688,6 +685,26 @@ def fusion_progress(request, profile_name):
         return render(request, 'herders/profile/profile_fusion.html', context)
     else:
         return render(request, 'herders/profile/not_public.html', context)
+
+
+def fusion_perform(request, profile_name, fusion_product_id):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:fusion', kwargs={'profile_name': profile_name})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    context = {
+        'view': 'fusion',
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'return_path': return_path,
+        'is_owner': is_owner,
+    }
+
+    fusion = Fusion.objects.get(product__pk=fusion_product_id)
+
 
 
 def teams(request, profile_name):

@@ -933,6 +933,9 @@ def bestiary_detail(request, monster_id):
         'view': 'bestiary',
     }
 
+    if request.user.is_authenticated():
+        context['profile_name'] = request.user.username
+
     if monster.is_awakened and monster.awakens_from is not None:
         base_monster = monster.awakens_from
         awakened_monster = monster

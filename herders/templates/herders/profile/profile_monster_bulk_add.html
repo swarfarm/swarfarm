@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load utils %}
+
+{% block title %}Bulk Add Monsters - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    {% if validation_errors %}
+        <div class="alert alert-danger" role="alert">
+            Please fix the following errors:
+            <ul>
+                {% for error,error_string in validation_errors.iteritems %}
+                <li>{{ error_string }}</li>
+                {% endfor %}
+                {% for dict in form_errors %}
+                    {% for error in dict.values %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post" action="{{ bulk_add_formset_action }}" class="form-inline" id="bulkAddFormset" data-formset-prefix="{{ bulk_add_formset.prefix }}">
+        <div data-formset-body>
+            {{ bulk_add_formset.management_form|crispy }}
+            {% for form in bulk_add_formset %}
+            <div class="row" data-formset-form>
+                {% crispy form %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="row">
+            <div class="form-actions">
+                <button type="button" class="btn btn-default" data-formset-add>Add Another</button>
+                <input type="submit" name="submit" value="Submit" class="btn btn-primary" id="submit-id-submit"/>
+                <a href="{{ return_path }}" class="btn btn-link">Cancel</a>
+            </div>
+        </div>
+
+        <script type="form-template" data-formset-empty-form>
+            {% autoescape off %}
+                <div class="row "data-formset-form>
+                    {% crispy bulk_add_formset.empty_form %}
+                </div>
+            {% endautoescape %}
+        </script>
+    </form>
+
+<p>{{ bulk_add_formset.media }}</p>
+{% endblock content %}
+
+{% block javascript %}
+    <script src="{% static 'herders/js/jquery.formset.js' %}"></script>
+    <script>
+        var formset = $('#bulkAddFormset');
+        formset.formset({
+            animateForms: false
+        }).on('formAdded', function() {
+            $('.rating').rating();
+        });
+        // TODO: Set stars based on api call as per normal add monster routine
+    </script>
+{% endblock javascript %}

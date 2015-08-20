@@ -13,9 +13,7 @@ from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import RegisterUserForm, CrispyChangeUsernameForm, AddMonsterInstanceForm, EditMonsterInstanceForm, AwakenMonsterInstanceForm, \
-    PowerUpMonsterInstanceForm, EditEssenceStorageForm, EditSummonerForm, EditUserForm, EditTeamForm, AddTeamGroupForm, \
-    DeleteTeamGroupForm
+from .forms import *
 from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
 from .fusion import essences_missing, total_awakening_cost
 
@@ -256,6 +254,43 @@ def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
         return redirect(return_path)
     else:
         return HttpResponseForbidden()
+
+
+@login_required()
+def monster_instance_bulk_add(request, profile_name):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    BulkAddFormset = formset_factory(BulkAddMonsterInstanceForm, extra=5, max_num=50)
+
+    if request.method == 'POST':
+        formset = BulkAddFormset(request.POST)
+    else:
+        formset = BulkAddFormset()
+
+    context = {
+        'profile_name': request.user.username,
+        'return_path': return_path,
+        'is_owner': is_owner,
+        'bulk_add_formset_action': request.path + '?next=' + return_path,
+        'bulk_add_formset': formset,
+        'view': 'profile',
+    }
+
+    if is_owner:
+        if request.method == 'POST':
+            # return render(request, 'herders/view_post_data.html', {'post_data': request.POST})
+            if formset.is_valid():
+                print formset.cleaned_data
+                # TODO: Process the form data
+    else:
+        raise PermissionDenied("Trying to bulk add to profile you don't own")
+
+    return render(request, 'herders/profile/profile_monster_bulk_add.html', context)
 
 
 def monster_instance_view(request, profile_name, instance_id):

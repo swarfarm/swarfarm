@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.templatetags.static import static
 
-from .models import MonsterInstance, Summoner, TeamGroup, Team
+from .models import Monster, MonsterInstance, Summoner, TeamGroup, Team
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
@@ -371,6 +371,28 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
     class Meta:
         model = MonsterInstance
         fields = ('monster', 'stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes')
+
+
+class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
+    monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
+
+    def __init__(self, *args, **kwargs):
+        super(BulkAddMonsterInstanceForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('monster'),
+            Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+            FieldWithButtons(
+                Field('level', value=1, min=1, max=40),
+                StrictButton("Max", name="Set_Max_Level", id="set_max_level"),
+            ),
+        )
+
+    class Meta:
+        model = MonsterInstance
+        fields = ('monster', 'stars', 'level')
 
 
 class EditMonsterInstanceForm(ModelForm):

@@ -251,7 +251,8 @@ def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
     monster_to_add = get_object_or_404(Monster, pk=monster_id)
 
     if is_owner:
-        MonsterInstance.objects.create(owner=summoner, monster=monster_to_add, stars=stars, level=level, fodder=True, notes='', priority=MonsterInstance.PRIORITY_DONE)
+        new_monster = MonsterInstance.objects.create(owner=summoner, monster=monster_to_add, stars=stars, level=level, fodder=True, notes='', priority=MonsterInstance.PRIORITY_DONE)
+        messages.success(request, 'Added %s to your collection.' % new_monster)
         return redirect(return_path)
     else:
         return HttpResponseForbidden()
@@ -704,7 +705,6 @@ def fusion_perform(request, profile_name, fusion_product_id):
     }
 
     fusion = Fusion.objects.get(product__pk=fusion_product_id)
-
 
 
 def teams(request, profile_name):

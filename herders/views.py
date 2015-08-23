@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from django.http import Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User, Group
@@ -11,6 +11,7 @@ from django.core.cache import cache
 from django.db import IntegrityError
 from django.db.models import Q
 from django.forms.formsets import formset_factory
+from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import *
@@ -265,7 +266,7 @@ def monster_instance_bulk_add(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    BulkAddFormset = formset_factory(BulkAddMonsterInstanceForm, extra=5, max_num=50)
+    BulkAddFormset = modelformset_factory(MonsterInstance, form=BulkAddMonsterInstanceForm, formset=BulkAddMonsterInstanceFormset, extra=5, max_num=50)
 
     if request.method == 'POST':
         formset = BulkAddFormset(request.POST)
@@ -283,10 +284,19 @@ def monster_instance_bulk_add(request, profile_name):
 
     if is_owner:
         if request.method == 'POST':
-            # return render(request, 'herders/view_post_data.html', {'post_data': request.POST})
             if formset.is_valid():
-                print formset.cleaned_data
-                # TODO: Process the form data
+                new_instances = formset.save(commit=False)
+                for new_instance in new_instances:
+                    try:
+                        if new_instance.monster:
+                            new_instance.owner = summoner
+                            new_instance.save()
+                            messages.success(request, 'Added %s to your collection.' % new_instance)
+                    except ObjectDoesNotExist:
+                        # Blank form, don't care
+                        pass
+
+                return redirect(return_path)
     else:
         raise PermissionDenied("Trying to bulk add to profile you don't own")
 

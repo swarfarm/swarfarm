@@ -32,11 +32,20 @@
             <div class="row" data-formset-form>
                 {% crispy form %}
             </div>
+            {% if form.errors|length > 0 %}
+            <div class="row">
+                <span class="text-danger">
+                {% for field, error in form.errors.iteritems %}
+                    {{ error }}
+                {% endfor %}
+                </span>
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
 
         <div class="row">
-            <div class="form-actions">
+            <div class="form-group">
                 <button type="button" class="btn btn-default" data-formset-add>Add Another</button>
                 <input type="submit" name="submit" value="Submit" class="btn btn-primary" id="submit-id-submit"/>
                 <a href="{{ return_path }}" class="btn btn-link">Cancel</a>

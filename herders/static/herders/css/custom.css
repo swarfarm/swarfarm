@@ -674,3 +674,8 @@ span.monster-source>span {
 .monster-stats>.popover-title {
     padding: 6px 3px;
 }
+
+div.monster-bulk-monster {
+    display: inline-block;
+    width: 200px;
+}

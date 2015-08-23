@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm
+from django.forms.models import BaseModelFormSet
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
@@ -373,20 +374,35 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
         fields = ('monster', 'stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes')
 
 
+class BulkAddMonsterInstanceFormset(BaseModelFormSet):
+    def __init__(self, *args, **kwargs):
+        super(BulkAddMonsterInstanceFormset, self).__init__(*args, **kwargs)
+        self.queryset = MonsterInstance.objects.none()
+
+
 class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
     monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
 
     def __init__(self, *args, **kwargs):
         super(BulkAddMonsterInstanceForm, self).__init__(*args, **kwargs)
 
+        self.fields['monster'].required = False
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
+        self.helper.form_show_errors = False
         self.helper.layout = Layout(
-            Field('monster'),
-            Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-            FieldWithButtons(
-                Field('level', value=1, min=1, max=40),
-                StrictButton("Max", name="Set_Max_Level", id="set_max_level"),
+            Div(
+                Div(
+                    Field('monster'),
+                    css_class='monster-bulk-monster',
+                ),
+                Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+                FieldWithButtons(
+                    Field('level', value=1, min=1, max=40),
+                    StrictButton("Max", name="Set_Max_Level", id="set_max_level"),
+                ),
+                css_class='col-md-4',
             ),
         )
 

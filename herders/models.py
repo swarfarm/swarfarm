@@ -585,11 +585,6 @@ class MonsterInstance(models.Model):
                 code='invalid_level'
             )
 
-        if self.stars > 6 or self.stars < 1:
-            raise ValidationError(
-                'Star rating out of range',
-                code='invalid_stars'
-            )
         super(MonsterInstance, self).clean()
 
     def __unicode__(self):

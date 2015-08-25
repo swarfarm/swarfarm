@@ -275,11 +275,14 @@
                                 </td>
                                 <td>{{ instance.notes }}</td>
                                 <td class="monster-info-icons-column">
-                                    {% if instance.monster.fusion_food %}
+                                    {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
                                         <img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/>
                                         <span class="hidden">0</span>
-                                    {% else %}
+                                    {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
+                                        <img src="{{ img_url_prefix }}icons/fusion_ignored.png"  data-toggle="tooltip" data-placement="top" title="Ignored for monster fusion"/>
                                         <span class="hidden">1</span>
+                                    {% else %}
+                                        <span class="hidden">2</span>
                                     {% endif %}
                                 </td>
                                 <td class="monster-info-icons-column">

@@ -93,8 +93,10 @@
                                                         {% endif %}
                                                     {% endfor %}
                                                 </span>
-                                                {% if instance.monster.fusion_food %}
+                                                {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
                                                     <img class="image-plus-icon" src="{{ img_url_prefix }}icons/fusion.png" />
+                                                {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
+                                                    <img class="image-plus-icon" src="{{ img_url_prefix }}icons/fusion_ignored.png" />
                                                 {% endif %}
                                                 <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
                                                 <span class="image-plus image-plus-right">{{ instance.level }}</span>

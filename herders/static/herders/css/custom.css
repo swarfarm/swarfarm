@@ -677,5 +677,9 @@ span.monster-source>span {
 
 div.monster-bulk-monster {
     display: inline-block;
-    width: 200px;
+    width: 220px;
+}
+
+#bulkAddFormset .row {
+    padding-bottom: 5px;
 }

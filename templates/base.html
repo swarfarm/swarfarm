@@ -166,7 +166,6 @@
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.22.1/js/jquery.tablesorter.combined.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-hashchange/v1.3/jquery.ba-hashchange.min.js"></script>
 
-        {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}
         {% compress js %}
             <script type="text/javascript">
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -179,8 +178,10 @@
             </script>
             <script type="text/javascript" src="{% static "herders/js/bootstrap.min.js" %}"></script>
             <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
+            <script type="text/javascript" src="{% static 'herders/js/jquery.formset.js' %}"></script>
             <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
         {% endcompress %}
+        {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}
         <script type="text/javascript">
             {% if profile_name %}var PROFILE_NAME = '{{ profile_name }}';{% endif %}
             var API_URL = '{% url 'api-root' %}';

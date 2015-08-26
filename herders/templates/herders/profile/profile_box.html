@@ -19,11 +19,9 @@
                     <span class="glyphicon glyphicon-plus"></span>
                      Add Monster
                 </button>
-            {% comment %}
                 <div class="btn-group">
-                    <a href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> Bulk Add</a>
+                    <a href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}?next={{ return_path }}" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> Bulk Add</a>
                 </div>
-            {% endcomment %}
                 <div class="btn-group">
                     <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                         Quick Fodder <span class="caret"></span>

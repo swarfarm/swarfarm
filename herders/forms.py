@@ -347,11 +347,13 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
                     data_container='body',
                     title='Autocomplete Tips',
                     data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
+                    data_stars_field=self['stars'].auto_id,
+                    data_set_stars='',
                 ),
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
                 FieldWithButtons(
                     Field('level', value=1, min=1, max=40),
-                    StrictButton("Max", name="Set_Max_Level", id="set_max_level"),
+                    StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
                 ),
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
@@ -385,7 +387,6 @@ class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(BulkAddMonsterInstanceForm, self).__init__(*args, **kwargs)
-
         self.fields['monster'].required = False
 
         self.helper = FormHelper(self)
@@ -394,15 +395,14 @@ class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    Field('monster'),
+                    Field('monster', data_stars_field=self['stars'].auto_id, data_set_stars=''),
                     css_class='monster-bulk-monster',
                 ),
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
                 FieldWithButtons(
                     Field('level', value=1, min=1, max=40),
-                    StrictButton("Max", name="Set_Max_Level", id="set_max_level"),
+                    StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
                 ),
-                css_class='col-md-4',
             ),
         )
 
@@ -422,7 +422,7 @@ class EditMonsterInstanceForm(ModelForm):
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
                 FieldWithButtons(
                     'level',
-                    StrictButton("Max", name="Set_Max_Level", id="set_max_level"),
+                    StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
                     value=1, min=1, max=40,
                 ),
                 Field('fodder', css_class='checkbox'),

@@ -1,12 +1,9 @@
 //Initialize all bootstrap tooltips and popovers
 $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-});
-
-$(function () {
-  $('[data-toggle="popover"]').popover({
-      html:true
-  })
+    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover({
+        html:true
+    });
 });
 
 //Custom popovers for loading AJAX content
@@ -38,38 +35,52 @@ $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
 });
 
-//Calculate max level based on stars currently entered
-$('#set_max_level').click(function() {
-    var stars = $('#id_stars').val();
-    $('#id_level').val(10 + stars * 5);
-});
+
+
+
 
 //Automatically set attributes based on monster info
-$('#id_monster-autocomplete').bind('selectChoice',
-    function(e, choice, autocomplete) {
-        var monster_id = choice[0].dataset['value'];
-        var url = API_URL + 'bestiary/' + monster_id + '.json';
+function SetStars(e, choice, autocomplete) {
+    var monster_id = choice[0].dataset['value'];
+    var stars_field = '#' + $(this).data('stars-field');
+    var url = API_URL + 'bestiary/' + monster_id + '.json';
 
-        $.ajax({
-            url: url
-        }).done(function (result) {
-            //Set stars
-            if (result.is_awakened && result.base_stars > 1) {
-                //Awakened is -1 star to get actual base
-                $('#id_stars').rating('rate', result.base_stars - 1);
-            }
-            else {
-                $('#id_stars').rating('rate', result.base_stars);
-            }
+    $.ajax({
+        url: url
+    }).done(function (result) {
+        //Set stars
+        if (result.is_awakened && result.base_stars > 1) {
+            //Awakened is -1 star to get actual base
+            $(stars_field).rating('rate', result.base_stars - 1);
+        }
+        else {
+            $(stars_field).rating('rate', result.base_stars);
+        }
 
-            //Set fodder
-            if (result.archetype == 'material') {
-                $('#id_priority').val('0');
-                $('#id_fodder').prop('checked', true);
-            }
-        });
-    }
-);
+        //Set fodder
+        if (result.archetype == 'material') {
+            $('#id_priority').val('0');
+            $('#id_fodder').prop('checked', true);
+        }
+    });
+}
+
+//Calculate max level based on stars currently entered
+function SetMaxLevel() {
+    var stars_field = '#' + $(this).data('stars-field');
+    var level_field = '#' + $(this).data('level-field');
+    var stars = $(stars_field).val();
+    $(level_field).val(10 + stars * 5);
+}
+$('body').on('click', '*[data-set-max-level]', SetMaxLevel)
+    .on('selectChoice', '*[data-set-stars]', SetStars);
+
+//Bulk add
+$('#bulkAddFormset').formset({
+        animateForms: false
+    }).on('formAdded', function() {
+    $('.rating').rating();
+});
 
 //Update filter buttons on page load
 var monster_table = $('#monster_table');

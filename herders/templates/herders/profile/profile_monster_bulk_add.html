@@ -63,16 +63,3 @@
 
 <p>{{ bulk_add_formset.media }}</p>
 {% endblock content %}
-
-{% block javascript %}
-    <script src="{% static 'herders/js/jquery.formset.js' %}"></script>
-    <script>
-        var formset = $('#bulkAddFormset');
-        formset.formset({
-            animateForms: false
-        }).on('formAdded', function() {
-            $('.rating').rating();
-        });
-        // TODO: Set stars based on api call as per normal add monster routine
-    </script>
-{% endblock javascript %}

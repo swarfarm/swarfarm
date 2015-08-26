@@ -103,7 +103,7 @@ def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
 
     if is_owner or summoner.public:
         if view_mode.lower() == 'list':
-            context['monster_stable'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner)
+            context['monster_stable'] = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').filter(owner=summoner)
             context['buff_list'] = MonsterSkillEffect.objects.filter(is_buff=True).exclude(icon_filename='').order_by('name')
             context['debuff_list'] = MonsterSkillEffect.objects.filter(is_buff=False).exclude(icon_filename='').order_by('name')
             context['other_effect_list'] = MonsterSkillEffect.objects.filter(icon_filename='').order_by('name')
@@ -961,7 +961,7 @@ def bestiary(request):
     monster_list = cache.get('bestiary_data')
 
     if monster_list is None:
-        monster_list = Monster.objects.select_related('awakens_from', 'awakens_to').filter(obtainable=True)
+        monster_list = Monster.objects.select_related('awakens_from', 'awakens_to', 'leader_skill').filter(obtainable=True)
         cache.set('bestiary_data', monster_list, 900)
 
     context['monster_list'] = monster_list

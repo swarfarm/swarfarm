@@ -217,11 +217,6 @@ class Monster(models.Model):
     def all_skill_effects(self):
         return MonsterSkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))
 
-#        if len(effects) > 0:
-#            return effects
-#        else:
-#            return None
-
     def farmable(self):
         if self.is_awakened and self.awakens_from is not None:
             return self.awakens_from.source.filter(farmable_source=True).count() > 0

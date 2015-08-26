@@ -114,6 +114,31 @@
                     </div>
 
                     <div class="filter-group">
+                        <span class="filter-description">Leader Skill:</span>
+                        <div class="btn-group leader-filters">
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="HP" data-filter-function=" && ">HP</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Defense" data-filter-function=" && ">DEF</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Attack Power" data-filter-function=" && ">ATK</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Attack Speed" data-filter-function=" && ">SPD</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Critical rate" data-filter-function=" && ">CRI Rate</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Critical DMG" data-filter-function=" && ">CRI Dmg</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Resistance" data-filter-function=" && ">RES</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Accuracy" data-filter-function=" && ">ACC</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="filter-description">Leader Type:</span>
+                        <div class="btn-group leader-filters">
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="general" data-filter-function=" && ">General</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="element" data-filter-function=" && ">Element</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="dungeon" data-filter-function=" && ">Dungeon</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="arena" data-filter-function=" && ">Arena</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="guild" data-filter-function=" && ">Guild</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
                         <span class="filter-description">Flags:</span>
                         <div class="btn-group info-filters">
                             <button type="button" class="btn btn-default filter" data-filter-column="10" data-filter-text="0">
@@ -257,6 +282,14 @@
                                     {% if instance.monster.leader_skill %}
                                     <img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}"
                                          data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
+                                        <span class="hidden">
+                                            {{ instance.monster.leader_skill.get_attribute_display }}
+                                            {% if instance.monster.leader_skill.dungeon_skill %}dungeon
+                                            {% elif instance.monster.leader_skill.arena_skill %}arena
+                                            {% elif instance.monster.leader_skill.element_skill %}element
+                                            {% elif instance.monster.leader_skill.guild_skill %}guild
+                                            {% else %}general{% endif %}
+                                        </span>
                                     {% endif %}
                                 </td>
                                 <td class="monster-skill-effects">

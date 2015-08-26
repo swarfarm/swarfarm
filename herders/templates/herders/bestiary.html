@@ -69,10 +69,35 @@
                     </div>
 
                     <div class="filter-group">
+                        <span class="filter-description">Leader Skill:</span>
+                        <div class="btn-group leader-filters">
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="HP" data-filter-function=" && ">HP</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Defense" data-filter-function=" && ">DEF</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Attack Power" data-filter-function=" && ">ATK</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Attack Speed" data-filter-function=" && ">SPD</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Critical rate" data-filter-function=" && ">CRI Rate</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Critical DMG" data-filter-function=" && ">CRI Dmg</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Resistance" data-filter-function=" && ">RES</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="Accuracy" data-filter-function=" && ">ACC</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="filter-description">Leader Type:</span>
+                        <div class="btn-group leader-filters">
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="general" data-filter-function=" && ">General</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="element" data-filter-function=" && ">Element</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="dungeon" data-filter-function=" && ">Dungeon</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="arena" data-filter-function=" && ">Arena</button>
+                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="guild" data-filter-function=" && ">Guild</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
                         <span class="filter-description">Buffs:</span>
                         <div class="btn-group buff-filters">
                             {% for buff in buff_list %}
-                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ buff.pk }}-{{ buff.name|slugify }}" data-filter-function=" && ">
+                            <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="{{ buff.pk }}-{{ buff.name|slugify }}" data-filter-function=" && ">
                                 {% if buff.icon_filename %}
                                 <img src="{{ img_url_prefix }}buffs/{{ buff.icon_filename }}" />
                                 {% else %}
@@ -87,7 +112,7 @@
                         <span class="filter-description">Debuffs:</span>
                         <div class="btn-group buff-filters">
                             {% for debuff in debuff_list %}
-                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ debuff.pk }}-{{ debuff.name|slugify }}" data-filter-function=" && ">
+                            <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="{{ debuff.pk }}-{{ debuff.name|slugify }}" data-filter-function=" && ">
                                 {% if debuff.icon_filename %}
                                 <img src="{{ img_url_prefix }}buffs/{{ debuff.icon_filename }}" />
                                 {% else %}
@@ -102,7 +127,7 @@
                         <span class="filter-description">Other:</span>
                         <div class="btn-group buff-filters">
                             {% for effect in other_effect_list %}
-                            <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="{{ effect.pk }}-{{ effect.name|slugify }}" data-filter-function=" && ">
+                            <button type="button" class="btn btn-default filter" data-filter-column="8" data-filter-text="{{ effect.pk }}-{{ effect.name|slugify }}" data-filter-function=" && ">
                                 {% if effect.icon_filename %}
                                 <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" />
                                 {% else %}
@@ -128,9 +153,10 @@
                             <th>Stars</th>
                             <th>Element</th>
                             <th>Type</th>
-                            <th class="{sorter: false}">Awakens To</th>
-                            <th class="{sorter: false}">Awakens From</th>
-                            <th class="{sorter: false}">Skill Effects</th>
+                            <th data-sorter="false">Awakens To</th>
+                            <th data-sorter="false">Awakens From</th>
+                            <th data-sorter="false">Leader Skill</th>
+                            <th data-sorter="false">Skill Effects</th>
                             <th class="{sorter: false}">Awakening Materials</th>
                         </tr>
                     </thead>
@@ -161,6 +187,20 @@
                                 <a href="{% url 'herders:bestiary_detail' monster_id=monster.awakens_from.pk %}">
                                     <div class="sprite sprite-{{ monster.awakens_from.image_filename|remove_extension }}"></div>{{ monster.awakens_from.name|title }}
                                 </a>
+                                {% endif %}
+                            </td>
+                            <td class="monster-leader-skill">
+                                {% if monster.leader_skill %}
+                                <img src="{{ img_url_prefix }}skills/leader/{{ monster.leader_skill.icon_filename }}"
+                                     data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ monster.leader_skill.skill_string }}" />
+                                    <span class="hidden">
+                                        {{ monster.leader_skill.get_attribute_display }}
+                                        {% if monster.leader_skill.dungeon_skill %}dungeon
+                                        {% elif monster.leader_skill.arena_skill %}arena
+                                        {% elif monster.leader_skill.element_skill %}element
+                                        {% elif monster.leader_skill.guild_skill %}guild
+                                        {% else %}general{% endif %}
+                                    </span>
                                 {% endif %}
                             </td>
                             <td class="monster-skill-effects">

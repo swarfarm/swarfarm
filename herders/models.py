@@ -564,7 +564,7 @@ class MonsterInstance(models.Model):
         return self.monster.accuracy
 
     def clean(self):
-        from django.core.exceptions import ValidationError
+        from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
         if self.level > 40 or self.level < 1:
             raise ValidationError(
@@ -580,6 +580,19 @@ class MonsterInstance(models.Model):
                 code='invalid_level'
             )
 
+        try:
+            min_stars = self.monster.base_stars
+            if self.monster.is_awakened:
+                min_stars -= 1
+        except ObjectDoesNotExist:
+            min_stars = 1
+
+        if self.stars > 6 or self.stars < min_stars:
+            raise ValidationError(
+                'Star rating out of range (%(min)s to %(max)s)',
+                params={'min': min_stars, 'max': 6},
+                code='invalid_stars'
+            )
         super(MonsterInstance, self).clean()
 
     def __unicode__(self):

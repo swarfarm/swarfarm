@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseForbidden
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
 
@@ -43,6 +44,13 @@ class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
 
 class IssueDetail(LoginRequiredMixin, ProfileNameMixin, DetailView):
     model = Issue
+
+    def get(self, request, *args, **kwargs):
+        issue = self.get_object()
+        if issue.user == self.request.user or issue.public or self.request.user.is_superuser:
+            return super(IssueDetail, self).get(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden()
 
     def get_context_data(self, **kwargs):
         context = super(IssueDetail, self).get_context_data(**kwargs)

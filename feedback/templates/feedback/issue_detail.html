@@ -8,8 +8,9 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title"><strong>{{ issue.get_topic_display }} - {{ issue.subject }}</strong></h4>
-                    <p class="panel-title">Status: <span class="label label-default">{{ issue.get_status_display }}</span></p>
-                    <p class="panel-title">Priority: <span class="label label-default">{% if issue.priority %}{{ issue.get_priority_display }}{% else %}Not Set{% endif %}</span></p>
+                    <p class="panel-title">Status: {{ issue.get_status_display }}</p>
+                    <p class="panel-title">Priority: {% if issue.priority %}{{ issue.get_priority_display }}{% else %}Not Set{% endif %}</p>
+                    <p class="panel-title">Public: {% if issue.public %}Yes{% else %}No{% endif %}</p>
                 </div>
                 {% if status_form %}
                 <div class="panel-body">

@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.db.models import Q
 
 from .forms import IssueForm, IssueUpdateStatusForm, CommentForm
 from .models import Issue, Discussion
@@ -27,7 +28,7 @@ class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
         if self.request.user.is_superuser:
             return Issue.objects.all()
         else:
-            return Issue.objects.filter(user=self.request.user)
+            return Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
 
 
 class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):

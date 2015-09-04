@@ -53,65 +53,45 @@
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-mainnav">
-                        <ul class="nav navbar-nav">
+                        <div class="btn-group navbar-btn">
                             {% if user.is_authenticated %}
-                                <li>
-                                    <div class="navbar-btn">
-                                        <a href="{% url 'herders:profile' profile_name=user.username view_mode='list' %}"
-                                           class="btn btn-default {% if view == 'profile' and is_owner %}active{% endif %}">
-                                            <img src="{% static 'herders/images/icons/monster.png' %}" />
-                                            My Monsters
-                                        </a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="navbar-btn">
-                                        <a href="{% url 'herders:fusion' profile_name=user.username %}"
-                                           class="btn btn-default {% if view == 'fusion'  and is_owner %}active{% endif %}">
-                                            <img src="{% static 'herders/images/icons/fusion.png' %}" />
-                                            My Fusion
-                                        </a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="navbar-btn">
-                                        <a href="{% url 'herders:teams' profile_name=user.username %}"
-                                           class="btn btn-default {% if view == 'teams' and is_owner %}active{% endif %}">
-                                            <i class="fa fa-users"></i>
-                                            My Teams
-                                        </a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="navbar-btn">
-                                        <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}"
-                                           class="btn btn-default {% if view == 'storage'  and is_owner %}active{% endif %}">
-                                            <span class="fa fa-archive"></span>
-                                            My Essence Storage
-                                        </a>
-                                    </div>
-                                </li>
+                            <a href="{% url 'herders:profile' profile_name=user.username view_mode='list' %}"
+                               class="btn btn-default {% if view == 'profile' and is_owner %}active{% endif %}">
+                                <img src="{% static 'herders/images/icons/monster.png' %}" />
+                                My Monsters
+                            </a>
+                            <a href="{% url 'herders:fusion' profile_name=user.username %}"
+                               class="btn btn-default {% if view == 'fusion'  and is_owner %}active{% endif %}">
+                                <img src="{% static 'herders/images/icons/fusion.png' %}" />
+                                My Fusion
+                            </a>
+                            <a href="{% url 'herders:teams' profile_name=user.username %}"
+                               class="btn btn-default {% if view == 'teams' and is_owner %}active{% endif %}">
+                                <i class="fa fa-users"></i>
+                                My Teams
+                            </a>
+                            <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}"
+                               class="btn btn-default {% if view == 'storage'  and is_owner %}active{% endif %}">
+                                <span class="fa fa-archive"></span>
+                                My Essence Storage
+                            </a>
                             {% endif %}
-                            <li>
-                                <div class="navbar-btn">
-                                    <a href="{% url 'herders:bestiary' %}"
-                                       class="btn btn-default {% if view == 'bestiary' %}active{% endif %}">
-                                        <span class="fa fa-book"></span>
-                                        Bestiary
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
+                            <a href="{% url 'herders:bestiary' %}"
+                               class="btn btn-default {% if view == 'bestiary' %}active{% endif %}">
+                                <span class="fa fa-book"></span>
+                                Bestiary
+                            </a>
+                        </div>
 
                         <div class="navbar-right hidden-sm">
                             {% if user.is_authenticated %}
                                 <div class="btn-group navbar-btn">
+                                    <a href="{% url 'feedback:index' %}" class="btn btn-default"><span class="glyphicon glyphicon-send"></span> Feedback</a>
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                         {{ user.username }} <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
                                         <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
-                                        <li><a href="{% url 'feedback:index' %}">Leave Feedback</a></li>
                                         {% if user.is_staff %}
                                             <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
                                         {% endif %}

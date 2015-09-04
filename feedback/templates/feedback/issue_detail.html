@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load markdown_deux_tags %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title"><strong>{{ issue.get_topic_display }} - {{ issue.subject }}</strong></h4>
+                    <p class="panel-title">Status: <span class="label label-default">{{ issue.get_status_display }}</span></p>
+                    <p class="panel-title">Priority: <span class="label label-default">{% if issue.priority %}{{ issue.get_priority_display }}{% else %}Not Set{% endif %}</span></p>
+                </div>
+                {% if status_form %}
+                <div class="panel-body">
+                    {% crispy status_form %}
+                </div>
+                {% endif %}
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <h4 class="list-group-item-heading">{{ issue.user }}</h4>
+                        {{ issue.description }}
+                    </div>
+                    {% for comment in issue.discussion_set.all %}
+                    <div class="list-group-item">
+                        <h4 class="list-group-item-heading">{{ comment.user }} <small>{{ comment.timestamp }}</small></h4>
+                        <p class="list-group-item-text">{{ comment.comment|markdown }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="panel-body">
+                    {% crispy comment_form %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

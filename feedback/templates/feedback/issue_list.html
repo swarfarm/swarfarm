@@ -18,6 +18,7 @@
                 <th>Status</th>
                 <th>Priority</th>
                 <th>Comments</th>
+                <th>Public</th>
             </tr>
         </thead>
         <tbody>
@@ -31,6 +32,7 @@
                 <td>{{ issue.get_status_display }}</td>
                 <td>{{ issue.get_priority_display }}</td>
                 <td>{{ issue.comment_count }}</td>
+                <td>{% if issue.public %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>
             </tr>
             {% empty %}
             <tr><td colspan="8">None yet!</td></tr>

@@ -228,10 +228,10 @@
                                 {% endfor %}
                             </tr>
                             <tr>
+                                <th width="100px">Level</th>
                                 <th width="50px" data-container="body" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Approximate change in stats once monster undergoes awakening. Calculated using 6<span class=&quot;glyphicon glyphicon-star&quot;></span> level 40 stats.">
                                     Delta
                                 </th>
-                                <th width="100px">Level</th>
                                 {% for grade,levels in awakened_monster_stats.iteritems %}
                                     {% for level,stats in levels.iteritems %}
                                         <th>{{ level }}</th>
@@ -241,6 +241,7 @@
                         </thead>
                         <tbody>
                             <tr>
+                                <td>HP</td>
                                 <td>
                                     {% if awakened_monster_stats_deltas.HP %}
                                         {% if awakened_monster_stats_deltas.HP > 0 %}
@@ -250,7 +251,6 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>HP</td>
                                 {% for grade,levels in awakened_monster_stats.iteritems %}
                                     {% for level,stats in levels.iteritems %}
                                         <td class="bestiary-stat-column">
@@ -262,6 +262,7 @@
                                 {% endfor %}
                             </tr>
                             <tr>
+                                <td>ATK</td>
                                 <td>
                                     {% if awakened_monster_stats_deltas.ATK %}
                                         {% if awakened_monster_stats_deltas.ATK > 0 %}
@@ -271,7 +272,6 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>ATK</td>
                                 {% for grade,levels in awakened_monster_stats.iteritems %}
                                     {% for level,stats in levels.iteritems %}
                                         <td class="bestiary-stat-column">
@@ -283,6 +283,7 @@
                                 {% endfor %}
                             </tr>
                             <tr>
+                                <td>DEF</td>
                                 <td>
                                     {% if awakened_monster_stats_deltas.DEF %}
                                         {% if awakened_monster_stats_deltas.DEF > 0 %}
@@ -292,7 +293,6 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>DEF</td>
                                 {% for grade,levels in awakened_monster_stats.iteritems %}
                                     {% for level,stats in levels.iteritems %}
                                         <td class="bestiary-stat-column">
@@ -304,6 +304,7 @@
                                 {% endfor %}
                             </tr>
                             <tr>
+                                <td>SPD</td>
                                 <td>
                                     {% if awakened_monster_stats_deltas.SPD %}
                                         {% if awakened_monster_stats_deltas.SPD > 0 %}
@@ -313,12 +314,12 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>SPD</td>
                                 <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                     {{ awakened_monster.speed }}
                                 </td>
                             </tr>
                             <tr>
+                                <td>CRIT Rate</td>
                                 <td>
                                     {% if awakened_monster_stats_deltas.CRIT_Rate %}
                                         {% if awakened_monster_stats_deltas.CRIT_Rate > 0 %}
@@ -328,12 +329,12 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>CRIT Rate</td>
                                 <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                     {{ awakened_monster.crit_rate }}%
                                 </td>
                             </tr>
                             <tr>
+                                <td>CRIT DMG</td>
                                 <td>
                                     {% if awakened_monster_stats_deltas.CRIT_DMG %}
                                         {% if awakened_monster_stats_deltas.CRIT_DMG > 0 %}
@@ -343,12 +344,12 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>CRIT DMG</td>
                                 <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                     {{ awakened_monster.crit_damage }}%
                                 </td>
                             </tr>
                             <tr>
+                                <td>Accuracy</td>
                                 <td>
                                     {% if awakened_monster_stats_deltas.Accuracy %}
                                         {% if awakened_monster_stats_deltas.Accuracy > 0 %}
@@ -358,12 +359,12 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>Accuracy</td>
                                 <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                     {{ awakened_monster.accuracy }}%
                                 </td>
                             </tr>
                             <tr>
+                                <td>Resistance</td>
                                 <td>
                                     {% if awakened_monster_stats_deltas.Resistance %}
                                         {% if awakened_monster_stats_deltas.Resistance > 0 %}
@@ -373,7 +374,6 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>Resistance</td>
                                 <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
                                     {{ awakened_monster.resistance }}%
                                 </td>

@@ -5,8 +5,8 @@
     <div class="list-group">
         <div class="team-list-group">
             {% if is_owner %}
-                <a href="{% url 'herders:team_group_delete' profile_name=profile_name group_id=group.pk.hex %}">
-                    <span class="glyphicon glyphicon-remove"></span>
+                <a href="{% url 'herders:team_group_edit' profile_name=profile_name group_id=group.pk.hex %}">
+                    <span class="glyphicon glyphicon-pencil"></span>
                 </a>
             {% endif %}
             <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}">

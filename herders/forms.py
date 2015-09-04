@@ -509,6 +509,26 @@ class AddTeamGroupForm(ModelForm):
         exclude = ('id', 'owner')
 
 
+class EditTeamGroupForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditTeamGroupForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Field('name'),
+            FormActions(
+                Submit('save', 'Save', css_class='btn btn-primary'),
+                HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
+                HTML("""<a href="{% url 'herders:team_group_delete' profile_name=profile_name group_id=group_id%}" class="btn btn-danger pull-right">Delete</a>"""),
+            ),
+        )
+
+    class Meta:
+        model = TeamGroup
+        exclude = ('id', 'owner')
+
+
 class DeleteTeamGroupForm(forms.Form):
     reassign_group = forms.ModelChoiceField(
         queryset=TeamGroup.objects.all(),

@@ -817,6 +817,38 @@ def team_group_add(request, profile_name):
 
 
 @login_required
+def team_group_edit(request, profile_name, group_id):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:teams', kwargs={'profile_name': profile_name})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    team_group = get_object_or_404(TeamGroup, pk=group_id)
+
+    form = EditTeamGroupForm(request.POST or None, instance=team_group)
+
+    if is_owner:
+        if form.is_valid() and request.method == 'POST':
+            form.save()
+            return redirect(return_path)
+    else:
+        return PermissionDenied("Editing a group you don't own")
+
+    context = {
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'form': form,
+        'group_id': group_id,
+        'return_path': return_path,
+        'is_owner': is_owner,
+        'view': 'teams',
+    }
+    return render(request, 'herders/profile/teams/team_group_edit.html', context)
+
+
+@login_required
 def team_group_delete(request, profile_name, group_id):
     return_path = request.GET.get(
         'next',

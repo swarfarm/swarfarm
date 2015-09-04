@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            {% if validation_errors %}
+                <div class="alert alert-danger" role="alert">
+                    <p>{{ validation_errors }}</p>
+                </div>
+            {% endif %}
+            {% crispy form %}
+        </div>
+    </div>
+
+{% endblock content %}

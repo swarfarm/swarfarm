@@ -25,41 +25,42 @@
         </div>
     {% endif %}
 
-    <form method="post" action="{{ bulk_add_formset_action }}" class="form-inline" id="bulkAddFormset" data-formset-prefix="{{ bulk_add_formset.prefix }}">
-        <div data-formset-body>
+    <div class="col-md-8 col-md-offset-2">
+        <form method="post" action="{{ bulk_add_formset_action }}" class="form-inline" id="bulkAddFormset" data-formset-prefix="{{ bulk_add_formset.prefix }}">
+            {% csrf_token %}
             {{ bulk_add_formset.management_form|crispy }}
-            {% for form in bulk_add_formset %}
-            <div class="row" data-formset-form>
-                {% crispy form %}
-            </div>
-            {% if form.errors|length > 0 %}
-            <div class="row">
-                <span class="text-danger">
-                {% for field, error in form.errors.iteritems %}
-                    {{ error }}
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th>Monster</th>
+                    <th>Stars</th>
+                    <th>Level</th>
+                    <th>In Storage</th>
+                    <th>Fodder</th>
+                </tr>
+                </thead>
+                <tbody data-formset-body>
+                {% for form in bulk_add_formset %}
+                    <tr data-formset-form>{% crispy form %}</tr>
                 {% endfor %}
-                </span>
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
+                </tbody>
+            </table>
 
-        <div class="row">
-            <div class="form-group">
-                <button type="button" class="btn btn-default" data-formset-add>Add Another</button>
-                <input type="submit" name="submit" value="Submit" class="btn btn-primary" id="submit-id-submit"/>
-                <a href="{{ return_path }}" class="btn btn-link">Cancel</a>
-            </div>
-        </div>
-
-        <script type="form-template" data-formset-empty-form>
-            {% autoescape off %}
-                <div class="row "data-formset-form>
-                    {% crispy bulk_add_formset.empty_form %}
+            <div class="row">
+                <div class="form-group">
+                    <button type="button" class="btn btn-default" data-formset-add>Add Another</button>
+                    <input type="submit" name="submit" value="Submit" class="btn btn-primary" id="submit-id-submit"/>
+                    <a href="{{ return_path }}" class="btn btn-link">Cancel</a>
                 </div>
-            {% endautoescape %}
-        </script>
-    </form>
+            </div>
+
+            <script type="form-template" data-formset-empty-form>
+                {% autoescape off %}
+                    <tr data-formset-form>{% crispy bulk_add_formset.empty_form %}</tr>
+                {% endautoescape %}
+            </script>
+        </form>
+    </div>
 
 <p>{{ bulk_add_formset.media }}</p>
 {% endblock content %}

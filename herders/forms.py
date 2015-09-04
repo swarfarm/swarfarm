@@ -10,7 +10,7 @@ from .models import Monster, MonsterInstance, Summoner, TeamGroup, Team
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton
+from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, InlineCheckboxes
 
 from captcha.fields import ReCaptchaField
 
@@ -391,24 +391,28 @@ class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.form_show_errors = False
+        self.helper.form_show_labels = False
+        self.helper.disable_csrf = True
         self.helper.layout = Layout(
-            Div(
-                Div(
-                    Field('monster', data_stars_field=self['stars'].auto_id, data_set_stars=''),
-                    css_class='monster-bulk-monster',
-                ),
-                Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                FieldWithButtons(
-                    Field('level', value=1, min=1, max=40),
-                    StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
-                ),
+            HTML('<td>'),
+            InlineField('monster', data_stars_field=self['stars'].auto_id, data_set_stars=''),
+            HTML('</td><td>'),
+            InlineField('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+            HTML('</td><td>'),
+            FieldWithButtons(
+                Field('level', value=1, min=1, max=40),
+                StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
             ),
+            HTML('</td><td>'),
+            Field('in_storage'),
+            HTML('</td><td>'),
+            Field('fodder'),
+            HTML('</td>'),
         )
 
     class Meta:
         model = MonsterInstance
-        fields = ('monster', 'stars', 'level')
+        fields = ('monster', 'stars', 'level', 'in_storage', 'fodder')
 
 
 class EditMonsterInstanceForm(ModelForm):

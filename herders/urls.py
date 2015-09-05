@@ -38,6 +38,11 @@ urlpatterns = [
                 url(r'^edit/(?P<group_id>[0-9a-f]{32})/$', views.team_group_edit, name='team_group_edit'),
             ])),
         ])),
+        url(r'following/', include([
+            url(r'^$', views.following, name='profile_following'),
+            url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_add, name='profile_follow_add'),
+            url(r'^remove/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_remove, name='profile_follow_remove'),
+        ])),
         url(r'(?P<view_mode>[a-zA-Z]+)/(?P<sort_method>[a-zA-Z]+)/$', views.profile, name='profile_sorted'),
         url(r'(?P<view_mode>[a-zA-Z]+)/$', views.profile, name='profile'),
     ])),

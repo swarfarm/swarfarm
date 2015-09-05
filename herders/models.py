@@ -403,6 +403,7 @@ class Summoner(models.Model):
     user = models.OneToOneField(User)
     summoner_name = models.CharField(max_length=256, null=True, blank=True)
     global_server = models.NullBooleanField(default=True, null=True, blank=True)
+    following = models.ManyToManyField("self", related_name='followed_by', symmetrical=False)
     public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)

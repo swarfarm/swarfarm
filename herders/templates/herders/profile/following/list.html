@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+Friends - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><strong>Following</strong></h4>
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Summoner's War Account</th>
+                    <th>Remove</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for person in summoner.following.all %}
+                <tr>
+                    <td>{% if person.public %}<a href="{% url 'herders:profile' profile_name=person.user.username view_mode='list' %}">{{ person.user.username }}</a>{% else %}{{ person.user.username }} - Private <span class="fa fa-frown-o"></span>{% endif %}</td>
+                    <td>{% if person.public %}{{ person.summoner_name }}{% endif %}</td>
+                    <td><a href="{% url 'herders:profile_follow_remove' profile_name=profile_name follow_username=person.user.username%}?next={{ return_path }}"><span class="glyphicon glyphicon-remove-sign"></span> Remove</a></td>
+                </tr>
+                {% empty %}
+                <tr><td>Nobody</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><strong>Followed By</strong></h4>
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Summoner's War Account</th>
+                    <th>Add</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for person in summoner.followed_by.all %}
+                    {% if person.public %}
+                    <tr>
+                        <td><a href="{% url 'herders:profile' profile_name=person.user.username view_mode='list'%}">{{ person.user.username }}</a></td>
+                        <td>{{ person.summoner_name }}</td>
+                        <td>
+                            {% if person not in summoner.following.all %}
+                                <a href="{% url 'herders:profile_follow_add' profile_name=profile_name follow_username=person.user.username%}?next={{ return_path }}"><span class="glyphicon glyphicon-plus-sign"></span> Follow</a>
+                            {% else %}
+                                <span class="glyphicon glyphicon-ok-circle"></span> Following
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                {% empty %}
+                    <tr><td>Nobody</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

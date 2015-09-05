@@ -8,7 +8,8 @@ from .models import *
 class SummonerInline(admin.StackedInline):
     model = Summoner
     can_delete = False
-    verbose_name_plural = 'summoner'
+    verbose_name_plural = 'summoners'
+    exclude = ('following',)
 
 
 class UserAdmin(UserAdmin):

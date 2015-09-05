@@ -54,6 +54,7 @@ def register(request):
     return render(request, 'herders/register.html', context)
 
 
+@login_required
 def change_username(request):
     user = request.user
     form = CrispyChangeUsernameForm(request.POST or None)
@@ -76,6 +77,65 @@ def change_username(request):
 
 def change_username_complete(request):
     return render(request, 'registration/change_username_complete.html')
+
+
+@login_required
+def following(request, profile_name):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:profile_following', kwargs={'profile_name': profile_name})
+    )
+
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    context = {
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'view': 'following',
+        'return_path': return_path,
+    }
+
+    return render(request, 'herders/profile/following/list.html', context)
+
+
+@login_required
+def follow_add(request, profile_name, follow_username):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+    )
+
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    new_follower = get_object_or_404(Summoner, user__username=follow_username)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        summoner.following.add(new_follower)
+        messages.success(request, 'Now following %s' % new_follower.user.username)
+        return redirect(return_path)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required
+def follow_remove(request, profile_name, follow_username):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+    )
+
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    removed_follower = get_object_or_404(Summoner, user__username=follow_username)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        summoner.following.remove(removed_follower)
+        messages.success(request, 'Unfollowed %s' % removed_follower.user.username)
+        return redirect(return_path)
+    else:
+        return HttpResponseForbidden()
 
 
 def profile(request, profile_name=None, view_mode='list', sort_method='grade'):

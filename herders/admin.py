@@ -72,6 +72,11 @@ class MonsterAdmin(admin.ModelAdmin):
                 'source',
             )
         }),
+        ('SummonersWar.co URL', {
+            'fields': (
+                'summonerswar_co_url',
+            )
+        }),
     ]
 
     list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'awakens_from', 'awakens_to')

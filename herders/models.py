@@ -4,6 +4,7 @@ from collections import OrderedDict
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
 from timezone_field import TimeZoneField
@@ -77,6 +78,7 @@ class Monster(models.Model):
     awaken_magic_mats_high = models.IntegerField(null=True, blank=True)
     source = models.ManyToManyField('MonsterSource', blank=True)
     fusion_food = models.BooleanField(default=False)
+    summonerswar_co_url = models.URLField(null=True, blank=True)
 
     def image_url(self):
         if self.image_filename:
@@ -229,6 +231,34 @@ class Monster(models.Model):
             self.image_filename = self.awakens_from.image_filename.replace('.png', '_awakened.png')
         else:
             self.image_filename = self.name.lower().replace(' ', '_') + '_' + str(self.element) + '.png'
+
+        # Generate summonerswar.co URL if possible
+        element = self.element
+        base = 'http://summonerswar.co/'
+
+        if self.can_awaken and self.archetype is not self.TYPE_MATERIAL and self.summonerswar_co_url is None:
+            try:
+                # Generate the URL
+                if self.is_awakened:
+                    unawakened_name = self.awakens_from.name
+                    awakened_name = self.name
+                else:
+                    unawakened_name = self.name
+                    awakened_name = self.awakens_to.name
+
+                url = base + slugify(element + '-' + unawakened_name + '-' + awakened_name)
+
+                # Check that it is valid
+                from urllib2 import Request, urlopen
+                request = Request(url)
+                request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
+                if urlopen(request).code == 200:
+                    self.summonerswar_co_url = url
+                else:
+                    self.summonerswar_co_url = None
+            except:
+                # Something prevented getting the correct names or verifying the URL, so clear it out
+                self.summonerswar_co_url = None
 
         super(Monster, self).save(*args, **kwargs)
 

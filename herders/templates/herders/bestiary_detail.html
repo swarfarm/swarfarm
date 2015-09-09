@@ -82,12 +82,13 @@
                                 </td>
                             </tr>
                             {% endif %}
-                            {% if base_monster.summonerswar_co_url %}
                             <tr>
                                 <td>Resources:</td>
-                                <td><a href="{{ base_monster.summonerswar_co_url }}"><span class="glyphicon glyphicon-link"></span>summonerswar.co</a></td>
+                                <td>
+                                    {% if base_monster.wikia_url %}<a href="{{ base_monster.wikia_url }}"><span class="glyphicon glyphicon-link"></span>Wikia</a>{% endif %}
+                                    {% if base_monster.summonerswar_co_url %}<a href="{{ base_monster.summonerswar_co_url }}"><span class="glyphicon glyphicon-link"></span>summonerswar.co</a>{% endif %}
+                                </td>
                             </tr>
-                            {% endif %}
                             </tbody>
                         </table>
                     </div>

@@ -1161,6 +1161,13 @@ def bestiary_sanity_checks(request):
             if monster.accuracy is None:
                 monster_errors.append('Missing accuracy')
 
+            # Check  missing links resource
+            if monster.can_awaken and monster.is_awakened and monster.archetype is not monster.TYPE_MATERIAL and (monster.summonerswar_co_url is None or monster.summonerswar_co_url == ''):
+                monster_errors.append('Missing summonerswar.co link')
+
+            if monster.wikia_url is None or monster.wikia_url == '':
+                monster_errors.append('Missing wikia link')
+
             if len(monster_errors) > 0:
                 errors[str(monster)] = monster_errors
 

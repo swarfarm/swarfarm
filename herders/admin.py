@@ -72,9 +72,10 @@ class MonsterAdmin(admin.ModelAdmin):
                 'source',
             )
         }),
-        ('SummonersWar.co URL', {
+        ('Resources', {
             'fields': (
                 'summonerswar_co_url',
+                'wikia_url',
             )
         }),
     ]

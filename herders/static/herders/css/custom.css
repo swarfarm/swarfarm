@@ -136,6 +136,7 @@ div.monster-image {
     padding: 0!important;
     width: 50px;
     height: 50px;
+    font-size: 0;
 }
 
 div.sprite {
@@ -297,9 +298,10 @@ div.sprite {
 
 .monster-awaken-materials {
     padding: 0 !important;
+    font-size: 0;
 }
 
-.monster-awaken-materials div {
+.monster-awaken-materials>div {
     position: relative;
     display: inline-block;
     margin-right: 1px;
@@ -523,8 +525,8 @@ td>h6 {
     margin-left: 115px;
 }
 
-.bestiary-detail th,
-.bestiary-detail td {
+.bestiary-stats-table th,
+.bestiary-stats-table td {
     text-align: center;
 }
 
@@ -633,6 +635,7 @@ img.skill-effect {
 
 .monster-sources {
     width: 350px;
+    padding: 0!important;
 }
 
 .monster-source {

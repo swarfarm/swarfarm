@@ -10,6 +10,7 @@ class Issue(models.Model):
     STATUS_FEEDBACK = 4
     STATUS_RESOLVED = 5
     STATUS_REJECTED = 6
+    STATUS_DUPLICATE = 7
 
     STATUS_CHOICES = (
         (STATUS_UNREVIEWED, 'Unreviewed'),

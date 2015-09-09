@@ -236,7 +236,7 @@ class Monster(models.Model):
         element = self.element
         base = 'http://summonerswar.co/'
 
-        if self.can_awaken and self.archetype is not self.TYPE_MATERIAL and self.summonerswar_co_url is None:
+        if self.can_awaken and self.archetype is not self.TYPE_MATERIAL and (self.summonerswar_co_url is None or self.summonerswar_co_url == ''):
             try:
                 # Generate the URL
                 if self.is_awakened:
@@ -252,7 +252,8 @@ class Monster(models.Model):
                 from urllib2 import Request, urlopen
                 request = Request(url)
                 request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
-                if urlopen(request).code == 200:
+                code = urlopen(request).code
+                if code == 200:
                     self.summonerswar_co_url = url
                 else:
                     self.summonerswar_co_url = None

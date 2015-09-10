@@ -1,0 +1,178 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+    <div class="container-fluid">
+        <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal">
+            <span class="glyphicon glyphicon-plus"></span>
+             Add Monster
+        </button>
+        <div class="btn-group">
+            <a href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}?next={{ return_path }}" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> Bulk Add</a>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                Quick Fodder <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li class="dropdown-submenu">
+                    <a href="#"><img src="{{ img_url_prefix }}monsters/rainbowmon_light.png" /> Rainbowmon</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=799 stars=2 level=20 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                2<span class="glyphicon glyphicon-star"></span> Lvl. MAX
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=799 stars=3 level=25 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                3<span class="glyphicon glyphicon-star"></span> Lvl. MAX
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=799 stars=4 level=30 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                4<span class="glyphicon glyphicon-star"></span> Lvl. MAX
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% comment %}
+                <li class="dropdown-submenu">
+                    <a href="#"><img src="{{ img_url_prefix }}monsters/warbear_water.png" /> Mt. White Ragon</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=94 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/garuda_wind.png" /> 2<span class="glyphicon glyphicon-star"></span> Garuda
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=73 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/yeti_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Yeti
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=57 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/harpu_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Harpu
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=345 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/warbear_water.png" /> 3<span class="glyphicon glyphicon-star"></span> Warbear
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endcomment %}
+                <li class="dropdown-submenu">
+                    <a href="#"><img src="{{ img_url_prefix }}monsters/howl_water.png" /> Hydeni Ruins</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=61 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/howl_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Howl
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=53 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/elemental_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Elemental
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=321 stars=3 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/high_elemental_water.png" /> 3<span class="glyphicon glyphicon-star"></span> High Elemental
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown-submenu">
+                    <a href="#"><img src="{{ img_url_prefix }}monsters/griffon_wind.png" /> Tamor Desert</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=107 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/salamander_wind.png" /> 2<span class="glyphicon glyphicon-star"></span> Salamander
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=395 stars=3 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/serpent_wind.png" /> 3<span class="glyphicon glyphicon-star"></span> Serpent
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=367 stars=3 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/griffon_wind.png" /> 3<span class="glyphicon glyphicon-star"></span> Griffon
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown-submenu">
+                    <a href="#"><img src="{{ img_url_prefix }}monsters/hellhound_fire.png" /> Faimon</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=24 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/hellhound_fire.png" /> 2<span class="glyphicon glyphicon-star"></span> Hellhound
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=199 stars=3 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/inugami_fire.png" /> 3<span class="glyphicon glyphicon-star"></span> Inugami
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=215 stars=3 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/salamander_fire.png" /> 3<span class="glyphicon glyphicon-star"></span> Salamander
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown-submenu">
+                    <a href="#"><img src="{{ img_url_prefix }}monsters/grim_reaper_wind.png" /> Aiden Forest</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=87 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/monster_flower_wind.png" /> 2<span class="glyphicon glyphicon-star"></span> Monster Flower
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=800 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/sandman_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Sandman
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=36 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/forest_keeper_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Forest Keeper
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=369 stars=3 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}\monsters/grim_reaper_wind.png" /> 3<span class="glyphicon glyphicon-star"></span> Grim Reaper
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown-submenu">
+                    <a href="#"><img src="{{ img_url_prefix }}monsters/minotauros_wind.png" /> Chiruka Remains</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=47 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/monster_flower_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Monster Flower
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=794 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/battle_scorpion_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Battle Scorpion
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=111 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}monsters/warbear_wind.png" /> 2<span class="glyphicon glyphicon-star"></span> Warbear
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=389 stars=3 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
+                                <img src="{{ img_url_prefix }}\monsters/minotauros_wind.png" /> 3<span class="glyphicon glyphicon-star"></span> Minotauros
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

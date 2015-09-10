@@ -12,37 +12,7 @@
 {% endblock title %}
 
 {% block subnav %}
-    {% if is_owner %}
-        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
-            <div class="container-fluid">
-                <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addMonsterModal">
-                    <span class="glyphicon glyphicon-plus"></span>
-                     Add Monster
-                </button>
-                <div class="btn-group">
-                    <a href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}?next={{ return_path }}" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> Bulk Add</a>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                        Quick Fodder <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=799 stars=2 level=20 %}{% if return_path %}?next={{ return_path }}{% endif %}">
-                                Rainbowmon 2<span class="glyphicon glyphicon-star"></span> Lvl. MAX
-                            </a>
-                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=799 stars=3 level=25 %}{% if return_path %}?next={{ return_path }}{% endif %}">
-                                Rainbowmon 3<span class="glyphicon glyphicon-star"></span> Lvl. MAX
-                            </a>
-                            <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=799 stars=4 level=30 %}{% if return_path %}?next={{ return_path }}{% endif %}">
-                                Rainbowmon 4<span class="glyphicon glyphicon-star"></span> Lvl. MAX
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div><!-- /.container-fluid -->
-        </nav>
-    {% endif %}
+    {% if is_owner %}{% include 'herders/profile/profile_collection_subnav.html' %}{% endif %}
 {% endblock subnav %}
 
 {% block profile %}

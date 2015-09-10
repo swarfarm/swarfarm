@@ -47,7 +47,7 @@
                             <th class="monster-element">Element</th>
                             <th>Archetype</th>
                             <th>Priority</th>
-                            <th data-sorter="false">Leader Skill</th>
+                            <th>Leader Skill</th>
                             <th data-sorter="false">Skill Effects</th>
                             <th>Notes</th>
                             <th class="monster-info-icons-column"><img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/></th>
@@ -112,8 +112,10 @@
                                 <td><span class="hidden">{{ instance.priority }}</span>{{ instance.get_priority_display }}</td>
                                 <td class="monster-leader-skill">
                                     {% if instance.monster.leader_skill %}
-                                    <img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}"
-                                         data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
+                                    <div>
+                                        <img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}"
+                                             data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
+                                        <span class="image-plus image-plus-top-left">{{ instance.monster.leader_skill.amount }}%</span>
                                         <span class="hidden">
                                             {{ instance.monster.leader_skill.get_attribute_display }}
                                             {% if instance.monster.leader_skill.dungeon_skill %}dungeon
@@ -122,6 +124,7 @@
                                             {% elif instance.monster.leader_skill.guild_skill %}guild
                                             {% else %}general{% endif %}
                                         </span>
+                                    </div>
                                     {% endif %}
                                 </td>
                                 <td class="monster-skill-effects">

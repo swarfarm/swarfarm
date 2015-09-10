@@ -394,7 +394,7 @@ class MonsterLeaderSkill(models.Model):
         else:
             condition = ''
 
-        return self.get_attribute_display() + ' ' + str(self.amount) + condition
+        return self.get_attribute_display() + ' ' + str(self.amount) + '%' + condition
 
     class Meta:
         ordering = ['attribute', 'amount', 'element']

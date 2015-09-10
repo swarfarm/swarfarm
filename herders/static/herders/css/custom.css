@@ -324,7 +324,6 @@ div.sprite {
 
 .image-plus {
     position: absolute;
-    bottom: 1px;
     height: 14px;
     width: auto;
 
@@ -349,10 +348,22 @@ div.sprite {
 }
 
 .image-plus-left {
+    bottom: 1px;
+    left: 1px;
+}
+
+.image-plus-top-left {
+    top: 1px;
     left: 1px;
 }
 
 .image-plus-right {
+    bottom: 1px;
+    right: 1px;
+}
+
+.image-plus-top-right {
+    top: 1px;
     right: 1px;
 }
 
@@ -574,16 +585,22 @@ td>h6 {
 }
 
 .monster-leader-skill {
-    width: 100px;
+    width: 120px;
+}
+
+.monster-leader-skill div {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
 }
 
 .monster-leader-skill img {
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     border: 1px solid black;
-    border-radius: 15%;
+    border-radius: 4px;
     margin-right: 1px;
-    float: left;
 }
 
 .monster-skill-effects {

@@ -1,19 +1,21 @@
-{% extends 'herders/profile/profile_base.html' %}
+{% extends 'base.html' %}
 {% load crispy_forms_tags %}
-{% load staticfiles %}
 
 {% block title %}Edit Profile - {{ block.super }}{% endblock title %}
 
-{% block profile %}
-    <form action="{% url 'herders:edit_profile' profile_name=profile_name %}?next={{ return_path }}" method="post">
-        {% csrf_token %}
-        {% crispy user_form %}
-        {% crispy summoner_form %}
-        <div class="form-actions">
-            <input type="submit" name="save" value="Save" class="btn btn-primary btn btn-primary" id="submit-id-save"/>
-            <a href="{% url 'password_change' %}" class="btn btn-link">Change Password</a>
-            <a href="{% url 'username_change' %}" class="btn btn-link">Change Username</a>
-            <input type="button" name="cancel" value="Cancel" class="btn btn-link pull-right" id="button-id-cancel"/>
-        </div>
-    </form>
-{% endblock profile %}
+{% block content %}
+    <div class="col-md-6 col-md-offset-3">
+        <form action="{% url 'herders:edit_profile' profile_name=profile_name %}?next={{ return_path }}" method="post">
+            {% csrf_token %}
+            {% crispy user_form %}
+            {% crispy summoner_form %}
+            <div class="form-actions">
+                <input type="submit" name="save" value="Save" class="btn btn-primary btn btn-primary" id="submit-id-save"/>
+                <input type="button" name="cancel" value="Cancel" class="btn btn-default" id="button-id-cancel"/>
+                <a href="{% url 'password_change' %}" class="btn btn-link">Change Password</a>
+                <a href="{% url 'username_change' %}" class="btn btn-link">Change Username</a>
+                <a href="{% url 'herders:profile_delete' profile_name=profile_name %}" class="btn btn-danger pull-right">Delete Account</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

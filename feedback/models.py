@@ -19,6 +19,7 @@ class Issue(models.Model):
         (STATUS_FEEDBACK, 'Requires Feedback'),
         (STATUS_RESOLVED, 'Resolved'),
         (STATUS_REJECTED, 'Rejected'),
+        (STATUS_DUPLICATE, 'Duplicate'),
     )
 
     PRIORITY_NOW = 1

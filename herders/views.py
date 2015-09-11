@@ -4,7 +4,7 @@ from django.http import Http404, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
@@ -77,6 +77,30 @@ def change_username(request):
 
 def change_username_complete(request):
     return render(request, 'registration/change_username_complete.html')
+
+
+@login_required
+def profile_delete(request, profile_name):
+    user = request.user
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    form = DeleteProfileForm(request.POST or None)
+    form.helper.form_action = reverse('herders:profile_delete', kwargs={'profile_name': profile_name})
+
+    context = {
+        'form': form,
+    }
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            logout(request)
+            user.delete()
+            messages.success(request, 'Your profile has been deleted.')
+            return redirect('news:latest_news')
+
+        return render(request, 'herders/profile/profile_delete.html', context)
+    else:
+        return HttpResponseForbidden("You don't own this profile")
 
 
 @login_required

@@ -180,6 +180,37 @@ class EditSummonerForm(ModelForm):
         }
 
 
+class DeleteProfileForm(forms.Form):
+    confirmbox = forms.BooleanField(label="I seriously do want to delete my account and all associated data", required=True)
+    passcode = forms.CharField(
+        label='Acknowledgement:',
+        required=True,
+        help_text='Enter the following text: I acknowledge everything will be permanently deleted',
+        validators=[
+            RegexValidator(
+                regex='^I acknowledge everything will be permanently deleted$',
+                message="You didn't enter the correct text.",
+                code='invalid_acknowledgement'
+            )
+        ]
+    )
+    captcha = ReCaptchaField()
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.layout = Layout(
+        Div(
+            Field('confirmbox', css_class='checkbox'),
+            Field('passcode', css_class='input-sm'),
+            Field('captcha'),
+            FormActions(
+                Submit('delete', 'Delete', css_class='btn-lg btn-danger btn-block'),
+            ),
+            css_class='col-md-6 col-md-offset-3',
+        ),
+    )
+
+
 # SWARFARM forms
 class EditEssenceStorageForm(ModelForm):
     def __init__(self, *args, **kwargs):

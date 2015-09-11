@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+{% block title %}Delete Profile - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    {% crispy form %}
+{% endblock content %}

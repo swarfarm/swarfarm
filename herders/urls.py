@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^profile/(?P<profile_name>[a-zA-Z0-9_@.]+)/', include([
         url(r'^$', views.profile),
         url(r'^edit/$', views.profile_edit, name='edit_profile'),
+        url(r'^delete/$', views.profile_delete, name='profile_delete'),
         url(r'^storage/$', views.profile_storage, name='profile_storage'),
         url(r'^monster/', include([
             url(r'^add/$', views.monster_instance_add, name='monster_instance_add'),

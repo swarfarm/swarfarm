@@ -10,7 +10,7 @@ urlpatterns = [
 
     # User profiles and monster views
     url(r'^profile/(?P<profile_name>[a-zA-Z0-9_@.]+)/', include([
-        url(r'^$', views.profile),
+        url(r'^$', views.profile, name='profile_default'),
         url(r'^edit/$', views.profile_edit, name='edit_profile'),
         url(r'^delete/$', views.profile_delete, name='profile_delete'),
         url(r'^storage/$', views.profile_storage, name='profile_storage'),

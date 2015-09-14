@@ -55,7 +55,7 @@
                     <div class="collapse navbar-collapse" id="bs-mainnav">
                         <div class="btn-group navbar-btn">
                             {% if user.is_authenticated %}
-                            <a href="{% url 'herders:profile' profile_name=user.username view_mode='list' %}"
+                            <a href="{% url 'herders:profile_default' profile_name=user.username %}"
                                class="btn btn-default {% if view == 'profile' and is_owner %}active{% endif %}">
                                 <img src="{% static 'herders/images/icons/monster.png' %}" />
                                 My Monsters

@@ -45,7 +45,7 @@ def register(request):
                 if user is not None:
                     if user.is_active:
                         login(request, user)
-                        return redirect('herders:profile', profile_name=user.username, view_mode='list')
+                        return redirect('herders:profile_default', profile_name=user.username)
             except IntegrityError:
                 form.add_error('username', 'Username already taken')
 
@@ -128,7 +128,7 @@ def following(request, profile_name):
 def follow_add(request, profile_name, follow_username):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
@@ -147,7 +147,7 @@ def follow_add(request, profile_name, follow_username):
 def follow_remove(request, profile_name, follow_username):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
@@ -162,17 +162,24 @@ def follow_remove(request, profile_name, follow_username):
         return HttpResponseForbidden()
 
 
-def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
+def profile(request, profile_name=None, view_mode=None, sort_method='grade'):
     if profile_name is None:
         if request.user.is_authenticated():
             profile_name = request.user.username
         else:
-            raise Http404('No user profile specified and not logged in. ')
+            raise Http404('No user profile specified and not logged in.')
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
 
     # Determine if the person logged in is the one requesting the view
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    # Get preferred view mode from cookie
+    if view_mode is None:
+        view_mode = request.session.get('profile_view_mode', 'list')
+    else:
+        request.session['profile_view_mode'] = view_mode
+        return redirect('herders:profile_default', profile_name=profile_name)
 
     context = {
         'add_monster_form': AddMonsterInstanceForm(),
@@ -231,7 +238,7 @@ def profile(request, profile_name=None, view_mode='list', sort_method='grade'):
 def profile_edit(request, profile_name):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -265,7 +272,7 @@ def profile_edit(request, profile_name):
 def profile_storage(request, profile_name):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -294,7 +301,7 @@ def profile_storage(request, profile_name):
 def monster_instance_add(request, profile_name):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -326,7 +333,7 @@ def monster_instance_add(request, profile_name):
 def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -345,7 +352,7 @@ def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
 def monster_instance_bulk_add(request, profile_name):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -390,7 +397,7 @@ def monster_instance_bulk_add(request, profile_name):
 def monster_instance_view(request, profile_name, instance_id):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -412,7 +419,7 @@ def monster_instance_view(request, profile_name, instance_id):
 def monster_instance_edit(request, profile_name, instance_id):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -450,7 +457,7 @@ def monster_instance_edit(request, profile_name, instance_id):
 def monster_instance_delete(request, profile_name, instance_id):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
 
@@ -466,7 +473,7 @@ def monster_instance_delete(request, profile_name, instance_id):
 def monster_instance_power_up(request, profile_name, instance_id):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -578,7 +585,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
 def monster_instance_awaken(request, profile_name, instance_id):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -676,7 +683,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
 def monster_instance_duplicate(request, profile_name, instance_id):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile', kwargs={'profile_name': profile_name, 'view_mode': 'list'})
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
 

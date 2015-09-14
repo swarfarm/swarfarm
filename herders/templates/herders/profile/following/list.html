@@ -23,7 +23,7 @@ Friends - {{ block.super }}
                 <tbody>
                 {% for person in summoner.following.all %}
                 <tr>
-                    <td>{% if person.public %}<a href="{% url 'herders:profile' profile_name=person.user.username view_mode='list' %}">{{ person.user.username }}</a>{% else %}{{ person.user.username }} - Private <span class="fa fa-frown-o"></span>{% endif %}</td>
+                    <td>{% if person.public %}<a href="{% url 'herders:profile_default' profile_name=person.user.username %}">{{ person.user.username }}</a>{% else %}{{ person.user.username }} - Private <span class="fa fa-frown-o"></span>{% endif %}</td>
                     <td>{% if person.public %}{{ person.summoner_name }}{% endif %}</td>
                     <td><a href="{% url 'herders:profile_follow_remove' profile_name=profile_name follow_username=person.user.username%}?next={{ return_path }}"><span class="glyphicon glyphicon-remove-sign"></span> Remove</a></td>
                 </tr>
@@ -53,7 +53,7 @@ Friends - {{ block.super }}
                 {% for person in summoner.followed_by.all %}
                     {% if person.public %}
                     <tr>
-                        <td><a href="{% url 'herders:profile' profile_name=person.user.username view_mode='list'%}">{{ person.user.username }}</a></td>
+                        <td><a href="{% url 'herders:profile_default' profile_name=person.user.username %}">{{ person.user.username }}</a></td>
                         <td>{{ person.summoner_name }}</td>
                         <td>
                             {% if person not in summoner.following.all %}

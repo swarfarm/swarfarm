@@ -17,7 +17,7 @@
             <div class="panel-body">
                 <span class="lead">{{ summoner.user.username }}'s profile </span>
                 <div class="btn-group" role="group">
-                    <a href="{% url 'herders:profile' profile_name=summoner.user.username view_mode='list' %}" class="btn btn-default {% if view == 'profile' %}active{% endif %}">
+                    <a href="{% url 'herders:profile_default' profile_name=summoner.user.username %}" class="btn btn-default {% if view == 'profile' %}active{% endif %}">
                         <img src="{% static 'herders/images/icons/monster.png' %}" />
                         Monsters
                     </a>

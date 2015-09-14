@@ -41,6 +41,11 @@ footer {
     padding-right: 0;
 }
 
+.condensed {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
 .navbar img, .btn-group img {
     height: 18px;
 }
@@ -601,6 +606,20 @@ td>h6 {
     border: 1px solid black;
     border-radius: 4px;
     margin-right: 1px;
+}
+
+.monster-skill-thumb {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    margin: 0 10px 10px 0;
+}
+
+.monster-skill-thumb>img {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    border-radius: 4px;
 }
 
 .monster-skill-effects {

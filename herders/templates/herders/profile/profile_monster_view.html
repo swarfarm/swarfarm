@@ -5,62 +5,168 @@
 {% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
 
-    <div class="row">
-        <div class="monster-box">
-            <div class="monster-box-thumb">
-                <span>
-                    <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}"/>
-                    <span>
-                        {% for x in monster.stars|get_range %}
-                            {% if monster.monster.is_awakened %}
-                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% elif monster.monster.can_awaken %}
-                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% else %}
-                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% endif %}
-                        {% endfor %}
-                    </span>
-                    {% if monster.monster.fusion_food %}
-                        <img class="image-plus-icon" src="{{ img_url_prefix }}icons/fusion.png" />
-                    {% endif %}
-                    <span class="image-plus image-plus-left">{{ monster.monster.name }}</span>
-                    <span class="image-plus image-plus-right">{{ monster.level }}</span>
-                </span>
+    <div class="bestiary-detail">
+        <div class="col-lg-3 no-left-gutter">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <p class="panel-title"><strong>Stats</strong></p>
+                </div>
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Stat</th>
+                        <th>Base</th>
+                        <th>Rune</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>HP</td>
+                        <td>{{ instance.base_hp }}</td>
+                        <td>{% if instance.rune_hp > 0 %}<span class="text-success">+{{ instance.rune_hp }}</span>{% else %}{{ instance.rune_hp }}{% endif %}</td>
+                        <td>{{ instance.hp }}</td>
+                    </tr>
+                    <tr>
+                        <td>ATK</td>
+                        <td>{{ instance.base_attack }}</td>
+                        <td>{% if instance.rune_attack > 0 %}<span class="text-success">+{{ instance.rune_attack }}</span>{% else %}{{ instance.rune_attack }}{% endif %}</td>
+                        <td>{{ instance.attack }}</td>
+                    </tr>
+                    <tr>
+                        <td>DEF</td>
+                        <td>{{ instance.base_defense }}</td>
+                        <td>{% if instance.rune_defense > 0 %}<span class="text-success">+{{ instance.rune_defense }}</span>{% else %}{{ instance.rune_defense }}{% endif %}</td>
+                        <td>{{ instance.defense }}</td>
+                    </tr>
+                    <tr>
+                        <td>SPD</td>
+                        <td>{{ instance.base_speed }}</td>
+                        <td>{% if instance.rune_speed > 0 %}<span class="text-success">+{{ instance.rune_speed }}</span>{% else %}{{ instance.rune_speed }}{% endif %}</td>
+                        <td>{{ instance.speed }}</td>
+                    </tr>
+                    <tr>
+                        <td>CRI Rate</td>
+                        <td>{{ instance.base_crit_rate }}</td>
+                        <td>{% if instance.rune_crit_rate > 0 %}<span class="text-success">+{{ instance.rune_crit_rate }}</span>{% else %}{{ instance.rune_crit_rate }}{% endif %}</td>
+                        <td>{{ instance.crit_rate }}</td>
+                    </tr>
+                    <tr>
+                        <td>CRI Dmg</td>
+                        <td>{{ instance.base_crit_damage }}</td>
+                        <td>{% if instance.rune_crit_damage > 0 %}<span class="text-success">+{{ instance.rune_crit_damage }}</span>{% else %}{{ instance.rune_crit_damage }}{% endif %}</td>
+                        <td>{{ instance.crit_damage }}</td>
+                    </tr>
+                    <tr>
+                        <td>Resistance</td>
+                        <td>{{ instance.base_resistance }}</td>
+                        <td>{% if instance.rune_resistance > 0 %}<span class="text-success">+{{ instance.rune_resistance }}</span>{% else %}{{ instance.rune_resistance }}{% endif %}</td>
+                        <td>{{ instance.resistance }}</td>
+                    </tr>
+                    <tr>
+                        <td>Accuracy</td>
+                        <td>{{ instance.base_accuracy }}</td>
+                        <td>{% if instance.rune_accuracy > 0 %}<span class="text-success">+{{ instance.rune_accuracy }}</span>{% else %}{{ instance.rune_accuracy }}{% endif %}</td>
+                        <td>{{ instance.accuracy }}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="monster-box-actions">
-                {% if is_owner %}
-                    <span class="monster-box-actions">
-                        <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}">
-                            <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
-                        </a>
-                        <a href="{% url 'herders:monster_instance_power_up' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}">
-                            <span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span>
-                        </a>
-                        <a href="{% url 'herders:monster_instance_duplicate' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Copy">
-                            <span class="glyphicon glyphicon-copy" data-toggle="tooltip" data-placement="top" title="Copy"></span>
-                        </a>
-                        {% if monster.monster.can_awaken and not monster.monster.is_awakened %}
-                            <a href="{% url 'herders:monster_instance_awaken' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Awaken">
-                                <span class="glyphicon glyphicon-star" style="color:purple"></span>
-                            </a>
-                        {% endif %}
-                        <a href="{% url 'herders:monster_instance_delete' profile_name=profile_name instance_id=monster.pk.hex %}?next={{ return_path }}">
-                            <span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
-                        </a>
-                    </span>
-                {% endif %}
+        </div>
+        <div class="col-lg-9 no-left-gutter">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <p class="panel-title"><strong>Skills</strong></p>
+                </div>
+                <ul class="list-group">
+                    {% if instance.monster.leader_skill %}
+                    <li class="list-group-item">
+                        <h4 class="list-group-item-heading">Leader Skill</h4>
+                        <div class="list-group-item-text">
+                            <img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}" class="monster-thumb"/>
+                            <span>{{ instance.monster.leader_skill.skill_string }}</span>
+                        </div>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item condensed">
+                        {% for skill in skills %}
+                            <div class="{% if instance.monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %} condensed">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <p class="panel-title"><strong>{{ skill.skill.name }}</strong> {% if skill.skill.passive %}(Passive){% endif %}</p>
+                                    </div>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <div class="monster-skill-thumb pull-left">
+                                                <img src="{{ img_url_prefix }}skills/{{ skill.skill.icon_filename }}" />
+                                                <span class="image-plus image-plus-right">{{ skill.level }}/{{ skill.skill.max_level }}</span>
+                                            </div>
+                                            <p>{{ skill.skill.description }}</p>
+                                            <div class="clearfix"></div>
+                                        </li>
+                                        {% if skill.skill.level_progress_description_list|length > 0%}
+                                        <li class="list-group-item">
+                                            <p class="list-group-item-heading"><strong>Level-up Progress:</strong></p>
+                                            <ul class="list-unstyled">
+                                            {% for line in skill.skill.level_progress_description_list %}
+                                                <li>{% if forloop.counter >= skill.level %}<span class="text-muted">{% else %}<span>{% endif %}{{ line }}</span></li>
+                                            {% endfor %}
+                                            </ul>
+                                        </li>
+                                        {% endif %}
+                                        {% if skill.skill.skill_effect.all|length > 0 %}
+                                        <li class="list-group-item">
+                                            <p class="list-group-item-heading"><strong>Skill Effects:</strong></p>
+                                            <p>
+                                            {% for effect in skill.skill.skill_effect.all %}
+                                                {% if effect.icon_filename %}
+                                                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                                                        data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                                        />
+                                                {% else %}
+                                                    <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                                        <span>{{ effect.name }}</span>
+                                                    </span>
+                                                {% endif %}
+                                                <div class="clearfix"></div>
+                                            {% endfor %}
+
+                                            </p>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="clearfix"></div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
-    <div class="row">
-    HP: {{ monster.hp }}<br />
-    ATK: {{ monster.attack }}<br />
-    DEF: {{ monster.defense }}<br />
-    SPD: {{ monster.speed }}<br />
-    CRI Rate: {{ monster.crit_rate }}%<br />
-    CRI DMG: {{ monster.crit_damage }}%<br />
-    Resistance: {{ monster.resistance }}%<br />
-    Accuracy: {{ monster.accuracy }}%<br />
+
+
+    <div class="bestiary-portraits">
+        <div class="monster-box">
+            <span>
+                <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
+                {% for x in instance.stars|get_range %}
+                    {% if instance.monster.is_awakened %}
+                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                    {% elif base_monster.can_awaken %}
+                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                    {% else %}
+                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                    {% endif %}
+                {% endfor %}
+            </span>
+        </div>
+        <div class="clearfix"></div>
+        <div class="btn-group-vertical">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addMonsterModal"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addMonsterModal"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addMonsterModal"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+        </div>
     </div>
+    <div class="clearfix"></div>
 {% endblock profile %}

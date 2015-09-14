@@ -402,12 +402,30 @@ def monster_instance_view(request, profile_name, instance_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    monster = get_object_or_404(MonsterInstance, pk=instance_id)
+    instance = get_object_or_404(MonsterInstance, pk=instance_id)
+
+    # Reconcile skill level with actual skill from base monster
+    skills = []
+    skill_levels = [
+        instance.skill_1_level,
+        instance.skill_2_level,
+        instance.skill_3_level,
+        instance.skill_4_level,
+    ]
+
+    for idx in range(0, instance.monster.skills.count()):
+        skills.append({
+            'skill': instance.monster.skills.all()[idx],
+            'level': skill_levels[idx]
+        })
+
+    print skills
 
     context = {
         'profile_name': request.user.username,
         'return_path': return_path,
-        'monster': monster,
+        'instance': instance,
+        'skills': skills,
         'is_owner': is_owner,
         'view': 'profile',
     }

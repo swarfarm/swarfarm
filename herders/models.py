@@ -313,6 +313,9 @@ class MonsterSkill(models.Model):
         else:
             return 'No Image'
 
+    def level_progress_description_list(self):
+        return self.level_progress_description.splitlines()
+
     def __unicode__(self):
         return self.name + ' - ' + self.icon_filename
 
@@ -594,30 +597,78 @@ class MonsterInstance(models.Model):
     def max_level_from_stars(self):
         return self.monster.max_level_from_stars(self.stars)
 
-    # Stat callables. Will integrate rune numbers here too eventually.
-    def hp(self):
+    # Stat callables. Base = monster's own stat. Rune = amount gained from runes. Bare stat is combined
+    def base_hp(self):
         return self.monster.actual_hp(self.stars, self.level)
 
-    def attack(self):
+    def rune_hp(self):
+        return 0
+
+    def hp(self):
+        return self.base_hp() + self.rune_hp()
+
+    def base_attack(self):
         return self.monster.actual_attack(self.stars, self.level)
 
-    def defense(self):
+    def rune_attack(self):
+        return 0
+
+    def attack(self):
+        return self.base_attack() + self.rune_attack()
+
+    def base_defense(self):
         return self.monster.actual_defense(self.stars, self.level)
 
-    def speed(self):
+    def rune_defense(self):
+        return 0
+
+    def defense(self):
+        return self.base_defense() + self.rune_defense()
+
+    def base_speed(self):
         return self.monster.speed
 
-    def crit_rate(self):
+    def rune_speed(self):
+        return 0
+
+    def speed(self):
+        return self.base_speed() + self.rune_speed()
+
+    def base_crit_rate(self):
         return self.monster.crit_rate
 
-    def crit_damage(self):
+    def rune_crit_rate(self):
+        return 0
+
+    def crit_rate(self):
+        return self.base_crit_rate() + self.rune_crit_rate()
+
+    def base_crit_damage(self):
         return self.monster.crit_damage
 
-    def resistance(self):
+    def rune_crit_damage(self):
+        return 0
+
+    def crit_damage(self):
+        return self.base_crit_damage() + self.rune_crit_damage()
+
+    def base_resistance(self):
         return self.monster.resistance
 
-    def accuracy(self):
+    def rune_resistance(self):
+        return 0
+
+    def resistance(self):
+        return self.base_resistance() + self.rune_resistance()
+
+    def base_accuracy(self):
         return self.monster.accuracy
+
+    def rune_accuracy(self):
+        return 0
+
+    def accuracy(self):
+        return self.base_accuracy() + self.rune_accuracy()
 
     def clean(self):
         from django.core.exceptions import ValidationError, ObjectDoesNotExist

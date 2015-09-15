@@ -83,11 +83,11 @@
                             </a>
                         </div>
 
-                        <div class="navbar-right hidden-sm">
+                        <div class="navbar-right">
                             {% if user.is_authenticated %}
                                 <div class="btn-group navbar-btn">
-                                    <a href="{% url 'feedback:index' %}" class="btn btn-default"><span class="fa fa-comments"></span> Feedback</a>
-                                    <a href="{% url 'herders:profile_following' profile_name=user.username %}" class="btn btn-default"><span class="fa fa-user"></span> Friends</a>
+                                    <a href="{% url 'feedback:index' %}" class="btn btn-default hidden-sm"><span class="fa fa-comments"></span> Feedback</a>
+                                    <a href="{% url 'herders:profile_following' profile_name=user.username %}" class="btn btn-default hidden-sm"><span class="fa fa-user"></span> Friends</a>
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                         {{ user.username }} <span class="caret"></span>
                                     </button>

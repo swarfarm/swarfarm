@@ -17,7 +17,7 @@ Friends - {{ block.super }}
                 <tr>
                     <th>Username</th>
                     <th>Summoner's War Account</th>
-                    <th>Remove</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -25,7 +25,11 @@ Friends - {{ block.super }}
                 <tr>
                     <td>{% if person.public %}<a href="{% url 'herders:profile_default' profile_name=person.user.username %}">{{ person.user.username }}</a>{% else %}{{ person.user.username }} - Private <span class="fa fa-frown-o"></span>{% endif %}</td>
                     <td>{% if person.public %}{{ person.summoner_name }}{% endif %}</td>
-                    <td><a href="{% url 'herders:profile_follow_remove' profile_name=profile_name follow_username=person.user.username%}?next={{ return_path }}"><span class="glyphicon glyphicon-remove-sign"></span> Remove</a></td>
+                    <td>
+                        <a href="{% url 'herders:profile_follow_remove' profile_name=profile_name follow_username=person.user.username%}?next={{ return_path }}" class="btn btn-xs btn-danger pull-right">
+                            <span class="glyphicon glyphicon-remove-sign"></span> Remove
+                        </a>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr><td>Nobody</td></tr>
@@ -46,7 +50,7 @@ Friends - {{ block.super }}
                 <tr>
                     <th>Username</th>
                     <th>Summoner's War Account</th>
-                    <th>Add</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -57,7 +61,9 @@ Friends - {{ block.super }}
                         <td>{{ person.summoner_name }}</td>
                         <td>
                             {% if person not in summoner.following.all %}
-                                <a href="{% url 'herders:profile_follow_add' profile_name=profile_name follow_username=person.user.username%}?next={{ return_path }}"><span class="glyphicon glyphicon-plus-sign"></span> Follow</a>
+                                <a href="{% url 'herders:profile_follow_add' profile_name=profile_name follow_username=person.user.username%}?next={{ return_path }}" class="btn btn-xs btn-success">
+                                    <span class="glyphicon glyphicon-plus-sign"></span> Follow
+                                </a>
                             {% else %}
                                 <span class="glyphicon glyphicon-ok-circle"></span> Following
                             {% endif %}

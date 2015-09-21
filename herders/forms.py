@@ -222,91 +222,91 @@ class EditEssenceStorageForm(ModelForm):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    PrependedText('storage_magic_low', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_low.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_magic_low', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_low.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 Div(
-                    PrependedText('storage_magic_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_mid.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_magic_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_mid.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 Div(
-                    PrependedText('storage_magic_high', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_high.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                css_class='row',
-            ),
-            Div(
-                Div(
-                    PrependedText('storage_fire_low', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_low.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                Div(
-                    PrependedText('storage_fire_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_mid.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                Div(
-                    PrependedText('storage_fire_high', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_high.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_magic_high', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_high.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    PrependedText('storage_water_low', '<img src="' + STATIC_URL_PREFIX + 'essences/water_low.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_fire_low', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_low.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 Div(
-                    PrependedText('storage_water_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/water_mid.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_fire_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_mid.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 Div(
-                    PrependedText('storage_water_high', '<img src="' + STATIC_URL_PREFIX + 'essences/water_high.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                css_class='row',
-            ),
-            Div(
-                Div(
-                    PrependedText('storage_wind_low', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_low.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                Div(
-                    PrependedText('storage_wind_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_mid.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
-                ),
-                Div(
-                    PrependedText('storage_wind_high', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_high.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_fire_high', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_high.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    PrependedText('storage_light_low', '<img src="' + STATIC_URL_PREFIX + 'essences/light_low.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_water_low', '<img src="' + STATIC_URL_PREFIX + 'essences/water_low.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 Div(
-                    PrependedText('storage_light_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/light_mid.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_water_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/water_mid.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 Div(
-                    PrependedText('storage_light_high', '<img src="' + STATIC_URL_PREFIX + 'essences/light_high.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_water_high', '<img src="' + STATIC_URL_PREFIX + 'essences/water_high.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
-                    PrependedText('storage_dark_low', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_low.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_wind_low', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_low.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 Div(
-                    PrependedText('storage_dark_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_mid.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_wind_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_mid.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 Div(
-                    PrependedText('storage_dark_high', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_high.png" />', min=0),
-                    css_class='col-lg-1 storage_group',
+                    PrependedText('storage_wind_high', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_high.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    PrependedText('storage_light_low', '<img src="' + STATIC_URL_PREFIX + 'essences/light_low.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
+                ),
+                Div(
+                    PrependedText('storage_light_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/light_mid.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
+                ),
+                Div(
+                    PrependedText('storage_light_high', '<img src="' + STATIC_URL_PREFIX + 'essences/light_high.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
+                ),
+                css_class='row',
+            ),
+            Div(
+                Div(
+                    PrependedText('storage_dark_low', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_low.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
+                ),
+                Div(
+                    PrependedText('storage_dark_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_mid.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
+                ),
+                Div(
+                    PrependedText('storage_dark_high', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_high.png" class="prepended-image"/>', min=0),
+                    css_class='col-lg-1 storage_group prepended-image-group',
                 ),
                 css_class='row',
             ),
@@ -463,8 +463,24 @@ class EditMonsterInstanceForm(ModelForm):
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
                 Field('ignore_for_fusion', css_class='checkbox'),
-                Field('priority'),
-                Field('notes'),
+                'priority',
+                Div(
+                    'skill_1_level',
+                    css_class='prepended-image-group',
+                ),
+                Div(
+                    'skill_2_level',
+                    css_class='prepended-image-group',
+                ),
+                Div(
+                    'skill_3_level',
+                    css_class='prepended-image-group',
+                ),
+                Div(
+                    'skill_4_level',
+                    css_class='prepended-image-group',
+                ),
+                'notes',
             ),
             Div(
                 FormActions(
@@ -476,7 +492,7 @@ class EditMonsterInstanceForm(ModelForm):
 
     class Meta:
         model = MonsterInstance
-        exclude = ('owner', 'monster', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level')
+        exclude = ('owner', 'monster')
 
 
 class PowerUpMonsterInstanceForm(forms.Form):

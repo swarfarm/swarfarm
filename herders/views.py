@@ -13,6 +13,7 @@ from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
+from django.templatetags.static import static
 
 from .forms import *
 from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
@@ -395,14 +396,11 @@ def monster_instance_bulk_add(request, profile_name):
 
 
 def monster_instance_view(request, profile_name, instance_id):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
+    return_path = request.path
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    instance = get_object_or_404(MonsterInstance, pk=instance_id)
+    instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
 
     # Reconcile skill level with actual skill from base monster
     skills = []
@@ -419,10 +417,9 @@ def monster_instance_view(request, profile_name, instance_id):
             'level': skill_levels[idx]
         })
 
-    print skills
-
     context = {
         'profile_name': request.user.username,
+        'summoner': summoner,
         'return_path': return_path,
         'instance': instance,
         'skills': skills,
@@ -430,7 +427,81 @@ def monster_instance_view(request, profile_name, instance_id):
         'view': 'profile',
     }
 
-    return render(request, 'herders/profile/profile_monster_view.html', context)
+    # Add in the forms if you're the owner.
+    if is_owner:
+        # Edit form requires a lot of customization based on skills
+        edit_form = EditMonsterInstanceForm(request.POST or None, instance=instance)
+        edit_form.helper.form_action = reverse('herders:monster_instance_edit', kwargs={'profile_name': profile_name, 'instance_id': instance.pk.hex}) + '?next=' + return_path
+        if len(skills) < 1 or skills[0]['skill'].passive:
+            edit_form.helper['skill_1_level'].wrap(Div, css_class="hidden")
+        else:
+            edit_form.helper['skill_1_level'].wrap(
+                PrependedText,
+                '<img src="' + static('herders/images/') + 'skills/' + skills[0]['skill'].icon_filename + '" class="prepended-image"/>',
+                min=1,
+                max=skills[0]['skill'].max_level,
+            )
+            edit_form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
+
+        if len(skills) < 2 or skills[1]['skill'].passive:
+            edit_form.helper['skill_2_level'].wrap(Div, css_class="hidden")
+        else:
+            edit_form.helper['skill_2_level'].wrap(
+                PrependedText,
+                '<img src="' + static('herders/images/') + 'skills/' + skills[1]['skill'].icon_filename + '" class="prepended-image"/>',
+                min=1,
+                max=skills[1]['skill'].max_level,
+            )
+            edit_form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
+
+        if len(skills) < 3 or skills[2]['skill'].passive:
+            edit_form.helper['skill_3_level'].wrap(Div, css_class="hidden")
+        else:
+            edit_form.helper['skill_3_level'].wrap(
+                PrependedText,
+                '<img src="' + static('herders/images/') + 'skills/' + skills[2]['skill'].icon_filename + '" class="prepended-image"/>',
+                min=1,
+                max=skills[2]['skill'].max_level,
+            )
+            edit_form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
+
+        if len(skills) < 4 or skills[3]['skill'].passive:
+            edit_form.helper['skill_4_level'].wrap(Div, css_class="hidden")
+        else:
+            edit_form.helper['skill_4_level'].wrap(
+                PrependedText,
+                '<img src="' + static('herders/images/') + 'skills/' + skills[3]['skill'].icon_filename + '" class="prepended-image"/>',
+                min=1,
+                max=skills[3]['skill'].max_level,
+            )
+            edit_form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
+
+        context['edit_form'] = edit_form
+
+        awaken_form = AwakenMonsterInstanceForm()
+        awaken_form.helper.form_action = reverse('herders:monster_instance_awaken', kwargs={'profile_name': profile_name, 'instance_id': instance.pk.hex}) + '?next=' + return_path
+        context['awaken_form'] = awaken_form
+
+        storage = summoner.get_storage()
+        available_essences = OrderedDict()
+
+        for element, essences in instance.monster.get_awakening_materials().iteritems():
+            available_essences[element] = OrderedDict()
+            for size, cost in essences.iteritems():
+                available_essences[element][size] = dict()
+                available_essences[element][size]['qty'] = storage[element][size]
+                available_essences[element][size]['sufficient'] = storage[element][size] >= cost
+
+        context['available_essences'] = available_essences
+
+        PowerUpFormset = formset_factory(PowerUpMonsterInstanceForm, extra=5, max_num=5)
+        context['power_up_form'] = PowerUpFormset()
+        context['power_up_form_action'] = reverse('herders:monster_instance_power_up', kwargs={'profile_name': profile_name, 'instance_id': instance.pk.hex}) + '?next=' + return_path
+
+    if is_owner or summoner.public:
+        return render(request, 'herders/profile/profile_monster_view.html', context)
+    else:
+        return render(request, 'herders/profile/not_public.html')
 
 
 @login_required()
@@ -585,8 +656,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
                         return redirect(return_path)
                     else:
                         return redirect(
-                            reverse('herders:monster_instance_edit', kwargs={'profile_name':profile_name, 'instance_id': instance_id}) +
-                            '?next=' + return_path
+                            reverse('herders:monster_instance_view', kwargs={'profile_name':profile_name, 'instance_id': instance_id})
                         )
             else:
                 context['form_errors'] = formset.errors
@@ -679,6 +749,8 @@ def monster_instance_awaken(request, profile_name, instance_id):
         monster.monster = monster.monster.awakens_to
         monster.save()
 
+        messages.success(request, "Awakened " + str(monster.monster.awakens_from) + " to " + str(monster.monster))
+
         return redirect(return_path)
 
     else:
@@ -710,6 +782,7 @@ def monster_instance_duplicate(request, profile_name, instance_id):
         newmonster = monster
         newmonster.pk = None
         newmonster.save()
+        messages.success(request, 'Succesfully copied ' + str(newmonster))
 
         return redirect(return_path)
     else:

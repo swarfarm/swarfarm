@@ -3,7 +3,7 @@
 {% load utils %}
 {% load cache %}
 
-{% block title %}Bestiary - {{ base_monster.name }} - {{ block.super }}{% endblock title %}
+{% block title %}Bestiary - {{ base_monster.get_element_display }} {{ base_monster.name }}{% if awakened_monster %} ({{ awakened_monster.name }}){% endif %} - {{ block.super }}{% endblock title %}
 
 {% block css %}
     {% if profile_name %}
@@ -192,7 +192,7 @@
                             {% for skill in base_monster_skills %}
                             <tr>
                                 <td class="monster-image"
-                                {% if not skill.passive %}
+                                {% if skill.max_level > 1 %}
                                 data-toggle="popover" data-trigger="hover" data-container="body" title="Skill-Up Effects" data-placement="left" data-content="{{ skill.level_progress_description|linebreaksbr }}"
                                 {% endif %}
                                 >
@@ -504,60 +504,70 @@
     </div>
 
     <div class="bestiary-portraits">
-        <div class="monster-box">
-            <span>
-                <img src="{{ img_url_prefix }}monsters/{{ base_monster.image_filename }}"/>
-                {% for x in base_monster.base_stars|get_range %}
-                    {% if base_monster.is_awakened %}
-                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% elif base_monster.can_awaken %}
-                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% else %}
-                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% endif %}
-                {% endfor %}
-            </span>
-        </div>
-        <div class="clearfix"></div>
-        {% if awakened_monster %}
-        <div class="monster-box">
-            <span>
-                <img src="{{ img_url_prefix }}monsters/{{ awakened_monster.image_filename }}"/>
-                {% for x in awakened_monster.base_stars|get_range %}
-                    {% if awakened_monster.is_awakened %}
-                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% elif awakened_monster.can_awaken %}
-                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% else %}
-                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% endif %}
-                {% endfor %}
-            </span>
-        </div>
-        {% endif %}
-
-        <div class="bestiary-family">
-            <div class="panel panel-default">
-                <table class="table">
-                    <tbody>
-                    {% for related_monster in base_monster.monster_family %}
-                    <tr>
-                        <td class="monster-image">
-                            <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.pk %}">
-                                <img src="{{ img_url_prefix }}monsters/{{ related_monster.image_filename }}" class="monster-thumb"/>
-                            </a>
-                        </td>
-                        <td class="monster-image">
-                            {% if related_monster.awakens_to %}
-                            <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.awakens_to.pk %}">
-                                <img src="{{ img_url_prefix }}monsters/{{ related_monster.awakens_to.image_filename }}" class="monster-thumb"/>
-                            </a>
+        <div class="list-group">
+            <div class="list-group-item">
+                <div class="monster-box">
+                    <span>
+                        <img src="{{ img_url_prefix }}monsters/{{ base_monster.image_filename }}"/>
+                        {% for x in base_monster.base_stars|get_range %}
+                            {% if base_monster.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif base_monster.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
                             {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        {% endfor %}
+                    </span>
+                    <span class="image-plus image-plus-left">{{ base_monster.name }}</span>
+                </div>
+                <div class="clearfix"></div>
+
+                {% if awakened_monster %}
+                <div class="monster-box">
+                    <span>
+                        <img src="{{ img_url_prefix }}monsters/{{ awakened_monster.image_filename }}"/>
+                        {% for x in awakened_monster.base_stars|get_range %}
+                            {% if awakened_monster.is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif awakened_monster.can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    <span class="image-plus image-plus-left">{{ awakened_monster.name }}</span>
+                </div>
+                <div class="clearfix"></div>
+                {% endif %}
+            </div>
+            <div class="list-group-item">
+                <h4 class="list-group-item-heading">Family:</h4>
+                <div class="bestiary-family">
+                    <div class="panel panel-default">
+                        <table class="table">
+                            <tbody>
+                            {% for related_monster in base_monster.monster_family %}
+                            <tr>
+                                <td class="monster-image">
+                                    <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.pk %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ related_monster.image_filename }}" class="monster-thumb"/>
+                                    </a>
+                                </td>
+                                <td class="monster-image">
+                                    {% if related_monster.awakens_to %}
+                                    <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.awakens_to.pk %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ related_monster.awakens_to.image_filename }}" class="monster-thumb"/>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

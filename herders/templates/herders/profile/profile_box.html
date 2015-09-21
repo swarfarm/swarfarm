@@ -44,11 +44,7 @@
                                 {% for instance in monsters %}
                                     <div class="monster-box">
                                         <div class="monster-box-thumb" {% if instance.notes %}data-toggle="popover" data-placement="top" data-trigger="hover" data-container="body" title="Notes" data-content="{{ instance.notes }}{% endif %}">
-                                            {% if is_owner %}
-                                                <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=instance.pk.hex %}?next={{ return_path }}">
-                                            {% else %}
-                                                <span>
-                                            {% endif %}
+                                            <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
                                                 <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
                                                 <span>
                                                     {% for x in instance.stars|get_range %}
@@ -68,30 +64,18 @@
                                                 {% endif %}
                                                 <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
                                                 <span class="image-plus image-plus-right">{{ instance.level }}</span>
-                                            {% if is_owner %}
-                                                </a>
-                                            {% else %}
-                                                </span>
-                                            {% endif %}
+                                            </a>
                                         </div>
 
                                         {% if is_owner %}
                                         <div class="monster-box-actions">
                                             <span class="monster-box-actions">
-                                                <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}">
+                                                <a href="{% url 'herders:monster_instance_view' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}">
                                                     <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
-                                                </a>
-                                                <a href="{% url 'herders:monster_instance_power_up' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}">
-                                                    <span class="glyphicon glyphicon-arrow-up" data-toggle="tooltip" data-placement="top" title="Power Up"></span>
                                                 </a>
                                                 <a href="{% url 'herders:monster_instance_duplicate' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Copy">
                                                     <span class="glyphicon glyphicon-copy" data-toggle="tooltip" data-placement="top" title="Copy"></span>
                                                 </a>
-                                                {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
-                                                    <a href="{% url 'herders:monster_instance_awaken' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Awaken">
-                                                        <span class="glyphicon glyphicon-star" style="color:purple"></span>
-                                                    </a>
-                                                {% endif %}
                                                 <a href="{% url 'herders:monster_instance_delete' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}">
                                                     <span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
                                                 </a>

@@ -83,7 +83,7 @@ class SummonerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SummonerSerializer
 
 
-class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterInstanceViewSet(viewsets.ModelViewSet):
     queryset = MonsterInstance.objects.none()
     serializer_class = MonsterInstanceSerializer
     pagination_class = PersonalCollectionSetPagination
@@ -94,7 +94,8 @@ class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         instance_id = self.kwargs.get('pk', None)
 
         if instance_id:
-            return MonsterInstance.objects.filter(pk=instance_id)
+            summoner = Summoner.objects.get(user=self.request.user)
+            return MonsterInstance.objects.filter(owner=summoner, pk=instance_id)
         else:
             return MonsterInstance.objects.none()
 

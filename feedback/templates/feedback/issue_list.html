@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block content %}
 <div class="panel panel-default">
@@ -7,32 +8,36 @@
         <p class="panel-title"><strong>Feedback Submissions</strong></p>
         <div class="clearfix"></div>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-condensed" id="monster_table">
         <thead>
             <tr>
                 <th>#</th>
-                <th>Reported By</th>
-                <th>Submitted</th>
-                <th>Topic</th>
-                <th>Subject</th>
+                <th data-sorter="false">Topic</th>
                 <th>Status</th>
                 <th>Priority</th>
                 <th>Comments</th>
+                <th>Latest Comment</th>
                 <th>Public</th>
+                <th>Closed</th>
             </tr>
         </thead>
         <tbody>
             {% for issue in issue_list %}
             <tr>
                 <td><a href="{{ issue.get_absolute_url }}">#{{ issue.pk }}</a></td>
-                <td>{{ issue.user }}</td>
-                <td>{{ issue.submitted }}</td>
-                <td>{{ issue.get_topic_display }}</td>
-                <td>{{ issue.subject }}</td>
-                <td>{{ issue.get_status_display }}</td>
+                <td>
+                    <h4>{{ issue.subject }}</h4>
+                    <p>{{ issue.get_topic_display }} - Reported by {{ issue.user }} {{ issue.submitted|naturaltime }}</p>
+                </td>
+                <td>
+                    <span class="hidden">{{ issue.status }}</span>
+                    {{ issue.get_status_display }}
+                </td>
                 <td>{{ issue.get_priority_display }}</td>
                 <td>{{ issue.comment_count }}</td>
+                <td>{% if issue.comment_count > 0 %}{{ issue.latest_comment.timestamp|naturaltime }} ({{ issue.latest_comment.user }}){% endif %}</td>
                 <td>{% if issue.public %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>
+                <td>{% if issue.closed %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>
             </tr>
             {% empty %}
             <tr><td colspan="8">None yet!</td></tr>

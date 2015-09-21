@@ -62,6 +62,12 @@ class Issue(models.Model):
     def comment_count(self):
         return Discussion.objects.filter(feedback=self).count()
 
+    def closed(self):
+        return self.status >= self.STATUS_RESOLVED
+
+    def latest_comment(self):
+        return Discussion.objects.filter(feedback=self).latest('timestamp')
+
     class Meta:
         ordering = ('status', 'priority', 'submitted')
 

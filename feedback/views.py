@@ -24,6 +24,7 @@ class ProfileNameMixin(object):
 
 class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
     model = Issue
+    # paginate_by = 25
 
     def get_queryset(self):
         if self.request.user.is_superuser:

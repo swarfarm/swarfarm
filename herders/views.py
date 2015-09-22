@@ -163,7 +163,7 @@ def follow_remove(request, profile_name, follow_username):
         return HttpResponseForbidden()
 
 
-def profile(request, profile_name=None, view_mode=None, sort_method='grade'):
+def profile(request, profile_name=None, view_mode=None, sort_method=None):
     if profile_name is None:
         if request.user.is_authenticated():
             profile_name = request.user.username
@@ -175,12 +175,18 @@ def profile(request, profile_name=None, view_mode=None, sort_method='grade'):
     # Determine if the person logged in is the one requesting the view
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    # Get preferred view mode from cookie
-    if view_mode is None:
-        view_mode = request.session.get('profile_view_mode', 'list')
-    else:
+    # If we passed in view mode or sort method, set the session variable and redirect back to base profile URL
+    if view_mode:
         request.session['profile_view_mode'] = view_mode
+
+    if sort_method:
+        request.session['profile_sort_method'] = sort_method
+
+    if request.session.modified:
         return redirect('herders:profile_default', profile_name=profile_name)
+
+    view_mode = request.session.get('profile_view_mode', 'list')
+    sort_method = request.session.get('profile_sort_method', 'grade')
 
     context = {
         'add_monster_form': AddMonsterInstanceForm(),

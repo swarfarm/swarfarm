@@ -34,11 +34,11 @@ footer {
 }
 
 .no-left-gutter {
-    padding-left: 0;
+    padding-left: 0!important;
 }
 
 .no-right-gutter {
-    padding-right: 0;
+    padding-right: 0!important;
 }
 
 .condensed {

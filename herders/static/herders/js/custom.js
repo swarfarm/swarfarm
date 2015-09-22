@@ -72,7 +72,15 @@ function SetMaxLevel() {
     var stars = $(stars_field).val();
     $(level_field).val(10 + stars * 5);
 }
+//Set max skill level
+function SetMaxSkillLevel() {
+    var skill_level_field = $('#' + $(this).data('skill-field'));
+    var maxlv = skill_level_field.attr('max');
+    skill_level_field.val(maxlv)
+}
+
 $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
+    .on('click', '*[data-skill-field]', SetMaxSkillLevel)
     .on('selectChoice', '*[data-set-stars]', SetStars);
 
 //Bulk add

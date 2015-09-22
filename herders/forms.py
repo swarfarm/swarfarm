@@ -464,22 +464,10 @@ class EditMonsterInstanceForm(ModelForm):
                 Field('in_storage', css_class='checkbox'),
                 Field('ignore_for_fusion', css_class='checkbox'),
                 'priority',
-                Div(
-                    'skill_1_level',
-                    css_class='prepended-image-group',
-                ),
-                Div(
-                    'skill_2_level',
-                    css_class='prepended-image-group',
-                ),
-                Div(
-                    'skill_3_level',
-                    css_class='prepended-image-group',
-                ),
-                Div(
-                    'skill_4_level',
-                    css_class='prepended-image-group',
-                ),
+                'skill_1_level',
+                'skill_2_level',
+                'skill_3_level',
+                'skill_4_level',
                 'notes',
             ),
             Div(

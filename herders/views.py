@@ -438,6 +438,54 @@ def monster_instance_view(request, profile_name, instance_id):
         # Edit form requires a lot of customization based on skills
         edit_form = EditMonsterInstanceForm(request.POST or None, instance=instance)
         edit_form.helper.form_action = reverse('herders:monster_instance_edit', kwargs={'profile_name': profile_name, 'instance_id': instance.pk.hex}) + '?next=' + return_path
+        if len(skills) >= 1 and not skills[0]['skill'].passive:
+
+            edit_form.helper['skill_1_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=edit_form['skill_1_level'].auto_id),
+            )
+            edit_form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
+            edit_form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
+        else:
+            edit_form.helper['skill_1_level'].wrap(Div, css_class="hidden")
+
+        if len(skills) >= 2 and not skills[1]['skill'].passive:
+            edit_form.helper['skill_2_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=edit_form['skill_2_level'].auto_id),
+                min=1,
+                max=skills[1]['skill'].max_level,
+            )
+            edit_form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
+            edit_form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
+        else:
+            edit_form.helper['skill_2_level'].wrap(Div, css_class="hidden")
+
+        if len(skills) >= 3 and not skills[2]['skill'].passive:
+            edit_form.helper['skill_3_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=edit_form['skill_3_level'].auto_id),
+                min=1,
+                max=skills[2]['skill'].max_level,
+            )
+            edit_form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
+            edit_form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
+        else:
+            edit_form.helper['skill_3_level'].wrap(Div, css_class="hidden")
+
+        if len(skills) >= 4 and not skills[3]['skill'].passive:
+            edit_form.helper['skill_4_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=edit_form['skill_4_level'].auto_id),
+                min=1,
+                max=skills[1]['skill'].max_level,
+            )
+            edit_form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
+            edit_form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
+        else:
+            edit_form.helper['skill_4_level'].wrap(Div, css_class="hidden")
+
+        '''
         if len(skills) < 1 or skills[0]['skill'].passive:
             edit_form.helper['skill_1_level'].wrap(Div, css_class="hidden")
         else:
@@ -481,6 +529,7 @@ def monster_instance_view(request, profile_name, instance_id):
                 max=skills[3]['skill'].max_level,
             )
             edit_form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
+        '''
 
         context['edit_form'] = edit_form
 

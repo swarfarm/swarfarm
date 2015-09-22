@@ -558,7 +558,9 @@ def monster_instance_delete(request, profile_name, instance_id):
 
     # Check for proper owner before deleting
     if request.user.summoner == monster.owner:
+        messages.success(request, 'Deleted ' + str(monster))
         monster.delete()
+
         return redirect(return_path)
     else:
         return HttpResponseForbidden()

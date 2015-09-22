@@ -7,9 +7,43 @@
         <a role="button" href="{% url 'feedback:issue_add' %}" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"></span> New Feedback</a>
         <p class="panel-title"><strong>Feedback Submissions</strong></p>
         <p>In addition to Accepted or In Progress topics here, see the <a href="https://swarfarm.com/upcoming_features/">list of upcoming features</a> to see where the site is headed.</p>
-        <div class="clearfix"></div>
+        <div class="btn-toolbar">
+            {% if mode == 'mine' %}
+            <a href="{% url 'feedback:index' %}" class="btn btn-default">All Feedback</a>
+            {% else %}
+            <a href="{% url 'feedback:myissue_list' %}" class="btn btn-default">My Feedback</a>
+            {% endif %}
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filters" aria-expanded="false" aria-controls="filters">
+                Filters
+            </button>
+            <button type="button" class="btn btn-danger reset">Reset Filters</button>
+        </div>
     </div>
-    <table class="table table-condensed">
+    <div id="filters" class="collapse">
+        <div class="panel-body">
+            <div class="filter-group">
+                <span class="filter-description">Closed:</span>
+                <div class="btn-group priority-filters">
+                    <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="true">Yes</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="7" data-filter-text="false">No</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-description">Status:</span>
+                <div class="btn-group priority-filters">
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="*Unreviewed*">Unreviewed</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="*Accepted*">Accepted</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="*In Progress*">In Progress</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="*Requires Feedback*">Requires Feedback</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="*Resolved*">Resolved</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="*Rejected*">Rejected</button>
+                    <button type="button" class="btn btn-default filter" data-filter-column="2" data-filter-text="*Duplicate*">Duplicate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-condensed" id="monster_table">
         <thead>
             <tr>
                 <th>#</th>
@@ -36,9 +70,15 @@
                 </td>
                 <td>{{ issue.get_priority_display }}</td>
                 <td>{{ issue.comment_count }}</td>
-                <td>{% if issue.comment_count > 0 %}{{ issue.latest_comment.timestamp|naturaltime }} ({{ issue.latest_comment.user }}){% endif %}</td>
+                <td>
+                    {% if issue.comment_count > 0 %}
+                    <span class="hidden">{{ issue.latest_comment.timestamp }}</span>{{ issue.latest_comment.timestamp|naturaltime }} ({{ issue.latest_comment.user }})
+                    {% else %}
+                    <span class="hidden">{{ issue.submitted }}</span>{{ issue.submitted|naturaltime }} ({{ issue.user }})
+                    {% endif %}
+                </td>
                 <td>{% if issue.public %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>
-                <td>{% if issue.closed %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>
+                <td><span class="hidden">{{ issue.closed }}</span>{% if issue.closed %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>
             </tr>
             {% empty %}
             <tr><td colspan="8">None yet!</td></tr>
@@ -46,44 +86,4 @@
         </tbody>
     </table>
 </div>
-{% if is_paginated %}
-    <nav>
-        <ul class="pagination">
-            {% if page_obj.has_previous %}
-                <li>
-                    <a href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-            {% else %}
-                <li class="disabled">
-                    <span aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </span>
-                </li>
-            {% endif %}
-
-            {% for page_num in page_obj.paginator.page_range %}
-                <li {% if page_num == page_obj.number %}class="active"{% endif %}>
-                    <a href="{% url 'news:latest_news' %}?page={{ page_num }}">{{ page_num }}</a>
-                </li>
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-                <li>
-                    <a href="?page={{ page_obj.next_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            {% else %}
-                <li class="disabled">
-                    <span aria-label="Previous">
-                        <span aria-hidden="true">&raquo;</span>
-                    </span>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
-{% endif %}
-
 {% endblock content %}

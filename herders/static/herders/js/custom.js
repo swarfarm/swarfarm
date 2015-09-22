@@ -35,10 +35,6 @@ $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
 });
 
-
-
-
-
 //Automatically set attributes based on monster info
 function SetStars(e, choice, autocomplete) {
     var monster_id = choice[0].dataset['value'];
@@ -98,6 +94,7 @@ var active_filter_class = 'active';
 monster_table.tablesorter({
     widgets: ['filter', 'saveSort'],
     ignoreCase: true,
+    widthFixed: true,
     widgetOptions: {
         filter_columnFilters: true,
         filter_reset: 'button.reset',

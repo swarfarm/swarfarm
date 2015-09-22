@@ -24,14 +24,21 @@ class ProfileNameMixin(object):
 
 class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
     model = Issue
-    # paginate_by = 25
 
     def get_queryset(self):
-        if self.request.user.is_superuser:
-            return Issue.objects.all()
+        mode = self.kwargs.get('mode', None)
+        if mode == 'mine':
+            return Issue.objects.filter(user=self.request.user)
         else:
-            return Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
+            if self.request.user.is_superuser:
+                return Issue.objects.all()
+            else:
+                return Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
 
+    def get_context_data(self, **kwargs):
+        context = super(IssueList, self).get_context_data(**kwargs)
+        context['mode'] = self.kwargs.get('mode', None)
+        return context
 
 class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
     model = Issue

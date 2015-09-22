@@ -405,6 +405,7 @@
                 <p class="list-group-item-text">None!</p>
                 {% endif %}
             </div>
+            {% if instance.fodder or instance.in_storage or instance.monster.fusion_food %}
             <div class="list-group-item">
                 <h4 class="list-group-item-heading">Flags</h4>
                 <h4 class="list-group-item-text">
@@ -417,6 +418,7 @@
                     {% endif %}
                 </h4>
             </div>
+            {% endif %}
         </div>
     </div>
     <div class="clearfix"></div>

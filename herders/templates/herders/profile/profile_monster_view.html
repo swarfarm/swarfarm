@@ -4,6 +4,14 @@
 {% load crispy_forms_tags %}
 {% load crispy_forms_filters %}
 
+{% block title %}
+{% if is_owner %}
+        {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
+    {% else %}
+        {{ profile_name }}'s {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
+    {% endif %}
+{% endblock %}
+
 {% block subnav %}
     {% if is_owner %}
     <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">

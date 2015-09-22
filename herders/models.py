@@ -597,6 +597,15 @@ class MonsterInstance(models.Model):
     def max_level_from_stars(self):
         return self.monster.max_level_from_stars(self.stars)
 
+    def skill_ups_to_max(self):
+        skill_ups_remaining = self.monster.skill_ups_to_max()
+        skill_levels = [self.skill_1_level, self.skill_2_level, self.skill_3_level, self.skill_4_level]
+
+        for idx in range(0, self.monster.skills.count()):
+            skill_ups_remaining -= skill_levels[idx] - 1
+
+        return skill_ups_remaining
+
     # Stat callables. Base = monster's own stat. Rune = amount gained from runes. Bare stat is combined
     def base_hp(self):
         return self.monster.actual_hp(self.stars, self.level)

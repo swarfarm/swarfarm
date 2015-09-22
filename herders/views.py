@@ -438,7 +438,7 @@ def monster_instance_view(request, profile_name, instance_id):
         # Edit form requires a lot of customization based on skills
         edit_form = EditMonsterInstanceForm(request.POST or None, instance=instance)
         edit_form.helper.form_action = reverse('herders:monster_instance_edit', kwargs={'profile_name': profile_name, 'instance_id': instance.pk.hex}) + '?next=' + return_path
-        if len(skills) >= 1 and not skills[0]['skill'].passive:
+        if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
 
             edit_form.helper['skill_1_level'].wrap(
                 FieldWithButtons,
@@ -449,7 +449,7 @@ def monster_instance_view(request, profile_name, instance_id):
         else:
             edit_form.helper['skill_1_level'].wrap(Div, css_class="hidden")
 
-        if len(skills) >= 2 and not skills[1]['skill'].passive:
+        if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
             edit_form.helper['skill_2_level'].wrap(
                 FieldWithButtons,
                 StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=edit_form['skill_2_level'].auto_id),
@@ -461,7 +461,7 @@ def monster_instance_view(request, profile_name, instance_id):
         else:
             edit_form.helper['skill_2_level'].wrap(Div, css_class="hidden")
 
-        if len(skills) >= 3 and not skills[2]['skill'].passive:
+        if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
             edit_form.helper['skill_3_level'].wrap(
                 FieldWithButtons,
                 StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=edit_form['skill_3_level'].auto_id),
@@ -473,7 +473,7 @@ def monster_instance_view(request, profile_name, instance_id):
         else:
             edit_form.helper['skill_3_level'].wrap(Div, css_class="hidden")
 
-        if len(skills) >= 4 and not skills[3]['skill'].passive:
+        if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
             edit_form.helper['skill_4_level'].wrap(
                 FieldWithButtons,
                 StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=edit_form['skill_4_level'].auto_id),

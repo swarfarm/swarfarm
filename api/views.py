@@ -83,7 +83,7 @@ class SummonerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SummonerSerializer
 
 
-class MonsterInstanceViewSet(viewsets.ModelViewSet):
+class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterInstance.objects.none()
     serializer_class = MonsterInstanceSerializer
     pagination_class = PersonalCollectionSetPagination

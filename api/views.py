@@ -94,8 +94,7 @@ class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         instance_id = self.kwargs.get('pk', None)
 
         if instance_id:
-            summoner = Summoner.objects.get(user=self.request.user)
-            return MonsterInstance.objects.filter(owner=summoner, pk=instance_id)
+            return MonsterInstance.objects.filter(pk=instance_id)
         else:
             return MonsterInstance.objects.none()
 

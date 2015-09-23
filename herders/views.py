@@ -406,7 +406,10 @@ def monster_instance_view(request, profile_name, instance_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+    try:
+        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+    except ObjectDoesNotExist:
+        raise Http404()
 
     # Reconcile skill level with actual skill from base monster
     skills = []
@@ -484,52 +487,6 @@ def monster_instance_view(request, profile_name, instance_id):
             edit_form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
         else:
             edit_form.helper['skill_4_level'].wrap(Div, css_class="hidden")
-
-        '''
-        if len(skills) < 1 or skills[0]['skill'].passive:
-            edit_form.helper['skill_1_level'].wrap(Div, css_class="hidden")
-        else:
-            edit_form.helper['skill_1_level'].wrap(
-                PrependedText,
-                '<img src="' + static('herders/images/') + 'skills/' + skills[0]['skill'].icon_filename + '" class="prepended-image"/>',
-                min=1,
-                max=skills[0]['skill'].max_level,
-            )
-            edit_form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
-
-        if len(skills) < 2 or skills[1]['skill'].passive:
-            edit_form.helper['skill_2_level'].wrap(Div, css_class="hidden")
-        else:
-            edit_form.helper['skill_2_level'].wrap(
-                PrependedText,
-                '<img src="' + static('herders/images/') + 'skills/' + skills[1]['skill'].icon_filename + '" class="prepended-image"/>',
-                min=1,
-                max=skills[1]['skill'].max_level,
-            )
-            edit_form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
-
-        if len(skills) < 3 or skills[2]['skill'].passive:
-            edit_form.helper['skill_3_level'].wrap(Div, css_class="hidden")
-        else:
-            edit_form.helper['skill_3_level'].wrap(
-                PrependedText,
-                '<img src="' + static('herders/images/') + 'skills/' + skills[2]['skill'].icon_filename + '" class="prepended-image"/>',
-                min=1,
-                max=skills[2]['skill'].max_level,
-            )
-            edit_form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
-
-        if len(skills) < 4 or skills[3]['skill'].passive:
-            edit_form.helper['skill_4_level'].wrap(Div, css_class="hidden")
-        else:
-            edit_form.helper['skill_4_level'].wrap(
-                PrependedText,
-                '<img src="' + static('herders/images/') + 'skills/' + skills[3]['skill'].icon_filename + '" class="prepended-image"/>',
-                min=1,
-                max=skills[3]['skill'].max_level,
-            )
-            edit_form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
-        '''
 
         context['edit_form'] = edit_form
 

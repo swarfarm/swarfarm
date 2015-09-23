@@ -168,7 +168,7 @@
                         <h4 class="modal-title" id="modalDeleteMonsterTitle">Delete {{ instance.monster }}?</h4>
                     </div>
                     <div class="modal-body">
-                        <a href="{% url 'herders:monster_instance_delete' profile_name=profile_name instance_id=instance.pk.hex %}?return_path={{ return_path }}" class="btn btn-danger"> Yes</a>
+                        <a href="{% url 'herders:monster_instance_delete' profile_name=profile_name instance_id=instance.pk.hex %}?return_path={% url 'herders:profile_default' profile_name=profile_name %}" class="btn btn-danger"> Yes</a>
                         <button class="btn btn-default pull-right" data-dismiss="modal" aria-label="Cancel">Cancel</button>
                     </div>
                 </div>

@@ -1274,7 +1274,7 @@ def bestiary_sanity_checks(request):
                 monster_errors.append('Missing skills')
 
             # Check for same slot
-            for slot in range(1,5):
+            for slot in range(1, 5):
                 if monster.skills.all().filter(slot=slot).count() > 1:
                     monster_errors.append("More than one skill in slot " + str(slot))
 
@@ -1315,6 +1315,10 @@ def bestiary_sanity_checks(request):
             if skill.slot - prev_skill_slot > 1 and prev_skill_slot >= 1:
                 skill_errors.append('slot skipped from previous skill')
             prev_skill_slot = skill.slot
+
+            # Check that skill has a level up description if it is not a passive
+            if not skill.passive and skill.max_level == 1:
+                skill_errors.append('max level missing for non-passive skill')
 
             # Check max level of skill = num lines in level up progress + 1
             if skill.max_level > 1:

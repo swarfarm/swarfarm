@@ -472,6 +472,9 @@ div.disabled {
     width: 275px;
     float: left;
 }
+.team-list-expand {
+    margin-bottom: 20px;
+}
 
 .team-detail {
     margin-left: 300px;
@@ -481,7 +484,7 @@ div.disabled {
     clear: none;
 }
 
-.team-list button {
+.team-list-group button {
     width: 100%;
     display: block;
     text-align: left;

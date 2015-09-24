@@ -77,7 +77,13 @@ function SetMaxSkillLevel() {
 
 $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('click', '*[data-skill-field]', SetMaxSkillLevel)
-    .on('selectChoice', '*[data-set-stars]', SetStars);
+    .on('selectChoice', '*[data-set-stars]', SetStars)
+    .on('click', '.closeall', function() {
+        $('.panel-collapse.in').collapse('hide');
+    })
+    .on('click', '.openall', function() {
+        $('.panel-collapse:not(".in")').collapse('show');
+    });
 
 //Bulk add
 $('#bulkAddFormset').formset({
@@ -154,3 +160,4 @@ $('button.reset').click(function() {
     $('button.filter').toggleClass(active_filter_class, false);
     $('#monster_table').trigger('saveSortReset').trigger("sortReset");
 });
+

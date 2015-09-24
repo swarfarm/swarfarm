@@ -830,7 +830,7 @@ def fusion_progress(request, profile_name):
             # Check if fusion has been completed already
             fusion_complete = MonsterInstance.objects.filter(
                 Q(owner=summoner), Q(monster=fusion.product) | Q(monster=fusion.product.awakens_to)
-            ).count() > 0
+            ).filter(ignore_for_fusion=False).count() > 0
 
             # Scan summoner's collection for instances each ingredient
             for ingredient in fusion.ingredients.all().select_related('awakens_from', 'awakens_to'):

@@ -1,3 +1,4 @@
+from math import floor, ceil
 import uuid
 from collections import OrderedDict
 
@@ -606,12 +607,62 @@ class MonsterInstance(models.Model):
 
         return skill_ups_remaining
 
-    # Stat callables. Base = monster's own stat. Rune = amount gained from runes. Bare stat is combined
+    # Rune bonus calculations
+    def rune_bonus_energy(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENERGY).count()
+        return 15 * floor(rune_count / 2)
+
+    def rune_bonus_fatal(self):
+        if self.runeinstance_set.filter(type=RuneInstance.TYPE_FATAL).count() >= 4:
+            return 35
+        else:
+            return 0
+
+    def rune_bonus_blade(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_BLADE).count()
+        return 12 * floor(rune_count / 2)
+
+    def rune_bonus_rage(self):
+        if self.runeinstance_set.filter(type=RuneInstance.TYPE_RAGE).count() >= 4:
+            return 40
+        else:
+            return 0
+
+    def rune_bonus_swift(self):
+        if self.runeinstance_set.filter(type=RuneInstance.TYPE_SWIFT).count() >= 4:
+            return 25
+        else:
+            return 0
+
+    def rune_bonus_focus(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_FOCUS).count()
+        return 20 * floor(rune_count / 2)
+
+    def rune_bonus_guard(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_GUARD).count()
+        return 15 * floor(rune_count / 2)
+
+    def rune_bonus_endure(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENDURE).count()
+        return 20 * floor(rune_count / 2)
+
+    # Stat callables. Base = monster's own stat. Rune = amount gained from runes. Stat by itself is combined total
     def base_hp(self):
         return self.monster.actual_hp(self.stars, self.level)
 
     def rune_hp(self):
-        return 0
+        runes = self.runeinstance_set.filter(has_hp=True)
+        base = self.monster.actual_hp(self.stars, self.level)
+        hp_percent = 0
+        hp_flat = 0
+
+        for rune in runes:
+            hp_flat += rune.get_stat(RuneInstance.STAT_HP)
+            hp_percent += rune.get_stat(RuneInstance.STAT_HP_PCT)
+
+        rune_set_bonus = self.rune_bonus_energy()
+
+        return int(ceil(base * (hp_percent / 100.0)) + ceil(base * (rune_set_bonus / 100.0)) + hp_flat)
 
     def hp(self):
         return self.base_hp() + self.rune_hp()
@@ -620,7 +671,18 @@ class MonsterInstance(models.Model):
         return self.monster.actual_attack(self.stars, self.level)
 
     def rune_attack(self):
-        return 0
+        runes = self.runeinstance_set.filter(has_atk=True)
+        base = self.monster.actual_attack(self.stars, self.level)
+        atk_percent = 0
+        atk_flat = 0
+
+        for rune in runes:
+            atk_flat += rune.get_stat(RuneInstance.STAT_ATK)
+            atk_percent += rune.get_stat(RuneInstance.STAT_ATK_PCT)
+
+        rune_set_bonus = self.rune_bonus_fatal()
+
+        return int(ceil(base * (atk_percent / 100.0)) + ceil(base * (rune_set_bonus / 100.0)) + atk_flat)
 
     def attack(self):
         return self.base_attack() + self.rune_attack()
@@ -629,7 +691,18 @@ class MonsterInstance(models.Model):
         return self.monster.actual_defense(self.stars, self.level)
 
     def rune_defense(self):
-        return 0
+        runes = self.runeinstance_set.filter(has_def=True)
+        base = self.monster.actual_defense(self.stars, self.level)
+        def_percent = 0
+        def_flat = 0
+
+        for rune in runes:
+            def_flat += rune.get_stat(RuneInstance.STAT_DEF)
+            def_percent += rune.get_stat(RuneInstance.STAT_DEF_PCT)
+
+        rune_set_bonus = self.rune_bonus_guard()
+
+        return int(ceil(base * (def_percent / 100.0)) + ceil(base * (rune_set_bonus / 100.0)) + def_flat)
 
     def defense(self):
         return self.base_defense() + self.rune_defense()
@@ -638,7 +711,13 @@ class MonsterInstance(models.Model):
         return self.monster.speed
 
     def rune_speed(self):
-        return 0
+        runes = self.runeinstance_set.filter(has_speed=True)
+        spd_flat = self.rune_bonus_swift()
+
+        for rune in runes:
+            spd_flat += rune.get_stat(RuneInstance.STAT_SPD)
+
+        return int(spd_flat)
 
     def speed(self):
         return self.base_speed() + self.rune_speed()
@@ -647,7 +726,13 @@ class MonsterInstance(models.Model):
         return self.monster.crit_rate
 
     def rune_crit_rate(self):
-        return 0
+        runes = self.runeinstance_set.filter(has_crit_rate=True)
+        crit_rate = self.rune_bonus_blade()
+
+        for rune in runes:
+            crit_rate += rune.get_stat(RuneInstance.STAT_CRIT_RATE_PCT)
+
+        return int(crit_rate)
 
     def crit_rate(self):
         return self.base_crit_rate() + self.rune_crit_rate()
@@ -656,7 +741,13 @@ class MonsterInstance(models.Model):
         return self.monster.crit_damage
 
     def rune_crit_damage(self):
-        return 0
+        runes = self.runeinstance_set.filter(has_crit_dmg=True)
+        crit_damage = self.rune_bonus_rage()
+
+        for rune in runes:
+            crit_damage += rune.get_stat(RuneInstance.STAT_CRIT_DMG_PCT)
+
+        return int(crit_damage)
 
     def crit_damage(self):
         return self.base_crit_damage() + self.rune_crit_damage()
@@ -665,7 +756,13 @@ class MonsterInstance(models.Model):
         return self.monster.resistance
 
     def rune_resistance(self):
-        return 0
+        runes = self.runeinstance_set.filter(has_resist=True)
+        resist = self.rune_bonus_rage()
+
+        for rune in runes:
+            resist += rune.get_stat(RuneInstance.STAT_RESIST_PCT)
+
+        return int(resist)
 
     def resistance(self):
         return self.base_resistance() + self.rune_resistance()
@@ -674,7 +771,13 @@ class MonsterInstance(models.Model):
         return self.monster.accuracy
 
     def rune_accuracy(self):
-        return 0
+        runes = self.runeinstance_set.filter(has_accuracy=True)
+        accuracy = self.rune_bonus_rage()
+
+        for rune in runes:
+            accuracy += rune.get_stat(RuneInstance.STAT_ACCURACY_PCT)
+
+        return int(accuracy)
 
     def accuracy(self):
         return self.base_accuracy() + self.rune_accuracy()
@@ -796,7 +899,7 @@ class RuneInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
-    monster = models.ForeignKey('MonsterInstance', null=True, blank=True)
+    assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()
     slot = models.IntegerField()
@@ -812,6 +915,51 @@ class RuneInstance(models.Model):
     substat_3_value = models.IntegerField(null=True, blank=True)
     substat_4 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_4_value = models.IntegerField(null=True, blank=True)
+
+    # The following fields exist purely to allow easier filtering and are updated on model save
+    has_hp = models.BooleanField(default=False)
+    has_atk = models.BooleanField(default=False)
+    has_def = models.BooleanField(default=False)
+    has_crit_rate = models.BooleanField(default=False)
+    has_crit_dmg = models.BooleanField(default=False)
+    has_speed = models.BooleanField(default=False)
+    has_resist = models.BooleanField(default=False)
+    has_accuracy = models.BooleanField(default=False)
+
+    def get_stat(self, stat_type):
+        if self.main_stat == stat_type:
+            return self.main_stat_value
+        elif self.innate_stat == stat_type:
+            return self.innate_stat_value
+        elif self.substat_1 == stat_type:
+            return self.substat_1_value
+        elif self.substat_2 == stat_type:
+            return self.substat_2_value
+        elif self.substat_3 == stat_type:
+            return self.substat_3_value
+        elif self.substat_4 == stat_type:
+            return self.substat_4_value
+        else:
+            return 0
+
+    def save(self, *args, **kwargs):
+        rune_stat_types = [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]
+        hp_stats = [self.STAT_HP, self.STAT_HP_PCT]
+        atk_stats = [self.STAT_ATK, self.STAT_ATK_PCT]
+        def_stats = [self.STAT_DEF, self.STAT_DEF_PCT]
+
+        self.has_hp = any([i for i in rune_stat_types if i in hp_stats])
+        self.has_atk = any([i for i in rune_stat_types if i in atk_stats])
+        self.has_def = any([i for i in rune_stat_types if i in def_stats])
+        self.has_crit_rate = self.STAT_CRIT_RATE_PCT in rune_stat_types
+        self.has_crit_dmg = self.STAT_CRIT_DMG_PCT in rune_stat_types
+        self.has_speed = self.STAT_SPD in rune_stat_types
+        self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
+        self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
+
+        #TODO: Block saving if assigned_to monster already has slot assigned.
+
+        super(RuneInstance, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.TYPE_CHOICES[self.type - 1][1] + ', Slot ' + str(self.slot) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level) + ', +' + str(self.main_stat_value) + ' ' + self.STAT_CHOICES[self.main_stat - 1][1]

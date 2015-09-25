@@ -122,6 +122,7 @@ class FusionAdmin(admin.ModelAdmin):
 @admin.register(MonsterInstance)
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')
+    exclude = ('owner',)
     search_fields = ['id',]
 
 
@@ -136,6 +137,9 @@ class TeamGroupAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')
 
 
-admin.site.register(RuneInstance)
+@admin.register(RuneInstance)
+class RuneInstanceAdmin(admin.ModelAdmin):
+    exclude = ('owner', 'assigned_to')
+
 
 admin.site.register(GameEvent)

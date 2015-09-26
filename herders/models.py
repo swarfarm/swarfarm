@@ -783,7 +783,17 @@ class MonsterInstance(models.Model):
         return self.base_accuracy() + self.rune_accuracy()
 
     def clean(self):
-        from django.core.exceptions import ValidationError, ObjectDoesNotExist
+        from django.core.exceptions import ValidationError, ObjectDoesNotExist\
+
+        # Check skill levels if they were nulled out. 
+        if self.skill_1_level is None:
+            self.skill_1_level = 1
+        if self.skill_2_level is None:
+            self.skill_2_level = 1
+        if self.skill_3_level is None:
+            self.skill_3_level = 1
+        if self.skill_4_level is None:
+            self.skill_4_level = 1
 
         if self.level > 40 or self.level < 1:
             raise ValidationError(

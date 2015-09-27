@@ -72,9 +72,11 @@
                 <td>{{ issue.comment_count }}</td>
                 <td>
                     {% if issue.comment_count > 0 %}
-                    <span class="hidden">{{ issue.latest_comment.timestamp|date:"Y-m-d H-i-s" }}</span>{{ issue.latest_comment.timestamp|naturaltime }} ({{ issue.latest_comment.user }})
+                    <span class="hidden">{{ issue.latest_comment.timestamp|date:"U" }}</span>
+                    {{ issue.latest_comment.timestamp|naturaltime }} ({{ issue.latest_comment.user }})
                     {% else %}
-                    <span class="hidden">{{ issue.submitted }}</span>{{ issue.submitted|naturaltime }} ({{ issue.user }})
+                    <span class="hidden">{{ issue.submitted|date:"U" }}</span>
+                    {{ issue.submitted|naturaltime }} ({{ issue.user }})
                     {% endif %}
                 </td>
                 <td>{% if issue.public %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>

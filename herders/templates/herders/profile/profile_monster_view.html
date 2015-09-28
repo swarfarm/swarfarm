@@ -8,7 +8,7 @@
 {% if is_owner %}
         {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
     {% else %}
-        {{ profile_name }}'s {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
+        {{ summoner.user.username }}'s {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
     {% endif %}
 {% endblock %}
 

@@ -38,8 +38,8 @@ page_content.on('submit', '#EditTeamForm', function() {
 
 $(window).hashchange(load_new_team());
 $(document).ready(function() {
-    load_new_team();
     update_team_list();
+    load_new_team();
 });
 
 function load_new_team() {

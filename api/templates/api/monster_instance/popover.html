@@ -58,5 +58,8 @@
             {% endfor %}
         </td>
     </tr>
+    <tr>
+        {% if instance.notes %}<td colspan="2"><strong>Notes: </strong> {{ instance.notes }}</td>{% endif %}
+    </tr>
     </tbody>
 </table>

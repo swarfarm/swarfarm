@@ -43,7 +43,7 @@
                             <div class="panel-body">
                                 {% for instance in monsters %}
                                     <div class="monster-box">
-                                        <div class="monster-box-thumb" {% if instance.notes %}data-toggle="popover" data-placement="top" data-trigger="hover" data-container="body" title="Notes" data-content="{{ instance.notes }}{% endif %}">
+                                        <div class="monster-box-thumb" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }}">
                                             <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
                                                 <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
                                                 <span>

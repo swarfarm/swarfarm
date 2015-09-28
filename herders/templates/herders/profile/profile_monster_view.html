@@ -230,6 +230,16 @@
                     </tr>
                 </table>
             </div>
+            {% if instance.notes and instance.notes != '' %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <p class="panel-title">Personal Notes</p>
+                </div>
+                <div class="panel-body">
+                    {{ instance.notes }}
+                </div>
+            </div>
+            {% endif %}
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <p class="panel-title">Stats</p>

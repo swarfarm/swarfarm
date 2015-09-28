@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load markdown_deux_tags %}
+{% load humanize %}
 
 {% block content %}
     <div class="row">
@@ -19,12 +20,12 @@
                 {% endif %}
                 <div class="list-group">
                     <div class="list-group-item">
-                        <h4 class="list-group-item-heading">{{ issue.user }}</h4>
+                        <h4 class="list-group-item-heading">{{ issue.user }} <small>{{ issue.submitted|naturaltime }}</small></h4>
                         {{ issue.description }}
                     </div>
                     {% for comment in issue.discussion_set.all %}
                     <div class="list-group-item">
-                        <h4 class="list-group-item-heading">{{ comment.user }} <small>{{ comment.timestamp }}</small></h4>
+                        <h4 class="list-group-item-heading">{{ comment.user }} <small>{{ comment.timestamp|naturaltime }}</small></h4>
                         <p class="list-group-item-text">{{ comment.comment|markdown }}</p>
                     </div>
                     {% endfor %}

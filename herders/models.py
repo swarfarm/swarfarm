@@ -783,7 +783,7 @@ class MonsterInstance(models.Model):
         return self.base_accuracy() + self.rune_accuracy()
 
     def clean(self):
-        from django.core.exceptions import ValidationError, ObjectDoesNotExist\
+        from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
         # Check skill levels if they were nulled out. 
         if self.skill_1_level is None:
@@ -952,9 +952,73 @@ class RuneInstance(models.Model):
         else:
             return 0
 
-    def save(self, *args, **kwargs):
-        rune_stat_types = [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]
+    def clean(self):
+        from django.core.exceptions import ValidationError
 
+        # Check slot, level, etc for valid ranges
+        if self.slot < 1 or self.slot > 6:
+            raise ValidationError(
+                'Slot must be 1 through 6.',
+                code='invalid_rune_slot',
+            )
+
+        if self.level < 1 or self.level > 15:
+            raise ValidationError(
+                'Level must be 1 through 15.',
+                code='invalid_rune_level',
+            )
+
+        if self.stars < 1 or self.stars > 6:
+            raise ValidationError(
+                'Stars must be between 1 and 6.',
+                code='invalid_rune_stars',
+            )
+
+        # Check main stat vs slot
+        valid_even_stats = [
+            self.STAT_ATK,
+            self.STAT_ATK_PCT,
+            self.STAT_DEF,
+            self.STAT_DEF_PCT,
+            self.STAT_HP,
+            self.STAT_HP_PCT,
+        ]
+
+        # Do slot vs stat check
+        if self.slot == 1 and self.main_stat != self.STAT_ATK:
+            raise ValidationError(
+                'Unacceptable stat for slot 1. Must be ATK.',
+                code='invalid_rune_main_stat'
+            )
+        elif self.slot == 2 and self.main_stat not in valid_even_stats + [self.STAT_SPD]:
+            raise ValidationError(
+                'Unacceptable stat for slot 2. Must be ATK, ATK%, DEF, DEF%, HP, HP%, or SPD.',
+                code='invalid_rune_main_stat'
+            )
+        elif self.slot == 3 and self.main_stat != self.STAT_DEF:
+            raise ValidationError(
+                'Unacceptable stat for slot 3. Must be DEF.',
+                code='invalid_rune_main_stat'
+            )
+        elif self.slot == 4 and self.main_stat not in valid_even_stats + [self.STAT_CRIT_RATE_PCT, self.STAT_CRIT_DMG_PCT]:
+            raise ValidationError(
+                'Unacceptable stat for slot 3. Must be ATK, ATK%, DEF, DEF%, HP, HP%, CRIT Rate, or CRIT Dmg.',
+                code='invalid_rune_main_stat'
+            )
+        elif self.slot == 5 and self.main_stat != self.STAT_HP:
+            raise ValidationError(
+                'Unacceptable stat for slot 3. Must be HP.',
+                code='invalid_rune_main_stat'
+            )
+        elif self.slot == 6 and self.main_stat not in valid_even_stats + [self.STAT_RESIST_PCT, self.STAT_ACCURACY_PCT]:
+            raise ValidationError(
+                'Unacceptable stat for slot 3. Must be ATK, ATK%, DEF, DEF%, HP, HP%, Resist, or Accuracy.',
+                code='invalid_rune_main_stat'
+            )
+
+    def save(self, *args, **kwargs):
+        # Set flags for filtering
+        rune_stat_types = [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]
         self.has_hp = any([i for i in rune_stat_types if i in [self.STAT_HP, self.STAT_HP_PCT]])
         self.has_atk = any([i for i in rune_stat_types if i in [self.STAT_ATK, self.STAT_ATK_PCT]])
         self.has_def = any([i for i in rune_stat_types if i in [self.STAT_DEF, self.STAT_DEF_PCT]])
@@ -963,8 +1027,6 @@ class RuneInstance(models.Model):
         self.has_speed = self.STAT_SPD in rune_stat_types
         self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
-
-        #TODO: Block saving if assigned_to monster already has slot assigned.
 
         super(RuneInstance, self).save(*args, **kwargs)
 

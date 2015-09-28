@@ -312,8 +312,10 @@ class EditEssenceStorageForm(ModelForm):
             ),
             Div(
                 FormActions(
-                    Submit('save', 'Save', css_class='btn btn-primary'),
+                    Submit('save', 'Save and Go Back'),
+                    Submit('saveandcontinue', 'Save and Continue Editing'),
                 ),
+                css_class='row',
             )
         )
 

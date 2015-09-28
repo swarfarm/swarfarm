@@ -298,10 +298,11 @@ def profile_storage(request, profile_name):
 
     if request.method == 'POST' and form.is_valid():
         form.save()
-        return redirect(return_path)
 
-    else:
-        return render(request, 'herders/essence_storage.html', context)
+        if request.POST.get('save', None):
+            return redirect(return_path)
+
+    return render(request, 'herders/essence_storage.html', context)
 
 
 @login_required()

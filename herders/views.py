@@ -402,7 +402,10 @@ def monster_instance_bulk_add(request, profile_name):
 
 
 def monster_instance_view(request, profile_name, instance_id):
-    return_path = request.path
+    return_path = request.GET.get(
+        'next',
+        request.path
+    )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 

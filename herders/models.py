@@ -954,13 +954,10 @@ class RuneInstance(models.Model):
 
     def save(self, *args, **kwargs):
         rune_stat_types = [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]
-        hp_stats = [self.STAT_HP, self.STAT_HP_PCT]
-        atk_stats = [self.STAT_ATK, self.STAT_ATK_PCT]
-        def_stats = [self.STAT_DEF, self.STAT_DEF_PCT]
 
-        self.has_hp = any([i for i in rune_stat_types if i in hp_stats])
-        self.has_atk = any([i for i in rune_stat_types if i in atk_stats])
-        self.has_def = any([i for i in rune_stat_types if i in def_stats])
+        self.has_hp = any([i for i in rune_stat_types if i in [self.STAT_HP, self.STAT_HP_PCT]])
+        self.has_atk = any([i for i in rune_stat_types if i in [self.STAT_ATK, self.STAT_ATK_PCT]])
+        self.has_def = any([i for i in rune_stat_types if i in [self.STAT_DEF, self.STAT_DEF_PCT]])
         self.has_crit_rate = self.STAT_CRIT_RATE_PCT in rune_stat_types
         self.has_crit_dmg = self.STAT_CRIT_DMG_PCT in rune_stat_types
         self.has_speed = self.STAT_SPD in rune_stat_types

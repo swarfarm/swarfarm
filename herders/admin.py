@@ -139,6 +139,8 @@ class TeamGroupAdmin(admin.ModelAdmin):
 
 @admin.register(RuneInstance)
 class RuneInstanceAdmin(admin.ModelAdmin):
+    list_display = ('type', 'stars', 'level', 'slot', 'owner', 'main_stat')
+    search_fields = ('id',)
     exclude = ('owner', 'assigned_to')
 
 

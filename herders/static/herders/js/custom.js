@@ -35,6 +35,21 @@ $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
 });
 
+// Monster view page show modals on load
+$(window).load(function() {
+    var hashStr = location.hash.replace("#","");
+    if (hashStr) {
+        switch(hashStr) {
+            case 'edit':
+                $('#editMonsterModal').modal('show');
+                break;
+            case 'awaken':
+                $('#awakenMonsterModal').modal('show');
+                break;
+        }
+    }
+});
+
 //Automatically set attributes based on monster info
 function SetStars(e, choice, autocomplete) {
     var monster_id = choice[0].dataset['value'];
@@ -160,4 +175,3 @@ $('button.reset').click(function() {
     $('button.filter').toggleClass(active_filter_class, false);
     $('#monster_table').trigger('saveSortReset').trigger("sortReset");
 });
-

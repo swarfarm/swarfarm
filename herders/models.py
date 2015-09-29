@@ -786,7 +786,7 @@ class MonsterInstance(models.Model):
         from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
         # Check skill levels
-        skills = self.monster.skills.all()
+        '''skills = self.monster.skills.all()'''
 
         if self.skill_1_level is None or self.skill_1_level < 1:
             self.skill_1_level = 1
@@ -797,7 +797,7 @@ class MonsterInstance(models.Model):
         if self.skill_4_level is None or self.skill_4_level < 1:
             self.skill_4_level = 1
 
-        if len(skills) >= 1 and self.skill_1_level > skills[0].max_level:
+        '''if len(skills) >= 1 and self.skill_1_level > skills[0].max_level:
             raise ValidationError(
                 'Skill ' + skills[0].name + ' level out of range (Valid range 1-%(max)s)',
                 params={'max': skills[0].max_level},
@@ -821,7 +821,7 @@ class MonsterInstance(models.Model):
                 'Skill ' + skills[3].name + ' level out of range (Valid range 1-%(max)s)',
                 params={'max': skills[3].max_level},
                 code='invalid_skill_level'
-            )
+            )'''
 
         if self.level > 40 or self.level < 1:
             raise ValidationError(

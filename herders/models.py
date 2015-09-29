@@ -786,8 +786,6 @@ class MonsterInstance(models.Model):
         from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
         # Check skill levels
-        '''skills = self.monster.skills.all()'''
-
         if self.skill_1_level is None or self.skill_1_level < 1:
             self.skill_1_level = 1
         if self.skill_2_level is None or self.skill_2_level < 1:
@@ -796,32 +794,6 @@ class MonsterInstance(models.Model):
             self.skill_3_level = 1
         if self.skill_4_level is None or self.skill_4_level < 1:
             self.skill_4_level = 1
-
-        '''if len(skills) >= 1 and self.skill_1_level > skills[0].max_level:
-            raise ValidationError(
-                'Skill ' + skills[0].name + ' level out of range (Valid range 1-%(max)s)',
-                params={'max': skills[0].max_level},
-                code='invalid_skill_level'
-            )
-        if len(skills) >= 2 and self.skill_2_level > skills[1].max_level:
-            raise ValidationError(
-                'Skill ' + skills[1].name + ' level out of range (Valid range 1-%(max)s)',
-                params={'max': skills[1].max_level},
-                code='invalid_skill_level'
-            )
-
-        if len(skills) >= 3 and self.skill_3_level > skills[2].max_level:
-            raise ValidationError(
-                'Skill ' + skills[2].name + ' level out of range (Valid range 1-%(max)s)',
-                params={'max': skills[2].max_level},
-                code='invalid_skill_level'
-            )
-        if len(skills) >= 4 and self.skill_4_level > skills[3].max_level:
-            raise ValidationError(
-                'Skill ' + skills[3].name + ' level out of range (Valid range 1-%(max)s)',
-                params={'max': skills[3].max_level},
-                code='invalid_skill_level'
-            )'''
 
         if self.level > 40 or self.level < 1:
             raise ValidationError(
@@ -851,6 +823,21 @@ class MonsterInstance(models.Model):
                 code='invalid_stars'
             )
         super(MonsterInstance, self).clean()
+
+    def save(self, *args, **kwargs):
+        skills = self.monster.skills.all()
+
+        if len(skills) >= 1 and self.skill_1_level > skills[0].max_level:
+            self.skill_1_level = skills[0].max_level
+
+        if len(skills) >= 2 and self.skill_2_level > skills[1].max_level:
+            self.skill_2_level = skills[1].max_level
+
+        if len(skills) >= 3 and self.skill_3_level > skills[2].max_level:
+            self.skill_3_level = skills[2].max_level
+
+        if len(skills) >= 4 and self.skill_4_level > skills[3].max_level:
+            self.skill_4_level = skills[3].max_level
 
     def __unicode__(self):
         return str(self.monster) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level)

@@ -529,16 +529,76 @@ def monster_instance_edit(request, profile_name, instance_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    monster = get_object_or_404(MonsterInstance, pk=instance_id)
+    instance = get_object_or_404(MonsterInstance, pk=instance_id)
 
-    form = EditMonsterInstanceForm(request.POST or None, instance=monster)
+    # Reconcile skill level with actual skill from base monster
+    skills = []
+    skill_levels = [
+        instance.skill_1_level,
+        instance.skill_2_level,
+        instance.skill_3_level,
+        instance.skill_4_level,
+    ]
+
+    for idx in range(0, instance.monster.skills.count()):
+        skills.append({
+            'skill': instance.monster.skills.all()[idx],
+            'level': skill_levels[idx]
+        })
+
+    form = EditMonsterInstanceForm(request.POST or None, instance=instance)
     form.helper.form_action = request.path + '?next=' + return_path
+    if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
+        form.helper['skill_1_level'].wrap(
+            FieldWithButtons,
+            StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id),
+        )
+        form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
+        form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
+    else:
+        form.helper['skill_1_level'].wrap(Div, css_class="hidden")
+
+    if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
+        form.helper['skill_2_level'].wrap(
+            FieldWithButtons,
+            StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id),
+            min=1,
+            max=skills[1]['skill'].max_level,
+        )
+        form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
+        form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
+    else:
+        form.helper['skill_2_level'].wrap(Div, css_class="hidden")
+
+    if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
+        form.helper['skill_3_level'].wrap(
+            FieldWithButtons,
+            StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id),
+            min=1,
+            max=skills[2]['skill'].max_level,
+        )
+        form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
+        form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
+    else:
+        form.helper['skill_3_level'].wrap(Div, css_class="hidden")
+
+    if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
+        form.helper['skill_4_level'].wrap(
+            FieldWithButtons,
+            StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id),
+            min=1,
+            max=skills[1]['skill'].max_level,
+        )
+        form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
+        form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
+    else:
+        form.helper['skill_4_level'].wrap(Div, css_class="hidden")
 
     context = {
         'profile_name': request.user.username,
         'summoner': summoner,
         'return_path': return_path,
-        'monster': monster,
+        'monster': instance,
         'is_owner': is_owner,
         'edit_monster_form': form,
         'view': 'profile',

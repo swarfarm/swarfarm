@@ -132,10 +132,12 @@ var current_filters = $.tablesorter.getFilters(monster_table);
 
 if (current_filters) {
     filter_buttons.each(function () {
-        var filter_col = $(this).data('filter-column');
-        var filter_text = $(this).data('filter-text');
+        var filter_col = $(this).data('filter-column'),
+            filter_text = $(this).data('filter-text'),
+            filter_function = $(this).data('filter-function'),
+            mult = current_filters[filter_col].split(filter_function);
 
-        if (current_filters[filter_col].indexOf(filter_text) > -1) {
+        if ($.inArray(String(filter_text), mult) > -1) {
             $(this).toggleClass(active_filter_class, true);
         }
     });
@@ -147,26 +149,38 @@ filter_buttons.click(function() {
 
     var filters = $('#monster_table').find('input.tablesorter-filter'),
         col = $(this).data('filter-column'),
-        txt = $(this).data('filter-text'),
-        filt = $(this).data('filter-function'),
-        cur = filters.eq(col).val(),
+        filter_txt = $(this).data('filter-text'),
+        filter_function = $(this).data('filter-function'),
+        exclusive = $(this).data('filter-exclusive'),
+        current_filters = filters.eq(col).val(),
         mult, i;
 
-    if (!filt) {
-        filt = '|';
+    if (!filter_function) {
+        filter_function = '|';
     }
 
-    if (cur && txt !== '') {
-        mult = cur.split(filt);
-        i = $.inArray(String(txt), mult);
-        if (i < 0) {
-            mult.push(String(txt));
-        } else {
-            mult.splice(String(i),1);
+    if (current_filters && filter_txt !== '') {
+        mult = current_filters.split(filter_function);
+        i = $.inArray(String(filter_txt), mult);
+        if (exclusive) {
+            if (i >= 0) {
+                filter_txt = '';
+            } else {
+                // Remove pressed status of other buttons assigned to same col
+                $('[data-filter-column="' + String(col) + '"]').toggleClass(active_filter_class, false);
+                $(this).toggleClass(active_filter_class, true);
+            }
         }
-        txt = mult.join(filt);
+        else {
+            if (i < 0) {
+            mult.push(String(filter_txt));
+            } else {
+                mult.splice(String(i),1);
+            }
+            filter_txt = mult.join(filter_function);
+        }
     }
-    filters.eq(col).val(txt).trigger('search', false);
+    filters.eq(col).val(filter_txt).trigger('search', false);
 });
 
 //Reset filters

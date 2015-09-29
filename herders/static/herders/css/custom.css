@@ -90,10 +90,6 @@ footer {
     list-style: none;
 }
 
-.btn-group button img {
-    height: 20px;
-}
-
 .autocomplete-results>span {
     height: 30px;
     margin-left: 3px;

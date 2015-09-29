@@ -80,14 +80,25 @@
 <div class="filter-group">
     <span class="filter-description">Flags:</span>
     <div class="btn-group info-filters">
-        <button type="button" class="btn btn-default filter" data-filter-column="10" data-filter-text="0">
+        <button type="button" class="btn btn-default filter" data-filter-column="10" data-filter-text="0" data-filter-exclusive="1">
             <img src="{{ img_url_prefix }}icons/fusion.png" />
         </button>
-        <button type="button" class="btn btn-default filter" data-filter-column="11" data-filter-text="0">
+        <button type="button" class="btn btn-default filter" data-filter-column="11" data-filter-text="0" data-filter-exclusive="1">
             <span class="fa fa-birthday-cake" aria-hidden="true"></span>
         </button>
-        <button type="button" class="btn btn-default filter" data-filter-column="12" data-filter-text="0">
+        <button type="button" class="btn btn-default filter" data-filter-column="12" data-filter-text="0" data-filter-exclusive="1">
             <span class="fa fa-bed" aria-hidden="true"></span>
+        </button>
+    </div>
+    <div class="btn-group inverse-info-filters">
+        <button type="button" class="btn btn-default filter" data-filter-column="10" data-filter-text="!0" data-filter-exclusive="1">
+            Not <img src="{{ img_url_prefix }}icons/fusion.png" />
+        </button>
+        <button type="button" class="btn btn-default filter" data-filter-column="11" data-filter-text="!0" data-filter-exclusive="1">
+            Not <span class="fa fa-birthday-cake" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="btn btn-default filter" data-filter-column="12" data-filter-text="!0" data-filter-exclusive="1">
+            Not <span class="fa fa-bed" aria-hidden="true"></span>
         </button>
     </div>
 </div>

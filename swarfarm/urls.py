@@ -42,5 +42,4 @@ urlpatterns = [
     url(r'^feedback/', include('feedback.urls', namespace='feedback')),
     url(r'^', include('herders.urls', namespace='herders')),
     url(r'^', include('news.urls', namespace='news')),
-
 ]

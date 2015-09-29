@@ -839,6 +839,8 @@ class MonsterInstance(models.Model):
         if len(skills) >= 4 and self.skill_4_level > skills[3].max_level:
             self.skill_4_level = skills[3].max_level
 
+        super(MonsterInstance, self).save(*args, **kwargs)
+
     def __unicode__(self):
         return str(self.monster) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level)
 

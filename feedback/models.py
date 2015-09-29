@@ -45,7 +45,7 @@ class Issue(models.Model):
     )
 
     user = models.ForeignKey(User)
-    submitted = models.DateTimeField(auto_now=True)
+    submitted = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_UNREVIEWED)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, null=True, blank=True)
     topic = models.IntegerField(choices=TOPIC_CHOICES)

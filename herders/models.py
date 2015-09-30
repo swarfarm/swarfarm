@@ -234,6 +234,19 @@ class Monster(models.Model):
         else:
             self.image_filename = self.name.lower().replace(' ', '_') + '_' + str(self.element) + '.png'
 
+        # Update awakened from/to of the other monster in awakened from/to
+        if self.awakens_from is not None and self.awakens_from.awakens_to is not self:
+            print 'updating awakens_from monster: ' + str(self.awakens_from)
+            awakens_from = self.awakens_from
+            awakens_from.awakens_to = self
+            awakens_from.save()
+
+        if self.awakens_to is not None and self.awakens_to.awakens_from is not self:
+            print 'updating awakens_to monster: ' + str(self.awakens_to)
+            awakens_to = self.awakens_to
+            awakens_to.awakens_from = self
+            awakens_to.save()
+
         # Generate summonerswar.co URL if possible
         if self.can_awaken and self.archetype is not self.TYPE_MATERIAL and (self.summonerswar_co_url is None or self.summonerswar_co_url == ''):
             base = 'http://summonerswar.co/'

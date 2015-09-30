@@ -3638,6 +3638,46 @@
 .sprite-yeti_dark {
     background-position: -300px -300px
 }
+.sprite-anubis_dark,
+.sprite-anubis_dark_awakened,
+.sprite-anubis_fire,
+.sprite-anubis_fire_awakened,
+.sprite-anubis_light,
+.sprite-anubis_light_awakened,
+.sprite-anubis_water,
+.sprite-anubis_water_awakened,
+.sprite-anubis_wind,
+.sprite-anubis_wind_awakened,
+.sprite-desert_queen_dark,
+.sprite-desert_queen_dark_awakened,
+.sprite-desert_queen_fire,
+.sprite-desert_queen_fire_awakened,
+.sprite-desert_queen_light,
+.sprite-desert_queen_light_awakened,
+.sprite-desert_queen_water,
+.sprite-desert_queen_water_awakened,
+.sprite-desert_queen_wind,
+.sprite-desert_queen_wind_awakened,
+.sprite-horus_dark,
+.sprite-horus_dark_awakened,
+.sprite-horus_fire,
+.sprite-horus_fire_awakened,
+.sprite-horus_light,
+.sprite-horus_light_awakened,
+.sprite-horus_water,
+.sprite-horus_water_awakened,
+.sprite-horus_wind,
+.sprite-horus_wind_awakened,
+.sprite-mummy_dark,
+.sprite-mummy_dark_awakened,
+.sprite-mummy_fire,
+.sprite-mummy_fire_awakened,
+.sprite-mummy_light,
+.sprite-mummy_light_awakened,
+.sprite-mummy_water,
+.sprite-mummy_water_awakened,
+.sprite-mummy_wind,
+.sprite-mummy_wind_awakened,
 .sprite-yeti_dark_awakened,
 .sprite-yeti_fire,
 .sprite-yeti_fire_awakened,
@@ -3651,33 +3691,160 @@
     width: 50px;
     height: 50px
 }
+.sprite-anubis_dark {
+    background-position: 0 0;
+}
+.sprite-anubis_dark_awakened {
+    background-position: -50px 0;
+}
+.sprite-anubis_fire {
+    background-position: -100px 0;
+}
+.sprite-anubis_fire_awakened {
+    background-position: -150px 0;
+}
+.sprite-anubis_light {
+    background-position: -200px 0;
+}
+.sprite-anubis_light_awakened {
+    background-position: -250px 0;
+}
+.sprite-anubis_water {
+    background-position: -300px 0;
+}
+.sprite-anubis_water_awakened {
+    background-position: 0 -50px;
+}
+.sprite-anubis_wind {
+    background-position: -50px -50px;
+}
+.sprite-anubis_wind_awakened {
+    background-position: -100px -50px;
+}
+.sprite-desert_queen_dark {
+    background-position: -150px -50px;
+}
+.sprite-desert_queen_dark_awakened {
+    background-position: -200px -50px;
+}
+.sprite-desert_queen_fire {
+    background-position: -250px -50px;
+}
+.sprite-desert_queen_fire_awakened {
+    background-position: -300px -50px;
+}
+.sprite-desert_queen_light {
+    background-position: 0 -100px;
+}
+.sprite-desert_queen_light_awakened {
+    background-position: -50px -100px;
+}
+.sprite-desert_queen_water {
+    background-position: -100px -100px;
+}
+.sprite-desert_queen_water_awakened {
+    background-position: -150px -100px;
+}
+.sprite-desert_queen_wind {
+    background-position: -200px -100px;
+}
+.sprite-desert_queen_wind_awakened {
+    background-position: -250px -100px;
+}
+.sprite-horus_dark {
+    background-position: -300px -100px;
+}
+.sprite-horus_dark_awakened {
+    background-position: 0 -150px;
+}
+.sprite-horus_fire {
+    background-position: -50px -150px;
+}
+.sprite-horus_fire_awakened {
+    background-position: -100px -150px;
+}
+.sprite-horus_light {
+    background-position: -150px -150px;
+}
+.sprite-horus_light_awakened {
+    background-position: -200px -150px;
+}
+.sprite-horus_water {
+    background-position: -250px -150px;
+}
+.sprite-horus_water_awakened {
+    background-position: -300px -150px;
+}
+.sprite-horus_wind {
+    background-position: 0 -200px;
+}
+.sprite-horus_wind_awakened {
+    background-position: -50px -200px;
+}
+.sprite-mummy_dark {
+    background-position: -100px -200px;
+}
+.sprite-mummy_dark_awakened {
+    background-position: -150px -200px;
+}
+.sprite-mummy_fire {
+    background-position: -200px -200px;
+}
+.sprite-mummy_fire_awakened {
+    background-position: -250px -200px;
+}
+.sprite-mummy_light {
+    background-position: -300px -200px;
+}
+.sprite-mummy_light_awakened {
+    background-position: 0 -250px;
+}
+.sprite-mummy_water {
+    background-position: -50px -250px;
+}
+.sprite-mummy_water_awakened {
+    background-position: -100px -250px;
+}
+.sprite-mummy_wind {
+    background-position: -150px -250px;
+}
+.sprite-mummy_wind_awakened {
+    background-position: -200px -250px;
+}
 .sprite-yeti_dark_awakened {
-    background-position: 0 0
+    background-position: -250px -250px;
 }
 .sprite-yeti_fire {
-    background-position: -50px 0
+    background-position: -300px -250px;
 }
 .sprite-yeti_fire_awakened {
-    background-position: -100px 0
+    background-position: 0 -300px;
 }
+
 .sprite-yeti_light {
-    background-position: 0 -50px
+    background-position: -50px -300px;
 }
+
 .sprite-yeti_light_awakened {
-    background-position: -50px -50px
+    background-position: -100px -300px;
 }
+
 .sprite-yeti_water {
-    background-position: -100px -50px
+    background-position: -150px -300px;
 }
+
 .sprite-yeti_water_awakened {
-    background-position: 0 -100px
+    background-position: -200px -300px;
 }
+
 .sprite-yeti_wind {
-    background-position: -50px -100px
+    background-position: -250px -300px;
 }
+
 .sprite-yeti_wind_awakened {
-    background-position: -100px -100px
+    background-position: -300px -300px;
 }
+
 
 .sprite-dark_high,
 .sprite-dark_low,

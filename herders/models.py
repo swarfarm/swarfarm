@@ -79,6 +79,7 @@ class Monster(models.Model):
     awaken_magic_mats_high = models.IntegerField(null=True, blank=True)
     source = models.ManyToManyField('MonsterSource', blank=True)
     fusion_food = models.BooleanField(default=False)
+    bestiary_slug = models.SlugField(max_length=255, editable=False, null=True)
     summonerswar_co_url = models.URLField(null=True, blank=True)
     wikia_url = models.URLField(null=True, blank=True)
 
@@ -228,11 +229,16 @@ class Monster(models.Model):
             return self.source.filter(farmable_source=True).count() > 0
 
     def save(self, *args, **kwargs):
-        # Update image filename on save.
+        # Update image filename and slugs on save.
         if self.is_awakened and self.awakens_from is not None:
             self.image_filename = self.awakens_from.image_filename.replace('.png', '_awakened.png')
+            self.bestiary_slug = self.awakens_from.bestiary_slug
         else:
             self.image_filename = self.name.lower().replace(' ', '_') + '_' + str(self.element) + '.png'
+            if self.awakens_to is not None:
+                self.bestiary_slug = slugify(" ".join([self.element, self.name, self.awakens_to.name]))
+            else:
+                self.bestiary_slug = slugify(" ".join([self.element, self.name]))
 
         # Generate summonerswar.co URL if possible
         if self.can_awaken and self.archetype is not self.TYPE_MATERIAL and (self.summonerswar_co_url is None or self.summonerswar_co_url == ''):
@@ -291,17 +297,14 @@ class Monster(models.Model):
         # Update awakened from/to of the other monster in awakened from/to
         # This has to be done after the monster is saved first
         if self.awakens_from is not None and self.awakens_from.awakens_to is not self:
-            print 'updating awakens_from monster: ' + str(self.awakens_from)
             awakens_from = self.awakens_from
             awakens_from.awakens_to = self
             awakens_from.save()
 
         if self.awakens_to is not None and self.awakens_to.awakens_from is not self:
-            print 'updating awakens_to monster: ' + str(self.awakens_to)
             awakens_to = self.awakens_to
             awakens_to.awakens_from = self
             awakens_to.save()
-
     class Meta:
         ordering = ['name', 'element']
 

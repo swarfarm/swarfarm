@@ -76,6 +76,7 @@ class MonsterAdmin(admin.ModelAdmin):
             'fields': (
                 'summonerswar_co_url',
                 'wikia_url',
+                'bestiary_slug',
             )
         }),
     ]
@@ -84,6 +85,7 @@ class MonsterAdmin(admin.ModelAdmin):
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken')
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)
+    readonly_fields = ('bestiary_slug',)
     search_fields = ['name']
     save_as = True
 

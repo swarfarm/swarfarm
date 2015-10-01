@@ -51,6 +51,7 @@ urlpatterns = [
     # Bestiary
     url(r'^bestiary/', include([
         url(r'^$', views.bestiary, name='bestiary'),
-        url(r'^(?P<monster_id>[0-9]+)/$', views.bestiary_detail, name='bestiary_detail'),
+        url(r'^(?P<monster_id>[0-9]+)/$', views.bestiary_detail_by_id, name='bestiary_detail_by_id'), # Legacy URL pattern
+        url(r'^(?P<monster_slug>[\w-]+)/$', views.bestiary_detail, name='bestiary_detail'),
     ])),
 ]

@@ -51,7 +51,7 @@
                 <button class="btn btn-default pull-right" type="button" data-toggle="collapse" data-target="#{{ fusion.instance.name|slugify }}-fusion" aria-controls="{{ fusion.instance.name }}-fusion">Toggle Requirements</button>
                 <div class="monster-image pull-left">
                     <div>
-                        <a href="{% url 'herders:bestiary_detail' monster_id=fusion.instance.pk %}">
+                        <a href="{% url 'herders:bestiary_detail' monster_slug=fusion.instance.bestiary_slug %}">
                             <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}" class="monster-thumb"/>
                             <span>
                                 {% for x in fusion.stars|get_range %}
@@ -94,7 +94,7 @@
                                 <tr {% if ingredient.complete %}class="success"{% endif %}>
                                     <td class="monster-image">
                                         <div class="pull-left">
-                                            <a href="{% url 'herders:bestiary_detail' monster_id=ingredient.instance.pk %}">
+                                            <a href="{% url 'herders:bestiary_detail' monster_slug=ingredient.instance.bestiary_slug %}">
                                                 <img src="{{ img_url_prefix }}monsters/{{ ingredient.instance.image_filename }}" class="monster-thumb"/>
                                                 <span>
                                                     {% for x in fusion.stars|get_range %}

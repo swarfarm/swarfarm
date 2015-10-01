@@ -31,7 +31,7 @@
 
 {% block content %}
 {% static 'herders/images/' as img_url_prefix %}
-{% cache 60 bestiary_detail base_monster.pk %}
+{% cache 60 bestiary_detail base_monster.bestiary_slug %}
     <div class="bestiary-detail">
         {# Base monster stats and skills #}
         {% if base_monster %}
@@ -551,13 +551,13 @@
                             {% for related_monster in base_monster.monster_family %}
                             <tr>
                                 <td class="monster-image">
-                                    <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.pk %}">
+                                    <a href="{% url 'herders:bestiary_detail' monster_slug=related_monster.bestiary_slug %}">
                                         <img src="{{ img_url_prefix }}monsters/{{ related_monster.image_filename }}" class="monster-thumb"/>
                                     </a>
                                 </td>
                                 <td class="monster-image">
                                     {% if related_monster.awakens_to %}
-                                    <a href="{% url 'herders:bestiary_detail' monster_id=related_monster.awakens_to.pk %}">
+                                    <a href="{% url 'herders:bestiary_detail' monster_slug=related_monster.awakens_to.bestiary_slug %}">
                                         <img src="{{ img_url_prefix }}monsters/{{ related_monster.awakens_to.image_filename }}" class="monster-thumb"/>
                                     </a>
                                     {% endif %}

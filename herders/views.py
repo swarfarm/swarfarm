@@ -1264,8 +1264,12 @@ def bestiary(request):
     return render(request, 'herders/bestiary.html', context)
 
 
-def bestiary_detail(request, monster_id):
-    monster = get_object_or_404(Monster, pk=monster_id)
+def bestiary_detail(request, monster_slug):
+    monster = Monster.objects.filter(bestiary_slug=monster_slug).first()
+
+    if monster is None:
+        raise Http404()
+
     context = {
         'view': 'bestiary',
     }
@@ -1321,6 +1325,12 @@ def bestiary_detail(request, monster_id):
         context['awakened_monster_skills'] = awakened_monster.skills.all().order_by('slot')
 
     return render(request, 'herders/bestiary_detail.html', context)
+
+
+def bestiary_detail_by_id(request, monster_id):
+    monster = get_object_or_404(Monster, pk=monster_id)
+
+    return redirect('herders:bestiary_detail', monster_slug=monster.bestiary_slug)
 
 
 def bestiary_sanity_checks(request):

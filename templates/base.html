@@ -17,7 +17,8 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         {% compress css %}
             <link href="{% static "herders/css/custom.css" %}" rel="stylesheet">
-            <link  href="{% static 'herders/css/sprites.css' %}" rel="stylesheet">
+            <link href="{% static 'herders/css/sprites.css' %}" rel="stylesheet">
+            <link href="{% static 'herders/css/runes.css' %}" rel="stylesheet">
             <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/style.css' %}">
             {% block css %}{# Custom CSS for specific templates can be inserted here #}{% endblock css %}
         {% endcompress %}

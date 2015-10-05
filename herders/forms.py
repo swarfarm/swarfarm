@@ -381,6 +381,8 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
                     title='Autocomplete Tips',
                     data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
                     data_stars_field=self['stars'].auto_id,
+                    data_fodder_field=self['fodder'].auto_id,
+                    data_priority_field=self['priority'].auto_id,
                     data_set_stars='',
                 ),
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
@@ -428,7 +430,12 @@ class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
         self.helper.disable_csrf = True
         self.helper.layout = Layout(
             HTML('<td>'),
-            InlineField('monster', data_stars_field=self['stars'].auto_id, data_set_stars=''),
+            InlineField(
+                'monster',
+                data_stars_field=self['stars'].auto_id,
+                data_fodder_field=self['fodder'].auto_id,
+                data_set_stars=''
+            ),
             HTML('</td><td>'),
             InlineField('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
             HTML('</td><td>'),
@@ -656,8 +663,8 @@ class AddRuneInstanceForm(ModelForm):
                 Div(
                     Div('type', css_class='col-lg-3'),
                     Div('slot', css_class='col-lg-3'),
-                    Div('stars', css_class='col-lg-3'),
-                    Div('level', css_class='col-lg-3'),
+                    Div(Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6), css_class='col-lg-3 text-justify'),
+                    Div(Field('level', placeholder='1-15'), css_class='col-lg-3'),
                     css_class='row'
                 ),
                 Div(

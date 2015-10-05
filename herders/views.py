@@ -389,6 +389,10 @@ def monster_instance_bulk_add(request, profile_name):
                     try:
                         if new_instance.monster:
                             new_instance.owner = summoner
+
+                            if new_instance.monster.archetype == Monster.TYPE_MATERIAL:
+                                new_instance.priority = MonsterInstance.PRIORITY_DONE
+
                             new_instance.save()
                             messages.success(request, 'Added %s to your collection.' % new_instance)
                     except ObjectDoesNotExist:

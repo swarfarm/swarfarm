@@ -53,6 +53,8 @@ $(window).load(function() {
 function SetStars(e, choice, autocomplete) {
     var monster_id = choice[0].dataset['value'];
     var stars_field = '#' + $(this).data('stars-field');
+    var priority_field = '#' + $(this).data('priority-field');
+    var fodder_field = '#' + $(this).data('fodder-field');
     var url = API_URL + 'bestiary/' + monster_id + '.json';
 
     $.ajax({
@@ -69,8 +71,8 @@ function SetStars(e, choice, autocomplete) {
 
         //Set fodder
         if (result.archetype == 'material') {
-            $('#id_priority').val('0');
-            $('#id_fodder').prop('checked', true);
+            $(priority_field).val('0');
+            $(fodder_field).prop('checked', true);
         }
     });
 }

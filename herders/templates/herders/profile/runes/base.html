@@ -1,0 +1,38 @@
+{% extends 'herders/profile/profile_base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load utils %}
+
+{% block subnav %}
+    {% if is_owner %}
+        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+            <div class="container-fluid">
+                <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#addRuneModal">
+                    <span class="glyphicon glyphicon-plus"></span> Add Rune
+                </button>
+            </div>
+        </nav>
+    {% endif %}
+{% endblock subnav %}
+
+{% block profile %}
+    {% if is_owner %}
+        {# Add rune modal #}
+        <div class="modal fade" id="addRuneModal" tabindex="-1" role="dialog" aria-labelledby="modalAddRuneTitle" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalAddRuneTitle">Add Rune</h4>
+                    </div>
+                    {% crispy add_rune_form %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock profile %}
+
+{% block javascript %}
+    {% comment %}<script type="text/javascript" src="{% static 'herders/js/runes.js' %}"></script>{% endcomment %}
+{% endblock javascript %}

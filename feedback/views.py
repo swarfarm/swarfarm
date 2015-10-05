@@ -79,7 +79,6 @@ class IssueUpdateStatus(LoginRequiredMixin, ProfileNameMixin, UpdateView):
     form_class = IssueUpdateStatusForm
 
     def get_success_url(self):
-        print 'success hurr durr'
         return reverse('feedback:issue_detail', kwargs={'pk': self.kwargs['pk']})
 
 

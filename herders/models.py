@@ -900,6 +900,24 @@ class RuneInstance(models.Model):
         (TYPE_VAMPIRE, 'Vampire'),
     )
 
+    STAR_CHOICES = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+    )
+
+    SLOT_CHOICES = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+    )
+
     STAT_HP = 1
     STAT_HP_PCT = 2
     STAT_ATK = 3
@@ -946,7 +964,7 @@ class RuneInstance(models.Model):
     assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()
-    slot = models.IntegerField()
+    slot = models.IntegerField(choices=SLOT_CHOICES)
     main_stat = models.IntegerField(choices=STAT_CHOICES)
     main_stat_value = models.IntegerField(default=0)
     innate_stat = models.IntegerField(choices=INNATE_STAT_CHOICES, null=True, blank=True)

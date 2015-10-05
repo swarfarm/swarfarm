@@ -1245,6 +1245,36 @@ def team_delete(request, profile_name, team_id):
         return HttpResponseForbidden()
 
 
+def runes(request, profile_name):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:runes', kwargs={'profile_name': profile_name})
+    )
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    add_rune_form = AddRuneInstanceForm()
+
+    context = {
+        'view': 'runes',
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'return_path': return_path,
+        'is_owner': is_owner,
+        'add_rune_form': add_rune_form,
+    }
+
+    return render(request, 'herders/profile/runes/base.html', context)
+
+
+def rune_edit(request, profile_name, rune_id):
+    pass
+
+
+def rune_delete(request, profile_name, rune_id):
+    pass
+
+
 def bestiary(request):
     context = {
         'view': 'bestiary',

@@ -6,11 +6,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.templatetags.static import static
 
-from .models import Monster, MonsterInstance, Summoner, TeamGroup, Team
+from .models import MonsterInstance, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, InlineCheckboxes
+from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Fieldset
+from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField
 
 from captcha.fields import ReCaptchaField
 
@@ -624,9 +624,6 @@ class EditTeamForm(ModelForm):
         leader = self.cleaned_data.get('leader')
         roster = self.cleaned_data.get('roster')
 
-        print leader
-        print roster
-
         if leader in roster:
             raise ValidationError(
                 'Leader cannot be included in the roster as well',
@@ -634,3 +631,89 @@ class EditTeamForm(ModelForm):
             )
 
         super(EditTeamForm, self).clean()
+
+
+class AddRuneInstanceForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AddRuneInstanceForm, self).__init__(*args, **kwargs)
+        self.fields['main_stat'].label = False
+        self.fields['main_stat_value'].label = False
+        self.fields['innate_stat'].label = False
+        self.fields['innate_stat_value'].label = False
+        self.fields['substat_1'].label = False
+        self.fields['substat_1_value'].label = False
+        self.fields['substat_2'].label = False
+        self.fields['substat_2_value'].label = False
+        self.fields['substat_3'].label = False
+        self.fields['substat_3_value'].label = False
+        self.fields['substat_4'].label = False
+        self.fields['substat_4_value'].label = False
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Div('type', css_class='col-lg-3'),
+                    Div('slot', css_class='col-lg-3'),
+                    Div('stars', css_class='col-lg-3'),
+                    Div('level', css_class='col-lg-3'),
+                    css_class='row'
+                ),
+                Div(
+                    Div(HTML('Main Stat'), css_class='col-lg-2 text-right'),
+                    Div('main_stat', css_class='col-lg-5'),
+                    Div('main_stat_value', css_class='col-lg-5'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('Innate Stat'), css_class='col-lg-2 text-right'),
+                    Div('innate_stat', css_class='col-lg-5'),
+                    Div('innate_stat_value', css_class='col-lg-5'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('Substat 1'), css_class='col-lg-2 text-right'),
+                    Div('substat_1', css_class='col-lg-5'),
+                    Div('substat_1_value', css_class='col-lg-5'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('Substat 2'), css_class='col-lg-2 text-right'),
+                    Div('substat_2', css_class='col-lg-5'),
+                    Div('substat_2_value', css_class='col-lg-5'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('Substat 3'), css_class='col-lg-2 text-right'),
+                    Div('substat_3', css_class='col-lg-5'),
+                    Div('substat_3_value', css_class='col-lg-5'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('<Substat 4'), css_class='col-lg-2 control-label text-right'),
+                    Div('substat_4', css_class='col-lg-5'),
+                    Div('substat_4_value', css_class='col-lg-5'),
+                    css_class='row',
+                ),
+                css_class='modal-body'
+            ),
+            Div(
+                FormActions(
+                    Submit('save', 'Save', css_class='btn btn-primary'),
+                ),
+                css_class='modal-footer'
+            )
+        )
+
+    class Meta:
+        model = RuneInstance
+        fields = (
+            'type', 'stars', 'level', 'slot',
+            'main_stat', 'main_stat_value',
+            'innate_stat', 'innate_stat_value',
+            'substat_1', 'substat_1_value',
+            'substat_2', 'substat_2_value',
+            'substat_3', 'substat_3_value',
+            'substat_4', 'substat_4_value',
+        )

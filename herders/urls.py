@@ -39,6 +39,11 @@ urlpatterns = [
                 url(r'^edit/(?P<group_id>[0-9a-f]{32})/$', views.team_group_edit, name='team_group_edit'),
             ])),
         ])),
+        url(r'^runes/', include([
+            url(r'^$', views.runes, name='runes'),
+            url(r'^edit/(?P<rune_id>[0-9a-f]{32})/$', views.rune_edit, name='rune_edit'),
+            url(r'^delete/(?P<rune_id>[0-9a-f]{32})/$', views.rune_delete, name='rune_delete'),
+        ])),
         url(r'following/', include([
             url(r'^$', views.following, name='profile_following'),
             url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_add, name='profile_follow_add'),

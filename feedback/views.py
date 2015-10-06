@@ -40,6 +40,21 @@ class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
         context['mode'] = self.kwargs.get('mode', None)
         return context
 
+
+def issue_search(request):
+    from django.db.models import Q
+    from django.shortcuts import render, redirect
+
+    query = request.GET.get('query', None)
+
+    if query:
+        results = Issue.objects.filter(Q(subject__icontains=query) | Q(description__icontains=query))
+
+        return render(request, 'feedback/issue_list.html', {'issue_list': results, 'query': query})
+    else:
+        return redirect('feedback:index')
+
+
 class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
     model = Issue
     form_class = IssueForm

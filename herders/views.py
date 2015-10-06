@@ -13,7 +13,6 @@ from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
-from django.templatetags.static import static
 
 from .forms import *
 from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team

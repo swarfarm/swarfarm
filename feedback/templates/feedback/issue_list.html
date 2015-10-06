@@ -5,19 +5,29 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <a role="button" href="{% url 'feedback:issue_add' %}" class="btn btn-default pull-right"><span class="glyphicon glyphicon-plus"></span> New Feedback</a>
+
         <p class="panel-title"><strong>Feedback Submissions</strong></p>
         <p>In addition to Accepted or In Progress topics here, see the <a href="https://swarfarm.com/upcoming_features/">list of upcoming features</a> to see where the site is headed.</p>
-        <div class="btn-toolbar">
-            {% if mode == 'mine' %}
-            <a href="{% url 'feedback:index' %}" class="btn btn-default">All Feedback</a>
-            {% else %}
-            <a href="{% url 'feedback:myissue_list' %}" class="btn btn-default">My Feedback</a>
-            {% endif %}
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filters" aria-expanded="false" aria-controls="filters">
-                Filters
-            </button>
-            <button type="button" class="btn btn-danger reset">Reset Filters</button>
-        </div>
+
+        <form class="form-inline" action="{% url 'feedback:issue_search' %}" method="get">
+            <div class="btn-group">
+                {% if mode == 'mine' or query %}
+                <a href="{% url 'feedback:index' %}" class="btn btn-default">All Feedback</a>
+                {% else %}
+                <a href="{% url 'feedback:myissue_list' %}" class="btn btn-default">My Feedback</a>
+                {% endif %}
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filters" aria-expanded="false" aria-controls="filters">
+                    Filters
+                </button>
+                <button type="button" class="btn btn-danger reset">Reset Filters</button>
+            </div>
+            <div class="input-group">
+                <input name="query" type="text" class="form-control" placeholder="Search for..." value="{{ query }}">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">Go!</button>
+                </span>
+            </div>
+        </form>
     </div>
     <div id="filters" class="collapse">
         <div class="panel-body">

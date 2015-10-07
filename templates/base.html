@@ -61,13 +61,11 @@
                                 <img src="{% static 'herders/images/icons/monster.png' %}" />
                                 My Monsters
                             </a>
-                            {% comment %}
                             <a href="{% url 'herders:runes' profile_name=user.username %}"
                                class="btn btn-default {% if view == 'runes'  and is_owner %}active{% endif %}">
                                 <img src="{% static 'herders/images/icons/rune.png' %}" />
                                 Runes
                             </a>
-                            {% endcomment %}
                             <a href="{% url 'herders:fusion' profile_name=user.username %}"
                                class="btn btn-default {% if view == 'fusion'  and is_owner %}active{% endif %}">
                                 <img src="{% static 'herders/images/icons/fusion.png' %}" />

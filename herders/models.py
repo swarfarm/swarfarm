@@ -1004,69 +1004,97 @@ class RuneInstance(models.Model):
         else:
             return 0
 
+    @staticmethod
+    def get_valid_stats_for_slot(slot):
+        if slot == 1:
+            return {
+                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
+            }
+        elif slot == 2:
+            return {
+                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
+                RuneInstance.STAT_ATK_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK_PCT - 1][1],
+                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
+                RuneInstance.STAT_DEF_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF_PCT - 1][1],
+                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
+                RuneInstance.STAT_HP_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP_PCT - 1][1],
+                RuneInstance.STAT_SPD: RuneInstance.STAT_CHOICES[RuneInstance.STAT_SPD - 1][1],
+            }
+        elif slot == 3:
+            return {
+                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
+            }
+        elif slot == 4:
+            return {
+                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
+                RuneInstance.STAT_ATK_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK_PCT - 1][1],
+                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
+                RuneInstance.STAT_DEF_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF_PCT - 1][1],
+                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
+                RuneInstance.STAT_HP_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP_PCT - 1][1],
+                RuneInstance.STAT_CRIT_RATE_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_CRIT_RATE_PCT - 1][1],
+                RuneInstance.STAT_CRIT_DMG_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_CRIT_DMG_PCT - 1][1],
+            }
+        elif slot == 5:
+            return {
+                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
+            }
+        elif slot == 6:
+            return {
+                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
+                RuneInstance.STAT_ATK_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK_PCT - 1][1],
+                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
+                RuneInstance.STAT_DEF_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF_PCT - 1][1],
+                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
+                RuneInstance.STAT_HP_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP_PCT - 1][1],
+                RuneInstance.STAT_RESIST_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_RESIST_PCT - 1][1],
+                RuneInstance.STAT_ACCURACY_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ACCURACY_PCT - 1][1],
+            }
+        else:
+            return None
+
     def clean(self):
         from django.core.exceptions import ValidationError
 
         # Check slot, level, etc for valid ranges
         if self.slot < 1 or self.slot > 6:
-            raise ValidationError(
-                'Slot must be 1 through 6.',
-                code='invalid_rune_slot',
-            )
+            raise ValidationError({
+                'slot': ValidationError(
+                    'Slot must be 1 through 6.',
+                    code='invalid_rune_slot',
+                )
+            })
 
         if self.level < 1 or self.level > 15:
-            raise ValidationError(
-                'Level must be 1 through 15.',
-                code='invalid_rune_level',
-            )
+            raise ValidationError({
+                'level': ValidationError(
+                    'Level must be 1 through 15.',
+                    code='invalid_rune_level',
+                )
+            })
 
         if self.stars < 1 or self.stars > 6:
-            raise ValidationError(
-                'Stars must be between 1 and 6.',
-                code='invalid_rune_stars',
-            )
-
-        # Check main stat vs slot
-        valid_even_stats = [
-            self.STAT_ATK,
-            self.STAT_ATK_PCT,
-            self.STAT_DEF,
-            self.STAT_DEF_PCT,
-            self.STAT_HP,
-            self.STAT_HP_PCT,
-        ]
+            raise ValidationError({
+                'stars': ValidationError(
+                    'Stars must be between 1 and 6.',
+                    code='invalid_rune_stars',
+                )
+            })
 
         # Do slot vs stat check
-        if self.slot == 1 and self.main_stat != self.STAT_ATK:
-            raise ValidationError(
-                'Unacceptable stat for slot 1. Must be ATK.',
-                code='invalid_rune_main_stat'
-            )
-        elif self.slot == 2 and self.main_stat not in valid_even_stats + [self.STAT_SPD]:
-            raise ValidationError(
-                'Unacceptable stat for slot 2. Must be ATK, ATK%, DEF, DEF%, HP, HP%, or SPD.',
-                code='invalid_rune_main_stat'
-            )
-        elif self.slot == 3 and self.main_stat != self.STAT_DEF:
-            raise ValidationError(
-                'Unacceptable stat for slot 3. Must be DEF.',
-                code='invalid_rune_main_stat'
-            )
-        elif self.slot == 4 and self.main_stat not in valid_even_stats + [self.STAT_CRIT_RATE_PCT, self.STAT_CRIT_DMG_PCT]:
-            raise ValidationError(
-                'Unacceptable stat for slot 3. Must be ATK, ATK%, DEF, DEF%, HP, HP%, CRIT Rate, or CRIT Dmg.',
-                code='invalid_rune_main_stat'
-            )
-        elif self.slot == 5 and self.main_stat != self.STAT_HP:
-            raise ValidationError(
-                'Unacceptable stat for slot 3. Must be HP.',
-                code='invalid_rune_main_stat'
-            )
-        elif self.slot == 6 and self.main_stat not in valid_even_stats + [self.STAT_RESIST_PCT, self.STAT_ACCURACY_PCT]:
-            raise ValidationError(
-                'Unacceptable stat for slot 3. Must be ATK, ATK%, DEF, DEF%, HP, HP%, Resist, or Accuracy.',
-                code='invalid_rune_main_stat'
-            )
+        if self.main_stat not in RuneInstance.get_valid_stats_for_slot(self.slot):
+            raise ValidationError({
+                'main_stat': ValidationError(
+                    'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
+                    params={
+                        'slot': self.slot,
+                        'valid_stats': ', '.join(RuneInstance.get_valid_stats_for_slot(self.slot).values())
+                    },
+                    code='invalid_rune_main_stat'
+                ),
+            })
+
+        super(RuneInstance, self).clean()
 
     def save(self, *args, **kwargs):
         # Set flags for filtering

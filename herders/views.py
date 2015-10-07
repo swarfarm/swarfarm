@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden, JsonResponse
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
@@ -13,6 +13,7 @@ from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template import loader, RequestContext
 
 from .forms import *
 from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
@@ -1257,7 +1258,7 @@ def runes(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     add_rune_form = AddRuneInstanceForm()
-    add_rune_form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name}) + '?next=' + return_path
+    add_rune_form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
 
     context = {
         'view': 'runes',
@@ -1273,18 +1274,32 @@ def runes(request, profile_name):
 
 def rune_add(request, profile_name):
     form = AddRuneInstanceForm(request.POST or None)
+    form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
+    template = loader.get_template('herders/profile/runes/add_form.html')
 
-    if form.is_valid() and request.method == 'POST':
+    if request.method == 'POST' and form.is_valid():
         # Create the monster instance
         new_rune = form.save(commit=False)
         new_rune.owner = request.user.summoner
         new_rune.save()
-    else:
-        # Re-show same page but with form filled in and errors shown
-        context = {
-            'add_rune_form': form,
+
+        # Send back blank form
+        form = AddRuneInstanceForm()
+        form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
+
+        response_data = {
+            'code': 'success',
+            'html': template.render(RequestContext(request, {'add_rune_form': form}))
         }
-        return render(request, 'herders/profile/runes/add_form.html', context)
+
+    else:
+        # Return form filled in and errors shown
+        response_data = {
+            'code': 'error',
+            'html': template.render(RequestContext(request, {'add_rune_form': form}))
+        }
+
+    return JsonResponse(response_data)
 
 
 def rune_edit(request, profile_name, rune_id):

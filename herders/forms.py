@@ -658,8 +658,8 @@ class AddRuneInstanceForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
-        self.helper.form_action = 'herders:rune_add'
         self.helper.form_id = 'addRuneForm'
+        self.helper.form_class = 'ajax-form'
         self.helper.layout = Layout(
             Div(
                 Div(

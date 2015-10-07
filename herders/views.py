@@ -1257,6 +1257,7 @@ def runes(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     add_rune_form = AddRuneInstanceForm()
+    add_rune_form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name}) + '?next=' + return_path
 
     context = {
         'view': 'runes',
@@ -1268,6 +1269,22 @@ def runes(request, profile_name):
     }
 
     return render(request, 'herders/profile/runes/base.html', context)
+
+
+def rune_add(request, profile_name):
+    form = AddRuneInstanceForm(request.POST or None)
+
+    if form.is_valid() and request.method == 'POST':
+        # Create the monster instance
+        new_rune = form.save(commit=False)
+        new_rune.owner = request.user.summoner
+        new_rune.save()
+    else:
+        # Re-show same page but with form filled in and errors shown
+        context = {
+            'add_rune_form': form,
+        }
+        return render(request, 'herders/profile/runes/add_form.html', context)
 
 
 def rune_edit(request, profile_name, rune_id):

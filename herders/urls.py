@@ -41,6 +41,7 @@ urlpatterns = [
         ])),
         url(r'^runes/', include([
             url(r'^$', views.runes, name='runes'),
+            url(r'^add/$', views.rune_add, name='rune_add'),
             url(r'^edit/(?P<rune_id>[0-9a-f]{32})/$', views.rune_edit, name='rune_edit'),
             url(r'^delete/(?P<rune_id>[0-9a-f]{32})/$', views.rune_delete, name='rune_delete'),
         ])),

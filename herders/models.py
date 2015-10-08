@@ -949,8 +949,69 @@ class RuneInstance(models.Model):
         (STAT_ACCURACY_PCT, 'Accuracy %'),
     )
 
-    # Stat values is organized as such: STAT_VALUES[stat][stars]
-
+    MAIN_STAT_RANGES = {
+        STAT_HP: {
+            1: {'min': 40, 'max': 804},
+            2: {'min': 70, 'max': 1092},
+            3: {'min': 100, 'max': 1380},
+            4: {'min': 160, 'max': 1704},
+            5: {'min': 270, 'max': 2088},
+            6: {'min': 360, 'max': 2448},
+        },
+        STAT_HP_PCT: {
+            1: {'min': 1, 'max': 18},
+            2: {'min': 2, 'max': 20},
+            3: {'min': 4, 'max': 38},
+            4: {'min': 5, 'max': 43},
+            5: {'min': 8, 'max': 51},
+            6: {'min': 11, 'max': 63},
+        },
+        STAT_ATK: {
+            1: {'min': 3, 'max': 54},
+            2: {'min': 5, 'max': 74},
+            3: {'min': 7, 'max': 93},
+            4: {'min': 10, 'max': 113},
+            5: {'min': 15, 'max': 135},
+            6: {'min': 22, 'max': 160},
+        },
+        STAT_SPD: {
+            1: {'min': 1, 'max': 18},
+            2: {'min': 2, 'max': 19},
+            3: {'min': 3, 'max': 25},
+            4: {'min': 4, 'max': 30},
+            5: {'min': 5, 'max': 39},
+            6: {'min': 7, 'max': 42},
+        },
+        STAT_CRIT_RATE_PCT: {
+            1: {'min': 1, 'max': 18},
+            2: {'min': 2, 'max': 20},
+            3: {'min': 4, 'max': 37},
+            4: {'min': 5, 'max': 41},
+            5: {'min': 8, 'max': 47},
+            6: {'min': 11, 'max': 58},
+        },
+        STAT_CRIT_DMG_PCT: {
+            1: {'min': 2, 'max': 20},
+            2: {'min': 3, 'max': 37},
+            3: {'min': 4, 'max': 43},
+            4: {'min': 6, 'max': 58},
+            5: {'min': 9, 'max': 65},
+            6: {'min': 12, 'max': 80},
+        },
+        STAT_RESIST_PCT: {
+            1: {'min': 1, 'max': 18},
+            2: {'min': 2, 'max': 20},
+            3: {'min': 4, 'max': 38},
+            4: {'min': 6, 'max': 44},
+            5: {'min': 9, 'max': 51},
+            6: {'min': 12, 'max': 64},
+        },
+    }
+    # Copy a few ranges that are the same
+    MAIN_STAT_RANGES[STAT_ATK_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
+    MAIN_STAT_RANGES[STAT_DEF] = MAIN_STAT_RANGES[STAT_ATK]
+    MAIN_STAT_RANGES[STAT_DEF_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
+    MAIN_STAT_RANGES[STAT_ACCURACY_PCT] = MAIN_STAT_RANGES[STAT_RESIST_PCT]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
@@ -1047,33 +1108,6 @@ class RuneInstance(models.Model):
         else:
             return None
 
-    @staticmethod
-    def get_value_for_main_slot(stat_type, stars, level):
-        stats = {
-            RuneInstance.STAT_HP: {
-                1: {1: 40, 15: 804, 'inc': 45},
-                2: {1: 70, 15: 1092, 'inc': 60},
-                3: {1: 100, 15: 1380, 'inc': 75},
-                4: {1: 160, 15: 1704, 'inc': 90},
-                5: {1: 270, 15: 2088, 'inc': 105},
-                6: {1: 360, 15: 2448, 'inc': 120},
-            },
-            RuneInstance.STAT_HP_PCT: {
-                1: {1: 1, 15: 18, 'inc': 1},
-                2: {1: 2, 15: 20, 'inc': 1},
-                3: {1: 4, 15: 38, 'inc': 2},
-                4: {1: 5, 15: 43, 'inc': 2.25},
-                5: {1: 8, 15: 51, 'inc': 2.5},
-                6: {1: 11, 15: 63, 'inc': 3},
-            },
-        }
-        if level == 1 or level == 15:
-            return stats[stat_type][stars][level]
-        else:
-            lv1val = stats[stat_type][stars][1]
-            inc = stats[stat_type][stars]['inc']
-            return lv1val + (level - 1) * inc
-
     def clean(self):
         from django.core.exceptions import ValidationError
 
@@ -1089,7 +1123,7 @@ class RuneInstance(models.Model):
         if self.level is not None and self.level < 1 or self.level > 15:
             raise ValidationError({
                 'level': ValidationError(
-                    'Level must be 1 through 15.',
+                    'Level must be 0 through 15.',
                     code='invalid_rune_level',
                 )
             })

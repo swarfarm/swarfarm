@@ -1257,19 +1257,31 @@ def runes(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    add_rune_form = AddRuneInstanceForm()
-    add_rune_form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
-
     context = {
         'view': 'runes',
         'profile_name': profile_name,
         'summoner': summoner,
         'return_path': return_path,
         'is_owner': is_owner,
-        'add_rune_form': add_rune_form,
     }
 
+    if is_owner:
+        add_rune_form = AddRuneInstanceForm()
+        add_rune_form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
+        context['add_rune_form'] = add_rune_form
+
     return render(request, 'herders/profile/runes/base.html', context)
+
+
+def rune_inventory(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    rune_list = RuneInstance.objects.filter(owner=summoner)
+
+    context = {
+        'runes': rune_list,
+    }
+
+    return render(request, 'herders/profile/runes/inventory.html', context)
 
 
 def rune_add(request, profile_name):

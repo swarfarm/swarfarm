@@ -909,15 +909,6 @@ class RuneInstance(models.Model):
         (6, 6),
     )
 
-    SLOT_CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4),
-        (5, 5),
-        (6, 6),
-    )
-
     STAT_HP = 1
     STAT_HP_PCT = 2
     STAT_ATK = 3
@@ -958,13 +949,16 @@ class RuneInstance(models.Model):
         (STAT_ACCURACY_PCT, 'Accuracy %'),
     )
 
+    # Stat values is organized as such: STAT_VALUES[stat][stars]
+
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
     assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()
-    slot = models.IntegerField(choices=SLOT_CHOICES)
+    slot = models.IntegerField()
     main_stat = models.IntegerField(choices=STAT_CHOICES)
     main_stat_value = models.IntegerField(default=0)
     innate_stat = models.IntegerField(choices=INNATE_STAT_CHOICES, null=True, blank=True)
@@ -1053,11 +1047,38 @@ class RuneInstance(models.Model):
         else:
             return None
 
+    @staticmethod
+    def get_value_for_main_slot(stat_type, stars, level):
+        stats = {
+            RuneInstance.STAT_HP: {
+                1: {1: 40, 15: 804, 'inc': 45},
+                2: {1: 70, 15: 1092, 'inc': 60},
+                3: {1: 100, 15: 1380, 'inc': 75},
+                4: {1: 160, 15: 1704, 'inc': 90},
+                5: {1: 270, 15: 2088, 'inc': 105},
+                6: {1: 360, 15: 2448, 'inc': 120},
+            },
+            RuneInstance.STAT_HP_PCT: {
+                1: {1: 1, 15: 18, 'inc': 1},
+                2: {1: 2, 15: 20, 'inc': 1},
+                3: {1: 4, 15: 38, 'inc': 2},
+                4: {1: 5, 15: 43, 'inc': 2.25},
+                5: {1: 8, 15: 51, 'inc': 2.5},
+                6: {1: 11, 15: 63, 'inc': 3},
+            },
+        }
+        if level == 1 or level == 15:
+            return stats[stat_type][stars][level]
+        else:
+            lv1val = stats[stat_type][stars][1]
+            inc = stats[stat_type][stars]['inc']
+            return lv1val + (level - 1) * inc
+
     def clean(self):
         from django.core.exceptions import ValidationError
 
         # Check slot, level, etc for valid ranges
-        if self.slot < 1 or self.slot > 6:
+        if self.slot is not None and self.slot < 1 or self.slot > 6:
             raise ValidationError({
                 'slot': ValidationError(
                     'Slot must be 1 through 6.',
@@ -1065,7 +1086,7 @@ class RuneInstance(models.Model):
                 )
             })
 
-        if self.level < 1 or self.level > 15:
+        if self.level is not None and self.level < 1 or self.level > 15:
             raise ValidationError({
                 'level': ValidationError(
                     'Level must be 1 through 15.',
@@ -1073,7 +1094,7 @@ class RuneInstance(models.Model):
                 )
             })
 
-        if self.stars < 1 or self.stars > 6:
+        if self.stars is not None and self.stars < 1 or self.stars > 6:
             raise ValidationError({
                 'stars': ValidationError(
                     'Stars must be between 1 and 6.',
@@ -1082,7 +1103,7 @@ class RuneInstance(models.Model):
             })
 
         # Do slot vs stat check
-        if self.main_stat not in RuneInstance.get_valid_stats_for_slot(self.slot):
+        if self.main_stat is not None and self.main_stat not in RuneInstance.get_valid_stats_for_slot(self.slot):
             raise ValidationError({
                 'main_stat': ValidationError(
                     'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',

@@ -664,7 +664,7 @@ class AddRuneInstanceForm(ModelForm):
             Div(
                 Div(
                     Div('type', css_class='col-lg-3'),
-                    Div('slot', css_class='col-lg-3'),
+                    Div(Field('slot', placeholder='1-6'), css_class='col-lg-3'),
                     Div(Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6), css_class='col-lg-3 text-justify'),
                     Div(Field('level', placeholder='1-15'), css_class='col-lg-3'),
                     css_class='row'

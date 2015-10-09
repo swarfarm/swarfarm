@@ -3,6 +3,7 @@
 {% load utils %}
 {% load crispy_forms_tags %}
 {% load crispy_forms_filters %}
+{% load markdown_deux_tags %}
 
 {% block title %}
 {% if is_owner %}
@@ -236,7 +237,7 @@
                     <p class="panel-title">Personal Notes</p>
                 </div>
                 <div class="panel-body">
-                    {{ instance.notes }}
+                    {{ instance.notes||markdown }}
                 </div>
             </div>
             {% endif %}

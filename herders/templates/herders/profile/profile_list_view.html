@@ -131,7 +131,7 @@
                                     <span class="hidden">{{ effect.pk }}-{{ effect.name|slugify }}</span>
                                 {% endfor %}
                                 </td>
-                                <td>{% if instance.notes %}{{ instance.notes }}{% endif %}</td>
+                                <td>{% if instance.notes %}{{ instance.notes|truncatewords:50|markdown }}{% endif %}</td>
                                 <td class="monster-info-icons-column">
                                     {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
                                         <img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/>

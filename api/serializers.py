@@ -8,13 +8,13 @@ from herders.models import Monster, MonsterSkill, MonsterLeaderSkill, MonsterSki
 class MonsterSourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MonsterSource
-        exclude = ['pk', 'meta_order', 'icon_filename']
+        exclude = ['meta_order', 'icon_filename']
 
 
 class MonsterSkillEffectSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MonsterSkillEffect
-        fields = ('pk', 'name', 'is_buff', 'description', 'icon_filename')
+        fields = ('name', 'is_buff', 'description', 'icon_filename')
 
 
 class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):

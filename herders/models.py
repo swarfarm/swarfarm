@@ -949,6 +949,20 @@ class RuneInstance(models.Model):
         (STAT_ACCURACY_PCT, 'Accuracy %'),
     )
 
+    RUNE_QUALITY_NORMAL = 0
+    RUNE_QUALITY_MAGIC = 1
+    RUNE_QUALITY_RARE = 3
+    RUNE_QUALITY_HERO = 4
+    RUNE_QUALITY_LEGEND = 5
+
+    RUNE_QUALITY_CHOICES = (
+        (RUNE_QUALITY_NORMAL, 'Normal'),
+        (RUNE_QUALITY_MAGIC, 'Magic'),
+        (RUNE_QUALITY_RARE, 'Rare'),
+        (RUNE_QUALITY_HERO, 'Hero'),
+        (RUNE_QUALITY_LEGEND, 'Legend'),
+    )
+
     MAIN_STAT_RANGES = {
         STAT_HP: {
             1: {'min': 40, 'max': 804},
@@ -1007,6 +1021,21 @@ class RuneInstance(models.Model):
             6: {'min': 12, 'max': 64},
         },
     }
+
+    INNATE_STAT_TITLES = {
+        STAT_HP: 'Strong',
+        STAT_HP_PCT: 'Tenacious',
+        STAT_ATK: 'Ferocious',
+        STAT_ATK_PCT: 'Powerful',
+        STAT_DEF: 'Sturdy',
+        STAT_DEF_PCT: 'Durable',
+        STAT_SPD: 'Quick',
+        STAT_CRIT_RATE_PCT: 'Mortal',
+        STAT_CRIT_DMG_PCT: 'Cruel',
+        STAT_RESIST_PCT: 'Resistant',
+        STAT_ACCURACY_PCT: 'Intricate',
+    }
+
     # Copy a few ranges that are the same
     MAIN_STAT_RANGES[STAT_ATK_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
     MAIN_STAT_RANGES[STAT_DEF] = MAIN_STAT_RANGES[STAT_ATK]
@@ -1034,6 +1063,7 @@ class RuneInstance(models.Model):
     substat_4_value = models.IntegerField(null=True, blank=True)
 
     # The following fields exist purely to allow easier filtering and are updated on model save
+    quality = models.IntegerField(default=0)
     has_hp = models.BooleanField(default=False)
     has_atk = models.BooleanField(default=False)
     has_def = models.BooleanField(default=False)
@@ -1042,22 +1072,6 @@ class RuneInstance(models.Model):
     has_speed = models.BooleanField(default=False)
     has_resist = models.BooleanField(default=False)
     has_accuracy = models.BooleanField(default=False)
-
-    def get_stat(self, stat_type):
-        if self.main_stat == stat_type:
-            return self.main_stat_value
-        elif self.innate_stat == stat_type:
-            return self.innate_stat_value
-        elif self.substat_1 == stat_type:
-            return self.substat_1_value
-        elif self.substat_2 == stat_type:
-            return self.substat_2_value
-        elif self.substat_3 == stat_type:
-            return self.substat_3_value
-        elif self.substat_4 == stat_type:
-            return self.substat_4_value
-        else:
-            return 0
 
     @staticmethod
     def get_valid_stats_for_slot(slot):
@@ -1108,6 +1122,28 @@ class RuneInstance(models.Model):
         else:
             return None
 
+    def get_stat(self, stat_type):
+        if self.main_stat == stat_type:
+            return self.main_stat_value
+        elif self.innate_stat == stat_type:
+            return self.innate_stat_value
+        elif self.substat_1 == stat_type:
+            return self.substat_1_value
+        elif self.substat_2 == stat_type:
+            return self.substat_2_value
+        elif self.substat_3 == stat_type:
+            return self.substat_3_value
+        elif self.substat_4 == stat_type:
+            return self.substat_4_value
+        else:
+            return 0
+
+    def get_innate_stat_title(self):
+        if self.innate_stat is not None:
+            return self.INNATE_STAT_TITLES[self.innate_stat]
+        else:
+            return ''
+
     def clean(self):
         from django.core.exceptions import ValidationError
 
@@ -1149,6 +1185,18 @@ class RuneInstance(models.Model):
                 ),
             })
 
+        # Check that monster rune is assigned to does not already have rune in that slot
+        if self.assigned_to is not None and self.assigned_to.runeinstance_set.filter(slot=self.slot).count() > 0:
+            raise ValidationError({
+                'assigned_to': ValidationError(
+                    'Monster already has rune in slot %(slot)s. Either pick a different slot or do not assign to the monster yet.',
+                    params={
+                        'slot': self.slot,
+                    },
+                    code='slot_occupied'
+                )
+            })
+
         super(RuneInstance, self).clean()
 
     def save(self, *args, **kwargs):
@@ -1163,10 +1211,17 @@ class RuneInstance(models.Model):
         self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
+        self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
+
         super(RuneInstance, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return self.TYPE_CHOICES[self.type - 1][1] + ', Slot ' + str(self.slot) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level) + ', +' + str(self.main_stat_value) + ' ' + self.STAT_CHOICES[self.main_stat - 1][1]
+        if self.level > 0:
+            levelstr = '+' + str(self.level)
+        else:
+            levelstr = ''
+
+        return ' '.join([levelstr, self.get_innate_stat_title(), self.get_main_stat_display(), 'Rune (', self.slot, ') -', self.get_quality()])
 
 
 class TeamGroup(models.Model):

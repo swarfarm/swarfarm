@@ -881,6 +881,7 @@ class RuneInstance(models.Model):
     TYPE_REVENGE = 13
     TYPE_DESPAIR = 14
     TYPE_VAMPIRE = 15
+    TYPE_DESTROY = 16
 
     TYPE_CHOICES = (
         (TYPE_ENERGY, 'Energy'),
@@ -898,6 +899,7 @@ class RuneInstance(models.Model):
         (TYPE_REVENGE, 'Revenge'),
         (TYPE_DESPAIR, 'Despair'),
         (TYPE_VAMPIRE, 'Vampire'),
+        (TYPE_DESTROY, 'Destroy'),
     )
 
     STAR_CHOICES = (
@@ -921,20 +923,7 @@ class RuneInstance(models.Model):
     STAT_RESIST_PCT = 10
     STAT_ACCURACY_PCT = 11
 
-    INNATE_STAT_CHOICES = (
-        (STAT_HP, 'HP'),
-        (STAT_HP_PCT, 'HP %'),
-        (STAT_ATK, 'ATK'),
-        (STAT_ATK_PCT, 'ATK %'),
-        (STAT_DEF, 'DEF'),
-        (STAT_DEF_PCT, 'DEF %'),
-        (STAT_SPD, 'SPD'),
-        (STAT_CRIT_RATE_PCT, 'CRI Rate %'),
-        (STAT_CRIT_DMG_PCT, 'CRI Dmg %'),
-        (STAT_RESIST_PCT, 'Resistance %'),
-        (STAT_ACCURACY_PCT, 'Accuracy %'),
-    )
-
+    # Used for selecting type of stat in form
     STAT_CHOICES = (
         (STAT_HP, 'HP'),
         (STAT_HP_PCT, 'HP %'),
@@ -949,18 +938,50 @@ class RuneInstance(models.Model):
         (STAT_ACCURACY_PCT, 'Accuracy %'),
     )
 
-    RUNE_QUALITY_NORMAL = 0
-    RUNE_QUALITY_MAGIC = 1
-    RUNE_QUALITY_RARE = 2
-    RUNE_QUALITY_HERO = 3
-    RUNE_QUALITY_LEGEND = 4
+    # This list of tuples is used for display of rune stats
+    RUNE_STAT_DISPLAY = {
+        STAT_HP: 'HP',
+        STAT_HP_PCT: 'HP',
+        STAT_ATK: 'ATK',
+        STAT_ATK_PCT: 'ATK',
+        STAT_DEF: 'DEF',
+        STAT_DEF_PCT: 'DEF',
+        STAT_SPD: 'SPD',
+        STAT_CRIT_RATE_PCT: 'CRI Rate',
+        STAT_CRIT_DMG_PCT: 'CRI Dmg',
+        STAT_RESIST_PCT: 'Resistance',
+        STAT_ACCURACY_PCT: 'Accuracy',
+    }
 
-    RUNE_QUALITY_CHOICES = (
-        (RUNE_QUALITY_NORMAL, 'Normal'),
-        (RUNE_QUALITY_MAGIC, 'Magic'),
-        (RUNE_QUALITY_RARE, 'Rare'),
-        (RUNE_QUALITY_HERO, 'Hero'),
-        (RUNE_QUALITY_LEGEND, 'Legend'),
+    PERCENT_STATS = [
+        STAT_HP_PCT,
+        STAT_ATK_PCT,
+        STAT_DEF_PCT,
+        STAT_CRIT_RATE_PCT,
+        STAT_CRIT_DMG_PCT,
+        STAT_RESIST_PCT,
+        STAT_ACCURACY_PCT,
+    ]
+
+    FLAT_STATS = [
+        STAT_HP,
+        STAT_ATK,
+        STAT_DEF,
+        STAT_SPD,
+    ]
+
+    QUALITY_NORMAL = 0
+    QUALITY_MAGIC = 1
+    QUALITY_RARE = 2
+    QUALITY_HERO = 3
+    QUALITY_LEGEND = 4
+
+    QUALITY_CHOICES = (
+        (QUALITY_NORMAL, 'Normal'),
+        (QUALITY_MAGIC, 'Magic'),
+        (QUALITY_RARE, 'Rare'),
+        (QUALITY_HERO, 'Hero'),
+        (QUALITY_LEGEND, 'Legend'),
     )
 
     MAIN_STAT_RANGES = {
@@ -1042,6 +1063,25 @@ class RuneInstance(models.Model):
     MAIN_STAT_RANGES[STAT_DEF_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
     MAIN_STAT_RANGES[STAT_ACCURACY_PCT] = MAIN_STAT_RANGES[STAT_RESIST_PCT]
 
+    RUNE_SET_BONUSES = {
+        TYPE_ENERGY: '2 Set: HP +15%',
+        TYPE_FATAL: '4 Set: Attack Power +35%',
+        TYPE_BLADE: '2 Set: Critical Rate +12%',
+        TYPE_RAGE: '4 Set: Critical Damage +40%',
+        TYPE_SWIFT: '4 Set: Attack Speed +25%',
+        TYPE_FOCUS: '2 Set: Accuracy +20%',
+        TYPE_GUARD: '2 Set: Defense +15%',
+        TYPE_ENDURE: '2 Set: Resistance +20%',
+        TYPE_VIOLENT: '4 Set: Get Extra Turn +22%',
+        TYPE_WILL: '2 Set: Immunity +1 turn',
+        TYPE_NEMESIS: '2 Set: ATK Gauge +4% (for every 7% HP lost)',
+        TYPE_SHIELD: '2 Set: Ally Shield 3 turns (15% of HP)',
+        TYPE_REVENGE: '2 Set: Counterattack +15%',
+        TYPE_DESPAIR: '4 Set: Stun Rate +25%',
+        TYPE_VAMPIRE: '4 Set: Life Drain +35%',
+        TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP"
+    }
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
@@ -1051,7 +1091,7 @@ class RuneInstance(models.Model):
     slot = models.IntegerField()
     main_stat = models.IntegerField(choices=STAT_CHOICES)
     main_stat_value = models.IntegerField(default=0)
-    innate_stat = models.IntegerField(choices=INNATE_STAT_CHOICES, null=True, blank=True)
+    innate_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     innate_stat_value = models.IntegerField(null=True, blank=True)
     substat_1 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_1_value = models.IntegerField(null=True, blank=True)
@@ -1063,7 +1103,7 @@ class RuneInstance(models.Model):
     substat_4_value = models.IntegerField(null=True, blank=True)
 
     # The following fields exist purely to allow easier filtering and are updated on model save
-    quality = models.IntegerField(default=0, choices=RUNE_QUALITY_CHOICES)
+    quality = models.IntegerField(default=0, choices=QUALITY_CHOICES)
     has_hp = models.BooleanField(default=False)
     has_atk = models.BooleanField(default=False)
     has_def = models.BooleanField(default=False)
@@ -1072,6 +1112,27 @@ class RuneInstance(models.Model):
     has_speed = models.BooleanField(default=False)
     has_resist = models.BooleanField(default=False)
     has_accuracy = models.BooleanField(default=False)
+
+    def get_main_stat_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.main_stat, '')
+
+    def get_innate_stat_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.innate_stat, '')
+
+    def get_substat_1_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.substat_1, '')
+
+    def get_substat_2_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.substat_2, '')
+
+    def get_substat_3_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.substat_3, '')
+
+    def get_substat_4_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.substat_4, '')
+
+    def get_rune_set_bonus(self):
+        return self.RUNE_SET_BONUSES[self.type]
 
     @staticmethod
     def get_valid_stats_for_slot(slot):
@@ -1146,6 +1207,7 @@ class RuneInstance(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
+        # TODO: if stat is specified it must have a value >0
 
         # Check slot, level, etc for valid ranges
         if self.slot is not None and self.slot < 1 or self.slot > 6:
@@ -1217,11 +1279,11 @@ class RuneInstance(models.Model):
 
     def __unicode__(self):
         if self.level > 0:
-            levelstr = '+' + str(self.level) + ''
+            levelstr = '+' + str(self.level) + ' '
         else:
             levelstr = ''
 
-        return levelstr + self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune (' + str(self.slot) + ') - ' + self.get_quality_display()
+        return levelstr + self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune (' + str(self.slot) + ')'
 
 
 class TeamGroup(models.Model):

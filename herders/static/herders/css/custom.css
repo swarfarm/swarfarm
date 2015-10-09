@@ -42,8 +42,7 @@ footer {
 }
 
 .condensed {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 5px;
 }
 
 .navbar img, .btn-group img {

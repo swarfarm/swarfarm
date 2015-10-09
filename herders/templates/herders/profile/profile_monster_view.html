@@ -231,16 +231,6 @@
                     </tr>
                 </table>
             </div>
-            {% if instance.notes and instance.notes != '' %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <p class="panel-title">Personal Notes</p>
-                </div>
-                <div class="panel-body">
-                    {{ instance.notes||markdown }}
-                </div>
-            </div>
-            {% endif %}
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <p class="panel-title">Stats</p>
@@ -306,6 +296,16 @@
                     </tbody>
                 </table>
             </div>
+            {% if instance.notes and instance.notes != '' %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <p class="panel-title">Personal Notes</p>
+                </div>
+                <div class="panel-body">
+                    {{ instance.notes|markdown }}
+                </div>
+            </div>
+            {% endif %}
         </div>
         <div class="col-lg-9 no-right-gutter">
             {% if instance.monster.leader_skill %}

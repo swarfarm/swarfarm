@@ -60,10 +60,7 @@
         </td>
     </tr>
     <tr>
-        {% if instance.notes %}<td colspan="2"><strong>Notes: </strong> {{ instance.notes|truncatewords:50|markdown }}</td>{% endif %}
-    </tr>
-    <tr>
-        {% if instance.notes %}<td colspan="2"><strong>Notes: </strong> {{ instance.notes|markdown }}</td>{% endif %}
+        {% if instance.notes %}<td colspan="2"><strong>Notes: </strong>{{ instance.notes|markdown }}</td>{% endif %}
     </tr>
     </tbody>
 </table>

@@ -1,0 +1,12 @@
+{% load staticfiles %}
+{% load utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="rune-image pull-left">
+    <div class="rune-bg {{ quality|lower }}">
+    <div class="rune slot{{ slot }}"><div class="rune-symbol {{ type|lower }}"></div></div>
+    {% for x in stars|get_range %}
+    <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
+    {% endfor %}
+    </div>
+</div>

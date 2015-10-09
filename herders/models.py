@@ -951,9 +951,9 @@ class RuneInstance(models.Model):
 
     RUNE_QUALITY_NORMAL = 0
     RUNE_QUALITY_MAGIC = 1
-    RUNE_QUALITY_RARE = 3
-    RUNE_QUALITY_HERO = 4
-    RUNE_QUALITY_LEGEND = 5
+    RUNE_QUALITY_RARE = 2
+    RUNE_QUALITY_HERO = 3
+    RUNE_QUALITY_LEGEND = 4
 
     RUNE_QUALITY_CHOICES = (
         (RUNE_QUALITY_NORMAL, 'Normal'),
@@ -1063,7 +1063,7 @@ class RuneInstance(models.Model):
     substat_4_value = models.IntegerField(null=True, blank=True)
 
     # The following fields exist purely to allow easier filtering and are updated on model save
-    quality = models.IntegerField(default=0)
+    quality = models.IntegerField(default=0, choices=RUNE_QUALITY_CHOICES)
     has_hp = models.BooleanField(default=False)
     has_atk = models.BooleanField(default=False)
     has_def = models.BooleanField(default=False)
@@ -1156,7 +1156,7 @@ class RuneInstance(models.Model):
                 )
             })
 
-        if self.level is not None and self.level < 1 or self.level > 15:
+        if self.level is not None and self.level < 0 or self.level > 15:
             raise ValidationError({
                 'level': ValidationError(
                     'Level must be 0 through 15.',
@@ -1217,11 +1217,11 @@ class RuneInstance(models.Model):
 
     def __unicode__(self):
         if self.level > 0:
-            levelstr = '+' + str(self.level)
+            levelstr = '+' + str(self.level) + ''
         else:
             levelstr = ''
 
-        return ' '.join([levelstr, self.get_innate_stat_title(), self.get_main_stat_display(), 'Rune (', self.slot, ') -', self.get_quality()])
+        return levelstr + self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune (' + str(self.slot) + ') - ' + self.get_quality_display()
 
 
 class TeamGroup(models.Model):

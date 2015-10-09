@@ -1,5 +1,17 @@
-<ul>
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
 {% for rune in runes %}
-    <li>{{ rune }}</li>
+    <div class="col-md-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">
+                    <strong class="rune-text-{{ rune.get_quality_display|lower }}">{{ rune }}</strong>
+                </p>
+            </div>
+            <div class="panel-body">
+                {% include 'herders/profile/runes/rune_image_fragment.html' with type=rune.get_type_display stars=rune.stars quality=rune.get_quality_display slot=rune.slot only %}
+            </div>
+        </div>
+    </div>
 {% endfor %}
-</ul>

@@ -144,6 +144,6 @@ class RuneInstanceAdmin(admin.ModelAdmin):
     list_display = ('type', 'stars', 'level', 'slot', 'owner', 'main_stat')
     search_fields = ('id',)
     exclude = ('owner', 'assigned_to')
-
+    readonly_fields = ('quality', 'has_hp', 'has_atk', 'has_def', 'has_crit_rate', 'has_crit_dmg', 'has_speed', 'has_resist', 'has_accuracy')
 
 admin.site.register(GameEvent)

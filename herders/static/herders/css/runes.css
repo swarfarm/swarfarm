@@ -1,3 +1,21 @@
+.flex {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: stretch;
+}
+
+.flex > div {
+    margin: 0 5px;
+    display: flex;
+    min-width: 250px;
+}
+
+.rune-panel {
+    width: 100%;
+    height: auto;
+    position: relative;
+}
+
 .rune-image {
     position: relative;
     width: 50px;
@@ -8,8 +26,7 @@
 }
 
 .rune-text {
-    text-shadow: 1px 0px 1px rgba(255, 255, 255, 0.3), 1px 1px 0px rgba(0, 0, 0, 0.5);
-    font-weight: 500;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .rune-text-normal {
@@ -33,9 +50,15 @@
 }
 
 span.rune-set-bonus {
+    position: absolute;
+    bottom: 0;
     color: #A2BA00;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+    /*text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);*/
     font-weight: 500;
+}
+
+.rune-main-stat {
+    font-size: 115%;
 }
 
 .rune-bg {

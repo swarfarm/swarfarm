@@ -173,7 +173,7 @@
                                             <div class="monster-image pull-left">
                                                 <div>
                                                     {% if is_owner %}
-                                                        <a href="{% url 'herders:monster_instance_edit' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}">
+                                                        <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}#edit">
                                                     {% endif %}
                                                         <img src="{{ img_url_prefix }}monsters/{{ owned.monster.image_filename }}" class="monster-thumb"/>
                                                         <span>

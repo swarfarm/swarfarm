@@ -50,7 +50,7 @@
             </div>
             <div class="monster-box-actions">
                 <span class="monster-box-actions">
-                    <a href="{% url 'herders:monster_instance_edit' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}">
+                    <a href="{% url 'herders:monster_instance_view' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}#edit">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
                     </a>
                     <a href="{% url 'herders:monster_instance_duplicate' profile_name=user.username instance_id=monster.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Copy">

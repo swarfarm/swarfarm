@@ -1279,6 +1279,7 @@ def rune_inventory(request, profile_name):
 
     context = {
         'runes': rune_list,
+        'profile_name': profile_name,
     }
 
     return render(request, 'herders/profile/runes/inventory.html', context)

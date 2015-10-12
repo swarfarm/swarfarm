@@ -30,11 +30,24 @@
                 </div>
             </div>
         </div>
+
+        {# Edit rune modal #}
+        <div class="modal fade" id="editRuneModal" tabindex="-1" role="dialog" aria-labelledby="modalEditRuneTitle" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalAddRuneTitle">Edit Rune</h4>
+                    </div>
+                    <div id="editRuneForm"></div>
+                </div>
+            </div>
+        </div>
     {% endif %}
 
-<div id="rune-inventory">
+<div id="rune-inventory"></div>
 
-</div>
+<div id="rune-list"></div>
 
 {% endblock profile %}
 

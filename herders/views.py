@@ -1273,12 +1273,16 @@ def runes(request, profile_name):
     return render(request, 'herders/profile/runes/base.html', context)
 
 
+def rune_list(request, profile_name):
+    pass
+
+
 def rune_inventory(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    rune_list = RuneInstance.objects.filter(owner=summoner)
+    inventory = RuneInstance.objects.filter(owner=summoner)
 
     context = {
-        'runes': rune_list,
+        'runes': inventory,
         'profile_name': profile_name,
     }
 
@@ -1316,7 +1320,34 @@ def rune_add(request, profile_name):
 
 
 def rune_edit(request, profile_name, rune_id):
-    pass
+    rune = get_object_or_404(RuneInstance, pk=rune_id)
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    form = AddRuneInstanceForm(request.POST or None, instance=rune)
+    form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
+    template = loader.get_template('herders/profile/runes/add_form.html')
+
+    if is_owner:
+        if request.POST and form.is_valid():
+            print 'yay rune edit success'
+            form.save()
+
+            response_data = {
+                'code': 'success',
+                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+            }
+        else:
+            print 'either not post or invalid form'
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+            }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
 
 
 def rune_delete(request, profile_name, rune_id):

@@ -25,4 +25,16 @@ $('body').on('submit', '.ajax-form', function() {
     });
 
     return false;  //cancel default on submit action.
+}).on('show.bs.modal', '#editRuneModal', function(event) {
+    //Pull in edit form on modal show
+    var rune_id = $(event.relatedTarget).data('rune-id');
+
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/runes/edit/' + rune_id + '/'
+    }).done(function(data) {
+        $('#editRuneForm').empty().append(data.html);
+        $('.rating').rating();
+    });
 });
+

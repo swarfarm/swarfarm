@@ -3,30 +3,7 @@
 <div class="flex">
 {% for rune in runes %}
     <div data-rune-instance="{{ rune.pk.hex }}">
-        <div class="panel panel-default rune-panel">
-            <div class="panel-heading condensed">
-                <div class="btn-group pull-right">
-                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-pencil"></span></button>
-                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove text-danger"></span></button>
-                </div>
-                <p class="panel-title rune-text rune-text-{{ rune.get_quality_display|lower }}">{{ rune }}</p>
-            </div>
-            <div class="panel-body condensed">
-                {% include 'herders/profile/runes/rune_image_fragment.html' with type=rune.get_type_display stars=rune.stars quality=rune.get_quality_display slot=rune.slot only %}
-                <ul class="list-unstyled">
-                    <li class="rune-main-stat">{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</li>
-                    {% if rune.innate_stat %}<li>{{ rune.get_innate_stat_rune_display }} +{{ rune.innate_stat_value }}{% if rune.innate_stat in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
-                </ul>
-                <div class="clearfix"></div>
-                <ul class="list-unstyled">
-                    {% if rune.substat_1 %}<li>{{ rune.get_substat_1_rune_display }} +{{ rune.substat_1_value }}{% if rune.substat_1 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
-                    {% if rune.substat_2 %}<li>{{ rune.get_substat_2_rune_display }} +{{ rune.substat_2_value }}{% if rune.substat_2 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
-                    {% if rune.substat_3 %}<li>{{ rune.get_substat_3_rune_display }} +{{ rune.substat_3_value }}{% if rune.substat_3 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
-                    {% if rune.substat_4 %}<li>{{ rune.get_substat_4_rune_display }} +{{ rune.substat_4_value }}{% if rune.substat_4 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
-                </ul>
-                {% if rune.assigned_to %}<span>Assigned to <a href="{% url 'herders:monster_view' profile_name=profile_name monster_id=rune.assigned_to.pk.hex %}">{{ rune.assigned_to }}</a></span>{% endif %}
-            </div>
-        </div>
+        {% include 'herders/profile/runes/rune_panel_fragment.html' with rune=rune profile_name=profile_name only %}
     </div>
 {% endfor %}
 </div>

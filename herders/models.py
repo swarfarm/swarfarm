@@ -1285,6 +1285,9 @@ class RuneInstance(models.Model):
 
         return levelstr + self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune (' + str(self.slot) + ')'
 
+    class Meta:
+        ordering = ['type', 'slot', 'level', 'quality']
+
 
 class TeamGroup(models.Model):
     owner = models.ForeignKey(Summoner)

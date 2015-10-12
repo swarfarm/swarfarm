@@ -44,7 +44,8 @@ urlpatterns = [
             url(r'^add/$', views.rune_add, name='rune_add'),
             url(r'^edit/(?P<rune_id>[0-9a-f]{32})/$', views.rune_edit, name='rune_edit'),
             url(r'^delete/(?P<rune_id>[0-9a-f]{32})/$', views.rune_delete, name='rune_delete'),
-            url(r'^inventory/$', views.rune_inventory, name='rune_list')
+            url(r'^inventory/$', views.rune_inventory, name='rune_inventory'),
+            url(r'^list/$', views.rune_list, name='rune_list'),
         ])),
         url(r'following/', include([
             url(r'^$', views.following, name='profile_following'),

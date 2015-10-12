@@ -1,3 +1,12 @@
+#rune-inventory {
+    margin-left: 200px;
+}
+
+#rune-list {
+    width: 200px;
+    float: left;
+}
+
 .flex {
     display: flex;
     flex-flow: row wrap;

@@ -461,6 +461,8 @@ class EditMonsterInstanceForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
+        self.fields['notes'].help_text = 'Markdown syntax enabled'
+
         self.helper.layout = Layout(
             Div(
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
@@ -477,7 +479,7 @@ class EditMonsterInstanceForm(ModelForm):
                 'skill_2_level',
                 'skill_3_level',
                 'skill_4_level',
-                'notes',
+                Field('notes'),
             ),
             Div(
                 FormActions(

@@ -1207,7 +1207,6 @@ class RuneInstance(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
-        # TODO: if stat is specified it must have a value >0
 
         # Check slot, level, etc for valid ranges
         if self.slot is not None and self.slot < 1 or self.slot > 6:
@@ -1235,7 +1234,7 @@ class RuneInstance(models.Model):
             })
 
         # Do slot vs stat check
-        if self.main_stat is not None and self.main_stat not in RuneInstance.get_valid_stats_for_slot(self.slot):
+        if self.main_stat not in RuneInstance.get_valid_stats_for_slot(self.slot):
             raise ValidationError({
                 'main_stat': ValidationError(
                     'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
@@ -1244,6 +1243,65 @@ class RuneInstance(models.Model):
                         'valid_stats': ', '.join(RuneInstance.get_valid_stats_for_slot(self.slot).values())
                     },
                     code='invalid_rune_main_stat'
+                ),
+            })
+
+        # Check that the same stat type was not used multiple times
+        from operator import is_not
+        from functools import partial
+        stat_list = filter(partial(is_not, None), [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4])
+        if len(stat_list) != len(set(stat_list)):
+            raise ValidationError(
+                'All stats and substats must be unique.',
+                code='duplicate_stats'
+            )
+
+        # Check if stat type was specified that it has value > 0
+        if self.main_stat_value is None or self.main_stat_value <= 0:
+            raise ValidationError({
+                'main_stat_value': ValidationError(
+                    'Must provide a value greater than 0.',
+                    code='invalid_rune_main_stat_value'
+                ),
+            })
+
+        if self.innate_stat is not None and (self.innate_stat_value is None or self.innate_stat_value <= 0):
+            raise ValidationError({
+                'innate_stat_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_innate_stat_value'
+                ),
+            })
+
+        if self.substat_1 is not None and (self.substat_1_value is None or self.substat_1_value <= 0):
+            raise ValidationError({
+                'substat_1_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_substat_1_value'
+                ),
+            })
+
+        if self.substat_2 is not None and (self.substat_2_value is None or self.substat_2_value <= 0):
+            raise ValidationError({
+                'substat_2_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_substat_2_value'
+                ),
+            })
+
+        if self.substat_3 is not None and (self.substat_3_value is None or self.substat_3_value <= 0):
+            raise ValidationError({
+                'substat_3_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_substat_3_value'
+                ),
+            })
+
+        if self.substat_4 is not None and (self.substat_4_value is None or self.substat_4_value <= 0):
+            raise ValidationError({
+                'substat_4_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_substat_4_value'
                 ),
             })
 

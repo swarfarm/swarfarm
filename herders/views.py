@@ -1324,7 +1324,7 @@ def rune_edit(request, profile_name, rune_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    form = AddRuneInstanceForm(request.POST or None, instance=rune)
+    form = AddRuneInstanceForm(request.POST or None, instance=rune, auto_id='edit_id_%s')
     form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
     template = loader.get_template('herders/profile/runes/add_form.html')
 

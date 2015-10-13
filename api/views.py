@@ -122,3 +122,20 @@ class TeamViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
     pagination_class = PersonalCollectionSetPagination
+
+
+# Custom API
+def get_rune_stats_by_slot(request, slot):
+    from django.http import JsonResponse
+
+    valid_stats = RuneInstance.get_valid_stats_for_slot(int(slot))
+
+    if valid_stats:
+        return JsonResponse({
+            'code': 'success',
+            'data': valid_stats,
+        })
+    else:
+        return JsonResponse({
+            'code': 'error',
+        })

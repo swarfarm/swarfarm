@@ -36,5 +36,14 @@ $('body').on('submit', '.ajax-form', function() {
         $('#editRuneForm').empty().append(data.html);
         $('.rating').rating();
     });
-});
+}).on('show.bs.modal', '#deleteRuneModal', function(event) {
+    //Pull in delete confirmation form on modal show
+    var rune_id = $(event.relatedTarget).data('rune-id');
 
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/runes/delete/' + rune_id + '/'
+    }).done(function(data) {
+        $('#deleteRuneConfirmation').empty().append(data.html);
+    });
+});

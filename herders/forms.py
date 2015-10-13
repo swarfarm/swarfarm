@@ -716,7 +716,7 @@ class AddRuneInstanceForm(ModelForm):
             ),
             Div(
                 FormActions(
-                    Submit('save', 'Save', css_class='btn btn-primary'),
+                    Submit('save', 'Save'),
                 ),
                 css_class='modal-footer'
             )
@@ -733,3 +733,16 @@ class AddRuneInstanceForm(ModelForm):
             'substat_3', 'substat_3_value',
             'substat_4', 'substat_4_value',
         )
+
+
+class DeleteRuneInstanceForm(forms.Form):
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_class = 'ajax-form'
+    # helper.form_action must be set in view
+    helper.layout = Layout(
+        FormActions(
+            Submit('delete', 'Delete'),
+            HTML("""<button type="button" class="btn btn-default pull-right" data-dismiss="modal" aria-label="Close">Cancel</button>"""),
+        )
+    )

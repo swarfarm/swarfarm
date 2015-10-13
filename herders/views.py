@@ -1351,7 +1351,31 @@ def rune_edit(request, profile_name, rune_id):
 
 
 def rune_delete(request, profile_name, rune_id):
-    pass
+    rune = get_object_or_404(RuneInstance, pk=rune_id)
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        if request.POST:
+            messages.success(request, 'Deleted ' + str(rune))
+            rune.delete()
+
+            response_data = {
+                'code': 'success',
+            }
+        else:
+            form = DeleteRuneInstanceForm()
+            form.helper.form_action = reverse('herders:rune_delete', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
+            template = loader.get_template('herders/profile/runes/delete_form.html')
+
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'delete_rune_form': form}))
+            }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
 
 
 def bestiary(request):

@@ -94,7 +94,7 @@ class MonsterAdmin(admin.ModelAdmin):
 class MonsterSkillAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
     filter_vertical = ('skill_effect',)
-    search_fields = ['name', 'icon_filename']
+    search_fields = ['name', 'icon_filename', 'description']
     list_filter = ['slot', 'skill_effect', 'passive']
     save_as = True
 

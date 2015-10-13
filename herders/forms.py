@@ -467,9 +467,8 @@ class EditMonsterInstanceForm(ModelForm):
             Div(
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
                 FieldWithButtons(
-                    'level',
+                    Field('level', value=1, min=1, max=40),
                     StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
-                    value=1, min=1, max=40,
                 ),
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),

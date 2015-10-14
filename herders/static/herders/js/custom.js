@@ -130,19 +130,23 @@ monster_table.tablesorter({
 });
 
 //Get list of current filters and set buttons properly
-var current_filters = $.tablesorter.getFilters(monster_table);
+var current_filters;
 
-if (current_filters) {
-    filter_buttons.each(function () {
-        var filter_col = $(this).data('filter-column'),
-            filter_text = $(this).data('filter-text'),
-            filter_function = $(this).data('filter-function'),
-            mult = current_filters[filter_col].split(filter_function);
+if (monster_table.length > 0) {
+    current_filters = $.tablesorter.getFilters(monster_table);
 
-        if ($.inArray(String(filter_text), mult) > -1) {
-            $(this).toggleClass(active_filter_class, true);
-        }
-    });
+    if (current_filters) {
+        filter_buttons.each(function () {
+            var filter_col = $(this).data('filter-column'),
+                filter_text = $(this).data('filter-text'),
+                filter_function = $(this).data('filter-function'),
+                mult = current_filters[filter_col].split(filter_function);
+
+            if ($.inArray(String(filter_text), mult) > -1) {
+                $(this).toggleClass(active_filter_class, true);
+            }
+        });
+    }
 }
 
 //Toggle text in filter field when button is pressed

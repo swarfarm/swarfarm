@@ -36,7 +36,6 @@ page_content.on('submit', '#EditTeamForm', function() {
     return false;
 });
 
-$(window).hashchange(load_new_team());
 $(document).ready(function() {
     update_team_list();
     load_new_team();

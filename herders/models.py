@@ -1306,16 +1306,14 @@ class RuneInstance(models.Model):
             })
 
         # Check that monster rune is assigned to does not already have rune in that slot
-        if self.assigned_to is not None and self.assigned_to.runeinstance_set.filter(slot=self.slot).count() > 0:
-            raise ValidationError({
-                'assigned_to': ValidationError(
-                    'Monster already has rune in slot %(slot)s. Either pick a different slot or do not assign to the monster yet.',
-                    params={
-                        'slot': self.slot,
-                    },
-                    code='slot_occupied'
-                )
-            })
+        if self.assigned_to is not None and self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0:
+            raise ValidationError(
+                'Monster already has rune in slot %(slot)s. Either pick a different slot or do not assign to the monster yet.',
+                params={
+                    'slot': self.slot,
+                },
+                code='slot_occupied'
+            )
 
         super(RuneInstance, self).clean()
 
@@ -1332,6 +1330,17 @@ class RuneInstance(models.Model):
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
         self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
+
+        if self.innate_stat is None:
+            self.innate_stat_value = None
+        if self.substat_1 is None:
+            self.substat_1_value = None
+        if self.substat_2 is None:
+            self.substat_2_value = None
+        if self.substat_3 is None:
+            self.substat_3_value = None
+        if self.substat_4 is None:
+            self.substat_4_value = None
 
         super(RuneInstance, self).save(*args, **kwargs)
 

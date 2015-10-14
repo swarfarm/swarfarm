@@ -428,6 +428,15 @@ def monster_instance_view(request, profile_name, instance_id):
         instance.skill_4_level,
     ]
 
+    instance_runes = [
+        instance.runeinstance_set.filter(slot=1).first(),
+        instance.runeinstance_set.filter(slot=2).first(),
+        instance.runeinstance_set.filter(slot=3).first(),
+        instance.runeinstance_set.filter(slot=4).first(),
+        instance.runeinstance_set.filter(slot=5).first(),
+        instance.runeinstance_set.filter(slot=6).first(),
+    ]
+
     for idx in range(0, instance.monster.skills.count()):
         skills.append({
             'skill': instance.monster.skills.all()[idx],
@@ -440,6 +449,7 @@ def monster_instance_view(request, profile_name, instance_id):
         'return_path': return_path,
         'instance': instance,
         'skills': skills,
+        'runes': instance_runes,
         'is_owner': is_owner,
         'view': 'profile',
     }
@@ -1330,15 +1340,16 @@ def rune_edit(request, profile_name, rune_id):
 
     if is_owner:
         if request.POST and form.is_valid():
-            print 'yay rune edit success'
             form.save()
+
+            form = AddRuneInstanceForm(auto_id='edit_id_%s')
+            form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
 
             response_data = {
                 'code': 'success',
                 'html': template.render(RequestContext(request, {'add_rune_form': form}))
             }
         else:
-            print 'either not post or invalid form'
             # Return form filled in and errors shown
             response_data = {
                 'code': 'error',

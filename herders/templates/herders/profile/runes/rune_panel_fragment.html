@@ -23,6 +23,6 @@
             {% if rune.substat_3 %}<li>{{ rune.get_substat_3_rune_display }} +{{ rune.substat_3_value }}{% if rune.substat_3 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
             {% if rune.substat_4 %}<li>{{ rune.get_substat_4_rune_display }} +{{ rune.substat_4_value }}{% if rune.substat_4 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
         </ul>
-        {% if rune.assigned_to %}<span>Assigned to <a href="{% url 'herders:monster_view' profile_name=profile_name monster_id=rune.assigned_to.pk.hex %}">{{ rune.assigned_to }}</a></span>{% endif %}
+        {% if rune.assigned_to %}<span>Assigned to <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}">{{ rune.assigned_to }}</a></span>{% endif %}
     </div>
 </div>

@@ -22,7 +22,7 @@ def total_awakening_cost(ingredients):
         'light': {},
     })
 
-    # Method 1: Assume user wants to awaken the highest star/level ingredient
+    # Assume user wants to awaken the highest star/level ingredient
     for ingredient in ingredients:
         base_monster = ingredient['instance'].awakens_from
 
@@ -30,6 +30,7 @@ def total_awakening_cost(ingredients):
         for owned in ingredient['owned']:
             if not owned.ignore_for_fusion:
                 base_monster = owned.monster
+                break
 
         # If the best ingredient monster is not awakened, total up it's awakening cost
         if not base_monster.is_awakened:

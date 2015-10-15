@@ -15,6 +15,7 @@
                 <a href="{% url 'feedback:index' %}" class="btn btn-default">All Feedback</a>
                 {% else %}
                 <a href="{% url 'feedback:myissue_list' %}" class="btn btn-default">My Feedback</a>
+                <a href="{% url 'feedback:allissue_list' %}" class="btn btn-default">Include Closed Items</a>
                 {% endif %}
                 <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filters" aria-expanded="false" aria-controls="filters">
                     Filters

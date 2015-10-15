@@ -8,52 +8,6 @@ function update_rune_inventory() {
     rune_inventory.load('/profile/' + PROFILE_NAME + '/runes/inventory');
 }
 
-
-$('body').on('submit', '.ajax-form', function() {
-    //Handle add ajax form submit
-    var $form = $(this);
-    $.ajax({
-        type: $form.attr('method'),
-        url: $form.attr('action'),
-        data: $form.serialize()
-    }).done(function(data) {
-        if (data.code === 'success') {
-            $('.modal.in').modal('hide');
-            update_rune_inventory();
-        }
-        $form.replaceWith(data.html);
-        $('.rating').rating();
-    });
-
-    return false;  //cancel default on submit action.
-}).on('show.bs.modal', '#editRuneModal', function(event) {
-    //Pull in edit form on modal show
-    var rune_id = $(event.relatedTarget).data('rune-id');
-
-    $.ajax({
-        type: 'get',
-        url: '/profile/' + PROFILE_NAME + '/runes/edit/' + rune_id + '/'
-    }).done(function(data) {
-        $('#editRuneForm').empty().append(data.html);
-        update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
-        $('.rating').rating();
-    });
-}).on('show.bs.modal', '#deleteRuneModal', function(event) {
-    //Pull in delete confirmation form on modal show
-    var rune_id = $(event.relatedTarget).data('rune-id');
-
-    $.ajax({
-        type: 'get',
-        url: '/profile/' + PROFILE_NAME + '/runes/delete/' + rune_id + '/'
-    }).done(function(data) {
-        $('#deleteRuneConfirmation').empty().append(data.html);
-    });
-}).on('change', '#edit_id_slot', function() {
-    update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
-}).on('change', '#id_slot', function() {
-    update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
-});
-
 function update_main_slot_options(slot, main_stat_input) {
     $.ajax({
         type: 'get',
@@ -81,3 +35,78 @@ function update_main_slot_options(slot, main_stat_input) {
         }
     });
 }
+
+$('body').on('submit', '.ajax-form', function() {
+    //Handle add ajax form submit
+    var $form = $(this);
+    $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+    }).done(function(data) {
+        if (data.code === 'success') {
+            $('.modal.in').modal('hide');
+            update_rune_inventory();
+        }
+        $form.replaceWith(data.html);
+        $('.rating').rating();
+    });
+
+    return false;  //cancel default on submit action.
+}).on('click', '.rune-add', function() {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/runes/add/'
+    }).done(function(data) {
+        bootbox.dialog({
+            title: "Add rune",
+            message: data.html
+        });
+
+        update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+        $('.rating').rating();
+    });
+}).on('click', '.rune-edit', function() {
+    //Pull in edit form on modal show
+    var rune_id = $(this).data('rune-id');
+
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/runes/edit/' + rune_id + '/'
+    }).done(function(data) {
+        bootbox.dialog({
+            title: "Edit rune",
+            message: data.html
+        });
+        update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
+        $('.rating').rating();
+    });
+}).on('click', '.rune-delete', function() {
+    //Pull in delete confirmation form on modal show
+    var rune_id = $(this).data('rune-id');
+
+    bootbox.confirm({
+        size: 'small',
+        message: 'Are you sure?',
+        callback: function(result) {
+            if (result) {
+                $.ajax({
+                    type: 'post',
+                    url: '/profile/' + PROFILE_NAME + '/runes/delete/' + rune_id + '/',
+                    data: {
+                        "delete": "delete",
+                        "rune_id": rune_id
+                    }
+                }).done(function () {
+                    update_rune_inventory();
+                }).fail(function () {
+                    alert("Something went wrong! Server admin has been notified.");
+                });
+            }
+        }
+    });
+}).on('change', '#edit_id_slot', function() {
+    update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
+}).on('change', '#id_slot', function() {
+    update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+});

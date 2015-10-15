@@ -1,10 +1,10 @@
 <div class="panel panel-default rune-panel">
     <div class="panel-heading condensed">
         <div class="btn-group pull-right">
-            <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#editRuneModal" data-rune-id="{{ rune.pk.hex }}">
+            <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
                 <span class="glyphicon glyphicon-pencil"></span>
             </button>
-            <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#deleteRuneModal" data-rune-id="{{ rune.pk.hex }}">
+            <button class="btn btn-default btn-xs rune-delete" data-rune-id="{{ rune.pk.hex }}">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </button>
         </div>

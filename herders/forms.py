@@ -712,7 +712,7 @@ class AddRuneInstanceForm(ModelForm):
                     css_class='row',
                 ),
                 Field('assigned_to'),
-                css_class='modal-body'
+                #css_class='modal-body'
             ),
             Div(
                 FormActions(
@@ -737,16 +737,3 @@ class AddRuneInstanceForm(ModelForm):
         widgets = {
             'assigned_to': autocomplete_light.ChoiceWidget('MonsterInstanceAutocomplete'),
         }
-
-
-class DeleteRuneInstanceForm(forms.Form):
-    helper = FormHelper()
-    helper.form_method = 'post'
-    helper.form_class = 'ajax-form'
-    # helper.form_action must be set in view
-    helper.layout = Layout(
-        FormActions(
-            Submit('delete', 'Delete'),
-            HTML("""<button type="button" class="btn btn-default pull-right" data-dismiss="modal" aria-label="Close">Cancel</button>"""),
-        )
-    )

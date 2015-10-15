@@ -6,6 +6,14 @@ $(function () {
     });
 });
 
+//Defaults for the bootboxes
+bootbox.setDefaults({
+    backdrop: true,
+    closeButton: true,
+    animate: true,
+    onEscape: true
+});
+
 //Custom popovers for loading AJAX content
 $('*[data-instance-id]').hover(function(event) {
     if (event.type === 'mouseenter') {
@@ -94,12 +102,9 @@ function SetMaxSkillLevel() {
 $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('click', '*[data-skill-field]', SetMaxSkillLevel)
     .on('selectChoice', '*[data-set-stars]', SetStars)
-    .on('click', '.closeall', function() {
-        $('.panel-collapse.in').collapse('hide');
-    })
-    .on('click', '.openall', function() {
-        $('.panel-collapse:not(".in")').collapse('show');
-    });
+    .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
+    .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); });
+
 
 //Bulk add
 $('#bulkAddFormset').formset({

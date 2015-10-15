@@ -29,11 +29,16 @@ class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
         mode = self.kwargs.get('mode', None)
         if mode == 'mine':
             return Issue.objects.filter(user=self.request.user)
-        else:
+        elif mode == 'all':
             if self.request.user.is_superuser:
                 return Issue.objects.all()
             else:
                 return Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
+        else:
+            if self.request.user.is_superuser:
+                return Issue.objects.filter(status__lt=Issue.STATUS_RESOLVED)
+            else:
+                return Issue.objects.filter(status__lt=Issue.STATUS_RESOLVED).filter(Q(user=self.request.user) | Q(public=True))
 
     def get_context_data(self, **kwargs):
         context = super(IssueList, self).get_context_data(**kwargs)

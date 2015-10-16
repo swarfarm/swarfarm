@@ -3855,7 +3855,6 @@
 .sprite-frankenstein_water_awakened,
 .sprite-frankenstein_wind,
 .sprite-frankenstein_wind_awakened,
-.sprite-jack-o-lantern_awakened,
 .sprite-jack-o-lantern_dark,
 .sprite-jack-o-lantern_dark_awakened,
 .sprite-jack-o-lantern_fire,
@@ -3863,6 +3862,7 @@
 .sprite-jack-o-lantern_light,
 .sprite-jack-o-lantern_light_awakened,
 .sprite-jack-o-lantern_water,
+.sprite-jack-o-lantern_water_awakened,
 .sprite-jack-o-lantern_wind,
 .sprite-jack-o-lantern_wind_awakened {
     background-image: url(/static/herders/images/monsters/sprite/20.png);
@@ -3872,6 +3872,10 @@
 
 .sprite-frakenstein_water {
     background-position: 0 0;
+}
+
+.sprite-jack-o-lantern_water_awakened {
+    background-position: -100px -100px;
 }
 
 .sprite-frankenstein_dark {
@@ -3908,10 +3912,6 @@
 
 .sprite-frankenstein_wind_awakened {
     background-position: -50px -100px;
-}
-
-.sprite-jack-o-lantern_awakened {
-    background-position: -100px -100px;
 }
 
 .sprite-jack-o-lantern_dark {

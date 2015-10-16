@@ -305,6 +305,7 @@ class Monster(models.Model):
             awakens_to = self.awakens_to
             awakens_to.awakens_from = self
             awakens_to.save()
+
     class Meta:
         ordering = ['name', 'element']
 

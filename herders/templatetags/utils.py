@@ -25,4 +25,4 @@ def multiply(value, arg):
 
 @register.filter
 def remove_extension(string):
-    return string.replace('.png', '')
+    return string.replace('.png', '').replace("'", "")

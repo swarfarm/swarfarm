@@ -3,10 +3,13 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="rune-image pull-left">
-    <div class="rune-bg {{ quality|lower }}">
-    <div class="rune slot{{ slot }}"><div class="rune-symbol {{ type|lower }}"></div></div>
-    {% for x in stars|get_range %}
-    <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
-    {% endfor %}
+    <div class="rune-bg {{ rune.get_quality_display|lower }}">
+        <div class="rune slot{{ rune.slot }}">
+            <div class="rune-symbol {{ rune.get_type_display|lower }}"></div>
+        </div>
+        {% for x in rune.stars|get_range %}
+        <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
+        {% endfor %}
+        <span class="image-plus image-plus-right">+{{ rune.level }}</span>
     </div>
 </div>

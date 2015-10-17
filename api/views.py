@@ -107,9 +107,27 @@ class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = RuneInstance.objects.all()
+    queryset = RuneInstance.objects.none()
     serializer_class = RuneInstanceSerializer
     pagination_class = PersonalCollectionSetPagination
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
+
+    def get_queryset(self):
+        # We do not want to allow retrieving all instances
+        instance_id = self.kwargs.get('pk', None)
+
+        if instance_id:
+            return RuneInstance.objects.filter(pk=instance_id)
+        else:
+            return RuneInstance.objects.none()
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super(RuneInstanceViewSet, self).retrieve(request, *args, **kwargs)
+
+        if request.accepted_renderer.format == 'html':
+            # print response.data
+            return Response({'rune': response.data}, template_name='api/rune_instance/popover.html')
+        return response
 
 
 class TeamGroupViewSet(viewsets.ReadOnlyModelViewSet):

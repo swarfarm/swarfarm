@@ -20,7 +20,7 @@
 }
 
 .rune-panel {
-    width: 100%;
+    min-width: 250px;
     height: auto;
     position: relative;
 }

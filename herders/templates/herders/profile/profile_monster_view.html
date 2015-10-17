@@ -185,15 +185,24 @@
                 <div class="panel-heading">
                     <p class="panel-title">Runes</p>
                 </div>
-                <div class="list-group">
+                <table class="table table-condensed">
+                    <tbody>
                     {% for rune in runes %}
-                    <div class="list-group-item">
-                        {% include 'herders/profile/runes/rune_image_fragment.html' with type=rune.get_type_display stars=rune.stars quality=rune.get_quality_display slot=rune.slot only %}
-                        {{ rune }}
-                        <div class="clearfix"></div>
-                    </div>
+                    <tr {% if rune %}data-rune-id="{{ rune.pk.hex }}"{% endif %}>
+                        <td style="vertical-align:middle">{{ forloop.counter }}</td>
+                        <td>
+                            {% if rune %}
+                            {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
+                            <ul class="list-unstyled">
+                                <li>{{ rune }}</li>
+                                <li>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</li>
+                            </ul>
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% endfor %}
-                </div>
+                    </tbody>
+                </table>
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">

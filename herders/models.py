@@ -1346,12 +1346,7 @@ class RuneInstance(models.Model):
         super(RuneInstance, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        if self.level > 0:
-            levelstr = '+' + str(self.level) + ' '
-        else:
-            levelstr = ''
-
-        return levelstr + self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune (' + str(self.slot) + ')'
+        return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
 
     class Meta:
         ordering = ['type', 'slot', 'level', 'quality']

@@ -1,0 +1,62 @@
+{% load staticfiles %}
+{% load utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="bestiary-portraits">
+    <div class="list-group">
+        <div class="list-group-item">
+            <div class="monster-box">
+                <span>
+                    <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
+                    {% for x in instance.stars|get_range %}
+                        {% if instance.monster.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% elif base_monster.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
+                <span class="image-plus image-plus-right">{{ instance.level }}</span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="list-group-item">
+            <h4 class="list-group-item-heading">Element</h4>
+            <img height="30px" width="30px" src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" alt="{{ instance.monster.element }}" />
+        </div>
+        <div class="list-group-item">
+            <h4 class="list-group-item-heading">Type</h4>
+            {{ instance.monster.get_archetype_display }}
+        </div>
+        <div class="list-group-item">
+            <h4 class="list-group-item-heading">Skills to Max</h4>
+            {% if instance.skill_ups_to_max > 0 %}
+            <div class="monster-image">
+                <div class="sprite sprite-devilmon_dark">
+                    <span class="image-plus image-plus-right">{{ instance.skill_ups_to_max }}</span>
+                </div>
+            </div>
+            {% else %}
+            <p class="list-group-item-text">None!</p>
+            {% endif %}
+        </div>
+        {% if instance.fodder or instance.in_storage or instance.monster.fusion_food %}
+        <div class="list-group-item">
+            <h4 class="list-group-item-heading">Flags</h4>
+            <h4 class="list-group-item-text">
+                {% if instance.fodder %}<span class="fa fa-birthday-cake" aria-hidden="true" data-container="body" data-toggle="tooltip" data-placement="top" title="Marked as food"></span>{% endif %}
+                {% if instance.in_storage %}<span class="fa fa-bed" aria-hidden="true" data-container="body" data-toggle="tooltip" data-placement="top" title="In Monster Storage"></span>{% endif %}
+                {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
+                    <img height="20px" src="{{ img_url_prefix }}icons/fusion.png" data-container="body" data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/>
+                {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
+                    <img height="20px" src="{{ img_url_prefix }}icons/fusion_ignored.png" data-container="body" data-toggle="tooltip" data-placement="top" title="Ignored for monster fusion"/>
+                {% endif %}
+            </h4>
+        </div>
+        {% endif %}
+    </div>
+</div>

@@ -37,7 +37,7 @@ $('*[data-instance-id]').hover(function(event) {
     }
 });
 
-$('*[data-rune-id]').hover(function(event) {
+$('tr[data-rune-id]').hover(function(event) {
     if (event.type === 'mouseenter') {
         var el = $(this);
         var url = API_URL + 'runes/' + el.data('rune-id') + '.html';
@@ -125,8 +125,7 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('click', '*[data-skill-field]', SetMaxSkillLevel)
     .on('selectChoice', '*[data-set-stars]', SetStars)
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
-    .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); });
-
+    .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
 
 //Bulk add
 $('#bulkAddFormset').formset({
@@ -221,3 +220,32 @@ $('button.reset').click(function() {
     $('button.filter').toggleClass(active_filter_class, false);
     $('#monster_table').trigger('saveSortReset').trigger("sortReset");
 });
+
+//Rune form common functions
+function update_main_slot_options(slot, main_stat_input) {
+    $.ajax({
+        type: 'get',
+        url: API_URL + 'runes/stats_by_slot/' + slot.toString() + '/'
+    }).done(function (response) {
+        if (response.code === 'success') {
+            // Record the current stat to see if we can pick it in the new list
+            var current_stat = main_stat_input.val();
+
+            main_stat_input.empty();
+            $.each(response.data, function (val, text) {
+                main_stat_input.append(
+                    $('<option></option>').val(val).html(text)
+                );
+            });
+
+            var exists = 0 != main_stat_input.find('option[value='+current_stat+']').length;
+            if (exists) {
+                main_stat_input.val(current_stat);
+            }
+            else {
+                for(var key in response.data) break;
+                main_stat_input.val(key);
+            }
+        }
+    });
+}

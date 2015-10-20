@@ -735,6 +735,13 @@ div.monster-bulk-monster {
     right: 5px;
 }
 
+button.rune-assign-choice {
+    text-align: left;
+    margin: 0;
+    padding: 5px;
+    width: 280px;
+}
+
 .dropdown-submenu{position:relative;}
 .dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
 .dropdown-submenu:hover>.dropdown-menu{display:block;}

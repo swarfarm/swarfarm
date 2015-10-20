@@ -12,5 +12,5 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'type': ['exact'],
             'level': ['gte'],
             'stars': ['gte'],
+            'slot': ['exact'],
         }
-        order_by = ['type', '-stars', '-level']

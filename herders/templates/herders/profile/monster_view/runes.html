@@ -5,11 +5,11 @@
     <table class="table table-condensed">
         <tbody>
         {% for rune in runes %}
-        <tr {% if rune %}data-rune-id="{{ rune.pk.hex }}"{% endif %}>
+        <tr {% if rune %}class="rune-popover" data-rune-id="{{ rune.pk.hex }}"{% endif %}>
             <td style="vertical-align:middle">{{ forloop.counter }}</td>
             <td>
                 {% if rune %}
-                <div class="btn-group pull-right">
+                <div class="btn-group pull-right ">
                     <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
                         <span class="glyphicon glyphicon-pencil"></span>
                     </button>

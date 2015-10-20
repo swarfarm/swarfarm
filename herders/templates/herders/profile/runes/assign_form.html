@@ -1,12 +1,4 @@
-{% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
-{% block content %}
-<div class="modal-body">
-    {% crispy raw_form %}
-
-    {% for obj in filter %}
-        {{ obj }} - {{ obj.stars }}* Lv. {{ obj.level }} - Slot {{ obj.slot }}<br />
-    {% endfor %}
-</div>
-{% endblock %}
+{% crispy form %}
+{% include 'herders/profile/runes/assign_results.html' %}

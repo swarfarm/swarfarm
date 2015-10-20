@@ -1432,15 +1432,64 @@ def rune_edit(request, profile_name, rune_id):
 
 @login_required
 def rune_assign(request, profile_name, instance_id, slot=None):
-    rune_queryset = RuneInstance.objects.filter(owner=request.user.summoner)
+    rune_queryset = RuneInstance.objects.filter(owner=request.user.summoner, assigned_to=None)
+    filter_form = AssignRuneForm(request.POST or None, initial={'slot': slot})
+    filter_form.helper.form_action = reverse('herders:rune_assign', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
     if slot:
         rune_queryset = rune_queryset.filter(slot=slot)
 
-    rune_filter = RuneInstanceFilter(request.GET, queryset=rune_queryset)
-    filter_form = AssignRuneForm(request.GET or None)
+    rune_filter = RuneInstanceFilter(request.POST, queryset=rune_queryset)
 
-    return render(request, 'herders/profile/runes/assign_form.html', {'filter': rune_filter, 'raw_form': filter_form})
+    if request.method == 'POST':
+        template = loader.get_template('herders/profile/runes/assign_results.html')
+
+        response_data = {
+            'code': 'results',
+            'html': template.render(RequestContext(request, {
+                'filter': rune_filter,
+                'profile_name': profile_name,
+                'instance_id': instance_id,
+            }))
+        }
+    else:
+        template = loader.get_template('herders/profile/runes/assign_form.html')
+
+        response_data = {
+            'code': 'success',
+            'html': template.render(RequestContext(request, {
+                'filter': rune_filter,
+                'form': filter_form,
+                'profile_name': profile_name,
+                'instance_id': instance_id,
+            }))
+        }
+
+    return JsonResponse(response_data)
+
+
+@login_required
+def rune_assign_choice(request, profile_name, instance_id, rune_id):
+    monster = get_object_or_404(MonsterInstance, pk=instance_id)
+    rune = get_object_or_404(RuneInstance, pk=rune_id)
+
+    if rune.assigned_to is not None:
+        # Warn about removing from other monster
+        pass
+
+    # Check for existing rune.
+    existing_runes = monster.runeinstance_set.filter(slot=rune.slot)
+    for existing_rune in existing_runes:
+        existing_rune.assigned_to = None
+
+    rune.assigned_to = monster
+    rune.save()
+
+    response_data = {
+        'code': 'success',
+    }
+
+    return JsonResponse(response_data)
 
 
 @login_required

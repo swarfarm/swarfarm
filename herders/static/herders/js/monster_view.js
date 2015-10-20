@@ -23,16 +23,34 @@ function AssignRune(slot) {
     })
 }
 
-function AssignExistingRune() {
+function AssignExistingRune(slot) {
     $.ajax({
         type: 'get',
-        url: '/profile/' + PROFILE_NAME + '/runes/assign/' + INSTANCE_ID + '/'
+        url: '/profile/' + PROFILE_NAME + '/runes/assign/' + INSTANCE_ID + '/' + slot.toString() + '/'
     }).done(function (response) {
        bootbox.dialog({
             title: "Assign Rune",
             message: response.html
         });
+        $('.rating').rating();
     });
+}
+
+function AssignRuneChoice(rune_id, monster_id) {
+
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/runes/assign/' + monster_id + '/' + rune_id + '/'
+    }).done(function (response) {
+        if (response.code === 'success') {
+            $('.modal.in').modal('hide');
+            UpdateRunes();
+            UpdateStats();
+        }
+        else {
+            alert('Something went wrong assigning the rune :(');
+        }
+    })
 }
 
 function CreateNewRune(slot) {
@@ -112,7 +130,8 @@ function EditRune(rune_id) {
 
 // Page update functions
 function UpdateRunes() {
-    $('#monster-view-runes').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/runes/')
+    $('#monster-view-runes').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/runes/');
+    $('.popover').remove();
 }
 
 function UpdateStats() {
@@ -141,6 +160,24 @@ $('body')
     .on('click', '.rune-edit', function() { EditRune($(this).data('rune-id')) })
     .on('click', '.rune-unassign', function() { UnassignRune($(this).data('rune-id')) })
     .on('click', '.rune-assign', function() { AssignRune($(this).data('rune-slot')) })
+    .on('click', '.rune-assign-choice', function() { AssignRuneChoice($(this).data('rune-id'), $(this).data('instance-id')) })
+    .on('submit', '#AssignRuneForm', function() {
+        var $form = $(this);
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: $form.serialize()
+        }).done(function (data) {
+            if (data.code === 'results') {
+                $('#assign_rune_results').replaceWith(data.html)
+            }
+            else {
+                alert('Unable to retrieve search results :(')
+            }
+        });
+
+        return false;  //cancel default on submit action.
+    })
     .on('submit', '.ajax-form', function() {
         //Handle add ajax form submit
         var $form = $(this);

@@ -739,15 +739,34 @@ class AddRuneInstanceForm(ModelForm):
 
 
 class AssignRuneForm(forms.Form):
-    type = forms.MultipleChoiceField(choices=RuneInstance.TYPE_CHOICES, widget=forms.CheckboxSelectMultiple, required=False)
-    level__gte = forms.IntegerField(min_value=0, max_value=15, required=False, initial=1)
-    stars__gte = forms.IntegerField(required=False)
+    type = forms.MultipleChoiceField(
+        choices=RuneInstance.TYPE_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    level__gte = forms.IntegerField(
+        label="Minimum Level",
+        min_value=0,
+        initial=1,
+        max_value=15,
+        required=False,
+    )
+    stars__gte = forms.IntegerField(
+        label="Minimum Stars",
+        required=False
+    )
+    slot = forms.IntegerField(
+        min_value=1,
+        max_value=6,
+        required=False
+    )
 
     helper = FormHelper()
-    helper.form_method = 'get'
+    helper.form_method = 'post'
     helper.form_id = 'AssignRuneForm'
     helper.layout = Layout(
         Field('type'),
+        Field('slot', type='hidden'),
         Field('level__gte'),
         Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
         Submit('submit', 'Submit'),

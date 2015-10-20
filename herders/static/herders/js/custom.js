@@ -37,27 +37,6 @@ $('*[data-instance-id]').hover(function(event) {
     }
 });
 
-$('tr[data-rune-id]').hover(function(event) {
-    if (event.type === 'mouseenter') {
-        var el = $(this);
-        var url = API_URL + 'runes/' + el.data('rune-id') + '.html';
-        $.get(url, function (d) {
-            el.popover({
-                trigger: 'manual',
-                content: d,
-                html: true,
-                container: 'body',
-                template: '<div class="rune-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
-            });
-
-            if (el.is(":hover")) {
-                el.popover('show');
-            }
-        });
-    } else {
-        $(this).popover('hide');
-    }
-});
 
 //Modal management scripts
 $('#addMonsterModal').on('shown.bs.modal', function () {
@@ -126,6 +105,34 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('selectChoice', '*[data-set-stars]', SetStars)
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
     .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
+    .on('mouseenter mouseleave', '.rune-popover', function(event) {
+        if (event.type === 'mouseenter') {
+            var el = $(this);
+            var rune_id = el.data('rune-id');
+            var popover_loc = el.data('placement');
+            if (!popover_loc) { popover_loc = 'right'; }
+
+            if (rune_id.length > 0) {
+                var url = API_URL + 'runes/' + el.data('rune-id') + '.html';
+                $.get(url, function (d) {
+                    el.popover({
+                        trigger: 'manual',
+                        content: d,
+                        placement: popover_loc,
+                        html: true,
+                        container: 'body',
+                        template: '<div class="rune-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                    });
+
+                    if (el.is(":hover")) {
+                        el.popover('show');
+                    }
+                });
+            }
+        } else {
+            $(this).popover('hide');
+        }
+    });
 
 //Bulk add
 $('#bulkAddFormset').formset({

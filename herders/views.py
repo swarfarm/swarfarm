@@ -1430,8 +1430,36 @@ def rune_edit(request, profile_name, rune_id):
 
 
 @login_required
-def rune_assign(request, profile_name):
-    pass
+def rune_assign(request, profile_name, instance_id):
+    monster = get_object_or_404(MonsterInstance, pk=instance_id)
+    form = PickRuneInstanceForm(request.POST or None)
+    form.helper.form_action = reverse('herders:rune_assign', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
+    template = loader.get_template('herders/profile/runes/assign_form.html')
+
+    if request.method == 'POST':
+        if form.is_valid():
+            rune = form.cleaned_data['rune']
+            rune.assigned_to = monster
+            rune.save()
+
+            print rune
+
+            response_data = {
+                'code': 'success',
+            }
+        else:
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'assign_rune_form': form}))
+            }
+    else:
+        # Return form filled in and errors shown
+        response_data = {
+            'code': 'error',
+            'html': template.render(RequestContext(request, {'assign_rune_form': form}))
+        }
+
+    return JsonResponse(response_data)
 
 
 @login_required

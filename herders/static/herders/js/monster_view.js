@@ -24,7 +24,15 @@ function AssignRune(slot) {
 }
 
 function AssignExistingRune() {
-    alert("Assigning an existing rune!")
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/runes/assign/' + INSTANCE_ID + '/'
+    }).done(function (response) {
+       bootbox.dialog({
+            title: "Assign Rune",
+            message: response.html
+        });
+    });
 }
 
 function CreateNewRune(slot) {

@@ -16,6 +16,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext
 
 from .forms import *
+from .filters import *
 from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
 from .fusion import essences_missing, total_awakening_cost
 
@@ -1430,36 +1431,16 @@ def rune_edit(request, profile_name, rune_id):
 
 
 @login_required
-def rune_assign(request, profile_name, instance_id):
-    monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    form = PickRuneInstanceForm(request.POST or None)
-    form.helper.form_action = reverse('herders:rune_assign', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
-    template = loader.get_template('herders/profile/runes/assign_form.html')
+def rune_assign(request, profile_name, instance_id, slot=None):
+    rune_queryset = RuneInstance.objects.filter(owner=request.user.summoner)
 
-    if request.method == 'POST':
-        if form.is_valid():
-            rune = form.cleaned_data['rune']
-            rune.assigned_to = monster
-            rune.save()
+    if slot:
+        rune_queryset = rune_queryset.filter(slot=slot)
 
-            print rune
+    rune_filter = RuneInstanceFilter(request.GET, queryset=rune_queryset)
+    filter_form = AssignRuneForm(request.GET or None)
 
-            response_data = {
-                'code': 'success',
-            }
-        else:
-            response_data = {
-                'code': 'error',
-                'html': template.render(RequestContext(request, {'assign_rune_form': form}))
-            }
-    else:
-        # Return form filled in and errors shown
-        response_data = {
-            'code': 'error',
-            'html': template.render(RequestContext(request, {'assign_rune_form': form}))
-        }
-
-    return JsonResponse(response_data)
+    return render(request, 'herders/profile/runes/assign_form.html', {'filter': rune_filter, 'raw_form': filter_form})
 
 
 @login_required
@@ -1469,7 +1450,6 @@ def rune_unassign(request, profile_name, rune_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner and request.method == 'POST':
-        monster = rune.assigned_to
         rune.assigned_to = None
         rune.save()
 

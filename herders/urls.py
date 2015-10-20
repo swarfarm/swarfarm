@@ -50,6 +50,7 @@ urlpatterns = [
             url(r'^delete/(?P<rune_id>[0-9a-f]{32})/$', views.rune_delete, name='rune_delete'),
             url(r'^unassign/(?P<rune_id>[0-9a-f]{32})/$', views.rune_unassign, name='rune_unassign'),
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/$', views.rune_assign, name='rune_assign'),
+            url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<slot>[0-9])/$', views.rune_assign, name='rune_assign_with_slot'),
             url(r'^inventory/$', views.rune_inventory, name='rune_inventory'),
             url(r'^list/$', views.rune_list, name='rune_list'),
         ])),

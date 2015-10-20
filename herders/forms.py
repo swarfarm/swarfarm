@@ -712,7 +712,6 @@ class AddRuneInstanceForm(ModelForm):
                     css_class='row',
                 ),
                 Field('assigned_to'),
-                #css_class='modal-body'
             ),
             Div(
                 FormActions(
@@ -737,3 +736,19 @@ class AddRuneInstanceForm(ModelForm):
         widgets = {
             'assigned_to': autocomplete_light.ChoiceWidget('MonsterInstanceAutocomplete'),
         }
+
+
+class AssignRuneForm(forms.Form):
+    type = forms.MultipleChoiceField(choices=RuneInstance.TYPE_CHOICES, widget=forms.CheckboxSelectMultiple, required=False)
+    level__gte = forms.IntegerField(min_value=0, max_value=15, required=False, initial=1)
+    stars__gte = forms.IntegerField(required=False)
+
+    helper = FormHelper()
+    helper.form_method = 'get'
+    helper.form_id = 'AssignRuneForm'
+    helper.layout = Layout(
+        Field('type'),
+        Field('level__gte'),
+        Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+        Submit('submit', 'Submit'),
+    )

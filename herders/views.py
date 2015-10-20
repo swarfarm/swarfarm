@@ -526,6 +526,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
 
     context = {
         'runes': instance_runes,
+        'instance': instance,
     }
 
     return render(request, 'herders/profile/monster_view/runes.html', context)

@@ -625,6 +625,22 @@ class MonsterInstance(models.Model):
 
         return skill_ups_remaining
 
+    def get_rune_set_bonuses(self):
+        from django.db.models import Count
+        rune_counts = self.runeinstance_set.values('type').order_by().annotate(count=Count('type'))
+        rune_bonuses = []
+
+        for rune_count in rune_counts:
+            type_name = RuneInstance.TYPE_CHOICES[rune_count['type'] - 1][1]
+            required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[rune_count['type']]
+            present = rune_count['count']
+            bonus_text = RuneInstance.RUNE_SET_BONUSES[rune_count['type']]
+
+            if present >= required:
+                rune_bonuses.extend([type_name + ' ' + bonus_text] * (present // required))
+
+        return rune_bonuses
+
     # Rune bonus calculations
     def rune_bonus_energy(self):
         rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENERGY).count()
@@ -1063,6 +1079,25 @@ class RuneInstance(models.Model):
     MAIN_STAT_RANGES[STAT_DEF] = MAIN_STAT_RANGES[STAT_ATK]
     MAIN_STAT_RANGES[STAT_DEF_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
     MAIN_STAT_RANGES[STAT_ACCURACY_PCT] = MAIN_STAT_RANGES[STAT_RESIST_PCT]
+
+    RUNE_SET_COUNT_REQUIREMENTS = {
+        TYPE_ENERGY: 2,
+        TYPE_FATAL: 4,
+        TYPE_BLADE: 2,
+        TYPE_RAGE: 4,
+        TYPE_SWIFT: 4,
+        TYPE_FOCUS: 2,
+        TYPE_GUARD: 2,
+        TYPE_ENDURE: 2,
+        TYPE_VIOLENT: 4,
+        TYPE_WILL: 2,
+        TYPE_NEMESIS: 2,
+        TYPE_SHIELD: 2,
+        TYPE_REVENGE: 2,
+        TYPE_DESPAIR: 4,
+        TYPE_VAMPIRE: 4,
+        TYPE_DESTROY: 2,
+    }
 
     RUNE_SET_BONUSES = {
         TYPE_ENERGY: '2 Set: HP +15%',

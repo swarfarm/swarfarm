@@ -148,7 +148,26 @@ function DeleteMonster(instance_id) {
     }
 }
 
+function AwakenMonster(instance_id) {
+    if (instance_id) {
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/monster/awaken/' + instance_id + '/'
+        }).done(function(result) {
+            bootbox.dialog({
+                title: 'Awaken Monster',
+                message: result.html
+            });
+            $('.rating').rating();
+        });
+    }
+}
+
 // Page update functions
+function UpdateSidebar() {
+    $('#monster-view-sidebar').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/sidebar/');
+}
+
 function UpdateRunes() {
     $('#monster-view-runes').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/runes/', function() {
         $('.popover').remove();
@@ -172,6 +191,7 @@ function UpdateNotes() {
 }
 
 function UpdateAll() {
+    UpdateSidebar();
     UpdateRunes();
     UpdateStats();
     UpdateSkills();
@@ -188,6 +208,7 @@ $('body')
     .on('click', '.rune-assign-choice', function() { AssignRuneChoice($(this).data('rune-id'), $(this).data('instance-id')) })
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
+    .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
     .on('click', '#addNewRune', function() { CreateNewRune($("#id_slot").val()) })
     .on('submit', '#AssignRuneForm', function() {
         var $form = $(this);

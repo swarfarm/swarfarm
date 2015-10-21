@@ -1,56 +1,37 @@
-{% extends 'herders/profile/profile_base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
+{% static 'herders/images/' as img_url_prefix %}
 
-{% block title %}Awaken {{ monster.monster.name|title }} - {{ block.super }}{% endblock title %}
-
-{% block profile %}
-    {% static 'herders/images/' as img_url_prefix %}
+{% with mats=instance.monster.get_awakening_materials %}
     <div>
-        <h2>
-            <img src="{{ img_url_prefix }}monsters/{{ monster.monster.image_filename }}" class="monster-thumb"/>
-            <img src="{{ img_url_prefix }}elements/{{ monster.monster.element }}.png" height="30" width="30"/>
-            <span>{{ monster.monster.name }}</span>
-            <span class="glyphicon glyphicon-arrow-right"></span>
-            <img src="{{ img_url_prefix }}monsters/{{ monster.monster.awakens_to.image_filename }}" class="monster-thumb"/>
-            <img src="{{ img_url_prefix }}elements/{{ monster.monster.element }}.png" height="30" width="30"/>
-            <span>{{ monster.monster.awakens_to.name }}</span>
-        </h2>
-    </div>
-
-    {% with mats=monster.monster.get_awakening_materials %}
-        <div>
-            <h3>Essences Required:</h3>
-            <div class="monster-awaken-materials">
-                {% for element,essences in mats.iteritems %}
-                    {% for size,count in essences.iteritems %}
-                        {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        </div>
-        <div>
-            <h3>Essences Available:</h3>
-            <div class="monster-awaken-materials">
-            {% for element, essences in available_essences.iteritems %}
-                {% for size, count in essences.iteritems %}
-                    <div>
-                        <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" style="
-                        {% if count.sufficient %}
-                            border: 5px solid green
-                        {% else %}
-                            border: 5px solid red
-                        {% endif %}
-                        "/>
-                        <span class="image-plus image-plus-right">{{ count.qty }}</span>
-                    </div>
+        <h3>Essences Required:</h3>
+        <div class="monster-awaken-materials">
+            {% for element,essences in mats.iteritems %}
+                {% for size,count in essences.iteritems %}
+                    {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
                 {% endfor %}
             {% endfor %}
-            </div>
         </div>
-    {% endwith %}
+    </div>
+    <div>
+        <h3>Essences Available:</h3>
+        <div class="monster-awaken-materials">
+        {% for element, essences in available_essences.iteritems %}
+            {% for size, count in essences.iteritems %}
+                <div>
+                    <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" style="
+                    {% if count.sufficient %}
+                        border: 5px solid green
+                    {% else %}
+                        border: 5px solid red
+                    {% endif %}
+                    "/>
+                    <span class="image-plus image-plus-right">{{ count.qty }}</span>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        </div>
+    </div>
+{% endwith %}
 
-    <br />
-
-    {% crispy awaken_monster_form %}
-{% endblock profile %}
+{% crispy awaken_form %}

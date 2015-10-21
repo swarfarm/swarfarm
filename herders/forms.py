@@ -512,7 +512,7 @@ class AwakenMonsterInstanceForm(forms.Form):
 
     helper = FormHelper()
     helper.form_method = 'post'
-    # helper.form_action must be set in view
+    helper.form_class = 'ajax-form'
     helper.layout = Layout(
         Div(
             Field('subtract_materials', css_class='checkbox', checked=''),

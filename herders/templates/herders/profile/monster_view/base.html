@@ -35,7 +35,7 @@
                         <span class="glyphicon glyphicon-arrow-up"></span> Power Up
                     </button>
                     {% if not instance.monster.is_awakened and instance.monster.can_awaken %}
-                    <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#awakenMonsterModal">
+                    <button type="button" class="btn btn-default navbar-btn monster-awaken" data-instance-id="{{ instance.pk.hex }}">
                         <span class="glyphicon glyphicon-star" style="color:purple"></span> Awaken
                     </button>
                     {% endif %}
@@ -59,55 +59,6 @@
 
     {# Form modals #}
     {% if is_owner and edit_form %}
-        {# Awaken monster modal #}
-        <div class="modal fade" id="awakenMonsterModal" tabindex="-1" role="dialog" aria-labelledby="modalAwakenMonsterTitle">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalAwakenMonsterTitle">Awaken {{ instance.monster }} to {{ instance.monster.awakens_to }}</h4>
-                    </div>
-                    <div class="modal-body">
-                        {% with mats=instance.monster.get_awakening_materials %}
-                            <div>
-                                <h3>Essences Required:</h3>
-                                <div class="monster-awaken-materials">
-                                    {% for element,essences in mats.iteritems %}
-                                        {% for size,count in essences.iteritems %}
-                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
-                                        {% endfor %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            <div>
-                                <h3>Essences Available:</h3>
-                                <div class="monster-awaken-materials">
-                                {% for element, essences in available_essences.iteritems %}
-                                    {% for size, count in essences.iteritems %}
-                                        <div>
-                                            <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" style="
-                                            {% if count.sufficient %}
-                                                border: 5px solid green
-                                            {% else %}
-                                                border: 5px solid red
-                                            {% endif %}
-                                            "/>
-                                            <span class="image-plus image-plus-right">{{ count.qty }}</span>
-                                        </div>
-                                    {% endfor %}
-                                {% endfor %}
-                                </div>
-                            </div>
-                        {% endwith %}
-                    </div>
-                    <div class="modal-body">
-                        {% crispy awaken_form %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
         {# Power-up monster modal #}
         <div class="modal fade" id="powerUpMonsterModal" tabindex="-1" role="dialog" aria-labelledby="modalPowerUpMonsterTitle" aria-hidden="true">
             <div class="modal-dialog">
@@ -143,22 +94,6 @@
                 </div>
             </div>
         </div>
-
-        {# Delete Monster Modal #}
-        <div class="modal fade" id="deleteMonsterModal" tabindex="-1" role="dialog" aria-labelledby="modalDeleteMonsterTitle" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalDeleteMonsterTitle">Delete {{ instance.monster }}?</h4>
-                    </div>
-                    <div class="modal-body">
-                        <a href="{% url 'herders:monster_instance_delete' profile_name=profile_name instance_id=instance.pk.hex %}?return_path={% url 'herders:profile_default' profile_name=profile_name %}" class="btn btn-danger"> Yes</a>
-                        <button class="btn btn-default pull-right" data-dismiss="modal" aria-label="Cancel">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     {% endif %}
 
     {# Monster data display #}
@@ -172,8 +107,7 @@
             <div id="monster-view-skills"></div>
         </div>
     </div>
-
-    {% include 'herders/profile/monster_view/side_info.html' with instance=instance only %}
+    <div class="bestiary-portraits"></div>
 
     <div class="clearfix"></div>
 {% endblock profile %}

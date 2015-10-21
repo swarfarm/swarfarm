@@ -308,34 +308,33 @@ def profile_storage(request, profile_name):
 
 @login_required()
 def monster_instance_add(request, profile_name):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     form = AddMonsterInstanceForm(request.POST or None)
+    form.helper.form_action = reverse('herders:monster_instance_add', kwargs={'profile_name': profile_name})
+    template = loader.get_template('herders/profile/profile_monster_add.html')
 
-    if form.is_valid() and request.method == 'POST':
-        # Create the monster instance
-        new_monster = form.save(commit=False)
-        new_monster.owner = request.user.summoner
-        new_monster.save()
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            # Create the monster instance
+            new_monster = form.save(commit=False)
+            new_monster.owner = request.user.summoner
+            new_monster.save()
 
-        messages.success(request, 'Added %s to your collection.' % new_monster)
-        return redirect(return_path)
+            response_data = {
+                'code': 'success'
+            }
+        else:
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'add_monster_form': form}))
+            }
+
+        return JsonResponse(response_data)
     else:
-        # Re-show same page but with form filled in and errors shown
-        context = {
-            'profile_name': profile_name,
-            'summoner': summoner,
-            'add_monster_form': form,
-            'return_path': return_path,
-            'is_owner': is_owner,
-            'view': 'profile',
-        }
-        return render(request, 'herders/profile/profile_monster_add.html', context)
+        return HttpResponseForbidden()
 
 
 @login_required()
@@ -589,14 +588,11 @@ def monster_instance_view_info(request, profile_name, instance_id):
 
 @login_required()
 def monster_instance_edit(request, profile_name, instance_id):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     instance = get_object_or_404(MonsterInstance, pk=instance_id)
+    template = loader.get_template('herders/profile/profile_monster_edit.html')
 
     # Reconcile skill level with actual skill from base monster
     skills = []
@@ -614,7 +610,7 @@ def monster_instance_edit(request, profile_name, instance_id):
         })
 
     form = EditMonsterInstanceForm(request.POST or None, instance=instance)
-    form.helper.form_action = request.path + '?next=' + return_path
+    form.helper.form_action = request.path
     if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
         form.helper['skill_1_level'].wrap(
             FieldWithButtons,
@@ -661,28 +657,23 @@ def monster_instance_edit(request, profile_name, instance_id):
     else:
         form.helper['skill_4_level'].wrap(Div, css_class="hidden")
 
-    context = {
-        'profile_name': request.user.username,
-        'summoner': summoner,
-        'return_path': return_path,
-        'monster': instance,
-        'is_owner': is_owner,
-        'edit_monster_form': form,
-        'view': 'profile',
-    }
-
     if is_owner:
-        if request.method == 'POST':
-            if form.is_valid():
-                monster = form.save(commit=False)
-                monster.save()
+        if request.method == 'POST' and form.is_valid():
+            form.save()
 
-                messages.success(request, 'Saved changes to %s.' % monster)
-                return redirect(return_path)
+            response_data = {
+                'code': 'success'
+            }
+        else:
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'edit_monster_form': form}))
+            }
+
+        return JsonResponse(response_data)
     else:
         raise PermissionDenied()
-
-    return render(request, 'herders/profile/profile_monster_edit.html', context)
 
 
 @login_required()

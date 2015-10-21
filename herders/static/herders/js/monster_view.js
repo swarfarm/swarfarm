@@ -96,12 +96,26 @@ function EditRune(rune_id) {
     $.ajax({
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/edit/' + rune_id + '/'
-    }).done(function(data) {
+    }).done(function(result) {
         bootbox.dialog({
             title: "Edit rune",
-            message: data.html
+            message: result.html
         });
         update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
+        $('.rating').rating();
+    });
+}
+
+// Monster edit functions
+function EditMonster(instance_id) {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/monster/edit/' + instance_id + '/'
+    }).done(function(result) {
+        bootbox.dialog({
+            title: 'Edit Monster',
+            message: result.html
+        });
         $('.rating').rating();
     });
 }
@@ -144,6 +158,7 @@ $('body')
     .on('click', '.rune-unassign', function() { UnassignRune($(this).data('rune-id')) })
     .on('click', '.rune-assign', function() { AssignRune($(this).data('rune-slot')) })
     .on('click', '.rune-assign-choice', function() { AssignRuneChoice($(this).data('rune-id'), $(this).data('instance-id')) })
+    .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '#addNewRune', function() { CreateNewRune($("#id_slot").val()) })
     .on('submit', '#AssignRuneForm', function() {
         var $form = $(this);

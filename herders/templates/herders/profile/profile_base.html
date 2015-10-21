@@ -42,22 +42,6 @@
             </div>
         </div>
     {% endif %}
-    {% if is_owner and add_monster_form %}
-        {# Add monster modal #}
-        <div class="modal fade" id="addMonsterModal" tabindex="-1" role="dialog" aria-labelledby="modalAddMonsterTitle" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalAddMonsterTitle">Add Monster</h4>
-                    </div>
-                    <form method="post" action="{% url 'herders:monster_instance_add' profile_name=profile_name %}?next={{ request.path }}" >
-                        {% crispy add_monster_form %}
-                    </form>
-                </div>
-            </div>
-        </div>
-    {% endif %}
 
     <div class="profile">
         {% block profile %}
@@ -65,6 +49,6 @@
     </div>
 {% endblock content %}
 
-{% block javascript %}
-    <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
-{% endblock javascript %}
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "herders/js/profile.js" %}"></script>
+{% endblock javascript_compressed %}

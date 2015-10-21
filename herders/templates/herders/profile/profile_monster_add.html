@@ -1,13 +1,6 @@
-{% extends 'base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
-{% block title %}Add Monster - {{ block.super }}{% endblock title %}
-
-{% block content %}
-    <div class="monster-form">
-        <form method="post" action="{% url 'herders:monster_instance_add' profile_name=profile_name %}?next={{ return_path }}" >
-            {% crispy add_monster_form %}
-        </form>
-    </div>
-{% endblock content %}
+<div class="monster-form">
+    {% crispy add_monster_form %}
+</div>

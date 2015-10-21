@@ -370,33 +370,30 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
         super(AddMonsterInstanceForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
-        self.helper.form_tag = False
+        self.helper.form_class = 'ajax-form'
         self.helper.layout = Layout(
-            Div(
-                Field(
-                    'monster',
-                    data_toggle='popover',
-                    data_trigger='focus',
-                    data_container='body',
-                    title='Autocomplete Tips',
-                    data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
-                    data_stars_field=self['stars'].auto_id,
-                    data_fodder_field=self['fodder'].auto_id,
-                    data_priority_field=self['priority'].auto_id,
-                    data_set_stars='',
-                ),
-                Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                FieldWithButtons(
-                    Field('level', value=1, min=1, max=40),
-                    StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
-                ),
-                Field('fodder', css_class='checkbox'),
-                Field('in_storage', css_class='checkbox'),
-                Field('ignore_for_fusion', css_class='checkbox'),
-                Field('priority',),
-                Field('notes'),
-                css_class='modal-body',
+            Field(
+                'monster',
+                data_toggle='popover',
+                data_trigger='focus',
+                data_container='body',
+                title='Autocomplete Tips',
+                data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
+                data_stars_field=self['stars'].auto_id,
+                data_fodder_field=self['fodder'].auto_id,
+                data_priority_field=self['priority'].auto_id,
+                data_set_stars='',
             ),
+            Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+            FieldWithButtons(
+                Field('level', value=1, min=1, max=40),
+                StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
+            ),
+            Field('fodder', css_class='checkbox'),
+            Field('in_storage', css_class='checkbox'),
+            Field('ignore_for_fusion', css_class='checkbox'),
+            Field('priority',),
+            Field('notes'),
             Div(
                 FormActions(
                     Submit('save', 'Save', css_class='btn btn-primary'),
@@ -461,6 +458,7 @@ class EditMonsterInstanceForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
+        self.helper.form_class = 'ajax-form'
         self.fields['notes'].help_text = 'Markdown syntax enabled'
 
         self.helper.layout = Layout(

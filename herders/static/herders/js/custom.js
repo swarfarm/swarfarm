@@ -15,7 +15,7 @@ bootbox.setDefaults({
 });
 
 //Custom popovers for loading AJAX content
-$('*[data-instance-id]').hover(function(event) {
+$('.monster-popover').hover(function(event) {
     if (event.type === 'mouseenter') {
         var el = $(this);
         var url = API_URL + 'instance/' + el.data('instance-id') + '.html';
@@ -41,21 +41,6 @@ $('*[data-instance-id]').hover(function(event) {
 //Modal management scripts
 $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
-});
-
-// Monster view page show modals on load
-$(window).load(function() {
-    var hashStr = location.hash.replace("#","");
-    if (hashStr) {
-        switch(hashStr) {
-            case 'edit':
-                $('#editMonsterModal').modal('show');
-                break;
-            case 'awaken':
-                $('#awakenMonsterModal').modal('show');
-                break;
-        }
-    }
 });
 
 //Automatically set attributes based on monster info

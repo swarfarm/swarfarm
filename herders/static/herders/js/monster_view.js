@@ -120,6 +120,34 @@ function EditMonster(instance_id) {
     });
 }
 
+function DeleteMonster(instance_id) {
+    if (instance_id) {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure?',
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        type: 'post',
+                        url: '/profile/' + PROFILE_NAME + '/monster/delete/' + instance_id + '/',
+                        data: {
+                            "delete": "delete",
+                            "instance_id": instance_id
+                        }
+                    }).done(function () {
+                        location.href= '/profile/' + PROFILE_NAME + '/'
+                    }).fail(function () {
+                        alert("Something went wrong! Server admin has been notified.");
+                    });
+                }
+            }
+        });
+    }
+    else {
+        alert("Unspecified monster to delete");
+    }
+}
+
 // Page update functions
 function UpdateRunes() {
     $('#monster-view-runes').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/runes/', function() {
@@ -159,6 +187,7 @@ $('body')
     .on('click', '.rune-assign', function() { AssignRune($(this).data('rune-slot')) })
     .on('click', '.rune-assign-choice', function() { AssignRuneChoice($(this).data('rune-id'), $(this).data('instance-id')) })
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
+    .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
     .on('click', '#addNewRune', function() { CreateNewRune($("#id_slot").val()) })
     .on('submit', '#AssignRuneForm', function() {
         var $form = $(this);

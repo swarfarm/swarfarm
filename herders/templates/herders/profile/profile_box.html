@@ -69,17 +69,17 @@
 
                                         {% if is_owner %}
                                         <div class="monster-box-actions">
-                                            <span class="monster-box-actions">
-                                                <a href="{% url 'herders:monster_instance_view' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}#edit">
+                                            <div class="btn-group">
+                                                <button class="btn btn-link btn-xs monster-edit" data-instance-id="{{ instance.pk.hex }}">
                                                     <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
-                                                </a>
-                                                <a href="{% url 'herders:monster_instance_duplicate' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}" data-toggle="tooltip" data-placement="top" title="Copy">
+                                                </button>
+                                                <button class="btn btn-link btn-xs monster-copy" data-instance-id="{{ instance.pk.hex }}">
                                                     <span class="glyphicon glyphicon-copy" data-toggle="tooltip" data-placement="top" title="Copy"></span>
-                                                </a>
-                                                <a href="{% url 'herders:monster_instance_delete' profile_name=user.username instance_id=instance.pk.hex %}?next={{ return_path }}">
-                                                    <span class="glyphicon glyphicon-trash" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
-                                                </a>
-                                            </span>
+                                                </button>
+                                                <button class="btn btn-link btn-xs monster-delete" data-instance-id="{{ instance.pk.hex }}">
+                                                    <span class="glyphicon glyphicon-trash text-danger" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
+                                                </button>
+                                            </div>
                                         </div>
                                         {% endif %}
                                     </div>

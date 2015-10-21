@@ -12,7 +12,44 @@ function AddMonster() {
 }
 
 function EditMonster(instance_id) {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/monster/edit/' + instance_id + '/'
+    }).done(function(result) {
+        bootbox.dialog({
+            title: 'Edit Monster',
+            message: result.html
+        });
+        $('.rating').rating();
+    });
+}
 
+function DeleteMonster(instance_id) {
+    if (instance_id) {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure?',
+            callback: function (result) {
+                if (result) {
+                    $.ajax({
+                        type: 'post',
+                        url: '/profile/' + PROFILE_NAME + '/monster/delete/' + instance_id + '/',
+                        data: {
+                            "delete": "delete",
+                            "instance_id": instance_id
+                        }
+                    }).done(function () {
+                        location.reload();
+                    }).fail(function () {
+                        alert("Something went wrong! Server admin has been notified.");
+                    });
+                }
+            }
+        });
+    }
+    else {
+        alert("Unspecified monster to delete");
+    }
 }
 
 $('body')
@@ -35,5 +72,6 @@ $('body')
 
         return false;  //cancel default on submit action.
     })
-    .on('click', '.add-monster', function() { AddMonster() })
-    .on('click', '.edit-monster', function() { EditMonster($(this).data('instance-id')) });
+    .on('click', '.monster-add', function() { AddMonster() })
+    .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
+    .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) });

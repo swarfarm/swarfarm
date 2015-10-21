@@ -1,11 +1,14 @@
-var rune_inventory = $('#rune-inventory');
-
 $(document).ready(function() {
     update_rune_inventory();
 });
 
 function update_rune_inventory() {
-    rune_inventory.load('/profile/' + PROFILE_NAME + '/runes/inventory');
+    $.ajax({
+        url: '/profile/' + PROFILE_NAME + '/runes/inventory/',
+        type: 'get'
+    }).done(function(data) {
+        $('#rune-inventory').replaceWith(data);
+    });
 }
 
 $('body').on('submit', '.ajax-form', function() {
@@ -81,4 +84,15 @@ $('body').on('submit', '.ajax-form', function() {
     update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
 }).on('change', '#id_slot', function() {
     update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+}).on('submit', '#FilterInventoryForm', function() {
+    var $form = $(this);
+    $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+    }).done(function (data) {
+        $('#rune-inventory').replaceWith(data);
+    });
+
+    return false;  //cancel default on submit action.
 });

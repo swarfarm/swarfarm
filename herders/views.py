@@ -1322,32 +1322,29 @@ def runes(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
+    filter_form = FilterRuneForm()
+    filter_form.helper.form_action = reverse('herders:rune_inventory', kwargs={'profile_name': profile_name})
+
     context = {
         'view': 'runes',
         'profile_name': profile_name,
         'summoner': summoner,
         'return_path': return_path,
         'is_owner': is_owner,
+        'rune_filter_form': filter_form,
     }
-
-    if is_owner:
-        add_rune_form = AddRuneInstanceForm()
-        add_rune_form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
-        context['add_rune_form'] = add_rune_form
 
     return render(request, 'herders/profile/runes/base.html', context)
 
 
-def rune_list(request, profile_name):
-    pass
-
-
 def rune_inventory(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    inventory = RuneInstance.objects.filter(owner=summoner)
+    rune_queryset = RuneInstance.objects.filter(owner=request.user.summoner)
+
+    rune_filter = RuneInstanceFilter(request.POST, queryset=rune_queryset)
 
     context = {
-        'runes': inventory,
+        'runes': rune_filter,
         'profile_name': profile_name,
     }
 
@@ -1409,7 +1406,7 @@ def rune_edit(request, profile_name, rune_id):
     template = loader.get_template('herders/profile/runes/add_form.html')
 
     if is_owner:
-        if request.POST and form.is_valid():
+        if request.method == 'POST' and form.is_valid():
             form.save()
 
             form = AddRuneInstanceForm(auto_id='edit_id_%s')

@@ -19,8 +19,10 @@
 {% endblock subnav %}
 
 {% block profile %}
+    <div id="rune-inventory-filters">
+        {% include 'herders/profile/runes/inventory_filters.html' with form=rune_filter_form %}
+    </div>
     <div id="rune-inventory"></div>
-    <div id="rune-list"></div>
 {% endblock profile %}
 
 {% block javascript %}

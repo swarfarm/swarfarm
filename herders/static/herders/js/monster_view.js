@@ -1,29 +1,5 @@
 // Rune functions
 function AssignRune(slot) {
-    bootbox.dialog({
-        message: 'Assign an existing rune or create a new one?',
-        title: 'Assign Rune',
-        size: 'small',
-        buttons: {
-            assign: {
-                label: 'Assign Existing',
-                className: 'btn-default pull-left',
-                callback: function() {
-                    AssignExistingRune(slot)
-                }
-            },
-            create_new: {
-                label: 'Create New',
-                className: 'btn-default',
-                callback: function() {
-                    CreateNewRune(slot)
-                }
-            }
-        }
-    })
-}
-
-function AssignExistingRune(slot) {
     $.ajax({
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/assign/' + INSTANCE_ID + '/' + slot.toString() + '/'
@@ -33,11 +9,11 @@ function AssignExistingRune(slot) {
             message: response.html
         });
         $('.rating').rating();
+        $('.modal.in').modal('handleUpdate');
     });
 }
 
 function AssignRuneChoice(rune_id, monster_id) {
-
     $.ajax({
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/assign/' + monster_id + '/' + rune_id + '/'
@@ -54,6 +30,7 @@ function AssignRuneChoice(rune_id, monster_id) {
 }
 
 function CreateNewRune(slot) {
+    $('.modal.in').modal('hide');
     $.ajax({
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/add/?slot=' + slot.toString() + '&assigned_to=' + INSTANCE_ID
@@ -64,6 +41,7 @@ function CreateNewRune(slot) {
         });
         update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
         $('.rating').rating();
+        $('.modal.in').modal('handleUpdate');
     });
 }
 
@@ -130,8 +108,9 @@ function EditRune(rune_id) {
 
 // Page update functions
 function UpdateRunes() {
-    $('#monster-view-runes').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/runes/');
-    $('.popover').remove();
+    $('#monster-view-runes').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/runes/', function() {
+        $('.popover').remove();
+    });
 }
 
 function UpdateStats() {
@@ -139,7 +118,11 @@ function UpdateStats() {
 }
 
 function UpdateSkills() {
-    $('#monster-view-skills').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/skills/')
+    $('#monster-view-skills').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/skills/', function() {
+        $('[data-toggle="popover"]').popover({
+            html:true
+        });
+    })
 }
 
 function UpdateNotes() {
@@ -161,6 +144,7 @@ $('body')
     .on('click', '.rune-unassign', function() { UnassignRune($(this).data('rune-id')) })
     .on('click', '.rune-assign', function() { AssignRune($(this).data('rune-slot')) })
     .on('click', '.rune-assign-choice', function() { AssignRuneChoice($(this).data('rune-id'), $(this).data('instance-id')) })
+    .on('click', '#addNewRune', function() { CreateNewRune($("#id_slot").val()) })
     .on('submit', '#AssignRuneForm', function() {
         var $form = $(this);
         $.ajax({

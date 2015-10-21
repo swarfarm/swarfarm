@@ -1475,7 +1475,7 @@ def rune_assign_choice(request, profile_name, instance_id, rune_id):
     rune = get_object_or_404(RuneInstance, pk=rune_id)
 
     if rune.assigned_to is not None:
-        # Warn about removing from other monster
+        # TODO: Warn about removing from other monster?
         pass
 
     # Check for existing rune.

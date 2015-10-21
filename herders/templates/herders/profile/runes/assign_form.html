@@ -1,4 +1,9 @@
 {% load crispy_forms_tags %}
-
-{% crispy form %}
-{% include 'herders/profile/runes/assign_results.html' %}
+<div class="row">
+    <div class="col-md-3">
+        {% crispy form %}
+    </div>
+    <div class="col-md-9">
+        {% include 'herders/profile/runes/assign_results.html' %}
+    </div>
+</div>

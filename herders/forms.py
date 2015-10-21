@@ -9,8 +9,8 @@ from django.templatetags.static import static
 from .models import MonsterInstance, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Fieldset
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField
+from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
+from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, InlineCheckboxes
 
 from captcha.fields import ReCaptchaField
 
@@ -765,9 +765,9 @@ class AssignRuneForm(forms.Form):
     helper.form_method = 'post'
     helper.form_id = 'AssignRuneForm'
     helper.layout = Layout(
-        Field('type'),
-        Field('slot', type='hidden'),
-        Field('level__gte'),
-        Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-        Submit('submit', 'Submit'),
+        StrictButton('Create New', id='addNewRune', css_class='btn btn-primary btn-block'),
+        Field('type', css_class='auto-submit'),
+        Field('slot', type='hidden', css_class='auto-submit'),
+        Field('level__gte', css_class='auto-submit'),
+        Field('stars__gte', css_class='rating hidden auto-submit', value=1, data_start=0, data_stop=6, data_stars=6),
     )

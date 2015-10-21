@@ -105,6 +105,9 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('selectChoice', '*[data-set-stars]', SetStars)
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
     .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
+    .on('change', '.auto-submit', function() {
+        $(this).parents("form").submit();
+    })
     .on('mouseenter mouseleave', '.rune-popover', function(event) {
         if (event.type === 'mouseenter') {
             var el = $(this);

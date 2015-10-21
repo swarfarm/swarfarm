@@ -10,7 +10,7 @@ from .models import MonsterInstance, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, InlineCheckboxes
+from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField
 
 from captcha.fields import ReCaptchaField
 

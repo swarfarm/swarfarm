@@ -504,7 +504,7 @@ def monster_instance_view(request, profile_name, instance_id):
         context['power_up_form_action'] = reverse('herders:monster_instance_power_up', kwargs={'profile_name': profile_name, 'instance_id': instance.pk.hex}) + '?next=' + return_path
 
     if is_owner or summoner.public:
-        return render(request, 'herders/profile/profile_monster_view.html', context)
+        return render(request, 'herders/profile/monster_view/base.html', context)
     else:
         return render(request, 'herders/profile/not_public.html')
 
@@ -537,8 +537,6 @@ def monster_instance_view_stats(request, profile_name, instance_id):
         instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
-
-
 
     context = {
         'instance': instance,

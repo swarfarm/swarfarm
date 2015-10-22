@@ -520,6 +520,7 @@ def monster_instance_view_sidebar(request, profile_name, instance_id):
 
     return render(request, 'herders/profile/monster_view/side_info.html', context)
 
+
 def monster_instance_view_runes(request, profile_name, instance_id):
     try:
         instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
@@ -738,7 +739,6 @@ def monster_instance_power_up(request, profile_name, instance_id):
 
     if is_owner:
         if request.method == 'POST':
-            # return render(request, 'herders/view_post_data.html', {'post_data': request.POST})
             if formset.is_valid():
                 # Create list of submitted food monsters
                 for instance in formset.cleaned_data:
@@ -1317,7 +1317,7 @@ def runes(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    filter_form = FilterRuneForm()
+    filter_form = FilterRuneForm(auto_id="filter_id_%s")
     filter_form.helper.form_action = reverse('herders:rune_inventory', kwargs={'profile_name': profile_name})
 
     context = {

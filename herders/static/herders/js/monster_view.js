@@ -35,13 +35,15 @@ function CreateNewRune(slot) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/add/?slot=' + slot.toString() + '&assigned_to=' + INSTANCE_ID
     }).done(function (response) {
-       bootbox.dialog({
+        bootbox.dialog({
             title: "Add new rune",
-            message: response.html
+            message: response.html,
+            callback: function() {
+                update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+                $('.rating').rating();
+                $('.modal.in').modal('handleUpdate');
+            }
         });
-        update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
-        $('.rating').rating();
-        $('.modal.in').modal('handleUpdate');
     });
 }
 

@@ -1,0 +1,23 @@
+{% load staticfiles %}
+{% load utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+{% spaceless %}
+    <div class="block autocomplete-results" data-value="{{ choice.pk }}">
+        <div class="rune-image pull-left">
+            <div class="rune-bg {{ choice.get_quality_display|lower }}">
+                <div class="rune slot{{ choice.slot }}">
+                    <div class="rune-symbol {{ choice.get_type_display|lower }}"></div>
+                </div>
+                {% for x in choice.stars|get_range %}
+                <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
+                {% endfor %}
+                <span class="image-plus image-plus-right">+{{ choice.level }}</span>
+            </div>
+        </div>
+        <ul class="list-unstyled">
+            <li>{{ choice }}</li>
+            <li>{{ choice.get_main_stat_rune_display }} +{{ choice.main_stat_value }}{% if choice.main_stat in choice.PERCENT_STATS %}%{% endif %}</li>
+        </ul>
+    </div>
+{% endspaceless %}

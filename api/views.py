@@ -107,9 +107,27 @@ class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = RuneInstance.objects.all()
+    queryset = RuneInstance.objects.none()
     serializer_class = RuneInstanceSerializer
     pagination_class = PersonalCollectionSetPagination
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
+
+    def get_queryset(self):
+        # We do not want to allow retrieving all instances
+        instance_id = self.kwargs.get('pk', None)
+
+        if instance_id:
+            return RuneInstance.objects.filter(pk=instance_id)
+        else:
+            return RuneInstance.objects.none()
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super(RuneInstanceViewSet, self).retrieve(request, *args, **kwargs)
+
+        if request.accepted_renderer.format == 'html':
+            # print response.data
+            return Response({'rune': response.data}, template_name='api/rune_instance/popover.html')
+        return response
 
 
 class TeamGroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -122,3 +140,20 @@ class TeamViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
     pagination_class = PersonalCollectionSetPagination
+
+
+# Custom API
+def get_rune_stats_by_slot(request, slot):
+    from django.http import JsonResponse
+
+    valid_stats = RuneInstance.get_valid_stats_for_slot(int(slot))
+
+    if valid_stats:
+        return JsonResponse({
+            'code': 'success',
+            'data': valid_stats,
+        })
+    else:
+        return JsonResponse({
+            'code': 'error',
+        })

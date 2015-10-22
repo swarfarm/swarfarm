@@ -9,7 +9,7 @@ from django.templatetags.static import static
 from .models import MonsterInstance, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Fieldset
+from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
 from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField
 
 from captcha.fields import ReCaptchaField
@@ -370,40 +370,34 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
         super(AddMonsterInstanceForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
-        self.helper.form_tag = False
+        self.helper.form_class = 'ajax-form'
         self.helper.layout = Layout(
-            Div(
-                Field(
-                    'monster',
-                    data_toggle='popover',
-                    data_trigger='focus',
-                    data_container='body',
-                    title='Autocomplete Tips',
-                    data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
-                    data_stars_field=self['stars'].auto_id,
-                    data_fodder_field=self['fodder'].auto_id,
-                    data_priority_field=self['priority'].auto_id,
-                    data_set_stars='',
-                ),
-                Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                FieldWithButtons(
-                    Field('level', value=1, min=1, max=40),
-                    StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
-                ),
-                Field('fodder', css_class='checkbox'),
-                Field('in_storage', css_class='checkbox'),
-                Field('ignore_for_fusion', css_class='checkbox'),
-                Field('priority',),
-                Field('notes'),
-                css_class='modal-body',
+            Field(
+                'monster',
+                data_toggle='popover',
+                data_trigger='focus',
+                data_container='body',
+                title='Autocomplete Tips',
+                data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
+                data_stars_field=self['stars'].auto_id,
+                data_fodder_field=self['fodder'].auto_id,
+                data_priority_field=self['priority'].auto_id,
+                data_set_stars='',
             ),
-            Div(
-                FormActions(
-                    Submit('save', 'Save', css_class='btn btn-primary'),
-                    Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
-                ),
-                css_class='modal-footer',
-            )
+            Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+            FieldWithButtons(
+                Field('level', value=1, min=1, max=40),
+                StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
+            ),
+            Field('fodder', css_class='checkbox'),
+            Field('in_storage', css_class='checkbox'),
+            Field('ignore_for_fusion', css_class='checkbox'),
+            Field('priority',),
+            Field('notes'),
+            FormActions(
+                Submit('save', 'Save', css_class='btn btn-primary'),
+                Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+            ),
         )
 
     class Meta:
@@ -461,6 +455,7 @@ class EditMonsterInstanceForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
+        self.helper.form_class = 'ajax-form'
         self.fields['notes'].help_text = 'Markdown syntax enabled'
 
         self.helper.layout = Layout(
@@ -494,15 +489,23 @@ class EditMonsterInstanceForm(ModelForm):
 
 
 class PowerUpMonsterInstanceForm(forms.Form):
-    monster = autocomplete_light.ModelChoiceField('MonsterInstanceAutocomplete')
-    monster.label = 'Material Monster'
-    monster.required = False
+    monster = autocomplete_light.ModelMultipleChoiceField('MonsterInstanceAutocomplete')
+    monster.label = 'Material Monsters'
+    ignore_evolution = forms.BooleanField(
+        label='Ignore evolution error checking',
+        required=False,
+    )
 
     helper = FormHelper()
     helper.form_method = 'post'
-    helper.form_tag = False
+    helper.form_class = 'ajax-form'
     helper.layout = Layout(
         Field('monster'),
+        Field('ignore_evolution'),
+        FormActions(
+            Submit('power_up', 'Power Up', css_class='btn btn-primary'),
+            Submit('evolve', 'Evolve', css_class='btn btn-primary'),
+        )
     )
 
 
@@ -514,7 +517,7 @@ class AwakenMonsterInstanceForm(forms.Form):
 
     helper = FormHelper()
     helper.form_method = 'post'
-    # helper.form_action must be set in view
+    helper.form_class = 'ajax-form'
     helper.layout = Layout(
         Div(
             Field('subtract_materials', css_class='checkbox', checked=''),
@@ -656,62 +659,74 @@ class AddRuneInstanceForm(ModelForm):
         self.fields['substat_3_value'].label = False
         self.fields['substat_4'].label = False
         self.fields['substat_4_value'].label = False
+        self.fields['assigned_to'].label = False
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
+        self.helper.form_id = 'addRuneForm'
+        self.helper.form_class = 'ajax-form'
         self.helper.layout = Layout(
             Div(
                 Div(
                     Div('type', css_class='col-lg-3'),
-                    Div('slot', css_class='col-lg-3'),
+                    Div(Field('slot', placeholder='1-6'), css_class='col-lg-3'),
                     Div(Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6), css_class='col-lg-3 text-justify'),
-                    Div(Field('level', placeholder='1-15'), css_class='col-lg-3'),
+                    Div(Field('level', placeholder='0-15'), css_class='col-lg-3'),
                     css_class='row'
                 ),
                 Div(
-                    Div(HTML('Main Stat'), css_class='col-lg-2 text-right'),
-                    Div('main_stat', css_class='col-lg-5'),
-                    Div('main_stat_value', css_class='col-lg-5'),
+                    Div(HTML('<label>Stat Type</label>'), css_class='col-lg-5 col-lg-offset-2'),
+                    Div(HTML('<label>Stat Value</label>'), css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('Innate Stat'), css_class='col-lg-2 text-right'),
+                    Div(HTML('<label>Main Stat</label>'), css_class='col-lg-2 text-right'),
+                    Field('main_stat', wrapper_class='col-lg-5'),
+                    Field('main_stat_value', wrapper_class='col-lg-5'),
+                    css_class='row',
+                ),
+                Div(
+                    Div(HTML('<label>Innate Stat</label>'), css_class='col-lg-2 text-right'),
                     Div('innate_stat', css_class='col-lg-5'),
                     Div('innate_stat_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('Substat 1'), css_class='col-lg-2 text-right'),
+                    Div(HTML('<label>Substat 1</label>'), css_class='col-lg-2 text-right'),
                     Div('substat_1', css_class='col-lg-5'),
                     Div('substat_1_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('Substat 2'), css_class='col-lg-2 text-right'),
+                    Div(HTML('<label>Substat 2</label>'), css_class='col-lg-2 text-right'),
                     Div('substat_2', css_class='col-lg-5'),
                     Div('substat_2_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('Substat 3'), css_class='col-lg-2 text-right'),
+                    Div(HTML('<label>Substat 3</label>'), css_class='col-lg-2 text-right'),
                     Div('substat_3', css_class='col-lg-5'),
                     Div('substat_3_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('<Substat 4'), css_class='col-lg-2 control-label text-right'),
+                    Div(HTML('<label>Substat 4</label>'), css_class='col-lg-2 text-right'),
                     Div('substat_4', css_class='col-lg-5'),
                     Div('substat_4_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
-                css_class='modal-body'
-            ),
-            Div(
-                FormActions(
-                    Submit('save', 'Save', css_class='btn btn-primary'),
+                Div(
+                    Div(HTML('<label>Assign To</label>'), css_class='col-lg-2 text-right'),
+                    Div(
+                        Field('assigned_to'),
+                        css_class='col-lg-5',
+                    ),
+                    css_class='row',
                 ),
-                css_class='modal-footer'
-            )
+            ),
+            FormActions(
+                Submit('save', 'Save'),
+            ),
         )
 
     class Meta:
@@ -724,4 +739,76 @@ class AddRuneInstanceForm(ModelForm):
             'substat_2', 'substat_2_value',
             'substat_3', 'substat_3_value',
             'substat_4', 'substat_4_value',
+            'assigned_to',
         )
+        widgets = {
+            'assigned_to': autocomplete_light.ChoiceWidget('MonsterInstanceAutocomplete'),
+        }
+
+
+class AssignRuneForm(forms.Form):
+    type = forms.MultipleChoiceField(
+        choices=RuneInstance.TYPE_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    level__gte = forms.IntegerField(
+        label="Minimum Level",
+        min_value=0,
+        max_value=15,
+        required=False,
+    )
+    stars__gte = forms.IntegerField(
+        label="Minimum Stars",
+        required=False
+    )
+    slot = forms.IntegerField(
+        min_value=1,
+        max_value=6,
+        required=False
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_id = 'AssignRuneForm'
+    helper.layout = Layout(
+        StrictButton('Create New', id='addNewRune', css_class='btn btn-primary btn-block'),
+        Field('type', css_class='auto-submit'),
+        Field('slot', type='hidden', css_class='auto-submit'),
+        Field('level__gte', css_class='auto-submit'),
+        Field('stars__gte', css_class='rating hidden auto-submit', value=1, data_start=0, data_stop=6, data_stars=6),
+    )
+
+
+class FilterRuneForm(forms.Form):
+    type = forms.MultipleChoiceField(
+        choices=RuneInstance.TYPE_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    level__gte = forms.IntegerField(
+        label="Minimum Level",
+        min_value=0,
+        initial=1,
+        max_value=15,
+        required=False,
+    )
+    stars__gte = forms.IntegerField(
+        label="Minimum Stars",
+        required=False
+    )
+    slot = forms.IntegerField(
+        min_value=1,
+        max_value=6,
+        required=False
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_id = 'FilterInventoryForm'
+    helper.layout = Layout(
+        Field('type', css_class='auto-submit'),
+        Field('slot', css_class='auto-submit'),
+        Field('level__gte', css_class='auto-submit'),
+        Field('stars__gte', css_class='rating hidden auto-submit', value=1, data_start=0, data_stop=6, data_stars=6),
+    )

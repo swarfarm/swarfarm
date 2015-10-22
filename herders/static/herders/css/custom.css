@@ -42,8 +42,7 @@ footer {
 }
 
 .condensed {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 5px;
 }
 
 .navbar img, .btn-group img {
@@ -374,10 +373,6 @@ div.sprite {
 .image-plus-top-right {
     top: 1px;
     right: 1px;
-}
-
-.monster-form {
-    width: 600px;
 }
 
 .header {
@@ -728,6 +723,18 @@ div.monster-bulk-monster {
 
 #bulkAddFormset .row {
     padding-bottom: 5px;
+}
+
+.rune-assigned-to {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+}
+
+button.rune-assign-choice {
+    text-align: left;
+    margin: 0;
+    padding: 5px;
 }
 
 .dropdown-submenu{position:relative;}

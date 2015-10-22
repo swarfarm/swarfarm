@@ -1,0 +1,64 @@
+{% load staticfiles %}
+{% load markdown_deux_tags %}
+{% static 'herders/images/' as img_url_prefix %}
+
+{% if instance.notes and instance.notes != '' %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p class="panel-title">Personal Notes</p>
+    </div>
+    <div class="panel-body">
+        {{ instance.notes|markdown }}
+    </div>
+</div>
+{% endif %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p class="panel-title">Monster Info</p>
+    </div>
+    <table class="table table-condensed table-bordered">
+        <tbody>
+        <tr>
+            <td>Awakening Bonus:</td>
+            {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
+            <td>{{ instance.monster.awaken_bonus }}</td>
+            {% elif instance.monster.can_awaken and instance.monster.is_awakened%}
+            <td>{{ instance.monster.awakens_from.awaken_bonus }}</td>
+            {% endif %}
+        </tr>
+        {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
+        <tr>
+            <td>Awakening Essences:</td>
+            <td class="monster-awaken-materials">
+                {% with mats=instance.monster.get_awakening_materials %}
+                    {% for element,essences in mats.iteritems %}
+                        {% for size,count in essences.iteritems %}
+                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endwith %}
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>Sources:</td>
+            <td class="monster-sources">
+                {% for source in instance.monster.source.all %}
+                    {% if source.icon_filename %}
+                    <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
+                         class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
+                    {% else %}
+                    <span class="monster-source"><span>{{ source }}</span></span>
+                    {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <td>Resources:</td>
+            <td>
+                {% if instance.monster.wikia_url %}<a href="{{ instance.monster.wikia_url }}" target="_blank">Wikia<span class="glyphicon glyphicon-link"></span></a>{% endif %}
+                {% if instance.monster.summonerswar_co_url %}<a href="{{ instance.monster.summonerswar_co_url }}" target="_blank">summonerswar.co<span class="glyphicon glyphicon-link"></span></a>{% endif %}
+            </td>
+        </tr>
+    </table>
+</div>

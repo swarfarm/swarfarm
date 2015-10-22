@@ -625,6 +625,22 @@ class MonsterInstance(models.Model):
 
         return skill_ups_remaining
 
+    def get_rune_set_bonuses(self):
+        from django.db.models import Count
+        rune_counts = self.runeinstance_set.values('type').order_by().annotate(count=Count('type'))
+        rune_bonuses = []
+
+        for rune_count in rune_counts:
+            type_name = RuneInstance.TYPE_CHOICES[rune_count['type'] - 1][1]
+            required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[rune_count['type']]
+            present = rune_count['count']
+            bonus_text = RuneInstance.RUNE_SET_BONUSES[rune_count['type']]
+
+            if present >= required:
+                rune_bonuses.extend([type_name + ' ' + bonus_text] * (present // required))
+
+        return rune_bonuses
+
     # Rune bonus calculations
     def rune_bonus_energy(self):
         rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENERGY).count()
@@ -882,6 +898,7 @@ class RuneInstance(models.Model):
     TYPE_REVENGE = 13
     TYPE_DESPAIR = 14
     TYPE_VAMPIRE = 15
+    TYPE_DESTROY = 16
 
     TYPE_CHOICES = (
         (TYPE_ENERGY, 'Energy'),
@@ -899,18 +916,10 @@ class RuneInstance(models.Model):
         (TYPE_REVENGE, 'Revenge'),
         (TYPE_DESPAIR, 'Despair'),
         (TYPE_VAMPIRE, 'Vampire'),
+        (TYPE_DESTROY, 'Destroy'),
     )
 
     STAR_CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4),
-        (5, 5),
-        (6, 6),
-    )
-
-    SLOT_CHOICES = (
         (1, 1),
         (2, 2),
         (3, 3),
@@ -931,20 +940,7 @@ class RuneInstance(models.Model):
     STAT_RESIST_PCT = 10
     STAT_ACCURACY_PCT = 11
 
-    INNATE_STAT_CHOICES = (
-        (STAT_HP, 'HP'),
-        (STAT_HP_PCT, 'HP %'),
-        (STAT_ATK, 'ATK'),
-        (STAT_ATK_PCT, 'ATK %'),
-        (STAT_DEF, 'DEF'),
-        (STAT_DEF_PCT, 'DEF %'),
-        (STAT_SPD, 'SPD'),
-        (STAT_CRIT_RATE_PCT, 'CRI Rate %'),
-        (STAT_CRIT_DMG_PCT, 'CRI Dmg %'),
-        (STAT_RESIST_PCT, 'Resistance %'),
-        (STAT_ACCURACY_PCT, 'Accuracy %'),
-    )
-
+    # Used for selecting type of stat in form
     STAT_CHOICES = (
         (STAT_HP, 'HP'),
         (STAT_HP_PCT, 'HP %'),
@@ -959,16 +955,179 @@ class RuneInstance(models.Model):
         (STAT_ACCURACY_PCT, 'Accuracy %'),
     )
 
+    # This list of tuples is used for display of rune stats
+    RUNE_STAT_DISPLAY = {
+        STAT_HP: 'HP',
+        STAT_HP_PCT: 'HP',
+        STAT_ATK: 'ATK',
+        STAT_ATK_PCT: 'ATK',
+        STAT_DEF: 'DEF',
+        STAT_DEF_PCT: 'DEF',
+        STAT_SPD: 'SPD',
+        STAT_CRIT_RATE_PCT: 'CRI Rate',
+        STAT_CRIT_DMG_PCT: 'CRI Dmg',
+        STAT_RESIST_PCT: 'Resistance',
+        STAT_ACCURACY_PCT: 'Accuracy',
+    }
+
+    PERCENT_STATS = [
+        STAT_HP_PCT,
+        STAT_ATK_PCT,
+        STAT_DEF_PCT,
+        STAT_CRIT_RATE_PCT,
+        STAT_CRIT_DMG_PCT,
+        STAT_RESIST_PCT,
+        STAT_ACCURACY_PCT,
+    ]
+
+    FLAT_STATS = [
+        STAT_HP,
+        STAT_ATK,
+        STAT_DEF,
+        STAT_SPD,
+    ]
+
+    QUALITY_NORMAL = 0
+    QUALITY_MAGIC = 1
+    QUALITY_RARE = 2
+    QUALITY_HERO = 3
+    QUALITY_LEGEND = 4
+
+    QUALITY_CHOICES = (
+        (QUALITY_NORMAL, 'Normal'),
+        (QUALITY_MAGIC, 'Magic'),
+        (QUALITY_RARE, 'Rare'),
+        (QUALITY_HERO, 'Hero'),
+        (QUALITY_LEGEND, 'Legend'),
+    )
+
+    MAIN_STAT_RANGES = {
+        STAT_HP: {
+            1: {'min': 40, 'max': 804},
+            2: {'min': 70, 'max': 1092},
+            3: {'min': 100, 'max': 1380},
+            4: {'min': 160, 'max': 1704},
+            5: {'min': 270, 'max': 2088},
+            6: {'min': 360, 'max': 2448},
+        },
+        STAT_HP_PCT: {
+            1: {'min': 1, 'max': 18},
+            2: {'min': 2, 'max': 20},
+            3: {'min': 4, 'max': 38},
+            4: {'min': 5, 'max': 43},
+            5: {'min': 8, 'max': 51},
+            6: {'min': 11, 'max': 63},
+        },
+        STAT_ATK: {
+            1: {'min': 3, 'max': 54},
+            2: {'min': 5, 'max': 74},
+            3: {'min': 7, 'max': 93},
+            4: {'min': 10, 'max': 113},
+            5: {'min': 15, 'max': 135},
+            6: {'min': 22, 'max': 160},
+        },
+        STAT_SPD: {
+            1: {'min': 1, 'max': 18},
+            2: {'min': 2, 'max': 19},
+            3: {'min': 3, 'max': 25},
+            4: {'min': 4, 'max': 30},
+            5: {'min': 5, 'max': 39},
+            6: {'min': 7, 'max': 42},
+        },
+        STAT_CRIT_RATE_PCT: {
+            1: {'min': 1, 'max': 18},
+            2: {'min': 2, 'max': 20},
+            3: {'min': 4, 'max': 37},
+            4: {'min': 5, 'max': 41},
+            5: {'min': 8, 'max': 47},
+            6: {'min': 11, 'max': 58},
+        },
+        STAT_CRIT_DMG_PCT: {
+            1: {'min': 2, 'max': 20},
+            2: {'min': 3, 'max': 37},
+            3: {'min': 4, 'max': 43},
+            4: {'min': 6, 'max': 58},
+            5: {'min': 9, 'max': 65},
+            6: {'min': 12, 'max': 80},
+        },
+        STAT_RESIST_PCT: {
+            1: {'min': 1, 'max': 18},
+            2: {'min': 2, 'max': 20},
+            3: {'min': 4, 'max': 38},
+            4: {'min': 6, 'max': 44},
+            5: {'min': 9, 'max': 51},
+            6: {'min': 12, 'max': 64},
+        },
+    }
+
+    INNATE_STAT_TITLES = {
+        STAT_HP: 'Strong',
+        STAT_HP_PCT: 'Tenacious',
+        STAT_ATK: 'Ferocious',
+        STAT_ATK_PCT: 'Powerful',
+        STAT_DEF: 'Sturdy',
+        STAT_DEF_PCT: 'Durable',
+        STAT_SPD: 'Quick',
+        STAT_CRIT_RATE_PCT: 'Mortal',
+        STAT_CRIT_DMG_PCT: 'Cruel',
+        STAT_RESIST_PCT: 'Resistant',
+        STAT_ACCURACY_PCT: 'Intricate',
+    }
+
+    # Copy a few ranges that are the same
+    MAIN_STAT_RANGES[STAT_ATK_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
+    MAIN_STAT_RANGES[STAT_DEF] = MAIN_STAT_RANGES[STAT_ATK]
+    MAIN_STAT_RANGES[STAT_DEF_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
+    MAIN_STAT_RANGES[STAT_ACCURACY_PCT] = MAIN_STAT_RANGES[STAT_RESIST_PCT]
+
+    RUNE_SET_COUNT_REQUIREMENTS = {
+        TYPE_ENERGY: 2,
+        TYPE_FATAL: 4,
+        TYPE_BLADE: 2,
+        TYPE_RAGE: 4,
+        TYPE_SWIFT: 4,
+        TYPE_FOCUS: 2,
+        TYPE_GUARD: 2,
+        TYPE_ENDURE: 2,
+        TYPE_VIOLENT: 4,
+        TYPE_WILL: 2,
+        TYPE_NEMESIS: 2,
+        TYPE_SHIELD: 2,
+        TYPE_REVENGE: 2,
+        TYPE_DESPAIR: 4,
+        TYPE_VAMPIRE: 4,
+        TYPE_DESTROY: 2,
+    }
+
+    RUNE_SET_BONUSES = {
+        TYPE_ENERGY: '2 Set: HP +15%',
+        TYPE_FATAL: '4 Set: Attack Power +35%',
+        TYPE_BLADE: '2 Set: Critical Rate +12%',
+        TYPE_RAGE: '4 Set: Critical Damage +40%',
+        TYPE_SWIFT: '4 Set: Attack Speed +25%',
+        TYPE_FOCUS: '2 Set: Accuracy +20%',
+        TYPE_GUARD: '2 Set: Defense +15%',
+        TYPE_ENDURE: '2 Set: Resistance +20%',
+        TYPE_VIOLENT: '4 Set: Get Extra Turn +22%',
+        TYPE_WILL: '2 Set: Immunity +1 turn',
+        TYPE_NEMESIS: '2 Set: ATK Gauge +4% (for every 7% HP lost)',
+        TYPE_SHIELD: '2 Set: Ally Shield 3 turns (15% of HP)',
+        TYPE_REVENGE: '2 Set: Counterattack +15%',
+        TYPE_DESPAIR: '4 Set: Stun Rate +25%',
+        TYPE_VAMPIRE: '4 Set: Life Drain +35%',
+        TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP"
+    }
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
     assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()
-    slot = models.IntegerField(choices=SLOT_CHOICES)
+    slot = models.IntegerField()
     main_stat = models.IntegerField(choices=STAT_CHOICES)
     main_stat_value = models.IntegerField(default=0)
-    innate_stat = models.IntegerField(choices=INNATE_STAT_CHOICES, null=True, blank=True)
+    innate_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     innate_stat_value = models.IntegerField(null=True, blank=True)
     substat_1 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_1_value = models.IntegerField(null=True, blank=True)
@@ -980,6 +1139,7 @@ class RuneInstance(models.Model):
     substat_4_value = models.IntegerField(null=True, blank=True)
 
     # The following fields exist purely to allow easier filtering and are updated on model save
+    quality = models.IntegerField(default=0, choices=QUALITY_CHOICES)
     has_hp = models.BooleanField(default=False)
     has_atk = models.BooleanField(default=False)
     has_def = models.BooleanField(default=False)
@@ -988,6 +1148,76 @@ class RuneInstance(models.Model):
     has_speed = models.BooleanField(default=False)
     has_resist = models.BooleanField(default=False)
     has_accuracy = models.BooleanField(default=False)
+
+    def get_main_stat_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.main_stat, '')
+
+    def get_innate_stat_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.innate_stat, '')
+
+    def get_substat_1_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.substat_1, '')
+
+    def get_substat_2_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.substat_2, '')
+
+    def get_substat_3_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.substat_3, '')
+
+    def get_substat_4_rune_display(self):
+        return self.RUNE_STAT_DISPLAY.get(self.substat_4, '')
+
+    def get_rune_set_bonus(self):
+        return self.RUNE_SET_BONUSES[self.type]
+
+    @staticmethod
+    def get_valid_stats_for_slot(slot):
+        if slot == 1:
+            return {
+                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
+            }
+        elif slot == 2:
+            return {
+                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
+                RuneInstance.STAT_ATK_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK_PCT - 1][1],
+                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
+                RuneInstance.STAT_DEF_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF_PCT - 1][1],
+                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
+                RuneInstance.STAT_HP_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP_PCT - 1][1],
+                RuneInstance.STAT_SPD: RuneInstance.STAT_CHOICES[RuneInstance.STAT_SPD - 1][1],
+            }
+        elif slot == 3:
+            return {
+                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
+            }
+        elif slot == 4:
+            return {
+                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
+                RuneInstance.STAT_ATK_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK_PCT - 1][1],
+                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
+                RuneInstance.STAT_DEF_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF_PCT - 1][1],
+                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
+                RuneInstance.STAT_HP_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP_PCT - 1][1],
+                RuneInstance.STAT_CRIT_RATE_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_CRIT_RATE_PCT - 1][1],
+                RuneInstance.STAT_CRIT_DMG_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_CRIT_DMG_PCT - 1][1],
+            }
+        elif slot == 5:
+            return {
+                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
+            }
+        elif slot == 6:
+            return {
+                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
+                RuneInstance.STAT_ATK_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK_PCT - 1][1],
+                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
+                RuneInstance.STAT_DEF_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF_PCT - 1][1],
+                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
+                RuneInstance.STAT_HP_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP_PCT - 1][1],
+                RuneInstance.STAT_RESIST_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_RESIST_PCT - 1][1],
+                RuneInstance.STAT_ACCURACY_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ACCURACY_PCT - 1][1],
+            }
+        else:
+            return None
 
     def get_stat(self, stat_type):
         if self.main_stat == stat_type:
@@ -1005,69 +1235,123 @@ class RuneInstance(models.Model):
         else:
             return 0
 
+    def get_innate_stat_title(self):
+        if self.innate_stat is not None:
+            return self.INNATE_STAT_TITLES[self.innate_stat]
+        else:
+            return ''
+
     def clean(self):
         from django.core.exceptions import ValidationError
 
         # Check slot, level, etc for valid ranges
-        if self.slot < 1 or self.slot > 6:
-            raise ValidationError(
-                'Slot must be 1 through 6.',
-                code='invalid_rune_slot',
-            )
+        if self.slot is not None and self.slot < 1 or self.slot > 6:
+            raise ValidationError({
+                'slot': ValidationError(
+                    'Slot must be 1 through 6.',
+                    code='invalid_rune_slot',
+                )
+            })
 
-        if self.level < 1 or self.level > 15:
-            raise ValidationError(
-                'Level must be 1 through 15.',
-                code='invalid_rune_level',
-            )
+        if self.level is not None and self.level < 0 or self.level > 15:
+            raise ValidationError({
+                'level': ValidationError(
+                    'Level must be 0 through 15.',
+                    code='invalid_rune_level',
+                )
+            })
 
-        if self.stars < 1 or self.stars > 6:
-            raise ValidationError(
-                'Stars must be between 1 and 6.',
-                code='invalid_rune_stars',
-            )
-
-        # Check main stat vs slot
-        valid_even_stats = [
-            self.STAT_ATK,
-            self.STAT_ATK_PCT,
-            self.STAT_DEF,
-            self.STAT_DEF_PCT,
-            self.STAT_HP,
-            self.STAT_HP_PCT,
-        ]
+        if self.stars is not None and self.stars < 1 or self.stars > 6:
+            raise ValidationError({
+                'stars': ValidationError(
+                    'Stars must be between 1 and 6.',
+                    code='invalid_rune_stars',
+                )
+            })
 
         # Do slot vs stat check
-        if self.slot == 1 and self.main_stat != self.STAT_ATK:
+        if self.main_stat not in RuneInstance.get_valid_stats_for_slot(self.slot):
+            raise ValidationError({
+                'main_stat': ValidationError(
+                    'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
+                    params={
+                        'slot': self.slot,
+                        'valid_stats': ', '.join(RuneInstance.get_valid_stats_for_slot(self.slot).values())
+                    },
+                    code='invalid_rune_main_stat'
+                ),
+            })
+
+        # Check that the same stat type was not used multiple times
+        from operator import is_not
+        from functools import partial
+        stat_list = filter(partial(is_not, None), [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4])
+        if len(stat_list) != len(set(stat_list)):
             raise ValidationError(
-                'Unacceptable stat for slot 1. Must be ATK.',
-                code='invalid_rune_main_stat'
+                'All stats and substats must be unique.',
+                code='duplicate_stats'
             )
-        elif self.slot == 2 and self.main_stat not in valid_even_stats + [self.STAT_SPD]:
+
+        # Check if stat type was specified that it has value > 0
+        if self.main_stat_value is None or self.main_stat_value <= 0:
+            raise ValidationError({
+                'main_stat_value': ValidationError(
+                    'Must provide a value greater than 0.',
+                    code='invalid_rune_main_stat_value'
+                ),
+            })
+
+        if self.innate_stat is not None and (self.innate_stat_value is None or self.innate_stat_value <= 0):
+            raise ValidationError({
+                'innate_stat_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_innate_stat_value'
+                ),
+            })
+
+        if self.substat_1 is not None and (self.substat_1_value is None or self.substat_1_value <= 0):
+            raise ValidationError({
+                'substat_1_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_substat_1_value'
+                ),
+            })
+
+        if self.substat_2 is not None and (self.substat_2_value is None or self.substat_2_value <= 0):
+            raise ValidationError({
+                'substat_2_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_substat_2_value'
+                ),
+            })
+
+        if self.substat_3 is not None and (self.substat_3_value is None or self.substat_3_value <= 0):
+            raise ValidationError({
+                'substat_3_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_substat_3_value'
+                ),
+            })
+
+        if self.substat_4 is not None and (self.substat_4_value is None or self.substat_4_value <= 0):
+            raise ValidationError({
+                'substat_4_value': ValidationError(
+                    'Must be greater than 0.',
+                    code='invalid_rune_substat_4_value'
+                ),
+            })
+
+        # Check that monster rune is assigned to does not already have rune in that slot
+        if self.assigned_to is not None and self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0:
             raise ValidationError(
-                'Unacceptable stat for slot 2. Must be ATK, ATK%, DEF, DEF%, HP, HP%, or SPD.',
-                code='invalid_rune_main_stat'
+                'Monster already has rune in slot %(slot)s. Either pick a different slot or do not assign to the monster yet.',
+                params={
+                    'slot': self.slot,
+                },
+                code='slot_occupied'
             )
-        elif self.slot == 3 and self.main_stat != self.STAT_DEF:
-            raise ValidationError(
-                'Unacceptable stat for slot 3. Must be DEF.',
-                code='invalid_rune_main_stat'
-            )
-        elif self.slot == 4 and self.main_stat not in valid_even_stats + [self.STAT_CRIT_RATE_PCT, self.STAT_CRIT_DMG_PCT]:
-            raise ValidationError(
-                'Unacceptable stat for slot 3. Must be ATK, ATK%, DEF, DEF%, HP, HP%, CRIT Rate, or CRIT Dmg.',
-                code='invalid_rune_main_stat'
-            )
-        elif self.slot == 5 and self.main_stat != self.STAT_HP:
-            raise ValidationError(
-                'Unacceptable stat for slot 3. Must be HP.',
-                code='invalid_rune_main_stat'
-            )
-        elif self.slot == 6 and self.main_stat not in valid_even_stats + [self.STAT_RESIST_PCT, self.STAT_ACCURACY_PCT]:
-            raise ValidationError(
-                'Unacceptable stat for slot 3. Must be ATK, ATK%, DEF, DEF%, HP, HP%, Resist, or Accuracy.',
-                code='invalid_rune_main_stat'
-            )
+
+        super(RuneInstance, self).clean()
 
     def save(self, *args, **kwargs):
         # Set flags for filtering
@@ -1081,10 +1365,26 @@ class RuneInstance(models.Model):
         self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
+        self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
+
+        if self.innate_stat is None:
+            self.innate_stat_value = None
+        if self.substat_1 is None:
+            self.substat_1_value = None
+        if self.substat_2 is None:
+            self.substat_2_value = None
+        if self.substat_3 is None:
+            self.substat_3_value = None
+        if self.substat_4 is None:
+            self.substat_4_value = None
+
         super(RuneInstance, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return self.TYPE_CHOICES[self.type - 1][1] + ', Slot ' + str(self.slot) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level) + ', +' + str(self.main_stat_value) + ' ' + self.STAT_CHOICES[self.main_stat - 1][1]
+        return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
+
+    class Meta:
+        ordering = ['type', 'slot', 'level', 'quality']
 
 
 class TeamGroup(models.Model):

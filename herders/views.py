@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden, JsonResponse
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
@@ -13,8 +13,10 @@ from django.db.models import Q
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template import loader, RequestContext
 
 from .forms import *
+from .filters import *
 from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
 from .fusion import essences_missing, total_awakening_cost
 
@@ -306,34 +308,33 @@ def profile_storage(request, profile_name):
 
 @login_required()
 def monster_instance_add(request, profile_name):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     form = AddMonsterInstanceForm(request.POST or None)
+    form.helper.form_action = reverse('herders:monster_instance_add', kwargs={'profile_name': profile_name})
+    template = loader.get_template('herders/profile/profile_monster_add.html')
 
-    if form.is_valid() and request.method == 'POST':
-        # Create the monster instance
-        new_monster = form.save(commit=False)
-        new_monster.owner = request.user.summoner
-        new_monster.save()
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            # Create the monster instance
+            new_monster = form.save(commit=False)
+            new_monster.owner = request.user.summoner
+            new_monster.save()
 
-        messages.success(request, 'Added %s to your collection.' % new_monster)
-        return redirect(return_path)
+            response_data = {
+                'code': 'success'
+            }
+        else:
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'add_monster_form': form}))
+            }
+
+        return JsonResponse(response_data)
     else:
-        # Re-show same page but with form filled in and errors shown
-        context = {
-            'profile_name': profile_name,
-            'summoner': summoner,
-            'add_monster_form': form,
-            'return_path': return_path,
-            'is_owner': is_owner,
-            'view': 'profile',
-        }
-        return render(request, 'herders/profile/profile_monster_add.html', context)
+        return HttpResponseForbidden()
 
 
 @login_required()
@@ -418,27 +419,11 @@ def monster_instance_view(request, profile_name, instance_id):
     except ObjectDoesNotExist:
         raise Http404()
 
-    # Reconcile skill level with actual skill from base monster
-    skills = []
-    skill_levels = [
-        instance.skill_1_level,
-        instance.skill_2_level,
-        instance.skill_3_level,
-        instance.skill_4_level,
-    ]
-
-    for idx in range(0, instance.monster.skills.count()):
-        skills.append({
-            'skill': instance.monster.skills.all()[idx],
-            'level': skill_levels[idx]
-        })
-
     context = {
         'profile_name': request.user.username,
         'summoner': summoner,
         'return_path': return_path,
         'instance': instance,
-        'skills': skills,
         'is_owner': is_owner,
         'view': 'profile',
     }
@@ -446,7 +431,7 @@ def monster_instance_view(request, profile_name, instance_id):
     # Add in the forms if you're the owner.
     if is_owner:
         # Edit form requires a lot of customization based on skills
-        edit_form = EditMonsterInstanceForm(request.POST or None, instance=instance)
+        '''edit_form = EditMonsterInstanceForm(request.POST or None, instance=instance)
         edit_form.helper.form_action = reverse('herders:monster_instance_edit', kwargs={'profile_name': profile_name, 'instance_id': instance.pk.hex}) + '?next=' + return_path
         if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
 
@@ -495,7 +480,7 @@ def monster_instance_view(request, profile_name, instance_id):
         else:
             edit_form.helper['skill_4_level'].wrap(Div, css_class="hidden")
 
-        context['edit_form'] = edit_form
+        context['edit_form'] = edit_form'''
 
         awaken_form = AwakenMonsterInstanceForm()
         awaken_form.helper.form_action = reverse('herders:monster_instance_awaken', kwargs={'profile_name': profile_name, 'instance_id': instance.pk.hex}) + '?next=' + return_path
@@ -518,21 +503,108 @@ def monster_instance_view(request, profile_name, instance_id):
         context['power_up_form_action'] = reverse('herders:monster_instance_power_up', kwargs={'profile_name': profile_name, 'instance_id': instance.pk.hex}) + '?next=' + return_path
 
     if is_owner or summoner.public:
-        return render(request, 'herders/profile/profile_monster_view.html', context)
+        return render(request, 'herders/profile/monster_view/base.html', context)
     else:
         return render(request, 'herders/profile/not_public.html')
 
 
+def monster_instance_view_sidebar(request, profile_name, instance_id):
+    try:
+        instance = MonsterInstance.objects.select_related('monster').get(pk=instance_id)
+    except ObjectDoesNotExist:
+        raise Http404()
+
+    context = {
+        'instance': instance,
+    }
+
+    return render(request, 'herders/profile/monster_view/side_info.html', context)
+
+
+def monster_instance_view_runes(request, profile_name, instance_id):
+    try:
+        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+    except ObjectDoesNotExist:
+        raise Http404()
+
+    instance_runes = [
+        instance.runeinstance_set.filter(slot=1).first(),
+        instance.runeinstance_set.filter(slot=2).first(),
+        instance.runeinstance_set.filter(slot=3).first(),
+        instance.runeinstance_set.filter(slot=4).first(),
+        instance.runeinstance_set.filter(slot=5).first(),
+        instance.runeinstance_set.filter(slot=6).first(),
+    ]
+
+    context = {
+        'runes': instance_runes,
+        'instance': instance,
+    }
+
+    return render(request, 'herders/profile/monster_view/runes.html', context)
+
+
+def monster_instance_view_stats(request, profile_name, instance_id):
+    try:
+        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+    except ObjectDoesNotExist:
+        raise Http404()
+
+    context = {
+        'instance': instance,
+    }
+
+    return render(request, 'herders/profile/monster_view/stats.html', context)
+
+
+def monster_instance_view_skills(request, profile_name, instance_id):
+    try:
+        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+    except ObjectDoesNotExist:
+        raise Http404()
+
+    # Reconcile skill level with actual skill from base monster
+    skills = []
+    skill_levels = [
+        instance.skill_1_level,
+        instance.skill_2_level,
+        instance.skill_3_level,
+        instance.skill_4_level,
+    ]
+
+    for idx in range(0, instance.monster.skills.count()):
+        skills.append({
+            'skill': instance.monster.skills.all()[idx],
+            'level': skill_levels[idx]
+        })
+
+    context = {
+        'instance': instance,
+        'skills': skills,
+    }
+
+    return render(request, 'herders/profile/monster_view/skills.html', context)
+
+
+def monster_instance_view_info(request, profile_name, instance_id):
+    try:
+        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+    except ObjectDoesNotExist:
+        raise Http404()
+
+    context = {
+        'instance': instance,
+    }
+
+    return render(request, 'herders/profile/monster_view/notes_info.html', context)
+
+
 @login_required()
 def monster_instance_edit(request, profile_name, instance_id):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
     instance = get_object_or_404(MonsterInstance, pk=instance_id)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    template = loader.get_template('herders/profile/profile_monster_edit.html')
 
     # Reconcile skill level with actual skill from base monster
     skills = []
@@ -550,7 +622,7 @@ def monster_instance_edit(request, profile_name, instance_id):
         })
 
     form = EditMonsterInstanceForm(request.POST or None, instance=instance)
-    form.helper.form_action = request.path + '?next=' + return_path
+    form.helper.form_action = request.path
     if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
         form.helper['skill_1_level'].wrap(
             FieldWithButtons,
@@ -597,28 +669,23 @@ def monster_instance_edit(request, profile_name, instance_id):
     else:
         form.helper['skill_4_level'].wrap(Div, css_class="hidden")
 
-    context = {
-        'profile_name': request.user.username,
-        'summoner': summoner,
-        'return_path': return_path,
-        'monster': instance,
-        'is_owner': is_owner,
-        'edit_monster_form': form,
-        'view': 'profile',
-    }
-
     if is_owner:
-        if request.method == 'POST':
-            if form.is_valid():
-                monster = form.save(commit=False)
-                monster.save()
+        if request.method == 'POST' and form.is_valid():
+            form.save()
 
-                messages.success(request, 'Saved changes to %s.' % monster)
-                return redirect(return_path)
+            response_data = {
+                'code': 'success'
+            }
+        else:
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'edit_monster_form': form}))
+            }
+
+        return JsonResponse(response_data)
     else:
         raise PermissionDenied()
-
-    return render(request, 'herders/profile/profile_monster_edit.html', context)
 
 
 @login_required()
@@ -641,53 +708,36 @@ def monster_instance_delete(request, profile_name, instance_id):
 
 @login_required()
 def monster_instance_power_up(request, profile_name, instance_id):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
+
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
+    template = loader.get_template('herders/profile/profile_power_up.html')
 
-    PowerUpFormset = formset_factory(PowerUpMonsterInstanceForm, extra=5, max_num=5)
-
-    if request.method == 'POST':
-        formset = PowerUpFormset(request.POST)
-    else:
-        formset = PowerUpFormset()
+    form = PowerUpMonsterInstanceForm(request.POST or None)
+    form.helper.form_action = reverse('herders:monster_instance_power_up', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
     context = {
         'profile_name': request.user.username,
-        'return_path': return_path,
         'monster': monster,
         'is_owner': is_owner,
-        'power_up_formset_action': request.path + '?next=' + return_path,
-        'power_up_formset': formset,
+        'form': form,
         'view': 'profile',
     }
 
-    food_monsters = []
     validation_errors = {}
+    response_data = {
+        'code': 'error'
+    }
 
     if is_owner:
         if request.method == 'POST':
-            # return render(request, 'herders/view_post_data.html', {'post_data': request.POST})
-            if formset.is_valid():
-                # Create list of submitted food monsters
-                for instance in formset.cleaned_data:
-                    # Some fields may be blank if user skipped a form input or didn't fill in all 5
-                    if instance:
-                        food_monsters.append(instance['monster'])
-
-                # Check that all food monsters are unique - This is done whether or not user bypassed evolution checks
-                if len(food_monsters) != len(set(food_monsters)):
-                    validation_errors['food_monster_unique'] = "You submitted duplicate food monsters. Please select unique monsters for each slot."
+            if form.is_valid():
+                food_monsters = form.cleaned_data['monster']
 
                 # Check that monster is not being fed to itself
-                for food in food_monsters:
-                    if food == monster:
-                        validation_errors['base_food_same'] = "You can't feed a monster to itself. "
+                if monster in food_monsters:
+                    validation_errors['base_food_same'] = "You can't feed a monster to itself. "
 
                 is_evolution = request.POST.get('evolve', False)
 
@@ -734,120 +784,114 @@ def monster_instance_power_up(request, profile_name, instance_id):
 
                     # Redirect back to return path if evolved, or go to edit screen if power up
                     if is_evolution:
-                        return redirect(return_path)
+                        response_data['code'] = 'success'
                     else:
-                        return redirect(
-                            reverse('herders:monster_instance_view', kwargs={'profile_name':profile_name, 'instance_id': instance_id})
-                        )
-            else:
-                context['form_errors'] = formset.errors
+                        response_data['code'] = 'edit'
 
+                    return JsonResponse(response_data)
     else:
         raise PermissionDenied("Trying to power up or evolve a monster you don't own")
 
     # Any errors in the form will fall through to here and be displayed
     context['validation_errors'] = validation_errors
-    return render(request, 'herders/profile/profile_power_up.html', context)
+    response_data['html'] = template.render(RequestContext(request, context))
+
+    return JsonResponse(response_data)
 
 
 @login_required()
 def monster_instance_awaken(request, profile_name, instance_id):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-
-    if monster.monster.is_awakened:
-        return redirect(return_path)
+    template = loader.get_template('herders/profile/profile_monster_awaken.html')
 
     form = AwakenMonsterInstanceForm(request.POST or None)
-    form.helper.form_action = request.path + '?next=' + return_path
+    form.helper.form_action = reverse('herders:monster_instance_awaken', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
-    context = {
-        'profile_name': request.user.username,
-        'summoner': summoner,
-        'is_owner': is_owner,  # Because of @login_required decorator
-        'return_path': return_path,
-        'monster': monster,
-        'awaken_monster_form': form,
-    }
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            # Subtract essences from inventory if requested
+            if form.cleaned_data['subtract_materials']:
+                summoner = Summoner.objects.get(user=request.user)
 
-    if request.method == 'POST' and form.is_valid() and is_owner:
-        # Subtract essences from inventory if requested
-        if form.cleaned_data['subtract_materials']:
-            summoner = Summoner.objects.get(user=request.user)
+                if monster.monster.awaken_magic_mats_high:
+                    summoner.storage_magic_high -= monster.monster.awaken_magic_mats_high
+                if monster.monster.awaken_magic_mats_mid:
+                    summoner.storage_magic_mid -= monster.monster.awaken_magic_mats_mid
+                if monster.monster.awaken_magic_mats_low:
+                    summoner.storage_magic_low -= monster.monster.awaken_magic_mats_low
 
-            if monster.monster.awaken_magic_mats_high:
-                summoner.storage_magic_high -= monster.monster.awaken_magic_mats_high
-            if monster.monster.awaken_magic_mats_mid:
-                summoner.storage_magic_mid -= monster.monster.awaken_magic_mats_mid
-            if monster.monster.awaken_magic_mats_low:
-                summoner.storage_magic_low -= monster.monster.awaken_magic_mats_low
+                if monster.monster.element == Monster.ELEMENT_FIRE:
+                    if monster.monster.awaken_ele_mats_high:
+                        summoner.storage_fire_high -= monster.monster.awaken_ele_mats_high
+                    if monster.monster.awaken_ele_mats_mid:
+                        summoner.storage_fire_mid -= monster.monster.awaken_ele_mats_mid
+                    if monster.monster.awaken_ele_mats_low:
+                        summoner.storage_fire_low -= monster.monster.awaken_ele_mats_low
+                elif monster.monster.element == Monster.ELEMENT_WATER:
+                    if monster.monster.awaken_ele_mats_high:
+                        summoner.storage_water_high -= monster.monster.awaken_ele_mats_high
+                    if monster.monster.awaken_ele_mats_mid:
+                        summoner.storage_water_mid -= monster.monster.awaken_ele_mats_mid
+                    if monster.monster.awaken_ele_mats_low:
+                        summoner.storage_water_low -= monster.monster.awaken_ele_mats_low
+                elif monster.monster.element == Monster.ELEMENT_WIND:
+                    if monster.monster.awaken_ele_mats_high:
+                        summoner.storage_wind_high -= monster.monster.awaken_ele_mats_high
+                    if monster.monster.awaken_ele_mats_mid:
+                        summoner.storage_wind_mid -= monster.monster.awaken_ele_mats_mid
+                    if monster.monster.awaken_ele_mats_low:
+                        summoner.storage_wind_low -= monster.monster.awaken_ele_mats_low
+                elif monster.monster.element == Monster.ELEMENT_DARK:
+                    if monster.monster.awaken_ele_mats_high:
+                        summoner.storage_dark_high -= monster.monster.awaken_ele_mats_high
+                    if monster.monster.awaken_ele_mats_mid:
+                        summoner.storage_dark_mid -= monster.monster.awaken_ele_mats_mid
+                    if monster.monster.awaken_ele_mats_low:
+                        summoner.storage_dark_low -= monster.monster.awaken_ele_mats_low
+                elif monster.monster.element == Monster.ELEMENT_LIGHT:
+                    if monster.monster.awaken_ele_mats_high:
+                        summoner.storage_light_high -= monster.monster.awaken_ele_mats_high
+                    if monster.monster.awaken_ele_mats_mid:
+                        summoner.storage_light_mid -= monster.monster.awaken_ele_mats_mid
+                    if monster.monster.awaken_ele_mats_low:
+                        summoner.storage_light_low -= monster.monster.awaken_ele_mats_low
 
-            if monster.monster.element == Monster.ELEMENT_FIRE:
-                if monster.monster.awaken_ele_mats_high:
-                    summoner.storage_fire_high -= monster.monster.awaken_ele_mats_high
-                if monster.monster.awaken_ele_mats_mid:
-                    summoner.storage_fire_mid -= monster.monster.awaken_ele_mats_mid
-                if monster.monster.awaken_ele_mats_low:
-                    summoner.storage_fire_low -= monster.monster.awaken_ele_mats_low
-            elif monster.monster.element == Monster.ELEMENT_WATER:
-                if monster.monster.awaken_ele_mats_high:
-                    summoner.storage_water_high -= monster.monster.awaken_ele_mats_high
-                if monster.monster.awaken_ele_mats_mid:
-                    summoner.storage_water_mid -= monster.monster.awaken_ele_mats_mid
-                if monster.monster.awaken_ele_mats_low:
-                    summoner.storage_water_low -= monster.monster.awaken_ele_mats_low
-            elif monster.monster.element == Monster.ELEMENT_WIND:
-                if monster.monster.awaken_ele_mats_high:
-                    summoner.storage_wind_high -= monster.monster.awaken_ele_mats_high
-                if monster.monster.awaken_ele_mats_mid:
-                    summoner.storage_wind_mid -= monster.monster.awaken_ele_mats_mid
-                if monster.monster.awaken_ele_mats_low:
-                    summoner.storage_wind_low -= monster.monster.awaken_ele_mats_low
-            elif monster.monster.element == Monster.ELEMENT_DARK:
-                if monster.monster.awaken_ele_mats_high:
-                    summoner.storage_dark_high -= monster.monster.awaken_ele_mats_high
-                if monster.monster.awaken_ele_mats_mid:
-                    summoner.storage_dark_mid -= monster.monster.awaken_ele_mats_mid
-                if monster.monster.awaken_ele_mats_low:
-                    summoner.storage_dark_low -= monster.monster.awaken_ele_mats_low
-            elif monster.monster.element == Monster.ELEMENT_LIGHT:
-                if monster.monster.awaken_ele_mats_high:
-                    summoner.storage_light_high -= monster.monster.awaken_ele_mats_high
-                if monster.monster.awaken_ele_mats_mid:
-                    summoner.storage_light_mid -= monster.monster.awaken_ele_mats_mid
-                if monster.monster.awaken_ele_mats_low:
-                    summoner.storage_light_low -= monster.monster.awaken_ele_mats_low
+                summoner.save()
 
-            summoner.save()
+            # Perform the awakening by instance's monster source ID
+            monster.monster = monster.monster.awakens_to
+            monster.save()
 
-        # Perform the awakening by instance's monster source ID
-        monster.monster = monster.monster.awakens_to
-        monster.save()
+            response_data = {
+                'code': 'success'
+            }
 
-        messages.success(request, "Awakened " + str(monster.monster.awakens_from) + " to " + str(monster.monster))
+        else:
+            storage = summoner.get_storage()
+            available_essences = OrderedDict()
 
-        return redirect(return_path)
+            for element, essences in monster.monster.get_awakening_materials().iteritems():
+                available_essences[element] = OrderedDict()
+                for size, cost in essences.iteritems():
+                    available_essences[element][size] = dict()
+                    available_essences[element][size]['qty'] = storage[element][size]
+                    available_essences[element][size]['sufficient'] = storage[element][size] >= cost
 
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {
+                    'awaken_form': form,
+                    'available_essences': available_essences,
+                    'instance': monster,
+                }))
+            }
+
+        return JsonResponse(response_data)
     else:
-        storage = summoner.get_storage()
-        available_essences = OrderedDict()
-
-        for element, essences in monster.monster.get_awakening_materials().iteritems():
-            available_essences[element] = OrderedDict()
-            for size, cost in essences.iteritems():
-                available_essences[element][size] = dict()
-                available_essences[element][size]['qty'] = storage[element][size]
-                available_essences[element][size]['sufficient'] = storage[element][size] >= cost
-
-        context['available_essences'] = available_essences
-
-        return render(request, 'herders/profile/profile_monster_awaken.html', context)
+        raise PermissionDenied()
 
 
 @login_required()
@@ -1256,7 +1300,8 @@ def runes(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    add_rune_form = AddRuneInstanceForm()
+    filter_form = FilterRuneForm(auto_id="filter_id_%s")
+    filter_form.helper.form_action = reverse('herders:rune_inventory', kwargs={'profile_name': profile_name})
 
     context = {
         'view': 'runes',
@@ -1264,18 +1309,201 @@ def runes(request, profile_name):
         'summoner': summoner,
         'return_path': return_path,
         'is_owner': is_owner,
-        'add_rune_form': add_rune_form,
+        'rune_filter_form': filter_form,
     }
 
     return render(request, 'herders/profile/runes/base.html', context)
 
 
+def rune_inventory(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    rune_queryset = RuneInstance.objects.filter(owner=request.user.summoner)
+
+    rune_filter = RuneInstanceFilter(request.POST, queryset=rune_queryset)
+
+    context = {
+        'runes': rune_filter,
+        'profile_name': profile_name,
+    }
+
+    return render(request, 'herders/profile/runes/inventory.html', context)
+
+
+@login_required
+def rune_add(request, profile_name):
+    form = AddRuneInstanceForm(request.POST or None)
+    form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
+    template = loader.get_template('herders/profile/runes/add_form.html')
+
+    if request.method == 'POST':
+        if form.is_valid():
+            # Create the monster instance
+            new_rune = form.save(commit=False)
+            new_rune.owner = request.user.summoner
+            new_rune.save()
+
+            # Send back blank form
+            form = AddRuneInstanceForm()
+            form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
+
+            response_data = {
+                'code': 'success',
+                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+            }
+        else:
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+            }
+    else:
+        # Check for any pre-filled GET parameters
+        slot = request.GET.get('slot', None)
+        assigned_to = request.GET.get('assigned_to', None)
+
+        form = AddRuneInstanceForm(initial={
+            'assigned_to': assigned_to,
+            'slot': slot if slot is not None else 1,
+        })
+        form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
+
+        # Return form filled in and errors shown
+        response_data = {
+            'html': template.render(RequestContext(request, {'add_rune_form': form}))
+        }
+
+    return JsonResponse(response_data)
+
+
 def rune_edit(request, profile_name, rune_id):
-    pass
+    rune = get_object_or_404(RuneInstance, pk=rune_id)
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    form = AddRuneInstanceForm(request.POST or None, instance=rune, auto_id='edit_id_%s')
+    form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
+    template = loader.get_template('herders/profile/runes/add_form.html')
+
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            form.save()
+
+            form = AddRuneInstanceForm(auto_id='edit_id_%s')
+            form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
+
+            response_data = {
+                'code': 'success',
+                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+            }
+        else:
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+            }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
 
 
+@login_required
+def rune_assign(request, profile_name, instance_id, slot=None):
+    rune_queryset = RuneInstance.objects.filter(owner=request.user.summoner, assigned_to=None)
+    filter_form = AssignRuneForm(request.POST or None, initial={'slot': slot})
+    filter_form.helper.form_action = reverse('herders:rune_assign', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
+
+    if slot:
+        rune_queryset = rune_queryset.filter(slot=slot)
+
+    rune_filter = RuneInstanceFilter(request.POST, queryset=rune_queryset)
+
+    if request.method == 'POST':
+        template = loader.get_template('herders/profile/runes/assign_results.html')
+
+        response_data = {
+            'code': 'results',
+            'html': template.render(RequestContext(request, {
+                'filter': rune_filter,
+                'profile_name': profile_name,
+                'instance_id': instance_id,
+            }))
+        }
+    else:
+        template = loader.get_template('herders/profile/runes/assign_form.html')
+
+        response_data = {
+            'code': 'success',
+            'html': template.render(RequestContext(request, {
+                'filter': rune_filter,
+                'form': filter_form,
+                'profile_name': profile_name,
+                'instance_id': instance_id,
+            }))
+        }
+
+    return JsonResponse(response_data)
+
+
+@login_required
+def rune_assign_choice(request, profile_name, instance_id, rune_id):
+    monster = get_object_or_404(MonsterInstance, pk=instance_id)
+    rune = get_object_or_404(RuneInstance, pk=rune_id)
+
+    if rune.assigned_to is not None:
+        # TODO: Warn about removing from other monster?
+        pass
+
+    # Check for existing rune.
+    existing_runes = monster.runeinstance_set.filter(slot=rune.slot)
+    for existing_rune in existing_runes:
+        existing_rune.assigned_to = None
+
+    rune.assigned_to = monster
+    rune.save()
+
+    response_data = {
+        'code': 'success',
+    }
+
+    return JsonResponse(response_data)
+
+
+@login_required
+def rune_unassign(request, profile_name, rune_id):
+    rune = get_object_or_404(RuneInstance, pk=rune_id)
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner and request.method == 'POST':
+        rune.assigned_to = None
+        rune.save()
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required
 def rune_delete(request, profile_name, rune_id):
-    pass
+    rune = get_object_or_404(RuneInstance, pk=rune_id)
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner and request.method == 'POST':
+        messages.success(request, 'Deleted ' + str(rune))
+        rune.delete()
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
 
 
 def bestiary(request):

@@ -6,8 +6,16 @@ $(function () {
     });
 });
 
+//Defaults for the bootboxes
+bootbox.setDefaults({
+    backdrop: true,
+    closeButton: true,
+    animate: true,
+    onEscape: true
+});
+
 //Custom popovers for loading AJAX content
-$('*[data-instance-id]').hover(function(event) {
+$('.monster-popover').hover(function(event) {
     if (event.type === 'mouseenter') {
         var el = $(this);
         var url = API_URL + 'instance/' + el.data('instance-id') + '.html';
@@ -29,24 +37,10 @@ $('*[data-instance-id]').hover(function(event) {
     }
 });
 
+
 //Modal management scripts
 $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
-});
-
-// Monster view page show modals on load
-$(window).load(function() {
-    var hashStr = location.hash.replace("#","");
-    if (hashStr) {
-        switch(hashStr) {
-            case 'edit':
-                $('#editMonsterModal').modal('show');
-                break;
-            case 'awaken':
-                $('#awakenMonsterModal').modal('show');
-                break;
-        }
-    }
 });
 
 //Automatically set attributes based on monster info
@@ -94,11 +88,38 @@ function SetMaxSkillLevel() {
 $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('click', '*[data-skill-field]', SetMaxSkillLevel)
     .on('selectChoice', '*[data-set-stars]', SetStars)
-    .on('click', '.closeall', function() {
-        $('.panel-collapse.in').collapse('hide');
+    .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
+    .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
+    .on('change', '.auto-submit', function() {
+        $(this).parents("form").submit();
     })
-    .on('click', '.openall', function() {
-        $('.panel-collapse:not(".in")').collapse('show');
+    .on('mouseenter mouseleave', '.rune-popover', function(event) {
+        if (event.type === 'mouseenter') {
+            var el = $(this);
+            var rune_id = el.data('rune-id');
+            var popover_loc = el.data('placement');
+            if (!popover_loc) { popover_loc = 'right'; }
+
+            if (rune_id.length > 0) {
+                var url = API_URL + 'runes/' + el.data('rune-id') + '.html';
+                $.get(url, function (d) {
+                    el.popover({
+                        trigger: 'manual',
+                        content: d,
+                        placement: popover_loc,
+                        html: true,
+                        container: 'body',
+                        template: '<div class="rune-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                    });
+
+                    if (el.is(":hover")) {
+                        el.popover('show');
+                    }
+                });
+            }
+        } else {
+            $(this).popover('hide');
+        }
     });
 
 //Bulk add
@@ -194,3 +215,33 @@ $('button.reset').click(function() {
     $('button.filter').toggleClass(active_filter_class, false);
     $('#monster_table').trigger('saveSortReset').trigger("sortReset");
 });
+
+//Rune form common functions
+function update_main_slot_options(slot, main_stat_input) {
+
+    $.ajax({
+        type: 'get',
+        url: API_URL + 'runes/stats_by_slot/' + slot.toString() + '/'
+    }).done(function (response) {
+        if (response.code === 'success') {
+            // Record the current stat to see if we can pick it in the new list
+            var current_stat = main_stat_input.val();
+
+            main_stat_input.empty();
+            $.each(response.data, function (val, text) {
+                main_stat_input.append(
+                    $('<option></option>').val(val).html(text)
+                );
+            });
+
+            var exists = 0 != main_stat_input.find('option[value='+current_stat+']').length;
+            if (exists) {
+                main_stat_input.val(current_stat);
+            }
+            else {
+                for(var key in response.data) break;
+                main_stat_input.val(key);
+            }
+        }
+    });
+}

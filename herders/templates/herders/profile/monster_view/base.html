@@ -1,0 +1,89 @@
+{% extends 'herders/profile/profile_base.html' %}
+{% load staticfiles %}
+{% load utils %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+
+{% block title %}
+{% if is_owner %}
+        {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
+    {% else %}
+        {{ summoner.user.username }}'s {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block subnav %}
+    {% if is_owner %}
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-subnav">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-subnav">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default navbar-btn monster-edit" data-instance-id="{{ instance.pk.hex }}">
+                        <span class="glyphicon glyphicon-edit"></span> Edit
+                    </button>
+                    <button type="button" class="btn btn-default navbar-btn monster-power-up" data-instance-id="{{ instance.pk.hex }}">
+                        <span class="glyphicon glyphicon-arrow-up"></span> Power Up
+                    </button>
+                    {% if not instance.monster.is_awakened and instance.monster.can_awaken %}
+                    <button type="button" class="btn btn-default navbar-btn monster-awaken" data-instance-id="{{ instance.pk.hex }}">
+                        <span class="glyphicon glyphicon-star" style="color:purple"></span> Awaken
+                    </button>
+                    {% endif %}
+                    <a href="{% url 'herders:monster_instance_duplicate' profile_name=profile_name instance_id=instance.pk.hex %}?next={{ return_path }}" class="btn btn-default navbar-btn">
+                        <span class="glyphicon glyphicon-copy"></span> Copy
+                    </a>
+                </div>
+
+                <button type="button" class="btn btn-danger navbar-btn pull-right monster-delete" data-instance-id="{{ instance.pk.hex }}">
+                    <span class="glyphicon glyphicon-trash"></span>
+                     Delete
+                </button>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+{% endblock subnav %}
+
+{% block profile %}
+    <div class="bestiary-detail">
+        <div class="row">
+            <div class="col-lg-4">
+                <div id="monster-view-notes-info"></div>
+            </div>
+            <div class="col-lg-4">
+                <div id="monster-view-runes"></div>
+            </div>
+            <div class="col-lg-4">
+                <div id="monster-view-stats"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="monster-view-skills"></div>
+        </div>
+    </div>
+    <div class="bestiary-portraits">
+        <div id="monster-view-sidebar"></div>
+    </div>
+
+    <div class="clearfix"></div>
+{% endblock profile %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "herders/js/monster_view.js" %}"></script>
+{% endblock javascript_compressed %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        var INSTANCE_ID = '{{ instance.pk.hex }}';
+    </script>
+{% endblock javascript %}

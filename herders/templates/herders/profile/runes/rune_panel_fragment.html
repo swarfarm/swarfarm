@@ -1,0 +1,52 @@
+{% load utils %}
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default rune-panel">
+    <div class="panel-heading condensed">
+        <div class="btn-group pull-right">
+            <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </button>
+            <button class="btn btn-default btn-xs rune-delete" data-rune-id="{{ rune.pk.hex }}">
+                <span class="glyphicon glyphicon-trash text-danger"></span>
+            </button>
+        </div>
+        <p class="panel-title rune-text rune-text-{{ rune.get_quality_display|lower }}">{{ rune }}</p>
+    </div>
+    <div class="panel-body condensed">
+        {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
+        <ul class="list-unstyled">
+            <li class="rune-main-stat">{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</li>
+            {% if rune.innate_stat %}<li>{{ rune.get_innate_stat_rune_display }} +{{ rune.innate_stat_value }}{% if rune.innate_stat in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
+        </ul>
+        <div class="clearfix"></div>
+        <ul class="list-unstyled">
+            {% if rune.substat_1 %}<li>{{ rune.get_substat_1_rune_display }} +{{ rune.substat_1_value }}{% if rune.substat_1 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
+            {% if rune.substat_2 %}<li>{{ rune.get_substat_2_rune_display }} +{{ rune.substat_2_value }}{% if rune.substat_2 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
+            {% if rune.substat_3 %}<li>{{ rune.get_substat_3_rune_display }} +{{ rune.substat_3_value }}{% if rune.substat_3 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
+            {% if rune.substat_4 %}<li>{{ rune.get_substat_4_rune_display }} +{{ rune.substat_4_value }}{% if rune.substat_4 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
+        </ul>
+        {% if rune.assigned_to %}
+            <div class="rune-assigned-to">
+                <div class="monster-image">
+                    <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}" target="_blank">
+                        <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb"/>
+                        <span>
+                            {% for x in rune.assigned_to.stars|get_range %}
+                                {% if rune.assigned_to.monster.is_awakened %}
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% elif rune.assigned_to.monster.can_awaken %}
+                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% else %}
+                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span class="image-plus image-plus-right">{{ rune.assigned_to.level }}</span>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

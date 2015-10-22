@@ -198,7 +198,7 @@ function UpdateAll() {
     UpdateNotes();
 }
 
-$(document).ready(UpdateAll);
+$(document).ready(UpdateAll());
 
 // Event ties
 $('body')

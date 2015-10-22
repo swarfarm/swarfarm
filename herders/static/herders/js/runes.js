@@ -66,7 +66,7 @@ $('body').on('submit', '.ajax-form', function() {
         callback: function(result) {
             if (result) {
                 $.ajax({
-                    type: 'post',
+                    type: 'get',
                     url: '/profile/' + PROFILE_NAME + '/runes/delete/' + rune_id + '/',
                     data: {
                         "delete": "delete",

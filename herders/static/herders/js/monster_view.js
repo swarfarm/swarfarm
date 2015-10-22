@@ -56,7 +56,7 @@ function UnassignRune(rune_id) {
                 className: 'btn-default pull-left',
                 callback: function () {
                     $.ajax({
-                        type: 'post',
+                        type: 'get',
                         url: '/profile/' + PROFILE_NAME + '/runes/unassign/' + rune_id + '/'
                     }).done(function (response) {
                         if (response.code === 'success') {
@@ -72,7 +72,7 @@ function UnassignRune(rune_id) {
                 className: 'btn-danger',
                 callback: function () {
                     $.ajax({
-                        type: 'post',
+                        type: 'get',
                         url: '/profile/' + PROFILE_NAME + '/runes/delete/' + rune_id + '/',
                         data: {
                             "delete": "delete",
@@ -128,7 +128,7 @@ function DeleteMonster(instance_id) {
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        type: 'post',
+                        type: 'get',
                         url: '/profile/' + PROFILE_NAME + '/monster/delete/' + instance_id + '/',
                         data: {
                             "delete": "delete",

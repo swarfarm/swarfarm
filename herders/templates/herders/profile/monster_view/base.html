@@ -6,10 +6,10 @@
 
 {% block title %}
 {% if is_owner %}
-        {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
-    {% else %}
-        {{ summoner.user.username }}'s {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
-    {% endif %}
+{{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
+{% else %}
+{{ summoner.user.username }}'s {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
+{% endif %}
 {% endblock %}
 
 {% block subnav %}

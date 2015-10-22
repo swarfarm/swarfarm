@@ -21,6 +21,11 @@
                         <img src="{% static 'herders/images/icons/monster.png' %}" />
                         Monsters
                     </a>
+                    <a href="{% url 'herders:runes' profile_name=summoner.user.username %}"
+                       class="btn btn-default {% if view == 'runes' %}active{% endif %}">
+                        <img src="{% static 'herders/images/icons/rune.png' %}" />
+                        Runes
+                    </a>
                     <a href="{% url 'herders:fusion' profile_name=summoner.user.username %}"
                        class="btn btn-default {% if view == 'fusion' %}active{% endif %}">
                         <img src="{% static 'herders/images/icons/fusion.png' %}" />

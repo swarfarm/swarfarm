@@ -4,7 +4,13 @@
 {% load crispy_forms_filters %}
 {% load utils %}
 
-{% block title %}My Runes - {{ block.super }}{% endblock %}
+{% block title %}
+{% if is_owner %}
+My Runes - {{ block.super }}
+{% else %}
+{{ summoner.user.username }}'s Runes - {{ block.super }}
+{% endif %}
+{% endblock %}
 
 {% block subnav %}
     {% if is_owner %}

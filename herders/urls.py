@@ -60,8 +60,8 @@ urlpatterns = [
             url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_add, name='profile_follow_add'),
             url(r'^remove/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_remove, name='profile_follow_remove'),
         ])),
-        url(r'(?P<view_mode>[a-zA-Z]+)/(?P<sort_method>[a-zA-Z]+)/$', views.profile, name='profile_sorted'),
-        url(r'(?P<view_mode>[a-zA-Z]+)/$', views.profile, name='profile'),
+        url(r'(?P<view_mode>(list|box))/(?P<sort_method>[a-zA-Z]+)/$', views.profile, name='profile_sorted'),
+        url(r'(?P<view_mode>(list|box))/$', views.profile, name='profile'),
     ])),
 
     # Bestiary

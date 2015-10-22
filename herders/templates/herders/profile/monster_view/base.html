@@ -31,7 +31,7 @@
                     <button type="button" class="btn btn-default navbar-btn monster-edit" data-instance-id="{{ instance.pk.hex }}">
                         <span class="glyphicon glyphicon-edit"></span> Edit
                     </button>
-                    <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#powerUpMonsterModal">
+                    <button type="button" class="btn btn-default navbar-btn monster-power-up" data-instance-id="{{ instance.pk.hex }}">
                         <span class="glyphicon glyphicon-arrow-up"></span> Power Up
                     </button>
                     {% if not instance.monster.is_awakened and instance.monster.can_awaken %}
@@ -55,55 +55,19 @@
 {% endblock subnav %}
 
 {% block profile %}
-    {% static 'herders/images/' as img_url_prefix %}
-
-    {# Form modals #}
-    {% if is_owner and edit_form %}
-        {# Power-up monster modal #}
-        <div class="modal fade" id="powerUpMonsterModal" tabindex="-1" role="dialog" aria-labelledby="modalPowerUpMonsterTitle" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalEditMonsterTitle">Power Up {{ instance.monster }}</h4>
-                    </div>
-                    <form method="post" action="{{ power_up_form_action }}">
-                        <div class="modal-body">
-                            {{ power_up_form.management_form|crispy }}
-                            {% for form in power_up_form %}
-                                {% crispy form %}
-                            {% endfor %}
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="ignore_errors" id="id-ignore-errors" {% if ignore_evolve_checked %}checked="checked"{% endif %}> Disable evolution error checking.
-                                </label>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <div class="form-actions">
-                                <input type="submit" name="power_up" value="Power Up" class="btn btn-primary" id="submit-id-power-up"/>
-                                {% if monster.stars < 6 %}
-                                    <input type="submit" name="evolve" value="Evolve" class="btn btn-primary" id="submit-id-evolve"/>
-                                {% else %}
-                                    <button class="btn btn-primary disabled">Evolve</button>
-                                {% endif %}
-                                <p></p>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+    <div class="bestiary-detail">
+        <div class="row">
+            <div class="col-lg-4">
+                <div id="monster-view-notes-info"></div>
+            </div>
+            <div class="col-lg-4">
+                <div id="monster-view-runes"></div>
+            </div>
+            <div class="col-lg-4">
+                <div id="monster-view-stats"></div>
             </div>
         </div>
-    {% endif %}
-
-    {# Monster data display #}
-    <div class="bestiary-detail">
-        <div class="col-lg-3 no-left-gutter no-right-gutter">
-            <div id="monster-view-runes"></div>
-            <div id="monster-view-stats"></div>
-            <div id="monster-view-notes-info"></div>
-        </div>
-        <div class="col-lg-9 no-right-gutter">
+        <div class="row">
             <div id="monster-view-skills"></div>
         </div>
     </div>

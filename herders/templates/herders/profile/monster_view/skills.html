@@ -15,7 +15,7 @@
 {% endif %}
 
 {% for skill in skills %}
-<div class="{% if instance.monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %} no-left-gutter">
+<div class="{% if instance.monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
     <div class="panel panel-default">
         <div class="panel-heading">
             <p class="panel-title"><strong>{{ skill.skill.name }}</strong> {% if skill.skill.passive %}(Passive){% endif %}</p>

@@ -420,7 +420,7 @@ def monster_instance_view(request, profile_name, instance_id):
         raise Http404()
 
     context = {
-        'profile_name': request.user.username,
+        'profile_name': profile_name,
         'summoner': summoner,
         'return_path': return_path,
         'instance': instance,
@@ -522,6 +522,9 @@ def monster_instance_view_sidebar(request, profile_name, instance_id):
 
 
 def monster_instance_view_runes(request, profile_name, instance_id):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
     try:
         instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
@@ -539,6 +542,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     context = {
         'runes': instance_runes,
         'instance': instance,
+        'is_owner': is_owner,
     }
 
     return render(request, 'herders/profile/monster_view/runes.html', context)
@@ -1317,13 +1321,15 @@ def runes(request, profile_name):
 
 def rune_inventory(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    rune_queryset = RuneInstance.objects.filter(owner=request.user.summoner)
+    rune_queryset = RuneInstance.objects.filter(owner=summoner)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     rune_filter = RuneInstanceFilter(request.POST, queryset=rune_queryset)
 
     context = {
         'runes': rune_filter,
         'profile_name': profile_name,
+        'is_owner': is_owner,
     }
 
     return render(request, 'herders/profile/runes/inventory.html', context)

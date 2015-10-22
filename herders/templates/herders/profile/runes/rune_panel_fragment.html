@@ -4,6 +4,7 @@
 
 <div class="panel panel-default rune-panel">
     <div class="panel-heading condensed">
+        {% if is_owner %}
         <div class="btn-group pull-right">
             <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
                 <span class="glyphicon glyphicon-pencil"></span>
@@ -12,6 +13,7 @@
                 <span class="glyphicon glyphicon-trash text-danger"></span>
             </button>
         </div>
+        {% endif %}
         <p class="panel-title rune-text rune-text-{{ rune.get_quality_display|lower }}">{{ rune }}</p>
     </div>
     <div class="panel-body condensed">

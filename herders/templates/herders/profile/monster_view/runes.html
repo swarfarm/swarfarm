@@ -8,24 +8,26 @@
         <tr {% if rune %}class="rune-popover" data-rune-id="{{ rune.pk.hex }}"{% endif %}>
             <td style="vertical-align:middle">{{ forloop.counter }}</td>
             <td>
-                {% if rune %}
-                <div class="btn-group pull-right ">
-                    <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
-                        <span class="glyphicon glyphicon-pencil"></span>
-                    </button>
-                    <button class="btn btn-default btn-xs rune-unassign" data-rune-id="{{ rune.pk.hex }}">
-                        <span class="glyphicon glyphicon-remove text-danger"></span>
-                    </button>
-                </div>
-                {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
-                <ul class="list-unstyled">
-                    <li>{{ rune }}</li>
-                    <li>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</li>
-                </ul>
-                {% else %}
-                <div class="btn btn-default btn-xs rune-assign pull-right" data-rune-slot="{{ forloop.counter }}">
-                    <span class="glyphicon glyphicon-plus"></span>
-                </div>
+                {% if is_owner %}
+                    {% if rune %}
+                    <div class="btn-group pull-right ">
+                        <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                        <button class="btn btn-default btn-xs rune-unassign" data-rune-id="{{ rune.pk.hex }}">
+                            <span class="glyphicon glyphicon-remove text-danger"></span>
+                        </button>
+                    </div>
+                    {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
+                    <ul class="list-unstyled">
+                        <li>{{ rune }}</li>
+                        <li>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</li>
+                    </ul>
+                    {% else %}
+                    <div class="btn btn-default btn-xs rune-assign pull-right" data-rune-slot="{{ forloop.counter }}">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </div>
+                    {% endif %}
                 {% endif %}
             </td>
         </tr>

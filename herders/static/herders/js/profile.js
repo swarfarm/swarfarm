@@ -32,7 +32,7 @@ function DeleteMonster(instance_id) {
             callback: function (result) {
                 if (result) {
                     $.ajax({
-                        type: 'post',
+                        type: 'get',
                         url: '/profile/' + PROFILE_NAME + '/monster/delete/' + instance_id + '/',
                         data: {
                             "delete": "delete",

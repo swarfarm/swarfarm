@@ -490,6 +490,8 @@ class EditMonsterInstanceForm(ModelForm):
 class PowerUpMonsterInstanceForm(forms.Form):
     monster = autocomplete_light.ModelMultipleChoiceField('MonsterInstanceAutocomplete')
     monster.label = 'Material Monsters'
+    monster.required = False
+
     ignore_evolution = forms.BooleanField(
         label='Ignore evolution error checking',
         required=False,

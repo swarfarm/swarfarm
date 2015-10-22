@@ -242,9 +242,19 @@ $('body')
 
         return false;  //cancel default on submit action.
     })
+    .on('click', ':submit', function() {
+        var $form = $(this).closest('form');
+        $('<input>').attr({
+            type: 'hidden',
+            id: 'id' + $(this).attr('name'),
+            name: $(this).attr('name'),
+            value: $(this).attr('value')
+        }).appendTo($form);
+    })
     .on('submit', '.ajax-form', function() {
         //Handle add ajax form submit
         var $form = $(this);
+
         $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),

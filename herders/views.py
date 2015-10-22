@@ -638,7 +638,6 @@ def monster_instance_delete(request, profile_name, instance_id):
 
 @login_required()
 def monster_instance_power_up(request, profile_name, instance_id):
-
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
@@ -661,64 +660,60 @@ def monster_instance_power_up(request, profile_name, instance_id):
     }
 
     if is_owner:
-        if request.method == 'POST':
-            if form.is_valid():
-                food_monsters = form.cleaned_data['monster']
+        if request.method == 'POST' and form.is_valid():
+            food_monsters = form.cleaned_data['monster']
 
-                # Check that monster is not being fed to itself
-                if monster in food_monsters:
-                    validation_errors['base_food_same'] = "You can't feed a monster to itself. "
+            # Check that monster is not being fed to itself
+            if monster in food_monsters:
+                validation_errors['base_food_same'] = "You can't feed a monster to itself. "
 
-                is_evolution = request.POST.get('evolve', False)
+            is_evolution = request.POST.get('evolve', False)
 
-                # Perform validation checks for evolve action
-                if is_evolution:
-                    # Check constraints on evolving (or not, if form element was set)
-                    if not request.POST.get('ignore_errors', False):
-                        # Check monster level and stars
-                        if monster.stars >= 6:
-                            validation_errors['base_monster_stars'] = "%s is already at 6 stars." % monster.monster.name
+            # Perform validation checks for evolve action
+            if is_evolution:
+                # Check constraints on evolving (or not, if form element was set)
+                if not form.cleaned_data['ignore_evolution']:
+                    # Check monster level and stars
+                    if monster.stars >= 6:
+                        validation_errors['base_monster_stars'] = "%s is already at 6 stars." % monster.monster.name
 
-                        if monster.level != monster.max_level_from_stars():
-                            validation_errors['base_monster_level'] = "%s is not at max level for the current star rating (Lvl %s)." % (monster.monster.name, monster.monster.max_level_from_stars())
+                    if monster.level != monster.max_level_from_stars():
+                        validation_errors['base_monster_level'] = "%s is not at max level for the current star rating (Lvl %s)." % (monster.monster.name, monster.monster.max_level_from_stars())
 
-                        # Check number of fodder monsters
-                        if len(food_monsters) < monster.stars:
-                            validation_errors['food_monster_quantity'] = "Evolution requres %s food monsters." % monster.stars
+                    # Check number of fodder monsters
+                    if len(food_monsters) < monster.stars:
+                        validation_errors['food_monster_quantity'] = "Evolution requres %s food monsters." % monster.stars
 
-                        # Check fodder star ratings - must be same as monster
-                        for food in food_monsters:
-                            if food.stars != monster.stars:
-                                if 'food_monster_stars' not in validation_errors:
-                                    validation_errors['food_monster_stars'] = "All food monsters must be %s stars." % monster.stars
-                    else:
-                        # Record state of ignore evolve rules for form redisplay
-                        context['ignore_evolve_checked'] = True
-
-                    # Perform the stars++ if no errors
-                    if not validation_errors:
-                        # Level up stars
-                        monster.stars += 1
-                        monster.level = 1
-                        monster.save()
-                        messages.success(request, 'Successfully evolved %s to %s<span class="glyphicon glyphicon-star"></span>' % (monster.monster.name, monster.stars), extra_tags='safe')
-
-                if not validation_errors:
-                    # Delete the submitted monsters
+                    # Check fodder star ratings - must be same as monster
                     for food in food_monsters:
-                        if food.owner == request.user.summoner:
-                            messages.success(request, 'Deleted %s' % food)
-                            food.delete()
-                        else:
-                            raise PermissionDenied("Trying to delete a monster you don't own")
+                        if food.stars != monster.stars:
+                            if 'food_monster_stars' not in validation_errors:
+                                validation_errors['food_monster_stars'] = "All food monsters must be %s stars or higher." % monster.stars
 
-                    # Redirect back to return path if evolved, or go to edit screen if power up
-                    if is_evolution:
-                        response_data['code'] = 'success'
+                # Perform the stars++ if no errors
+                if not validation_errors:
+                    # Level up stars
+                    monster.stars += 1
+                    monster.level = 1
+                    monster.save()
+                    messages.success(request, 'Successfully evolved %s to %s<span class="glyphicon glyphicon-star"></span>' % (monster.monster.name, monster.stars), extra_tags='safe')
+
+            if not validation_errors:
+                # Delete the submitted monsters
+                for food in food_monsters:
+                    if food.owner == request.user.summoner:
+                        messages.success(request, 'Deleted %s' % food)
+                        food.delete()
                     else:
-                        response_data['code'] = 'edit'
+                        raise PermissionDenied("Trying to delete a monster you don't own")
 
-                    return JsonResponse(response_data)
+                # Redirect back to return path if evolved, or go to edit screen if power up
+                if is_evolution:
+                    response_data['code'] = 'success'
+                else:
+                    response_data['code'] = 'edit'
+
+                return JsonResponse(response_data)
     else:
         raise PermissionDenied("Trying to power up or evolve a monster you don't own")
 

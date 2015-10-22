@@ -178,16 +178,16 @@ def profile(request, profile_name=None, view_mode=None, sort_method=None):
 
     # If we passed in view mode or sort method, set the session variable and redirect back to base profile URL
     if view_mode:
-        request.session['profile_view_mode'] = view_mode
+        request.session['profile_view_mode'] = view_mode.lower()
 
     if sort_method:
-        request.session['profile_sort_method'] = sort_method
+        request.session['profile_sort_method'] = sort_method.lower()
 
     if request.session.modified:
         return redirect('herders:profile_default', profile_name=profile_name)
 
-    view_mode = request.session.get('profile_view_mode', 'list')
-    sort_method = request.session.get('profile_sort_method', 'grade')
+    view_mode = request.session.get('profile_view_mode', 'list').lower()
+    sort_method = request.session.get('profile_sort_method', 'grade').lower()
 
     context = {
         'add_monster_form': AddMonsterInstanceForm(),

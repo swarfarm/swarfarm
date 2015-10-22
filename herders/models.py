@@ -791,7 +791,7 @@ class MonsterInstance(models.Model):
 
     def rune_resistance(self):
         runes = self.runeinstance_set.filter(has_resist=True)
-        resist = self.rune_bonus_rage()
+        resist = self.rune_bonus_endure()
 
         for rune in runes:
             resist += rune.get_stat(RuneInstance.STAT_RESIST_PCT)
@@ -806,7 +806,7 @@ class MonsterInstance(models.Model):
 
     def rune_accuracy(self):
         runes = self.runeinstance_set.filter(has_accuracy=True)
-        accuracy = self.rune_bonus_rage()
+        accuracy = self.rune_bonus_focus()
 
         for rune in runes:
             accuracy += rune.get_stat(RuneInstance.STAT_ACCURACY_PCT)

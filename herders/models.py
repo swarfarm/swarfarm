@@ -608,7 +608,7 @@ class MonsterInstance(models.Model):
     in_storage = models.BooleanField(default=False)
     ignore_for_fusion = models.BooleanField(default=False)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_MED)
-    notes = models.TextField(null=True, blank=True)
+    notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
 
     def is_max_level(self):
         return self.level == self.monster.max_level_from_stars(self.stars)
@@ -1404,7 +1404,7 @@ class Team(models.Model):
     group = models.ForeignKey(TeamGroup)
     name = models.CharField(max_length=30)
     favorite = models.BooleanField(default=False, blank=True)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
     leader = models.ForeignKey('MonsterInstance', related_name='team_leader', null=True, blank=True)
     roster = models.ManyToManyField('MonsterInstance', blank=True)
 

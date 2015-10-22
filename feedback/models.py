@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils.safestring import mark_safe
 
 
 class Issue(models.Model):
@@ -50,7 +51,7 @@ class Issue(models.Model):
     priority = models.IntegerField(choices=PRIORITY_CHOICES, null=True, blank=True)
     topic = models.IntegerField(choices=TOPIC_CHOICES)
     subject = models.CharField(max_length=40)
-    description = models.TextField()
+    description = models.TextField(help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
     public = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -76,7 +77,7 @@ class Discussion(models.Model):
     feedback = models.ForeignKey(Issue)
     user = models.ForeignKey(User)
     timestamp = models.DateTimeField(auto_now=True)
-    comment = models.TextField()
+    comment = models.TextField(help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
 
     def __unicode__(self):
         return str(self.feedback) + ' ' + str(self.timestamp)

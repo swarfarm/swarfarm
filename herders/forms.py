@@ -456,7 +456,6 @@ class EditMonsterInstanceForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'ajax-form'
-        self.fields['notes'].help_text = 'Markdown syntax enabled'
 
         self.helper.layout = Layout(
             Div(
@@ -623,9 +622,6 @@ class EditTeamForm(ModelForm):
         widgets = {
             'roster': autocomplete_light.MultipleChoiceWidget('MonsterInstanceAutocomplete'),
             'leader': autocomplete_light.ChoiceWidget('MonsterInstanceAutocomplete'),
-        }
-        help_texts = {
-            'description': 'Markdown syntax enabled'
         }
 
     def clean(self):

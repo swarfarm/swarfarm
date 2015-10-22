@@ -20,7 +20,7 @@
             {% include 'herders/profile/runes/rune_panel_fragment.html' with rune=rune profile_name=profile_name only %}
         </div>
     {% empty %}
-        <div class="alert alert-warning">Your search returned no results!</div>
+        <div class="alert alert-warning">Your search returned no results or you have no runes!</div>
     {% endfor %}
     </div>
 </div>

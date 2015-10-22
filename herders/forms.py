@@ -654,6 +654,7 @@ class AddRuneInstanceForm(ModelForm):
         self.fields['substat_3_value'].label = False
         self.fields['substat_4'].label = False
         self.fields['substat_4_value'].label = False
+        self.fields['assigned_to'].label = False
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
@@ -709,14 +710,18 @@ class AddRuneInstanceForm(ModelForm):
                     Div('substat_4_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
-                Field('assigned_to'),
-            ),
-            Div(
-                FormActions(
-                    Submit('save', 'Save'),
+                Div(
+                    Div(HTML('<label>Assign To</label>'), css_class='col-lg-2 text-right'),
+                    Div(
+                        Field('assigned_to'),
+                        css_class='col-lg-5',
+                    ),
+                    css_class='row',
                 ),
-                css_class='modal-footer'
-            )
+            ),
+            FormActions(
+                Submit('save', 'Save'),
+            ),
         )
 
     class Meta:

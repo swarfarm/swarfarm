@@ -708,52 +708,36 @@ def monster_instance_delete(request, profile_name, instance_id):
 
 @login_required()
 def monster_instance_power_up(request, profile_name, instance_id):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
+
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
+    template = loader.get_template('herders/profile/profile_power_up.html')
 
-    PowerUpFormset = formset_factory(PowerUpMonsterInstanceForm, extra=5, max_num=5)
-
-    if request.method == 'POST':
-        formset = PowerUpFormset(request.POST)
-    else:
-        formset = PowerUpFormset()
+    form = PowerUpMonsterInstanceForm(request.POST or None)
+    form.helper.form_action = reverse('herders:monster_instance_power_up', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
     context = {
         'profile_name': request.user.username,
-        'return_path': return_path,
         'monster': monster,
         'is_owner': is_owner,
-        'power_up_formset_action': request.path + '?next=' + return_path,
-        'power_up_formset': formset,
+        'form': form,
         'view': 'profile',
     }
 
-    food_monsters = []
     validation_errors = {}
+    response_data = {
+        'code': 'error'
+    }
 
     if is_owner:
         if request.method == 'POST':
-            if formset.is_valid():
-                # Create list of submitted food monsters
-                for instance in formset.cleaned_data:
-                    # Some fields may be blank if user skipped a form input or didn't fill in all 5
-                    if instance:
-                        food_monsters.append(instance['monster'])
-
-                # Check that all food monsters are unique - This is done whether or not user bypassed evolution checks
-                if len(food_monsters) != len(set(food_monsters)):
-                    validation_errors['food_monster_unique'] = "You submitted duplicate food monsters. Please select unique monsters for each slot."
+            if form.is_valid():
+                food_monsters = form.cleaned_data['monster']
 
                 # Check that monster is not being fed to itself
-                for food in food_monsters:
-                    if food == monster:
-                        validation_errors['base_food_same'] = "You can't feed a monster to itself. "
+                if monster in food_monsters:
+                    validation_errors['base_food_same'] = "You can't feed a monster to itself. "
 
                 is_evolution = request.POST.get('evolve', False)
 
@@ -800,20 +784,19 @@ def monster_instance_power_up(request, profile_name, instance_id):
 
                     # Redirect back to return path if evolved, or go to edit screen if power up
                     if is_evolution:
-                        return redirect(return_path)
+                        response_data['code'] = 'success'
                     else:
-                        return redirect(
-                            reverse('herders:monster_instance_view', kwargs={'profile_name':profile_name, 'instance_id': instance_id})
-                        )
-            else:
-                context['form_errors'] = formset.errors
+                        response_data['code'] = 'edit'
 
+                    return JsonResponse(response_data)
     else:
         raise PermissionDenied("Trying to power up or evolve a monster you don't own")
 
     # Any errors in the form will fall through to here and be displayed
     context['validation_errors'] = validation_errors
-    return render(request, 'herders/profile/profile_power_up.html', context)
+    response_data['html'] = template.render(RequestContext(request, context))
+
+    return JsonResponse(response_data)
 
 
 @login_required()

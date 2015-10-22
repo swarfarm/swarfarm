@@ -394,13 +394,10 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
             Field('ignore_for_fusion', css_class='checkbox'),
             Field('priority',),
             Field('notes'),
-            Div(
-                FormActions(
-                    Submit('save', 'Save', css_class='btn btn-primary'),
-                    Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
-                ),
-                css_class='modal-footer',
-            )
+            FormActions(
+                Submit('save', 'Save', css_class='btn btn-primary'),
+                Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+            ),
         )
 
     class Meta:
@@ -492,15 +489,23 @@ class EditMonsterInstanceForm(ModelForm):
 
 
 class PowerUpMonsterInstanceForm(forms.Form):
-    monster = autocomplete_light.ModelChoiceField('MonsterInstanceAutocomplete')
-    monster.label = 'Material Monster'
-    monster.required = False
+    monster = autocomplete_light.ModelMultipleChoiceField('MonsterInstanceAutocomplete')
+    monster.label = 'Material Monsters'
+    ignore_evolution = forms.BooleanField(
+        label='Ignore evolution error checking',
+        required=False,
+    )
 
     helper = FormHelper()
     helper.form_method = 'post'
-    helper.form_tag = False
+    helper.form_class = 'ajax-form'
     helper.layout = Layout(
         Field('monster'),
+        Field('ignore_evolution'),
+        FormActions(
+            Submit('power_up', 'Power Up', css_class='btn btn-primary'),
+            Submit('evolve', 'Evolve', css_class='btn btn-primary'),
+        )
     )
 
 

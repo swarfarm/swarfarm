@@ -165,6 +165,20 @@ function AwakenMonster(instance_id) {
     }
 }
 
+function PowerUpMonster(instance_id) {
+    if (instance_id) {
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/monster/powerup/' + instance_id + '/'
+        }).done(function(result) {
+            bootbox.dialog({
+                title: 'Awaken Monster',
+                message: result.html
+            });
+        });
+    }
+}
+
 // Page update functions
 function UpdateSidebar() {
     $('#monster-view-sidebar').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/sidebar/');
@@ -211,6 +225,7 @@ $('body')
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
     .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
+    .on('click', '.monster-power-up', function() { PowerUpMonster($(this).data('instance-id')) })
     .on('click', '#addNewRune', function() { CreateNewRune($("#id_slot").val()) })
     .on('submit', '#AssignRuneForm', function() {
         var $form = $(this);
@@ -241,8 +256,15 @@ $('body')
                 $('.modal.in').modal('hide');
                 UpdateAll();
             }
-            $form.replaceWith(data.html);
-            $('.rating').rating();
+            else if (data.code === 'edit') {
+                $('.modal.in').modal('hide');
+                UpdateAll();
+                EditMonster(INSTANCE_ID);
+            }
+            else {
+                $form.replaceWith(data.html);
+                $('.rating').rating();
+            }
         });
 
         return false;  //cancel default on submit action.

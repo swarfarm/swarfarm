@@ -1406,7 +1406,7 @@ def rune_unassign(request, profile_name, rune_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    if is_owner and request.method == 'POST':
+    if is_owner:
         rune.assigned_to = None
         rune.save()
 
@@ -1425,7 +1425,7 @@ def rune_delete(request, profile_name, rune_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    if is_owner and request.method == 'POST':
+    if is_owner:
         messages.success(request, 'Deleted ' + str(rune))
         rune.delete()
 

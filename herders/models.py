@@ -686,7 +686,7 @@ class MonsterInstance(models.Model):
 
     def rune_hp(self):
         runes = self.runeinstance_set.filter(has_hp=True)
-        base = self.monster.actual_hp(self.stars, self.level)
+        base = self.base_hp()
         hp_percent = 0
         hp_flat = 0
 
@@ -706,7 +706,7 @@ class MonsterInstance(models.Model):
 
     def rune_attack(self):
         runes = self.runeinstance_set.filter(has_atk=True)
-        base = self.monster.actual_attack(self.stars, self.level)
+        base = self.base_attack()
         atk_percent = 0
         atk_flat = 0
 
@@ -726,7 +726,7 @@ class MonsterInstance(models.Model):
 
     def rune_defense(self):
         runes = self.runeinstance_set.filter(has_def=True)
-        base = self.monster.actual_defense(self.stars, self.level)
+        base = self.base_defense()
         def_percent = 0
         def_flat = 0
 
@@ -745,13 +745,15 @@ class MonsterInstance(models.Model):
         return self.monster.speed
 
     def rune_speed(self):
+        base = self.base_speed()
         runes = self.runeinstance_set.filter(has_speed=True)
-        spd_flat = self.rune_bonus_swift()
+        spd_percent = self.rune_bonus_swift()
+        spd_flat = 0
 
         for rune in runes:
             spd_flat += rune.get_stat(RuneInstance.STAT_SPD)
 
-        return int(spd_flat)
+        return int(ceil(base * (spd_percent / 100.0)) + spd_flat)
 
     def speed(self):
         return self.base_speed() + self.rune_speed()

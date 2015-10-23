@@ -243,4 +243,28 @@ span.rune-set-bonus {
 .rune-symbol.destroy {
     background-image: url(/static/herders/images/runes/destroy.png);
 }
+.rune-button {
 
+    background-position: left!important;
+    background-size: 30px 30px!important;
+    background-repeat: no-repeat;
+    text-align: left;
+    padding-left: 30px!important;
+}
+
+.rune-button-energy { background-image: url(/static/herders/images/runes/energy.png)!important;}
+.rune-button-fatal { background-image: url(/static/herders/images/runes/fatal.png)!important;}
+.rune-button-blade { background-image: url(/static/herders/images/runes/blade.png)!important;}
+.rune-button-rage { background-image: url(/static/herders/images/runes/rage.png)!important;}
+.rune-button-swift { background-image: url(/static/herders/images/runes/swift.png)!important;}
+.rune-button-focus { background-image: url(/static/herders/images/runes/focus.png)!important;}
+.rune-button-endure { background-image: url(/static/herders/images/runes/endure.png)!important;}
+.rune-button-guard { background-image: url(/static/herders/images/runes/guard.png)!important;}
+.rune-button-violent { background-image: url(/static/herders/images/runes/violent.png)!important;}
+.rune-button-will { background-image: url(/static/herders/images/runes/will.png)!important;}
+.rune-button-nemesis { background-image: url(/static/herders/images/runes/nemesis.png)!important;}
+.rune-button-shield { background-image: url(/static/herders/images/runes/shield.png)!important;}
+.rune-button-revenge { background-image: url(/static/herders/images/runes/revenge.png)!important;}
+.rune-button-despair { background-image: url(/static/herders/images/runes/despair.png)!important;}
+.rune-button-vampire { background-image: url(/static/herders/images/runes/vampire.png)!important;}
+.rune-button-destroy { background-image: url(/static/herders/images/runes/destroy.png)!important;}

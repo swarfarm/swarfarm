@@ -645,6 +645,7 @@ class EditTeamForm(ModelForm):
 class AddRuneInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRuneInstanceForm, self).__init__(*args, **kwargs)
+        self.fields['stars'].label = False
         self.fields['main_stat'].label = False
         self.fields['main_stat_value'].label = False
         self.fields['innate_stat'].label = False
@@ -665,63 +666,72 @@ class AddRuneInstanceForm(ModelForm):
         self.helper.form_class = 'ajax-form'
         self.helper.layout = Layout(
             Div(
+                Field('type', template="crispy/rune_button_select.html"),
+                css_class='col-lg-3',
+            ),
+            Div(
                 Div(
-                    Div('type', css_class='col-lg-3'),
-                    Div(Field('slot', placeholder='1-6'), css_class='col-lg-3'),
-                    Div(Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6), css_class='col-lg-3 text-justify'),
-                    Div(Field('level', placeholder='0-15'), css_class='col-lg-3'),
+                    Div(Field('slot', placeholder='1-6'), css_class='col-lg-4 col-lg-offset-3'),
+                    Div(Field('level', placeholder='0-15'), css_class='col-lg-5'),
                     css_class='row'
                 ),
                 Div(
-                    Div(HTML('<label>Stat Type</label>'), css_class='col-lg-5 col-lg-offset-2'),
+                    Div(HTML('<label>Stars</label>'), css_class='col-lg-3 text-right no-right-gutter'),
+                    Div(Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6), css_class='col-lg-9'),
+                    css_class='row'
+                ),
+                Div(
+                    Div(HTML('<label>Stat Type</label>'), css_class='col-lg-4 col-lg-offset-3'),
                     Div(HTML('<label>Stat Value</label>'), css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('<label>Main Stat</label>'), css_class='col-lg-2 text-right'),
-                    Field('main_stat', wrapper_class='col-lg-5'),
+                    Div(HTML('<label>Main Stat</label>'), css_class='col-lg-3 text-right no-right-gutter'),
+                    Field('main_stat', wrapper_class='col-lg-4'),
                     Field('main_stat_value', wrapper_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('<label>Innate Stat</label>'), css_class='col-lg-2 text-right'),
-                    Div('innate_stat', css_class='col-lg-5'),
+                    Div(HTML('<label>Innate Stat</label>'), css_class='col-lg-3 text-right no-right-gutter'),
+                    Div('innate_stat', css_class='col-lg-4'),
                     Div('innate_stat_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('<label>Substat 1</label>'), css_class='col-lg-2 text-right'),
-                    Div('substat_1', css_class='col-lg-5'),
+                    Div(HTML('<label>Substat 1</label>'), css_class='col-lg-3 text-right no-right-gutter'),
+                    Div('substat_1', css_class='col-lg-4'),
                     Div('substat_1_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('<label>Substat 2</label>'), css_class='col-lg-2 text-right'),
-                    Div('substat_2', css_class='col-lg-5'),
+                    Div(HTML('<label>Substat 2</label>'), css_class='col-lg-3 text-right no-right-gutter'),
+                    Div('substat_2', css_class='col-lg-4'),
                     Div('substat_2_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('<label>Substat 3</label>'), css_class='col-lg-2 text-right'),
-                    Div('substat_3', css_class='col-lg-5'),
+                    Div(HTML('<label>Substat 3</label>'), css_class='col-lg-3 text-right no-right-gutter'),
+                    Div('substat_3', css_class='col-lg-4'),
                     Div('substat_3_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('<label>Substat 4</label>'), css_class='col-lg-2 text-right'),
-                    Div('substat_4', css_class='col-lg-5'),
+                    Div(HTML('<label>Substat 4</label>'), css_class='col-lg-3 text-right no-right-gutter'),
+                    Div('substat_4', css_class='col-lg-4'),
                     Div('substat_4_value', css_class='col-lg-5'),
                     css_class='row',
                 ),
                 Div(
-                    Div(HTML('<label>Assign To</label>'), css_class='col-lg-2 text-right'),
+                    Div(HTML('<label>Assign To</label>'), css_class='col-lg-3 text-right no-right-gutter'),
                     Div(
                         Field('assigned_to'),
-                        css_class='col-lg-5',
+                        css_class='col-lg-9',
                     ),
                     css_class='row',
                 ),
+                css_class='col-lg-9',
             ),
+            Div(css_class='clearfix'),
             FormActions(
                 Submit('save', 'Save'),
             ),

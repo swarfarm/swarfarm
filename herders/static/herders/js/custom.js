@@ -2,7 +2,8 @@
 $(function () {
     $('[data-toggle="tooltip"]').tooltip();
     $('[data-toggle="popover"]').popover({
-        html:true
+        html:true,
+        viewport: {selector: 'body', padding: 2}
     });
 });
 
@@ -25,6 +26,7 @@ $('.monster-popover').hover(function(event) {
                 content: d,
                 html: true,
                 container: 'body',
+                viewport: {selector: 'body', padding: 2},
                 template: '<div class="monster-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
             });
 
@@ -97,8 +99,6 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
         if (event.type === 'mouseenter') {
             var el = $(this);
             var rune_id = el.data('rune-id');
-            var popover_loc = el.data('placement');
-            if (!popover_loc) { popover_loc = 'right'; }
 
             if (rune_id.length > 0) {
                 var url = API_URL + 'runes/' + el.data('rune-id') + '.html';
@@ -106,9 +106,10 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
                     el.popover({
                         trigger: 'manual',
                         content: d,
-                        placement: popover_loc,
+                        placement: runePopoverPlacement,
                         html: true,
-                        container: 'body',
+                        viewport: {selector: '#wrap', padding: 2},
+                        container: '#wrap',
                         template: '<div class="rune-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
                     });
 
@@ -121,6 +122,12 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
             $(this).popover('hide');
         }
     });
+
+function runePopoverPlacement(){
+    var width = window.innerWidth;
+    if (width<1200) return 'auto top';
+    return 'right';
+}
 
 //Bulk add
 $('#bulkAddFormset').formset({

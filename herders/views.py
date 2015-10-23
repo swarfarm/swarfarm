@@ -209,8 +209,9 @@ def profile(request, profile_name=None, view_mode=None, sort_method=None):
 
             return render(request, 'herders/profile/profile_list_view.html', context)
         elif view_mode.lower() == 'box':
+            monster_stable = OrderedDict()
+
             if sort_method == 'grade':
-                monster_stable = OrderedDict()
                 monster_stable['6*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=6).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['5*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=5).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['4*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=4).order_by('-level', 'monster__element', 'monster__name')
@@ -218,19 +219,22 @@ def profile(request, profile_name=None, view_mode=None, sort_method=None):
                 monster_stable['2*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=2).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['1*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=1).order_by('-level', 'monster__element', 'monster__name')
             elif sort_method == 'level':
-                monster_stable = OrderedDict()
                 monster_stable['40'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
                 monster_stable['39-31'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=30).filter(level__lt=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
                 monster_stable['30-21'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=20).filter(level__lte=30).order_by('-level', '-stars', 'monster__element', 'monster__name')
                 monster_stable['20-11'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=10).filter(level__lte=20).order_by('-level', '-stars', 'monster__element', 'monster__name')
                 monster_stable['10-1'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__lte=10).order_by('-level', '-stars', 'monster__element', 'monster__name')
             elif sort_method == 'attribute':
-                monster_stable = OrderedDict()
                 monster_stable['water'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_WATER).order_by('-stars', '-level', 'monster__name')
                 monster_stable['fire'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_FIRE).order_by('-stars', '-level', 'monster__name')
                 monster_stable['wind'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_WIND).order_by('-stars', '-level', 'monster__name')
                 monster_stable['light'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
                 monster_stable['dark'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
+            elif sort_method == 'priority':
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_HIGH][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_MED][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_LOW][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_DONE][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_DONE).order_by('-level', 'monster__element', 'monster__name')
             else:
                 raise Http404('Invalid sort method')
 

@@ -32,6 +32,8 @@
                         {% if sort_method == 'level' %}btn-info{% endif %}">Level</a>
                         <a href="{% url 'herders:profile_sorted' profile_name=profile_name view_mode=view_mode sort_method='attribute' %}" class="btn btn-default
                         {% if sort_method == 'attribute' %}btn-info{% endif %}">Attribute</a>
+                        <a href="{% url 'herders:profile_sorted' profile_name=profile_name view_mode=view_mode sort_method='priority' %}" class="btn btn-default
+                        {% if sort_method == 'priority' %}btn-info{% endif %}">Priority</a>
                     </div>
                 </div>
             </div>

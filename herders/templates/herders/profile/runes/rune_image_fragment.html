@@ -8,7 +8,11 @@
             <div class="rune-symbol {{ rune.get_type_display|lower }}"></div>
         </div>
         {% for x in rune.stars|get_range %}
-        <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
+            {% if rune.level == 15 %}
+            <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-awakened.png" />
+            {% else %}
+            <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
+            {% endif %}
         {% endfor %}
         <span class="image-plus image-plus-right">+{{ rune.level }}</span>
     </div>

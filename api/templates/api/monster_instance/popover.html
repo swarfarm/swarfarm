@@ -23,7 +23,7 @@
     </tr>
     <tr>
         <td>CRI Rate</td>
-        <td>{{ instance.crit_rate }}%</td>
+        <td {% if instance.crit_rate >= 100 %}class="text-danger"{% endif %}>{{ instance.crit_rate }}%</td>
     </tr>
     <tr>
         <td>CRI Dmg</td>

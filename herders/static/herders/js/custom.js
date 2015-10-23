@@ -121,6 +121,13 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
         } else {
             $(this).popover('hide');
         }
+    })
+    .on('click', 'input[type=reset]', function() {
+        var $form = $(this).parents('form');
+        $form[0].reset();
+        $form.find('label.btn').toggleClass('active', false);
+        $form.submit();
+        return false;
     });
 
 function runePopoverPlacement(){

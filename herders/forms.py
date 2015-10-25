@@ -798,7 +798,6 @@ class FilterRuneForm(forms.Form):
     level__gte = forms.IntegerField(
         label="Minimum Level",
         min_value=0,
-        initial=1,
         max_value=15,
         required=False,
     )

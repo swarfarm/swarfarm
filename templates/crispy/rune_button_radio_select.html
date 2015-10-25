@@ -14,7 +14,7 @@
             {% include 'bootstrap3/layout/field_errors_block.html' %}
 
             {% for choice in field.field.choices %}
-            <label class="btn btn-default btn-block rune-button rune-button-{{ choice.1|lower }}">
+            <label class="btn btn-default btn-block rune-button rune-button-{{ choice.1|lower }} {% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} active{% endif %}">
                 <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0 }}" {{ field.field.widget.attrs|flatatt }}>{{ choice.1 }}
             </label>
             {% endfor %}

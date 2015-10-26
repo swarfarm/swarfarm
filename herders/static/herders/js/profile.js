@@ -24,6 +24,21 @@ function EditMonster(instance_id) {
     });
 }
 
+function AwakenMonster(instance_id) {
+    if (instance_id) {
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/monster/awaken/' + instance_id + '/'
+        }).done(function(result) {
+            bootbox.dialog({
+                title: 'Awaken Monster',
+                message: result.html
+            });
+            $('.rating').rating();
+        });
+    }
+}
+
 function DeleteMonster(instance_id) {
     if (instance_id) {
         bootbox.confirm({
@@ -83,4 +98,5 @@ $('body')
     })
     .on('click', '.monster-add', function() { AddMonster() })
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
-    .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) });
+    .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
+    .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) });

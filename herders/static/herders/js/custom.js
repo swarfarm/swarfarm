@@ -1,6 +1,8 @@
 //Initialize all bootstrap tooltips and popovers
 $(function () {
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip({
+        container: 'body'
+    });
     $('[data-toggle="popover"]').popover({
         html:true,
         viewport: {selector: 'body', padding: 2}

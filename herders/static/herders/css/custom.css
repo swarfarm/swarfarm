@@ -254,7 +254,10 @@ div.sprite {
     width: 100%;
 }
 
-.monster-box-actions .btn-xs {
+.btn-xs.monster-edit,
+.btn-xs.monster-awaken,
+.btn-xs.monster-copy,
+.btn-xs.monster-delete {
     padding: 1px 2px;
 }
 
@@ -291,7 +294,7 @@ div.sprite {
 }
 
 .monster-actions-column {
-    width: 10px;
+    width: 80px;
     padding-left: 2px!important;
     padding-right: 2px!important;
 }

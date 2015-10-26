@@ -254,6 +254,10 @@ div.sprite {
     width: 100%;
 }
 
+.monster-box-actions .btn-xs {
+    padding: 1px 2px;
+}
+
 .monster-level-column {
     text-align: center;
     width: 65px;

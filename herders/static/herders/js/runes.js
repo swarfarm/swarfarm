@@ -32,6 +32,10 @@ $('body')
             if (data.code === 'success') {
                 $('.modal.in').modal('hide');
                 update_rune_inventory();
+
+                if (result.removeElement) {
+                    $(result.removeElement).remove();
+                }
             }
             $form.replaceWith(data.html);
             $('.rating').rating();

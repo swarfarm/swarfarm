@@ -259,10 +259,14 @@ $('body')
             type: $form.attr('method'),
             url: $form.attr('action'),
             data: $form.serialize()
-        }).done(function (data) {
-            if (data.code === 'success') {
+        }).done(function (result) {
+            if (result.code === 'success') {
                 $('.modal.in').modal('hide');
                 UpdateAll();
+
+                if (result.removeElement) {
+                    $(result.removeElement).remove();
+                }
             }
             else if (data.code === 'edit') {
                 $('.modal.in').modal('hide');

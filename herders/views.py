@@ -795,7 +795,8 @@ def monster_instance_awaken(request, profile_name, instance_id):
             monster.save()
 
             response_data = {
-                'code': 'success'
+                'code': 'success',
+                'removeElement': '#awakenMonsterButton',
             }
 
         else:

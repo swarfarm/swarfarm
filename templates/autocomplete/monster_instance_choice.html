@@ -4,6 +4,10 @@
     {% static 'herders/images/' as img_url_prefix %}
     <div class="block autocomplete-results" data-value="{{ choice.pk }}">
         <img src="{{ img_url_prefix }}monsters/{{ choice.monster.image_filename }}"/>
-        <span>{{ choice }}</span>
+        <span style="padding-right:5px">{{ choice }}</span>
+        <div class="pull-right">
+            {% if choice.fodder %}<span class="fa fa-birthday-cake"></span>{% endif %}
+            {% if choice.storage %}<span class="fa fa-bed"></span>{% endif %}
+        </div>
     </div>
 {% endspaceless %}

@@ -37,7 +37,7 @@ stat_decode_dict = {
 
 def import_rune(rune_data):
     rune = RuneInstance()
-
+    rune_id = rune_data.get('id', None)
     rune_type = rune_data.get('set', None)
     grade = rune_data.get('grade', None)
     level = rune_data.get('level', None)
@@ -58,7 +58,7 @@ def import_rune(rune_data):
     if rune_type in type_decode_dict:
         rune.type = type_decode_dict[rune_type]
     else:
-        raise ValidationError('Unable to decode rune type.')
+        raise ValidationError('[Rune ID=' + str(rune_id) + '] Unable to decode rune type. Runes prior to this one have been successfully imported.')
 
     rune.stars = grade
     rune.level = level
@@ -66,47 +66,62 @@ def import_rune(rune_data):
 
     if main_stat in stat_decode_dict:
         rune.main_stat = stat_decode_dict[main_stat]
-        rune.main_stat_value = main_stat_value
+        if main_stat_value > 0:
+            rune.main_stat_value = main_stat_value
+        else:
+            raise ValidationError('[Rune ID=' + str(rune_id) + '] Main stat value is 0 or lower. Runes prior to this one have been successfully imported.')
     else:
-        raise ValidationError('Unable to decode main stat type.')
+        raise ValidationError('[Rune ID=' + str(rune_id) + '] Unable to decode main stat type. Runes prior to this one have been successfully imported.')
 
     if innate_stat:
         if innate_stat in stat_decode_dict:
             rune.innate_stat = stat_decode_dict[innate_stat]
-            if rune.innate_stat_value > 0:
+            if innate_stat_value > 0:
                 rune.innate_stat_value = innate_stat_value
             else:
-                raise ValidationError('Innate stat value is 0 or lower')
+                raise ValidationError('[Rune ID=' + str(rune_id) + '] Innate stat value is 0 or lower. Runes prior to this one have been successfully imported.')
         else:
-            raise ValidationError('Innate stat is present but unable to decode')
+            raise ValidationError('[Rune ID=' + str(rune_id) + '] Innate stat is present but unable to decode. Runes prior to this one have been successfully imported.')
 
     if substat_1_stat:
         if substat_1_stat in stat_decode_dict:
             rune.substat_1 = stat_decode_dict[substat_1_stat]
-            rune.substat_1_value = substat_1_value
+            if substat_1_value > 0:
+                rune.substat_1_value = substat_1_value
+            else:
+                raise ValidationError('[Rune ID=' + str(rune_id) + '] Substat 1 value is 0 or lower. Runes prior to this one have been successfully imported.')
         else:
-            raise ValidationError('Substat 1 is present but unable to decode')
+            raise ValidationError('[Rune ID=' + str(rune_id) + '] Substat 1 is present but unable to decode. Runes prior to this one have been successfully imported.')
 
     if substat_2_stat:
         if substat_2_stat in stat_decode_dict:
             rune.substat_2 = stat_decode_dict[substat_2_stat]
-            rune.substat_2_value = substat_2_value
+            if substat_2_value > 0:
+                rune.substat_2_value = substat_2_value
+            else:
+                raise ValidationError('[Rune ID=' + str(rune_id) + '] Substat 2 value is 0 or lower. Runes prior to this one have been successfully imported.')
         else:
-            raise ValidationError('Substat 2 is present but unable to decode')
+            raise ValidationError('[Rune ID=' + str(rune_id) + '] Substat 2 is present but unable to decode. Runes prior to this one have been successfully imported.')
 
     if substat_3_stat:
         if substat_3_stat in stat_decode_dict:
             rune.substat_3 = stat_decode_dict[substat_3_stat]
-            rune.substat_3_value = substat_3_value
+            if substat_3_value > 0:
+                rune.substat_3_value = substat_3_value
+            else:
+                raise ValidationError('[Rune ID=' + str(rune_id) + '] Substat 3 value is 0 or lower. Runes prior to this one have been successfully imported.')
         else:
-            raise ValidationError('Substat 3 is present but unable to decode')
+            raise ValidationError('[Rune ID=' + str(rune_id) + '] Substat 3 is present but unable to decode. Runes prior to this one have been successfully imported.')
 
     if substat_4_stat:
         if substat_4_stat in stat_decode_dict:
             rune.substat_4 = stat_decode_dict[substat_4_stat]
-            rune.substat_4_value = substat_4_value
+            if substat_4_value > 0:
+                rune.substat_4_value = substat_4_value
+            else:
+                raise ValidationError('[Rune ID=' + str(rune_id) + '] Substat 4 value is 0 or lower. Runes prior to this one have been successfully imported.')
         else:
-            raise ValidationError('Substat 4 is present but unable to decode')
+            raise ValidationError('[Rune ID=' + str(rune_id) + '] Substat 4 is present but unable to decode. Runes prior to this one have been successfully imported.')
 
     return rune
 

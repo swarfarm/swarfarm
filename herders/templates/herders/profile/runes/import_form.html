@@ -1,5 +1,9 @@
 {% load crispy_forms_tags %}
 
-<div class="modal-body">
+<form action="{% url 'herders:rune_import' profile_name=profile_name %}" class="ajax-form" method="post">
+    {% if import_error %}
+    <div class="alert alert-danger">Error: {{ import_error }}</div>
+    {% endif %}
+
     {% crispy import_rune_form %}
-</div>
+</form>

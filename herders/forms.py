@@ -834,8 +834,7 @@ class ImportRuneForm(forms.Form):
     )
 
     helper = FormHelper()
-    helper.form_method = 'post'
-    helper.form_class = 'ajax-form'
+    helper.form_tag = False
     helper.layout = Layout(
         Field('json_data'),
         FormActions(

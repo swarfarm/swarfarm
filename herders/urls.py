@@ -54,6 +54,7 @@ urlpatterns = [
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<slot>[0-9])/$', views.rune_assign, name='rune_assign_with_slot'),
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<rune_id>[0-9a-f]{32})/$', views.rune_assign_choice, name='rune_assign_choice'),
             url(r'^inventory/$', views.rune_inventory, name='rune_inventory'),
+            url(r'^import/$', views.rune_import, name='rune_import'),
         ])),
         url(r'following/', include([
             url(r'^$', views.following, name='profile_following'),

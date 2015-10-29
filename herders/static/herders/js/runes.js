@@ -98,6 +98,17 @@ $('body')
             }
         });
     })
+    .on('click', '.rune-import', function() {
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/runes/import/'
+        }).done(function(result) {
+            bootbox.dialog({
+                title: "Import Runes",
+                message: result.html
+            });
+        })
+    })
     .on('change', '#edit_id_slot', function() {
         update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
     })

@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import IntegrityError
 from django.db.models import Q
-from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext
@@ -19,6 +18,7 @@ from .forms import *
 from .filters import *
 from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
 from .fusion import essences_missing, total_awakening_cost
+from .rune_import_export import import_rune, export_rune
 
 
 def register(request):
@@ -1437,6 +1437,53 @@ def rune_delete(request, profile_name, rune_id):
     else:
         return HttpResponseForbidden()
 
+
+@login_required
+def rune_import(request, profile_name):
+    import json
+    from django.forms import ValidationError
+
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    form = ImportRuneForm(request.POST or None)
+    form.helper.form_action = reverse('herders:rune_import', kwargs={'profile_name': profile_name})
+    template = loader.get_template('herders/profile/runes/import_form.html')
+
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            data = form.cleaned_data['json_data']
+            import_errors = []
+
+            for rune_data in data['runes']:
+                try:
+                    rune = import_rune(rune_data)
+                    print 'import success!' + str(rune)
+
+                    rune.owner = summoner
+                    rune.save()
+
+                    response_data = {
+                        'code': 'success',
+                    }
+                except ValidationError as e:
+                    print 'import failed :( Error: ' + str(e)
+                    import_errors.append(e)
+        else:
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'import_rune_form': form})),
+            }
+
+        return render(request, 'herders/profile/runes/import_form.html', {'import_rune_form': form})
+        #return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+def _rune_import_decode_stat(stat):
+
+
+    return stat_decode_dict.get(stat, None)
 
 def bestiary(request):
     context = {

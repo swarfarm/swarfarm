@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.templatetags.static import static
+from django.utils.safestring import mark_safe
 
 from .models import MonsterInstance, Summoner, TeamGroup, Team, RuneInstance
 
@@ -821,3 +822,35 @@ class FilterRuneForm(forms.Form):
         Field('level__gte', css_class='auto-submit'),
         Field('stars__gte', css_class='rating hidden auto-submit', value=1, data_start=0, data_stop=6, data_stars=6),
     )
+
+
+class ImportRuneForm(forms.Form):
+    json_data = forms.CharField(
+        max_length=999999,
+        required=True,
+        label='Paste Rune Data',
+        help_text=mark_safe('Data is exported from the <a href="https://b7e2310d2b970be56f8b12314a4ade9bfc3d620b-www.googledrive.com/host/0B-GpYLz2ELqgfjdzTURIVFJVcGdlbW8xLWlyQTJKVWs5V0xrZHYyWGlYTFZnMElFX09RVmc/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
+        widget=forms.Textarea(),
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_class = 'ajax-form'
+    helper.layout = Layout(
+        Field('json_data'),
+        FormActions(
+            Submit('import', 'Import'),
+        ),
+    )
+
+    def clean_json_data(self):
+        import json
+
+        data = self.cleaned_data['json_data']
+
+        try:
+            data = json.loads(data)
+        except:
+            raise forms.ValidationError("Error parsing JSON data.")
+
+        return data

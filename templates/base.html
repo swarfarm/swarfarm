@@ -59,33 +59,33 @@
                             {% if user.is_authenticated %}
                             <a href="{% url 'herders:profile_default' profile_name=user.username %}"
                                class="btn btn-default {% if view == 'profile' and is_owner %}active{% endif %}">
-                                <img src="{% static 'herders/images/icons/monster.png' %}" />
+                                <img src="{% static 'herders/images/icons/monster.png' %}" class="hidden-sm" />
                                 My Monsters
                             </a>
                             <a href="{% url 'herders:runes' profile_name=user.username %}"
                                class="btn btn-default {% if view == 'runes'  and is_owner %}active{% endif %}">
-                                <img src="{% static 'herders/images/icons/rune.png' %}" />
+                                <img src="{% static 'herders/images/icons/rune.png' %}" class="hidden-sm"/>
                                 Runes
                             </a>
                             <a href="{% url 'herders:fusion' profile_name=user.username %}"
                                class="btn btn-default {% if view == 'fusion'  and is_owner %}active{% endif %}">
-                                <img src="{% static 'herders/images/icons/fusion.png' %}" />
+                                <img src="{% static 'herders/images/icons/fusion.png' %}" class="hidden-sm" />
                                 Fusion Progress
                             </a>
                             <a href="{% url 'herders:teams' profile_name=user.username %}"
                                class="btn btn-default {% if view == 'teams' and is_owner %}active{% endif %}">
-                                <i class="fa fa-users"></i>
+                                <i class="fa fa-users hidden-sm"></i>
                                 Teams
                             </a>
                             <a href="{% url 'herders:profile_storage' profile_name=user.username %}?next={{ request.path }}"
                                class="btn btn-default {% if view == 'storage'  and is_owner %}active{% endif %}">
-                                <span class="fa fa-archive"></span>
+                                <span class="fa fa-archive hidden-sm"></span>
                                 Essence Storage
                             </a>
                             {% endif %}
                             <a href="{% url 'herders:bestiary' %}"
                                class="btn btn-default {% if view == 'bestiary' %}active{% endif %}">
-                                <span class="fa fa-book"></span>
+                                <span class="fa fa-book hidden-sm"></span>
                                 Bestiary
                             </a>
                         </div>
@@ -93,8 +93,8 @@
                         <div class="navbar-right">
                             {% if user.is_authenticated %}
                                 <div class="btn-group navbar-btn">
-                                    <a href="{% url 'feedback:index' %}" class="btn btn-default hidden-sm"><span class="fa fa-comments"></span> Feedback</a>
-                                    <a href="{% url 'herders:profile_following' profile_name=user.username %}" class="btn btn-default hidden-sm"><span class="fa fa-user"></span> Friends</a>
+
+
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                         {{ user.username }} <span class="caret"></span>
                                     </button>
@@ -103,6 +103,8 @@
                                         {% if user.is_staff %}
                                             <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
                                         {% endif %}
+                                        <li><a href="{% url 'feedback:index' %}"><span class="fa fa-comments"></span> Feedback</a></li>
+                                        <li><a href="{% url 'herders:profile_following' profile_name=user.username %}"><span class="fa fa-user"></span> Friends</a></li>
                                         <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>
                                         <li><a href="{% url 'logout' %}">Log out</a></li>
                                     </ul>

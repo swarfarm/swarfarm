@@ -98,6 +98,24 @@ $('body')
             }
         });
     })
+    .on('click', '.rune-delete-all', function() {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure you want to delete <strong>all</strong> of your runes? Your monster rune assignments will be removed as well.',
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/runes/delete/all'
+                    }).done(function() {
+                        update_rune_inventory();
+                    }).fail(function() {
+                        alert("Something went wrong! Server admin has been notified.");
+                    })
+                }
+            }
+        })
+    })
     .on('click', '.rune-import', function() {
         $.ajax({
             type: 'get',

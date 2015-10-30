@@ -1439,6 +1439,26 @@ def rune_delete(request, profile_name, rune_id):
 
 
 @login_required
+def rune_delete_all(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        death_row = RuneInstance.objects.filter(owner=summoner)
+        number_killed = death_row.count()
+        death_row.delete()
+        messages.success(request, 'Deleted ' + str(number_killed) + ' rune(s).')
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required
 def rune_import(request, profile_name):
     from django.forms import ValidationError
 

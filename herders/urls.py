@@ -48,6 +48,7 @@ urlpatterns = [
             url(r'^$', views.runes, name='runes'),
             url(r'^add/$', views.rune_add, name='rune_add'),
             url(r'^edit/(?P<rune_id>[0-9a-f]{32})/$', views.rune_edit, name='rune_edit'),
+            url(r'^delete/all/$', views.rune_delete_all, name='rune_delete_all'),
             url(r'^delete/(?P<rune_id>[0-9a-f]{32})/$', views.rune_delete, name='rune_delete'),
             url(r'^unassign/(?P<rune_id>[0-9a-f]{32})/$', views.rune_unassign, name='rune_unassign'),
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/$', views.rune_assign, name='rune_assign'),

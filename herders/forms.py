@@ -865,6 +865,6 @@ class ExportRuneForm(forms.Form):
 
     helper = FormHelper()
     helper.layout = Layout(
-        Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes currently present. It is advised to back up your existing data first. Your monsters and builds will not be affected, but your builds are not guaranteed to remain the same.', css_class='alert-danger'),
+        Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes currently present. It is advised to back up your existing data first. Monsters will be unaffected, but saved builds will no longer match rune IDs correctly.', css_class='alert-danger'),
         Field('json_data'),
     )

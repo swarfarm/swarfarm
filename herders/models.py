@@ -1221,10 +1221,10 @@ class RuneInstance(models.Model):
         else:
             return None
 
-    def get_stat(self, stat_type):
-        if self.main_stat == stat_type:
+    def get_stat(self, stat_type, sub_stats_only=False):
+        if self.main_stat == stat_type and not sub_stats_only:
             return self.main_stat_value
-        elif self.innate_stat == stat_type:
+        elif self.innate_stat == stat_type and not sub_stats_only:
             return self.innate_stat_value
         elif self.substat_1 == stat_type:
             return self.substat_1_value

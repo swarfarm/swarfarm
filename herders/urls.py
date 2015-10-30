@@ -55,6 +55,7 @@ urlpatterns = [
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<rune_id>[0-9a-f]{32})/$', views.rune_assign_choice, name='rune_assign_choice'),
             url(r'^inventory/$', views.rune_inventory, name='rune_inventory'),
             url(r'^import/$', views.rune_import, name='rune_import'),
+            url(r'^export/$', views.rune_export, name='rune_export'),
         ])),
         url(r'following/', include([
             url(r'^$', views.following, name='profile_following'),
@@ -68,7 +69,7 @@ urlpatterns = [
     # Bestiary
     url(r'^bestiary/', include([
         url(r'^$', views.bestiary, name='bestiary'),
-        url(r'^(?P<monster_id>[0-9]+)/$', views.bestiary_detail_by_id, name='bestiary_detail_by_id'), # Legacy URL pattern
+        url(r'^(?P<monster_id>[0-9]+)/$', views.bestiary_detail_by_id, name='bestiary_detail_by_id'),  # Legacy URL pattern
         url(r'^(?P<monster_slug>[\w-]+)/$', views.bestiary_detail, name='bestiary_detail'),
     ])),
 ]

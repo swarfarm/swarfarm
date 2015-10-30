@@ -18,7 +18,7 @@ from .forms import *
 from .filters import *
 from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
 from .fusion import essences_missing, total_awakening_cost
-from .rune_import_export import import_rune, export_rune
+from .rune_import_export import import_rune, export_runes
 
 
 def register(request):
@@ -1484,6 +1484,26 @@ def rune_import(request, profile_name):
         response_data['html'] = template.render(RequestContext(request, {'import_rune_form': form, 'import_error': import_error, 'profile_name': profile_name}))
 
         # return render(request, 'herders/profile/runes/import_form.html', {'import_rune_form': form})
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required
+def rune_export(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        export_data = export_runes(RuneInstance.objects.filter(owner=summoner))
+        form = ExportRuneForm(initial={'json_data': export_data})
+        template = loader.get_template('herders/profile/runes/export.html')
+
+        response_data = {
+            'code': 'success',
+            'html': template.render(RequestContext(request, {'export_form': form}))
+        }
+
         return JsonResponse(response_data)
     else:
         return HttpResponseForbidden()

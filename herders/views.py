@@ -540,70 +540,70 @@ def monster_instance_edit(request, profile_name, instance_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     template = loader.get_template('herders/profile/profile_monster_edit.html')
 
-    # Reconcile skill level with actual skill from base monster
-    skills = []
-    skill_levels = [
-        instance.skill_1_level,
-        instance.skill_2_level,
-        instance.skill_3_level,
-        instance.skill_4_level,
-    ]
-
-    for idx in range(0, instance.monster.skills.count()):
-        skills.append({
-            'skill': instance.monster.skills.all()[idx],
-            'level': skill_levels[idx]
-        })
-
-    form = EditMonsterInstanceForm(request.POST or None, instance=instance)
-    form.helper.form_action = request.path
-    if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
-        form.helper['skill_1_level'].wrap(
-            FieldWithButtons,
-            StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id),
-        )
-        form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
-        form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
-    else:
-        form.helper['skill_1_level'].wrap(Div, css_class="hidden")
-
-    if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
-        form.helper['skill_2_level'].wrap(
-            FieldWithButtons,
-            StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id),
-            min=1,
-            max=skills[1]['skill'].max_level,
-        )
-        form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
-        form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
-    else:
-        form.helper['skill_2_level'].wrap(Div, css_class="hidden")
-
-    if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
-        form.helper['skill_3_level'].wrap(
-            FieldWithButtons,
-            StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id),
-            min=1,
-            max=skills[2]['skill'].max_level,
-        )
-        form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
-        form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
-    else:
-        form.helper['skill_3_level'].wrap(Div, css_class="hidden")
-
-    if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
-        form.helper['skill_4_level'].wrap(
-            FieldWithButtons,
-            StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id),
-            min=1,
-            max=skills[1]['skill'].max_level,
-        )
-        form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
-        form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
-    else:
-        form.helper['skill_4_level'].wrap(Div, css_class="hidden")
-
     if is_owner:
+        # Reconcile skill level with actual skill from base monster
+        skills = []
+        skill_levels = [
+            instance.skill_1_level,
+            instance.skill_2_level,
+            instance.skill_3_level,
+            instance.skill_4_level,
+        ]
+
+        for idx in range(0, instance.monster.skills.count()):
+            skills.append({
+                'skill': instance.monster.skills.all()[idx],
+                'level': skill_levels[idx]
+            })
+
+        form = EditMonsterInstanceForm(request.POST or None, instance=instance)
+        form.helper.form_action = request.path
+        if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
+            form.helper['skill_1_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id),
+            )
+            form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
+            form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
+        else:
+            form.helper['skill_1_level'].wrap(Div, css_class="hidden")
+
+        if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
+            form.helper['skill_2_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id),
+                min=1,
+                max=skills[1]['skill'].max_level,
+            )
+            form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
+            form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
+        else:
+            form.helper['skill_2_level'].wrap(Div, css_class="hidden")
+
+        if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
+            form.helper['skill_3_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id),
+                min=1,
+                max=skills[2]['skill'].max_level,
+            )
+            form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
+            form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
+        else:
+            form.helper['skill_3_level'].wrap(Div, css_class="hidden")
+
+        if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
+            form.helper['skill_4_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id),
+                min=1,
+                max=skills[1]['skill'].max_level,
+            )
+            form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
+            form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
+        else:
+            form.helper['skill_4_level'].wrap(Div, css_class="hidden")
+
         if request.method == 'POST' and form.is_valid():
             form.save()
 
@@ -1164,7 +1164,10 @@ def team_detail(request, profile_name, team_id):
         'team_buffs': team_effects,
     }
 
-    return render(request, 'herders/profile/teams/team_detail.html', context)
+    if is_owner or summoner.public:
+        return render(request, 'herders/profile/teams/team_detail.html', context)
+    else:
+        return render(request, 'herders/profile/not_public.html', context)
 
 
 @login_required
@@ -1242,7 +1245,10 @@ def runes(request, profile_name):
         'rune_filter_form': filter_form,
     }
 
-    return render(request, 'herders/profile/runes/base.html', context)
+    if is_owner or summoner.public:
+        return render(request, 'herders/profile/runes/base.html', context)
+    else:
+        return render(request, 'herders/profile/not_public.html', context)
 
 
 def rune_inventory(request, profile_name):
@@ -1257,8 +1263,25 @@ def rune_inventory(request, profile_name):
         'profile_name': profile_name,
         'is_owner': is_owner,
     }
+    if is_owner or summoner.public:
+        return render(request, 'herders/profile/runes/inventory.html', context)
+    else:
+        return render(request, 'herders/profile/not_public.html', context)
 
-    return render(request, 'herders/profile/runes/inventory.html', context)
+
+def rune_counts(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        response_data = {
+            'code': 'success',
+            'counts': summoner.get_rune_counts()
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
 
 
 @login_required
@@ -1306,6 +1329,7 @@ def rune_add(request, profile_name):
     return JsonResponse(response_data)
 
 
+@login_required
 def rune_edit(request, profile_name, rune_id):
     rune = get_object_or_404(RuneInstance, pk=rune_id)
     summoner = get_object_or_404(Summoner, user__username=profile_name)
@@ -1428,6 +1452,26 @@ def rune_delete(request, profile_name, rune_id):
     if is_owner:
         messages.success(request, 'Deleted ' + str(rune))
         rune.delete()
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required
+def rune_delete_all(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        death_row = RuneInstance.objects.filter(owner=summoner)
+        number_killed = death_row.count()
+        death_row.delete()
+        messages.success(request, 'Deleted ' + str(number_killed) + ' rune(s).')
 
         response_data = {
             'code': 'success',

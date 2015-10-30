@@ -532,6 +532,14 @@ class Summoner(models.Model):
 
         return storage
 
+    def get_rune_counts(self):
+        counts = {}
+
+        for rune_type in RuneInstance.TYPE_CHOICES:
+            counts[rune_type[1]] = RuneInstance.objects.filter(owner=self, type=rune_type[0]).count()
+
+        return counts
+
     def save(self, *args, **kwargs):
         # Bounds checks on essences
         if self.storage_magic_low < 0:

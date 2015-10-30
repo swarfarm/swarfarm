@@ -10,6 +10,7 @@ function AssignRune(slot) {
         });
         $('.rating').rating();
         $('.modal.in').modal('handleUpdate');
+        update_rune_counts();
     });
 }
 

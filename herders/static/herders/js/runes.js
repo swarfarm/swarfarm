@@ -1,13 +1,14 @@
 $(document).ready(function() {
     update_rune_inventory();
+    update_rune_counts();
 });
 
 function update_rune_inventory() {
     $.ajax({
         url: '/profile/' + PROFILE_NAME + '/runes/inventory/',
         type: 'get'
-    }).done(function(data) {
-        $('#rune-inventory').replaceWith(data);
+    }).done(function(result) {
+        $('#rune-inventory').replaceWith(result);
     });
 }
 
@@ -28,16 +29,17 @@ $('body')
             type: $form.attr('method'),
             url: $form.attr('action'),
             data: $form.serialize()
-        }).done(function(data) {
-            if (data.code === 'success') {
+        }).done(function(result) {
+            if (result.code === 'success') {
                 $('.modal.in').modal('hide');
                 update_rune_inventory();
+                update_rune_counts();
 
                 if (result.removeElement) {
                     $(result.removeElement).remove();
                 }
             }
-            $form.replaceWith(data.html);
+            $form.replaceWith(result.html);
             $('.rating').rating();
         });
 
@@ -91,12 +93,32 @@ $('body')
                         }
                     }).done(function () {
                         update_rune_inventory();
+                        update_rune_counts();
                     }).fail(function () {
                         alert("Something went wrong! Server admin has been notified.");
                     });
                 }
             }
         });
+    })
+    .on('click', '.rune-delete-all', function() {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure you want to delete <strong>all</strong> of your runes? Your monster rune assignments will be removed as well.',
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/runes/delete/all'
+                    }).done(function() {
+                        update_rune_inventory();
+                        update_rune_counts();
+                    }).fail(function() {
+                        alert("Something went wrong! Server admin has been notified.");
+                    })
+                }
+            }
+        })
     })
     .on('click', '.rune-import', function() {
         $.ajax({

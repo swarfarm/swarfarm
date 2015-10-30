@@ -11,7 +11,7 @@ from .models import MonsterInstance, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField
+from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert
 
 from captcha.fields import ReCaptchaField
 
@@ -853,3 +853,18 @@ class ImportRuneForm(forms.Form):
             raise forms.ValidationError("Error parsing JSON data.")
 
         return data
+
+
+class ExportRuneForm(forms.Form):
+    json_data = forms.CharField(
+        max_length=999999,
+        label='Exported Rune Data',
+        help_text=mark_safe('You can paste this data into the <a href="https://b7e2310d2b970be56f8b12314a4ade9bfc3d620b-www.googledrive.com/host/0B-GpYLz2ELqgfjdzTURIVFJVcGdlbW8xLWlyQTJKVWs5V0xrZHYyWGlYTFZnMElFX09RVmc/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
+        widget=forms.Textarea(),
+    )
+
+    helper = FormHelper()
+    helper.layout = Layout(
+        Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes currently present. It is advised to back up your existing data first. Monsters will be unaffected, but saved builds will no longer match rune IDs correctly.', css_class='alert-danger'),
+        Field('json_data'),
+    )

@@ -1,41 +1,42 @@
 from django.forms import ValidationError
 from herders.models import RuneInstance
-
-type_decode_dict = {
-    'Energy': RuneInstance.TYPE_ENERGY,
-    'Fatal': RuneInstance.TYPE_FATAL,
-    'Blade': RuneInstance.TYPE_BLADE,
-    'Rage': RuneInstance.TYPE_RAGE,
-    'Swift': RuneInstance.TYPE_SWIFT,
-    'Focus': RuneInstance.TYPE_FOCUS,
-    'Guard': RuneInstance.TYPE_GUARD,
-    'Endure': RuneInstance.TYPE_ENDURE,
-    'Violent': RuneInstance.TYPE_VIOLENT,
-    'Will': RuneInstance.TYPE_WILL,
-    'Nemesis': RuneInstance.TYPE_NEMESIS,
-    'Shield': RuneInstance.TYPE_SHIELD,
-    'Revenge': RuneInstance.TYPE_REVENGE,
-    'Despair': RuneInstance.TYPE_DESPAIR,
-    'Vampire': RuneInstance.TYPE_VAMPIRE,
-    'Destroy': RuneInstance.TYPE_DESTROY,
-}
-
-stat_decode_dict = {
-    'HP flat': RuneInstance.STAT_HP,
-    'HP%': RuneInstance.STAT_HP_PCT,
-    'DEF flat': RuneInstance.STAT_DEF,
-    'DEF%': RuneInstance.STAT_DEF_PCT,
-    'ATK flat': RuneInstance.STAT_ATK,
-    'ATK%': RuneInstance.STAT_ATK_PCT,
-    'SPD': RuneInstance.STAT_SPD,
-    'CRate': RuneInstance.STAT_CRIT_RATE_PCT,
-    'CDmg': RuneInstance.STAT_CRIT_DMG_PCT,
-    'RES': RuneInstance.STAT_RESIST_PCT,
-    'ACC': RuneInstance.STAT_ACCURACY_PCT,
-}
+import json
 
 
 def import_rune(rune_data):
+    type_decode_dict = {
+        'Energy': RuneInstance.TYPE_ENERGY,
+        'Fatal': RuneInstance.TYPE_FATAL,
+        'Blade': RuneInstance.TYPE_BLADE,
+        'Rage': RuneInstance.TYPE_RAGE,
+        'Swift': RuneInstance.TYPE_SWIFT,
+        'Focus': RuneInstance.TYPE_FOCUS,
+        'Guard': RuneInstance.TYPE_GUARD,
+        'Endure': RuneInstance.TYPE_ENDURE,
+        'Violent': RuneInstance.TYPE_VIOLENT,
+        'Will': RuneInstance.TYPE_WILL,
+        'Nemesis': RuneInstance.TYPE_NEMESIS,
+        'Shield': RuneInstance.TYPE_SHIELD,
+        'Revenge': RuneInstance.TYPE_REVENGE,
+        'Despair': RuneInstance.TYPE_DESPAIR,
+        'Vampire': RuneInstance.TYPE_VAMPIRE,
+        'Destroy': RuneInstance.TYPE_DESTROY,
+    }
+
+    stat_decode_dict = {
+        'HP flat': RuneInstance.STAT_HP,
+        'HP%': RuneInstance.STAT_HP_PCT,
+        'DEF flat': RuneInstance.STAT_DEF,
+        'DEF%': RuneInstance.STAT_DEF_PCT,
+        'ATK flat': RuneInstance.STAT_ATK,
+        'ATK%': RuneInstance.STAT_ATK_PCT,
+        'SPD': RuneInstance.STAT_SPD,
+        'CRate': RuneInstance.STAT_CRIT_RATE_PCT,
+        'CDmg': RuneInstance.STAT_CRIT_DMG_PCT,
+        'RES': RuneInstance.STAT_RESIST_PCT,
+        'ACC': RuneInstance.STAT_ACCURACY_PCT,
+    }
+
     rune = RuneInstance()
     rune_id = rune_data.get('id', None)
     rune_type = rune_data.get('set', None)
@@ -126,5 +127,135 @@ def import_rune(rune_data):
     return rune
 
 
-def export_rune(rune):
-    pass
+def export_runes(runes):
+    type_decode_dict = {
+        RuneInstance.TYPE_ENERGY: 'Energy',
+        RuneInstance.TYPE_FATAL: 'Fatal',
+        RuneInstance.TYPE_BLADE: 'Blade',
+        RuneInstance.TYPE_RAGE: 'Rage',
+        RuneInstance.TYPE_SWIFT: 'Swift',
+        RuneInstance.TYPE_FOCUS: 'Focus',
+        RuneInstance.TYPE_GUARD: 'Guard',
+        RuneInstance.TYPE_ENDURE: 'Endure',
+        RuneInstance.TYPE_VIOLENT: 'Violent',
+        RuneInstance.TYPE_WILL: 'Will',
+        RuneInstance.TYPE_NEMESIS: 'Nemesis',
+        RuneInstance.TYPE_SHIELD: 'Shield',
+        RuneInstance.TYPE_REVENGE: 'Revenge',
+        RuneInstance.TYPE_DESPAIR: 'Despair',
+        RuneInstance.TYPE_VAMPIRE: 'Vampire',
+        RuneInstance.TYPE_DESTROY: 'Destroy',
+    }
+
+    stat_decode_dict = {
+        RuneInstance.STAT_HP: 'HP flat',
+        RuneInstance.STAT_HP_PCT: 'HP%',
+        RuneInstance.STAT_DEF: 'DEF flat',
+        RuneInstance.STAT_DEF_PCT: 'DEF%',
+        RuneInstance.STAT_ATK: 'ATK flat',
+        RuneInstance.STAT_ATK_PCT: 'ATK%',
+        RuneInstance.STAT_SPD: 'SPD',
+        RuneInstance.STAT_CRIT_RATE_PCT: 'CRate',
+        RuneInstance.STAT_CRIT_DMG_PCT: 'CDmg',
+        RuneInstance.STAT_RESIST_PCT: 'RES',
+        RuneInstance.STAT_ACCURACY_PCT: 'ACC',
+    }
+
+    rune_id = 1
+    exported_runes = []
+
+    for rune in runes:
+        exported_rune = {
+            'id': rune_id,
+            'monster': 0,
+            'monster_n': 'Inventory',
+            'set': type_decode_dict[rune.type],
+            'slot': rune.slot,
+            'grade': rune.stars,
+            'level': rune.level,
+            'm_t': stat_decode_dict[rune.main_stat],
+            'm_v': rune.main_stat_value,
+            'i_t': '',
+            'i_v': '',
+            's1_t': '',
+            's1_v': '',
+            's2_t': '',
+            's2_v': '',
+            's3_t': '',
+            's3_v': '',
+            's4_t': '',
+            's4_v': '',
+            'locked': 0,
+            'sub_hpp': '-',
+            'sub_hpf': '-',
+            'sub_atkp': '-',
+            'sub_atkf': '-',
+            'sub_defp': '-',
+            'sub_deff': '-',
+            'sub_crate': '-',
+            'sub_cdmg': '-',
+            'sub_spd': '-',
+            'sub_acc': '-',
+            'sub_res': '-',
+        }
+
+        if rune.innate_stat:
+            exported_rune['i_t'] = stat_decode_dict[rune.innate_stat]
+            exported_rune['i_v'] = rune.innate_stat_value
+
+        if rune.substat_1:
+            exported_rune['s1_t'] = stat_decode_dict[rune.substat_1]
+            exported_rune['s1_v'] = rune.substat_1_value
+
+        if rune.substat_2:
+            exported_rune['s2_t'] = stat_decode_dict[rune.substat_2]
+            exported_rune['s2_v'] = rune.substat_2_value
+
+        if rune.substat_3:
+            exported_rune['s3_t'] = stat_decode_dict[rune.substat_3]
+            exported_rune['s3_v'] = rune.substat_3_value
+
+        if rune.substat_4:
+            exported_rune['s4_t'] = stat_decode_dict[rune.substat_4]
+            exported_rune['s4_v'] = rune.substat_4_value
+
+        # Stat summary values
+        sub_hpp = rune.get_stat(RuneInstance.STAT_HP_PCT, True)
+        sub_hpf = rune.get_stat(RuneInstance.STAT_HP, True)
+        sub_atkp = rune.get_stat(RuneInstance.STAT_ATK_PCT, True)
+        sub_atkf = rune.get_stat(RuneInstance.STAT_ATK, True)
+        sub_defp = rune.get_stat(RuneInstance.STAT_DEF_PCT, True)
+        sub_deff = rune.get_stat(RuneInstance.STAT_DEF, True)
+        sub_crate = rune.get_stat(RuneInstance.STAT_CRIT_RATE_PCT, True)
+        sub_cdmg = rune.get_stat(RuneInstance.STAT_CRIT_DMG_PCT, True)
+        sub_spd = rune.get_stat(RuneInstance.STAT_SPD, True)
+        sub_acc = rune.get_stat(RuneInstance.STAT_ACCURACY_PCT, True)
+        sub_res = rune.get_stat(RuneInstance.STAT_RESIST_PCT, True)
+
+        if sub_hpp:
+            exported_rune['sub_hpp'] = sub_hpp
+        if sub_hpf:
+            exported_rune['sub_hpf'] = sub_hpf
+        if sub_atkp:
+            exported_rune['sub_atkp'] = sub_atkp
+        if sub_atkf:
+            exported_rune['sub_atkf'] = sub_atkf
+        if sub_defp:
+            exported_rune['sub_defp'] = sub_defp
+        if sub_deff:
+            exported_rune['sub_deff'] = sub_deff
+        if sub_crate:
+            exported_rune['sub_crate'] = sub_crate
+        if sub_cdmg:
+            exported_rune['sub_cdmg'] = sub_cdmg
+        if sub_spd:
+            exported_rune['sub_spd'] = sub_spd
+        if sub_acc:
+            exported_rune['sub_acc'] = sub_acc
+        if sub_res:
+            exported_rune['sub_res'] = sub_res
+
+        exported_runes.append(exported_rune)
+        rune_id += 1
+
+    return json.dumps({'runes': exported_runes})

@@ -109,6 +109,14 @@ $('body')
             });
         })
     })
+    .on('click', '.rune-export', function() {
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/runes/export/'
+        }).done(function(result) {
+            bootbox.alert(result.html);
+        })
+    })
     .on('change', '#edit_id_slot', function() {
         update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
     })

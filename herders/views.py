@@ -1502,19 +1502,22 @@ def rune_import(request, profile_name):
             data = form.cleaned_data['json_data']
 
             if data['runes']:
+                import_count = 0
+
                 for rune_data in data['runes']:
                     try:
                         rune = import_rune(rune_data)
-                        print 'import success!' + str(rune)
-
                         rune.owner = summoner
                         rune.save()
+                        import_count += 1
                     except ValidationError as e:
                         import_error = e.message
                         response_data = {
                             'code': 'error',
                         }
                         break
+
+                messages.success(request, 'Successfully imported ' + str(import_count) + ' runes.')
             else:
                 response_data = {
                     'code': 'error',
@@ -1527,7 +1530,6 @@ def rune_import(request, profile_name):
 
         response_data['html'] = template.render(RequestContext(request, {'import_rune_form': form, 'import_error': import_error, 'profile_name': profile_name}))
 
-        # return render(request, 'herders/profile/runes/import_form.html', {'import_rune_form': form})
         return JsonResponse(response_data)
     else:
         return HttpResponseForbidden()

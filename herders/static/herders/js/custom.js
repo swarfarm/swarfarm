@@ -261,3 +261,27 @@ function update_main_slot_options(slot, main_stat_input) {
         }
     });
 }
+
+function update_rune_counts() {
+    $.ajax({
+        url: '/profile/' + PROFILE_NAME + '/runes/inventory/counts/',
+        type: 'get'
+    }).done(function(result) {
+        if (result.counts.Energy) { $('.rune-button-energy span.badge').text(result.counts.Energy) } else { $('.rune-button-energy span.badge').text('') }
+        if (result.counts.Fatal) { $('.rune-button-fatal span.badge').text(result.counts.Fatal) } else { $('.rune-button-fatal span.badge').text('') }
+        if (result.counts.Blade) { $('.rune-button-blade span.badge').text(result.counts.Blade) } else { $('.rune-button-blade span.badge').text('') }
+        if (result.counts.Rage) { $('.rune-button-rage span.badge').text(result.counts.Rage) } else { $('.rune-button-rage span.badge').text('') }
+        if (result.counts.Swift) { $('.rune-button-swift span.badge').text(result.counts.Swift) } else { $('.rune-button-swift span.badge').text('') }
+        if (result.counts.Focus) { $('.rune-button-focus span.badge').text(result.counts.Focus) } else { $('.rune-button-focus span.badge').text('') }
+        if (result.counts.Guard) { $('.rune-button-guard span.badge').text(result.counts.Guard) } else { $('.rune-button-guard span.badge').text('') }
+        if (result.counts.Endure) { $('.rune-button-endure span.badge').text(result.counts.Endure) } else { $('.rune-button-endure span.badge').text('') }
+        if (result.counts.Violent) { $('.rune-button-violent span.badge').text(result.counts.Violent) } else { $('.rune-button-violent span.badge').text('') }
+        if (result.counts.Will) { $('.rune-button-will span.badge').text(result.counts.Will) } else { $('.rune-button-will span.badge').text('') }
+        if (result.counts.Nemesis) { $('.rune-button-nemesis span.badge').text(result.counts.Nemesis) } else { $('.rune-button-nemesis span.badge').text('') }
+        if (result.counts.Shield) { $('.rune-button-shield span.badge').text(result.counts.Shield) } else { $('.rune-button-shield span.badge').text('') }
+        if (result.counts.Revenge) { $('.rune-button-revenge span.badge').text(result.counts.Revenge) } else { $('.rune-button-revenge span.badge').text('') }
+        if (result.counts.Despair) { $('.rune-button-despair span.badge').text(result.counts.Despair) } else { $('.rune-button-despair span.badge').text('') }
+        if (result.counts.Vampire) { $('.rune-button-vampire span.badge').text(result.counts.Vampire) } else { $('.rune-button-vampire span.badge').text('') }
+        if (result.counts.Destroy) { $('.rune-button-destroy span.badge').text(result.counts.Destroy) } else { $('.rune-button-destroy span.badge').text('') }
+    });
+}

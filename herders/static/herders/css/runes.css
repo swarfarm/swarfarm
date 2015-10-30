@@ -2,9 +2,20 @@
     margin-left: 140px;
 }
 
+.rune-inventory-filters-static {
+    width: 140px;
+    position: fixed;
+    top: 120px;
+    bottom: 40px;
+    left: 3%;
+    overflow: hidden;
+}
+
 #rune-inventory-filters {
-    width: 135px;
-    float: left;
+    width: 158px;
+    height: 100%;
+    padding-right: 18px;
+    overflow-y: scroll;
 }
 
 .flex {

@@ -15,7 +15,7 @@
 
             {% for choice in field.field.choices %}
             <label class="btn btn-default btn-block rune-button rune-button-{{ choice.1|lower }}">
-                <input type="checkbox"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0 }}" {{ field.field.widget.attrs|flatatt }}>{{ choice.1 }} <span class="badge pull-right"></span>
+                <input type="checkbox"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0 }}" {{ field.field.widget.attrs|flatatt }}><span class="badge pull-right"></span> {{ choice.1 }}
             </label>
             {% endfor %}
 

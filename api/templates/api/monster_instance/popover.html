@@ -31,11 +31,11 @@
     </tr>
     <tr>
         <td>Resistance</td>
-        <td>{{ instance.resistance }}%</td>
+        <td {% if instance.resistance >= 100 %}class="text-danger"{% endif %}>{{ instance.resistance }}%</td>
     </tr>
     <tr>
         <td>Accuracy</td>
-        <td>{{ instance.accuracy }}%</td>
+        <td {% if instance.accuracy >= 100 %}class="text-danger"{% endif %}>{{ instance.accuracy }}%</td>
     </tr>
     <tr>
         <td colspan="2" style="position:relative">

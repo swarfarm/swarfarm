@@ -646,6 +646,7 @@ class EditTeamForm(ModelForm):
 class AddRuneInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRuneInstanceForm, self).__init__(*args, **kwargs)
+        self.fields['type'].choices = self.fields['type'].choices[1:]  # Remove the empty '----' option from the list
         self.fields['stars'].label = False
         self.fields['main_stat'].label = False
         self.fields['main_stat_value'].label = False
@@ -678,7 +679,7 @@ class AddRuneInstanceForm(ModelForm):
                 ),
                 Div(
                     Div(HTML('<label>Stars</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div(Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6), css_class='col-lg-9'),
+                    Div(Field('stars', placeholder='1-6'), css_class='col-lg-9'),
                     css_class='row'
                 ),
                 Div(

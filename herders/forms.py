@@ -807,6 +807,10 @@ class FilterRuneForm(forms.Form):
         label="Minimum Stars",
         required=False
     )
+    stars__lte = forms.IntegerField(
+        label="Maximum Stars",
+        required=False
+    )
     slot = forms.IntegerField(
         min_value=1,
         max_value=6,
@@ -821,7 +825,8 @@ class FilterRuneForm(forms.Form):
         Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select.html'),
         Field('slot', css_class='auto-submit'),
         Field('level__gte', css_class='auto-submit'),
-        Field('stars__gte', css_class='rating hidden auto-submit', value=1, data_start=0, data_stop=6, data_stars=6),
+        Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+        Field('stars__lte', css_class='rating hidden', value=6, data_start=0, data_stop=6, data_stars=6),
     )
 
 

@@ -10,7 +10,7 @@ class RuneInstanceFilter(django_filters.FilterSet):
         model = RuneInstance
         fields = {
             'type': ['exact'],
-            'level': ['gte'],
-            'stars': ['gte'],
+            'level': ['gte', 'lte'],
+            'stars': ['gte', 'lte'],
             'slot': ['exact'],
         }

@@ -234,7 +234,6 @@ $('button.reset').click(function() {
 
 //Rune form common functions
 function update_main_slot_options(slot, main_stat_input) {
-
     $.ajax({
         type: 'get',
         url: API_URL + 'runes/stats_by_slot/' + slot.toString() + '/'

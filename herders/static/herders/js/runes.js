@@ -5,12 +5,6 @@ $(document).ready(function() {
 
 function update_rune_inventory() {
     $('#FilterInventoryForm').submit();
-    /*$.ajax({
-        url: '/profile/' + PROFILE_NAME + '/runes/inventory/',
-        type: 'get'
-    }).done(function(result) {
-        $('#rune-inventory').replaceWith(result);
-    });*/
 }
 
 $('body')
@@ -145,6 +139,22 @@ $('body')
     })
     .on('change', '#id_slot', function() {
         update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+    })
+    .on('change', '#filter_id_stars__gte', function() {
+        var min_stars = $(this).val();
+        var max_stars_field = $('#filter_id_stars__lte');
+        if (min_stars > max_stars_field.val()) {
+            max_stars_field.rating('rate', min_stars);
+        }
+        $(this).parents("form").submit();
+    })
+    .on('change', '#filter_id_stars__lte', function() {
+        var max_stars = $(this).val();
+        var min_stars_field = $('#filter_id_stars__gte');
+        if (max_stars < min_stars_field.val()) {
+            min_stars_field.rating('rate', max_stars);
+        }
+        $(this).parents("form").submit();
     })
     .on('submit', '#FilterInventoryForm', function() {
         var $form = $(this);

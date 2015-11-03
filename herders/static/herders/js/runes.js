@@ -4,12 +4,13 @@ $(document).ready(function() {
 });
 
 function update_rune_inventory() {
-    $.ajax({
+    $('#FilterInventoryForm').submit();
+    /*$.ajax({
         url: '/profile/' + PROFILE_NAME + '/runes/inventory/',
         type: 'get'
     }).done(function(result) {
         $('#rune-inventory').replaceWith(result);
-    });
+    });*/
 }
 
 $('body')
@@ -19,7 +20,7 @@ $('body')
             type: 'hidden',
             id: 'id' + $(this).attr('name'),
             name: $(this).attr('name'),
-            value: $(this).attr('value'),
+            value: $(this).attr('value')
         }).appendTo($form);
     })
     .on('submit', '.ajax-form', function() {

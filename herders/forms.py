@@ -646,7 +646,7 @@ class EditTeamForm(ModelForm):
 class AddRuneInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRuneInstanceForm, self).__init__(*args, **kwargs)
-        self.fields['type'].choices = self.fields['type'].choices[1:]
+        self.fields['type'].choices = self.fields['type'].choices[1:]  # Remove the empty '----' option from the list
         self.fields['stars'].label = False
         self.fields['main_stat'].label = False
         self.fields['main_stat_value'].label = False

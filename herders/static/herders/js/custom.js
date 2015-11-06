@@ -41,6 +41,30 @@ $('.monster-popover').hover(function(event) {
     }
 });
 
+//Custom popovers for loading AJAX content
+$('.skill-popover').hover(function(event) {
+    if (event.type === 'mouseenter') {
+        var el = $(this);
+        var url = API_URL + 'skill/' + el.data('skill-id') + '.html';
+        $.get(url, function (d) {
+            el.popover({
+                trigger: 'manual',
+                content: d,
+                html: true,
+                container: 'body',
+                viewport: {selector: 'body', padding: 2},
+                template: '<div class="monster-skill popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+            });
+
+            if (el.is(":hover")) {
+                el.popover('show');
+            }
+        });
+    } else {
+        $(this).popover('hide');
+    }
+});
+
 
 //Modal management scripts
 $('#addMonsterModal').on('shown.bs.modal', function () {

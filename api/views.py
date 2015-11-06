@@ -54,10 +54,19 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
         return response
 
 
-class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
+class MonsterSkillViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterSkill.objects.all()
+    renderer_classes = (renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
     serializer_class = MonsterSkillSerializer
     pagination_class = BestiarySetPagination
+
+    @cache_response(1 * 60 * 60, cache_errors=False)
+    def retrieve(self, request, *args, **kwargs):
+        response = super(MonsterSkillViewSet, self).retrieve(request, *args, **kwargs)
+
+        if request.accepted_renderer.format == 'html':
+            return Response({'skill': response.data}, template_name='api/monster_skills/popover.html')
+        return response
 
 
 class MonsterLeaderSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):

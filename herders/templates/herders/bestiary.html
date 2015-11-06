@@ -157,7 +157,7 @@
                             <th data-sorter="false">Awakens From</th>
                             <th data-sorter="false">Leader Skill</th>
                             <th data-sorter="false">Skill Effects</th>
-                            <th class="{sorter: false}">Awakening Materials</th>
+                            <th class="{sorter: false}">Skills</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -217,13 +217,12 @@
                                 {% endfor %}
                             </td>
                             <td class="monster-awaken-materials">
-                                {% with mats=monster.get_awakening_materials %}
-                                    {% for element,essences in mats.iteritems %}
-                                        {% for size,count in essences.iteritems %}
-                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
-                                        {% endfor %}
-                                    {% endfor %}
-                                {% endwith %}
+                                {% for skill in monster.skills.all %}
+                                    <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
+                                        <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
+                                        <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+                                    </div>
+                                {% endfor %}
                             </td>
                         </tr>
                         {% endfor %}

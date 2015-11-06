@@ -1255,15 +1255,42 @@ class RuneInstance(models.Model):
         from django.core.exceptions import ValidationError
 
         # Check slot, level, etc for valid ranges
-        if self.slot is not None and self.slot < 1 or self.slot > 6:
+        if self.slot is None:
             raise ValidationError({
                 'slot': ValidationError(
-                    'Slot must be 1 through 6.',
+                    'Slot is missing.',
                     code='invalid_rune_slot',
                 )
             })
+        else:
+            if self.slot < 1 or self.slot > 6:
+                raise ValidationError({
+                    'slot': ValidationError(
+                        'Slot must be 1 through 6.',
+                        code='invalid_rune_slot',
+                    )
+                })
+            # Do slot vs stat check
+            if self.main_stat not in RuneInstance.get_valid_stats_for_slot(self.slot):
+                raise ValidationError({
+                    'main_stat': ValidationError(
+                        'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
+                        params={
+                            'slot': self.slot,
+                            'valid_stats': ', '.join(RuneInstance.get_valid_stats_for_slot(self.slot).values())
+                        },
+                        code='invalid_rune_main_stat'
+                    ),
+                })
 
-        if self.level is not None and self.level < 0 or self.level > 15:
+        if self.level is None:
+            raise ValidationError({
+                'level': ValidationError(
+                    'Level is missing.',
+                    code='invalid_rune_level',
+                )
+            })
+        elif self.level < 0 or self.level > 15:
             raise ValidationError({
                 'level': ValidationError(
                     'Level must be 0 through 15.',
@@ -1271,25 +1298,19 @@ class RuneInstance(models.Model):
                 )
             })
 
-        if self.stars is not None and self.stars < 1 or self.stars > 6:
+        if self.stars is None:
+            raise ValidationError({
+                'stars': ValidationError(
+                    'Stars is missing.',
+                    code='invalid_rune_stars',
+                )
+            })
+        elif self.stars < 1 or self.stars > 6:
             raise ValidationError({
                 'stars': ValidationError(
                     'Stars must be between 1 and 6.',
                     code='invalid_rune_stars',
                 )
-            })
-
-        # Do slot vs stat check
-        if self.main_stat not in RuneInstance.get_valid_stats_for_slot(self.slot):
-            raise ValidationError({
-                'main_stat': ValidationError(
-                    'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
-                    params={
-                        'slot': self.slot,
-                        'valid_stats': ', '.join(RuneInstance.get_valid_stats_for_slot(self.slot).values())
-                    },
-                    code='invalid_rune_main_stat'
-                ),
             })
 
         # Check that the same stat type was not used multiple times

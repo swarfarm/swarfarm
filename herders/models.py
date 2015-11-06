@@ -651,12 +651,12 @@ class MonsterInstance(models.Model):
 
     # Rune bonus calculations
     def rune_bonus_energy(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENERGY).count()
-        return 15 * floor(rune_count / 2)
+        set_bonus_count = floor(self.runeinstance_set.filter(type=RuneInstance.TYPE_ENERGY).count() / 2)
+        return ceil(self.base_hp() * 0.15) * set_bonus_count
 
     def rune_bonus_fatal(self):
         if self.runeinstance_set.filter(type=RuneInstance.TYPE_FATAL).count() >= 4:
-            return 35
+            return ceil(self.base_attack() * 0.35)
         else:
             return 0
 
@@ -681,8 +681,8 @@ class MonsterInstance(models.Model):
         return 20 * floor(rune_count / 2)
 
     def rune_bonus_guard(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_GUARD).count()
-        return 15 * floor(rune_count / 2)
+        set_bonus_count = floor(self.runeinstance_set.filter(type=RuneInstance.TYPE_GUARD).count() / 2)
+        return ceil(self.base_defense() * 0.15) * set_bonus_count
 
     def rune_bonus_endure(self):
         rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENDURE).count()
@@ -704,7 +704,7 @@ class MonsterInstance(models.Model):
 
         rune_set_bonus = self.rune_bonus_energy()
 
-        return int(ceil(base * (hp_percent / 100.0)) + ceil(base * (rune_set_bonus / 100.0)) + hp_flat)
+        return int(ceil(base * (hp_percent / 100.0)) + rune_set_bonus + hp_flat)
 
     def hp(self):
         return self.base_hp() + self.rune_hp()
@@ -724,7 +724,7 @@ class MonsterInstance(models.Model):
 
         rune_set_bonus = self.rune_bonus_fatal()
 
-        return int(ceil(base * (atk_percent / 100.0)) + ceil(base * (rune_set_bonus / 100.0)) + atk_flat)
+        return int(ceil(base * (atk_percent / 100.0)) + rune_set_bonus + atk_flat)
 
     def attack(self):
         return self.base_attack() + self.rune_attack()
@@ -744,7 +744,7 @@ class MonsterInstance(models.Model):
 
         rune_set_bonus = self.rune_bonus_guard()
 
-        return int(ceil(base * (def_percent / 100.0)) + ceil(base * (rune_set_bonus / 100.0)) + def_flat)
+        return int(ceil(base * (def_percent / 100.0)) + rune_set_bonus + def_flat)
 
     def defense(self):
         return self.base_defense() + self.rune_defense()

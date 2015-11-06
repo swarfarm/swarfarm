@@ -1,0 +1,36 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<ul class="list-unstyled">
+    <li>
+        <div class="monster-skill-thumb pull-left">
+            <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
+            <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+        </div>
+        <p>{{ skill.description }}</p>
+        <div class="clearfix"></div>
+    </li>
+    {% if skill.level_progress_description %}
+    <li>
+        <p class="list-group-item-heading"><strong>Level-up Progress:</strong></p>
+        {{ skill.level_progress_description|linebreaks }}
+    </li>
+    {% endif %}
+    {% if skill.skill_effect|length > 0 %}
+    <li>
+        <p class="list-group-item-heading"><strong>Skill Effects:</strong></p>
+        <p>
+        {% for effect in skill.skill_effect %}
+            {% if effect.icon_filename %}
+                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"/>
+            {% else %}
+                <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}">
+                    <span>{{ effect.name }}</span>
+                </span>
+            {% endif %}
+        {% endfor %}
+        </p>
+        <div class="clearfix"></div>
+    </li>
+    {% endif %}
+</ul>

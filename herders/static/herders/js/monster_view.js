@@ -269,14 +269,13 @@ $('body')
                     $(result.removeElement).remove();
                 }
             }
-            else if (data.code === 'edit') {
+            else if (result.code === 'edit') {
                 $('.modal.in').modal('hide');
                 UpdateAll();
                 EditMonster(INSTANCE_ID);
             }
             else {
-                $form.replaceWith(data.html);
-                $('.rating').rating();
+                $form.replaceWith(result.html);
             }
         });
 

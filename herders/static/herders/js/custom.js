@@ -41,6 +41,30 @@ $('.monster-popover').hover(function(event) {
     }
 });
 
+//Custom popovers for loading AJAX content
+$('.skill-popover').hover(function(event) {
+    if (event.type === 'mouseenter') {
+        var el = $(this);
+        var url = API_URL + 'skill/' + el.data('skill-id') + '.html';
+        $.get(url, function (d) {
+            el.popover({
+                trigger: 'manual',
+                content: d,
+                html: true,
+                container: 'body',
+                viewport: {selector: 'body', padding: 2},
+                template: '<div class="monster-skill popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+            });
+
+            if (el.is(":hover")) {
+                el.popover('show');
+            }
+        });
+    } else {
+        $(this).popover('hide');
+    }
+});
+
 
 //Modal management scripts
 $('#addMonsterModal').on('shown.bs.modal', function () {
@@ -149,6 +173,7 @@ $('#bulkAddFormset').formset({
 var monster_table = $('#monster_table');
 var filter_buttons = $('button.filter');
 var active_filter_class = 'active';
+var save_filters = monster_table.data('save-filters');
 
 monster_table.tablesorter({
     widgets: ['filter', 'saveSort'],
@@ -161,7 +186,7 @@ monster_table.tablesorter({
         filter_ignoreCase : true,
         filter_liveSearch : true,
         filter_searchDelay : 300,
-        filter_saveFilters : true,
+        filter_saveFilters : save_filters,
         filter_searchFiltered : true
     }
 });
@@ -190,7 +215,7 @@ if (monster_table.length > 0) {
 filter_buttons.click(function() {
     $( this ).toggleClass(active_filter_class);
 
-    var filters = $('#monster_table').find('input.tablesorter-filter'),
+    var filters = monster_table.find('input.tablesorter-filter'),
         col = $(this).data('filter-column'),
         filter_txt = $(this).data('filter-text'),
         filter_function = $(this).data('filter-function'),
@@ -229,7 +254,7 @@ filter_buttons.click(function() {
 //Reset filters
 $('button.reset').click(function() {
     $('button.filter').toggleClass(active_filter_class, false);
-    $('#monster_table').trigger('saveSortReset').trigger("sortReset");
+    monster_table.trigger('saveSortReset').trigger("sortReset");
 });
 
 //Rune form common functions

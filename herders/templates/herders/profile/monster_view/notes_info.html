@@ -56,8 +56,11 @@
         <tr>
             <td>Resources:</td>
             <td>
-                {% if instance.monster.wikia_url %}<a href="{{ instance.monster.wikia_url }}" target="_blank">Wikia<span class="glyphicon glyphicon-link"></span></a>{% endif %}
-                {% if instance.monster.summonerswar_co_url %}<a href="{{ instance.monster.summonerswar_co_url }}" target="_blank">summonerswar.co<span class="glyphicon glyphicon-link"></span></a>{% endif %}
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'herders:bestiary_detail' monster_slug=instance.monster.bestiary_slug %}"><span class="glyphicon glyphicon-link"></span> SWARFARM Bestiary</a></li>
+                    <li>{% if instance.monster.wikia_url %}<a href="{{ instance.monster.wikia_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> Wikia</a>{% endif %}</li>
+                    <li>{% if instance.monster.summonerswar_co_url %}<a href="{{ instance.monster.summonerswar_co_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> summonerswar.co</a>{% endif %}</li>
+                </ul>
             </td>
         </tr>
     </table>

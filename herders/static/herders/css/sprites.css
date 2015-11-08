@@ -1844,6 +1844,7 @@
 .sprite-magic_knight_water_awakened,
 .sprite-magic_knight_wind,
 .sprite-magic_knight_wind_awakened,
+.sprite-magical_archer__fami__light,
 .sprite-magical_archer__fami__light_awakened,
 .sprite-magical_archer_dark,
 .sprite-magical_archer_dark_awakened,
@@ -1945,9 +1946,6 @@
     background-position: -100px -150px
 }
 .sprite-magical_archer__fami__light {
-    background-image: url(/static/herders/images/monsters/sprite/10.png);
-    width: 50px;
-    height: 50px;
     background-position: -150px -150px
 }
 .sprite-magical_archer__fami__light_awakened {

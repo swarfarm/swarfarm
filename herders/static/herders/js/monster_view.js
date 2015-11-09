@@ -1,15 +1,16 @@
+var dialog;
+
 // Rune functions
 function AssignRune(slot) {
     $.ajax({
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/assign/' + INSTANCE_ID + '/' + slot.toString() + '/'
     }).done(function (response) {
-       bootbox.dialog({
+        dialog = bootbox.dialog({
             title: "Assign Rune",
             message: response.html
         });
         $('.rating').rating();
-        $('.modal.in').modal('handleUpdate');
         update_rune_counts();
     });
 }
@@ -31,18 +32,23 @@ function AssignRuneChoice(rune_id, monster_id) {
 }
 
 function CreateNewRune(slot) {
-    $('.modal.in').modal('hide');
     $.ajax({
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/add/?slot=' + slot.toString() + '&assigned_to=' + INSTANCE_ID
     }).done(function (response) {
-        bootbox.dialog({
-            title: "Add new rune",
-            message: response.html,
-        });
+        if (dialog) {
+            $('.bootbox-body').html(response.html)
+        }
+        else {
+            dialog = bootbox.dialog({
+                title: "Add new rune",
+                message: response.html
+            });
+        }
+
         update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
         $('.rating').rating();
-        $('.modal.in').modal('handleUpdate');
+        dialog.modal('handleUpdate');
     });
 }
 

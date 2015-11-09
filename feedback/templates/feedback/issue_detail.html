@@ -21,7 +21,7 @@
                 <div class="list-group">
                     <div class="list-group-item">
                         <h4 class="list-group-item-heading">{{ issue.user }} <small>{{ issue.submitted|naturaltime }}</small></h4>
-                        {{ issue.description }}
+                        {{ issue.description|markdown }}
                     </div>
                     {% for comment in issue.discussion_set.all %}
                     <div class="list-group-item">

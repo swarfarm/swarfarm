@@ -131,7 +131,10 @@ $('body')
             type: 'get',
             url: '/profile/' + PROFILE_NAME + '/runes/export/'
         }).done(function(result) {
-            bootbox.alert(result.html);
+            bootbox.dialog({
+                title: "Export Runes and Monsters",
+                message: result.html
+            });
         })
     })
     .on('change', '#edit_id_slot', function() {

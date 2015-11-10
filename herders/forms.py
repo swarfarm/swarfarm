@@ -842,6 +842,7 @@ class ImportRuneForm(forms.Form):
     helper = FormHelper()
     helper.form_tag = False
     helper.layout = Layout(
+        Alert('You can only import runes. Importing will create new runes, not update your current runes. Monsters and saved builds from the spreadsheet are ignored.', css_class='alert-warning'),
         Field('json_data'),
         FormActions(
             Submit('import', 'Import'),
@@ -870,7 +871,8 @@ class ExportRuneForm(forms.Form):
     )
 
     helper = FormHelper()
+    helper.form_show_labels = False
     helper.layout = Layout(
-        Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes currently present. It is advised to back up your existing data first. Monsters will be unaffected, but saved builds will no longer match rune IDs correctly.', css_class='alert-danger'),
+        Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes, monsters, and saved builds currently present. It is advised to back up your existing data first.', css_class='alert-danger'),
         Field('json_data'),
     )

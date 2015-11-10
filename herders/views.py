@@ -1548,7 +1548,10 @@ def rune_export(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
-        export_data = export_runes(RuneInstance.objects.filter(owner=summoner))
+        export_data = export_runes(
+            MonsterInstance.objects.filter(owner=summoner, runeinstance__isnull=False).distinct(),
+            RuneInstance.objects.filter(owner=summoner, assigned_to=None),
+        )
         form = ExportRuneForm(initial={'json_data': export_data})
         template = loader.get_template('herders/profile/runes/export.html')
 

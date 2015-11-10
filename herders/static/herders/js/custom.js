@@ -274,7 +274,7 @@ function update_main_slot_options(slot, main_stat_input) {
                 );
             });
 
-            var exists = 0 != main_stat_input.find('option[value='+current_stat+']').length;
+            var exists = 0 != main_stat_input.find("option[value='"+current_stat+"']").length;
             if (exists) {
                 main_stat_input.val(current_stat);
             }

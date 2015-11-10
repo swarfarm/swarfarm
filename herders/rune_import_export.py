@@ -159,11 +159,14 @@ def import_rune(rune_data):
     return rune
 
 
-def export_runes(runed_monsters, unassigned_runes):
+def export_runes(monsters, unassigned_runes):
     rune_id = 1
     monster_id = 1
     exported_runes = []
     exported_monsters = []
+
+    runed_monsters = monsters.filter(runeinstance__isnull=False).distinct()
+    unruned_monsters = monsters.filter(runeinstance=None)
 
     # First export runes which are assigned to monsters so we can keep the association
     for monster in runed_monsters:
@@ -184,7 +187,15 @@ def export_runes(runed_monsters, unassigned_runes):
         exported_monsters.append(json_monster)
         monster_id += 1
 
-    # Now export all unassigned runes to the end.
+    # Second export all unruned monsters
+    for monster in unruned_monsters:
+        json_monster = _convert_monster_to_json(monster)
+        json_monster['id'] = monster_id
+
+        exported_monsters.append(json_monster)
+        monster_id += 1
+
+    # Now export all unassigned runes
     for rune in unassigned_runes:
         json_rune = _convert_rune_to_json(rune)
         json_rune['id'] = rune_id

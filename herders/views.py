@@ -1549,7 +1549,7 @@ def rune_export(request, profile_name):
 
     if is_owner:
         export_data = export_runes(
-            MonsterInstance.objects.filter(owner=summoner, runeinstance__isnull=False).distinct(),
+            MonsterInstance.objects.filter(owner=summoner),
             RuneInstance.objects.filter(owner=summoner, assigned_to=None),
         )
         form = ExportRuneForm(initial={'json_data': export_data})

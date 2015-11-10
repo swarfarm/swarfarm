@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from django.http import Http404, HttpResponseForbidden, JsonResponse
+from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
@@ -1255,13 +1255,22 @@ def runes(request, profile_name):
     if is_owner or summoner.public:
         return render(request, 'herders/profile/runes/base.html', context)
     else:
-        return render(request, 'herders/profile/not_public.html', context)
+        return render(request, 'herders/profile/not_public.html', context),
 
 
-def rune_inventory(request, profile_name):
+def rune_inventory(request, profile_name, view_mode=None):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     rune_queryset = RuneInstance.objects.filter(owner=summoner)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    # If we passed in view mode or sort method, set the session variable and redirect back to base profile URL
+    if view_mode:
+        request.session['rune_inventory_view_mode'] = view_mode.lower()
+
+    if request.session.modified:
+        return HttpResponse("Rune view mode cookie set")
+
+    view_mode = request.session.get('rune_inventory_view_mode', 'box').lower()
 
     rune_filter = RuneInstanceFilter(request.POST, queryset=rune_queryset)
 
@@ -1270,8 +1279,14 @@ def rune_inventory(request, profile_name):
         'profile_name': profile_name,
         'is_owner': is_owner,
     }
+
     if is_owner or summoner.public:
-        return render(request, 'herders/profile/runes/inventory.html', context)
+        if view_mode == 'box':
+            template = 'herders/profile/runes/inventory.html'
+        else:
+            template = 'herders/profile/runes/inventory_table.html'
+
+        return render(request, template, context)
     else:
         return render(request, 'herders/profile/not_public.html', context)
 

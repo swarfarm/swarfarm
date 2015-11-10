@@ -137,6 +137,12 @@ $('body')
             });
         })
     })
+    .on('click', '.rune-view-mode', function() {
+        var view_mode = $(this).data('mode');
+        $.get('/profile/' + PROFILE_NAME + '/runes/inventory/' + view_mode + '/', function() {
+            update_rune_inventory();
+        });
+    })
     .on('change', '#edit_id_slot', function() {
         update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
     })

@@ -1,0 +1,91 @@
+{% load staticfiles %}
+{% load utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div id="rune-inventory">
+    {# We duplicate the messages here because the page is not reloaded and base.html will not display them #}
+    {% if messages %}
+        <div class="alert alert-dismissible alert-success" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                    <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="btn-toolbar">
+                <button class="btn btn-default rune-view-mode" data-mode="box">
+                    <span class="glyphicon glyphicon-th"></span> Box View
+                </button>
+            </div>
+        </div>
+        <table class="table condensed">
+            <thead>
+            <tr>
+                <th>Type</th>
+                <th>Stars</th>
+                <th>Level</th>
+                <th>Main Stat</th>
+                <th>Innate Stat</th>
+                <th>Substat 1</th>
+                <th>Substat 2</th>
+                <th>Substat 3</th>
+                <th>Substat 4</th>
+                <th>Assigned To</th>
+                {% if is_owner %}<th></th>{% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for rune in runes %}
+            <tr>
+                <td>{% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}</td>
+                <td>{{ rune.stars }}</td>
+                <td>{{ rune.level }}</td>
+                <td>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</td>
+                <td>{% if rune.innate_stat %}{{ rune.get_innate_stat_rune_display }} +{{ rune.innate_stat_value }}{% if rune.innate_stat in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
+                <td>{% if rune.substat_1 %}{{ rune.get_substat_1_rune_display }} +{{ rune.substat_1_value }}{% if rune.substat_1 in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
+                <td>{% if rune.substat_2 %}{{ rune.get_substat_2_rune_display }} +{{ rune.substat_2_value }}{% if rune.substat_2 in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
+                <td>{% if rune.substat_3 %}{{ rune.get_substat_3_rune_display }} +{{ rune.substat_3_value }}{% if rune.substat_3 in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
+                <td>{% if rune.substat_4 %}{{ rune.get_substat_4_rune_display }} +{{ rune.substat_4_value }}{% if rune.substat_4 in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
+                <td>
+                    {% if rune.assigned_to %}
+                    <div class="monster-image">
+                        <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}" target="_blank">
+                            <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb"/>
+                            <span>
+                                {% for x in rune.assigned_to.stars|get_range %}
+                                    {% if rune.assigned_to.monster.is_awakened %}
+                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% elif rune.assigned_to.monster.can_awaken %}
+                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% else %}
+                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            <span class="image-plus image-plus-right">{{ rune.assigned_to.level }}</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                </td>
+                {% if is_owner %}
+                <td>
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                        <button class="btn btn-default btn-xs rune-delete" data-rune-id="{{ rune.pk.hex }}">
+                            <span class="glyphicon glyphicon-trash text-danger"></span>
+                        </button>
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

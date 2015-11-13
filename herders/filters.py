@@ -13,4 +13,5 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'level': ['gte', 'lte'],
             'stars': ['gte', 'lte'],
             'slot': ['exact'],
+            'assigned_to': ['isnull'],
         }

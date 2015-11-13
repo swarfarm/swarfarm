@@ -1270,9 +1270,11 @@ def rune_inventory(request, profile_name, view_mode=None):
     if request.session.modified:
         return HttpResponse("Rune view mode cookie set")
 
+    form = FilterRuneForm(request.POST or None)
     view_mode = request.session.get('rune_inventory_view_mode', 'box').lower()
 
-    rune_filter = RuneInstanceFilter(request.POST, queryset=rune_queryset)
+    form.is_valid()
+    rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)
 
     context = {
         'runes': rune_filter,

@@ -120,6 +120,13 @@ footer {
     z-index: 1000;
 }
 
+.navbar-sub .form-group>label,
+.navbar-sub .rating-symbol,
+.navbar-sub .checkbox>label
+{
+    color: #e5e5e5;
+}
+
 div.profile {
     position: relative;
 }

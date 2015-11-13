@@ -816,18 +816,71 @@ class FilterRuneForm(forms.Form):
         max_value=6,
         required=False
     )
+    assigned_to__isnull = forms.NullBooleanField(
+        label="Is Assigned",
+        required=False,
+    )
 
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_id = 'FilterInventoryForm'
     helper.layout = Layout(
-        Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger btn-block'),
-        Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select.html'),
-        Field('slot', css_class='auto-submit'),
-        Field('level__gte', css_class='auto-submit'),
-        Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-        Field('stars__lte', css_class='rating hidden', value=6, data_start=0, data_stop=6, data_stars=6),
+        Div(
+            Div(
+                Div(
+                    Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select.html'),
+                    css_class='condensed',
+                ),
+                css_class='col-md-12',
+            ),
+            css_class='row',
+        ),
+        Div(
+            Div(
+                Div(
+                    Field('slot', css_class='auto-submit'),
+                    css_class='pull-left condensed',
+                ),
+                Div(
+                    Field('level__gte', css_class='auto-submit'),
+                    css_class='pull-left condensed',
+                ),
+                Div(
+                    Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+                    css_class='pull-left condensed'
+                ),
+                Div(
+                    Field('stars__lte', css_class='rating hidden', value=6, data_start=0, data_stop=6, data_stars=6),
+                    css_class='pull-left condensed'
+                ),
+                css_class='col-md-12',
+            ),
+            css_class='row',
+        ),
+        Div(
+            Div(
+                Div(
+                    Field('assigned_to__isnull', css_class='auto-submit'),
+                    css_class='pull-left condensed',
+                ),
+                css_class='col-md-12',
+            ),
+            css_class='row',
+        ),
+
+        Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
     )
+
+    def clean(self):
+        super(FilterRuneForm, self).clean()
+        # Check that leader is not also in the roster
+        assigned_to__isnull = self.cleaned_data.get('assigned_to__isnull')
+        if assigned_to__isnull == 2:
+            self.cleaned_data['assigned_to__isnull'] = True
+        elif assigned_to__isnull == 2:
+            self.cleaned_data['assigned_to__isnull'] = False
+        else:
+            self.cleaned_data['assigned_to__isnull'] = None
 
 
 class ImportRuneForm(forms.Form):

@@ -795,7 +795,12 @@ class FilterRuneForm(forms.Form):
     type = forms.MultipleChoiceField(
         choices=RuneInstance.TYPE_CHOICES,
         widget=forms.CheckboxSelectMultiple,
-        required=False
+        required=False,
+    )
+    main_stat = forms.MultipleChoiceField(
+        choices=RuneInstance.STAT_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
     )
     level__gte = forms.IntegerField(
         label="Minimum Level",
@@ -821,14 +826,14 @@ class FilterRuneForm(forms.Form):
         required=False,
         widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
     )
-    has_hp = forms.NullBooleanField(label='Has HP', required=False)
-    has_atk = forms.NullBooleanField(label='Has ATK', required=False)
-    has_def = forms.NullBooleanField(label='Has DEF', required=False)
-    has_crit_rate = forms.NullBooleanField(label='Has CRI Rate', required=False)
-    has_crit_dmg = forms.NullBooleanField(label='Has CRI Dmg', required=False)
-    has_speed = forms.NullBooleanField(label='Has SPD', required=False)
-    has_resist = forms.NullBooleanField(label='Has RES', required=False)
-    has_accuracy = forms.NullBooleanField(label='Has ACC', required=False)
+    has_hp = forms.NullBooleanField(label='Has HP', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    has_atk = forms.NullBooleanField(label='Has ATK', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    has_def = forms.NullBooleanField(label='Has DEF', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    has_crit_rate = forms.NullBooleanField(label='Has CRI Rate', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    has_crit_dmg = forms.NullBooleanField(label='Has CRI Dmg', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    has_speed = forms.NullBooleanField(label='Has SPD', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    has_resist = forms.NullBooleanField(label='Has RES', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    has_accuracy = forms.NullBooleanField(label='Has ACC', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -836,51 +841,58 @@ class FilterRuneForm(forms.Form):
     helper.layout = Layout(
         Div(
             Div(
-                Div(
-                    Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select_notext.html'),
-                    css_class='condensed',
-                ),
-                css_class='col-md-12',
+                Field('main_stat', css_class='auto-submit'),
+                css_class='col-lg-1',
             ),
-            css_class='row',
-        ),
-        Div(
             Div(
                 Div(
-                    Field('slot', css_class='auto-submit'),
-                    css_class='pull-left condensed',
+                    Div(
+                        Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select_notext.html'),
+                        css_class='col-md-12',
+                    ),
+                    css_class='row'
                 ),
                 Div(
-                    Field('assigned_to', css_class='auto-submit'),
-                    css_class='pull-left condensed',
+                    Div(
+                        Div(
+                            Field('slot', css_class='auto-submit'),
+                            css_class='pull-left condensed',
+                        ),
+                        Div(
+                            Field('assigned_to', css_class='auto-submit'),
+                            css_class='pull-left condensed',
+                        ),
+                        Div(
+                            Field('level__gte', css_class='auto-submit'),
+                            css_class='pull-left condensed',
+                        ),
+                        Div(
+                            Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+                            css_class='pull-left condensed'
+                        ),
+                        Div(
+                            Field('stars__lte', css_class='rating hidden', value=6, data_start=0, data_stop=6, data_stars=6),
+                            css_class='pull-left condensed'
+                        ),
+                        css_class='col-md-12',
+                    ),
+                    css_class='row',
                 ),
                 Div(
-                    Field('level__gte', css_class='auto-submit'),
-                    css_class='pull-left condensed',
+                    Div(
+                        Div(Field('has_hp', css_class='auto-submit'), css_class='pull-left condensed'),
+                        Div(Field('has_atk', css_class='auto-submit'), css_class='pull-left condensed'),
+                        Div(Field('has_def', css_class='auto-submit'), css_class='pull-left condensed'),
+                        Div(Field('has_crit_rate', css_class='auto-submit'), css_class='pull-left condensed'),
+                        Div(Field('has_crit_dmg', css_class='auto-submit'), css_class='pull-left condensed'),
+                        Div(Field('has_speed', css_class='auto-submit'), css_class='pull-left condensed'),
+                        Div(Field('has_resist', css_class='auto-submit'), css_class='pull-left condensed'),
+                        Div(Field('has_accuracy', css_class='auto-submit'), css_class='pull-left condensed'),
+                        css_class='col-md-12',
+                    ),
+                    css_class='row',
                 ),
-                Div(
-                    Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                    css_class='pull-left condensed'
-                ),
-                Div(
-                    Field('stars__lte', css_class='rating hidden', value=6, data_start=0, data_stop=6, data_stars=6),
-                    css_class='pull-left condensed'
-                ),
-                css_class='col-md-12',
-            ),
-            css_class='row',
-        ),
-        Div(
-            Div(
-                Div(Field('has_hp', css_class='auto-submit'), css_class='pull-left condensed'),
-                Div(Field('has_atk', css_class='auto-submit'), css_class='pull-left condensed'),
-                Div(Field('has_def', css_class='auto-submit'), css_class='pull-left condensed'),
-                Div(Field('has_crit_rate', css_class='auto-submit'), css_class='pull-left condensed'),
-                Div(Field('has_crit_dmg', css_class='auto-submit'), css_class='pull-left condensed'),
-                Div(Field('has_speed', css_class='auto-submit'), css_class='pull-left condensed'),
-                Div(Field('has_resist', css_class='auto-submit'), css_class='pull-left condensed'),
-                Div(Field('has_accuracy', css_class='auto-submit'), css_class='pull-left condensed'),
-                css_class='col-md-12',
+                css_class='col-lg-10',
             ),
             css_class='row',
         ),

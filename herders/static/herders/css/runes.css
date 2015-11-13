@@ -242,6 +242,10 @@ span.rune-set-bonus {
     padding-left: 3px;
     padding-right: 3px;
 }
+.rune-button-text {
+    padding-left: 32px;
+}
+
 .rune-button>span {
     margin-left: 20px;
 }

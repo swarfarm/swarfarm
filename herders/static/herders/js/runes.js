@@ -7,6 +7,10 @@ function update_rune_inventory() {
     $('#FilterInventoryForm').submit();
 }
 
+$('.container').click(function() {
+    $('.collapse.in').collapse('hide');
+});
+
 $('body')
     .on('click', ':submit', function() {
         var $form = $(this).closest('form');

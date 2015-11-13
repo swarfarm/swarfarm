@@ -784,7 +784,7 @@ class AssignRuneForm(forms.Form):
     helper.layout = Layout(
         StrictButton('Create New', id='addNewRune', css_class='btn btn-primary btn-block'),
         Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger btn-block'),
-        Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select.html'),
+        Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select_notext.html'),
         Field('slot', type='hidden', css_class='auto-submit'),
         Field('level__gte', css_class='auto-submit'),
         Field('stars__gte', css_class='rating hidden auto-submit', value=1, data_start=0, data_stop=6, data_stars=6),
@@ -819,7 +819,16 @@ class FilterRuneForm(forms.Form):
     assigned_to = forms.NullBooleanField(
         label="Is Assigned",
         required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
     )
+    has_hp = forms.NullBooleanField(label='Has HP', required=False)
+    has_atk = forms.NullBooleanField(label='Has ATK', required=False)
+    has_def = forms.NullBooleanField(label='Has DEF', required=False)
+    has_crit_rate = forms.NullBooleanField(label='Has CRI Rate', required=False)
+    has_crit_dmg = forms.NullBooleanField(label='Has CRI Dmg', required=False)
+    has_speed = forms.NullBooleanField(label='Has SPD', required=False)
+    has_resist = forms.NullBooleanField(label='Has RES', required=False)
+    has_accuracy = forms.NullBooleanField(label='Has ACC', required=False)
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -828,7 +837,7 @@ class FilterRuneForm(forms.Form):
         Div(
             Div(
                 Div(
-                    Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select.html'),
+                    Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select_notext.html'),
                     css_class='condensed',
                 ),
                 css_class='col-md-12',
@@ -839,6 +848,10 @@ class FilterRuneForm(forms.Form):
             Div(
                 Div(
                     Field('slot', css_class='auto-submit'),
+                    css_class='pull-left condensed',
+                ),
+                Div(
+                    Field('assigned_to', css_class='auto-submit'),
                     css_class='pull-left condensed',
                 ),
                 Div(
@@ -859,16 +872,21 @@ class FilterRuneForm(forms.Form):
         ),
         Div(
             Div(
-                Div(
-                    Field('assigned_to', css_class='auto-submit'),
-                    css_class='pull-left condensed',
-                ),
+                Div(Field('has_hp', css_class='auto-submit'), css_class='pull-left condensed'),
+                Div(Field('has_atk', css_class='auto-submit'), css_class='pull-left condensed'),
+                Div(Field('has_def', css_class='auto-submit'), css_class='pull-left condensed'),
+                Div(Field('has_crit_rate', css_class='auto-submit'), css_class='pull-left condensed'),
+                Div(Field('has_crit_dmg', css_class='auto-submit'), css_class='pull-left condensed'),
+                Div(Field('has_speed', css_class='auto-submit'), css_class='pull-left condensed'),
+                Div(Field('has_resist', css_class='auto-submit'), css_class='pull-left condensed'),
+                Div(Field('has_accuracy', css_class='auto-submit'), css_class='pull-left condensed'),
                 css_class='col-md-12',
             ),
             css_class='row',
         ),
-
-        Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
+        FormActions(
+            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
+        ),
     )
 
 

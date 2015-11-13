@@ -5,6 +5,7 @@ from .models import RuneInstance
 
 class RuneInstanceFilter(django_filters.FilterSet):
     type = django_filters.MultipleChoiceFilter(choices=RuneInstance.TYPE_CHOICES)
+    assigned_to = django_filters.MethodFilter(action='filter_assigned_to')
 
     class Meta:
         model = RuneInstance
@@ -13,5 +14,9 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'level': ['gte', 'lte'],
             'stars': ['gte', 'lte'],
             'slot': ['exact'],
-            'assigned_to': ['isnull'],
+            'assigned_to': ['exact'],
         }
+
+    def filter_assigned_to(self, queryset, value):
+
+        return queryset.filter(assigned_to__isnull=not value)

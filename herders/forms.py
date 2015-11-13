@@ -816,7 +816,7 @@ class FilterRuneForm(forms.Form):
         max_value=6,
         required=False
     )
-    assigned_to__isnull = forms.NullBooleanField(
+    assigned_to = forms.NullBooleanField(
         label="Is Assigned",
         required=False,
     )
@@ -860,7 +860,7 @@ class FilterRuneForm(forms.Form):
         Div(
             Div(
                 Div(
-                    Field('assigned_to__isnull', css_class='auto-submit'),
+                    Field('assigned_to', css_class='auto-submit'),
                     css_class='pull-left condensed',
                 ),
                 css_class='col-md-12',
@@ -870,17 +870,6 @@ class FilterRuneForm(forms.Form):
 
         Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
     )
-
-    def clean(self):
-        super(FilterRuneForm, self).clean()
-        # Check that leader is not also in the roster
-        assigned_to__isnull = self.cleaned_data.get('assigned_to__isnull')
-        if assigned_to__isnull == 2:
-            self.cleaned_data['assigned_to__isnull'] = True
-        elif assigned_to__isnull == 2:
-            self.cleaned_data['assigned_to__isnull'] = False
-        else:
-            self.cleaned_data['assigned_to__isnull'] = None
 
 
 class ImportRuneForm(forms.Form):

@@ -875,13 +875,13 @@ class FilterRuneForm(forms.Form):
         Div(
             Div(
                 Field('main_stat', css_class='auto-submit'),
-                css_class='col-lg-1',
+                css_class='col-sm-1',
             ),
             Div(
                 Div(
                     Div(
                         Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select_notext.html'),
-                        css_class='col-md-12',
+                        css_class='col-sm-12',
                     ),
                     css_class='row'
                 ),
@@ -907,7 +907,7 @@ class FilterRuneForm(forms.Form):
                             Field('stars__lte', css_class='rating hidden', value=6, data_start=0, data_stop=6, data_stars=6),
                             css_class='pull-left condensed'
                         ),
-                        css_class='col-md-12',
+                        css_class='col-sm-12',
                     ),
                     css_class='row',
                 ),
@@ -921,11 +921,11 @@ class FilterRuneForm(forms.Form):
                         Div(Field('has_speed', css_class='auto-submit'), css_class='pull-left condensed'),
                         Div(Field('has_resist', css_class='auto-submit'), css_class='pull-left condensed'),
                         Div(Field('has_accuracy', css_class='auto-submit'), css_class='pull-left condensed'),
-                        css_class='col-md-12',
+                        css_class='col-sm-12',
                     ),
                     css_class='row',
                 ),
-                css_class='col-lg-10',
+                css_class='col-sm-10',
             ),
             css_class='row',
         ),

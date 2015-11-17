@@ -364,6 +364,7 @@ class EditEssenceStorageForm(ModelForm):
         }
 
 
+# MonsterInstance Forms
 class AddMonsterInstanceForm(autocomplete_light.ModelForm):
     monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
 
@@ -533,6 +534,41 @@ class AwakenMonsterInstanceForm(forms.Form):
     )
 
 
+class FilterMonsterInstanceForm(forms.Form):
+    monster__name__icontains = forms.CharField(
+        max_length=100,
+        required=False,
+        label='Monster Name'
+    )
+    stars = forms.MultipleChoiceField(
+        choices=(
+            (1, mark_safe('1<span class="glyphicon glyphicon-star"></span>')),
+            (2, mark_safe('2<span class="glyphicon glyphicon-star"></span>')),
+            (3, mark_safe('3<span class="glyphicon glyphicon-star"></span>')),
+            (4, mark_safe('4<span class="glyphicon glyphicon-star"></span>')),
+            (5, mark_safe('5<span class="glyphicon glyphicon-star"></span>')),
+            (6, mark_safe('6<span class="glyphicon glyphicon-star"></span>')),
+        ),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_id = 'FilterInventoryForm'
+    helper.form_class = 'form-horizontal'
+    helper.label_class = 'col-md-1'
+    helper.field_class = 'col-md-8'
+    helper.layout = Layout(
+        Field('monster__name__icontains', css_class='auto-submit'),
+        Field('stars', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
+        FormActions(
+            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
+        ),
+    )
+
+
+# Team Forms
 class AddTeamGroupForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddTeamGroupForm, self).__init__(*args, **kwargs)
@@ -643,6 +679,7 @@ class EditTeamForm(ModelForm):
         super(EditTeamForm, self).clean()
 
 
+# Rune Forms
 class AddRuneInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRuneInstanceForm, self).__init__(*args, **kwargs)

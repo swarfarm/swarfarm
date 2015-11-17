@@ -1,0 +1,60 @@
+{% load staticfiles %}
+{% load utils %}
+
+{% static 'herders/images/' as img_url_prefix %}
+
+<div id="monster-inventory">
+    {% if monsters %}
+        {# We duplicate the messages here because the page is not reloaded and base.html will not display them #}
+        {% if messages %}
+            <div class="alert alert-dismissible alert-success" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <ul class="list-unstyled">
+                    {% for message in messages %}
+                        <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a role="button" href="{% url 'herders:profile' profile_name=profile_name view_mode='box' %}" class="btn btn-default">
+                    <span class="glyphicon glyphicon-th"></span> Box View
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table id="monster_table" class="table table-hover table-condensed monster-table" data-save-filters="true">
+                    <thead>
+                        <tr>
+                            <th data-sorter="false"></th>
+                            <th>Name</th>
+                            <th class="monster-stars-column">Stars</th>
+                            <th class="monster-level-column">Level</th>
+                            <th class="monster-element">Element</th>
+                            <th>Archetype</th>
+                            <th>Priority</th>
+                            <th>Leader Skill</th>
+                            <th data-sorter="false">Skill Effects</th>
+                            <th>Notes</th>
+                            <th class="monster-info-icons-column"><img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/></th>
+                            <th class="monster-info-icons-column"><span class="fa fa-birthday-cake" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Marked as food"></span></th>
+                            <th class="monster-info-icons-column"><span class="fa fa-bed" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="In Monster Storage"></span></th>
+                            {% if is_owner %}
+                                <th data-sorter="false"></th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for instance in monsters %}
+                            {% include 'herders/profile/monster_inventory/list_row.html' with instance=instance profile_name=profile_name only %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <p>No monsters in your profile.</p>
+    {% endif %}
+</div>

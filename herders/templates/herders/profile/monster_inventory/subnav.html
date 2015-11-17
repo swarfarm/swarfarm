@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load crispy_forms_tags %}
 {% static 'herders/images/' as img_url_prefix %}
 
 <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
@@ -14,6 +15,9 @@
         </div>
 
         <div class="collapse navbar-collapse" id="bs-subnav">
+            <button class="btn btn-primary navbar-btn toggle collapsed" data-toggle="collapse" data-target="#dropdownFilters">
+                Filters
+            </button>
             <button type="button" class="btn btn-default navbar-btn monster-add">
                 <span class="glyphicon glyphicon-plus"></span>
                  Add Monster
@@ -184,6 +188,11 @@
                         </ul>
                     </li>
                 </ul>
+            </div>
+        </div>
+        <div class="collapse" id="dropdownFilters">
+            <div id="monster-inventory-filters" class="container-fluid">
+                {% crispy monster_filter_form %}
             </div>
         </div>
     </div>

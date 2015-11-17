@@ -99,4 +99,16 @@ $('body')
     .on('click', '.monster-add', function() { AddMonster() })
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
-    .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) });
+    .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
+    .on('submit', '#FilterInventoryForm', function() {
+        var $form = $(this);
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: $form.serialize()
+        }).done(function (data) {
+            $('#monster-inventory').replaceWith(data);
+        });
+
+        return false;  //cancel default on submit action.
+    });

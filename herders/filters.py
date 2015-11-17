@@ -1,6 +1,27 @@
 import django_filters
 
-from .models import RuneInstance
+from .models import MonsterInstance, RuneInstance
+
+
+class MonsterInstanceFilter(django_filters.FilterSet):
+    stars = django_filters.MultipleChoiceFilter(
+        choices=(
+            (1, '1*'),
+            (2, '2*'),
+            (3, '3*'),
+            (4, '4*'),
+            (5, '5*'),
+            (6, '6*'),
+        ),
+    )
+
+    class Meta:
+        model = MonsterInstance
+        fields = {
+            'monster__name': ['icontains'],
+            'stars': ['exact'],
+            'monster__element': ['exact'],
+        }
 
 
 class RuneInstanceFilter(django_filters.FilterSet):

@@ -15,6 +15,8 @@ urlpatterns = [
         url(r'^delete/$', views.profile_delete, name='profile_delete'),
         url(r'^storage/$', views.profile_storage, name='profile_storage'),
         url(r'^monster/', include([
+            url(r'^inventory/$', views.monster_inventory, name='monster_inventory'),
+            url(r'^inventory/(?P<view_mode>(list|box))/$', views.monster_inventory, name='monster_inventory_view_mode'),
             url(r'^add/$', views.monster_instance_add, name='monster_instance_add'),
             url(r'^quick_add/(?P<monster_id>[0-9]+)/(?P<stars>[0-9])/(?P<level>[0-9]+)/$', views.monster_instance_quick_add, name='monster_instance_quick_add'),
             url(r'^bulk_add/$', views.monster_instance_bulk_add, name='monster_instance_bulk_add'),

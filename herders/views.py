@@ -175,6 +175,8 @@ def profile(request, profile_name=None, view_mode=None, sort_method=None):
 
     # Determine if the person logged in is the one requesting the view
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    monster_filter_form = FilterMonsterInstanceForm()
+    monster_filter_form.helper.form_action = reverse('herders:monster_inventory', kwargs={'profile_name': profile_name})
 
     # If we passed in view mode or sort method, set the session variable and redirect back to base profile URL
     if view_mode:
@@ -186,28 +188,19 @@ def profile(request, profile_name=None, view_mode=None, sort_method=None):
     if request.session.modified:
         return redirect('herders:profile_default', profile_name=profile_name)
 
-    view_mode = request.session.get('profile_view_mode', 'list').lower()
-    sort_method = request.session.get('profile_sort_method', 'grade').lower()
-
     context = {
-        'add_monster_form': AddMonsterInstanceForm(),
         'profile_name': profile_name,
         'summoner': summoner,
         'is_owner': is_owner,
-        'view_mode': view_mode,
-        'sort_method': sort_method,
-        'return_path': request.path,
+        'monster_filter_form': monster_filter_form,
         'view': 'profile',
     }
 
     if is_owner or summoner.public:
-        if view_mode.lower() == 'list':
-            context['monster_stable'] = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').filter(owner=summoner)
-            context['buff_list'] = MonsterSkillEffect.objects.filter(is_buff=True).exclude(icon_filename='').order_by('name')
-            context['debuff_list'] = MonsterSkillEffect.objects.filter(is_buff=False).exclude(icon_filename='').order_by('name')
-            context['other_effect_list'] = MonsterSkillEffect.objects.filter(icon_filename='').order_by('name')
+        return render(request, 'herders/profile/monster_inventory/base.html', context)
 
-            return render(request, 'herders/profile/profile_list_view.html', context)
+        '''if view_mode.lower() == 'list':
+            return render(request, 'herders/profile/monster_inventory/list.html', context)
         elif view_mode.lower() == 'box':
             monster_stable = OrderedDict()
 
@@ -239,11 +232,43 @@ def profile(request, profile_name=None, view_mode=None, sort_method=None):
                 raise Http404('Invalid sort method')
 
             context['monster_stable'] = monster_stable
-            return render(request, 'herders/profile/profile_box.html', context)
+            return render(request, 'herders/profile/monster_inventory/box.html', context)
         else:
-            raise Http404('Unknown profile view mode')
+            raise Http404('Unknown profile view mode')'''
     else:
         return render(request, 'herders/profile/not_public.html')
+
+
+def monster_inventory(request, profile_name, view_mode=None):
+    if view_mode:
+        request.session['profile_view_mode'] = view_mode.lower()
+
+    if request.session.modified:
+        return redirect('herders:monster_inventory', profile_name=profile_name)
+
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    monster_queryset = MonsterInstance.objects.filter(owner=summoner)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    view_mode = request.session.get('profile_view_mode', 'list').lower()
+
+    monster_filter = MonsterInstanceFilter(request.POST, queryset=monster_queryset)
+
+    context = {
+        'monsters': monster_filter,
+        'profile_name': profile_name,
+        'is_owner': is_owner,
+    }
+
+    if is_owner or summoner.public:
+        if view_mode == 'list':
+            template = 'herders/profile/monster_inventory/list.html'
+        else:
+            template = 'herders/profile/monster_inventory/box.html'
+
+        return render(request, template, context)
+    else:
+        return render(request, 'herders/profile/not_public.html', context)
 
 
 @login_required
@@ -317,7 +342,7 @@ def monster_instance_add(request, profile_name):
 
     form = AddMonsterInstanceForm(request.POST or None)
     form.helper.form_action = reverse('herders:monster_instance_add', kwargs={'profile_name': profile_name})
-    template = loader.get_template('herders/profile/profile_monster_add.html')
+    template = loader.get_template('herders/profile/monster_inventory/add_monster_form.html')
 
     if is_owner:
         if request.method == 'POST' and form.is_valid():
@@ -407,7 +432,7 @@ def monster_instance_bulk_add(request, profile_name):
     else:
         raise PermissionDenied("Trying to bulk add to profile you don't own")
 
-    return render(request, 'herders/profile/profile_monster_bulk_add.html', context)
+    return render(request, 'herders/profile/monster_inventory/bulk_add_form.html', context)
 
 
 def monster_instance_view(request, profile_name, instance_id):
@@ -538,7 +563,7 @@ def monster_instance_edit(request, profile_name, instance_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     instance = get_object_or_404(MonsterInstance, pk=instance_id)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-    template = loader.get_template('herders/profile/profile_monster_edit.html')
+    template = loader.get_template('herders/profile/monster_view/edit_form.html')
 
     if is_owner:
         # Reconcile skill level with actual skill from base monster
@@ -645,7 +670,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    template = loader.get_template('herders/profile/profile_power_up.html')
+    template = loader.get_template('herders/profile/monster_view/power_up_form.html')
 
     form = PowerUpMonsterInstanceForm(request.POST or None)
     form.helper.form_action = reverse('herders:monster_instance_power_up', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
@@ -734,7 +759,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    template = loader.get_template('herders/profile/profile_monster_awaken.html')
+    template = loader.get_template('herders/profile/monster_view/awaken_form.html')
 
     form = AwakenMonsterInstanceForm(request.POST or None)
     form.helper.form_action = reverse('herders:monster_instance_awaken', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
@@ -1259,10 +1284,6 @@ def runes(request, profile_name):
 
 
 def rune_inventory(request, profile_name, view_mode=None):
-    summoner = get_object_or_404(Summoner, user__username=profile_name)
-    rune_queryset = RuneInstance.objects.filter(owner=summoner)
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
     # If we passed in view mode or sort method, set the session variable and redirect back to base profile URL
     if view_mode:
         request.session['rune_inventory_view_mode'] = view_mode.lower()
@@ -1270,11 +1291,17 @@ def rune_inventory(request, profile_name, view_mode=None):
     if request.session.modified:
         return HttpResponse("Rune view mode cookie set")
 
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    rune_queryset = RuneInstance.objects.filter(owner=summoner)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
     form = FilterRuneForm(request.POST or None)
     view_mode = request.session.get('rune_inventory_view_mode', 'box').lower()
 
-    form.is_valid()
-    rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)
+    if form.is_valid():
+        rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)
+    else:
+        rune_filter = RuneInstanceFilter(None, queryset=rune_queryset)
 
     context = {
         'runes': rune_filter,

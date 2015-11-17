@@ -1,19 +1,14 @@
 import django_filters
 
-from .models import MonsterInstance, RuneInstance
+from .models import Monster, MonsterInstance, MonsterSkill, MonsterSkillEffect, MonsterLeaderSkill, RuneInstance
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):
-    stars = django_filters.MultipleChoiceFilter(
-        choices=(
-            (1, '1*'),
-            (2, '2*'),
-            (3, '3*'),
-            (4, '4*'),
-            (5, '5*'),
-            (6, '6*'),
-        ),
-    )
+    stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
+    monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
+    monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
+    priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)
+    monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES)
 
     class Meta:
         model = MonsterInstance
@@ -21,6 +16,9 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__name': ['icontains'],
             'stars': ['exact'],
             'monster__element': ['exact'],
+            'monster__archetype': ['exact'],
+            'priority': ['exact'],
+            'monster__leader_skill__attribute': ['exact'],
         }
 
 

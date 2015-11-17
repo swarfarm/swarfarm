@@ -1,3 +1,7 @@
+$(document).ready(function() {
+    $('#FilterInventoryForm').submit();
+});
+
 function AddMonster() {
     $.ajax({
         url: '/profile/' + PROFILE_NAME + '/monster/add/',

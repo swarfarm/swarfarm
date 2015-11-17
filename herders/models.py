@@ -42,12 +42,12 @@ class Monster(models.Model):
     )
 
     STAR_CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4),
-        (5, 5),
-        (6, 6),
+        (1, mark_safe('1<span class="glyphicon glyphicon-star"></span>')),
+        (2, mark_safe('2<span class="glyphicon glyphicon-star"></span>')),
+        (3, mark_safe('3<span class="glyphicon glyphicon-star"></span>')),
+        (4, mark_safe('4<span class="glyphicon glyphicon-star"></span>')),
+        (5, mark_safe('5<span class="glyphicon glyphicon-star"></span>')),
+        (6, mark_safe('6<span class="glyphicon glyphicon-star"></span>')),
     )
 
     name = models.CharField(max_length=40)
@@ -606,7 +606,7 @@ class MonsterInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
     monster = models.ForeignKey('Monster')
-    stars = models.IntegerField()
+    stars = models.IntegerField(choices=Monster.STAR_CHOICES)
     level = models.IntegerField()
     skill_1_level = models.IntegerField(blank=True, default=1)
     skill_2_level = models.IntegerField(blank=True, default=1)

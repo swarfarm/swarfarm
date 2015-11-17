@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, Pa
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from .models import MonsterInstance, Summoner, TeamGroup, Team, RuneInstance
+from .models import Monster, MonsterInstance, MonsterSkill, MonsterLeaderSkill, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
@@ -536,19 +536,36 @@ class AwakenMonsterInstanceForm(forms.Form):
 
 class FilterMonsterInstanceForm(forms.Form):
     monster__name__icontains = forms.CharField(
+        label='Monster Name',
         max_length=100,
         required=False,
-        label='Monster Name'
     )
     stars = forms.MultipleChoiceField(
-        choices=(
-            (1, mark_safe('1<span class="glyphicon glyphicon-star"></span>')),
-            (2, mark_safe('2<span class="glyphicon glyphicon-star"></span>')),
-            (3, mark_safe('3<span class="glyphicon glyphicon-star"></span>')),
-            (4, mark_safe('4<span class="glyphicon glyphicon-star"></span>')),
-            (5, mark_safe('5<span class="glyphicon glyphicon-star"></span>')),
-            (6, mark_safe('6<span class="glyphicon glyphicon-star"></span>')),
-        ),
+        choices=Monster.STAR_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    monster__element = forms.MultipleChoiceField(
+        label='Element',
+        choices=Monster.ELEMENT_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    monster__archetype = forms.MultipleChoiceField(
+        label='Archetype',
+        choices=Monster.TYPE_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    priority = forms.MultipleChoiceField(
+        label='Priority',
+        choices=MonsterInstance.PRIORITY_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    monster__leader_skill__attribute = forms.MultipleChoiceField(
+        label='Leader Skill Stat',
+        choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES,
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
@@ -562,6 +579,10 @@ class FilterMonsterInstanceForm(forms.Form):
     helper.layout = Layout(
         Field('monster__name__icontains', css_class='auto-submit'),
         Field('stars', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
+        Field('monster__element', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
+        Field('monster__archetype', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
+        Field('priority', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
+        Field('monster__leader_skill__attribute', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
         FormActions(
             Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
         ),

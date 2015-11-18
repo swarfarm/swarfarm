@@ -1,0 +1,25 @@
+{% extends 'herders/profile/base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load utils %}
+
+{% block title %}
+{% if is_owner %}
+My Monsters - {{ block.super }}
+{% else %}
+{{ summoner.user.username }}'s Monsters - {{ block.super }}
+{% endif %}
+{% endblock %}
+
+{% block subnav %}
+    {% include 'herders/profile/monster_inventory/subnav.html' %}
+{% endblock subnav %}
+
+{% block profile %}
+    <div id="monster-inventory"></div>
+{% endblock profile %}
+
+{% block javascript_compressed %}
+    {{ block.super }}
+{% endblock javascript_compressed %}

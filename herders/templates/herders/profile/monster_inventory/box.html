@@ -84,6 +84,8 @@
                             </div>
                         </div>
                     {% endif %}
+                {% empty %}
+                    <div class="alert alert-warning">Your search returned no results or you have no monsters!</div>
                 {% endfor %}
             </div>
         </div>

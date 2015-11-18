@@ -4,26 +4,26 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div id="monster-inventory">
-    {% if monsters %}
-        {# We duplicate the messages here because the page is not reloaded and base.html will not display them #}
-        {% if messages %}
-            <div class="alert alert-dismissible alert-success" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <ul class="list-unstyled">
-                    {% for message in messages %}
-                        <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+    {# We duplicate the messages here because the page is not reloaded and base.html will not display them #}
+    {% if messages %}
+        <div class="alert alert-dismissible alert-success" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                    <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <a role="button" href="{% url 'herders:profile' profile_name=profile_name view_mode='box' %}" class="btn btn-default">
-                    <span class="glyphicon glyphicon-th"></span> Box View
-                </a>
-            </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a role="button" href="{% url 'herders:profile' profile_name=profile_name view_mode='box' %}" class="btn btn-default">
+                <span class="glyphicon glyphicon-th"></span> Box View
+            </a>
+        </div>
 
+        {% if monsters %}
             <div class="table-responsive">
                 <table id="monster_table" class="table table-hover table-condensed monster-table" data-save-filters="true">
                     <thead>
@@ -53,8 +53,10 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    {% else %}
-        <p>No monsters in your profile.</p>
-    {% endif %}
+        {% else %}
+            <div class="panel-body">
+                <div class="alert alert-warning">Your search returned no results or you have no monsters!</div>
+            </div>
+        {% endif %}
+    </div>
 </div>

@@ -62,7 +62,7 @@ function DeleteMonster(instance_id) {
                             "instance_id": instance_id
                         }
                     }).done(function () {
-                        location.reload();
+                        update_monster_inventory();
                     }).fail(function () {
                         alert("Something went wrong! Server admin has been notified.");
                     });
@@ -94,7 +94,8 @@ $('body')
             data: $form.serialize()
         }).done(function(data) {
             if (data.code === 'success') {
-                location.reload();
+                $('.modal.in').modal('hide');
+                update_monster_inventory();
             }
             else {
                 $form.replaceWith(data.html);

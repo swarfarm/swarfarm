@@ -13,32 +13,35 @@ My Runes - {{ block.super }}
 {% endblock %}
 
 {% block subnav %}
-    {% if is_owner %}
-        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
-            <div class="container-fluid">
-                <button class="btn btn-default navbar-btn rune-add">
-                    <span class="glyphicon glyphicon-plus"></span> Add Rune
-                </button>
-                <button class="btn btn-default navbar-btn rune-import">
-                    <span class="glyphicon glyphicon-import"></span> Import Runes
-                </button>
-                <button class="btn btn-default navbar-btn rune-export">
-                    <span class="glyphicon glyphicon-export"></span> Export Runes
-                </button>
-                <button class="btn btn-danger navbar-btn pull-right rune-delete-all">
-                    <span class="glyphicon glyphicon-remove-sign"></span> Delete All
-                </button>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+        <div class="container-fluid">
+            <button class="btn btn-primary navbar-btn toggle collapsed" data-toggle="collapse" data-target="#runeFilters">
+                Filters
+            </button>
+            {% if is_owner %}
+            <button class="btn btn-default navbar-btn rune-add">
+                <span class="glyphicon glyphicon-plus"></span> Add Rune
+            </button>
+            <button class="btn btn-default navbar-btn rune-import">
+                <span class="glyphicon glyphicon-import"></span> Import Runes
+            </button>
+            <button class="btn btn-default navbar-btn rune-export">
+                <span class="glyphicon glyphicon-export"></span> Export Runes
+            </button>
+            <button class="btn btn-danger navbar-btn pull-right rune-delete-all">
+                <span class="glyphicon glyphicon-remove-sign"></span> Delete All
+            </button>
+            {% endif %}
+        </div>
+        <div class="collapse" id="runeFilters">
+            <div id="rune-inventory-filters" class="container-fluid">
+                {% include 'herders/profile/runes/inventory_filters.html' with form=rune_filter_form %}
             </div>
-        </nav>
-    {% endif %}
+        </div>
+    </nav>
 {% endblock subnav %}
 
 {% block profile %}
-    <div class="rune-inventory-filters-static">
-        <div id="rune-inventory-filters">
-            {% include 'herders/profile/runes/inventory_filters.html' with form=rune_filter_form %}
-        </div>
-    </div>
     <div id="rune-inventory"></div>
 {% endblock profile %}
 

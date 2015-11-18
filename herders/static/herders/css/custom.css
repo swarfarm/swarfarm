@@ -58,6 +58,24 @@ footer {
   margin-right: 5px;
 }
 
+.toggle {
+
+}
+
+.toggle:before {
+    padding-right: 5px;
+    float: left;
+    font-family: "Glyphicons Halflings";
+    content: "\e114";
+}
+
+.toggle.collapsed:before {
+    padding-right: 5px;
+    float: left;
+    font-family: "Glyphicons Halflings";
+    content: "\e080";
+}
+
 .panel-horizontal {
     display:table;
 }
@@ -118,6 +136,13 @@ footer {
 .navbar-sub {
     top: 50px;
     z-index: 1000;
+}
+
+.navbar-sub .form-group>label,
+.navbar-sub .rating-symbol,
+.navbar-sub .checkbox>label
+{
+    color: #e5e5e5;
 }
 
 div.profile {

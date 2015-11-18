@@ -7,6 +7,10 @@ function update_rune_inventory() {
     $('#FilterInventoryForm').submit();
 }
 
+$('.container').click(function() {
+    $('.collapse.in').collapse('hide');
+});
+
 $('body')
     .on('click', ':submit', function() {
         var $form = $(this).closest('form');
@@ -131,8 +135,17 @@ $('body')
             type: 'get',
             url: '/profile/' + PROFILE_NAME + '/runes/export/'
         }).done(function(result) {
-            bootbox.alert(result.html);
+            bootbox.dialog({
+                title: "Export Runes and Monsters",
+                message: result.html
+            });
         })
+    })
+    .on('click', '.rune-view-mode', function() {
+        var view_mode = $(this).data('mode');
+        $.get('/profile/' + PROFILE_NAME + '/runes/inventory/' + view_mode + '/', function() {
+            update_rune_inventory();
+        });
     })
     .on('change', '#edit_id_slot', function() {
         update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));

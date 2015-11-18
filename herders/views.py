@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from django.http import Http404, HttpResponseForbidden, JsonResponse
+from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
@@ -740,83 +740,90 @@ def monster_instance_awaken(request, profile_name, instance_id):
     form.helper.form_action = reverse('herders:monster_instance_awaken', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
     if is_owner:
-        if request.method == 'POST' and form.is_valid():
-            # Subtract essences from inventory if requested
-            if form.cleaned_data['subtract_materials']:
-                summoner = Summoner.objects.get(user=request.user)
+        if not monster.monster.is_awakened:
+            if request.method == 'POST' and form.is_valid():
+                # Subtract essences from inventory if requested
+                if form.cleaned_data['subtract_materials']:
+                    summoner = Summoner.objects.get(user=request.user)
 
-                if monster.monster.awaken_magic_mats_high:
-                    summoner.storage_magic_high -= monster.monster.awaken_magic_mats_high
-                if monster.monster.awaken_magic_mats_mid:
-                    summoner.storage_magic_mid -= monster.monster.awaken_magic_mats_mid
-                if monster.monster.awaken_magic_mats_low:
-                    summoner.storage_magic_low -= monster.monster.awaken_magic_mats_low
+                    if monster.monster.awaken_magic_mats_high:
+                        summoner.storage_magic_high -= monster.monster.awaken_magic_mats_high
+                    if monster.monster.awaken_magic_mats_mid:
+                        summoner.storage_magic_mid -= monster.monster.awaken_magic_mats_mid
+                    if monster.monster.awaken_magic_mats_low:
+                        summoner.storage_magic_low -= monster.monster.awaken_magic_mats_low
 
-                if monster.monster.element == Monster.ELEMENT_FIRE:
-                    if monster.monster.awaken_ele_mats_high:
-                        summoner.storage_fire_high -= monster.monster.awaken_ele_mats_high
-                    if monster.monster.awaken_ele_mats_mid:
-                        summoner.storage_fire_mid -= monster.monster.awaken_ele_mats_mid
-                    if monster.monster.awaken_ele_mats_low:
-                        summoner.storage_fire_low -= monster.monster.awaken_ele_mats_low
-                elif monster.monster.element == Monster.ELEMENT_WATER:
-                    if monster.monster.awaken_ele_mats_high:
-                        summoner.storage_water_high -= monster.monster.awaken_ele_mats_high
-                    if monster.monster.awaken_ele_mats_mid:
-                        summoner.storage_water_mid -= monster.monster.awaken_ele_mats_mid
-                    if monster.monster.awaken_ele_mats_low:
-                        summoner.storage_water_low -= monster.monster.awaken_ele_mats_low
-                elif monster.monster.element == Monster.ELEMENT_WIND:
-                    if monster.monster.awaken_ele_mats_high:
-                        summoner.storage_wind_high -= monster.monster.awaken_ele_mats_high
-                    if monster.monster.awaken_ele_mats_mid:
-                        summoner.storage_wind_mid -= monster.monster.awaken_ele_mats_mid
-                    if monster.monster.awaken_ele_mats_low:
-                        summoner.storage_wind_low -= monster.monster.awaken_ele_mats_low
-                elif monster.monster.element == Monster.ELEMENT_DARK:
-                    if monster.monster.awaken_ele_mats_high:
-                        summoner.storage_dark_high -= monster.monster.awaken_ele_mats_high
-                    if monster.monster.awaken_ele_mats_mid:
-                        summoner.storage_dark_mid -= monster.monster.awaken_ele_mats_mid
-                    if monster.monster.awaken_ele_mats_low:
-                        summoner.storage_dark_low -= monster.monster.awaken_ele_mats_low
-                elif monster.monster.element == Monster.ELEMENT_LIGHT:
-                    if monster.monster.awaken_ele_mats_high:
-                        summoner.storage_light_high -= monster.monster.awaken_ele_mats_high
-                    if monster.monster.awaken_ele_mats_mid:
-                        summoner.storage_light_mid -= monster.monster.awaken_ele_mats_mid
-                    if monster.monster.awaken_ele_mats_low:
-                        summoner.storage_light_low -= monster.monster.awaken_ele_mats_low
+                    if monster.monster.element == Monster.ELEMENT_FIRE:
+                        if monster.monster.awaken_ele_mats_high:
+                            summoner.storage_fire_high -= monster.monster.awaken_ele_mats_high
+                        if monster.monster.awaken_ele_mats_mid:
+                            summoner.storage_fire_mid -= monster.monster.awaken_ele_mats_mid
+                        if monster.monster.awaken_ele_mats_low:
+                            summoner.storage_fire_low -= monster.monster.awaken_ele_mats_low
+                    elif monster.monster.element == Monster.ELEMENT_WATER:
+                        if monster.monster.awaken_ele_mats_high:
+                            summoner.storage_water_high -= monster.monster.awaken_ele_mats_high
+                        if monster.monster.awaken_ele_mats_mid:
+                            summoner.storage_water_mid -= monster.monster.awaken_ele_mats_mid
+                        if monster.monster.awaken_ele_mats_low:
+                            summoner.storage_water_low -= monster.monster.awaken_ele_mats_low
+                    elif monster.monster.element == Monster.ELEMENT_WIND:
+                        if monster.monster.awaken_ele_mats_high:
+                            summoner.storage_wind_high -= monster.monster.awaken_ele_mats_high
+                        if monster.monster.awaken_ele_mats_mid:
+                            summoner.storage_wind_mid -= monster.monster.awaken_ele_mats_mid
+                        if monster.monster.awaken_ele_mats_low:
+                            summoner.storage_wind_low -= monster.monster.awaken_ele_mats_low
+                    elif monster.monster.element == Monster.ELEMENT_DARK:
+                        if monster.monster.awaken_ele_mats_high:
+                            summoner.storage_dark_high -= monster.monster.awaken_ele_mats_high
+                        if monster.monster.awaken_ele_mats_mid:
+                            summoner.storage_dark_mid -= monster.monster.awaken_ele_mats_mid
+                        if monster.monster.awaken_ele_mats_low:
+                            summoner.storage_dark_low -= monster.monster.awaken_ele_mats_low
+                    elif monster.monster.element == Monster.ELEMENT_LIGHT:
+                        if monster.monster.awaken_ele_mats_high:
+                            summoner.storage_light_high -= monster.monster.awaken_ele_mats_high
+                        if monster.monster.awaken_ele_mats_mid:
+                            summoner.storage_light_mid -= monster.monster.awaken_ele_mats_mid
+                        if monster.monster.awaken_ele_mats_low:
+                            summoner.storage_light_low -= monster.monster.awaken_ele_mats_low
 
-                summoner.save()
+                    summoner.save()
 
-            # Perform the awakening by instance's monster source ID
-            monster.monster = monster.monster.awakens_to
-            monster.save()
+                # Perform the awakening by instance's monster source ID
+                monster.monster = monster.monster.awakens_to
+                monster.save()
 
-            response_data = {
-                'code': 'success',
-                'removeElement': '#awakenMonsterButton',
-            }
+                response_data = {
+                    'code': 'success',
+                    'removeElement': '#awakenMonsterButton',
+                }
 
+            else:
+                storage = summoner.get_storage()
+                available_essences = OrderedDict()
+
+                for element, essences in monster.monster.get_awakening_materials().iteritems():
+                    available_essences[element] = OrderedDict()
+                    for size, cost in essences.iteritems():
+                        available_essences[element][size] = dict()
+                        available_essences[element][size]['qty'] = storage[element][size]
+                        available_essences[element][size]['sufficient'] = storage[element][size] >= cost
+
+                response_data = {
+                    'code': 'error',
+                    'html': template.render(RequestContext(request, {
+                        'awaken_form': form,
+                        'available_essences': available_essences,
+                        'instance': monster,
+                    }))
+                }
         else:
-            storage = summoner.get_storage()
-            available_essences = OrderedDict()
-
-            for element, essences in monster.monster.get_awakening_materials().iteritems():
-                available_essences[element] = OrderedDict()
-                for size, cost in essences.iteritems():
-                    available_essences[element][size] = dict()
-                    available_essences[element][size]['qty'] = storage[element][size]
-                    available_essences[element][size]['sufficient'] = storage[element][size] >= cost
-
+            error_template = loader.get_template('herders/profile/monster_already_awakened.html')
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {
-                    'awaken_form': form,
-                    'available_essences': available_essences,
-                    'instance': monster,
-                }))
+                'html': error_template.render(RequestContext(request, {}))
             }
 
         return JsonResponse(response_data)
@@ -1248,23 +1255,40 @@ def runes(request, profile_name):
     if is_owner or summoner.public:
         return render(request, 'herders/profile/runes/base.html', context)
     else:
-        return render(request, 'herders/profile/not_public.html', context)
+        return render(request, 'herders/profile/not_public.html', context),
 
 
-def rune_inventory(request, profile_name):
+def rune_inventory(request, profile_name, view_mode=None):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     rune_queryset = RuneInstance.objects.filter(owner=summoner)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    rune_filter = RuneInstanceFilter(request.POST, queryset=rune_queryset)
+    # If we passed in view mode or sort method, set the session variable and redirect back to base profile URL
+    if view_mode:
+        request.session['rune_inventory_view_mode'] = view_mode.lower()
+
+    if request.session.modified:
+        return HttpResponse("Rune view mode cookie set")
+
+    form = FilterRuneForm(request.POST or None)
+    view_mode = request.session.get('rune_inventory_view_mode', 'box').lower()
+
+    form.is_valid()
+    rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)
 
     context = {
         'runes': rune_filter,
         'profile_name': profile_name,
         'is_owner': is_owner,
     }
+
     if is_owner or summoner.public:
-        return render(request, 'herders/profile/runes/inventory.html', context)
+        if view_mode == 'box':
+            template = 'herders/profile/runes/inventory.html'
+        else:
+            template = 'herders/profile/runes/inventory_table.html'
+
+        return render(request, template, context)
     else:
         return render(request, 'herders/profile/not_public.html', context)
 
@@ -1541,7 +1565,10 @@ def rune_export(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
-        export_data = export_runes(RuneInstance.objects.filter(owner=summoner))
+        export_data = export_runes(
+            MonsterInstance.objects.filter(owner=summoner),
+            RuneInstance.objects.filter(owner=summoner, assigned_to=None),
+        )
         form = ExportRuneForm(initial={'json_data': export_data})
         template = loader.get_template('herders/profile/runes/export.html')
 

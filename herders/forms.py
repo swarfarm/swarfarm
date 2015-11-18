@@ -598,19 +598,19 @@ class FilterMonsterInstanceForm(forms.Form):
     helper.form_method = 'post'
     helper.form_id = 'FilterInventoryForm'
     helper.form_class = 'form-horizontal'
-    helper.label_class = 'col-md-1'
-    helper.field_class = 'col-md-8'
+    helper.label_class = 'col-md-1 text-right'
+    helper.field_class = 'col-md-11 no-left-gutter'
     helper.layout = Layout(
-        Field('monster__name__icontains', css_class='auto-submit'),
-        Field('stars', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
-        Field('monster__element', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
-        Field('monster__archetype', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
-        Field('priority', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
-        Field('monster__leader_skill__attribute', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
-        Field('monster__leader_skill__area', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
-        Field('buffs', css_class='auto-submit', template='crispy/skill_button_checkbox_select.html'),
-        Field('debuffs', css_class='auto-submit', template='crispy/skill_button_checkbox_select.html'),
-        Field('other_effects', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
+        Field('monster__name__icontains', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('priority', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
+        Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
+        Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         FormActions(
             Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
         ),

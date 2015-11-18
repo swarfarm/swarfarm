@@ -45,6 +45,10 @@ footer {
     padding: 5px;
 }
 
+.form-group-condensed {
+    margin-bottom: 5px;
+}
+
 .navbar img, .btn-group img {
     height: 18px;
 }

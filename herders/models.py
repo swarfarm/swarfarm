@@ -388,13 +388,13 @@ class MonsterLeaderSkill(models.Model):
     guild_skill = models.BooleanField(default=False)
 
     def skill_string(self):
-        if self.dungeon_skill:
+        if self.area == self.AREA_DUNGEON:
             condition = 'in the Dungeons '
-        elif self.arena_skill:
+        elif self.area == self.AREA_ARENA:
             condition = 'in the Arena '
-        elif self.guild_skill:
+        elif self.area == self.AREA_GUILD:
             condition = 'in the Guild Battles '
-        elif self.element_skill:
+        elif self.area == self.AREA_ELEMENT:
             condition = 'with {} attribute '.format(self.get_element_display())
         else:
             condition = ''
@@ -402,18 +402,12 @@ class MonsterLeaderSkill(models.Model):
         return "Increase the {0} of ally monsters {1}by {2}%".format(self.get_attribute_display(), condition, self.amount)
 
     def icon_filename(self):
-        # suffix = '_' + self.AREA_CHOICES
-
-        if self.dungeon_skill:
-            suffix = '_Dungeon'
-        elif self.arena_skill:
-            suffix = '_Arena'
-        elif self.guild_skill:
-            suffix = '_Guild'
-        elif self.element_skill:
+        if self.area == self.AREA_ELEMENT:
             suffix = '_{}'.format(self.get_element_display())
-        else:
+        elif self.area == self.AREA_GENERAL:
             suffix = ''
+        else:
+            suffix = '_{}'.format(self.get_area_display())
 
         return 'leader_skill_{0}{1}.png'.format(self.get_attribute_display().replace(' ', '_'), suffix)
 
@@ -423,20 +417,17 @@ class MonsterLeaderSkill(models.Model):
         ))
 
     def __unicode__(self):
-        if self.dungeon_skill:
-            condition = ' Dungeon'
-        elif self.arena_skill:
-            condition = ' Arena'
-        elif self.guild_skill:
-            condition = ' Guild'
-        elif self.element_skill:
-            condition = ' ' + self.get_element_display()
-        else:
+        if self.area == self.AREA_ELEMENT:
+            condition = ' {}'.format(self.get_element_display())
+        elif self.area == self.AREA_GENERAL:
             condition = ''
+        else:
+            condition = ' {}'.format(self.get_area_display())
 
         return self.get_attribute_display() + ' ' + str(self.amount) + '%' + condition
 
     def save(self, *args, **kwargs):
+        # Auto-update the new area field. Can be deleted once area is populated and individual fields are removed.
         if self.dungeon_skill:
             self.area = self.AREA_DUNGEON
         elif self.element_skill:

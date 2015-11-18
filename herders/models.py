@@ -363,11 +363,27 @@ class MonsterLeaderSkill(models.Model):
         (ATTRIBUTE_CRIT_DMG, 'Critical DMG'),
     )
 
+    AREA_GENERAL = 1
+    AREA_DUNGEON = 2
+    AREA_ELEMENT = 3
+    AREA_ARENA = 4
+    AREA_GUILD = 5
+
+    AREA_CHOICES = (
+        (AREA_GENERAL, 'General'),
+        (AREA_DUNGEON, 'Dungeon'),
+        (AREA_ELEMENT, 'Element'),
+        (AREA_ARENA, 'Arena'),
+        (AREA_GUILD, 'Guild'),
+    )
+
     attribute = models.IntegerField(choices=ATTRIBUTE_CHOICES)
     amount = models.IntegerField()
+    area = models.IntegerField(choices=AREA_CHOICES, default=AREA_GENERAL)
+    element = models.CharField(max_length=6, null=True, blank=True, choices=Monster.ELEMENT_CHOICES)
+
     dungeon_skill = models.BooleanField(default=False)
     element_skill = models.BooleanField(default=False)
-    element = models.CharField(max_length=6, null=True, blank=True, choices=Monster.ELEMENT_CHOICES)
     arena_skill = models.BooleanField(default=False)
     guild_skill = models.BooleanField(default=False)
 
@@ -386,6 +402,8 @@ class MonsterLeaderSkill(models.Model):
         return "Increase the {0} of ally monsters {1}by {2}%".format(self.get_attribute_display(), condition, self.amount)
 
     def icon_filename(self):
+        # suffix = '_' + self.AREA_CHOICES
+
         if self.dungeon_skill:
             suffix = '_Dungeon'
         elif self.arena_skill:
@@ -417,6 +435,20 @@ class MonsterLeaderSkill(models.Model):
             condition = ''
 
         return self.get_attribute_display() + ' ' + str(self.amount) + '%' + condition
+
+    def save(self, *args, **kwargs):
+        if self.dungeon_skill:
+            self.area = self.AREA_DUNGEON
+        elif self.element_skill:
+            self.area = self.AREA_ELEMENT
+        elif self.arena_skill:
+            self.area = self.AREA_ARENA
+        elif self.guild_skill:
+            self.area = self.AREA_GUILD
+        else:
+            self.area = self.AREA_GENERAL
+
+        super(MonsterLeaderSkill, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['attribute', 'amount', 'element']

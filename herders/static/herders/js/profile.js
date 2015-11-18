@@ -75,6 +75,19 @@ function DeleteMonster(instance_id) {
     }
 }
 
+function QuickFodder(btn) {
+    var monster_id = btn.data('monster-id');
+    var stars = btn.data('stars');
+    var level = btn.data('level');
+
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/monster/quick_add/' + monster_id.toString() + '/' + stars.toString() + '/' + level.toString() + '/'
+    }).done(function() {
+        update_monster_inventory();
+    });
+}
+
 $('body')
     .on('click', ':submit', function() {
         var $form = $(this).closest('form');
@@ -109,6 +122,7 @@ $('body')
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
     .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
+    .on('click', '.quick-fodder', function() { QuickFodder($(this)) })
     .on('click', '.profile-view-mode', function() {
         var view_mode = $(this).data('mode');
         $.get('/profile/' + PROFILE_NAME + '/monster/inventory/' + view_mode + '/', function() {

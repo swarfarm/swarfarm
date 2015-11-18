@@ -164,7 +164,7 @@ def follow_remove(request, profile_name, follow_username):
         return HttpResponseForbidden()
 
 
-def profile(request, profile_name=None, view_mode=None, sort_method=None):
+def profile(request, profile_name=None):
     if profile_name is None:
         if request.user.is_authenticated():
             profile_name = request.user.username
@@ -178,16 +178,6 @@ def profile(request, profile_name=None, view_mode=None, sort_method=None):
     monster_filter_form = FilterMonsterInstanceForm()
     monster_filter_form.helper.form_action = reverse('herders:monster_inventory', kwargs={'profile_name': profile_name})
 
-    # If we passed in view mode or sort method, set the session variable and redirect back to base profile URL
-    if view_mode:
-        request.session['profile_view_mode'] = view_mode.lower()
-
-    if sort_method:
-        request.session['profile_sort_method'] = sort_method.lower()
-
-    if request.session.modified:
-        return redirect('herders:profile_default', profile_name=profile_name)
-
     context = {
         'profile_name': profile_name,
         'summoner': summoner,
@@ -198,50 +188,17 @@ def profile(request, profile_name=None, view_mode=None, sort_method=None):
 
     if is_owner or summoner.public:
         return render(request, 'herders/profile/monster_inventory/base.html', context)
-
-        '''if view_mode.lower() == 'list':
-            return render(request, 'herders/profile/monster_inventory/list.html', context)
-        elif view_mode.lower() == 'box':
-            monster_stable = OrderedDict()
-
-            if sort_method == 'grade':
-                monster_stable['6*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=6).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['5*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=5).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['4*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=4).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['3*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=3).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['2*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=2).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['1*'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, stars=1).order_by('-level', 'monster__element', 'monster__name')
-            elif sort_method == 'level':
-                monster_stable['40'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
-                monster_stable['39-31'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=30).filter(level__lt=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
-                monster_stable['30-21'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=20).filter(level__lte=30).order_by('-level', '-stars', 'monster__element', 'monster__name')
-                monster_stable['20-11'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__gt=10).filter(level__lte=20).order_by('-level', '-stars', 'monster__element', 'monster__name')
-                monster_stable['10-1'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, level__lte=10).order_by('-level', '-stars', 'monster__element', 'monster__name')
-            elif sort_method == 'attribute':
-                monster_stable['water'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_WATER).order_by('-stars', '-level', 'monster__name')
-                monster_stable['fire'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_FIRE).order_by('-stars', '-level', 'monster__name')
-                monster_stable['wind'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_WIND).order_by('-stars', '-level', 'monster__name')
-                monster_stable['light'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
-                monster_stable['dark'] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
-            elif sort_method == 'priority':
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_HIGH][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_MED][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_LOW][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_DONE][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_DONE).order_by('-level', 'monster__element', 'monster__name')
-            else:
-                raise Http404('Invalid sort method')
-
-            context['monster_stable'] = monster_stable
-            return render(request, 'herders/profile/monster_inventory/box.html', context)
-        else:
-            raise Http404('Unknown profile view mode')'''
     else:
         return render(request, 'herders/profile/not_public.html')
 
 
-def monster_inventory(request, profile_name, view_mode=None):
+def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
+    # If we passed in view mode or sort method, set the session variable and redirect back to ourself without the view mode or box grouping
     if view_mode:
         request.session['profile_view_mode'] = view_mode.lower()
+
+    if box_grouping:
+        request.session['profile_group_method'] = box_grouping.lower()
 
     if request.session.modified:
         return redirect('herders:monster_inventory', profile_name=profile_name)
@@ -251,30 +208,61 @@ def monster_inventory(request, profile_name, view_mode=None):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     view_mode = request.session.get('profile_view_mode', 'list').lower()
+    box_grouping = request.session.get('profile_group_method', 'grade').lower()
 
-    if request.method == 'POST':
-        form = FilterMonsterInstanceForm(request.POST or None)
-        form.is_valid()
-
+    form = FilterMonsterInstanceForm(request.POST or None)
+    if form.is_valid():
         monster_filter = MonsterInstanceFilter(form.cleaned_data, queryset=monster_queryset)
-
-        context = {
-            'monsters': monster_filter,
-            'profile_name': profile_name,
-            'is_owner': is_owner,
-        }
-
-        if is_owner or summoner.public:
-            if view_mode == 'list':
-                template = 'herders/profile/monster_inventory/list.html'
-            else:
-                template = 'herders/profile/monster_inventory/box.html'
-
-            return render(request, template, context)
-        else:
-            return render(request, 'herders/profile/not_public.html', context)
     else:
-        return HttpResponseForbidden()
+        monster_filter = MonsterInstanceFilter(queryset=monster_queryset)
+
+    context = {
+        'monsters': monster_filter,
+        'profile_name': profile_name,
+        'is_owner': is_owner,
+    }
+
+    if is_owner or summoner.public:
+        if view_mode == 'list':
+            template = 'herders/profile/monster_inventory/list.html'
+        else:
+            # Group up the filtered monsters
+            monster_stable = OrderedDict()
+
+            if box_grouping == 'grade':
+                monster_stable['6*'] = monster_filter.qs.filter(stars=6).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['5*'] = monster_filter.qs.filter(stars=5).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['4*'] = monster_filter.qs.filter(stars=4).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['3*'] = monster_filter.qs.filter(stars=3).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['2*'] = monster_filter.qs.filter(stars=2).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['1*'] = monster_filter.qs.filter(stars=1).order_by('-level', 'monster__element', 'monster__name')
+            elif box_grouping == 'level':
+                monster_stable['40'] = monster_filter.qs.filter(level=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
+                monster_stable['39-31'] = monster_filter.qs.filter(level__gt=30).filter(level__lt=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
+                monster_stable['30-21'] = monster_filter.qs.filter(level__gt=20).filter(level__lte=30).order_by('-level', '-stars', 'monster__element', 'monster__name')
+                monster_stable['20-11'] = monster_filter.qs.filter(level__gt=10).filter(level__lte=20).order_by('-level', '-stars', 'monster__element', 'monster__name')
+                monster_stable['10-1'] = monster_filter.qs.filter(level__lte=10).order_by('-level', '-stars', 'monster__element', 'monster__name')
+            elif box_grouping == 'attribute':
+                monster_stable['water'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_WATER).order_by('-stars', '-level', 'monster__name')
+                monster_stable['fire'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_FIRE).order_by('-stars', '-level', 'monster__name')
+                monster_stable['wind'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_WIND).order_by('-stars', '-level', 'monster__name')
+                monster_stable['light'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
+                monster_stable['dark'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
+            elif box_grouping == 'priority':
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_HIGH][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_MED][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_LOW][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_DONE][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_DONE).order_by('-level', 'monster__element', 'monster__name')
+            else:
+                raise Http404('Invalid sort method')
+
+            context['monster_stable'] = monster_stable
+            context['box_grouping'] = box_grouping
+            template = 'herders/profile/monster_inventory/box.html'
+
+        return render(request, template, context)
+    else:
+        return render(request, 'herders/profile/not_public.html', context)
 
 
 @login_required

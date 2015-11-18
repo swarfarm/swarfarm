@@ -1,6 +1,10 @@
 $(document).ready(function() {
-    $('#FilterInventoryForm').submit();
+    update_monster_inventory();
 });
+
+function update_monster_inventory() {
+    $('#FilterInventoryForm').submit();
+}
 
 function AddMonster() {
     $.ajax({
@@ -104,6 +108,18 @@ $('body')
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
     .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
+    .on('click', '.profile-view-mode', function() {
+        var view_mode = $(this).data('mode');
+        $.get('/profile/' + PROFILE_NAME + '/monster/inventory/' + view_mode + '/', function() {
+            update_monster_inventory();
+        });
+    })
+    .on('click', '.box-group-mode', function() {
+        var group_mode = $(this).data('mode');
+        $.get('/profile/' + PROFILE_NAME + '/monster/inventory/box/' + group_mode + '/', function() {
+            update_monster_inventory();
+        });
+    })
     .on('submit', '#FilterInventoryForm', function() {
         var $form = $(this);
         $.ajax({

@@ -18,9 +18,9 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            <a role="button" href="{% url 'herders:profile' profile_name=profile_name view_mode='box' %}" class="btn btn-default">
+            <button class="btn btn-default profile-view-mode" data-mode="box">
                 <span class="glyphicon glyphicon-th"></span> Box View
-            </a>
+            </button>
         </div>
 
         {% if monsters %}

@@ -10,7 +10,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)
     monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES)
     monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.AREA_CHOICES)
-    monster__skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=MonsterSkillEffect.objects.all(), conjoined=True)
+    monster__skills__skill_effect__pk = django_filters.MultipleChoiceFilter(choices=MonsterSkillEffect.objects.all().values_list('pk', 'name'), conjoined=True)
 
     class Meta:
         model = MonsterInstance

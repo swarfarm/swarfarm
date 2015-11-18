@@ -382,11 +382,6 @@ class MonsterLeaderSkill(models.Model):
     area = models.IntegerField(choices=AREA_CHOICES, default=AREA_GENERAL)
     element = models.CharField(max_length=6, null=True, blank=True, choices=Monster.ELEMENT_CHOICES)
 
-    dungeon_skill = models.BooleanField(default=False)
-    element_skill = models.BooleanField(default=False)
-    arena_skill = models.BooleanField(default=False)
-    guild_skill = models.BooleanField(default=False)
-
     def skill_string(self):
         if self.area == self.AREA_DUNGEON:
             condition = 'in the Dungeons '
@@ -425,21 +420,6 @@ class MonsterLeaderSkill(models.Model):
             condition = ' {}'.format(self.get_area_display())
 
         return self.get_attribute_display() + ' ' + str(self.amount) + '%' + condition
-
-    def save(self, *args, **kwargs):
-        # Auto-update the new area field. Can be deleted once area is populated and individual fields are removed.
-        if self.dungeon_skill:
-            self.area = self.AREA_DUNGEON
-        elif self.element_skill:
-            self.area = self.AREA_ELEMENT
-        elif self.arena_skill:
-            self.area = self.AREA_ARENA
-        elif self.guild_skill:
-            self.area = self.AREA_GUILD
-        else:
-            self.area = self.AREA_GENERAL
-
-        super(MonsterLeaderSkill, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['attribute', 'amount', 'element']

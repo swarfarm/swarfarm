@@ -252,23 +252,29 @@ def monster_inventory(request, profile_name, view_mode=None):
 
     view_mode = request.session.get('profile_view_mode', 'list').lower()
 
-    monster_filter = MonsterInstanceFilter(request.POST, queryset=monster_queryset)
+    if request.method == 'POST':
+        form = FilterMonsterInstanceForm(request.POST or None)
+        form.is_valid()
 
-    context = {
-        'monsters': monster_filter,
-        'profile_name': profile_name,
-        'is_owner': is_owner,
-    }
+        monster_filter = MonsterInstanceFilter(form.cleaned_data, queryset=monster_queryset)
 
-    if is_owner or summoner.public:
-        if view_mode == 'list':
-            template = 'herders/profile/monster_inventory/list.html'
+        context = {
+            'monsters': monster_filter,
+            'profile_name': profile_name,
+            'is_owner': is_owner,
+        }
+
+        if is_owner or summoner.public:
+            if view_mode == 'list':
+                template = 'herders/profile/monster_inventory/list.html'
+            else:
+                template = 'herders/profile/monster_inventory/box.html'
+
+            return render(request, template, context)
         else:
-            template = 'herders/profile/monster_inventory/box.html'
-
-        return render(request, template, context)
+            return render(request, 'herders/profile/not_public.html', context)
     else:
-        return render(request, 'herders/profile/not_public.html', context)
+        return HttpResponseForbidden()
 
 
 @login_required

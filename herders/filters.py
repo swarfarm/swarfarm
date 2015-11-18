@@ -1,6 +1,6 @@
 import django_filters
 
-from .models import Monster, MonsterInstance, MonsterSkill, MonsterSkillEffect, MonsterLeaderSkill, RuneInstance
+from .models import Monster, MonsterInstance, MonsterSkillEffect, MonsterLeaderSkill, RuneInstance
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):
@@ -9,6 +9,8 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)
     monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES)
+    monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.AREA_CHOICES)
+    monster__skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=MonsterSkillEffect.objects.all(), conjoined=True)
 
     class Meta:
         model = MonsterInstance
@@ -19,6 +21,8 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__archetype': ['exact'],
             'priority': ['exact'],
             'monster__leader_skill__attribute': ['exact'],
+            'monster__leader_skill__area': ['exact'],
+            'monster__skills__skill_effect__pk': ['exact'],
         }
 
 

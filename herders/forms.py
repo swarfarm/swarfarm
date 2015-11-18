@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, Pa
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from .models import Monster, MonsterInstance, MonsterSkill, MonsterLeaderSkill, Summoner, TeamGroup, Team, RuneInstance
+from .models import Monster, MonsterInstance, MonsterSkillEffect, MonsterLeaderSkill, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
@@ -569,6 +569,30 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
+    monster__leader_skill__area = forms.MultipleChoiceField(
+        label='Leader Skill Stat',
+        choices=MonsterLeaderSkill.AREA_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    buffs = forms.MultipleChoiceField(
+        label='Buffs',
+        choices=MonsterSkillEffect.buff_effect_choices.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    debuffs = forms.MultipleChoiceField(
+        label='Debuffs',
+        choices=MonsterSkillEffect.debuff_effect_choices.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    other_effects = forms.MultipleChoiceField(
+        label='Other Effects',
+        choices=MonsterSkillEffect.other_effect_choices.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -583,10 +607,23 @@ class FilterMonsterInstanceForm(forms.Form):
         Field('monster__archetype', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
         Field('priority', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
         Field('monster__leader_skill__attribute', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
+        Field('monster__leader_skill__area', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
+        Field('buffs', css_class='auto-submit', template='crispy/skill_button_checkbox_select.html'),
+        Field('debuffs', css_class='auto-submit', template='crispy/skill_button_checkbox_select.html'),
+        Field('other_effects', css_class='auto-submit', template='crispy/button_checkbox_select.html'),
         FormActions(
             Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
         ),
     )
+
+    def clean(self):
+        super(FilterMonsterInstanceForm, self).clean()
+
+        # Coalesce the effect fields into a single one that the filter can understand
+        selected_buff_effects = self.cleaned_data.get('buffs')
+        selected_debuff_effects = self.cleaned_data.get('debuffs')
+        selected_other_effects = self.cleaned_data.get('other_effects')
+        self.cleaned_data['monster__skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
 
 
 # Team Forms

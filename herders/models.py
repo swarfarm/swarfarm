@@ -425,11 +425,31 @@ class MonsterLeaderSkill(models.Model):
         ordering = ['attribute', 'amount', 'element']
 
 
+class MonsterSkillEffectBuffsManager(models.Manager):
+    def get_queryset(self):
+        return super(MonsterSkillEffectBuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=True).exclude(icon_filename='')
+
+
+class MonsterSkillEffectDebuffsManager(models.Manager):
+    def get_queryset(self):
+        return super(MonsterSkillEffectDebuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=False).exclude(icon_filename='')
+
+
+class MonsterSkillEffectOtherManager(models.Manager):
+    def get_queryset(self):
+        return super(MonsterSkillEffectOtherManager, self).get_queryset().values_list('pk', 'name').filter(icon_filename='')
+
+
 class MonsterSkillEffect(models.Model):
     is_buff = models.BooleanField(default=True)
     name = models.CharField(max_length=40)
     description = models.TextField()
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
+
+    objects = models.Manager()
+    buff_effect_choices = MonsterSkillEffectBuffsManager()
+    debuff_effect_choices = MonsterSkillEffectDebuffsManager()
+    other_effect_choices = MonsterSkillEffectOtherManager()
 
     def image_url(self):
         if self.icon_filename:

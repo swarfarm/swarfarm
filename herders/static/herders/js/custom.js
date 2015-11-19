@@ -18,30 +18,6 @@ bootbox.setDefaults({
 });
 
 //Custom popovers for loading AJAX content
-$('.monster-popover').hover(function(event) {
-    if (event.type === 'mouseenter') {
-        var el = $(this);
-        var url = API_URL + 'instance/' + el.data('instance-id') + '.html';
-        $.get(url, function (d) {
-            el.popover({
-                trigger: 'manual',
-                content: d,
-                html: true,
-                container: 'body',
-                viewport: {selector: 'body', padding: 2},
-                template: '<div class="monster-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
-            });
-
-            if (el.is(":hover")) {
-                el.popover('show');
-            }
-        });
-    } else {
-        $(this).popover('hide');
-    }
-});
-
-//Custom popovers for loading AJAX content
 $('.skill-popover').hover(function(event) {
     if (event.type === 'mouseenter') {
         var el = $(this);
@@ -144,6 +120,28 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
                     }
                 });
             }
+        } else {
+            $(this).popover('hide');
+        }
+    })
+    .on('mouseenter mouseleave', '.monster-popover', function(event) {
+        if (event.type === 'mouseenter') {
+            var el = $(this);
+            var url = API_URL + 'instance/' + el.data('instance-id') + '.html';
+            $.get(url, function (d) {
+                el.popover({
+                    trigger: 'manual',
+                    content: d,
+                    html: true,
+                    container: 'body',
+                    viewport: {selector: 'body', padding: 2},
+                    template: '<div class="monster-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                });
+
+                if (el.is(":hover")) {
+                    el.popover('show');
+                }
+            });
         } else {
             $(this).popover('hide');
         }

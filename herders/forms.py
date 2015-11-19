@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, Pa
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from .models import MonsterInstance, Summoner, TeamGroup, Team, RuneInstance
+from .models import Monster, MonsterInstance, MonsterSkillEffect, MonsterLeaderSkill, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
@@ -364,6 +364,7 @@ class EditEssenceStorageForm(ModelForm):
         }
 
 
+# MonsterInstance Forms
 class AddMonsterInstanceForm(autocomplete_light.ModelForm):
     monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
 
@@ -533,6 +534,99 @@ class AwakenMonsterInstanceForm(forms.Form):
     )
 
 
+class FilterMonsterInstanceForm(forms.Form):
+    monster__name__icontains = forms.CharField(
+        label='Monster Name',
+        max_length=100,
+        required=False,
+    )
+    stars = forms.MultipleChoiceField(
+        choices=Monster.STAR_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    monster__element = forms.MultipleChoiceField(
+        label='Element',
+        choices=Monster.ELEMENT_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    monster__archetype = forms.MultipleChoiceField(
+        label='Archetype',
+        choices=Monster.TYPE_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    priority = forms.MultipleChoiceField(
+        label='Priority',
+        choices=MonsterInstance.PRIORITY_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    monster__leader_skill__attribute = forms.MultipleChoiceField(
+        label='Leader Skill Stat',
+        choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    monster__leader_skill__area = forms.MultipleChoiceField(
+        label='Leader Skill Stat',
+        choices=MonsterLeaderSkill.AREA_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    buffs = forms.MultipleChoiceField(
+        label='Buffs',
+        choices=MonsterSkillEffect.buff_effect_choices.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    debuffs = forms.MultipleChoiceField(
+        label='Debuffs',
+        choices=MonsterSkillEffect.debuff_effect_choices.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    other_effects = forms.MultipleChoiceField(
+        label='Other Effects',
+        choices=MonsterSkillEffect.other_effect_choices.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_id = 'FilterInventoryForm'
+    helper.form_class = 'form-horizontal'
+    helper.label_class = 'col-md-1 text-right'
+    helper.field_class = 'col-md-11 no-left-gutter'
+    helper.layout = Layout(
+        Field('monster__name__icontains', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('priority', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
+        Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
+        Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        FormActions(
+            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
+        ),
+    )
+
+    def clean(self):
+        super(FilterMonsterInstanceForm, self).clean()
+
+        # Coalesce the effect fields into a single one that the filter can understand
+        selected_buff_effects = self.cleaned_data.get('buffs')
+        selected_debuff_effects = self.cleaned_data.get('debuffs')
+        selected_other_effects = self.cleaned_data.get('other_effects')
+        self.cleaned_data['monster__skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+
+
+# Team Forms
 class AddTeamGroupForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddTeamGroupForm, self).__init__(*args, **kwargs)
@@ -643,6 +737,7 @@ class EditTeamForm(ModelForm):
         super(EditTeamForm, self).clean()
 
 
+# Rune Forms
 class AddRuneInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRuneInstanceForm, self).__init__(*args, **kwargs)
@@ -875,13 +970,13 @@ class FilterRuneForm(forms.Form):
         Div(
             Div(
                 Field('main_stat', css_class='auto-submit'),
-                css_class='col-lg-1',
+                css_class='col-sm-1',
             ),
             Div(
                 Div(
                     Div(
                         Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select_notext.html'),
-                        css_class='col-md-12',
+                        css_class='col-sm-12',
                     ),
                     css_class='row'
                 ),
@@ -907,7 +1002,7 @@ class FilterRuneForm(forms.Form):
                             Field('stars__lte', css_class='rating hidden', value=6, data_start=0, data_stop=6, data_stars=6),
                             css_class='pull-left condensed'
                         ),
-                        css_class='col-md-12',
+                        css_class='col-sm-12',
                     ),
                     css_class='row',
                 ),
@@ -921,11 +1016,11 @@ class FilterRuneForm(forms.Form):
                         Div(Field('has_speed', css_class='auto-submit'), css_class='pull-left condensed'),
                         Div(Field('has_resist', css_class='auto-submit'), css_class='pull-left condensed'),
                         Div(Field('has_accuracy', css_class='auto-submit'), css_class='pull-left condensed'),
-                        css_class='col-md-12',
+                        css_class='col-sm-12',
                     ),
                     css_class='row',
                 ),
-                css_class='col-lg-10',
+                css_class='col-sm-10',
             ),
             css_class='row',
         ),

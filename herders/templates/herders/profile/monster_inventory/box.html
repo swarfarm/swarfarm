@@ -1,40 +1,33 @@
-{% extends 'herders/profile/profile_base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% load utils %}
 
-{% block title %}
-    {% if is_owner %}
-        My Monsters - {{ block.super }}
-    {% else %}
-        {{ profile_name }}'s Monsters - {{ block.super }}
-    {% endif %}
-{% endblock title %}
-
-{% block subnav %}
-    {% if is_owner %}{% include 'herders/profile/profile_collection_subnav.html' %}{% endif %}
-{% endblock subnav %}
-
-{% block profile %}
-    {% if monster_stable %}
+{% if monsters %}
+    <div id="monster-inventory">
         {% static 'herders/images/' as img_url_prefix %}
+
+        {# We duplicate the messages here because the page is not reloaded and base.html will not display them #}
+        {% if messages %}
+            <div class="alert alert-dismissible alert-success" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <ul class="list-unstyled">
+                    {% for message in messages %}
+                        <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <div class="btn-toolbar">
-                    <div class="btn-group">
-                        <a href="{% url 'herders:profile' profile_name=profile_name view_mode='list' %}" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> List View</a>
-                    </div>
-                    <div class="btn-group">
-                        <a href="{% url 'herders:profile_sorted' profile_name=profile_name view_mode=view_mode sort_method='grade' %}" class="btn btn-default
-                        {% if sort_method == 'grade' or sort_method == None %}btn-info{% endif %}">Grade</a>
-                        <a href="{% url 'herders:profile_sorted' profile_name=profile_name view_mode=view_mode sort_method='level' %}" class="btn btn-default
-                        {% if sort_method == 'level' %}btn-info{% endif %}">Level</a>
-                        <a href="{% url 'herders:profile_sorted' profile_name=profile_name view_mode=view_mode sort_method='attribute' %}" class="btn btn-default
-                        {% if sort_method == 'attribute' %}btn-info{% endif %}">Attribute</a>
-                        <a href="{% url 'herders:profile_sorted' profile_name=profile_name view_mode=view_mode sort_method='priority' %}" class="btn btn-default
-                        {% if sort_method == 'priority' %}btn-info{% endif %}">Priority</a>
-                    </div>
+                <button class="btn btn-default profile-view-mode" data-mode="list">
+                    <span class="glyphicon glyphicon-th-list"></span> List View
+                </button>
+                <div class="btn-group">
+                    <button class="btn btn-default box-group-mode {% if box_grouping == 'grade' %}active{% endif %}" data-mode="grade">Grade</button>
+                    <button class="btn btn-default box-group-mode {% if box_grouping == 'level' %}active{% endif %}" data-mode="level">Level</button>
+                    <button class="btn btn-default box-group-mode {% if box_grouping == 'attribute' %}active{% endif %}" data-mode="attribute">Attribute</button>
+                    <button class="btn btn-default box-group-mode {% if box_grouping == 'priority' %}active{% endif %}" data-mode="priority">Priority</button>
                 </div>
             </div>
             <div class="panel-body">
@@ -95,8 +88,10 @@
                             </div>
                         </div>
                     {% endif %}
+                {% empty %}
+                    <div class="alert alert-warning">Your search returned no results or you have no monsters!</div>
                 {% endfor %}
             </div>
         </div>
-    {% endif %}
-{% endblock profile %}
+    </div>
+{% endif %}

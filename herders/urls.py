@@ -15,6 +15,9 @@ urlpatterns = [
         url(r'^delete/$', views.profile_delete, name='profile_delete'),
         url(r'^storage/$', views.profile_storage, name='profile_storage'),
         url(r'^monster/', include([
+            url(r'^inventory/$', views.monster_inventory, name='monster_inventory'),
+            url(r'^inventory/(?i)(?P<view_mode>(list|box))/$', views.monster_inventory, name='monster_inventory_view_mode'),
+            url(r'^inventory/(?i)(?P<view_mode>(list|box))/(?i)(?P<box_grouping>[a-zA-Z]+)/$', views.monster_inventory, name='monster_inventory_view_mode_sorted'),
             url(r'^add/$', views.monster_instance_add, name='monster_instance_add'),
             url(r'^quick_add/(?P<monster_id>[0-9]+)/(?P<stars>[0-9])/(?P<level>[0-9]+)/$', views.monster_instance_quick_add, name='monster_instance_quick_add'),
             url(r'^bulk_add/$', views.monster_instance_bulk_add, name='monster_instance_bulk_add'),
@@ -65,8 +68,6 @@ urlpatterns = [
             url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_add, name='profile_follow_add'),
             url(r'^remove/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_remove, name='profile_follow_remove'),
         ])),
-        url(r'(?i)(?P<view_mode>(list|box))/(?P<sort_method>[a-zA-Z]+)/$', views.profile, name='profile_sorted'),
-        url(r'(?i)(?P<view_mode>(list|box))/$', views.profile, name='profile'),
     ])),
 
     # Bestiary

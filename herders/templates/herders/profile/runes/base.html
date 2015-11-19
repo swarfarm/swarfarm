@@ -1,4 +1,4 @@
-{% extends 'herders/profile/profile_base.html' %}
+{% extends 'herders/profile/base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% load crispy_forms_filters %}
@@ -15,7 +15,7 @@ My Runes - {{ block.super }}
 {% block subnav %}
     <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
         <div class="container-fluid">
-            <button class="btn btn-primary navbar-btn toggle collapsed" data-toggle="collapse" data-target="#runeFilters">
+            <button class="btn btn-primary navbar-btn toggle collapsed" data-toggle="collapse" data-target="#dropdownFilters">
                 Filters
             </button>
             {% if is_owner %}
@@ -33,9 +33,9 @@ My Runes - {{ block.super }}
             </button>
             {% endif %}
         </div>
-        <div class="collapse" id="runeFilters">
+        <div class="collapse" id="dropdownFilters">
             <div id="rune-inventory-filters" class="container-fluid">
-                {% include 'herders/profile/runes/inventory_filters.html' with form=rune_filter_form %}
+                {% crispy rune_filter_form %}
             </div>
         </div>
     </nav>

@@ -7,6 +7,7 @@ $(function () {
         html:true,
         viewport: {selector: 'body', padding: 2}
     });
+    $('.rating').rating();
 });
 
 //Defaults for the bootboxes

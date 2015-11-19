@@ -629,7 +629,7 @@ class MonsterInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
     monster = models.ForeignKey('Monster')
-    stars = models.IntegerField(choices=Monster.STAR_CHOICES)
+    stars = models.IntegerField()
     level = models.IntegerField()
     skill_1_level = models.IntegerField(blank=True, default=1)
     skill_2_level = models.IntegerField(blank=True, default=1)
@@ -869,7 +869,7 @@ class MonsterInstance(models.Model):
                 code='invalid_level'
             )
 
-        if self.level > 10 + self.stars * 5:
+        if self.stars and (self.level > 10 + self.stars * 5):
             raise ValidationError(
                 'Level exceeds max for given star rating (Max: %(value)s)',
                 params={'value': 10 + self.stars * 5},
@@ -883,12 +883,13 @@ class MonsterInstance(models.Model):
         except ObjectDoesNotExist:
             min_stars = 1
 
-        if self.stars > 6 or self.stars < min_stars:
+        if self.stars and (self.stars > 6 or self.stars < min_stars):
             raise ValidationError(
                 'Star rating out of range (%(min)s to %(max)s)',
                 params={'min': min_stars, 'max': 6},
                 code='invalid_stars'
             )
+
         super(MonsterInstance, self).clean()
 
     def save(self, *args, **kwargs):

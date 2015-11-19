@@ -143,6 +143,13 @@ $('body')
             data: $form.serialize()
         }).done(function (data) {
             $('#monster-inventory').replaceWith(data);
+            $('[data-toggle="tooltip"]').tooltip({
+                container: 'body'
+            });
+            $('[data-toggle="popover"]').popover({
+                html:true,
+                viewport: {selector: 'body', padding: 2}
+            });
         });
 
         return false;  //cancel default on submit action.

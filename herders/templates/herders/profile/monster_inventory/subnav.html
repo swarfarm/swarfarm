@@ -1,0 +1,45 @@
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-subnav">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-subnav">
+            <button class="btn btn-primary navbar-btn toggle collapsed" data-toggle="collapse" data-target="#dropdownFilters">
+                Filters
+            </button>
+            <button type="button" class="btn btn-default navbar-btn monster-add">
+                <span class="glyphicon glyphicon-plus"></span>
+                 Add Monster
+            </button>
+            <div class="btn-group">
+                <a href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> Bulk Add</a>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default navbar-btn toggle collapsed" data-toggle="collapse" data-target="#quickFodder">
+                    Quick Fodder
+                </button>
+            </div>
+        </div>
+        <div class="collapse" id="dropdownFilters">
+            <div id="monster-inventory-filters" class="container-fluid">
+                {% crispy monster_filter_form %}
+            </div>
+        </div>
+        <div class="collapse" id="quickFodder">
+            <div class="container-fluid">
+                {% include 'herders/profile/monster_inventory/quick_fodder_menu.html' %}
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,3 +1,11 @@
+$(document).ready(function() {
+    update_monster_inventory();
+});
+
+function update_monster_inventory() {
+    $('#FilterInventoryForm').submit();
+}
+
 function AddMonster() {
     $.ajax({
         url: '/profile/' + PROFILE_NAME + '/monster/add/',
@@ -54,7 +62,7 @@ function DeleteMonster(instance_id) {
                             "instance_id": instance_id
                         }
                     }).done(function () {
-                        location.reload();
+                        update_monster_inventory();
                     }).fail(function () {
                         alert("Something went wrong! Server admin has been notified.");
                     });
@@ -65,6 +73,19 @@ function DeleteMonster(instance_id) {
     else {
         alert("Unspecified monster to delete");
     }
+}
+
+function QuickFodder(btn) {
+    var monster_id = btn.data('monster-id');
+    var stars = btn.data('stars');
+    var level = btn.data('level');
+
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/monster/quick_add/' + monster_id.toString() + '/' + stars.toString() + '/' + level.toString() + '/'
+    }).done(function() {
+        update_monster_inventory();
+    });
 }
 
 $('body')
@@ -86,7 +107,8 @@ $('body')
             data: $form.serialize()
         }).done(function(data) {
             if (data.code === 'success') {
-                location.reload();
+                $('.modal.in').modal('hide');
+                update_monster_inventory();
             }
             else {
                 $form.replaceWith(data.html);
@@ -99,4 +121,36 @@ $('body')
     .on('click', '.monster-add', function() { AddMonster() })
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
-    .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) });
+    .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
+    .on('click', '.quick-fodder', function() { QuickFodder($(this)) })
+    .on('click', '.profile-view-mode', function() {
+        var view_mode = $(this).data('mode');
+        $.get('/profile/' + PROFILE_NAME + '/monster/inventory/' + view_mode + '/', function() {
+            update_monster_inventory();
+        });
+    })
+    .on('click', '.box-group-mode', function() {
+        var group_mode = $(this).data('mode');
+        $.get('/profile/' + PROFILE_NAME + '/monster/inventory/box/' + group_mode + '/', function() {
+            update_monster_inventory();
+        });
+    })
+    .on('submit', '#FilterInventoryForm', function() {
+        var $form = $(this);
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: $form.serialize()
+        }).done(function (data) {
+            $('#monster-inventory').replaceWith(data);
+            $('[data-toggle="tooltip"]').tooltip({
+                container: 'body'
+            });
+            $('[data-toggle="popover"]').popover({
+                html:true,
+                viewport: {selector: 'body', padding: 2}
+            });
+        });
+
+        return false;  //cancel default on submit action.
+    });

@@ -42,12 +42,12 @@ class Monster(models.Model):
     )
 
     STAR_CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4),
-        (5, 5),
-        (6, 6),
+        (1, mark_safe('1<span class="glyphicon glyphicon-star"></span>')),
+        (2, mark_safe('2<span class="glyphicon glyphicon-star"></span>')),
+        (3, mark_safe('3<span class="glyphicon glyphicon-star"></span>')),
+        (4, mark_safe('4<span class="glyphicon glyphicon-star"></span>')),
+        (5, mark_safe('5<span class="glyphicon glyphicon-star"></span>')),
+        (6, mark_safe('6<span class="glyphicon glyphicon-star"></span>')),
     )
 
     name = models.CharField(max_length=40)
@@ -363,22 +363,33 @@ class MonsterLeaderSkill(models.Model):
         (ATTRIBUTE_CRIT_DMG, 'Critical DMG'),
     )
 
+    AREA_GENERAL = 1
+    AREA_DUNGEON = 2
+    AREA_ELEMENT = 3
+    AREA_ARENA = 4
+    AREA_GUILD = 5
+
+    AREA_CHOICES = (
+        (AREA_GENERAL, 'General'),
+        (AREA_DUNGEON, 'Dungeon'),
+        (AREA_ELEMENT, 'Element'),
+        (AREA_ARENA, 'Arena'),
+        (AREA_GUILD, 'Guild'),
+    )
+
     attribute = models.IntegerField(choices=ATTRIBUTE_CHOICES)
     amount = models.IntegerField()
-    dungeon_skill = models.BooleanField(default=False)
-    element_skill = models.BooleanField(default=False)
+    area = models.IntegerField(choices=AREA_CHOICES, default=AREA_GENERAL)
     element = models.CharField(max_length=6, null=True, blank=True, choices=Monster.ELEMENT_CHOICES)
-    arena_skill = models.BooleanField(default=False)
-    guild_skill = models.BooleanField(default=False)
 
     def skill_string(self):
-        if self.dungeon_skill:
+        if self.area == self.AREA_DUNGEON:
             condition = 'in the Dungeons '
-        elif self.arena_skill:
+        elif self.area == self.AREA_ARENA:
             condition = 'in the Arena '
-        elif self.guild_skill:
+        elif self.area == self.AREA_GUILD:
             condition = 'in the Guild Battles '
-        elif self.element_skill:
+        elif self.area == self.AREA_ELEMENT:
             condition = 'with {} attribute '.format(self.get_element_display())
         else:
             condition = ''
@@ -386,16 +397,12 @@ class MonsterLeaderSkill(models.Model):
         return "Increase the {0} of ally monsters {1}by {2}%".format(self.get_attribute_display(), condition, self.amount)
 
     def icon_filename(self):
-        if self.dungeon_skill:
-            suffix = '_Dungeon'
-        elif self.arena_skill:
-            suffix = '_Arena'
-        elif self.guild_skill:
-            suffix = '_Guild'
-        elif self.element_skill:
+        if self.area == self.AREA_ELEMENT:
             suffix = '_{}'.format(self.get_element_display())
-        else:
+        elif self.area == self.AREA_GENERAL:
             suffix = ''
+        else:
+            suffix = '_{}'.format(self.get_area_display())
 
         return 'leader_skill_{0}{1}.png'.format(self.get_attribute_display().replace(' ', '_'), suffix)
 
@@ -405,16 +412,12 @@ class MonsterLeaderSkill(models.Model):
         ))
 
     def __unicode__(self):
-        if self.dungeon_skill:
-            condition = ' Dungeon'
-        elif self.arena_skill:
-            condition = ' Arena'
-        elif self.guild_skill:
-            condition = ' Guild'
-        elif self.element_skill:
-            condition = ' ' + self.get_element_display()
-        else:
+        if self.area == self.AREA_ELEMENT:
+            condition = ' {}'.format(self.get_element_display())
+        elif self.area == self.AREA_GENERAL:
             condition = ''
+        else:
+            condition = ' {}'.format(self.get_area_display())
 
         return self.get_attribute_display() + ' ' + str(self.amount) + '%' + condition
 
@@ -422,11 +425,31 @@ class MonsterLeaderSkill(models.Model):
         ordering = ['attribute', 'amount', 'element']
 
 
+class MonsterSkillEffectBuffsManager(models.Manager):
+    def get_queryset(self):
+        return super(MonsterSkillEffectBuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=True).exclude(icon_filename='')
+
+
+class MonsterSkillEffectDebuffsManager(models.Manager):
+    def get_queryset(self):
+        return super(MonsterSkillEffectDebuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=False).exclude(icon_filename='')
+
+
+class MonsterSkillEffectOtherManager(models.Manager):
+    def get_queryset(self):
+        return super(MonsterSkillEffectOtherManager, self).get_queryset().values_list('pk', 'name').filter(icon_filename='')
+
+
 class MonsterSkillEffect(models.Model):
     is_buff = models.BooleanField(default=True)
     name = models.CharField(max_length=40)
     description = models.TextField()
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
+
+    objects = models.Manager()
+    buff_effect_choices = MonsterSkillEffectBuffsManager()
+    debuff_effect_choices = MonsterSkillEffectDebuffsManager()
+    other_effect_choices = MonsterSkillEffectOtherManager()
 
     def image_url(self):
         if self.icon_filename:
@@ -846,7 +869,7 @@ class MonsterInstance(models.Model):
                 code='invalid_level'
             )
 
-        if self.level > 10 + self.stars * 5:
+        if self.stars and (self.level > 10 + self.stars * 5):
             raise ValidationError(
                 'Level exceeds max for given star rating (Max: %(value)s)',
                 params={'value': 10 + self.stars * 5},
@@ -860,12 +883,13 @@ class MonsterInstance(models.Model):
         except ObjectDoesNotExist:
             min_stars = 1
 
-        if self.stars > 6 or self.stars < min_stars:
+        if self.stars and (self.stars > 6 or self.stars < min_stars):
             raise ValidationError(
                 'Star rating out of range (%(min)s to %(max)s)',
                 params={'min': min_stars, 'max': 6},
                 code='invalid_stars'
             )
+
         super(MonsterInstance, self).clean()
 
     def save(self, *args, **kwargs):

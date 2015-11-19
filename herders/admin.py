@@ -101,8 +101,8 @@ class MonsterSkillAdmin(admin.ModelAdmin):
 
 @admin.register(MonsterLeaderSkill)
 class MonsterLeaderSkillAdmin(admin.ModelAdmin):
-    list_display = ('image_url', 'attribute', 'amount', 'skill_string', 'dungeon_skill', 'element_skill', 'arena_skill', 'guild_skill')
-    list_filter = ('attribute', 'dungeon_skill', 'element_skill', 'arena_skill', 'guild_skill')
+    list_display = ('image_url', 'attribute', 'amount', 'skill_string', 'area',)
+    list_filter = ('attribute', 'area',)
 
 
 @admin.register(MonsterSkillEffect)

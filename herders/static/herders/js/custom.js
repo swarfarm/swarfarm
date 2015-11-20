@@ -1,3 +1,5 @@
+var loading_template = '<div class="spinner-container"><div class="spinner"></div></div>';
+
 //Initialize all bootstrap tooltips and popovers
 $(function () {
     $('[data-toggle="tooltip"]').tooltip({

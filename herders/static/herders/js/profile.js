@@ -125,12 +125,14 @@ $('body')
     .on('click', '.quick-fodder', function() { QuickFodder($(this)) })
     .on('click', '.profile-view-mode', function() {
         var view_mode = $(this).data('mode');
+        $('#monster-inventory').html(loading_template);
         $.get('/profile/' + PROFILE_NAME + '/monster/inventory/' + view_mode + '/', function() {
             update_monster_inventory();
         });
     })
     .on('click', '.box-group-mode', function() {
         var group_mode = $(this).data('mode');
+        $('#monster-inventory').html(loading_template);
         $.get('/profile/' + PROFILE_NAME + '/monster/inventory/box/' + group_mode + '/', function() {
             update_monster_inventory();
         });
@@ -143,12 +145,29 @@ $('body')
             data: $form.serialize()
         }).done(function (data) {
             $('#monster-inventory').replaceWith(data);
+
+            //Reinit everything
             $('[data-toggle="tooltip"]').tooltip({
                 container: 'body'
             });
             $('[data-toggle="popover"]').popover({
                 html:true,
                 viewport: {selector: 'body', padding: 2}
+            });
+            $('#monster_table').tablesorter({
+                widgets: ['filter', 'saveSort'],
+                ignoreCase: true,
+                widthFixed: true,
+                widgetOptions: {
+                    filter_columnFilters: true,
+                    filter_reset: 'button.reset',
+                    filter_external : '.search',
+                    filter_ignoreCase : true,
+                    filter_liveSearch : true,
+                    filter_searchDelay : 300,
+                    filter_saveFilters : save_filters,
+                    filter_searchFiltered : true
+                }
             });
         });
 

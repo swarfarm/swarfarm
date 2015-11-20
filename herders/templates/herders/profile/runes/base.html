@@ -42,7 +42,7 @@ My Runes - {{ block.super }}
 {% endblock subnav %}
 
 {% block profile %}
-    <div id="rune-inventory"></div>
+    <div id="rune-inventory">{% include 'loading.html' %}</div>
 {% endblock profile %}
 
 {% block javascript_compressed %}

@@ -143,6 +143,7 @@ $('body')
     })
     .on('click', '.rune-view-mode', function() {
         var view_mode = $(this).data('mode');
+        $('#rune-inventory').html(loading_template);
         $.get('/profile/' + PROFILE_NAME + '/runes/inventory/' + view_mode + '/', function() {
             update_rune_inventory();
         });

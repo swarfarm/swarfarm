@@ -563,6 +563,9 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
+    fodder = forms.NullBooleanField(label='Fodder', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    in_storage = forms.NullBooleanField(label='Storage', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    monster__fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     monster__leader_skill__attribute = forms.MultipleChoiceField(
         label='Leader Skill Stat',
         choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES,
@@ -606,6 +609,9 @@ class FilterMonsterInstanceForm(forms.Form):
         Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('priority', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('fodder', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('in_storage', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('monster__fusion_food', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Field('monster__leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),

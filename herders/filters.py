@@ -23,6 +23,9 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__leader_skill__attribute': ['exact'],
             'monster__leader_skill__area': ['exact'],
             'monster__skills__skill_effect__pk': ['exact'],
+            'fodder': ['exact'],
+            'in_storage': ['exact'],
+            'monster__fusion_food': ['exact'],
         }
 
 

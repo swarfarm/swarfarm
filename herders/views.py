@@ -381,10 +381,7 @@ def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
 
 @login_required()
 def monster_instance_bulk_add(request, profile_name):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
+    return_path = reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
@@ -400,7 +397,6 @@ def monster_instance_bulk_add(request, profile_name):
         'return_path': return_path,
         'is_owner': is_owner,
         'bulk_add_formset_action': request.path + '?next=' + return_path,
-        'bulk_add_formset': formset,
         'view': 'profile',
     }
 
@@ -426,6 +422,7 @@ def monster_instance_bulk_add(request, profile_name):
     else:
         raise PermissionDenied("Trying to bulk add to profile you don't own")
 
+    context['bulk_add_formset'] = formset
     return render(request, 'herders/profile/monster_inventory/bulk_add_form.html', context)
 
 

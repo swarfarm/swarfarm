@@ -1,3 +1,5 @@
+var loading_template = '<div class="spinner-container"><div class="spinner"></div></div>';
+
 //Initialize all bootstrap tooltips and popovers
 $(function () {
     $('[data-toggle="tooltip"]').tooltip({
@@ -7,6 +9,7 @@ $(function () {
         html:true,
         viewport: {selector: 'body', padding: 2}
     });
+    $('.rating').rating();
 });
 
 //Defaults for the bootboxes

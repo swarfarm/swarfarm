@@ -563,6 +563,9 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
+    fodder = forms.NullBooleanField(label='Fodder', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    in_storage = forms.NullBooleanField(label='Storage', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    monster__fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     monster__leader_skill__attribute = forms.MultipleChoiceField(
         label='Leader Skill Stat',
         choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES,
@@ -606,6 +609,9 @@ class FilterMonsterInstanceForm(forms.Form):
         Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('priority', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('fodder', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('in_storage', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('monster__fusion_food', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Field('monster__leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
@@ -936,6 +942,12 @@ class FilterRuneForm(forms.Form):
         max_value=15,
         required=False,
     )
+    level__lte = forms.IntegerField(
+        label="Maximum Level",
+        min_value=0,
+        max_value=15,
+        required=False,
+    )
     stars__gte = forms.IntegerField(
         label="Minimum Stars",
         required=False
@@ -992,6 +1004,10 @@ class FilterRuneForm(forms.Form):
                         ),
                         Div(
                             Field('level__gte', css_class='auto-submit'),
+                            css_class='pull-left condensed',
+                        ),
+                        Div(
+                            Field('level__lte', css_class='auto-submit'),
                             css_class='pull-left condensed',
                         ),
                         Div(

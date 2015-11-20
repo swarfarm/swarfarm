@@ -17,7 +17,7 @@ My Monsters - {{ block.super }}
 {% endblock subnav %}
 
 {% block profile %}
-    <div id="monster-inventory"></div>
+    <div id="monster-inventory">{% include 'loading.html' %}</div>
 {% endblock profile %}
 
 {% block javascript_compressed %}

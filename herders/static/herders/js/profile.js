@@ -157,7 +157,6 @@ $('body')
             $('#monster_table').tablesorter({
                 widgets: ['filter', 'saveSort'],
                 ignoreCase: true,
-                widthFixed: true,
                 widgetOptions: {
                     filter_columnFilters: true,
                     filter_reset: 'button.reset',

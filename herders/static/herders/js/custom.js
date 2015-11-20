@@ -179,7 +179,6 @@ var save_filters = monster_table.data('save-filters');
 monster_table.tablesorter({
     widgets: ['filter', 'saveSort'],
     ignoreCase: true,
-    widthFixed: true,
     widgetOptions: {
         filter_columnFilters: true,
         filter_reset: 'button.reset',

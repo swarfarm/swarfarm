@@ -93,11 +93,7 @@
     </td>
     {% if is_owner %}
         <td class="monster-actions-column">
-            <button class="btn btn-link btn-xs monster-delete pull-right" data-instance-id="{{ instance.pk.hex }}">
-                <span class="glyphicon glyphicon-trash text-danger" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
-            </button>
-
-            <div class="btn-group pull-left">
+            <div class="btn-group">
                 <button class="btn btn-link btn-xs monster-edit" data-instance-id="{{ instance.pk.hex }}">
                     <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
                 </button>
@@ -110,6 +106,9 @@
                 </button>
                 {% endif %}
             </div>
+            <button class="btn btn-link btn-xs monster-delete pull-right" data-instance-id="{{ instance.pk.hex }}">
+                <span class="glyphicon glyphicon-trash text-danger" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
+            </button>
         </td>
     {% endif %}
 </tr>

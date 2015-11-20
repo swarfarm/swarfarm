@@ -48,7 +48,7 @@
                     </thead>
                     <tbody>
                         {% for instance in monsters %}
-                            {% include 'herders/profile/monster_inventory/list_row.html' with instance=instance profile_name=profile_name only %}
+                            {% include 'herders/profile/monster_inventory/list_row.html' %}
                         {% endfor %}
                     </tbody>
                 </table>

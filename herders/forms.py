@@ -942,6 +942,12 @@ class FilterRuneForm(forms.Form):
         max_value=15,
         required=False,
     )
+    level__lte = forms.IntegerField(
+        label="Maximum Level",
+        min_value=0,
+        max_value=15,
+        required=False,
+    )
     stars__gte = forms.IntegerField(
         label="Minimum Stars",
         required=False
@@ -998,6 +1004,10 @@ class FilterRuneForm(forms.Form):
                         ),
                         Div(
                             Field('level__gte', css_class='auto-submit'),
+                            css_class='pull-left condensed',
+                        ),
+                        Div(
+                            Field('level__lte', css_class='auto-submit'),
                             css_class='pull-left condensed',
                         ),
                         Div(

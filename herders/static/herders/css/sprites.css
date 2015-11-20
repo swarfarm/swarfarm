@@ -3843,16 +3843,16 @@
     background-position: -300px -300px;
 }
 
-.sprite-elven_archer_dark,
-.sprite-elven_archer_dark_awakened,
-.sprite-elven_archer_fire,
-.sprite-elven_archer_fire_awakened,
-.sprite-elven_archer_light,
-.sprite-elven_archer_light_awakened,
-.sprite-elven_archer_water,
-.sprite-elven_archer_water_awakened,
-.sprite-elven_archer_wind,
-.sprite-elven_archer_wind_awakened,
+.sprite-elven_ranger_dark,
+.sprite-elven_ranger_dark_awakened,
+.sprite-elven_ranger_fire,
+.sprite-elven_ranger_fire_awakened,
+.sprite-elven_ranger_light,
+.sprite-elven_ranger_light_awakened,
+.sprite-elven_ranger_water,
+.sprite-elven_ranger_water_awakened,
+.sprite-elven_ranger_wind,
+.sprite-elven_ranger_wind_awakened,
 .sprite-frankenstein_dark,
 .sprite-frankenstein_dark_awakened,
 .sprite-frankenstein_fire,
@@ -3877,34 +3877,34 @@
     width: 50px;
     height: 50px
 }
-.sprite-elven_archer_dark {
+.sprite-elven_ranger_dark {
     background-position: 0 0;
 }
-.sprite-elven_archer_dark_awakened {
+.sprite-elven_ranger_dark_awakened {
     background-position: -50px 0;
 }
-.sprite-elven_archer_fire {
+.sprite-elven_ranger_fire {
     background-position: -100px 0;
 }
-.sprite-elven_archer_fire_awakened {
+.sprite-elven_ranger_fire_awakened {
     background-position: -150px 0;
 }
-.sprite-elven_archer_light {
+.sprite-elven_ranger_light {
     background-position: -200px 0;
 }
-.sprite-elven_archer_light_awakened {
+.sprite-elven_ranger_light_awakened {
     background-position: 0 -50px;
 }
-.sprite-elven_archer_water {
+.sprite-elven_ranger_water {
     background-position: -50px -50px;
 }
-.sprite-elven_archer_water_awakened {
+.sprite-elven_ranger_water_awakened {
     background-position: -100px -50px;
 }
-.sprite-elven_archer_wind {
+.sprite-elven_ranger_wind {
     background-position: -150px -50px;
 }
-.sprite-elven_archer_wind_awakened {
+.sprite-elven_ranger_wind_awakened {
     background-position: -200px -50px;
 }
 .sprite-frankenstein_dark {

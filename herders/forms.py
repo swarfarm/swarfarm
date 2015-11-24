@@ -604,14 +604,14 @@ class FilterMonsterInstanceForm(forms.Form):
     helper.label_class = 'col-md-1 text-right'
     helper.field_class = 'col-md-11 no-left-gutter'
     helper.layout = Layout(
-        Field('monster__name__icontains', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('monster__name__icontains', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
         Field('stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('priority', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('fodder', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('in_storage', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('monster__fusion_food', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('fodder', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
+        Field('in_storage', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
+        Field('monster__fusion_food', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
         Field('monster__leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),

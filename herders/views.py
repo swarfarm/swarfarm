@@ -1303,6 +1303,8 @@ def rune_inventory(request, profile_name, view_mode=None):
     if is_owner or summoner.public:
         if view_mode == 'box':
             template = 'herders/profile/runes/inventory.html'
+        elif view_mode == 'grid':
+            template = 'herders/profile/runes/inventory_grid.html'
         else:
             template = 'herders/profile/runes/inventory_table.html'
 

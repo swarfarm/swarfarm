@@ -11,7 +11,7 @@
                 {% for x in instance.stars|get_range %}
                     {% if instance.monster.is_awakened %}
                         <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% elif base_monster.can_awaken %}
+                    {% elif instance.monster.can_awaken %}
                         <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
                     {% else %}
                         <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />

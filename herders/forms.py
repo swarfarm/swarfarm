@@ -618,7 +618,7 @@ class FilterMonsterInstanceForm(forms.Form):
         Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         FormActions(
-            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
+            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger reset'),
         ),
     )
 
@@ -1041,7 +1041,7 @@ class FilterRuneForm(forms.Form):
             css_class='row',
         ),
         FormActions(
-            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger'),
+            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger reset'),
         ),
     )
 

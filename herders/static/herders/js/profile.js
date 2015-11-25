@@ -155,20 +155,15 @@ $('body')
                 viewport: {selector: 'body', padding: 2}
             });
             $('#monster_table').tablesorter({
-                widgets: ['filter', 'saveSort'],
-                ignoreCase: true,
+                widgets: ['saveSort'],
                 widgetOptions: {
-                    filter_columnFilters: true,
-                    filter_reset: 'button.reset',
-                    filter_external : '.search',
-                    filter_ignoreCase : true,
-                    filter_liveSearch : true,
-                    filter_searchDelay : 300,
-                    filter_saveFilters : save_filters,
-                    filter_searchFiltered : true
+                    filter_reset: '.reset'
                 }
             });
         });
 
         return false;  //cancel default on submit action.
+    })
+    .on('click', '.reset', function() {
+        $('#monster_table').trigger('sortReset')
     });

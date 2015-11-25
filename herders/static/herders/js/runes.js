@@ -178,7 +178,11 @@ $('body')
             data: $form.serialize()
         }).done(function (data) {
             $('#rune-inventory').replaceWith(data);
+            $('#runeInventoryTable').tablesorter();
         });
 
         return false;  //cancel default on submit action.
+    })
+    .on('click', '.reset', function() {
+        $('#runeInventoryTable').trigger('sortReset')
     });

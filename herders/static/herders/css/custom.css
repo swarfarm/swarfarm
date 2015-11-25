@@ -49,6 +49,11 @@ footer {
     margin-bottom: 5px;
 }
 
+input.short,
+select.short {
+    max-width: 300px;
+}
+
 .navbar img, .btn-group img {
     height: 18px;
 }

@@ -17,30 +17,34 @@
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="btn-group">
-                <button class="btn btn-default rune-view-mode active" data-mode="list">
+                <button class="btn btn-default rune-view-mode" data-mode="list">
                     <span class="glyphicon glyphicon-th-list"></span> List
                 </button>
                 <button class="btn btn-default rune-view-mode" data-mode="box">
                     <span class="glyphicon glyphicon-th-large"></span> Box
                 </button>
-                <button class="btn btn-default rune-view-mode" data-mode="grid">
+                <button class="btn btn-default rune-view-mode active" data-mode="grid">
                     <span class="glyphicon glyphicon-th"></span> Grid
                 </button>
             </div>
         </div>
-        <table class="table table-condensed" id="runeInventoryTable">
+        <table class="table table-condensed table-bordered" id="runeInventoryTable">
             <thead>
             <tr>
                 <th>Type</th>
                 <th>Slot</th>
                 <th>Stars</th>
-                <th>Level</th>
-                <th>Main Stat</th>
-                <th>Innate Stat</th>
-                <th>Substat 1</th>
-                <th>Substat 2</th>
-                <th>Substat 3</th>
-                <th>Substat 4</th>
+                <th>HP %</th>
+                <th>HP</th>
+                <th>DEF %</th>
+                <th>DEF</th>
+                <th>ATK %</th>
+                <th>ATK</th>
+                <th>SPD</th>
+                <th>CRI Rate</th>
+                <th>CRI Dmg</th>
+                <th>RES</th>
+                <th>ACC</th>
                 <th>Assigned To</th>
                 {% if is_owner %}<th data-sorter="false"></th>{% endif %}
             </tr>
@@ -54,13 +58,17 @@
                 </td>
                 <td>{{ rune.slot }}</td>
                 <td>{{ rune.stars }}</td>
-                <td>{{ rune.level }}</td>
-                <td>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</td>
-                <td>{% if rune.innate_stat %}{{ rune.get_innate_stat_rune_display }} +{{ rune.innate_stat_value }}{% if rune.innate_stat in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
-                <td>{% if rune.substat_1 %}{{ rune.get_substat_1_rune_display }} +{{ rune.substat_1_value }}{% if rune.substat_1 in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
-                <td>{% if rune.substat_2 %}{{ rune.get_substat_2_rune_display }} +{{ rune.substat_2_value }}{% if rune.substat_2 in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
-                <td>{% if rune.substat_3 %}{{ rune.get_substat_3_rune_display }} +{{ rune.substat_3_value }}{% if rune.substat_3 in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
-                <td>{% if rune.substat_4 %}{{ rune.get_substat_4_rune_display }} +{{ rune.substat_4_value }}{% if rune.substat_4 in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
+                <td>{% if rune.get_hp_pct %}<span {% if rune.main_stat == rune.STAT_HP_PCT %}class="lead"{% endif %}>{{ rune.get_hp_pct }}%</span>{% endif %}</td>
+                <td>{% if rune.get_hp %}<span {% if rune.main_stat == rune.STAT_HP %}class="lead"{% endif %}>{{ rune.get_hp }}</span>{% endif %}</td>
+                <td>{% if rune.get_def_pct %}<span {% if rune.main_stat == rune.STAT_DEF_PCT %}class="lead"{% endif %}>{{ rune.get_def_pct }}%</span>{% endif %}</td>
+                <td>{% if rune.get_def %}<span {% if rune.main_stat == rune.STAT_DEF %}class="lead"{% endif %}>{{ rune.get_def }}</span>{% endif %}</td>
+                <td>{% if rune.get_atk_pct %}<span {% if rune.main_stat == rune.STAT_ATK_PCT %}class="lead"{% endif %}>{{ rune.get_atk_pct }}%</span>{% endif %}</td>
+                <td>{% if rune.get_atk %}<span {% if rune.main_stat == rune.STAT_ATK %}class="lead"{% endif %}>{{ rune.get_atk }}</span>{% endif %}</td>
+                <td>{% if rune.get_spd %}<span {% if rune.main_stat == rune.STAT_SPD %}class="lead"{% endif %}>{{ rune.get_spd }}</span>{% endif %}</td>
+                <td>{% if rune.get_cri_rate %}<span {% if rune.main_stat == rune.STAT_CRI_RATE_PCT %}class="lead"{% endif %}>{{ rune.get_cri_rate }}%</span>{% endif %}</td>
+                <td>{% if rune.get_cri_dmg %}<span {% if rune.main_stat == rune.STAT_CRI_DMG_PCT %}class="lead"{% endif %}>{{ rune.get_cri_dmg }}%</span>{% endif %}</td>
+                <td>{% if rune.get_res %}<span {% if rune.main_stat == rune.STAT_RESIST_PCT %}class="lead"{% endif %}>{{ rune.get_res }}%</span>{% endif %}</td>
+                <td>{% if rune.get_acc %}<span {% if rune.main_stat == rune.STAT_ACCURACY_PCT %}class="lead"{% endif %}>{{ rune.get_acc }}%</span>{% endif %}</td>
                 <td>
                     {% if rune.assigned_to %}
                     <div class="monster-image">

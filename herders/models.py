@@ -1269,6 +1269,40 @@ class RuneInstance(models.Model):
         else:
             return 0
 
+    # Individual functions for each stat to use within templates
+    def get_hp_pct(self):
+        return self.get_stat(RuneInstance.STAT_HP_PCT, False)
+
+    def get_hp(self):
+        return self.get_stat(RuneInstance.STAT_HP, False)
+
+    def get_def_pct(self):
+        return self.get_stat(RuneInstance.STAT_DEF_PCT, False)
+
+    def get_def(self):
+        return self.get_stat(RuneInstance.STAT_DEF, False)
+
+    def get_atk_pct(self):
+        return self.get_stat(RuneInstance.STAT_ATK_PCT, False)
+
+    def get_atk(self):
+        return self.get_stat(RuneInstance.STAT_ATK, False)
+
+    def get_spd(self):
+        return self.get_stat(RuneInstance.STAT_SPD, False)
+
+    def get_cri_rate(self):
+        return self.get_stat(RuneInstance.STAT_CRIT_RATE_PCT, False)
+
+    def get_cri_dmg(self):
+        return self.get_stat(RuneInstance.STAT_CRIT_DMG_PCT, False)
+
+    def get_res(self):
+        return self.get_stat(RuneInstance.STAT_RESIST_PCT, False)
+
+    def get_acc(self):
+        return self.get_stat(RuneInstance.STAT_ACCURACY_PCT, False)
+
     def get_innate_stat_title(self):
         if self.innate_stat is not None:
             return self.INNATE_STAT_TITLES[self.innate_stat]

@@ -22,10 +22,11 @@
                 </button>
             </div>
         </div>
-        <table class="table condensed">
+        <table class="table condensed" id="runeInventoryTable">
             <thead>
             <tr>
                 <th>Type</th>
+                <th>Slot</th>
                 <th>Stars</th>
                 <th>Level</th>
                 <th>Main Stat</th>
@@ -35,13 +36,17 @@
                 <th>Substat 3</th>
                 <th>Substat 4</th>
                 <th>Assigned To</th>
-                {% if is_owner %}<th></th>{% endif %}
+                {% if is_owner %}<th data-sorter="false"></th>{% endif %}
             </tr>
             </thead>
             <tbody>
             {% for rune in runes %}
             <tr>
-                <td>{% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}</td>
+                <td>
+                    <span class="hidden">{{ rune.get_type_display }}</span>
+                    {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
+                </td>
+                <td>{{ rune.slot }}</td>
                 <td>{{ rune.stars }}</td>
                 <td>{{ rune.level }}</td>
                 <td>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</td>

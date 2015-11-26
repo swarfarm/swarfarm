@@ -1463,6 +1463,7 @@ def rune_assign_choice(request, profile_name, instance_id, rune_id):
 
     rune.assigned_to = monster
     rune.save()
+    monster.save()
 
     response_data = {
         'code': 'success',
@@ -1478,8 +1479,10 @@ def rune_unassign(request, profile_name, rune_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
+        mon = rune.assigned_to
         rune.assigned_to = None
         rune.save()
+        mon.save()
 
         response_data = {
             'code': 'success',
@@ -1497,8 +1500,11 @@ def rune_delete(request, profile_name, rune_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
+        mon = rune.assigned_to
         messages.success(request, 'Deleted ' + str(rune))
         rune.delete()
+        if mon:
+            mon.save()
 
         response_data = {
             'code': 'success',
@@ -1517,8 +1523,16 @@ def rune_delete_all(request, profile_name):
     if is_owner:
         death_row = RuneInstance.objects.filter(owner=summoner)
         number_killed = death_row.count()
+        assigned_mons = []
+        for rune in death_row:
+            if rune.assigned_to and rune.assigned_to not in assigned_mons:
+                assigned_mons.append(rune.assigned_to)
+
         death_row.delete()
         messages.success(request, 'Deleted ' + str(number_killed) + ' rune(s).')
+
+        for mon in assigned_mons:
+            mon.save()
 
         response_data = {
             'code': 'success',

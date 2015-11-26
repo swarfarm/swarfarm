@@ -375,7 +375,7 @@ def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
     monster_to_add = get_object_or_404(Monster, pk=monster_id)
 
     if is_owner:
-        new_monster = MonsterInstance.objects.create(owner=summoner, monster=monster_to_add, stars=stars, level=level, fodder=True, notes='', priority=MonsterInstance.PRIORITY_DONE)
+        new_monster = MonsterInstance.objects.create(owner=summoner, monster=monster_to_add, stars=int(stars), level=int(level), fodder=True, notes='', priority=MonsterInstance.PRIORITY_DONE)
         messages.success(request, 'Added %s to your collection.' % new_monster)
         return redirect(return_path)
     else:

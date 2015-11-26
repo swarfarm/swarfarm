@@ -635,6 +635,23 @@ class MonsterInstance(models.Model):
     skill_2_level = models.IntegerField(blank=True, default=1)
     skill_3_level = models.IntegerField(blank=True, default=1)
     skill_4_level = models.IntegerField(blank=True, default=1)
+    base_hp = models.IntegerField(default=0)
+    rune_hp = models.IntegerField(default=0)
+    base_attack = models.IntegerField(default=0)
+    rune_attack = models.IntegerField(default=0)
+    base_defense = models.IntegerField(default=0)
+    rune_defense = models.IntegerField(default=0)
+    base_speed = models.IntegerField(default=0)
+    rune_speed = models.IntegerField(default=0)
+    base_crit_rate = models.IntegerField(default=0)
+    rune_crit_rate = models.IntegerField(default=0)
+    base_crit_damage = models.IntegerField(default=0)
+    rune_crit_damage = models.IntegerField(default=0)
+    base_resistance = models.IntegerField(default=0)
+    rune_resistance = models.IntegerField(default=0)
+    base_accuracy = models.IntegerField(default=0)
+    rune_accuracy = models.IntegerField(default=0)
+
     fodder = models.BooleanField(default=False)
     in_storage = models.BooleanField(default=False)
     ignore_for_fusion = models.BooleanField(default=False)
@@ -675,11 +692,11 @@ class MonsterInstance(models.Model):
     # Rune bonus calculations
     def rune_bonus_energy(self):
         set_bonus_count = floor(self.runeinstance_set.filter(type=RuneInstance.TYPE_ENERGY).count() / 2)
-        return ceil(self.base_hp() * 0.15) * set_bonus_count
+        return ceil(self.base_hp * 0.15) * set_bonus_count
 
     def rune_bonus_fatal(self):
         if self.runeinstance_set.filter(type=RuneInstance.TYPE_FATAL).count() >= 4:
-            return ceil(self.base_attack() * 0.35)
+            return ceil(self.base_attack * 0.35)
         else:
             return 0
 
@@ -705,19 +722,19 @@ class MonsterInstance(models.Model):
 
     def rune_bonus_guard(self):
         set_bonus_count = floor(self.runeinstance_set.filter(type=RuneInstance.TYPE_GUARD).count() / 2)
-        return ceil(self.base_defense() * 0.15) * set_bonus_count
+        return ceil(self.base_defense * 0.15) * set_bonus_count
 
     def rune_bonus_endure(self):
         rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENDURE).count()
         return 20 * floor(rune_count / 2)
 
     # Stat callables. Base = monster's own stat. Rune = amount gained from runes. Stat by itself is combined total
-    def base_hp(self):
+    def calc_base_hp(self):
         return self.monster.actual_hp(self.stars, self.level)
 
-    def rune_hp(self):
+    def calc_rune_hp(self):
         runes = self.runeinstance_set.filter(has_hp=True)
-        base = self.base_hp()
+        base = self.base_hp
         hp_percent = 0
         hp_flat = 0
 
@@ -730,14 +747,14 @@ class MonsterInstance(models.Model):
         return int(ceil(base * (hp_percent / 100.0)) + rune_set_bonus + hp_flat)
 
     def hp(self):
-        return self.base_hp() + self.rune_hp()
+        return self.base_hp + self.rune_hp
 
-    def base_attack(self):
+    def calc_base_attack(self):
         return self.monster.actual_attack(self.stars, self.level)
 
-    def rune_attack(self):
+    def calc_rune_attack(self):
         runes = self.runeinstance_set.filter(has_atk=True)
-        base = self.base_attack()
+        base = self.base_attack
         atk_percent = 0
         atk_flat = 0
 
@@ -750,14 +767,14 @@ class MonsterInstance(models.Model):
         return int(ceil(base * (atk_percent / 100.0)) + rune_set_bonus + atk_flat)
 
     def attack(self):
-        return self.base_attack() + self.rune_attack()
+        return self.base_attack + self.rune_attack
 
-    def base_defense(self):
+    def calc_base_defense(self):
         return self.monster.actual_defense(self.stars, self.level)
 
-    def rune_defense(self):
+    def calc_rune_defense(self):
         runes = self.runeinstance_set.filter(has_def=True)
-        base = self.base_defense()
+        base = self.base_defense
         def_percent = 0
         def_flat = 0
 
@@ -770,13 +787,13 @@ class MonsterInstance(models.Model):
         return int(ceil(base * (def_percent / 100.0)) + rune_set_bonus + def_flat)
 
     def defense(self):
-        return self.base_defense() + self.rune_defense()
+        return self.base_defense + self.rune_defense
 
-    def base_speed(self):
+    def calc_base_speed(self):
         return self.monster.speed
 
-    def rune_speed(self):
-        base = self.base_speed()
+    def calc_rune_speed(self):
+        base = self.base_speed
         runes = self.runeinstance_set.filter(has_speed=True)
         spd_percent = self.rune_bonus_swift()
         spd_flat = 0
@@ -787,12 +804,12 @@ class MonsterInstance(models.Model):
         return int(ceil(base * (spd_percent / 100.0)) + spd_flat)
 
     def speed(self):
-        return self.base_speed() + self.rune_speed()
+        return self.base_speed + self.rune_speed
 
-    def base_crit_rate(self):
+    def calc_base_crit_rate(self):
         return self.monster.crit_rate
 
-    def rune_crit_rate(self):
+    def calc_rune_crit_rate(self):
         runes = self.runeinstance_set.filter(has_crit_rate=True)
         crit_rate = self.rune_bonus_blade()
 
@@ -802,12 +819,12 @@ class MonsterInstance(models.Model):
         return int(crit_rate)
 
     def crit_rate(self):
-        return self.base_crit_rate() + self.rune_crit_rate()
+        return self.base_crit_rate + self.rune_crit_rate
 
-    def base_crit_damage(self):
+    def calc_base_crit_damage(self):
         return self.monster.crit_damage
 
-    def rune_crit_damage(self):
+    def calc_rune_crit_damage(self):
         runes = self.runeinstance_set.filter(has_crit_dmg=True)
         crit_damage = self.rune_bonus_rage()
 
@@ -817,12 +834,12 @@ class MonsterInstance(models.Model):
         return int(crit_damage)
 
     def crit_damage(self):
-        return self.base_crit_damage() + self.rune_crit_damage()
+        return self.base_crit_damage + self.rune_crit_damage
 
-    def base_resistance(self):
+    def calc_base_resistance(self):
         return self.monster.resistance
 
-    def rune_resistance(self):
+    def calc_rune_resistance(self):
         runes = self.runeinstance_set.filter(has_resist=True)
         resist = self.rune_bonus_endure()
 
@@ -832,12 +849,12 @@ class MonsterInstance(models.Model):
         return int(resist)
 
     def resistance(self):
-        return self.base_resistance() + self.rune_resistance()
+        return self.base_resistance + self.rune_resistance
 
-    def base_accuracy(self):
+    def calc_base_accuracy(self):
         return self.monster.accuracy
 
-    def rune_accuracy(self):
+    def calc_rune_accuracy(self):
         runes = self.runeinstance_set.filter(has_accuracy=True)
         accuracy = self.rune_bonus_focus()
 
@@ -847,7 +864,7 @@ class MonsterInstance(models.Model):
         return int(accuracy)
 
     def accuracy(self):
-        return self.base_accuracy() + self.rune_accuracy()
+        return self.base_accuracy + self.rune_accuracy
 
     def clean(self):
         from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -893,6 +910,26 @@ class MonsterInstance(models.Model):
         super(MonsterInstance, self).clean()
 
     def save(self, *args, **kwargs):
+        # Update stats
+        self.base_hp = self.calc_base_hp()
+        self.base_attack = self.calc_base_attack()
+        self.base_defense = self.calc_base_defense()
+        self.base_speed = self.calc_base_speed()
+        self.base_crit_rate = self.calc_base_crit_rate()
+        self.base_crit_damage = self.calc_base_crit_damage()
+        self.base_resistance = self.calc_base_resistance()
+        self.base_accuracy = self.calc_base_accuracy()
+
+        self.rune_hp = self.calc_rune_hp()
+        self.rune_attack = self.calc_rune_attack()
+        self.rune_defense = self.calc_rune_defense()
+        self.rune_speed = self.calc_rune_speed()
+        self.rune_crit_rate = self.calc_rune_crit_rate()
+        self.rune_crit_damage = self.calc_rune_crit_damage()
+        self.rune_resistance = self.calc_rune_resistance()
+        self.rune_accuracy = self.calc_rune_accuracy()
+
+        # Limit skill levels to the max level of the skill
         skills = self.monster.skills.all()
 
         if len(skills) >= 1 and self.skill_1_level > skills[0].max_level:
@@ -1456,6 +1493,7 @@ class RuneInstance(models.Model):
 
         self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
 
+        # Clean up values that don't have a stat type picked
         if self.innate_stat is None:
             self.innate_stat_value = None
         if self.substat_1 is None:
@@ -1466,6 +1504,15 @@ class RuneInstance(models.Model):
             self.substat_3_value = None
         if self.substat_4 is None:
             self.substat_4_value = None
+
+        if self.assigned_to is not None:
+            # Check no other runes are in this slot
+            for rune in RuneInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot):
+                rune.assigned_to = None
+                rune.save()
+
+            # Trigger stat calc update on the assigned monster
+            self.assigned_to.save()
 
         super(RuneInstance, self).save(*args, **kwargs)
 

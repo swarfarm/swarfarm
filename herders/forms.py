@@ -455,6 +455,8 @@ class EditMonsterInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditMonsterInstanceForm, self).__init__(*args, **kwargs)
 
+        self.fields['ignore_for_fusion'].label = 'Do not use as fusion ingredient'
+
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'ajax-form'

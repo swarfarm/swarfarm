@@ -52,6 +52,7 @@
                             <th>Priority</th>
                             <th>Leader Skill</th>
                             <th data-sorter="false">Skill Effects</th>
+                            <th data-sorter="false" data-columnSelector="false">Skills</th>
                             <th data-columnSelector="false">Skill-Ups Remaining</th>
                             <th data-columnSelector="false">HP</th>
                             <th data-columnSelector="false">DEF</th>
@@ -61,6 +62,7 @@
                             <th data-columnSelector="false">CRI Dmg</th>
                             <th data-columnSelector="false">RES</th>
                             <th data-columnSelector="false">ACC</th>
+                            <th data-sorter="false" data-columnSelector="false">Awakening Materials</th>
                             <th>Notes</th>
                             <th class="monster-info-icons-column" data-selector-name="Fusion Food"><img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/></th>
                             <th class="monster-info-icons-column" data-selector-name="Fodder"><span class="fa fa-birthday-cake" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Marked as food"></span></th>
@@ -132,6 +134,14 @@
                                     {% endif %}
                                 {% endfor %}
                                 </td>
+                                <td class="monster-awaken-materials">
+                                    {% for skill in instance.monster.skills.all %}
+                                        <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
+                                            <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
+                                            <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </td>
                                 <td>
                                     {% if instance.skill_ups_to_max > 0 %}
                                     <div class="monster-image">
@@ -151,6 +161,17 @@
                                 <td>{{ instance.crit_damage }}%</td>
                                 <td>{{ instance.resistance }}%</td>
                                 <td>{{ instance.accuracy }}%</td>
+                                <td class="monster-awaken-materials">
+                                    {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
+                                        {% with mats=instance.monster.get_awakening_materials %}
+                                            {% for element,essences in mats.iteritems %}
+                                                {% for size,count in essences.iteritems %}
+                                                    {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                        {% endwith %}
+                                    {% endif %}
+                                </td>
                                 <td>{% if instance.notes %}{{ instance.notes|truncatewords:25|markdown|striptags }}{% endif %}</td>
                                 <td class="monster-info-icons-column">
                                     {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}

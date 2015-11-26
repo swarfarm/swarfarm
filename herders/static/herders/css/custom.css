@@ -345,6 +345,7 @@ div.sprite {
 .monster-awaken-materials {
     padding: 0 !important;
     font-size: 0;
+    min-width: 205px;
 }
 
 .monster-awaken-materials>div {

@@ -201,7 +201,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
         request.session['profile_group_method'] = box_grouping.lower()
 
     if request.session.modified:
-        return redirect('herders:monster_inventory', profile_name=profile_name)
+        return HttpResponse("Profile view mode cookie set")
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     monster_queryset = MonsterInstance.objects.filter(owner=summoner)

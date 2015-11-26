@@ -19,9 +19,14 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            <button class="btn btn-default profile-view-mode" data-mode="box">
-                <span class="glyphicon glyphicon-th-large"></span> Box View
-            </button>
+            <div class="btn-group">
+                <button class="btn btn-default profile-view-mode active" data-mode="list">
+                    <span class="glyphicon glyphicon-th-list"></span> List
+                </button>
+                <button class="btn btn-default profile-view-mode" data-mode="box">
+                    <span class="glyphicon glyphicon-th-large"></span> Box
+                </button>
+            </div>
             <button class="btn btn-primary column-select toggle collapsed" data-toggle="collapse" data-target="#column-selector-collapse">
                 Select Columns
             </button>

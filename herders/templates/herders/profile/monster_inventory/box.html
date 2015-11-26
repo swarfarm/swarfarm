@@ -19,9 +19,15 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            <button class="btn btn-default profile-view-mode" data-mode="list">
-                <span class="glyphicon glyphicon-th-list"></span> List View
-            </button>
+            <div class="btn-group">
+                <button class="btn btn-default profile-view-mode" data-mode="list">
+                    <span class="glyphicon glyphicon-th-list"></span> List
+                </button>
+                <button class="btn btn-default profile-view-mode active" data-mode="box">
+                    <span class="glyphicon glyphicon-th-large"></span> Box
+                </button>
+            </div>
+
             <div class="btn-group">
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'grade' %}active{% endif %}" data-mode="grade">Grade</button>
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'level' %}active{% endif %}" data-mode="level">Level</button>

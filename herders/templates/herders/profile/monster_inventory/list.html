@@ -147,10 +147,10 @@
                                 <td>{{ instance.defense }}</td>
                                 <td>{{ instance.attack }}</td>
                                 <td>{{ instance.speed }}</td>
-                                <td>{{ instance.crit_rate }}</td>
-                                <td>{{ instance.crit_damage }}</td>
-                                <td>{{ instance.resistance }}</td>
-                                <td>{{ instance.accuracy }}</td>
+                                <td>{{ instance.crit_rate }}%</td>
+                                <td>{{ instance.crit_damage }}%</td>
+                                <td>{{ instance.resistance }}%</td>
+                                <td>{{ instance.accuracy }}%</td>
                                 <td>{% if instance.notes %}{{ instance.notes|truncatewords:25|markdown|striptags }}{% endif %}</td>
                                 <td class="monster-info-icons-column">
                                     {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}

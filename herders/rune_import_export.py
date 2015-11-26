@@ -68,6 +68,7 @@ stat_decode_dict = {
     'ACC': RuneInstance.STAT_ACCURACY_PCT,
 }
 
+
 def import_rune(rune_data):
     rune = RuneInstance()
     rune_id = rune_data.get('id', None)
@@ -305,9 +306,9 @@ def _convert_monster_to_json(monster):
         'id': 0,
         'name': str(monster.monster),
         'level': monster.level,
-        'b_hp': monster.base_hp(),
-        'b_atk': monster.base_attack(),
-        'b_def': monster.base_defense(),
+        'b_hp': monster.base_hp,
+        'b_atk': monster.base_attack,
+        'b_def': monster.base_defense,
         'b_spd': monster.monster.speed,
         'b_crate': monster.monster.crit_rate,
         'b_cdmg': monster.monster.crit_damage,

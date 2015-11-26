@@ -154,10 +154,15 @@ $('body')
                 html:true,
                 viewport: {selector: 'body', padding: 2}
             });
+
             $('#monster_table').tablesorter({
-                widgets: ['saveSort'],
+                widgets: ['saveSort', 'columnSelector'],
                 widgetOptions: {
-                    filter_reset: '.reset'
+                    filter_reset: '.reset',
+                    columnSelector_container : '#column-selectors',
+                    columnSelector_saveColumns: true,
+                    columnSelector_mediaquery: false,
+                    columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>'
                 }
             });
         });
@@ -165,5 +170,5 @@ $('body')
         return false;  //cancel default on submit action.
     })
     .on('click', '.reset', function() {
-        $('#monster_table').trigger('sortReset')
+        $('#monster_table').trigger('sortReset');
     });

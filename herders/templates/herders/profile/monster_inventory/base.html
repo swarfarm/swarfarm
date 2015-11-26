@@ -20,6 +20,6 @@ My Monsters - {{ block.super }}
     <div id="monster-inventory">{% include 'loading.html' %}</div>
 {% endblock profile %}
 
-{% block javascript_compressed %}
-    {{ block.super }}
-{% endblock javascript_compressed %}
+{% block javascript %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.24.6/js/widgets/widget-columnSelector.min.js"></script>
+{% endblock javascript %}

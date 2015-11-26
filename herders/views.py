@@ -203,12 +203,15 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     if request.session.modified:
         return HttpResponse("Profile view mode cookie set")
 
+    view_mode = request.session.get('profile_view_mode', 'list').lower()
+    box_grouping = request.session.get('profile_group_method', 'grade').lower()
+
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     monster_queryset = MonsterInstance.objects.filter(owner=summoner)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    view_mode = request.session.get('profile_view_mode', 'list').lower()
-    box_grouping = request.session.get('profile_group_method', 'grade').lower()
+    if view_mode == 'list':
+        monster_queryset = monster_queryset.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills', 'monster__skills__skill_effect')
 
     form = FilterMonsterInstanceForm(request.POST or None)
     if form.is_valid():

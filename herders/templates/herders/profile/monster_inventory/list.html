@@ -1,7 +1,9 @@
+{% extends 'base.html' %}
 {% load staticfiles %}
 {% load utils %}
 {% load markdown_deux_tags %}
 
+{% block content %}
 {% static 'herders/images/' as img_url_prefix %}
 
 <div id="monster-inventory">
@@ -211,3 +213,4 @@
         {% endif %}
     </div>
 </div>
+{% endblock content %}

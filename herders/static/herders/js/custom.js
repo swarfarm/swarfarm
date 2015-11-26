@@ -171,7 +171,7 @@ $('#bulkAddFormset').formset({
 });
 
 //Update filter buttons on page load
-var monster_table = $('#monster_table');
+var monster_table = $('#bestiary_table');
 var filter_buttons = $('button.filter');
 var active_filter_class = 'active';
 var save_filters = monster_table.data('save-filters');

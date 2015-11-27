@@ -1505,16 +1505,17 @@ class RuneInstance(models.Model):
         if self.substat_4 is None:
             self.substat_4_value = None
 
-        if self.assigned_to is not None:
-            # Check no other runes are in this slot
+        # Check no other runes are in this slot
+        if self.assigned_to:
             for rune in RuneInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot):
                 rune.assigned_to = None
                 rune.save()
 
-            # Trigger stat calc update on the assigned monster
-            self.assigned_to.save()
-
         super(RuneInstance, self).save(*args, **kwargs)
+
+        # Trigger stat calc update on the assigned monster
+        if self.assigned_to:
+            self.assigned_to.save()
 
     def __unicode__(self):
         return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'

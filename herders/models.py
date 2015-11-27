@@ -1350,14 +1350,7 @@ class RuneInstance(models.Model):
         from django.core.exceptions import ValidationError
 
         # Check slot, level, etc for valid ranges
-        if self.slot is None:
-            raise ValidationError({
-                'slot': ValidationError(
-                    'Slot is missing.',
-                    code='invalid_rune_slot',
-                )
-            })
-        else:
+        if self.slot is not None:
             if self.slot < 1 or self.slot > 6:
                 raise ValidationError({
                     'slot': ValidationError(
@@ -1378,14 +1371,7 @@ class RuneInstance(models.Model):
                     ),
                 })
 
-        if self.level is None:
-            raise ValidationError({
-                'level': ValidationError(
-                    'Level is missing.',
-                    code='invalid_rune_level',
-                )
-            })
-        elif self.level < 0 or self.level > 15:
+        if self.level is not None and self.level < 0 or self.level > 15:
             raise ValidationError({
                 'level': ValidationError(
                     'Level must be 0 through 15.',
@@ -1393,14 +1379,7 @@ class RuneInstance(models.Model):
                 )
             })
 
-        if self.stars is None:
-            raise ValidationError({
-                'stars': ValidationError(
-                    'Stars is missing.',
-                    code='invalid_rune_stars',
-                )
-            })
-        elif self.stars < 1 or self.stars > 6:
+        if self.stars is not None and self.stars < 1 or self.stars > 6:
             raise ValidationError({
                 'stars': ValidationError(
                     'Stars must be between 1 and 6.',

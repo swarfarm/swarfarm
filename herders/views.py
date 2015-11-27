@@ -1556,6 +1556,7 @@ def rune_import(request, profile_name):
     form.helper.form_action = reverse('herders:rune_import', kwargs={'profile_name': profile_name})
     template = loader.get_template('herders/profile/runes/import_form.html')
     import_error = None
+    err_rune = None
 
     response_data = {
         'code': 'success',
@@ -1567,21 +1568,29 @@ def rune_import(request, profile_name):
 
             if data['runes']:
                 import_count = 0
+                valid_runes = []
 
+                # Validate all imported runes
                 for rune_data in data['runes']:
                     try:
                         rune = import_rune(rune_data)
                         rune.owner = summoner
-                        rune.save()
+                        rune.full_clean()
                         import_count += 1
                     except ValidationError as e:
-                        import_error = e.message
+                        import_error = e.message_dict
+                        err_rune = rune_data.get('id', 'unknown')
                         response_data = {
                             'code': 'error',
                         }
                         break
-
-                messages.success(request, 'Successfully imported ' + str(import_count) + ' runes.')
+                    else:
+                        valid_runes.append(rune)
+                else:
+                    # No exceptions! Save the valid runes.
+                    for rune in valid_runes:
+                        rune.save()
+                    messages.success(request, 'Successfully imported ' + str(import_count) + ' runes.')
             else:
                 response_data = {
                     'code': 'error',
@@ -1592,7 +1601,7 @@ def rune_import(request, profile_name):
                 'code': 'error',
             }
 
-        response_data['html'] = template.render(RequestContext(request, {'import_rune_form': form, 'import_error': import_error, 'profile_name': profile_name}))
+        response_data['html'] = template.render(RequestContext(request, {'import_rune_form': form, 'import_error': import_error, 'errored_rune': err_rune, 'profile_name': profile_name}))
 
         return JsonResponse(response_data)
     else:

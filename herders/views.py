@@ -1391,6 +1391,8 @@ def rune_edit(request, profile_name, rune_id):
 
     if is_owner:
         if request.method == 'POST' and form.is_valid():
+            form.save()
+
             form = AddRuneInstanceForm(auto_id='edit_id_%s')
             form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
 

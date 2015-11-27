@@ -1347,6 +1347,9 @@ def rune_add(request, profile_name):
             new_rune.owner = request.user.summoner
             new_rune.save()
 
+            if new_rune.assigned_to:
+                new_rune.assigned_to.save()
+
             # Send back blank form
             form = AddRuneInstanceForm()
             form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
@@ -1391,7 +1394,10 @@ def rune_edit(request, profile_name, rune_id):
 
     if is_owner:
         if request.method == 'POST' and form.is_valid():
-            form.save()
+            rune = form.save()
+
+            if rune.assigned_to:
+                rune.assigned_to.save()
 
             form = AddRuneInstanceForm(auto_id='edit_id_%s')
             form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})

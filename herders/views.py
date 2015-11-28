@@ -97,7 +97,7 @@ def profile_delete(request, profile_name):
         if request.method == 'POST' and form.is_valid():
             logout(request)
             user.delete()
-            messages.success(request, 'Your profile has been deleted.')
+            messages.warning(request, 'Your profile has been permanently deleted.')
             return redirect('news:latest_news')
 
         return render(request, 'herders/profile/profile_delete.html', context)
@@ -139,7 +139,7 @@ def follow_add(request, profile_name, follow_username):
 
     if is_owner:
         summoner.following.add(new_follower)
-        messages.success(request, 'Now following %s' % new_follower.user.username)
+        messages.info(request, 'Now following %s' % new_follower.user.username)
         return redirect(return_path)
     else:
         return HttpResponseForbidden()
@@ -158,7 +158,7 @@ def follow_remove(request, profile_name, follow_username):
 
     if is_owner:
         summoner.following.remove(removed_follower)
-        messages.success(request, 'Unfollowed %s' % removed_follower.user.username)
+        messages.info(request, 'Unfollowed %s' % removed_follower.user.username)
         return redirect(return_path)
     else:
         return HttpResponseForbidden()
@@ -294,7 +294,7 @@ def profile_edit(request, profile_name):
             summoner_form.save()
             user_form.save()
 
-            messages.success(request, 'Your profile has been updated.')
+            messages.info(request, 'Your profile has been updated.')
             return redirect(return_path)
         else:
             return render(request, 'herders/profile/profile_edit.html', context)
@@ -654,7 +654,7 @@ def monster_instance_delete(request, profile_name, instance_id):
 
     # Check for proper owner before deleting
     if request.user.summoner == monster.owner:
-        messages.success(request, 'Deleted ' + str(monster))
+        messages.warning(request, 'Deleted ' + str(monster))
         monster.delete()
 
         return redirect(return_path)
@@ -728,7 +728,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
                 # Delete the submitted monsters
                 for food in food_monsters:
                     if food.owner == request.user.summoner:
-                        messages.success(request, 'Deleted %s' % food)
+                        messages.warning(request, 'Deleted %s' % food)
                         food.delete()
                     else:
                         raise PermissionDenied("Trying to delete a monster you don't own")
@@ -1155,7 +1155,7 @@ def team_group_delete(request, profile_name, group_id):
         if team_group.team_set.count() > 0:
             return render(request, 'herders/profile/teams/team_group_delete.html', context)
         else:
-            messages.success(request, 'Deleted team group %s' % team_group.name)
+            messages.warning(request, 'Deleted team group %s' % team_group.name)
             team_group.delete()
             return redirect(return_path)
     else:
@@ -1248,7 +1248,7 @@ def team_delete(request, profile_name, team_id):
     # Check for proper owner before deleting
     if request.user.summoner == team.group.owner:
         team.delete()
-        messages.success(request, 'Deleted team %s - %s.' % (team.group, team))
+        messages.warning(request, 'Deleted team %s - %s.' % (team.group, team))
         return redirect(return_path)
     else:
         return HttpResponseForbidden()
@@ -1347,6 +1347,8 @@ def rune_add(request, profile_name):
             new_rune.owner = request.user.summoner
             new_rune.save()
 
+            messages.success(request, 'Added ' + str(new_rune))
+
             # Send back blank form
             form = AddRuneInstanceForm()
             form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
@@ -1391,8 +1393,8 @@ def rune_edit(request, profile_name, rune_id):
 
     if is_owner:
         if request.method == 'POST' and form.is_valid():
-            form.save()
-
+            rune = form.save()
+            messages.success(request, 'Saved changes to ' + str(rune))
             form = AddRuneInstanceForm(auto_id='edit_id_%s')
             form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
 
@@ -1504,7 +1506,7 @@ def rune_delete(request, profile_name, rune_id):
 
     if is_owner:
         mon = rune.assigned_to
-        messages.success(request, 'Deleted ' + str(rune))
+        messages.warning(request, 'Deleted ' + str(rune))
         rune.delete()
         if mon:
             mon.save()
@@ -1532,7 +1534,7 @@ def rune_delete_all(request, profile_name):
                 assigned_mons.append(rune.assigned_to)
 
         death_row.delete()
-        messages.success(request, 'Deleted ' + str(number_killed) + ' rune(s).')
+        messages.warning(request, 'Deleted ' + str(number_killed) + ' rune(s).')
 
         for mon in assigned_mons:
             mon.save()

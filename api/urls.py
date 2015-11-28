@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     # Custom API stuff
-    url(r'^runes/stats_by_slot/(?P<slot>[0-9])/$', views.get_rune_stats_by_slot, name='rune_stat_by_slot')
+    url(r'^runes/stats_by_slot/(?P<slot>[0-9])/$', views.get_rune_stats_by_slot, name='rune_stat_by_slot'),
+    url(r'^messages/$', views.get_user_messages, name='user_messages'),
 ]

@@ -14,7 +14,7 @@ function AddMonster() {
         bootbox.dialog({
             title: "Add Monster",
             message: result.html
-        })
+        });
         $('.rating').rating();
     })
 }
@@ -165,6 +165,8 @@ $('body')
                     columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>'
                 }
             });
+
+            DisplayMessages();
         });
 
         return false;  //cancel default on submit action.

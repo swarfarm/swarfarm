@@ -10,6 +10,7 @@ $(function () {
         viewport: {selector: 'body', padding: 2}
     });
     $('.rating').rating();
+    DisplayMessages();
 });
 
 //Defaults for the bootboxes
@@ -24,6 +25,20 @@ bootbox.setDefaults({
 $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
 });
+
+//Generate growl notifications
+function DisplayMessages() {
+    $.get(API_URL + 'messages/', function(result) {
+        for (var i = 0; i < result.messages.length; i++) {
+            $.notify({
+                message: result.messages[i].text
+            },{
+                type: result.messages[i].status,
+                delay: 3000
+            });
+        }
+    });
+}
 
 //Automatically set attributes based on monster info
 function SetStars(e, choice, autocomplete) {

@@ -39,6 +39,7 @@ page_content.on('submit', '#EditTeamForm', function() {
 $(document).ready(function() {
     update_team_list();
     load_new_team();
+    DisplayMessages();
 });
 
 function load_new_team() {
@@ -49,6 +50,7 @@ function load_new_team() {
         });
     }
     $('.autocomplete-light-widget').remove();
+    DisplayMessages();
 }
 
 function update_team_list() {
@@ -57,4 +59,5 @@ function update_team_list() {
         $('.navbar .team-edit').toggleClass('disabled', isEmpty);
     });
     $('.autocomplete-light-widget').remove();
+    DisplayMessages();
 }

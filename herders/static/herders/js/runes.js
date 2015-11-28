@@ -179,6 +179,7 @@ $('body')
         }).done(function (data) {
             $('#rune-inventory').replaceWith(data);
             $('#runeInventoryTable').tablesorter();
+            DisplayMessages();
         });
 
         return false;  //cancel default on submit action.

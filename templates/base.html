@@ -16,6 +16,7 @@
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.4.0/animate.min.css">
         {% compress css %}
             <link href="{% static "herders/css/custom.css" %}" rel="stylesheet">
             <link href="{% static 'herders/css/sprites.css' %}" rel="stylesheet">
@@ -126,16 +127,6 @@
             {% block subnav %} {% endblock subnav %}
 
             <div class="container">
-                {% if messages %}
-                    <div class="alert alert-dismissible alert-success" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <ul class="list-unstyled">
-                            {% for message in messages %}
-                                <li>{% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
                 <div class="content">
                     {% block content %}
                     {% endblock content %}
@@ -171,6 +162,7 @@
         {% compress js %}
         <script type="text/javascript" src="{% static "herders/js/bootstrap.min.js" %}"></script>
         <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
+        <script type="text/javascript" src="{% static "herders/js/bootstrap-notify.min.js" %}"></script>
         <script type="text/javascript" src="{% static 'herders/js/jquery.formset.js' %}"></script>
         <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
         {% block javascript_compressed %}{% endblock javascript_compressed %}

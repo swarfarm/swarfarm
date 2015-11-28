@@ -162,3 +162,19 @@ def get_rune_stats_by_slot(request, slot):
         return JsonResponse({
             'code': 'error',
         })
+
+
+def get_user_messages(request):
+    from django.http import JsonResponse
+    from django.contrib.messages import get_messages
+
+    themessages = get_messages(request)
+    data = []
+
+    for message in themessages:
+        data.append({
+            'text': message.message,
+            'status': message.level_tag,
+        })
+
+    return JsonResponse({'messages': data})

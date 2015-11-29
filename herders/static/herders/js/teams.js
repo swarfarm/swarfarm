@@ -39,7 +39,7 @@ page_content.on('submit', '#EditTeamForm', function() {
 $(document).ready(function() {
     update_team_list();
     load_new_team();
-    DisplayMessages();
+    //DisplayMessages();
 });
 
 function load_new_team() {

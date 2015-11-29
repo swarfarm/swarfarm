@@ -122,7 +122,8 @@ $('body')
     .on('click', '.rune-import', function() {
         $.ajax({
             type: 'get',
-            url: '/profile/' + PROFILE_NAME + '/runes/import/'
+            url: '/profile/' + PROFILE_NAME + '/runes/import/',
+            global: false
         }).done(function(result) {
             bootbox.dialog({
                 title: "Import Runes",
@@ -133,7 +134,8 @@ $('body')
     .on('click', '.rune-export', function() {
         $.ajax({
             type: 'get',
-            url: '/profile/' + PROFILE_NAME + '/runes/export/'
+            url: '/profile/' + PROFILE_NAME + '/runes/export/',
+            global: false
         }).done(function(result) {
             bootbox.dialog({
                 title: "Export Runes and Monsters",
@@ -179,7 +181,7 @@ $('body')
         }).done(function (data) {
             $('#rune-inventory').replaceWith(data);
             $('#runeInventoryTable').tablesorter();
-            DisplayMessages();
+            //DisplayMessages();
         });
 
         return false;  //cancel default on submit action.

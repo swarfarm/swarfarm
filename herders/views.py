@@ -855,10 +855,6 @@ def monster_instance_awaken(request, profile_name, instance_id):
 
 @login_required()
 def monster_instance_duplicate(request, profile_name, instance_id):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
 
     # Check for proper owner before copying
@@ -868,7 +864,11 @@ def monster_instance_duplicate(request, profile_name, instance_id):
         newmonster.save()
         messages.success(request, 'Succesfully copied ' + str(newmonster))
 
-        return redirect(return_path)
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
     else:
         return HttpResponseForbidden()
 

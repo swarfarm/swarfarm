@@ -32,6 +32,12 @@ function EditMonster(instance_id) {
     });
 }
 
+function CopyMonster(instance_id) {
+    $.get('/profile/' + PROFILE_NAME + '/monster/copy/' + instance_id + '/', function() {
+        update_monster_inventory();
+    });
+}
+
 function AwakenMonster(instance_id) {
     if (instance_id) {
         $.ajax({
@@ -120,6 +126,7 @@ $('body')
     })
     .on('click', '.monster-add', function() { AddMonster() })
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
+    .on('click', '.monster-copy', function() { CopyMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
     .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
     .on('click', '.quick-fodder', function() { QuickFodder($(this)) })
@@ -165,8 +172,6 @@ $('body')
                     columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>'
                 }
             });
-
-            DisplayMessages();
         });
 
         return false;  //cancel default on submit action.

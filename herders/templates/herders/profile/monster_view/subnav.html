@@ -23,9 +23,9 @@
                     <span class="glyphicon glyphicon-star" style="color:purple"></span> Awaken
                 </button>
                 {% endif %}
-                <a href="{% url 'herders:monster_instance_duplicate' profile_name=profile_name instance_id=instance.pk.hex %}?next={{ return_path }}" class="btn btn-default navbar-btn">
+                <button type="button" class="btn btn-default navbar-btn monster-copy" data-instance-id="{{ instance.pk.hex }}">
                     <span class="glyphicon glyphicon-copy"></span> Copy
-                </a>
+                </button>
             </div>
 
             <button type="button" class="btn btn-danger navbar-btn pull-right monster-delete" data-instance-id="{{ instance.pk.hex }}">

@@ -47,7 +47,8 @@ $('body')
     .on('click', '.rune-add', function() {
         $.ajax({
             type: 'get',
-            url: '/profile/' + PROFILE_NAME + '/runes/add/'
+            url: '/profile/' + PROFILE_NAME + '/runes/add/',
+            global: false
         }).done(function(data) {
             bootbox.dialog({
                 title: "Add rune",
@@ -64,7 +65,8 @@ $('body')
 
         $.ajax({
             type: 'get',
-            url: '/profile/' + PROFILE_NAME + '/runes/edit/' + rune_id + '/'
+            url: '/profile/' + PROFILE_NAME + '/runes/edit/' + rune_id + '/',
+            global: false
         }).done(function(data) {
             bootbox.dialog({
                 title: "Edit rune",
@@ -108,7 +110,8 @@ $('body')
                 if (result) {
                     $.ajax({
                         type: 'get',
-                        url: '/profile/' + PROFILE_NAME + '/runes/delete/all'
+                        url: '/profile/' + PROFILE_NAME + '/runes/delete/all',
+                        global: false
                     }).done(function() {
                         update_rune_inventory();
                         update_rune_counts();
@@ -122,7 +125,8 @@ $('body')
     .on('click', '.rune-import', function() {
         $.ajax({
             type: 'get',
-            url: '/profile/' + PROFILE_NAME + '/runes/import/'
+            url: '/profile/' + PROFILE_NAME + '/runes/import/',
+            global: false
         }).done(function(result) {
             bootbox.dialog({
                 title: "Import Runes",
@@ -133,7 +137,8 @@ $('body')
     .on('click', '.rune-export', function() {
         $.ajax({
             type: 'get',
-            url: '/profile/' + PROFILE_NAME + '/runes/export/'
+            url: '/profile/' + PROFILE_NAME + '/runes/export/',
+            global: false
         }).done(function(result) {
             bootbox.dialog({
                 title: "Export Runes and Monsters",
@@ -179,7 +184,6 @@ $('body')
         }).done(function (data) {
             $('#rune-inventory').replaceWith(data);
             $('#runeInventoryTable').tablesorter();
-            DisplayMessages();
         });
 
         return false;  //cancel default on submit action.

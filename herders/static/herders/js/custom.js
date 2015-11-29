@@ -13,6 +13,10 @@ $(function () {
     DisplayMessages();
 });
 
+$(document).ajaxComplete(function(event, xhr, settings) {
+    DisplayMessages();
+});
+
 //Defaults for the bootboxes
 bootbox.setDefaults({
     backdrop: true,
@@ -28,16 +32,21 @@ $('#addMonsterModal').on('shown.bs.modal', function () {
 
 //Generate growl notifications
 function DisplayMessages() {
-    $.get(API_URL + 'messages/', function(result) {
-        for (var i = 0; i < result.messages.length; i++) {
-            $.notify({
-                message: result.messages[i].text
-            },{
-                type: result.messages[i].status,
-                delay: 3000
-            });
+    $.ajax({
+        url: API_URL + 'messages/',
+        type: 'get',
+        global: false
+    }).done(function(result) {
+            for (var i = 0; i < result.messages.length; i++) {
+                $.notify({
+                    message: result.messages[i].text
+                }, {
+                    type: result.messages[i].status,
+                    delay: 3000
+                });
+            }
         }
-    });
+    );
 }
 
 //Automatically set attributes based on monster info
@@ -49,7 +58,8 @@ function SetStars(e, choice, autocomplete) {
     var url = API_URL + 'bestiary/' + monster_id + '.json';
 
     $.ajax({
-        url: url
+        url: url,
+        global: false
     }).done(function (result) {
         //Set stars
         if (result.is_awakened && result.base_stars > 1) {
@@ -96,8 +106,11 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
             var rune_id = el.data('rune-id');
 
             if (rune_id.length > 0) {
-                var url = API_URL + 'runes/' + el.data('rune-id') + '.html';
-                $.get(url, function (d) {
+                $.ajax({
+                    url: API_URL + 'runes/' + el.data('rune-id') + '.html',
+                    type: get,
+                    global: false
+                }).done(function (d) {
                     el.popover({
                         trigger: 'manual',
                         content: d,
@@ -121,7 +134,11 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
         if (event.type === 'mouseenter') {
             var el = $(this);
             var url = API_URL + 'instance/' + el.data('instance-id') + '.html';
-            $.get(url, function (d) {
+            $.ajax({
+                url: url,
+                type: 'get',
+                global: false
+            }).done(function (d) {
                 el.popover({
                     trigger: 'manual',
                     content: d,
@@ -144,7 +161,11 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
         if (event.type === 'mouseenter') {
             var el = $(this);
             var url = API_URL + 'skill/' + el.data('skill-id') + '.html';
-            $.get(url, function (d) {
+            $.ajax({
+                url: url,
+                type: 'get',
+                global: false
+            }).done(function (d) {
                 el.popover({
                     trigger: 'manual',
                     content: d,

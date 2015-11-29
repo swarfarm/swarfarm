@@ -64,7 +64,8 @@ function UnassignRune(rune_id) {
                 callback: function () {
                     $.ajax({
                         type: 'get',
-                        url: '/profile/' + PROFILE_NAME + '/runes/unassign/' + rune_id + '/'
+                        url: '/profile/' + PROFILE_NAME + '/runes/unassign/' + rune_id + '/',
+                        global: false,
                     }).done(function (response) {
                         if (response.code === 'success') {
                             $('tr[data-rune-id]').popover('hide');
@@ -81,6 +82,7 @@ function UnassignRune(rune_id) {
                     $.ajax({
                         type: 'get',
                         url: '/profile/' + PROFILE_NAME + '/runes/delete/' + rune_id + '/',
+                        global: false,
                         data: {
                             "delete": "delete",
                             "rune_id": rune_id
@@ -124,6 +126,12 @@ function EditMonster(instance_id) {
             message: result.html
         });
         $('.rating').rating();
+    });
+}
+
+function CopyMonster(instance_id) {
+    $.get('/profile/' + PROFILE_NAME + '/monster/copy/' + instance_id + '/', function() {
+        //DisplayMessages();
     });
 }
 
@@ -186,29 +194,58 @@ function PowerUpMonster(instance_id) {
 
 // Page update functions
 function UpdateSidebar() {
-    $('#monster-view-sidebar').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/sidebar/');
+    $.ajax({
+        url: '/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/sidebar/',
+        type: 'get',
+        global: false
+    }).done(function(result) {
+        $('#monster-view-sidebar').html(result);
+    });
 }
 
 function UpdateRunes() {
-    $('#monster-view-runes').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/runes/', function() {
+    $.ajax({
+        url: '/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/runes/',
+        type: 'get',
+        global: false
+    }).done(function(result) {
+        $('#monster-view-runes').html(result);
         $('.popover').remove();
     });
 }
 
 function UpdateStats() {
-    $('#monster-view-stats').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/stats/')
+    $.ajax({
+        url: '/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/stats/',
+        type: 'get',
+        global: false
+    }).done(function(result) {
+        $('#monster-view-stats').html(result);
+    });
 }
 
 function UpdateSkills() {
-    $('#monster-view-skills').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/skills/', function() {
+    $.ajax({
+        url: '/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/skills/',
+        type: 'get',
+        global: false
+    }).done(function(result) {
+        $('#monster-view-skills').html(result);
+
         $('[data-toggle="popover"]').popover({
             html:true
         });
-    })
+    });
 }
 
 function UpdateNotes() {
-    $('#monster-view-notes-info').load('/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/info/')
+    $.ajax({
+        url: '/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/info/',
+        type: 'get',
+        global: false
+    }).done(function(result) {
+        $('#monster-view-notes-info').html(result);
+    });
 }
 
 function UpdateAll() {
@@ -228,6 +265,7 @@ $('body')
     .on('click', '.rune-assign', function() { AssignRune($(this).data('rune-slot')) })
     .on('click', '.rune-assign-choice', function() { AssignRuneChoice($(this).data('rune-id'), $(this).data('instance-id')) })
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
+    .on('click', '.monster-copy', function() { CopyMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
     .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
     .on('click', '.monster-power-up', function() { PowerUpMonster($(this).data('instance-id')) })

@@ -3,11 +3,11 @@ from collections import OrderedDict
 from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
 from django.db import IntegrityError
 from django.db.models import Q
 from django.forms.models import modelformset_factory
@@ -1638,16 +1638,18 @@ def bestiary(request):
         'view': 'bestiary',
     }
 
-    monster_list = cache.get('bestiary_data')
+    monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to').prefetch_related('skills', 'skills__skill_effect')
+    paginator = Paginator(monster_queryset, 100)
+    page = request.GET.get('page')
 
-    if monster_list is None:
-        monster_list = Monster.objects.select_related('awakens_from', 'awakens_to', 'leader_skill').filter(obtainable=True)
-        cache.set('bestiary_data', monster_list, 900)
+    try:
+        monsters = paginator.page(page)
+    except PageNotAnInteger:
+        monsters = paginator.page(1)
+    except EmptyPage:
+        monsters = paginator.page(paginator.num_pages)
 
-    context['monster_list'] = monster_list
-    context['buff_list'] = MonsterSkillEffect.objects.filter(is_buff=True).exclude(icon_filename='').order_by('name')
-    context['debuff_list'] = MonsterSkillEffect.objects.filter(is_buff=False).exclude(icon_filename='').order_by('name')
-    context['other_effect_list'] = MonsterSkillEffect.objects.filter(icon_filename='').order_by('name')
+    context['monster_list'] = monsters
 
     return render(request, 'herders/bestiary.html', context)
 

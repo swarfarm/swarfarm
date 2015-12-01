@@ -3,6 +3,29 @@ import django_filters
 from .models import Monster, MonsterInstance, MonsterSkillEffect, MonsterLeaderSkill, RuneInstance
 
 
+class MonsterFilter(django_filters.FilterSet):
+    base_stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
+    element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
+    archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
+    leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES)
+    leader_skill__area = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.AREA_CHOICES)
+    skills__skill_effect__pk = django_filters.MultipleChoiceFilter(choices=MonsterSkillEffect.objects.all().values_list('pk', 'name'), conjoined=True)
+
+    class Meta:
+        model = Monster
+        fields = {
+            'name': ['icontains'],
+            'element': ['exact'],
+            'archetype': ['exact'],
+            'base_stars': ['exact'],
+            'is_awakened': ['exact'],
+            'leader_skill__attribute': ['exact'],
+            'leader_skill__area': ['exact'],
+            'skills__skill_effect__pk': ['exact'],
+            'fusion_food': ['exact'],
+        }
+
+
 class MonsterInstanceFilter(django_filters.FilterSet):
     stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
     monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)

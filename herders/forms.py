@@ -364,6 +364,93 @@ class EditEssenceStorageForm(ModelForm):
         }
 
 
+class FilterMonsterForm(forms.Form):
+    name__icontains = forms.CharField(
+        label='Monster Name',
+        max_length=100,
+        required=False,
+    )
+    base_stars = forms.MultipleChoiceField(
+        choices=Monster.STAR_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    element = forms.MultipleChoiceField(
+        label='Element',
+        choices=Monster.ELEMENT_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    archetype = forms.MultipleChoiceField(
+        label='Archetype',
+        choices=Monster.TYPE_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    leader_skill__attribute = forms.MultipleChoiceField(
+        label='Leader Skill Stat',
+        choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    leader_skill__area = forms.MultipleChoiceField(
+        label='Leader Skill Stat',
+        choices=MonsterLeaderSkill.AREA_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    buffs = forms.MultipleChoiceField(
+        label='Buffs',
+        choices=MonsterSkillEffect.buff_effect_choices.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    debuffs = forms.MultipleChoiceField(
+        label='Debuffs',
+        choices=MonsterSkillEffect.debuff_effect_choices.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+    other_effects = forms.MultipleChoiceField(
+        label='Other Effects',
+        choices=MonsterSkillEffect.other_effect_choices.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_id = 'FilterBestiaryForm'
+    helper.form_class = 'form-horizontal'
+    helper.label_class = 'col-md-1 text-right'
+    helper.field_class = 'col-md-11 no-left-gutter'
+    helper.layout = Layout(
+        Field('name__icontains', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
+        Field('base_stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('fusion_food', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
+        Field('leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
+        Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
+        Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        FormActions(
+            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger reset'),
+        ),
+    )
+
+    def clean(self):
+        super(FilterMonsterForm, self).clean()
+
+        # Coalesce the effect fields into a single one that the filter can understand
+        selected_buff_effects = self.cleaned_data.get('buffs')
+        selected_debuff_effects = self.cleaned_data.get('debuffs')
+        selected_other_effects = self.cleaned_data.get('other_effects')
+        self.cleaned_data['monster__skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+
+
 # MonsterInstance Forms
 class AddMonsterInstanceForm(autocomplete_light.ModelForm):
     monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')

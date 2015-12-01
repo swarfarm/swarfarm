@@ -1634,12 +1634,28 @@ def rune_export(request, profile_name):
 
 
 def bestiary(request):
+    bestiary_filter_form = FilterMonsterForm()
+    bestiary_filter_form.helper.form_action = reverse('herders:bestiary_inventory')
+
     context = {
         'view': 'bestiary',
+        'bestiary_filter_form': bestiary_filter_form,
     }
 
+    return render(request, 'herders/bestiary.html', context)
+
+
+def bestiary_inventory(request):
     monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to').prefetch_related('skills', 'skills__skill_effect')
-    paginator = Paginator(monster_queryset, 100)
+
+    form = FilterMonsterInstanceForm(request.POST or None)
+
+    if form.is_valid():
+        monster_filter = MonsterFilter(form.cleaned_data, queryset=monster_queryset)
+    else:
+        monster_filter = MonsterFilter(queryset=monster_queryset)
+
+    paginator = Paginator(monster_filter.qs, 100)
     page = request.GET.get('page')
 
     try:
@@ -1649,9 +1665,7 @@ def bestiary(request):
     except EmptyPage:
         monsters = paginator.page(paginator.num_pages)
 
-    context['monster_list'] = monsters
-
-    return render(request, 'herders/bestiary.html', context)
+    return render(request, 'herders/bestiary_inventory.html', {'monsters': monsters})
 
 
 def bestiary_detail(request, monster_slug):

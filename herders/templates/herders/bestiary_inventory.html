@@ -1,0 +1,94 @@
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#filters" aria-expanded="false" aria-controls="filters">
+            Filters
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table id="bestiary_table" class="table table-hover table-condensed monster-table" data-save-filters="false">
+            <thead>
+                <tr>
+                    <th class="{sorter: false}"></th>
+                    <th>Name</th>
+                    <th>Stars</th>
+                    <th>Element</th>
+                    <th>Type</th>
+                    <th>Awakens To</th>
+                    <th>Awakens From</th>
+                    <th>Leader Skill</th>
+                    <th data-sorter="false">Skill Effects</th>
+                    <th data-sorter="false">Skills</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for monster in monsters %}
+                <tr>
+                    <td class="monster-image">
+                        <a href="{% url 'herders:bestiary_detail' monster_slug=monster.bestiary_slug %}">
+                            <div class="sprite sprite-{{ monster.image_filename|remove_extension }}"></div>
+                        </a>
+                    </td>
+                    <td><a href="{% url 'herders:bestiary_detail' monster_slug=monster.bestiary_slug %}">{{ monster.name|title }}</a></td>
+                    <td>{{ monster.base_stars }}<span class="glyphicon glyphicon-star"></span></td>
+                    <td class="monster-element">
+                        <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" class="monster-element" />
+                        <span class="hidden">{{ monster.element }}</span>
+                    </td>
+                    <td class="monster-type">{{ monster.get_archetype_display }}</td>
+                    <td class="monster-awakens">
+                        {% if monster.awakens_to %}
+                        <a href="{% url 'herders:bestiary_detail' monster_slug=monster.awakens_to.bestiary_slug %}">
+                            <div class="sprite sprite-{{ monster.awakens_to.image_filename|remove_extension }}"></div>{{ monster.awakens_to.name|title }}
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td class="monster-awakens">
+                        {% if monster.awakens_from %}
+                        <a href="{% url 'herders:bestiary_detail' monster_slug=monster.awakens_from.bestiary_slug %}">
+                            <div class="sprite sprite-{{ monster.awakens_from.image_filename|remove_extension }}"></div>{{ monster.awakens_from.name|title }}
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td class="monster-leader-skill">
+                        {% if monster.leader_skill %}
+                            <div>
+                                <img src="{{ img_url_prefix }}skills/leader/{{ monster.leader_skill.icon_filename }}"
+                                     data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ monster.leader_skill.skill_string }}" />
+                                <span class="image-plus image-plus-top-left">{{ monster.leader_skill.amount }}%</span>
+                                <span class="hidden">
+                                    {{ monster.leader_skill.get_attribute_display }}
+                                    {{ monster.leader_skill.get_area_display }}
+                                </span>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td class="monster-skill-effects">
+                        {% for effect in monster.all_skill_effects %}
+                            {% if effect.icon_filename %}
+                                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"
+                                        data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
+                            {% else %}
+                                <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                    <span>{{ effect.name }}</span>
+                                </span>
+                            {% endif %}
+                            <span class="hidden">{{ effect.pk }}-{{ effect.name|slugify }}</span>
+                        {% endfor %}
+                    </td>
+                    <td class="monster-awaken-materials">
+                        {% for skill in monster.skills.all %}
+                            <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
+                                <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
+                                <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+                            </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

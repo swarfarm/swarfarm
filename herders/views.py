@@ -1642,13 +1642,13 @@ def bestiary(request):
         'bestiary_filter_form': bestiary_filter_form,
     }
 
-    return render(request, 'herders/bestiary.html', context)
+    return render(request, 'herders/bestiary/base.html', context)
 
 
 def bestiary_inventory(request):
     monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to').prefetch_related('skills', 'skills__skill_effect')
 
-    form = FilterMonsterInstanceForm(request.POST or None)
+    form = FilterMonsterForm(request.POST or None)
 
     if form.is_valid():
         monster_filter = MonsterFilter(form.cleaned_data, queryset=monster_queryset)
@@ -1665,7 +1665,7 @@ def bestiary_inventory(request):
     except EmptyPage:
         monsters = paginator.page(paginator.num_pages)
 
-    return render(request, 'herders/bestiary_inventory.html', {'monsters': monsters})
+    return render(request, 'herders/bestiary/inventory.html', {'monsters': monsters, 'page_range': paginator.page_range})
 
 
 def bestiary_detail(request, monster_slug):
@@ -1728,7 +1728,7 @@ def bestiary_detail(request, monster_slug):
         context['awakened_monster_leader_skill'] = awakened_monster.leader_skill
         context['awakened_monster_skills'] = awakened_monster.skills.all().order_by('slot')
 
-    return render(request, 'herders/bestiary_detail.html', context)
+    return render(request, 'herders/profile/templates/herders/bestiary/detail.html', context)
 
 
 def bestiary_detail_by_id(request, monster_id):

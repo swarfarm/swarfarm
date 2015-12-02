@@ -3,10 +3,6 @@
 {% load humanize %}
 {% load utils %}
 
-{% block css %}
-    <link href="{% static 'herders/css/profile.css' %}" rel="stylesheet"/>
-{% endblock css %}
-
 {% block title %}
     {% if is_owner %}
         My Fusion Progress - {{ block.super }}

@@ -436,9 +436,6 @@ class FilterMonsterForm(forms.Form):
         Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        FormActions(
-            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger reset'),
-        ),
     )
 
     def clean(self):

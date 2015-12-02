@@ -1,8 +1,0 @@
-body { padding-top: 120px; }
-
-.profile-anchor-offset {
-    display: block;
-    position: relative;
-    top: -120px;
-    visibility: hidden;
-}

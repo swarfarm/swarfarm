@@ -1,0 +1,19 @@
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+
+        <button class="btn btn-primary navbar-btn toggle collapsed" data-toggle="collapse" data-target="#dropdownFilters">
+            Filters
+        </button>
+        <button class="btn btn-danger reset">Reset Filters</button>
+        <div class="collapse" id="dropdownFilters">
+            <div id="monster-inventory-filters" class="container-fluid">
+                {% crispy bestiary_filter_form %}
+            </div>
+        </div>
+    </div>
+</nav>

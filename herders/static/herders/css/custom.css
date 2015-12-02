@@ -2,7 +2,7 @@ html, body {
     height: 100%;
 }
 body {
-    padding-top: 70px;
+    padding-top: 120px;
 }
 
 #wrap {
@@ -11,6 +11,13 @@ body {
 
 thead {
     background-color: #FFFFFF;
+}
+
+.profile-anchor-offset {
+    display: block;
+    position: relative;
+    top: -120px;
+    visibility: hidden;
 }
 
 .container {

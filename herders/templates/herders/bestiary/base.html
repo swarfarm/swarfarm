@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load utils %}
+{% load cache %}
+
+{% block title %}Bestiary - {{ block.super }}{% endblock title %}
+
+{% block subnav %}
+    {% include 'herders/bestiary/subnav.html' %}
+{% endblock subnav %}
+
+{% block content %}
+<div id="bestiary-inventory">{% include 'loading.html' %}</div>
+{% endblock %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "herders/js/bestiary.js" %}"></script>
+{% endblock javascript_compressed %}

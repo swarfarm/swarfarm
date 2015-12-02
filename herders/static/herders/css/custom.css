@@ -9,6 +9,10 @@ body {
     min-height: 100%;
 }
 
+thead {
+    background-color: #FFFFFF;
+}
+
 .container {
     position: relative;
     min-height: 100%;

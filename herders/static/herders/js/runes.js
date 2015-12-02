@@ -183,7 +183,14 @@ $('body')
             data: $form.serialize()
         }).done(function (data) {
             $('#rune-inventory').replaceWith(data);
-            $('#runeInventoryTable').tablesorter();
+            $('#runeInventoryTable').tablesorter({
+                widgets: ['saveSort', 'stickyHeaders'],
+                widgetOptions: {
+                    filter_reset: '.reset',
+                    stickyHeaders_zIndex : 2,
+                    stickyHeaders_offset: 100
+                }
+            });
         });
 
         return false;  //cancel default on submit action.

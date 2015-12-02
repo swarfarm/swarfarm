@@ -163,13 +163,15 @@ $('body')
             });
 
             $('#monster_table').tablesorter({
-                widgets: ['saveSort', 'columnSelector'],
+                widgets: ['saveSort', 'columnSelector', 'stickyHeaders'],
                 widgetOptions: {
                     filter_reset: '.reset',
                     columnSelector_container : '#column-selectors',
                     columnSelector_saveColumns: true,
                     columnSelector_mediaquery: false,
-                    columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>'
+                    columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>',
+                    stickyHeaders_zIndex : 2,
+                    stickyHeaders_offset: 100
                 }
             });
         });

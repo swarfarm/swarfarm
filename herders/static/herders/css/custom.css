@@ -796,6 +796,7 @@ button.rune-assign-choice {
     top: 0;
     left: 0;
     padding-top: 20px;
+    z-index: 1000;
 }
 
 .spinner-container {

@@ -1,4 +1,4 @@
-var loading_template = '<div class="spinner-container"><div class="spinner"></div></div>';
+var loading_template = '<div class="spinner-overlay"><div class="spinner-container"><div class="spinner"></div></div>';
 var element_loading_template = '<div class="spinner-overlay"><div class="spinner-container"><div class="spinner"></div></div></div>';
 
 //Initialize all bootstrap tooltips and popovers
@@ -14,7 +14,7 @@ $(function () {
     DisplayMessages();
 });
 
-$(document).ajaxComplete(function(event, xhr, settings) {
+$(document).ajaxComplete(function() {
     DisplayMessages();
 });
 
@@ -42,12 +42,21 @@ $('#addMonsterModal').on('shown.bs.modal', function () {
 });
 
 function ToggleLoading(targetElement, setLoadingOn) {
-    if (targetElement.children('.spinner-overlay').length > 0 && !setLoadingOn) {
-        // Remove the overlay
-        targetElement.children('.spinner-overlay').remove();
+    if (setLoadingOn === undefined) {
+        if (targetElement.children('.spinner-overlay').length == 0) {
+            targetElement.append(element_loading_template);
+        }
+        else {
+            targetElement.children('.spinner-overlay').remove();
+        }
     }
     else {
-        targetElement.append(element_loading_template);
+        if (setLoadingOn && targetElement.children('.spinner-overlay').length == 0) {
+            targetElement.append(element_loading_template);
+        }
+        else if (!setLoadingOn) {
+            targetElement.children('.spinner-overlay').remove();
+        }
     }
 }
 

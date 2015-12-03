@@ -9,7 +9,7 @@ function update_inventory() {
 
 $('body')
     .on('submit', '#FilterBestiaryForm', function() {
-        ToggleLoading($('#wrap'));
+        ToggleLoading($('#wrap'), true);
 
         var $form = $(this);
         $.ajax({

@@ -28,8 +28,8 @@ $('body')
                 html:true,
                 viewport: {selector: 'body', padding: 2}
             });
-
-            $('#bestiary_table').tablesorter({
+            var bestiary_table = $('#bestiary_table');
+            bestiary_table.tablesorter({
                 widgets: ['saveSort', 'columnSelector', 'stickyHeaders'],
                 serverSideSorting: true,
                 widgetOptions: {
@@ -49,8 +49,13 @@ $('body')
 
                 $('#id_sort').val(sort_header + ';' + sortDirection);
                 update_inventory();
-                //throw new Error("");    //shitty but only way of preventing sort from actually happening
             });
+
+            // Trigger a sort reset if the sort form field is empty
+            if (!$('#id_sort').val()) {
+                bestiary_table.trigger('sortReset');
+                bestiary_table.trigger('saveSortReset');
+            }
         });
 
         return false;  //cancel default on submit action.
@@ -59,6 +64,7 @@ $('body')
         $('#monster_table').trigger('sortReset');
         var form = $('#FilterBestiaryForm');
         form[0].reset();
+        $('#id_sort').val('');
         form.find('label').toggleClass('active', false);
 
         update_inventory();

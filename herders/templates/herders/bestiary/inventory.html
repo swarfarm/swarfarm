@@ -4,29 +4,29 @@
 {% static 'herders/images/' as img_url_prefix %}
 <div id="bestiary-inventory">
     <div class="panel panel-default">
-    <div class="panel-heading">
-        <div class="btn-group">
-            <button class="btn btn-default pager-btn {% if not monsters.has_previous %}disabled"{% else %}" data-page="{{ monsters.previous_page_number }}"{% endif %} aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </button>
+        <div class="panel-heading">
+            <div class="btn-group">
+                <button class="btn btn-default pager-btn {% if not monsters.has_previous %}disabled"{% else %}" data-page="{{ monsters.previous_page_number }}"{% endif %} aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </button>
 
-            {% for page_num in page_range %}
-            <button class="btn btn-default pager-btn {% if page_num == monsters.number %}active{% endif %}" data-page="{{ page_num }}" aria-label="Previous">
-                {{ page_num }}
-            </button>
-            {% endfor %}
+                {% for page_num in page_range %}
+                <button class="btn btn-default pager-btn {% if page_num == monsters.number %}active{% endif %}" data-page="{{ page_num }}" aria-label="Previous">
+                    {{ page_num }}
+                </button>
+                {% endfor %}
 
-            <button class="btn btn-default pager-btn {% if not monsters.has_next %}disabled"{% else %}" data-page="{{ monsters.next_page_number }}"{% endif %} aria-label="Previous">
-                <span aria-hidden="true">&raquo;</span>
-            </button>
+                <button class="btn btn-default pager-btn {% if not monsters.has_next %}disabled"{% else %}" data-page="{{ monsters.next_page_number }}"{% endif %} aria-label="Previous">
+                    <span aria-hidden="true">&raquo;</span>
+                </button>
+            </div>
+            <span class="pull-right">Showing {{ filtered_monster_count }} of {{ total_monster_count }} monsters.</span>
         </div>
-        <span class="pull-right">Showing {{ filtered_monster_count }} of {{ total_monster_count }} monsters.</span>
-    </div>
         <div class="table-responsive">
             <table id="bestiary_table" class="table table-hover table-condensed monster-table" data-save-filters="false">
                 <thead>
                     <tr>
-                        <th class="{sorter: false}"></th>
+                        <th data-sorter="false"></th>
                         <th>Name</th>
                         <th>Stars</th>
                         <th>Element</th>

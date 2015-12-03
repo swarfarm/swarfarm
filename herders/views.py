@@ -1648,8 +1648,30 @@ def bestiary(request):
 def bestiary_inventory(request):
     monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to').prefetch_related('skills', 'skills__skill_effect')
     total_monster_count = Monster.objects.filter(obtainable=True).count()
-
     form = FilterMonsterForm(request.POST or None)
+
+    # Get queryset sort options
+    sort_options = request.POST.get('sort')
+    if sort_options:
+        sort_col_match = {
+            'name': 'name',
+            'stars': 'base_stars',
+            'element': 'element',
+            'type': 'archetype',
+            'awakens-to': 'awakens_to__name',
+            'awakens-from': 'awakens_from__name',
+            'leader-skill': 'leader_skill__amount',
+        }
+        sort_direction_match = {
+            'asc': '',
+            'desc': '-',
+        }
+        sort_options = sort_options.split(';')
+        sort_col = sort_col_match.get(sort_options[0])
+        sort_direction = sort_direction_match.get(sort_options[1])
+
+        if sort_col and sort_direction is not None:
+            monster_queryset = monster_queryset.order_by(sort_direction + sort_col)
 
     if form.is_valid():
         monster_filter = MonsterFilter(form.cleaned_data, queryset=monster_queryset)
@@ -1658,7 +1680,7 @@ def bestiary_inventory(request):
 
     filtered_monster_count = monster_filter.qs.count()
     paginator = Paginator(monster_filter.qs, 100)
-    page = request.GET.get('page')
+    page = request.POST.get('page')
 
     try:
         monsters = paginator.page(page)

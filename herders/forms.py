@@ -418,6 +418,8 @@ class FilterMonsterForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
+    page = forms.IntegerField(required=False)
+    sort = forms.CharField(required=False)
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -436,6 +438,8 @@ class FilterMonsterForm(forms.Form):
         Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('page', value=1, type='hidden'),
+        Field('sort', value='', type='hidden'),
     )
 
     def clean(self):
@@ -445,7 +449,7 @@ class FilterMonsterForm(forms.Form):
         selected_buff_effects = self.cleaned_data.get('buffs')
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
-        self.cleaned_data['monster__skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+        self.cleaned_data['skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
 
 
 # MonsterInstance Forms

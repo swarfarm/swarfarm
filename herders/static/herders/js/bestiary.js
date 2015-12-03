@@ -31,6 +31,7 @@ $('body')
 
             $('#bestiary_table').tablesorter({
                 widgets: ['saveSort', 'columnSelector', 'stickyHeaders'],
+                serverSideSorting: true,
                 widgetOptions: {
                     filter_reset: '.reset',
                     columnSelector_container : '#column-selectors',
@@ -40,6 +41,15 @@ $('body')
                     stickyHeaders_zIndex : 2,
                     stickyHeaders_offset: 100
                 }
+            })
+            .bind('sortBegin', function(e, table) {
+                var sortColumn = e.target.config.sortList[0][0];
+                var sortDirection = e.target.config.sortList[0][1] == 0 ? 'asc' : 'desc';
+                var sort_header = slugify($(table).find('th')[sortColumn].innerText);
+
+                $('#id_sort').val(sort_header + ';' + sortDirection);
+                update_inventory();
+                //throw new Error("");    //shitty but only way of preventing sort from actually happening
             });
         });
 
@@ -47,6 +57,13 @@ $('body')
     })
     .on('click', '.reset', function() {
         $('#monster_table').trigger('sortReset');
-        $('#FilterBestiaryForm')[0].reset();
+        var form = $('#FilterBestiaryForm');
+        form[0].reset();
+        form.find('label').toggleClass('active', false);
+
+        update_inventory();
+    })
+    .on('click', '.pager-btn', function() {
+        $('#id_page').val($(this).data('page'));
         update_inventory();
     });

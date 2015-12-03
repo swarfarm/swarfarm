@@ -8,33 +8,16 @@ function update_inventory() {
 
 
 $('body')
-    .on('submit', '.ajax-form', function() {
-        //Handle add ajax form submit
-        var $form = $(this);
-        $.ajax({
-            type: $form.attr('method'),
-            url: $form.attr('action'),
-            data: $form.serialize()
-        }).done(function(data) {
-            if (data.code === 'success') {
-                $('.modal.in').modal('hide');
-                update_monster_inventory();
-            }
-            else {
-                $form.replaceWith(data.html);
-                $('.rating').rating();
-            }
-        });
-
-        return false;  //cancel default on submit action.
-    })
     .on('submit', '#FilterBestiaryForm', function() {
+        ToggleLoading($('#wrap'));
+
         var $form = $(this);
         $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),
             data: $form.serialize()
         }).done(function (data) {
+            ToggleLoading($('#wrap'), false);
             $('#bestiary-inventory').replaceWith(data);
 
             //Reinit everything

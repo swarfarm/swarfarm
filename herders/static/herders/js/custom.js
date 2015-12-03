@@ -1,4 +1,5 @@
 var loading_template = '<div class="spinner-container"><div class="spinner"></div></div>';
+var element_loading_template = '<div class="spinner-overlay"><div class="spinner-container"><div class="spinner"></div></div></div>';
 
 //Initialize all bootstrap tooltips and popovers
 $(function () {
@@ -29,6 +30,16 @@ bootbox.setDefaults({
 $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
 });
+
+function ToggleLoading(targetElement, setLoadingOn) {
+    if (targetElement.children('.spinner-overlay').length > 0 && !setLoadingOn) {
+        // Remove the overlay
+        targetElement.children('.spinner-overlay').remove();
+    }
+    else {
+        targetElement.append(element_loading_template);
+    }
+}
 
 //Generate growl notifications
 function DisplayMessages() {

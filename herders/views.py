@@ -1647,6 +1647,7 @@ def bestiary(request):
 
 def bestiary_inventory(request):
     monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to').prefetch_related('skills', 'skills__skill_effect')
+    total_monster_count = Monster.objects.filter(obtainable=True).count()
 
     form = FilterMonsterForm(request.POST or None)
 
@@ -1655,6 +1656,7 @@ def bestiary_inventory(request):
     else:
         monster_filter = MonsterFilter(queryset=monster_queryset)
 
+    filtered_monster_count = monster_filter.qs.count()
     paginator = Paginator(monster_filter.qs, 100)
     page = request.GET.get('page')
 
@@ -1665,7 +1667,14 @@ def bestiary_inventory(request):
     except EmptyPage:
         monsters = paginator.page(paginator.num_pages)
 
-    return render(request, 'herders/bestiary/inventory.html', {'monsters': monsters, 'page_range': paginator.page_range})
+    context = {
+        'monsters': monsters,
+        'page_range': paginator.page_range,
+        'total_monster_count': total_monster_count,
+        'filtered_monster_count': filtered_monster_count,
+    }
+
+    return render(request, 'herders/bestiary/inventory.html', context)
 
 
 def bestiary_detail(request, monster_slug):

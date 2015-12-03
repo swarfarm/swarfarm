@@ -39,12 +39,22 @@
                         <th>Name</th>
                         <th>Stars</th>
                         <th>Element</th>
-                        <th>Type</th>
+                        <th>Archetype</th>
                         <th>Awakens To</th>
                         <th>Awakens From</th>
                         <th>Leader Skill</th>
                         <th data-sorter="false">Skill Effects</th>
                         <th data-sorter="false">Skills</th>
+                        <th data-columnSelector="false">Skill-Ups Req'd</th>
+                        <th data-columnSelector="false">HP (Lv.40)</th>
+                        <th data-columnSelector="false">DEF (Lv.40)</th>
+                        <th data-columnSelector="false">ATK (Lv.40)</th>
+                        <th data-columnSelector="false">SPD</th>
+                        <th data-columnSelector="false">CRI Rate</th>
+                        <th data-columnSelector="false">CRI Dmg</th>
+                        <th data-columnSelector="false">RES</th>
+                        <th data-columnSelector="false">ACC</th>
+                        <th data-sorter="false" data-columnSelector="false">Awakening Materials</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,6 +119,36 @@
                                     <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
                                 </div>
                             {% endfor %}
+                        </td>
+                        <td>
+                            {% if monster.skill_ups_to_max > 0 %}
+                            <div class="monster-image">
+                                <div class="sprite sprite-devilmon_dark">
+                                    <span class="image-plus image-plus-right">{{ monster.skill_ups_to_max }}</span>
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="glyphicon glyphicon-ok-circle text-success"></span>
+                            {% endif %}
+                        </td>
+                        <td>{{ monster.max_lvl_hp }}</td>
+                        <td>{{ monster.max_lvl_defense }}</td>
+                        <td>{{ monster.max_lvl_attack }}</td>
+                        <td>{{ monster.speed }}</td>
+                        <td>{{ monster.crit_rate }}%</td>
+                        <td>{{ monster.crit_damage }}%</td>
+                        <td>{{ monster.resistance }}%</td>
+                        <td>{{ monster.accuracy }}%</td>
+                        <td class="monster-awaken-materials">
+                            {% if monster.can_awaken and not monster.is_awakened %}
+                                {% with mats=monster.get_awakening_materials %}
+                                    {% for element,essences in mats.iteritems %}
+                                        {% for size,count in essences.iteritems %}
+                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endwith %}
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

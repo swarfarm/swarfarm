@@ -234,8 +234,8 @@ class Monster(models.Model):
     def save(self, *args, **kwargs):
         # Update the max level stats
         self.max_lvl_hp = self.actual_hp(6, 40)
-        self.max_lvl_defense = self.actual_attack(6, 40)
-        self.max_lvl_attack = self.actual_defense(6, 40)
+        self.max_lvl_defense = self.actual_defense(6, 40)
+        self.max_lvl_attack = self.actual_attack(6, 40)
 
         # Update image filename and slugs on save.
         if self.is_awakened and self.awakens_from is not None:

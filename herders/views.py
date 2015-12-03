@@ -1660,6 +1660,14 @@ def bestiary_inventory(request):
             'awakens-to': 'awakens_to__name',
             'awakens-from': 'awakens_from__name',
             'leader-skill': 'leader_skill__amount',
+            'hp-lv40': 'max_lvl_hp',
+            'def-lv40': 'max_lvl_defense',
+            'atk-lv40': 'max_lvl_attack',
+            'spd': 'speed',
+            'cri-rate': 'crit_rate',
+            'cri-dmg': 'crit_damage',
+            'res': 'resistance',
+            'acc': 'accuracy',
         }
         sort_direction_match = {
             'asc': '',
@@ -1755,7 +1763,7 @@ def bestiary_detail(request, monster_slug):
         context['awakened_monster_leader_skill'] = awakened_monster.leader_skill
         context['awakened_monster_skills'] = awakened_monster.skills.all().order_by('slot')
 
-    return render(request, 'herders/profile/templates/herders/bestiary/detail.html', context)
+    return render(request, 'herders/bestiary/detail.html', context)
 
 
 def bestiary_detail_by_id(request, monster_id):

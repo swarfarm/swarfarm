@@ -44,7 +44,7 @@ $('body')
             })
             .bind('sortBegin', function(e, table) {
                 var sortColumn = e.target.config.sortList[0][0];
-                var sortDirection = e.target.config.sortList[0][1] == 0 ? 'asc' : 'desc';
+                var sortDirection = e.target.config.sortList[0][1] == 0 ? 'desc' : 'asc';
                 var sort_header = slugify($(table).find('th')[sortColumn].innerText);
 
                 $('#id_sort').val(sort_header + ';' + sortDirection);

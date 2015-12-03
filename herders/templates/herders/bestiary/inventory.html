@@ -5,7 +5,10 @@
 <div id="bestiary-inventory">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <div class="btn-group">
+            <button class="btn btn-primary column-select toggle collapsed" data-toggle="collapse" data-target="#column-selector-collapse">
+                Select Columns
+            </button>
+            <div class="btn-group pull-right">
                 <button class="btn btn-default pager-btn {% if not monsters.has_previous %}disabled"{% else %}" data-page="{{ monsters.previous_page_number }}"{% endif %} aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </button>
@@ -20,13 +23,19 @@
                     <span aria-hidden="true">&raquo;</span>
                 </button>
             </div>
-            <span class="pull-right">Showing {{ filtered_monster_count }} of {{ total_monster_count }} monsters.</span>
         </div>
+
+        <div id="column-selector-collapse" class="collapse">
+            <div class="panel-body">
+                <div id="column-selectors"></div>
+            </div>
+        </div>
+
         <div class="table-responsive">
             <table id="bestiary_table" class="table table-hover table-condensed monster-table" data-save-filters="false">
                 <thead>
                     <tr>
-                        <th data-sorter="false"></th>
+                        <th data-sorter="false" data-columnSelector="disable"></th>
                         <th>Name</th>
                         <th>Stars</th>
                         <th>Element</th>
@@ -105,6 +114,23 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        <div class="panel-footer">
+            <div class="btn-group pull-right">
+                <button class="btn btn-default pager-btn {% if not monsters.has_previous %}disabled"{% else %}" data-page="{{ monsters.previous_page_number }}"{% endif %} aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </button>
+
+                {% for page_num in page_range %}
+                <button class="btn btn-default pager-btn {% if page_num == monsters.number %}active{% endif %}" data-page="{{ page_num }}" aria-label="Previous">
+                    {{ page_num }}
+                </button>
+                {% endfor %}
+
+                <button class="btn btn-default pager-btn {% if not monsters.has_next %}disabled"{% else %}" data-page="{{ monsters.next_page_number }}"{% endif %} aria-label="Previous">
+                    <span aria-hidden="true">&raquo;</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>

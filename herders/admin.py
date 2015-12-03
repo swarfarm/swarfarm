@@ -49,6 +49,9 @@ class MonsterAdmin(admin.ModelAdmin):
                 'crit_damage',
                 'resistance',
                 'accuracy',
+                'max_lvl_hp',
+                'max_lvl_defense',
+                'max_lvl_attack',
             )
         }),
         ('Awakening Materials', {
@@ -85,7 +88,7 @@ class MonsterAdmin(admin.ModelAdmin):
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken')
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)
-    readonly_fields = ('bestiary_slug',)
+    readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack')
     search_fields = ['name']
     save_as = True
 

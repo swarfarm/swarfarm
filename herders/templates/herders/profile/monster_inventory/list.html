@@ -99,7 +99,10 @@
                                     <span>{{ instance.monster.element }}</span>
                                 </td>
                                 <td>{{ instance.monster.get_archetype_display }}</td>
-                                <td>{{ instance.get_priority_display }}</td>
+                                <td>
+                                    <span class="hidden">{{ instance.priority }}</span>
+                                    {{ instance.get_priority_display }}
+                                </td>
                                 <td class="monster-leader-skill">
                                     {% if instance.monster.leader_skill %}
                                     <div>

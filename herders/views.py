@@ -1634,13 +1634,59 @@ def rune_export(request, profile_name):
 
 
 def bestiary(request):
+    bestiary_filter_form = FilterMonsterForm()
+    bestiary_filter_form.helper.form_action = reverse('herders:bestiary_inventory')
+
     context = {
         'view': 'bestiary',
+        'bestiary_filter_form': bestiary_filter_form,
     }
 
+    return render(request, 'herders/bestiary/base.html', context)
+
+
+def bestiary_inventory(request):
     monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to').prefetch_related('skills', 'skills__skill_effect')
-    paginator = Paginator(monster_queryset, 100)
-    page = request.GET.get('page')
+    form = FilterMonsterForm(request.POST or None)
+
+    # Get queryset sort options
+    sort_options = request.POST.get('sort')
+    if sort_options:
+        sort_col_match = {
+            'name': 'name',
+            'stars': 'base_stars',
+            'element': 'element',
+            'type': 'archetype',
+            'awakens-to': 'awakens_to__name',
+            'awakens-from': 'awakens_from__name',
+            'leader-skill': 'leader_skill__amount',
+            'hp-lv40': 'max_lvl_hp',
+            'def-lv40': 'max_lvl_defense',
+            'atk-lv40': 'max_lvl_attack',
+            'spd': 'speed',
+            'cri-rate': 'crit_rate',
+            'cri-dmg': 'crit_damage',
+            'res': 'resistance',
+            'acc': 'accuracy',
+        }
+        sort_direction_match = {
+            'asc': '',
+            'desc': '-',
+        }
+        sort_options = sort_options.split(';')
+        sort_col = sort_col_match.get(sort_options[0])
+        sort_direction = sort_direction_match.get(sort_options[1])
+
+        if sort_col and sort_direction is not None:
+            monster_queryset = monster_queryset.order_by(sort_direction + sort_col)
+
+    if form.is_valid():
+        monster_filter = MonsterFilter(form.cleaned_data, queryset=monster_queryset)
+    else:
+        monster_filter = MonsterFilter(queryset=monster_queryset)
+
+    paginator = Paginator(monster_filter.qs, 100)
+    page = request.POST.get('page')
 
     try:
         monsters = paginator.page(page)
@@ -1649,9 +1695,12 @@ def bestiary(request):
     except EmptyPage:
         monsters = paginator.page(paginator.num_pages)
 
-    context['monster_list'] = monsters
+    context = {
+        'monsters': monsters,
+        'page_range': paginator.page_range,
+    }
 
-    return render(request, 'herders/bestiary.html', context)
+    return render(request, 'herders/bestiary/inventory.html', context)
 
 
 def bestiary_detail(request, monster_slug):
@@ -1714,7 +1763,7 @@ def bestiary_detail(request, monster_slug):
         context['awakened_monster_leader_skill'] = awakened_monster.leader_skill
         context['awakened_monster_skills'] = awakened_monster.skills.all().order_by('slot')
 
-    return render(request, 'herders/bestiary_detail.html', context)
+    return render(request, 'herders/bestiary/detail.html', context)
 
 
 def bestiary_detail_by_id(request, monster_id):

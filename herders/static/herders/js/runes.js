@@ -148,7 +148,6 @@ $('body')
     })
     .on('click', '.rune-view-mode', function() {
         var view_mode = $(this).data('mode');
-        $('#rune-inventory').html(loading_template);
         $.get('/profile/' + PROFILE_NAME + '/runes/inventory/' + view_mode + '/', function() {
             update_rune_inventory();
         });
@@ -176,14 +175,24 @@ $('body')
         $(this).parents("form").submit();
     })
     .on('submit', '#FilterInventoryForm', function() {
+        ToggleLoading($('body'), true);
+
         var $form = $(this);
         $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),
             data: $form.serialize()
         }).done(function (data) {
+            ToggleLoading($('body'), false);
             $('#rune-inventory').replaceWith(data);
-            $('#runeInventoryTable').tablesorter();
+            $('#runeInventoryTable').tablesorter({
+                widgets: ['saveSort', 'stickyHeaders'],
+                widgetOptions: {
+                    filter_reset: '.reset',
+                    stickyHeaders_zIndex : 2,
+                    stickyHeaders_offset: 100
+                }
+            });
         });
 
         return false;  //cancel default on submit action.

@@ -5,12 +5,6 @@
 
 {% block title %}Bestiary - {{ base_monster.get_element_display }} {{ base_monster.name }}{% if awakened_monster %} ({{ awakened_monster.name }}){% endif %} - {{ block.super }}{% endblock title %}
 
-{% block css %}
-    {% if profile_name %}
-        <link href="{% static 'herders/css/profile.css' %}" rel="stylesheet"/>
-    {% endif %}
-{% endblock css %}
-
 {% block subnav %}
     {% if profile_name %}
         <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">

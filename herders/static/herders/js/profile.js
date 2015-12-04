@@ -132,25 +132,27 @@ $('body')
     .on('click', '.quick-fodder', function() { QuickFodder($(this)) })
     .on('click', '.profile-view-mode', function() {
         var view_mode = $(this).data('mode');
-        $('#monster-inventory').html(loading_template);
         $.get('/profile/' + PROFILE_NAME + '/monster/inventory/' + view_mode + '/', function() {
             update_monster_inventory();
         });
     })
     .on('click', '.box-group-mode', function() {
         var group_mode = $(this).data('mode');
-        $('#monster-inventory').html(loading_template);
         $.get('/profile/' + PROFILE_NAME + '/monster/inventory/box/' + group_mode + '/', function() {
             update_monster_inventory();
         });
     })
     .on('submit', '#FilterInventoryForm', function() {
+        ToggleLoading($('body'), true);
+
         var $form = $(this);
+
         $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),
             data: $form.serialize()
         }).done(function (data) {
+            ToggleLoading($('body'), false);
             $('#monster-inventory').replaceWith(data);
 
             //Reinit everything
@@ -163,13 +165,15 @@ $('body')
             });
 
             $('#monster_table').tablesorter({
-                widgets: ['saveSort', 'columnSelector'],
+                widgets: ['saveSort', 'columnSelector', 'stickyHeaders'],
                 widgetOptions: {
                     filter_reset: '.reset',
                     columnSelector_container : '#column-selectors',
                     columnSelector_saveColumns: true,
                     columnSelector_mediaquery: false,
-                    columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>'
+                    columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>',
+                    stickyHeaders_zIndex : 2,
+                    stickyHeaders_offset: 100
                 }
             });
         });

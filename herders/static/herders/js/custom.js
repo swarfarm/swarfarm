@@ -1,4 +1,4 @@
-var loading_template = '<div class="spinner-container"><div class="spinner"></div></div>';
+var element_loading_template = '<div class="spinner-overlay"><div class="spinner"></div></div>';
 
 //Initialize all bootstrap tooltips and popovers
 $(function () {
@@ -13,7 +13,7 @@ $(function () {
     DisplayMessages();
 });
 
-$(document).ajaxComplete(function(event, xhr, settings) {
+$(document).ajaxComplete(function() {
     DisplayMessages();
 });
 
@@ -25,10 +25,39 @@ bootbox.setDefaults({
     onEscape: true
 });
 
+function slugify(text)
+{
+  return text.toString().toLowerCase()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
+}
+
 //Modal management scripts
 $('#addMonsterModal').on('shown.bs.modal', function () {
     $('#id_monster-autocomplete').focus()
 });
+
+function ToggleLoading(targetElement, setLoadingOn) {
+    if (setLoadingOn === undefined) {
+        if (targetElement.children('.spinner-overlay').length == 0) {
+            targetElement.append(element_loading_template);
+        }
+        else {
+            targetElement.children('.spinner-overlay').remove();
+        }
+    }
+    else {
+        if (setLoadingOn && targetElement.children('.spinner-overlay').length == 0) {
+            targetElement.append(element_loading_template);
+        }
+        else if (!setLoadingOn) {
+            targetElement.children('.spinner-overlay').remove();
+        }
+    }
+}
 
 //Generate growl notifications
 function DisplayMessages() {

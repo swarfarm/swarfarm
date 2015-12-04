@@ -64,6 +64,9 @@ class Monster(models.Model):
     base_hp = models.IntegerField(null=True, blank=True)
     base_attack = models.IntegerField(null=True, blank=True)
     base_defense = models.IntegerField(null=True, blank=True)
+    max_lvl_hp = models.IntegerField(null=True, blank=True)
+    max_lvl_attack = models.IntegerField(null=True, blank=True)
+    max_lvl_defense = models.IntegerField(null=True, blank=True)
     speed = models.IntegerField(null=True, blank=True)
     crit_rate = models.IntegerField(null=True, blank=True)
     crit_damage = models.IntegerField(null=True, blank=True)
@@ -229,6 +232,11 @@ class Monster(models.Model):
             return self.source.filter(farmable_source=True).count() > 0
 
     def save(self, *args, **kwargs):
+        # Update the max level stats
+        self.max_lvl_hp = self.actual_hp(6, 40)
+        self.max_lvl_defense = self.actual_defense(6, 40)
+        self.max_lvl_attack = self.actual_attack(6, 40)
+
         # Update image filename and slugs on save.
         if self.is_awakened and self.awakens_from is not None:
             self.image_filename = self.awakens_from.image_filename.replace('.png', '_awakened.png')

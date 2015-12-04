@@ -387,6 +387,7 @@ class FilterMonsterForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
+    is_awakened = forms.NullBooleanField(label='Is Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     leader_skill__attribute = forms.MultipleChoiceField(
         label='Leader Skill Stat',
@@ -432,6 +433,7 @@ class FilterMonsterForm(forms.Form):
         Field('base_stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('is_awakened', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
         Field('fusion_food', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
         Field('leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
@@ -653,6 +655,7 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
+    monster__is_awakened = forms.NullBooleanField(label='Is Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     fodder = forms.NullBooleanField(label='Fodder', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     in_storage = forms.NullBooleanField(label='Storage', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     monster__fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
@@ -698,6 +701,7 @@ class FilterMonsterInstanceForm(forms.Form):
         Field('stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__is_awakened', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
         Field('priority', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('fodder', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
         Field('in_storage', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),

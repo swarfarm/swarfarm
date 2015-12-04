@@ -43,6 +43,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__element': ['exact'],
             'monster__archetype': ['exact'],
             'priority': ['exact'],
+            'monster__is_awakened': ['exact'],
             'monster__leader_skill__attribute': ['exact'],
             'monster__leader_skill__area': ['exact'],
             'monster__skills__skill_effect__pk': ['exact'],

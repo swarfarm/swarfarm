@@ -9,7 +9,7 @@ function update_inventory() {
 
 $('body')
     .on('submit', '#FilterBestiaryForm', function() {
-        ToggleLoading($('#wrap'), true);
+        ToggleLoading($('body'), true);
 
         var $form = $(this);
         $.ajax({
@@ -17,7 +17,7 @@ $('body')
             url: $form.attr('action'),
             data: $form.serialize()
         }).done(function (data) {
-            ToggleLoading($('#wrap'), false);
+            ToggleLoading($('body'), false);
             $('#bestiary-inventory').replaceWith(data);
 
             //Reinit everything

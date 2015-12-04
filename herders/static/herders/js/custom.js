@@ -1,5 +1,4 @@
-var loading_template = '<div class="spinner-overlay"><div class="spinner-container"><div class="spinner"></div></div>';
-var element_loading_template = '<div class="spinner-overlay"><div class="spinner-container"><div class="spinner"></div></div></div>';
+var element_loading_template = '<div class="spinner-overlay"><div class="spinner"></div></div>';
 
 //Initialize all bootstrap tooltips and popovers
 $(function () {

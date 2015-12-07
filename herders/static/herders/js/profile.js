@@ -182,4 +182,8 @@ $('body')
     })
     .on('click', '.reset', function() {
         $('#monster_table').trigger('sortReset');
+        var form = $('#FilterInventoryForm');
+        form[0].reset();
+        form.find('label').toggleClass('active', false);
+        update_monster_inventory();
     });

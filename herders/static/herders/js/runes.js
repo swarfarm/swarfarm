@@ -198,5 +198,9 @@ $('body')
         return false;  //cancel default on submit action.
     })
     .on('click', '.reset', function() {
-        $('#runeInventoryTable').trigger('sortReset')
+        $('#runeInventoryTable').trigger('sortReset');
+        var form = $('#FilterInventoryForm');
+        form[0].reset();
+        form.find('label').toggleClass('active', false);
+        update_rune_inventory();
     });

@@ -137,7 +137,7 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
             if (rune_id.length > 0) {
                 $.ajax({
                     url: API_URL + 'runes/' + el.data('rune-id') + '.html',
-                    type: get,
+                    type: 'get',
                     global: false
                 }).done(function (d) {
                     el.popover({

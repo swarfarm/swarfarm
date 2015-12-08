@@ -179,7 +179,8 @@ div.profile {
 
 .monster-image>div,
 div.monster-image,
-button.monster-image {
+button.monster-image,
+span.monster-image {
     position: relative;
     display: inline-block;
 }

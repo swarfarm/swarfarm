@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load utils %}
 {% load markdown_deux_tags %}
 {% static 'herders/images/' as img_url_prefix %}
 
@@ -18,14 +19,26 @@
     </div>
     <table class="table table-condensed table-bordered">
         <tbody>
-        <tr>
-            <td>Awakening Bonus:</td>
-            {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
-            <td>{{ instance.monster.awaken_bonus }}</td>
-            {% elif instance.monster.can_awaken and instance.monster.is_awakened%}
-            <td>{{ instance.monster.awakens_from.awaken_bonus }}</td>
-            {% endif %}
-        </tr>
+        {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
+            {% with instance.monster.awakens_to as awakened %}
+            <tr>
+                <td>Awakens To:</td>
+                <td>
+                    <span class="monster-image">
+                        <a href="{% url 'herders:bestiary_detail' monster_slug=awakened.bestiary_slug %}" target="_blank">
+                            <img src="{{ img_url_prefix }}monsters/{{ awakened.image_filename }}" class="monster-thumb"/>
+                            <span>
+                                {% for x in awakened.base_stars|get_range %}
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% endfor %}
+                            </span>
+                        </a>
+                    </span>
+                    Bonus: {{ instance.monster.awaken_bonus }}
+                </td>
+            </tr>
+            {% endwith %}
+        {% endif %}
         {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
         <tr>
             <td>Awakening Essences:</td>

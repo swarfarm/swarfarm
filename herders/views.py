@@ -1482,7 +1482,9 @@ def rune_unassign(request, profile_name, rune_id):
         mon = rune.assigned_to
         rune.assigned_to = None
         rune.save()
-        mon.save()
+
+        if mon:
+            mon.save()
 
         response_data = {
             'code': 'success',

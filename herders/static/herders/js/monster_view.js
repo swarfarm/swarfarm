@@ -320,6 +320,7 @@ $('body')
             }
             else {
                 $form.replaceWith(result.html);
+                $('.rating').rating();
             }
         });
 

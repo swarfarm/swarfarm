@@ -698,11 +698,11 @@ def monster_instance_power_up(request, profile_name, instance_id):
             # Perform validation checks for evolve action
             if is_evolution:
                 # Check constraints on evolving (or not, if form element was set)
-                if not form.cleaned_data['ignore_evolution']:
-                    # Check monster level and stars
-                    if monster.stars >= 6:
-                        validation_errors['base_monster_stars'] = "%s is already at 6 stars." % monster.monster.name
+                # Check monster level and stars
+                if monster.stars >= 6:
+                    validation_errors['base_monster_stars'] = "%s is already at 6 stars." % monster.monster.name
 
+                if not form.cleaned_data['ignore_evolution']:
                     if monster.level != monster.max_level_from_stars():
                         validation_errors['base_monster_level'] = "%s is not at max level for the current star rating (Lvl %s)." % (monster.monster.name, monster.monster.max_level_from_stars())
 
@@ -1255,10 +1255,6 @@ def team_delete(request, profile_name, team_id):
 
 
 def runes(request, profile_name):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:runes', kwargs={'profile_name': profile_name})
-    )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
@@ -1269,7 +1265,6 @@ def runes(request, profile_name):
         'view': 'runes',
         'profile_name': profile_name,
         'summoner': summoner,
-        'return_path': return_path,
         'is_owner': is_owner,
         'rune_filter_form': filter_form,
     }
@@ -1277,7 +1272,7 @@ def runes(request, profile_name):
     if is_owner or summoner.public:
         return render(request, 'herders/profile/runes/base.html', context)
     else:
-        return render(request, 'herders/profile/not_public.html', context),
+        return render(request, 'herders/profile/not_public.html', context)
 
 
 def rune_inventory(request, profile_name, view_mode=None):
@@ -1487,7 +1482,9 @@ def rune_unassign(request, profile_name, rune_id):
         mon = rune.assigned_to
         rune.assigned_to = None
         rune.save()
-        mon.save()
+
+        if mon:
+            mon.save()
 
         response_data = {
             'code': 'success',

@@ -29,13 +29,19 @@ class MonsterAdmin(admin.ModelAdmin):
                 'name',
                 'element',
                 'archetype',
-                'can_awaken',
-                'is_awakened',
-                'awaken_bonus',
                 'awakens_from',
                 'awakens_to',
                 'fusion_food',
                 'obtainable',
+            )
+        }),
+        ('Awakening', {
+            'fields': (
+                'can_awaken',
+                'is_awakened',
+                'awaken_bonus',
+                'awaken_bonus_content_type',
+                'awaken_bonus_content_id',
             )
         }),
         ('Stats', {

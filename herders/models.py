@@ -4,6 +4,8 @@ from collections import OrderedDict
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.contrib.staticfiles.templatetags.staticfiles import static
@@ -59,6 +61,9 @@ class Monster(models.Model):
     can_awaken = models.BooleanField(default=True)
     is_awakened = models.BooleanField(default=False)
     awaken_bonus = models.TextField(blank=True)
+    awaken_bonus_content_type = models.ForeignKey(ContentType, related_name="content_type_awaken_bonus", null=True, blank=True)
+    awaken_bonus_content_id = models.PositiveIntegerField(null=True, blank=True)
+    awaken_bonus_object = GenericForeignKey('awaken_bonus_content_type', 'awaken_bonus_content_id')
     skills = models.ManyToManyField('MonsterSkill', blank=True)
     leader_skill = models.ForeignKey('MonsterLeaderSkill', null=True, blank=True)
     base_hp = models.IntegerField(null=True, blank=True)

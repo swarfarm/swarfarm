@@ -1255,10 +1255,6 @@ def team_delete(request, profile_name, team_id):
 
 
 def runes(request, profile_name):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:runes', kwargs={'profile_name': profile_name})
-    )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
@@ -1269,7 +1265,6 @@ def runes(request, profile_name):
         'view': 'runes',
         'profile_name': profile_name,
         'summoner': summoner,
-        'return_path': return_path,
         'is_owner': is_owner,
         'rune_filter_form': filter_form,
     }
@@ -1277,7 +1272,7 @@ def runes(request, profile_name):
     if is_owner or summoner.public:
         return render(request, 'herders/profile/runes/base.html', context)
     else:
-        return render(request, 'herders/profile/not_public.html', context),
+        return render(request, 'herders/profile/not_public.html', context)
 
 
 def rune_inventory(request, profile_name, view_mode=None):

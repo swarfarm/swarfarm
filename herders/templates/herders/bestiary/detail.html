@@ -5,567 +5,563 @@
 
 {% block title %}Bestiary - {{ base_monster.get_element_display }} {{ base_monster.name }}{% if awakened_monster %} ({{ awakened_monster.name }}){% endif %} - {{ block.super }}{% endblock title %}
 
-{% block subnav %}
-    {% if profile_name %}
-        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
-            <div class="container-fluid">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <div class="navbar-btn">
-                            <a class="btn btn-default" href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=base_monster.pk stars=base_monster.base_stars level=1 %}">
-                                <span class="glyphicon glyphicon-plus"></span> Add to Collection
-                            </a>
-                        </div>
-                    </li>
-                </ul>
-            </div><!-- /.container-fluid -->
-        </nav>
-    {% endif %}
-{% endblock subnav %}
-
 {% block content %}
 {% static 'herders/images/' as img_url_prefix %}
-{% cache 60 bestiary_detail base_monster.bestiary_slug %}
-    <div class="bestiary-detail">
-        {# Base monster stats and skills #}
-        {% if base_monster %}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <p class="panel-title"><img src="{{ img_url_prefix }}elements/{{ base_monster.element }}.png" /> <strong>{{ base_monster.name }}{% if not base_monster.is_awakened %} (Unawakened){% endif %}</strong></p>
-            </div>
-            <div class="panel-body">
-                <div class="col-lg-6 no-left-gutter">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <p class="panel-title">Monster Info</p>
-                        </div>
-                        <table class="table table-condensed table-bordered">
-                            <tbody>
-                            <tr>
-                                <td>Archetype:</td>
-                                <td>{{ base_monster.get_archetype_display }}</td>
-                            </tr>
-                            <tr>
-                                <td>Awakening Bonus:</td>
-                                <td>{{ base_monster.awaken_bonus }}</td>
-                            </tr>
-                            <tr>
-                                <td>Sources:</td>
-                                <td class="monster-sources">
-                                    {% for source in base_monster.source.all %}
-                                        {% if source.icon_filename %}
-                                        <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
-                                             class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
-                                        {% else %}
-                                        <span class="monster-source"><span>{{ source }}</span></span>
-                                        {% endif %}
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                            {% if base_monster.can_awaken and not base_monster.is_awakened %}
-                            <tr>
-                                <td>Awakening Essences:</td>
-                                <td class="monster-awaken-materials">
-                                    {% with mats=base_monster.get_awakening_materials %}
-                                        {% for element,essences in mats.iteritems %}
-                                            {% for size,count in essences.iteritems %}
-                                                {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
-                                            {% endfor %}
-                                        {% endfor %}
-                                    {% endwith %}
-                                </td>
-                            </tr>
-                            {% endif %}
-                            <tr>
-                                <td>Resources:</td>
-                                <td>
-                                    <ul class="list-unstyled">
-                                        <li>{% if base_monster.wikia_url %}<a href="{{ base_monster.wikia_url }}" target="_blank">Wikia<span class="glyphicon glyphicon-link"></span></a>{% endif %}</li>
-                                        <li>{% if base_monster.summonerswar_co_url %}<a href="{{ base_monster.summonerswar_co_url }}" target="_blank">summonerswar.co<span class="glyphicon glyphicon-link"></span></a>{% endif %}</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <p class="panel-title">Stats</p>
-                        </div>
-                        <table class="table table-condensed table-bordered bestiary-stats-table">
-                            <thead>
-                                <tr>
-                                    <th width="150px">Grade</th>
-                                    {% for key,value in base_monster_stats.iteritems %}
-                                        <th colspan="2">
-                                            {{ key }}<span class="glyphicon glyphicon-star"></span>
-                                        </th>
-                                    {% endfor %}
-                                </tr>
-                                <tr>
-                                    <th>Level</th>
-                                    {% for grade,levels in base_monster_stats.iteritems %}
-                                        {% for level,stats in levels.iteritems %}
-                                            <th>{{ level }}</th>
-                                        {% endfor %}
-                                    {% endfor %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>HP</td>
-                                    {% for grade,levels in base_monster_stats.iteritems %}
-                                        {% for level,stats in levels.iteritems %}
-                                            <td class="bestiary-stat-column">{{ stats.HP }}</td>
-                                        {% endfor %}
-                                    {% endfor %}
-                                </tr>
-                                <tr>
-                                    <td>ATK</td>
-                                    {% for grade,levels in base_monster_stats.iteritems %}
-                                        {% for level,stats in levels.iteritems %}
-                                            <td class="bestiary-stat-column">{{ stats.ATK }}</td>
-                                        {% endfor %}
-                                    {% endfor %}
-                                </tr>
-                                <tr>
-                                    <td>DEF</td>
-                                    {% for grade,levels in base_monster_stats.iteritems %}
-                                        {% for level,stats in levels.iteritems %}
-                                            <td class="bestiary-stat-column">{{ stats.DEF }}</td>
-                                        {% endfor %}
-                                    {% endfor %}
-                                </tr>
-                                <tr>
-                                    <td>SPD</td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.speed }}</td>
-                                </tr>
-                                <tr>
-                                    <td>CRIT Rate</td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.crit_rate }}%</td>
-                                </tr>
-                                <tr>
-                                    <td>CRIT DMG</td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.crit_damage }}%</td>
-                                </tr>
-                                <tr>
-                                    <td>Accuracy</td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.accuracy }}%</td>
-                                </tr>
-                                <tr>
-                                    <td>Resistance</td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.resistance }}%</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 no-right-gutter">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <p class="panel-title">Skills</p>
-                        </div>
-                        <table class="table table-condensed skill-table">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th width="125">Name</th>
-                                <th>Description</th>
-                                <th>Effects</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% if base_monster_leader_skill %}
-                            <tr>
-                                <td class="monster-image"><img src="{{ img_url_prefix }}skills/leader/{{ base_monster_leader_skill.icon_filename }}" class="monster-thumb"/></td>
-                                <td>Leader Skill</td>
-                                <td>{{ base_monster_leader_skill.skill_string }}</td>
-                                <td></td>
-                            </tr>
-                            {% endif %}
-                            {% for skill in base_monster_skills %}
-                            <tr>
-                                <td class="monster-image"
-                                {% if skill.max_level > 1 %}
-                                data-toggle="popover" data-trigger="hover" data-container="body" title="Skill-Up Effects" data-placement="left" data-content="{{ skill.level_progress_description|linebreaksbr }}"
-                                {% endif %}
-                                >
-                                    <div style="position:relative">
-                                        <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" />
-                                        {% if not skill.passive %}
-                                        <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                <td>{{ skill.name }} {% if skill.passive %}(Passive){% endif %}</td>
-                                <td>{{ skill.description }}</td>
-                                <td width="100">
-                                    {% for effect in skill.skill_effect.all %}
-                                        {% if effect.icon_filename %}
-                                        <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
-                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                                />
-                                        {% else %}
-                                            <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                                                <span>{{ effect.name }}</span>
-                                            </span>
-                                        {% endif %}
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                                <tr><td colspan="4">No skills entered yet!</td></tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {% if base_monster.skill_ups_to_max %}
-                    <div class="col-sm-4 no-left-gutter">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <p class="panel-title">Skill-Ups to Max</p>
-                            </div>
-                            <div class="panel-body">
-                                <div class="monster-image">
-                                    <div class="sprite sprite-devilmon_dark">
-                                        <span class="image-plus image-plus-right">{{ base_monster.skill_ups_to_max }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+<div class="bestiary-detail">
+    {# Base monster stats and skills #}
+    {% if base_monster %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            {% if request.user.is_authenticated %}
+                <button class="btn btn-default monster-add pull-right" data-monster="{{ base_monster.pk }}" data-stars="{{ base_monster.base_stars }}">
+                    <span class="glyphicon glyphicon-plus"></span> Add to Collection
+                </button>
+            {% endif %}
+            <p class="panel-title"><img src="{{ img_url_prefix }}elements/{{ base_monster.element }}.png" /> <strong>{{ base_monster.name }}{% if not base_monster.is_awakened %} (Unawakened){% endif %}</strong></p>
+            <div class="clearfix"></div>
         </div>
-        {% endif %}
-
-        {# Awakened monster stats and skills #}
-        {% if awakened_monster %}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <p class="panel-title"><img src="{{ img_url_prefix }}elements/{{ awakened_monster.element }}.png" /> <strong>{{ awakened_monster.name }}</strong></p>
-            </div>
-            <div class="panel-body">
-                <div class="col-lg-6 no-left-gutter">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <p class="panel-title">Stats</p>
-                        </div>
-                        <table class="table table-condensed table-bordered bestiary-stats-table">
-                            <thead>
-                                <tr>
-                                    <th colspan="2">Grade</th>
-                                    {% for key,value in awakened_monster_stats.iteritems %}
-                                        <th colspan="2">
-                                            {{ key }}<span class="glyphicon glyphicon-star"></span>
-                                        </th>
+        <div class="panel-body">
+            <div class="col-lg-6 no-left-gutter">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <p class="panel-title">Monster Info</p>
+                    </div>
+                    <table class="table table-condensed table-bordered">
+                        <tbody>
+                        <tr>
+                            <td>Archetype:</td>
+                            <td>{{ base_monster.get_archetype_display }}</td>
+                        </tr>
+                        <tr>
+                            <td>Awakening Bonus:</td>
+                            <td>{{ base_monster.awaken_bonus }}</td>
+                        </tr>
+                        <tr>
+                            <td>Sources:</td>
+                            <td class="monster-sources">
+                                {% for source in base_monster.source.all %}
+                                    {% if source.icon_filename %}
+                                    <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
+                                         class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
+                                    {% else %}
+                                    <span class="monster-source"><span>{{ source }}</span></span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% if base_monster.can_awaken and not base_monster.is_awakened %}
+                        <tr>
+                            <td>Awakening Essences:</td>
+                            <td class="monster-awaken-materials">
+                                {% with mats=base_monster.get_awakening_materials %}
+                                    {% for element,essences in mats.iteritems %}
+                                        {% for size,count in essences.iteritems %}
+                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
+                                        {% endfor %}
                                     {% endfor %}
-                                </tr>
-                                <tr>
-                                    <th width="100px">Level</th>
-                                    <th width="50px" data-container="body" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Approximate change in stats once monster undergoes awakening. Calculated using 6<span class=&quot;glyphicon glyphicon-star&quot;></span> level 40 stats.">
-                                        Delta
+                                {% endwith %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td>Resources:</td>
+                            <td>
+                                <ul class="list-unstyled">
+                                    <li>{% if base_monster.wikia_url %}<a href="{{ base_monster.wikia_url }}" target="_blank">Wikia<span class="glyphicon glyphicon-link"></span></a>{% endif %}</li>
+                                    <li>{% if base_monster.summonerswar_co_url %}<a href="{{ base_monster.summonerswar_co_url }}" target="_blank">summonerswar.co<span class="glyphicon glyphicon-link"></span></a>{% endif %}</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <p class="panel-title">Stats</p>
+                    </div>
+                    <table class="table table-condensed table-bordered bestiary-stats-table">
+                        <thead>
+                            <tr>
+                                <th width="150px">Grade</th>
+                                {% for key,value in base_monster_stats.iteritems %}
+                                    <th colspan="2">
+                                        {{ key }}<span class="glyphicon glyphicon-star"></span>
                                     </th>
-                                    {% for grade,levels in awakened_monster_stats.iteritems %}
-                                        {% for level,stats in levels.iteritems %}
-                                            <th>{{ level }}</th>
-                                        {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th>Level</th>
+                                {% for grade,levels in base_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <th>{{ level }}</th>
                                     {% endfor %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>HP</td>
-                                    <td>
-                                        {% if awakened_monster_stats_deltas.HP %}
-                                            {% if awakened_monster_stats_deltas.HP > 0 %}
-                                                <span class="text-success">+{{ awakened_monster_stats_deltas.HP }}%</span>
-                                            {% else %}
-                                                <span class="text-danger">{{ awakened_monster_stats_deltas.HP }}%</span>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    {% for grade,levels in awakened_monster_stats.iteritems %}
-                                        {% for level,stats in levels.iteritems %}
-                                            <td class="bestiary-stat-column">
-                                                {% if stats.HP %}
-                                                    {{ stats.HP }}
-                                                {% endif %}
-                                            </td>
-                                        {% endfor %}
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>HP</td>
+                                {% for grade,levels in base_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">{{ stats.HP }}</td>
                                     {% endfor %}
-                                </tr>
-                                <tr>
-                                    <td>ATK</td>
-                                    <td>
-                                        {% if awakened_monster_stats_deltas.ATK %}
-                                            {% if awakened_monster_stats_deltas.ATK > 0 %}
-                                                <span class="text-success">+{{ awakened_monster_stats_deltas.ATK }}%</span>
-                                            {% else %}
-                                                <span class="text-danger">{{ awakened_monster_stats_deltas.ATK }}%</span>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    {% for grade,levels in awakened_monster_stats.iteritems %}
-                                        {% for level,stats in levels.iteritems %}
-                                            <td class="bestiary-stat-column">
-                                                {% if stats.ATK %}
-                                                    {{ stats.ATK }}
-                                                {% endif %}
-                                            </td>
-                                        {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>ATK</td>
+                                {% for grade,levels in base_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">{{ stats.ATK }}</td>
                                     {% endfor %}
-                                </tr>
-                                <tr>
-                                    <td>DEF</td>
-                                    <td>
-                                        {% if awakened_monster_stats_deltas.DEF %}
-                                            {% if awakened_monster_stats_deltas.DEF > 0 %}
-                                                <span class="text-success">+{{ awakened_monster_stats_deltas.DEF }}%</span>
-                                            {% else %}
-                                                <span class="text-danger">{{ awakened_monster_stats_deltas.DEF }}%</span>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    {% for grade,levels in awakened_monster_stats.iteritems %}
-                                        {% for level,stats in levels.iteritems %}
-                                            <td class="bestiary-stat-column">
-                                                {% if stats.DEF %}
-                                                    {{ stats.DEF }}
-                                                {% endif %}
-                                            </td>
-                                        {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>DEF</td>
+                                {% for grade,levels in base_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">{{ stats.DEF }}</td>
                                     {% endfor %}
-                                </tr>
-                                <tr>
-                                    <td>SPD</td>
-                                    <td>
-                                        {% if awakened_monster_stats_deltas.SPD %}
-                                            {% if awakened_monster_stats_deltas.SPD > 0 %}
-                                                <span class="text-success">+{{ awakened_monster_stats_deltas.SPD }}</span>
-                                            {% else %}
-                                                <span class="text-danger">{{ awakened_monster_stats_deltas.SPD }}</span>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
-                                        {{ awakened_monster.speed }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CRIT Rate</td>
-                                    <td>
-                                        {% if awakened_monster_stats_deltas.CRIT_Rate %}
-                                            {% if awakened_monster_stats_deltas.CRIT_Rate > 0 %}
-                                                <span class="text-success">+{{ awakened_monster_stats_deltas.CRIT_Rate }}%</span>
-                                            {% else %}
-                                                <span class="text-danger">{{ awakened_monster_stats_deltas.CRIT_Rate }}%</span>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
-                                        {{ awakened_monster.crit_rate }}%
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>CRIT DMG</td>
-                                    <td>
-                                        {% if awakened_monster_stats_deltas.CRIT_DMG %}
-                                            {% if awakened_monster_stats_deltas.CRIT_DMG > 0 %}
-                                                <span class="text-success">+{{ awakened_monster_stats_deltas.CRIT_DMG }}%</span>
-                                            {% else %}
-                                                <span class="text-danger">{{ awakened_monster_stats_deltas.CRIT_DMG }}%</span>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
-                                        {{ awakened_monster.crit_damage }}%
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Accuracy</td>
-                                    <td>
-                                        {% if awakened_monster_stats_deltas.Accuracy %}
-                                            {% if awakened_monster_stats_deltas.Accuracy > 0 %}
-                                                <span class="text-success">+{{ awakened_monster_stats_deltas.Accuracy }}%</span>
-                                            {% else %}
-                                                <span class="text-danger">{{ awakened_monster_stats_deltas.Accuracy }}%</span>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
-                                        {{ awakened_monster.accuracy }}%
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Resistance</td>
-                                    <td>
-                                        {% if awakened_monster_stats_deltas.Resistance %}
-                                            {% if awakened_monster_stats_deltas.Resistance > 0 %}
-                                                <span class="text-success">+{{ awakened_monster_stats_deltas.Resistance }}%</span>
-                                            {% else %}
-                                                <span class="text-danger">{{ awakened_monster_stats_deltas.Resistance }}%</span>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                    <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
-                                        {{ awakened_monster.resistance }}%
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>SPD</td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.speed }}</td>
+                            </tr>
+                            <tr>
+                                <td>CRIT Rate</td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.crit_rate }}%</td>
+                            </tr>
+                            <tr>
+                                <td>CRIT DMG</td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.crit_damage }}%</td>
+                            </tr>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.accuracy }}%</td>
+                            </tr>
+                            <tr>
+                                <td>Resistance</td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">{{ base_monster.resistance }}%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-6 no-right-gutter">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <p class="panel-title">Skills</p>
                     </div>
+                    <table class="table table-condensed skill-table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th width="125">Name</th>
+                            <th>Description</th>
+                            <th>Effects</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if base_monster_leader_skill %}
+                        <tr>
+                            <td class="monster-image"><img src="{{ img_url_prefix }}skills/leader/{{ base_monster_leader_skill.icon_filename }}" class="monster-thumb"/></td>
+                            <td>Leader Skill</td>
+                            <td>{{ base_monster_leader_skill.skill_string }}</td>
+                            <td></td>
+                        </tr>
+                        {% endif %}
+                        {% for skill in base_monster_skills %}
+                        <tr>
+                            <td class="monster-image"
+                            {% if skill.max_level > 1 %}
+                            data-toggle="popover" data-trigger="hover" data-container="body" title="Skill-Up Effects" data-placement="left" data-content="{{ skill.level_progress_description|linebreaksbr }}"
+                            {% endif %}
+                            >
+                                <div style="position:relative">
+                                    <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" />
+                                    {% if not skill.passive %}
+                                    <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>{{ skill.name }} {% if skill.passive %}(Passive){% endif %}</td>
+                            <td>{{ skill.description }}</td>
+                            <td width="100">
+                                {% for effect in skill.skill_effect.all %}
+                                    {% if effect.icon_filename %}
+                                    <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                                            data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                            />
+                                    {% else %}
+                                        <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                            <span>{{ effect.name }}</span>
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                            <tr><td colspan="4">No skills entered yet!</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="col-lg-6 no-right-gutter">
+                {% if base_monster.skill_ups_to_max %}
+                <div class="col-sm-4 no-left-gutter">
                     <div class="panel panel-default">
-                        <table class="table table-condensed skill-table">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th width="125">Skill</th>
-                                <th>Description</th>
-                                <th>Effects</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% if awakened_monster_leader_skill %}
-                            <tr>
-                                <td class="monster-image"><img src="{{ img_url_prefix }}skills/leader/{{ awakened_monster_leader_skill.icon_filename }}"  class="monster-thumb"/></td>
-                                <td>Leader Skill</td>
-                                <td>{{ awakened_monster_leader_skill.skill_string }}</td>
-                                <td></td>
-                            </tr>
-                            {% endif %}
-                            {% for skill in awakened_monster_skills %}
-                            <tr>
-                                <td class="monster-image"
-                                {% if not skill.passive %}
-                                data-toggle="popover" data-trigger="hover" data-container="body" title="Skill-Up Effects" data-placement="left" data-content="{{ skill.level_progress_description|linebreaksbr }}"
-                                {% endif %}
-                                >
-                                    <div style="position:relative">
-                                        <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" />
-                                        {% if not skill.passive %}
-                                        <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
-                                        {% endif %}
-                                    </div>
-                                <td>{{ skill.name }} {% if skill.passive %}(Passive){% endif %}</td>
-                                <td>{{ skill.description }}</td>
-                                <td width="100">
-                                    {% for effect in skill.skill_effect.all %}
-                                        {% if effect.icon_filename %}
-                                        <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
-                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                                />
-                                        {% else %}
-                                            <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                                                <span>{{ effect.name }}</span>
-                                            </span>
-                                        {% endif %}
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                                <tr><td colspan="4">No skills entered yet!</td></tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {% if awakened_monster.skill_ups_to_max %}
-                    <div class="col-sm-4 no-left-gutter">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <p class="panel-title">Skill-Ups to Max</p>
-                            </div>
-                            <div class="panel-body">
-                                <div class="monster-image">
-                                    <div class="sprite sprite-devilmon_dark">
-                                        <span class="image-plus image-plus-right">{{ awakened_monster.skill_ups_to_max }}</span>
-                                    </div>
+                        <div class="panel-heading">
+                            <p class="panel-title">Skill-Ups to Max</p>
+                        </div>
+                        <div class="panel-body">
+                            <div class="monster-image">
+                                <div class="sprite sprite-devilmon_dark">
+                                    <span class="image-plus image-plus-right">{{ base_monster.skill_ups_to_max }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {% endif %}
                 </div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-
-    <div class="bestiary-portraits">
-        <div class="list-group">
-            <div class="list-group-item">
-                <div class="monster-box">
-                    <span>
-                        <img src="{{ img_url_prefix }}monsters/{{ base_monster.image_filename }}"/>
-                        {% for x in base_monster.base_stars|get_range %}
-                            {% if base_monster.is_awakened %}
-                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% elif base_monster.can_awaken %}
-                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% else %}
-                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% endif %}
-                        {% endfor %}
-                    </span>
-                    <span class="image-plus image-plus-left">{{ base_monster.name }}</span>
-                </div>
-                <div class="clearfix"></div>
-
-                {% if awakened_monster %}
-                <div class="monster-box">
-                    <span>
-                        <img src="{{ img_url_prefix }}monsters/{{ awakened_monster.image_filename }}"/>
-                        {% for x in awakened_monster.base_stars|get_range %}
-                            {% if awakened_monster.is_awakened %}
-                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% elif awakened_monster.can_awaken %}
-                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% else %}
-                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% endif %}
-                        {% endfor %}
-                    </span>
-                    <span class="image-plus image-plus-left">{{ awakened_monster.name }}</span>
-                </div>
-                <div class="clearfix"></div>
                 {% endif %}
             </div>
-            <div class="list-group-item">
-                <h4 class="list-group-item-heading">Family:</h4>
-                <div class="bestiary-family">
-                    <div class="panel panel-default">
-                        <table class="table">
-                            <tbody>
-                            {% for related_monster in base_monster.monster_family %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Awakened monster stats and skills #}
+    {% if awakened_monster %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            {% if request.user.is_authenticated %}
+            <button class="btn btn-default monster-add pull-right" data-monster="{{ awakened_monster.pk }}" data-stars="{{ awakened_monster.base_stars }}">
+                <span class="glyphicon glyphicon-plus"></span> Add to Collection
+            </button>
+            {% endif %}
+            <p class="panel-title"><img src="{{ img_url_prefix }}elements/{{ awakened_monster.element }}.png" /> <strong>{{ awakened_monster.name }}</strong></p>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-6 no-left-gutter">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <p class="panel-title">Stats</p>
+                    </div>
+                    <table class="table table-condensed table-bordered bestiary-stats-table">
+                        <thead>
                             <tr>
-                                <td class="monster-image">
-                                    <a href="{% url 'herders:bestiary_detail' monster_slug=related_monster.bestiary_slug %}">
-                                        <img src="{{ img_url_prefix }}monsters/{{ related_monster.image_filename }}" class="monster-thumb"/>
-                                    </a>
-                                </td>
-                                <td class="monster-image">
-                                    {% if related_monster.awakens_to %}
-                                    <a href="{% url 'herders:bestiary_detail' monster_slug=related_monster.awakens_to.bestiary_slug %}">
-                                        <img src="{{ img_url_prefix }}monsters/{{ related_monster.awakens_to.image_filename }}" class="monster-thumb"/>
-                                    </a>
+                                <th colspan="2">Grade</th>
+                                {% for key,value in awakened_monster_stats.iteritems %}
+                                    <th colspan="2">
+                                        {{ key }}<span class="glyphicon glyphicon-star"></span>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th width="100px">Level</th>
+                                <th width="50px" data-container="body" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Approximate change in stats once monster undergoes awakening. Calculated using 6<span class=&quot;glyphicon glyphicon-star&quot;></span> level 40 stats.">
+                                    Delta
+                                </th>
+                                {% for grade,levels in awakened_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <th>{{ level }}</th>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>HP</td>
+                                <td>
+                                    {% if awakened_monster_stats_deltas.HP %}
+                                        {% if awakened_monster_stats_deltas.HP > 0 %}
+                                            <span class="text-success">+{{ awakened_monster_stats_deltas.HP }}%</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ awakened_monster_stats_deltas.HP }}%</span>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
+                                {% for grade,levels in awakened_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">
+                                            {% if stats.HP %}
+                                                {{ stats.HP }}
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                {% endfor %}
                             </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                            <tr>
+                                <td>ATK</td>
+                                <td>
+                                    {% if awakened_monster_stats_deltas.ATK %}
+                                        {% if awakened_monster_stats_deltas.ATK > 0 %}
+                                            <span class="text-success">+{{ awakened_monster_stats_deltas.ATK }}%</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ awakened_monster_stats_deltas.ATK }}%</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                {% for grade,levels in awakened_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">
+                                            {% if stats.ATK %}
+                                                {{ stats.ATK }}
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>DEF</td>
+                                <td>
+                                    {% if awakened_monster_stats_deltas.DEF %}
+                                        {% if awakened_monster_stats_deltas.DEF > 0 %}
+                                            <span class="text-success">+{{ awakened_monster_stats_deltas.DEF }}%</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ awakened_monster_stats_deltas.DEF }}%</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                {% for grade,levels in awakened_monster_stats.iteritems %}
+                                    {% for level,stats in levels.iteritems %}
+                                        <td class="bestiary-stat-column">
+                                            {% if stats.DEF %}
+                                                {{ stats.DEF }}
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>SPD</td>
+                                <td>
+                                    {% if awakened_monster_stats_deltas.SPD %}
+                                        {% if awakened_monster_stats_deltas.SPD > 0 %}
+                                            <span class="text-success">+{{ awakened_monster_stats_deltas.SPD }}</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ awakened_monster_stats_deltas.SPD }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
+                                    {{ awakened_monster.speed }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CRIT Rate</td>
+                                <td>
+                                    {% if awakened_monster_stats_deltas.CRIT_Rate %}
+                                        {% if awakened_monster_stats_deltas.CRIT_Rate > 0 %}
+                                            <span class="text-success">+{{ awakened_monster_stats_deltas.CRIT_Rate }}%</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ awakened_monster_stats_deltas.CRIT_Rate }}%</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
+                                    {{ awakened_monster.crit_rate }}%
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CRIT DMG</td>
+                                <td>
+                                    {% if awakened_monster_stats_deltas.CRIT_DMG %}
+                                        {% if awakened_monster_stats_deltas.CRIT_DMG > 0 %}
+                                            <span class="text-success">+{{ awakened_monster_stats_deltas.CRIT_DMG }}%</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ awakened_monster_stats_deltas.CRIT_DMG }}%</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
+                                    {{ awakened_monster.crit_damage }}%
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td>
+                                    {% if awakened_monster_stats_deltas.Accuracy %}
+                                        {% if awakened_monster_stats_deltas.Accuracy > 0 %}
+                                            <span class="text-success">+{{ awakened_monster_stats_deltas.Accuracy }}%</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ awakened_monster_stats_deltas.Accuracy }}%</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
+                                    {{ awakened_monster.accuracy }}%
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Resistance</td>
+                                <td>
+                                    {% if awakened_monster_stats_deltas.Resistance %}
+                                        {% if awakened_monster_stats_deltas.Resistance > 0 %}
+                                            <span class="text-success">+{{ awakened_monster_stats_deltas.Resistance }}%</span>
+                                        {% else %}
+                                            <span class="text-danger">{{ awakened_monster_stats_deltas.Resistance }}%</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td colspan="{{ 6|subtract:base_monster.base_stars|multiply:2|add:2 }}">
+                                    {{ awakened_monster.resistance }}%
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-6 no-right-gutter">
+                <div class="panel panel-default">
+                    <table class="table table-condensed skill-table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th width="125">Skill</th>
+                            <th>Description</th>
+                            <th>Effects</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if awakened_monster_leader_skill %}
+                        <tr>
+                            <td class="monster-image"><img src="{{ img_url_prefix }}skills/leader/{{ awakened_monster_leader_skill.icon_filename }}"  class="monster-thumb"/></td>
+                            <td>Leader Skill</td>
+                            <td>{{ awakened_monster_leader_skill.skill_string }}</td>
+                            <td></td>
+                        </tr>
+                        {% endif %}
+                        {% for skill in awakened_monster_skills %}
+                        <tr>
+                            <td class="monster-image"
+                            {% if not skill.passive %}
+                            data-toggle="popover" data-trigger="hover" data-container="body" title="Skill-Up Effects" data-placement="left" data-content="{{ skill.level_progress_description|linebreaksbr }}"
+                            {% endif %}
+                            >
+                                <div style="position:relative">
+                                    <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" />
+                                    {% if not skill.passive %}
+                                    <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+                                    {% endif %}
+                                </div>
+                            <td>{{ skill.name }} {% if skill.passive %}(Passive){% endif %}</td>
+                            <td>{{ skill.description }}</td>
+                            <td width="100">
+                                {% for effect in skill.skill_effect.all %}
+                                    {% if effect.icon_filename %}
+                                    <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                                            data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                            />
+                                    {% else %}
+                                        <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                            <span>{{ effect.name }}</span>
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                            <tr><td colspan="4">No skills entered yet!</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if awakened_monster.skill_ups_to_max %}
+                <div class="col-sm-4 no-left-gutter">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">Skill-Ups to Max</p>
+                        </div>
+                        <div class="panel-body">
+                            <div class="monster-image">
+                                <div class="sprite sprite-devilmon_dark">
+                                    <span class="image-plus image-plus-right">{{ awakened_monster.skill_ups_to_max }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="bestiary-portraits">
+    <div class="list-group">
+        <div class="list-group-item">
+            <div class="monster-box">
+                <span>
+                    <img src="{{ img_url_prefix }}monsters/{{ base_monster.image_filename }}"/>
+                    {% for x in base_monster.base_stars|get_range %}
+                        {% if base_monster.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% elif base_monster.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="image-plus image-plus-left">{{ base_monster.name }}</span>
+            </div>
+            <div class="clearfix"></div>
+
+            {% if awakened_monster %}
+            <div class="monster-box">
+                <span>
+                    <img src="{{ img_url_prefix }}monsters/{{ awakened_monster.image_filename }}"/>
+                    {% for x in awakened_monster.base_stars|get_range %}
+                        {% if awakened_monster.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% elif awakened_monster.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="image-plus image-plus-left">{{ awakened_monster.name }}</span>
+            </div>
+            <div class="clearfix"></div>
+            {% endif %}
+        </div>
+        <div class="list-group-item">
+            <h4 class="list-group-item-heading">Family:</h4>
+            <div class="bestiary-family">
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tbody>
+                        {% for related_monster in base_monster.monster_family %}
+                        <tr>
+                            <td class="monster-image">
+                                <a href="{% url 'herders:bestiary_detail' monster_slug=related_monster.bestiary_slug %}">
+                                    <img src="{{ img_url_prefix }}monsters/{{ related_monster.image_filename }}" class="monster-thumb"/>
+                                </a>
+                            </td>
+                            <td class="monster-image">
+                                {% if related_monster.awakens_to %}
+                                <a href="{% url 'herders:bestiary_detail' monster_slug=related_monster.awakens_to.bestiary_slug %}">
+                                    <img src="{{ img_url_prefix }}monsters/{{ related_monster.awakens_to.image_filename }}" class="monster-thumb"/>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-{% endcache %}
+</div>
 {% endblock content %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "herders/js/bestiary.js" %}"></script>
+{% endblock javascript_compressed %}

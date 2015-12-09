@@ -337,16 +337,23 @@ def monster_instance_add(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    form = AddMonsterInstanceForm(request.POST or None)
-    form.helper.form_action = reverse('herders:monster_instance_add', kwargs={'profile_name': profile_name})
-    template = loader.get_template('herders/profile/monster_inventory/add_monster_form.html')
-
     if is_owner:
+        if request.method == 'POST':
+            form = AddMonsterInstanceForm(request.POST or None)
+        else:
+            form = AddMonsterInstanceForm(initial=request.GET.dict())
+
+        form.helper.form_action = reverse('herders:monster_instance_add', kwargs={'profile_name': profile_name})
+
+        template = loader.get_template('herders/profile/monster_inventory/add_monster_form.html')
+
         if request.method == 'POST' and form.is_valid():
             # Create the monster instance
             new_monster = form.save(commit=False)
             new_monster.owner = request.user.summoner
             new_monster.save()
+
+            messages.success(request, 'Added %s to your collection.' % new_monster)
 
             response_data = {
                 'code': 'success'
@@ -1638,6 +1645,9 @@ def bestiary(request):
         'view': 'bestiary',
         'bestiary_filter_form': bestiary_filter_form,
     }
+
+    if request.user.is_authenticated():
+        context['profile_name'] = request.user.username
 
     return render(request, 'herders/bestiary/base.html', context)
 

@@ -6,8 +6,22 @@ function update_inventory() {
     $('#FilterBestiaryForm').submit();
 }
 
+function AddMonster(monster_pk, stars) {
+    $.ajax({
+        url: '/profile/' + PROFILE_NAME + '/monster/add/?monster=' + monster_pk.toString() + '&stars=' + stars.toString(),
+        type: 'get'
+    }).done( function(result) {
+        bootbox.dialog({
+            title: "Add Monster",
+            message: result.html
+        });
+        $('.rating').rating();
+    })
+}
+
 
 $('body')
+    .on('click', '.monster-add', function() { AddMonster($(this).data('monster'), $(this).data('stars')) })
     .on('submit', '#FilterBestiaryForm', function() {
         ToggleLoading($('body'), true);
 
@@ -72,4 +86,23 @@ $('body')
     .on('click', '.pager-btn', function() {
         $('#id_page').val($(this).data('page'));
         update_inventory();
+    })
+    .on('submit', '.ajax-form', function() {
+        //Handle add ajax form submit
+        var $form = $(this);
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: $form.serialize()
+        }).done(function(data) {
+            if (data.code === 'success') {
+                $('.modal.in').modal('hide');
+            }
+            else {
+                $form.replaceWith(data.html);
+                $('.rating').rating();
+            }
+        });
+
+        return false;  //cancel default on submit action.
     });

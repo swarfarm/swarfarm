@@ -35,6 +35,7 @@
             <table id="bestiary_table" class="table table-hover table-condensed monster-table" data-save-filters="false">
                 <thead>
                     <tr>
+                        {% if request.user.is_authenticated %}<th data-sorter="false" data-columnSelector="disable"></th>{% endif %}
                         <th data-sorter="false" data-columnSelector="disable"></th>
                         <th>Name</th>
                         <th>Stars</th>
@@ -60,6 +61,13 @@
                 <tbody>
                     {% for monster in monsters %}
                     <tr>
+                        {% if request.user.is_authenticated %}
+                        <td class="monster-info-icons-column">
+                            <button class="btn btn-link btn-xs monster-add" data-toggle="tooltip" data-placement="top" title="Add to collection" data-monster="{{ monster.pk }}" data-stars="{{ monster.base_stars }}">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </td>
+                        {% endif %}
                         <td class="monster-image">
                             <a href="{% url 'herders:bestiary_detail' monster_slug=monster.bestiary_slug %}">
                                 <div class="sprite sprite-{{ monster.image_filename|remove_extension }}"></div>

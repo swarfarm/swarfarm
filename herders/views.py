@@ -1653,7 +1653,7 @@ def bestiary(request):
 
 
 def bestiary_inventory(request):
-    monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to').prefetch_related('skills', 'skills__skill_effect')
+    monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to', 'leader_skill').prefetch_related('skills', 'skills__skill_effect')
     form = FilterMonsterForm(request.POST or None)
 
     # Get queryset sort options

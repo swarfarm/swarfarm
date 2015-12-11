@@ -328,15 +328,6 @@ class Monster(models.Model):
         self.max_lvl_defense = self.actual_defense(6, 40)
         self.max_lvl_attack = self.actual_attack(6, 40)
 
-        # Update various info fields
-        if self.skills is not None:
-            skill_list = self.skills.values_list('max_level', flat=True)
-            self.skill_ups_to_max = sum(skill_list) - len(skill_list)
-        else:
-            self.skill_ups_to_max = 0
-
-        self.farmable = self.source.filter(farmable_source=True).count() > 0
-
         # Update image filename and slugs on save.
         if self.is_awakened and self.awakens_from:
             self.image_filename = self.awakens_from.image_filename.replace('.png', '_awakened.png')

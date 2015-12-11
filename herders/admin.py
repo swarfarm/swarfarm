@@ -33,6 +33,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'archetype',
                 'fusion_food',
                 'obtainable',
+                'farmable',
             ),
         }),
         ('Awakening', {
@@ -114,7 +115,7 @@ class MonsterAdmin(admin.ModelAdmin):
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken')
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)
-    readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack')
+    readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack', 'farmable')
     search_fields = ['name']
     save_as = True
 
@@ -126,6 +127,16 @@ class MonsterAdmin(admin.ModelAdmin):
         if form.instance.awakens_from and form.instance.awakens_from.source.count() > 0:
             form.instance.source.clear()
             form.instance.source = form.instance.awakens_from.source.all()
+
+        # Update various info fields
+        if form.instance.skills is not None:
+            skill_list = form.instance.skills.values_list('max_level', flat=True)
+            form.instance.skill_ups_to_max = sum(skill_list) - len(skill_list)
+        else:
+            form.instance.skill_ups_to_max = 0
+
+        form.instance.farmable = form.instance.source.filter(farmable_source=True).count() > 0
+        form.instance.save()
 
 
 @admin.register(MonsterSkill)

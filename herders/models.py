@@ -244,7 +244,16 @@ class Monster(models.Model):
         return MonsterSkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))
 
     def save(self, *args, **kwargs):
-        # Update new element fields
+        # Pull awakening mats from unawakened version - one time deal
+        if self.awakens_from:
+            self.awaken_ele_mats_high = self.awakens_from.awaken_ele_mats_high
+            self.awaken_ele_mats_mid = self.awakens_from.awaken_ele_mats_mid
+            self.awaken_ele_mats_low = self.awakens_from.awaken_ele_mats_low
+            self.awaken_mats_magic_high = self.awakens_from.awaken_mats_magic_high
+            self.awaken_mats_magic_mid = self.awakens_from.awaken_mats_magic_mid
+            self.awaken_mats_magic_low = self.awakens_from.awaken_mats_magic_low
+
+        # Update new element fields - one time deal
         if self.element == self.ELEMENT_FIRE:
             self.awaken_mats_fire_high = self.awaken_ele_mats_high
             self.awaken_mats_fire_mid = self.awaken_ele_mats_mid
@@ -274,14 +283,14 @@ class Monster(models.Model):
         # Update various info fields
         if self.skills is not None:
             skill_list = self.skills.values_list('max_level', flat=True)
-            self.skill_ups_to_max =  sum(skill_list) - len(skill_list)
+            self.skill_ups_to_max = sum(skill_list) - len(skill_list)
         else:
             self.skill_ups_to_max = 0
 
         self.farmable = self.source.filter(farmable_source=True).count() > 0
 
         # Update image filename and slugs on save.
-        if self.is_awakened and self.awakens_from is not None:
+        if self.is_awakened and self.awakens_from:
             self.image_filename = self.awakens_from.image_filename.replace('.png', '_awakened.png')
             self.bestiary_slug = self.awakens_from.bestiary_slug
         else:
@@ -343,32 +352,28 @@ class Monster(models.Model):
                 # Something prevented getting the correct names or verifying the URL, so clear it out
                 self.wikia_url = None
 
-        # Pull info from other version of this monster (awakened or unawakened)
-        other_mon = None
+        # Pull info from unawakened version of this monster. This copying of data is one directional only
         if self.awakens_from:
-            other_mon = self.awakens_from
-        elif self.awakens_to:
-            other_mon = self.awakens_to
-
-        if other_mon:
-            # Monster sources M2M
-            if other_mon.source.count() > 0:
-                self.source.clear()
-                self.source = other_mon.source.all()
+            # Copy awaken bonus from unawakened version
+            if self.is_awakened and self.awakens_from.awaken_bonus:
+                self.awaken_bonus = self.awakens_from.awaken_bonus
+                self.awaken_bonus_content_type = self.awakens_from.awaken_bonus_content_type
+                self.awaken_bonus_content_id = self.awakens_from.awaken_bonus_content_id
 
         super(Monster, self).save(*args, **kwargs)
 
-        # Automatically set awakens from/to relationship
-        other_mon = None
-        if self.awakens_from and self.awakens_from.awakens_to is not self:
-            other_mon = self.awakens_from
-            other_mon.awakens_to = self
-        elif self.awakens_to and self.awakens_to.awakens_from is not self:
-            other_mon = self.awakens_to
-            other_mon.awakens_from = self
+        # Update M2M relationship
+        if self.awakens_from and self.awakens_from.source.count() > 0:
+            self.source.clear()
+            self.source = self.awakens_from.source.all()
 
-        if other_mon:
-            other_mon.save()
+        # Automatically set awakens from/to relationship if none exists
+        if self.awakens_from and self.awakens_from.awakens_to is not self:
+            self.awakens_from.awakens_to = self
+            self.awakens_from.save()
+        elif self.awakens_to and self.awakens_to.awakens_from is not self:
+            self.awakens_to.awakens_from = self
+            self.awakens_to.save()
 
     class Meta:
         ordering = ['name', 'element']

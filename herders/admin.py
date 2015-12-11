@@ -118,6 +118,15 @@ class MonsterAdmin(admin.ModelAdmin):
     search_fields = ['name']
     save_as = True
 
+    def save_related(self, request, form, formsets, change):
+        super(MonsterAdmin, self).save_related(request, form, formsets, change)
+
+        # Copy the unawakened version's sources if they exist.
+        # Has to be done here instead of in model's save() because django admin clears M2M on form submit
+        if form.instance.awakens_from and form.instance.awakens_from.source.count() > 0:
+            form.instance.source.clear()
+            form.instance.source = form.instance.awakens_from.source.all()
+
 
 @admin.register(MonsterSkill)
 class MonsterSkillAdmin(admin.ModelAdmin):

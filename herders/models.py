@@ -362,11 +362,6 @@ class Monster(models.Model):
 
         super(Monster, self).save(*args, **kwargs)
 
-        # Update M2M relationship
-        if self.awakens_from and self.awakens_from.source.count() > 0:
-            self.source.clear()
-            self.source = self.awakens_from.source.all()
-
         # Automatically set awakens from/to relationship if none exists
         if self.awakens_from and self.awakens_from.awakens_to is not self:
             self.awakens_from.awakens_to = self

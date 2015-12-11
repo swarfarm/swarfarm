@@ -1817,12 +1817,20 @@ def bestiary_sanity_checks(request):
             if monster.accuracy is None:
                 monster_errors.append('Missing accuracy')
 
-            # Check  missing links resource
+            # Check missing links resource
             if monster.can_awaken and monster.archetype != monster.TYPE_MATERIAL and (monster.summonerswar_co_url is None or monster.summonerswar_co_url == ''):
                 monster_errors.append('Missing summonerswar.co link')
 
             if monster.wikia_url is None or monster.wikia_url == '':
                 monster_errors.append('Missing wikia link')
+
+            # Check missing skills
+            if monster.source.count() == 0:
+                monster_errors.append('Missing sources')
+
+            # Check that monster has awakening mats specified
+            if monster.can_awaken and monster.awaken_mats_magic_high + monster.awaken_mats_magic_low + monster.awaken_mats_magic_mid == 0:
+                monster_errors.append('Missing awakening materials')
 
             if len(monster_errors) > 0:
                 errors[str(monster)] = monster_errors

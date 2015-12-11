@@ -3,6 +3,7 @@ import uuid
 from collections import OrderedDict
 
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -61,7 +62,13 @@ class Monster(models.Model):
     can_awaken = models.BooleanField(default=True)
     is_awakened = models.BooleanField(default=False)
     awaken_bonus = models.TextField(blank=True)
-    awaken_bonus_content_type = models.ForeignKey(ContentType, related_name="content_type_awaken_bonus", null=True, blank=True)
+    awaken_bonus_content_type = models.ForeignKey(
+        ContentType,
+        related_name="content_type_awaken_bonus",
+        limit_choices_to=Q(app_label='herders', model='monsterskill') | Q(app_label='herders', model='monsterleaderskill'),
+        null=True,
+        blank=True
+    )
     awaken_bonus_content_id = models.PositiveIntegerField(null=True, blank=True)
     awaken_bonus_object = GenericForeignKey('awaken_bonus_content_type', 'awaken_bonus_content_id')
     skills = models.ManyToManyField('MonsterSkill', blank=True)
@@ -340,7 +347,7 @@ class Monster(models.Model):
                 self.bestiary_slug = slugify(" ".join([self.element, self.name]))
 
         # Generate summonerswar.co URL if possible
-        if self.can_awaken and self.archetype is not self.TYPE_MATERIAL and (self.summonerswar_co_url is None or self.summonerswar_co_url == ''):
+        if self.can_awaken and self.base_stars > 1 and self.archetype is not self.TYPE_MATERIAL and (self.summonerswar_co_url is None or self.summonerswar_co_url == ''):
             base = 'http://summonerswar.co/'
             try:
                 # Generate the URL

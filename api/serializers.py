@@ -50,8 +50,12 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
             'skills', 'leader_skill',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
             'awakens_from', 'awakens_to',
-            'awaken_ele_mats_low', 'awaken_ele_mats_mid', 'awaken_ele_mats_high',
-            'awaken_magic_mats_low', 'awaken_magic_mats_mid', 'awaken_magic_mats_high',
+            'awaken_mats_fire_low', 'awaken_mats_fire_mid', 'awaken_mats_fire_high',
+            'awaken_mats_water_low', 'awaken_mats_water_mid', 'awaken_mats_water_high',
+            'awaken_mats_wind_low', 'awaken_mats_wind_mid', 'awaken_mats_wind_high',
+            'awaken_mats_light_low', 'awaken_mats_light_mid', 'awaken_mats_light_high',
+            'awaken_mats_dark_low', 'awaken_mats_dark_mid', 'awaken_mats_dark_high',
+            'awaken_mats_magic_low', 'awaken_mats_magic_mid', 'awaken_mats_magic_high',
             'source', 'fusion_food'
         )
 

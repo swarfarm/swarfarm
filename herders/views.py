@@ -775,12 +775,12 @@ def monster_instance_awaken(request, profile_name, instance_id):
                 if form.cleaned_data['subtract_materials']:
                     summoner = Summoner.objects.get(user=request.user)
 
-                    if monster.monster.awaken_magic_mats_high:
-                        summoner.storage_magic_high -= monster.monster.awaken_magic_mats_high
-                    if monster.monster.awaken_magic_mats_mid:
-                        summoner.storage_magic_mid -= monster.monster.awaken_magic_mats_mid
-                    if monster.monster.awaken_magic_mats_low:
-                        summoner.storage_magic_low -= monster.monster.awaken_magic_mats_low
+                    if monster.monster.awaken_mats_magic_high:
+                        summoner.storage_magic_high -= monster.monster.awaken_mats_magic_high
+                    if monster.monster.awaken_mats_magic_mid:
+                        summoner.storage_magic_mid -= monster.monster.awaken_mats_magic_mid
+                    if monster.monster.awaken_mats_magic_low:
+                        summoner.storage_magic_low -= monster.monster.awaken_mats_magic_low
 
                     if monster.monster.element == Monster.ELEMENT_FIRE:
                         if monster.monster.awaken_ele_mats_high:

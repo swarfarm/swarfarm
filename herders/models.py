@@ -292,6 +292,51 @@ class Monster(models.Model):
         super(Monster, self).clean()
 
     def save(self, *args, **kwargs):
+        # Update null values
+        if self.awaken_ele_mats_low is None:
+            self.awaken_ele_mats_low = 0
+        if self.awaken_ele_mats_mid is None:
+            self.awaken_ele_mats_mid = 0
+        if self.awaken_ele_mats_high is None:
+            self.awaken_ele_mats_high = 0
+
+        if self.awaken_mats_fire_high is None:
+            self.awaken_mats_fire_high = 0
+        if self.awaken_mats_fire_mid is None:
+            self.awaken_mats_fire_mid = 0
+        if self.awaken_mats_fire_low is None:
+            self.awaken_mats_fire_low = 0
+        if self.awaken_mats_water_high is None:
+            self.awaken_mats_water_high = 0
+        if self.awaken_mats_water_mid is None:
+            self.awaken_mats_water_mid = 0
+        if self.awaken_mats_water_low is None:
+            self.awaken_mats_water_low = 0
+        if self.awaken_mats_wind_high is None:
+            self.awaken_mats_wind_high = 0
+        if self.awaken_mats_wind_mid is None:
+            self.awaken_mats_wind_mid = 0
+        if self.awaken_mats_wind_low is None:
+            self.awaken_mats_wind_low = 0
+        if self.awaken_mats_light_high is None:
+            self.awaken_mats_light_high = 0
+        if self.awaken_mats_light_mid is None:
+            self.awaken_mats_light_mid = 0
+        if self.awaken_mats_light_low is None:
+            self.awaken_mats_light_low = 0
+        if self.awaken_mats_dark_high is None:
+            self.awaken_mats_dark_high = 0
+        if self.awaken_mats_dark_mid is None:
+            self.awaken_mats_dark_mid = 0
+        if self.awaken_mats_dark_low is None:
+            self.awaken_mats_dark_low = 0
+        if self.awaken_mats_magic_high is None:
+            self.awaken_mats_magic_high = 0
+        if self.awaken_mats_magic_mid is None:
+            self.awaken_mats_magic_mid = 0
+        if self.awaken_mats_magic_low is None:
+            self.awaken_mats_magic_low = 0
+
         # Pull awakening mats from unawakened version - one time deal
         if self.awakens_from:
             self.awaken_ele_mats_high = self.awakens_from.awaken_ele_mats_high

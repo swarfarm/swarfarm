@@ -23,28 +23,56 @@ admin.site.register(User, UserAdmin)
 # Monster Database stuff
 @admin.register(Monster)
 class MonsterAdmin(admin.ModelAdmin):
+    suit_form_tabs = (('basic', 'Basic Info'), ('awakening', 'Awakening'), ('other', 'Other'))
     fieldsets = [
         ('Basic Information', {
+            'classes': ('suit-tab', 'suit-tab-basic'),
             'fields': (
                 'name',
                 'element',
                 'archetype',
-                'awakens_from',
-                'awakens_to',
                 'fusion_food',
                 'obtainable',
-            )
+                'farmable',
+            ),
         }),
         ('Awakening', {
+            'classes': ('suit-tab', 'suit-tab-awakening'),
             'fields': (
+                'awakens_from',
+                'awakens_to',
                 'can_awaken',
                 'is_awakened',
                 'awaken_bonus',
                 'awaken_bonus_content_type',
                 'awaken_bonus_content_id',
-            )
+            ),
+        }),
+        ('Awakening Mats', {
+            'classes': ('suit-tab', 'suit-tab-awakening'),
+            'fields': (
+                'awaken_mats_magic_low',
+                'awaken_mats_magic_mid',
+                'awaken_mats_magic_high',
+                'awaken_mats_fire_low',
+                'awaken_mats_fire_mid',
+                'awaken_mats_fire_high',
+                'awaken_mats_water_low',
+                'awaken_mats_water_mid',
+                'awaken_mats_water_high',
+                'awaken_mats_wind_low',
+                'awaken_mats_wind_mid',
+                'awaken_mats_wind_high',
+                'awaken_mats_light_low',
+                'awaken_mats_light_mid',
+                'awaken_mats_light_high',
+                'awaken_mats_dark_low',
+                'awaken_mats_dark_mid',
+                'awaken_mats_dark_high',
+            ),
         }),
         ('Stats', {
+            'classes': ('suit-tab', 'suit-tab-basic'),
             'fields': (
                 'base_stars',
                 'base_hp',
@@ -58,35 +86,28 @@ class MonsterAdmin(admin.ModelAdmin):
                 'max_lvl_hp',
                 'max_lvl_defense',
                 'max_lvl_attack',
-            )
-        }),
-        ('Awakening Materials', {
-            'fields': (
-                'awaken_magic_mats_low',
-                'awaken_magic_mats_mid',
-                'awaken_magic_mats_high',
-                'awaken_ele_mats_low',
-                'awaken_ele_mats_mid',
-                'awaken_ele_mats_high',
-            )
+            ),
         }),
         ('Skills', {
+            'classes': ('suit-tab', 'suit-tab-basic'),
             'fields': (
                 'leader_skill',
                 'skills',
-            )
+            ),
         }),
         ('Source', {
+            'classes': ('suit-tab', 'suit-tab-other'),
             'fields': (
                 'source',
-            )
+            ),
         }),
         ('Resources', {
+            'classes': ('suit-tab', 'suit-tab-other'),
             'fields': (
                 'summonerswar_co_url',
                 'wikia_url',
                 'bestiary_slug',
-            )
+            ),
         }),
     ]
 
@@ -94,9 +115,28 @@ class MonsterAdmin(admin.ModelAdmin):
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken')
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)
-    readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack')
+    readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack', 'farmable')
     search_fields = ['name']
     save_as = True
+
+    def save_related(self, request, form, formsets, change):
+        super(MonsterAdmin, self).save_related(request, form, formsets, change)
+
+        # Copy the unawakened version's sources if they exist.
+        # Has to be done here instead of in model's save() because django admin clears M2M on form submit
+        if form.instance.awakens_from and form.instance.awakens_from.source.count() > 0:
+            form.instance.source.clear()
+            form.instance.source = form.instance.awakens_from.source.all()
+
+        # Update various info fields
+        if form.instance.skills is not None:
+            skill_list = form.instance.skills.values_list('max_level', flat=True)
+            form.instance.skill_ups_to_max = sum(skill_list) - len(skill_list)
+        else:
+            form.instance.skill_ups_to_max = 0
+
+        form.instance.farmable = form.instance.source.filter(farmable_source=True).count() > 0
+        form.instance.save()
 
 
 @admin.register(MonsterSkill)

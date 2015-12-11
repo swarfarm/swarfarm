@@ -775,12 +775,12 @@ def monster_instance_awaken(request, profile_name, instance_id):
                 if form.cleaned_data['subtract_materials']:
                     summoner = Summoner.objects.get(user=request.user)
 
-                    if monster.monster.awaken_magic_mats_high:
-                        summoner.storage_magic_high -= monster.monster.awaken_magic_mats_high
-                    if monster.monster.awaken_magic_mats_mid:
-                        summoner.storage_magic_mid -= monster.monster.awaken_magic_mats_mid
-                    if monster.monster.awaken_magic_mats_low:
-                        summoner.storage_magic_low -= monster.monster.awaken_magic_mats_low
+                    if monster.monster.awaken_mats_magic_high:
+                        summoner.storage_magic_high -= monster.monster.awaken_mats_magic_high
+                    if monster.monster.awaken_mats_magic_mid:
+                        summoner.storage_magic_mid -= monster.monster.awaken_mats_magic_mid
+                    if monster.monster.awaken_mats_magic_low:
+                        summoner.storage_magic_low -= monster.monster.awaken_mats_magic_low
 
                     if monster.monster.element == Monster.ELEMENT_FIRE:
                         if monster.monster.awaken_ele_mats_high:
@@ -1653,7 +1653,7 @@ def bestiary(request):
 
 
 def bestiary_inventory(request):
-    monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to').prefetch_related('skills', 'skills__skill_effect')
+    monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to', 'leader_skill').prefetch_related('skills', 'skills__skill_effect')
     form = FilterMonsterForm(request.POST or None)
 
     # Get queryset sort options
@@ -1817,12 +1817,20 @@ def bestiary_sanity_checks(request):
             if monster.accuracy is None:
                 monster_errors.append('Missing accuracy')
 
-            # Check  missing links resource
+            # Check missing links resource
             if monster.can_awaken and monster.archetype != monster.TYPE_MATERIAL and (monster.summonerswar_co_url is None or monster.summonerswar_co_url == ''):
                 monster_errors.append('Missing summonerswar.co link')
 
             if monster.wikia_url is None or monster.wikia_url == '':
                 monster_errors.append('Missing wikia link')
+
+            # Check missing skills
+            if monster.source.count() == 0:
+                monster_errors.append('Missing sources')
+
+            # Check that monster has awakening mats specified
+            if monster.can_awaken and monster.awaken_mats_magic_high + monster.awaken_mats_magic_low + monster.awaken_mats_magic_mid == 0:
+                monster_errors.append('Missing awakening materials')
 
             if len(monster_errors) > 0:
                 errors[str(monster)] = monster_errors

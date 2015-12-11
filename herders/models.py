@@ -65,6 +65,7 @@ class Monster(models.Model):
     awaken_bonus_content_id = models.PositiveIntegerField(null=True, blank=True)
     awaken_bonus_object = GenericForeignKey('awaken_bonus_content_type', 'awaken_bonus_content_id')
     skills = models.ManyToManyField('MonsterSkill', blank=True)
+    skill_ups_to_max = models.IntegerField(null=True, blank=True)
     leader_skill = models.ForeignKey('MonsterLeaderSkill', null=True, blank=True)
     base_hp = models.IntegerField(null=True, blank=True)
     base_attack = models.IntegerField(null=True, blank=True)
@@ -79,13 +80,32 @@ class Monster(models.Model):
     accuracy = models.IntegerField(null=True, blank=True)
     awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')
-    awaken_ele_mats_low = models.IntegerField(null=True, blank=True)
-    awaken_ele_mats_mid = models.IntegerField(null=True, blank=True)
-    awaken_ele_mats_high = models.IntegerField(null=True, blank=True)
-    awaken_magic_mats_low = models.IntegerField(null=True, blank=True)
-    awaken_magic_mats_mid = models.IntegerField(null=True, blank=True)
-    awaken_magic_mats_high = models.IntegerField(null=True, blank=True)
+
+    awaken_ele_mats_low = models.IntegerField(default=0)
+    awaken_ele_mats_mid = models.IntegerField(default=0)
+    awaken_ele_mats_high = models.IntegerField(default=0)
+
+    awaken_mats_fire_low = models.IntegerField(blank=True, default=0)
+    awaken_mats_fire_mid = models.IntegerField(blank=True, default=0)
+    awaken_mats_fire_high = models.IntegerField(blank=True, default=0)
+    awaken_mats_water_low = models.IntegerField(blank=True, default=0)
+    awaken_mats_water_mid = models.IntegerField(blank=True, default=0)
+    awaken_mats_water_high = models.IntegerField(blank=True, default=0)
+    awaken_mats_wind_low = models.IntegerField(blank=True, default=0)
+    awaken_mats_wind_mid = models.IntegerField(blank=True, default=0)
+    awaken_mats_wind_high = models.IntegerField(blank=True, default=0)
+    awaken_mats_light_low = models.IntegerField(blank=True, default=0)
+    awaken_mats_light_mid = models.IntegerField(blank=True, default=0)
+    awaken_mats_light_high = models.IntegerField(blank=True, default=0)
+    awaken_mats_dark_low = models.IntegerField(blank=True, default=0)
+    awaken_mats_dark_mid = models.IntegerField(blank=True, default=0)
+    awaken_mats_dark_high = models.IntegerField(blank=True, default=0)
+    awaken_mats_magic_low = models.IntegerField(blank=True, default=0)
+    awaken_mats_magic_mid = models.IntegerField(blank=True, default=0)
+    awaken_mats_magic_high = models.IntegerField(blank=True, default=0)
+
     source = models.ManyToManyField('MonsterSource', blank=True)
+    farmable = models.BooleanField(default=False)
     fusion_food = models.BooleanField(default=False)
     bestiary_slug = models.SlugField(max_length=255, editable=False, null=True)
     summonerswar_co_url = models.URLField(null=True, blank=True)
@@ -111,14 +131,14 @@ class Monster(models.Model):
             mats['magic'] = OrderedDict()
             mats[self.element] = OrderedDict()
 
-            if self.awaken_magic_mats_high:
-                mats['magic']['high'] = self.awaken_magic_mats_high
+            if self.awaken_mats_magic_high:
+                mats['magic']['high'] = self.awaken_mats_magic_high
 
-            if self.awaken_magic_mats_mid:
-                mats['magic']['mid'] = self.awaken_magic_mats_mid
+            if self.awaken_mats_magic_mid:
+                mats['magic']['mid'] = self.awaken_mats_magic_mid
 
-            if self.awaken_magic_mats_low:
-                mats['magic']['low'] = self.awaken_magic_mats_low
+            if self.awaken_mats_magic_low:
+                mats['magic']['low'] = self.awaken_mats_magic_low
 
             if self.awaken_ele_mats_high:
                 mats[self.element]['high'] = self.awaken_ele_mats_high
@@ -220,30 +240,96 @@ class Monster(models.Model):
 
         return Monster.objects.filter(name=unawakened_name).filter(obtainable=True).order_by('element')
 
-    def skill_ups_to_max(self):
-        if self.skills is not None:
-            skill_list = self.skills.values_list('max_level', flat=True)
-            return sum(skill_list) - len(skill_list)
-        else:
-            return None
-
     def all_skill_effects(self):
         return MonsterSkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))
 
-    def farmable(self):
-        if self.is_awakened and self.awakens_from is not None:
-            return self.awakens_from.source.filter(farmable_source=True).count() > 0
-        else:
-            return self.source.filter(farmable_source=True).count() > 0
+    def clean(self):
+        # Update null values
+        if self.awaken_ele_mats_low is None:
+            self.awaken_ele_mats_low = 0
+        if self.awaken_ele_mats_mid is None:
+            self.awaken_ele_mats_mid = 0
+        if self.awaken_ele_mats_high is None:
+            self.awaken_ele_mats_high = 0
+
+        if self.awaken_mats_fire_high is None:
+            self.awaken_mats_fire_high = 0
+        if self.awaken_mats_fire_mid is None:
+            self.awaken_mats_fire_mid = 0
+        if self.awaken_mats_fire_low is None:
+            self.awaken_mats_fire_low = 0
+        if self.awaken_mats_water_high is None:
+            self.awaken_mats_water_high = 0
+        if self.awaken_mats_water_mid is None:
+            self.awaken_mats_water_mid = 0
+        if self.awaken_mats_water_low is None:
+            self.awaken_mats_water_low = 0
+        if self.awaken_mats_wind_high is None:
+            self.awaken_mats_wind_high = 0
+        if self.awaken_mats_wind_mid is None:
+            self.awaken_mats_wind_mid = 0
+        if self.awaken_mats_wind_low is None:
+            self.awaken_mats_wind_low = 0
+        if self.awaken_mats_light_high is None:
+            self.awaken_mats_light_high = 0
+        if self.awaken_mats_light_mid is None:
+            self.awaken_mats_light_mid = 0
+        if self.awaken_mats_light_low is None:
+            self.awaken_mats_light_low = 0
+        if self.awaken_mats_dark_high is None:
+            self.awaken_mats_dark_high = 0
+        if self.awaken_mats_dark_mid is None:
+            self.awaken_mats_dark_mid = 0
+        if self.awaken_mats_dark_low is None:
+            self.awaken_mats_dark_low = 0
+        if self.awaken_mats_magic_high is None:
+            self.awaken_mats_magic_high = 0
+        if self.awaken_mats_magic_mid is None:
+            self.awaken_mats_magic_mid = 0
+        if self.awaken_mats_magic_low is None:
+            self.awaken_mats_magic_low = 0
+
+        super(Monster, self).clean()
 
     def save(self, *args, **kwargs):
+        # Pull awakening mats from unawakened version - one time deal
+        if self.awakens_from:
+            self.awaken_ele_mats_high = self.awakens_from.awaken_ele_mats_high
+            self.awaken_ele_mats_mid = self.awakens_from.awaken_ele_mats_mid
+            self.awaken_ele_mats_low = self.awakens_from.awaken_ele_mats_low
+            self.awaken_mats_magic_high = self.awakens_from.awaken_mats_magic_high
+            self.awaken_mats_magic_mid = self.awakens_from.awaken_mats_magic_mid
+            self.awaken_mats_magic_low = self.awakens_from.awaken_mats_magic_low
+
+        # Update new element fields - one time deal
+        if self.element == self.ELEMENT_FIRE:
+            self.awaken_mats_fire_high = self.awaken_ele_mats_high
+            self.awaken_mats_fire_mid = self.awaken_ele_mats_mid
+            self.awaken_mats_fire_low = self.awaken_ele_mats_low
+        elif self.element == self.ELEMENT_WATER:
+            self.awaken_mats_water_high = self.awaken_ele_mats_high
+            self.awaken_mats_water_mid = self.awaken_ele_mats_mid
+            self.awaken_mats_water_low = self.awaken_ele_mats_low
+        elif self.element == self.ELEMENT_WIND:
+            self.awaken_mats_wind_high = self.awaken_ele_mats_high
+            self.awaken_mats_wind_mid = self.awaken_ele_mats_mid
+            self.awaken_mats_wind_low = self.awaken_ele_mats_low
+        elif self.element == self.ELEMENT_DARK:
+            self.awaken_mats_dark_high = self.awaken_ele_mats_high
+            self.awaken_mats_dark_mid = self.awaken_ele_mats_mid
+            self.awaken_mats_dark_low = self.awaken_ele_mats_low
+        elif self.element == self.ELEMENT_LIGHT:
+            self.awaken_mats_light_high = self.awaken_ele_mats_high
+            self.awaken_mats_light_mid = self.awaken_ele_mats_mid
+            self.awaken_mats_light_low = self.awaken_ele_mats_low
+
         # Update the max level stats
         self.max_lvl_hp = self.actual_hp(6, 40)
         self.max_lvl_defense = self.actual_defense(6, 40)
         self.max_lvl_attack = self.actual_attack(6, 40)
 
         # Update image filename and slugs on save.
-        if self.is_awakened and self.awakens_from is not None:
+        if self.is_awakened and self.awakens_from:
             self.image_filename = self.awakens_from.image_filename.replace('.png', '_awakened.png')
             self.bestiary_slug = self.awakens_from.bestiary_slug
         else:
@@ -305,19 +391,23 @@ class Monster(models.Model):
                 # Something prevented getting the correct names or verifying the URL, so clear it out
                 self.wikia_url = None
 
+        # Pull info from unawakened version of this monster. This copying of data is one directional only
+        if self.awakens_from:
+            # Copy awaken bonus from unawakened version
+            if self.is_awakened and self.awakens_from.awaken_bonus:
+                self.awaken_bonus = self.awakens_from.awaken_bonus
+                self.awaken_bonus_content_type = self.awakens_from.awaken_bonus_content_type
+                self.awaken_bonus_content_id = self.awakens_from.awaken_bonus_content_id
+
         super(Monster, self).save(*args, **kwargs)
 
-        # Update awakened from/to of the other monster in awakened from/to
-        # This has to be done after the monster is saved first
-        if self.awakens_from is not None and self.awakens_from.awakens_to is not self:
-            awakens_from = self.awakens_from
-            awakens_from.awakens_to = self
-            awakens_from.save()
-
-        if self.awakens_to is not None and self.awakens_to.awakens_from is not self:
-            awakens_to = self.awakens_to
-            awakens_to.awakens_from = self
-            awakens_to.save()
+        # Automatically set awakens from/to relationship if none exists
+        if self.awakens_from and self.awakens_from.awakens_to is not self:
+            self.awakens_from.awakens_to = self
+            self.awakens_from.save()
+        elif self.awakens_to and self.awakens_to.awakens_from is not self:
+            self.awakens_to.awakens_from = self
+            self.awakens_to.save()
 
     class Meta:
         ordering = ['name', 'element']

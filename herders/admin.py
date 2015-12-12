@@ -93,6 +93,7 @@ class MonsterAdmin(admin.ModelAdmin):
             'fields': (
                 'leader_skill',
                 'skills',
+                'skill_ups_to_max',
             ),
         }),
         ('Source', {
@@ -115,9 +116,21 @@ class MonsterAdmin(admin.ModelAdmin):
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken')
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)
-    readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack', 'farmable')
+    readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack', 'farmable', 'skill_ups_to_max',)
     search_fields = ['name']
     save_as = True
+    actions = ['resave']
+
+    def resave(self, request, queryset):
+        for obj in queryset:
+            if obj.skills is not None:
+                skill_list = obj.skills.values_list('max_level', flat=True)
+                obj.skill_ups_to_max = sum(skill_list) - len(skill_list)
+            else:
+                obj.skill_ups_to_max = 0
+
+            obj.save(skip_url_gen=True)
+    resave.short_description = 'Resave model instances and update data'
 
     def save_related(self, request, form, formsets, change):
         super(MonsterAdmin, self).save_related(request, form, formsets, change)

@@ -131,32 +131,29 @@ class Monster(models.Model):
             return 10 + self.base_stars * 5
 
     def get_awakening_materials(self):
-        if self.is_awakened and self.awakens_from is not None:
-            return self.awakens_from.get_awakening_materials()
-        else:
-            mats = OrderedDict()
-            mats['magic'] = OrderedDict()
-            mats[self.element] = OrderedDict()
+        mats = OrderedDict()
+        mats['magic'] = OrderedDict()
+        mats[self.element] = OrderedDict()
 
-            if self.awaken_mats_magic_high:
-                mats['magic']['high'] = self.awaken_mats_magic_high
+        if self.awaken_mats_magic_high:
+            mats['magic']['high'] = self.awaken_mats_magic_high
 
-            if self.awaken_mats_magic_mid:
-                mats['magic']['mid'] = self.awaken_mats_magic_mid
+        if self.awaken_mats_magic_mid:
+            mats['magic']['mid'] = self.awaken_mats_magic_mid
 
-            if self.awaken_mats_magic_low:
-                mats['magic']['low'] = self.awaken_mats_magic_low
+        if self.awaken_mats_magic_low:
+            mats['magic']['low'] = self.awaken_mats_magic_low
 
-            if self.awaken_ele_mats_high:
-                mats[self.element]['high'] = self.awaken_ele_mats_high
+        if self.awaken_ele_mats_high:
+            mats[self.element]['high'] = self.awaken_ele_mats_high
 
-            if self.awaken_ele_mats_mid:
-                mats[self.element]['mid'] = self.awaken_ele_mats_mid
+        if self.awaken_ele_mats_mid:
+            mats[self.element]['mid'] = self.awaken_ele_mats_mid
 
-            if self.awaken_ele_mats_low:
-                mats[self.element]['low'] = self.awaken_ele_mats_low
+        if self.awaken_ele_mats_low:
+            mats[self.element]['low'] = self.awaken_ele_mats_low
 
-            return mats
+        return mats
 
     def get_stats(self):
         from collections import OrderedDict
@@ -345,6 +342,13 @@ class Monster(models.Model):
             self.awaken_mats_magic_mid = 0
         if self.awaken_mats_magic_low is None:
             self.awaken_mats_magic_low = 0
+
+        # ONE TIME DEAL UPDATES. REMOVE THESE BEFORE ADDING NEW MONSTERS
+        if self.awakens_from:
+            if self.awakens_from.source.count() > 0:
+                print 'grabbing sources from ' + str(self.awakens_from)
+                self.source.clear()
+                self.source = self.awakens_from.source.all()
 
         # Pull awakening mats from unawakened version - one time deal
         if self.awakens_from:

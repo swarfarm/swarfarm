@@ -1,6 +1,8 @@
+{% extends 'base.html' %}
 {% load staticfiles %}
 {% load utils %}
 
+{% block content %}
 {% static 'herders/images/' as img_url_prefix %}
 <div id="bestiary-inventory">
     <div class="panel panel-default">
@@ -183,3 +185,4 @@
         </div>
     </div>
 </div>
+{% endblock %}

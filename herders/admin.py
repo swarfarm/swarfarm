@@ -130,6 +130,7 @@ class MonsterAdmin(admin.ModelAdmin):
             else:
                 obj.skill_ups_to_max = 0
 
+            obj.farmable = obj.source.filter(farmable_source=True).count() > 0
             obj.save(skip_url_gen=True)
     resave.short_description = 'Resave model instances and update data'
 

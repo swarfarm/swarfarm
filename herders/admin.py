@@ -130,7 +130,13 @@ class MonsterAdmin(admin.ModelAdmin):
             else:
                 obj.skill_ups_to_max = 0
 
-            obj.farmable = obj.source.filter(farmable_source=True).count() > 0
+            if obj.awakens_from and obj.awakens_from.source.count() > 0:
+                # Update from unawakened version
+                obj.source.clear()
+                obj.source = obj.awakens_from.source.all()
+
+            # obj.farmable = obj.source.filter(farmable_source=True).count() > 0
+
             obj.save(skip_url_gen=True)
     resave.short_description = 'Resave model instances and update data'
 
@@ -150,8 +156,18 @@ class MonsterAdmin(admin.ModelAdmin):
         else:
             form.instance.skill_ups_to_max = 0
 
-        form.instance.farmable = form.instance.source.filter(farmable_source=True).count() > 0
         form.instance.save()
+
+
+class MonsterSkillScalesWithInline(admin.TabularInline):
+    model = MonsterSkillScalesWith
+    extra = 2
+
+
+@admin.register(MonsterSkillScalingStat)
+class MonsterSkillScalingStatAdmin(admin.ModelAdmin):
+    search_fields = ['stat', ]
+    save_as = True
 
 
 @admin.register(MonsterSkill)
@@ -160,6 +176,7 @@ class MonsterSkillAdmin(admin.ModelAdmin):
     filter_vertical = ('skill_effect',)
     search_fields = ['name', 'icon_filename', 'description']
     list_filter = ['slot', 'skill_effect', 'passive']
+    inlines = (MonsterSkillScalesWithInline, )
     save_as = True
 
 

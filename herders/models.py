@@ -344,12 +344,6 @@ class Monster(models.Model):
             self.awaken_mats_magic_low = 0
 
         # ONE TIME DEAL UPDATES. REMOVE THESE BEFORE ADDING NEW MONSTERS
-        if self.awakens_from:
-            if self.awakens_from.source.count() > 0:
-                print 'grabbing sources from ' + str(self.awakens_from)
-                self.source.clear()
-                self.source = self.awakens_from.source.all()
-
         # Pull awakening mats from unawakened version - one time deal
         if self.awakens_from:
             self.awaken_ele_mats_high = self.awakens_from.awaken_ele_mats_high
@@ -487,6 +481,8 @@ class MonsterSkill(models.Model):
     max_level = models.IntegerField()
     level_progress_description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
+    atk_multiplier = models.IntegerField(blank=True, null=True)
+    scales_with = models.ManyToManyField('MonsterSkillScalingStat', through='MonsterSkillScalesWith')
 
     def image_url(self):
         if self.icon_filename:
@@ -624,6 +620,19 @@ class MonsterSkillEffect(models.Model):
 
     class Meta:
         ordering = ['-is_buff', 'name']
+
+
+class MonsterSkillScalingStat(models.Model):
+    stat = models.CharField(max_length=20)
+
+    def __unicode__(self):
+        return self.stat
+
+
+class MonsterSkillScalesWith(models.Model):
+    scalingstat = models.ForeignKey(MonsterSkillScalingStat)
+    monsterskill = models.ForeignKey(MonsterSkill)
+    multiplier = models.IntegerField(blank=True, null=True)
 
 
 class MonsterSource(models.Model):

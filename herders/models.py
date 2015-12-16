@@ -131,32 +131,29 @@ class Monster(models.Model):
             return 10 + self.base_stars * 5
 
     def get_awakening_materials(self):
-        if self.is_awakened and self.awakens_from is not None:
-            return self.awakens_from.get_awakening_materials()
-        else:
-            mats = OrderedDict()
-            mats['magic'] = OrderedDict()
-            mats[self.element] = OrderedDict()
+        mats = OrderedDict()
+        mats['magic'] = OrderedDict()
+        mats[self.element] = OrderedDict()
 
-            if self.awaken_mats_magic_high:
-                mats['magic']['high'] = self.awaken_mats_magic_high
+        if self.awaken_mats_magic_high:
+            mats['magic']['high'] = self.awaken_mats_magic_high
 
-            if self.awaken_mats_magic_mid:
-                mats['magic']['mid'] = self.awaken_mats_magic_mid
+        if self.awaken_mats_magic_mid:
+            mats['magic']['mid'] = self.awaken_mats_magic_mid
 
-            if self.awaken_mats_magic_low:
-                mats['magic']['low'] = self.awaken_mats_magic_low
+        if self.awaken_mats_magic_low:
+            mats['magic']['low'] = self.awaken_mats_magic_low
 
-            if self.awaken_ele_mats_high:
-                mats[self.element]['high'] = self.awaken_ele_mats_high
+        if self.awaken_ele_mats_high:
+            mats[self.element]['high'] = self.awaken_ele_mats_high
 
-            if self.awaken_ele_mats_mid:
-                mats[self.element]['mid'] = self.awaken_ele_mats_mid
+        if self.awaken_ele_mats_mid:
+            mats[self.element]['mid'] = self.awaken_ele_mats_mid
 
-            if self.awaken_ele_mats_low:
-                mats[self.element]['low'] = self.awaken_ele_mats_low
+        if self.awaken_ele_mats_low:
+            mats[self.element]['low'] = self.awaken_ele_mats_low
 
-            return mats
+        return mats
 
     def get_stats(self):
         from collections import OrderedDict
@@ -346,6 +343,7 @@ class Monster(models.Model):
         if self.awaken_mats_magic_low is None:
             self.awaken_mats_magic_low = 0
 
+        # ONE TIME DEAL UPDATES. REMOVE THESE BEFORE ADDING NEW MONSTERS
         # Pull awakening mats from unawakened version - one time deal
         if self.awakens_from:
             self.awaken_ele_mats_high = self.awakens_from.awaken_ele_mats_high
@@ -456,6 +454,10 @@ class Monster(models.Model):
 
         super(Monster, self).save(*args, **kwargs)
 
+        if self.source.count() == 0:
+            # Trigger a clear which will re-populate with required fields. Do not do this if fields have already been added.
+            self.source.clear()
+
         # Automatically set awakens from/to relationship if none exists
         if self.awakens_from and self.awakens_from.awakens_to is not self:
             self.awakens_from.awakens_to = self
@@ -479,10 +481,13 @@ class MonsterSkill(models.Model):
     description = models.TextField()
     slot = models.IntegerField(default=1)
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
+    cooltime = models.IntegerField(null=True, blank=True)
     passive = models.BooleanField(default=False)
     max_level = models.IntegerField()
     level_progress_description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
+    atk_multiplier = models.IntegerField(blank=True, null=True)
+    scales_with = models.ManyToManyField('MonsterSkillScalingStat', through='MonsterSkillScalesWith')
 
     def image_url(self):
         if self.icon_filename:
@@ -620,6 +625,19 @@ class MonsterSkillEffect(models.Model):
 
     class Meta:
         ordering = ['-is_buff', 'name']
+
+
+class MonsterSkillScalingStat(models.Model):
+    stat = models.CharField(max_length=20)
+
+    def __unicode__(self):
+        return self.stat
+
+
+class MonsterSkillScalesWith(models.Model):
+    scalingstat = models.ForeignKey(MonsterSkillScalingStat)
+    monsterskill = models.ForeignKey(MonsterSkill)
+    multiplier = models.IntegerField(blank=True, null=True)
 
 
 class MonsterSource(models.Model):

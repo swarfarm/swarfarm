@@ -454,6 +454,10 @@ class Monster(models.Model):
 
         super(Monster, self).save(*args, **kwargs)
 
+        if self.source.count() == 0:
+            # Trigger a clear which will re-populate with required fields. Do not do this if fields have already been added.
+            self.source.clear()
+
         # Automatically set awakens from/to relationship if none exists
         if self.awakens_from and self.awakens_from.awakens_to is not self:
             self.awakens_from.awakens_to = self

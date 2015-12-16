@@ -33,7 +33,6 @@ class MonsterAdmin(admin.ModelAdmin):
                 'archetype',
                 'fusion_food',
                 'obtainable',
-                'farmable',
             ),
         }),
         ('Awakening', {
@@ -100,6 +99,7 @@ class MonsterAdmin(admin.ModelAdmin):
             'classes': ('suit-tab', 'suit-tab-other'),
             'fields': (
                 'source',
+                'farmable',
             ),
         }),
         ('Resources', {
@@ -135,8 +135,6 @@ class MonsterAdmin(admin.ModelAdmin):
                 obj.source.clear()
                 obj.source = obj.awakens_from.source.all()
 
-            # obj.farmable = obj.source.filter(farmable_source=True).count() > 0
-
             obj.save(skip_url_gen=True)
     resave.short_description = 'Resave model instances and update data'
 
@@ -146,8 +144,14 @@ class MonsterAdmin(admin.ModelAdmin):
         # Copy the unawakened version's sources if they exist.
         # Has to be done here instead of in model's save() because django admin clears M2M on form submit
         if form.instance.awakens_from and form.instance.awakens_from.source.count() > 0:
+            # This is the awakened one so copy from awakens_from monster
             form.instance.source.clear()
             form.instance.source = form.instance.awakens_from.source.all()
+
+        if form.instance.awakens_to:
+            # This is the unawakened one so push to the awakened one
+            form.instance.awakens_to.source.clear()
+            form.instance.awakens_to.source = form.instance.source.all()
 
         # Update various info fields
         if form.instance.skills is not None:

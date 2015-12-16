@@ -454,7 +454,7 @@ class Monster(models.Model):
 
         super(Monster, self).save(*args, **kwargs)
 
-        if self.source.count() == 0:
+        if self.archetype != self.TYPE_MATERIAL and self.source.count() == 0:
             # Trigger a clear which will re-populate with required fields. Do not do this if fields have already been added.
             self.source.clear()
 

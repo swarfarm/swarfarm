@@ -481,6 +481,7 @@ class MonsterSkill(models.Model):
     description = models.TextField()
     slot = models.IntegerField(default=1)
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
+    cooltime = models.IntegerField(null=True, blank=True)
     passive = models.BooleanField(default=False)
     max_level = models.IntegerField()
     level_progress_description = models.TextField(null=True, blank=True)

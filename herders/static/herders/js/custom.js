@@ -353,7 +353,8 @@ function update_main_slot_options(slot, main_stat_input) {
 function update_rune_counts() {
     $.ajax({
         url: '/profile/' + PROFILE_NAME + '/runes/inventory/counts/',
-        type: 'get'
+        type: 'get',
+        global: false
     }).done(function(result) {
         $('.rune-button-energy span.badge').text(result.counts.Energy);
         $('.rune-button-fatal span.badge').text(result.counts.Fatal);

@@ -27,7 +27,8 @@ $('body')
         $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),
-            data: $form.serialize()
+            data: $form.serialize(),
+            global: false
         }).done(function(result) {
             if (result.code === 'success') {
                 $('.modal.in').modal('hide');
@@ -148,7 +149,12 @@ $('body')
     })
     .on('click', '.rune-view-mode', function() {
         var view_mode = $(this).data('mode');
-        $.get('/profile/' + PROFILE_NAME + '/runes/inventory/' + view_mode + '/', function() {
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/runes/inventory/' + view_mode + '/',
+            global: false
+        })
+        .done(function(result) {
             update_rune_inventory();
         });
     })

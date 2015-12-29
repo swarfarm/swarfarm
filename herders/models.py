@@ -343,38 +343,6 @@ class Monster(models.Model):
         if self.awaken_mats_magic_low is None:
             self.awaken_mats_magic_low = 0
 
-        # ONE TIME DEAL UPDATES. REMOVE THESE BEFORE ADDING NEW MONSTERS
-        # Pull awakening mats from unawakened version - one time deal
-        if self.awakens_from:
-            self.awaken_ele_mats_high = self.awakens_from.awaken_ele_mats_high
-            self.awaken_ele_mats_mid = self.awakens_from.awaken_ele_mats_mid
-            self.awaken_ele_mats_low = self.awakens_from.awaken_ele_mats_low
-            self.awaken_mats_magic_high = self.awakens_from.awaken_mats_magic_high
-            self.awaken_mats_magic_mid = self.awakens_from.awaken_mats_magic_mid
-            self.awaken_mats_magic_low = self.awakens_from.awaken_mats_magic_low
-
-        # Update new element fields - one time deal
-        if self.element == self.ELEMENT_FIRE:
-            self.awaken_mats_fire_high = self.awaken_ele_mats_high
-            self.awaken_mats_fire_mid = self.awaken_ele_mats_mid
-            self.awaken_mats_fire_low = self.awaken_ele_mats_low
-        elif self.element == self.ELEMENT_WATER:
-            self.awaken_mats_water_high = self.awaken_ele_mats_high
-            self.awaken_mats_water_mid = self.awaken_ele_mats_mid
-            self.awaken_mats_water_low = self.awaken_ele_mats_low
-        elif self.element == self.ELEMENT_WIND:
-            self.awaken_mats_wind_high = self.awaken_ele_mats_high
-            self.awaken_mats_wind_mid = self.awaken_ele_mats_mid
-            self.awaken_mats_wind_low = self.awaken_ele_mats_low
-        elif self.element == self.ELEMENT_DARK:
-            self.awaken_mats_dark_high = self.awaken_ele_mats_high
-            self.awaken_mats_dark_mid = self.awaken_ele_mats_mid
-            self.awaken_mats_dark_low = self.awaken_ele_mats_low
-        elif self.element == self.ELEMENT_LIGHT:
-            self.awaken_mats_light_high = self.awaken_ele_mats_high
-            self.awaken_mats_light_mid = self.awaken_ele_mats_mid
-            self.awaken_mats_light_low = self.awaken_ele_mats_low
-
         # Update the max level stats
         self.max_lvl_hp = self.actual_hp(6, 40)
         self.max_lvl_defense = self.actual_defense(6, 40)

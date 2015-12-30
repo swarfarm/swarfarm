@@ -2,7 +2,7 @@
 {% load utils %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="rune-image pull-left">
+<div class="rune-image pull-left{% if popover %} rune-popover{% endif %}" data-rune-id="{{ rune.pk.hex }}" title="{{ rune }}">
     <div class="rune-bg {{ rune.get_quality_display|lower }}">
         <div class="rune slot{{ rune.slot }}">
             <div class="rune-symbol {{ rune.get_type_display|lower }}"></div>

@@ -177,6 +177,10 @@ div.profile {
     padding-bottom: 0;
 }
 
+.monster-table .rune-image {
+    margin-right: 3px;
+}
+
 .monster-image>div,
 div.monster-image,
 button.monster-image,

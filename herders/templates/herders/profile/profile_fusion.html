@@ -166,7 +166,7 @@
                                     </td>
                                     <td class="fusion-ingredients-collection">
                                         {% for owned in ingredient.owned %}
-                                            <div class="monster-image pull-left">
+                                            <div class="monster-image pull-left monster-popover" data-instance-id="{{ owned.pk.hex }}" title="{{ owned.monster.name }}">
                                                 <div>
                                                     {% if is_owner %}
                                                         <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}#edit">

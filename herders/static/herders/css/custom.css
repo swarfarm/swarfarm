@@ -177,6 +177,10 @@ div.profile {
     padding-bottom: 0;
 }
 
+.monster-table .rune-image {
+    margin-right: 3px;
+}
+
 .monster-image>div,
 div.monster-image,
 button.monster-image,
@@ -757,12 +761,12 @@ span.monster-source>span {
     padding: 0;
 }
 
-.monster-stats table {
-    margin: 3px;
+.monster-stats.popover {
+    max-width: 345px;
 }
 
-.monster-stats td {
-    padding: 3px 0;
+.monster-stats table {
+    margin: 3px;
 }
 
 .monster-stats>.popover-title {

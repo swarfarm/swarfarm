@@ -1640,7 +1640,7 @@ class RuneInstance(models.Model):
         return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
 
     class Meta:
-        ordering = ['type', 'slot', 'level', 'quality']
+        ordering = ['slot', 'type', 'level', 'quality']
 
 
 class TeamGroup(models.Model):

@@ -3,42 +3,66 @@
 {% static 'herders/images/' as img_url_prefix %}
 {% load markdown_deux_tags %}
 
-<table>
+<table class="table table-condensed">
+    <thead>
+    <tr>
+        <th>Stat</th>
+        <th>Base</th>
+        <th>Rune</th>
+        <th>Total</th>
+    </tr>
+    </thead>
     <tbody>
     <tr>
         <td>HP</td>
+        <td>{{ instance.base_hp }}</td>
+        <td class="text-success">{% if instance.rune_hp > 0 %}<span>+{{ instance.rune_hp }}</span>{% endif %}</td>
         <td>{{ instance.hp }}</td>
     </tr>
     <tr>
         <td>ATK</td>
+        <td>{{ instance.base_attack }}</td>
+        <td class="text-success">{% if instance.rune_attack > 0 %}<span>+{{ instance.rune_attack }}</span>{% endif %}</td>
         <td>{{ instance.attack }}</td>
     </tr>
     <tr>
         <td>DEF</td>
+        <td>{{ instance.base_defense }}</td>
+        <td class="text-success">{% if instance.rune_defense > 0 %}<span>+{{ instance.rune_defense }}</span>{% endif %}</td>
         <td>{{ instance.defense }}</td>
     </tr>
     <tr>
         <td>SPD</td>
+        <td>{{ instance.base_speed }}</td>
+        <td class="text-success">{% if instance.rune_speed > 0 %}<span>+{{ instance.rune_speed }}</span>{% endif %}</td>
         <td>{{ instance.speed }}</td>
     </tr>
     <tr>
         <td>CRI Rate</td>
-        <td {% if instance.crit_rate >= 100 %}class="text-danger"{% endif %}>{{ instance.crit_rate }}%</td>
+        <td>{{ instance.base_crit_rate }}%</td>
+        <td class="text-success">{% if instance.rune_crit_rate > 0 %}<span>+{{ instance.rune_crit_rate }}</span>%{% endif %}</td>
+        <td {% if instance.crit_rate >= 100 %} class="text-danger"{% endif %}>{{ instance.crit_rate }}%</td>
     </tr>
     <tr>
         <td>CRI Dmg</td>
+        <td>{{ instance.base_crit_damage }}%</td>
+        <td class="text-success">{% if instance.rune_crit_damage > 0 %}<span>+{{ instance.rune_crit_damage }}%</span>{% endif %}</td>
         <td>{{ instance.crit_damage }}%</td>
     </tr>
     <tr>
         <td>Resistance</td>
-        <td {% if instance.resistance >= 100 %}class="text-danger"{% endif %}>{{ instance.resistance }}%</td>
+        <td>{{ instance.base_resistance }}%</td>
+        <td class="text-success">{% if instance.rune_resistance > 0 %}<span>+{{ instance.rune_resistance }}</span>%{% endif %}</td>
+        <td {% if instance.resistance >= 100 %} class="text-danger"{% endif %}>{{ instance.resistance }}%</td>
     </tr>
     <tr>
         <td>Accuracy</td>
-        <td {% if instance.accuracy >= 100 %}class="text-danger"{% endif %}>{{ instance.accuracy }}%</td>
+        <td>{{ instance.base_accuracy }}%</td>
+        <td class="text-success">{% if instance.rune_accuracy > 0 %}<span>+{{ instance.rune_accuracy }}</span>%{% endif %}</td>
+        <td {% if instance.accuracy >= 100 %} class="text-danger"{% endif %}>{{ instance.accuracy }}%</td>
     </tr>
     <tr>
-        <td colspan="2" style="position:relative">
+        <td colspan="4" style="position:relative">
             {% for skill in instance.monster.skills %}
             <div class="monster-image" style="position:relative">
                 <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" />
@@ -59,8 +83,19 @@
             {% endfor %}
         </td>
     </tr>
+    {% if instance.runeinstance_set|length > 0 %}
     <tr>
-        {% if instance.notes %}<td colspan="2"><strong>Notes: </strong>{{ instance.notes|markdown }}</td>{% endif %}
+        <td colspan="4" class="rune-popover-row">
+            {% for rune in instance.runeinstance_set %}
+            {% include 'api/rune_instance/thumbnail.html' with rune=rune only %}
+            {% endfor %}
+        </td>
     </tr>
+    {% endif %}
+    {% if instance.notes %}
+    <tr>
+        <td colspan="4"><strong>Notes: </strong>{{ instance.notes|markdown }}</td>
+    </tr>
+    {% endif %}
     </tbody>
 </table>

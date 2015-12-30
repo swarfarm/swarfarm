@@ -1,0 +1,26 @@
+{% load staticfiles %}
+{% load utils %}
+{% static 'herders/images/' as img_url_prefix %}
+<div class="rune-box">
+    <div class="rune-box-actions">
+        Slot {{ rune.slot }}
+    </div>
+    <div class="rune-image-box">
+        <div class="rune-bg {{ rune.get_quality_display|lower }}">
+            <div class="rune slot{{ rune.slot }}">
+                <div class="rune-symbol {{ rune.get_type_display|lower }}"></div>
+            </div>
+            {% for x in rune.stars|get_range %}
+                {% if rune.level == 15 %}
+                <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-awakened.png" />
+                {% else %}
+                <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
+                {% endif %}
+            {% endfor %}
+            <span class="image-plus image-plus-right">+{{ rune.level }}</span>
+        </div>
+    </div>
+    <div class="rune-box-actions">
+        {{ rune.get_main_stat_rune_display }} {{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}
+    </div>
+</div>

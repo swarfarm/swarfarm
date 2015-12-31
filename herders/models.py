@@ -1090,7 +1090,7 @@ class MonsterInstance(models.Model):
         return str(self.monster) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level)
 
     class Meta:
-        ordering = ['-stars', '-level', '-priority', 'monster__name']
+        ordering = ['-stars', '-level', 'monster__name']
 
 
 class RuneInstance(models.Model):

@@ -32,6 +32,9 @@
                             <div class="panel-body">
                                 {% for instance in monsters %}
                                     <div class="monster-box">
+                                        <div class="monster-box-actions">
+                                            {{ instance.monster.name }}
+                                        </div>
                                         <div class="monster-box-thumb monster-popover" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }}">
                                             <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
                                                 <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
@@ -46,12 +49,26 @@
                                                         {% endif %}
                                                     {% endfor %}
                                                 </span>
-                                                {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
-                                                    <img class="image-plus-icon" src="{{ img_url_prefix }}icons/fusion.png" />
-                                                {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
-                                                    <img class="image-plus-icon" src="{{ img_url_prefix }}icons/fusion_ignored.png" />
-                                                {% endif %}
-                                                <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
+                                                <div class="image-plus-icon">
+                                                    {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
+                                                        <img src="{{ img_url_prefix }}icons/fusion.png" />
+                                                    {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
+                                                        <img src="{{ img_url_prefix }}icons/fusion_ignored.png" />
+                                                    {% endif %}
+                                                    {% if instance.fodder %}
+                                                        <span class="fa-stack">
+                                                            <span class="fa fa-square fa-stack-2x"></span>
+                                                            <span class="fa fa-birthday-cake fa-stack-1x fa-inverse"></span>
+                                                        </span>
+                                                    {% endif %}
+                                                    {% if instance.in_storage %}
+                                                        <span class="fa-stack">
+                                                            <span class="fa fa-square fa-stack-2x"></span>
+                                                            <span class="fa fa-bed fa-stack-1x fa-inverse"></span>
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+
                                                 <span class="image-plus image-plus-right">{{ instance.level }}</span>
                                             </a>
                                         </div>

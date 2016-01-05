@@ -1139,7 +1139,7 @@ class ImportRuneForm(forms.Form):
         max_length=999999,
         required=True,
         label='Paste Rune Data',
-        help_text=mark_safe('Data is exported from the <a href="https://b7e2310d2b970be56f8b12314a4ade9bfc3d620b-www.googledrive.com/host/0B-GpYLz2ELqgfjdzTURIVFJVcGdlbW8xLWlyQTJKVWs5V0xrZHYyWGlYTFZnMElFX09RVmc/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
+        help_text=mark_safe('Data is exported from the <a href="http://www.graphactory.eu/sw/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
         widget=forms.Textarea(),
     )
 
@@ -1170,7 +1170,7 @@ class ExportRuneForm(forms.Form):
     json_data = forms.CharField(
         max_length=999999,
         label='Exported Rune Data',
-        help_text=mark_safe('You can paste this data into the <a href="https://b7e2310d2b970be56f8b12314a4ade9bfc3d620b-www.googledrive.com/host/0B-GpYLz2ELqgfjdzTURIVFJVcGdlbW8xLWlyQTJKVWs5V0xrZHYyWGlYTFZnMElFX09RVmc/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
+        help_text=mark_safe('You can paste this data into the <a href="http://www.graphactory.eu/sw/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
         widget=forms.Textarea(),
     )
 

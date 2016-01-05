@@ -177,6 +177,10 @@ div.profile {
     padding-bottom: 0;
 }
 
+.monster-table .rune-image {
+    margin-right: 3px;
+}
+
 .monster-image>div,
 div.monster-image,
 button.monster-image,
@@ -301,6 +305,9 @@ div.sprite {
     position: relative;
     text-align: center;
     width: 100%;
+    line-height: 12px;
+    font-size: 11px;
+    font-weight: bold;
 }
 
 .btn-xs.monster-edit,
@@ -405,7 +412,13 @@ div.sprite {
     position: absolute;
     top: 1px;
     right: 1px;
-    height: 25px;
+    horiz-align: center;
+}
+
+.image-plus-icon>* {
+    display: block;
+    color: black;
+    width: 2em;
 }
 
 .image-plus-left {
@@ -757,12 +770,12 @@ span.monster-source>span {
     padding: 0;
 }
 
-.monster-stats table {
-    margin: 3px;
+.monster-stats.popover {
+    max-width: 345px;
 }
 
-.monster-stats td {
-    padding: 3px 0;
+.monster-stats table {
+    margin: 3px;
 }
 
 .monster-stats>.popover-title {

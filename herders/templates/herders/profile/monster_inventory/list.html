@@ -42,6 +42,7 @@
                             <th data-sorter="false">Skill Effects</th>
                             <th data-sorter="false" data-columnSelector="false">Skills</th>
                             <th data-columnSelector="false">Skill-Ups Remaining</th>
+                            <th data-sorter="false" data-columnSelector="false">Runes</th>
                             <th data-columnSelector="false">HP</th>
                             <th data-columnSelector="false">DEF</th>
                             <th data-columnSelector="false">ATK</th>
@@ -151,6 +152,11 @@
                                     {% else %}
                                     <span class="glyphicon glyphicon-ok-circle text-success"></span>
                                     {% endif %}
+                                </td>
+                                <td>
+                                    {% for rune in instance.runeinstance_set.all %}
+                                    {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune popover=True only %}
+                                    {% endfor %}
                                 </td>
                                 <td>{{ instance.hp }}</td>
                                 <td>{{ instance.defense }}</td>

@@ -23,6 +23,46 @@
     margin: 0 10px 0 0;
     border: 1px solid black;
     border-radius: 4px;
+    display: inline-block;
+}
+
+.rune-box {
+    width: 52px;
+    position: relative;
+    float: left;
+    border: 1px solid black;
+    border-radius: 6px;
+    margin: 1px;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.rune-box-actions {
+    position: relative;
+    text-align: center;
+    width: 100%;
+    height: auto;
+    padding: 0 1px;
+    line-height: 11px;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+.rune-image-box {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+}
+
+.rune-image-subtext {
+    position: relative;
+    text-align: center;
+    width: 100%;
+}
+
+.monster-stats .rune-image {
+    margin-right: 4px;
 }
 
 .rune-text {

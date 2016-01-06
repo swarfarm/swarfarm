@@ -29,6 +29,7 @@ class MonsterAdmin(admin.ModelAdmin):
             'classes': ('suit-tab', 'suit-tab-basic'),
             'fields': (
                 'name',
+                'com2us_id',
                 'element',
                 'archetype',
                 'fusion_food',

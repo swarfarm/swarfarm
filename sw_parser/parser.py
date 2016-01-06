@@ -86,11 +86,20 @@ def parse_pcap(filename):
 
 
 def parse_login_data(data):
-    inventory_info = data['inventory_info']
-    unit_list = data['unit_list']
-    runes_info = data['runes']
+    building_list = data.get('building_list')
+    inventory_info = data.get('inventory_info')
+    unit_list = data.get('unit_list')
+    runes_info = data.get('runes')
 
-    # Extract essence storage
+    # Buildings
+    # Find which one is the storage building
+    storage_building_id = None
+    for building in building_list:
+        if building.get('building_master_id') == 25:
+            storage_building_id = building.get('building_id')
+            break
+
+    # Essence Inventory
     inventory = {}
     for item in inventory_info:
         if item['item_master_type'] == 11:
@@ -105,13 +114,35 @@ def parse_login_data(data):
         # Get base monster type
         com2us_id = str(unit_info.get('unit_master_id'))
         if len(com2us_id) == 5:
+            imported_mon = MonsterInstance()
+
+            imported_mon.com2us_id = unit_info.get('unit_id')
+
+            # Base monster
             monster_family = int(com2us_id[:3])
             awakened = com2us_id[3] == '1'
             element = element_map.get(int(com2us_id[-1:]))
 
-            monster_base = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
+            imported_mon.monster = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
+            imported_mon.stars = unit_info.get('class')
+            imported_mon.level = unit_info.get('unit_level')
+            imported_mon.in_storage = unit_info.get('building_id') == storage_building_id
 
-            print monster_base
+            if imported_mon.monster.archetype == Monster.TYPE_MATERIAL:
+                imported_mon.fodder = True
+                imported_mon.priority = MonsterInstance.PRIORITY_DONE
+
+            skills = unit_info.get('skills', [])
+            if len(skills) >= 1:
+                imported_mon.skill_1_level = skills[0][1]
+            if len(skills) >= 2:
+                imported_mon.skill_2_level = skills[1][1]
+            if len(skills) >= 3:
+                imported_mon.skill_3_level = skills[2][1]
+            if len(skills) >= 4:
+                imported_mon.skill_4_level = skills[3][1]
+
+            print imported_mon
 
     uploaded_data = {
         'inventory': inventory,
@@ -119,8 +150,6 @@ def parse_login_data(data):
 
     print uploaded_data
     #return uploaded_data
-
-
 
 
 def monster_name(uid, default_unknown="???", full=True):

@@ -54,6 +54,7 @@ class Monster(models.Model):
     )
 
     name = models.CharField(max_length=40)
+    com2us_id = models.IntegerField(blank=True, null=True)
     image_filename = models.CharField(max_length=250, null=True, blank=True)
     element = models.CharField(max_length=6, choices=ELEMENT_CHOICES, default=ELEMENT_FIRE)
     archetype = models.CharField(max_length=10, choices=TYPE_CHOICES, default=TYPE_ATTACK)
@@ -446,6 +447,7 @@ class Monster(models.Model):
 
 class MonsterSkill(models.Model):
     name = models.CharField(max_length=40)
+    com2us_id = models.IntegerField(blank=True, null=True)
     description = models.TextField()
     slot = models.IntegerField(default=1)
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
@@ -773,6 +775,7 @@ class MonsterInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
     monster = models.ForeignKey('Monster')
+    com2us_id = models.BigIntegerField(blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()
     skill_1_level = models.IntegerField(blank=True, default=1)
@@ -1336,6 +1339,7 @@ class RuneInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
+    com2us_id = models.BigIntegerField(blank=True, null=True)
     assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()

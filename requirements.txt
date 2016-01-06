@@ -12,3 +12,5 @@ django-timezone-field
 django_compressor
 djangorestframework==3.3.1
 django-filter
+pycrypto
+dpkt

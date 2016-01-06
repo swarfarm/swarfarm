@@ -1,8 +1,10 @@
-from .smon_decryptor import decrypt_request, decrypt_response
 import dpkt
 import json
 from collections import OrderedDict
-from monster_mapping import monster_id_map, element_map
+
+from .data_mapping import *
+from .smon_decryptor import decrypt_request, decrypt_response
+from herders.models import Monster, MonsterInstance, RuneInstance
 
 
 def parse_pcap(filename):
@@ -67,10 +69,7 @@ def parse_pcap(filename):
                     requests = requests[len(request):]
                     responses = requests[len(responses):]
 
-                    if len(request) > 0 and len(response) > 0 and \
-                                    request.method == 'POST' and \
-                                    request.uri == '/api/gateway.php' and \
-                                    response.status == '200':
+                    if len(request) > 0 and len(response) > 0 and request.method == 'POST' and request.uri == '/api/gateway.php' and response.status == '200':
                         try:
                             req_plain = decrypt_request(request.body)
                             resp_plain = decrypt_response(response.body)
@@ -84,6 +83,44 @@ def parse_pcap(filename):
 
             elif (tcp.flags & dpkt.tcp.TH_FIN) != 0:
                 del streams[tupl]
+
+
+def parse_login_data(data):
+    inventory_info = data['inventory_info']
+    unit_list = data['unit_list']
+    runes_info = data['runes']
+
+    # Extract essence storage
+    inventory = {}
+    for item in inventory_info:
+        if item['item_master_type'] == 11:
+            essence = inventory_essence_map.get(item['item_master_id'])
+            quantity = item.get('item_quantity')
+
+            if essence and quantity:
+                inventory[essence] = quantity
+
+    # Extract monsters
+    for unit_info in unit_list:
+        # Get base monster type
+        com2us_id = str(unit_info.get('unit_master_id'))
+        if len(com2us_id) == 5:
+            monster_family = int(com2us_id[:3])
+            awakened = com2us_id[3] == '1'
+            element = element_map.get(int(com2us_id[-1:]))
+
+            monster_base = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
+
+            print monster_base
+
+    uploaded_data = {
+        'inventory': inventory,
+    }
+
+    print uploaded_data
+    #return uploaded_data
+
+
 
 
 def monster_name(uid, default_unknown="???", full=True):
@@ -308,7 +345,9 @@ def write_rune(f, rune, rune_id, monster_id=0, monster_uid=0):
             "sub_crate": sub_crate}
 
 
-def parse_login_data(data):
+
+
+def parse_login_data_old(data):
     wizard = data['wizard_info']
     inventory = data['inventory_info']
     monsters = data['unit_list']

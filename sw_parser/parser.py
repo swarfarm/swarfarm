@@ -146,7 +146,13 @@ def parse_sw_json(data, owner):
             mon.save()
 
             # Equipped runes
-            for rune_data in unit_info.get('runes', []):
+            equipped_runes = unit_info.get('runes')
+
+            # Sometimes the fuckin SWParser returns a dict or a list in the json.
+            if isinstance(equipped_runes, dict):
+                equipped_runes = equipped_runes.values()
+
+            for rune_data in equipped_runes:
                 rune = parse_rune_data(rune_data)
                 if rune:
                     rune.owner = owner
@@ -202,7 +208,10 @@ def parse_monster_data(monster_data):
 
 
 def parse_rune_data(rune_data):
-    com2us_id = rune_data.get('rune_id')
+    try:
+        com2us_id = rune_data.get('rune_id')
+    except AttributeError as e:
+        print e
 
     try:
         rune = RuneInstance.objects.get(com2us_id=com2us_id)

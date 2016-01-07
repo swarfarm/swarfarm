@@ -54,6 +54,7 @@ class Monster(models.Model):
     )
 
     name = models.CharField(max_length=40)
+    com2us_id = models.IntegerField(blank=True, null=True)
     image_filename = models.CharField(max_length=250, null=True, blank=True)
     element = models.CharField(max_length=6, choices=ELEMENT_CHOICES, default=ELEMENT_FIRE)
     archetype = models.CharField(max_length=10, choices=TYPE_CHOICES, default=TYPE_ATTACK)
@@ -422,9 +423,9 @@ class Monster(models.Model):
 
         super(Monster, self).save(*args, **kwargs)
 
-        if self.obtainable and self.archetype != self.TYPE_MATERIAL and self.source.count() == 0:
+        #if self.obtainable and self.archetype != self.TYPE_MATERIAL and ((self.element == self.ELEMENT_DARK and self.base_stars >= 3) or self.element != self.ELEMENT_DARK) and self.source.count() == 0:
             # Trigger a clear which will re-populate with required fields. Do not do this if fields have already been added.
-            self.source.clear()
+        #    self.source.clear()
 
         # Automatically set awakens from/to relationship if none exists
         if self.awakens_from and self.awakens_from.awakens_to is not self:
@@ -446,6 +447,7 @@ class Monster(models.Model):
 
 class MonsterSkill(models.Model):
     name = models.CharField(max_length=40)
+    com2us_id = models.IntegerField(blank=True, null=True)
     description = models.TextField()
     slot = models.IntegerField(default=1)
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
@@ -773,6 +775,7 @@ class MonsterInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
     monster = models.ForeignKey('Monster')
+    com2us_id = models.BigIntegerField(blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()
     skill_1_level = models.IntegerField(blank=True, default=1)
@@ -1094,7 +1097,7 @@ class MonsterInstance(models.Model):
         return str(self.monster) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level)
 
     class Meta:
-        ordering = ['-stars', '-level', '-priority', 'monster__name']
+        ordering = ['-stars', '-level', 'monster__name']
 
 
 class RuneInstance(models.Model):
@@ -1336,6 +1339,7 @@ class RuneInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
+    com2us_id = models.BigIntegerField(blank=True, null=True)
     assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()

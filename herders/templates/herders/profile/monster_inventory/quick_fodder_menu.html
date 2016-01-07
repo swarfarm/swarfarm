@@ -42,9 +42,9 @@
 <div class="form-group pull-left">
     <label class="control-label">Aiden Forest</label>
     <div class="btn-group input-group">
-        {% include 'herders/monster_icon_button.html' with filename='monster_flower_wind.png' monster_id=87 stars=2 level=1 extra_classes='quick-fodder' only %}
-        {% include 'herders/monster_icon_button.html' with filename='sandman_water.png' monster_id=800 stars=2 level=1 extra_classes='quick-fodder' only %}
-        {% include 'herders/monster_icon_button.html' with filename='forest_keeper_water.png' monster_id=36 stars=2 level=1 extra_classes='quick-fodder' only %}
+        {% include 'herders/monster_icon_button.html' with filename='monster_flower_wind.png' monster_id=87 stars=2 level=7 extra_classes='quick-fodder' only %}
+        {% include 'herders/monster_icon_button.html' with filename='sandman_water.png' monster_id=41 stars=2 level=7 extra_classes='quick-fodder' only %}
+        {% include 'herders/monster_icon_button.html' with filename='forest_keeper_water.png' monster_id=36 stars=2 level=7 extra_classes='quick-fodder' only %}
         {% include 'herders/monster_icon_button.html' with filename='grim_reaper_wind.png' monster_id=369 stars=3 can_awaken=1 level=1 extra_classes='quick-fodder' only %}
     </div>
 </div>
@@ -52,40 +52,10 @@
 <div class="form-group pull-left">
     <label class="control-label">Chiruka Remains</label>
     <div class="btn-group input-group">
-        {% include 'herders/monster_icon_button.html' with filename='monster_flower_water.png' monster_id=47 stars=2 level=1 extra_classes='quick-fodder' only %}
-        {% include 'herders/monster_icon_button.html' with filename='battle_scorpion_water.png' monster_id=794 stars=2 level=1 extra_classes='quick-fodder' only %}
+        {% include 'herders/monster_icon_button.html' with filename='monster_flower_water.png' monster_id=47 stars=2 level=7 extra_classes='quick-fodder' only %}
+        {% include 'herders/monster_icon_button.html' with filename='battle_scorpion_water.png' monster_id=794 stars=2 level=7 extra_classes='quick-fodder' only %}
         {% include 'herders/monster_icon_button.html' with filename='warbear_wind.png' monster_id=111 stars=2 level=1 can_awaken=1 extra_classes='quick-fodder' only %}
         {% include 'herders/monster_icon_button.html' with filename='minotauros_wind.png' monster_id=389 stars=3 can_awaken=1 level=1 extra_classes='quick-fodder' only %}
     </div>
 </div>
 
-{% comment %}
-<ul class="dropdown-menu" role="menu">
-
-    <li class="dropdown-submenu">
-        <a href="#"><img src="{{ img_url_prefix }}monsters/minotauros_wind.png" /> Chiruka Remains</a>
-        <ul class="dropdown-menu" role="menu">
-            <li>
-                <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=47 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
-                    <img src="{{ img_url_prefix }}monsters/monster_flower_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Monster Flower
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=794 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
-                    <img src="{{ img_url_prefix }}monsters/battle_scorpion_water.png" /> 2<span class="glyphicon glyphicon-star"></span> Battle Scorpion
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=111 stars=2 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
-                    <img src="{{ img_url_prefix }}monsters/warbear_wind.png" /> 2<span class="glyphicon glyphicon-star"></span> Warbear
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'herders:monster_instance_quick_add' profile_name=profile_name monster_id=389 stars=3 level=1 %}{% if return_path %}?next={{ return_path }}{% endif %}">
-                    <img src="{{ img_url_prefix }}\monsters/minotauros_wind.png" /> 3<span class="glyphicon glyphicon-star"></span> Minotauros
-                </a>
-            </li>
-        </ul>
-    </li>
-</ul>
-{% endcomment %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="col-sm-6 col-sm-offset-3">
+        {% if errors|length > 0 %}
+            <div class="alert alert-warning">The import completed successfully but encountered errors importing some items.</div>
+            <div class="alert alert-danger">
+                <ul class="list-unstyled">
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="alert alert-success">The import completed successfully.</div>
+        {% endif %}
+    </div>
+{% endblock content %}

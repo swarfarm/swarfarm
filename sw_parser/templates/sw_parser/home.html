@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Import/Export - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<ul class="list-unstyled">
+    <li><a href="{% url 'sw_parser:import_pcap' %}">Import PCAP file</a></li>
+    <li><a href="{% url 'sw_parser:import_swparser' %}">Import SWParser json</a></li>
+    <li><a href="{% url 'sw_parser:import_optimizer' %}">Import Rune Optimizer JSON</a></li>
+    <li><a href="{% url 'sw_parser:export_optimizer' %}">Export Rune Optimizer JSON</a></li>
+</ul>
+{% endblock content %}

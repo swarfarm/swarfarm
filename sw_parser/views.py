@@ -42,6 +42,8 @@ def import_sw_json(request):
             except KeyError as e:
                 errors.append('Uploaded JSON is missing an expected field: ' + str(e))
 
+            return render(request, 'sw_parser/import_successful.html', {'errors': errors})
+
     context = {
         'form': form,
         'errors': errors,

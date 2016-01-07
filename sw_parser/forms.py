@@ -36,7 +36,6 @@ class ImportSWParserJSONForm(ClearProfileFieldMixin, forms.Form):
     helper = FormHelper()
     helper.form_action = 'sw_parser:import_swparser'
     helper.layout = Layout(
-        Alert('Todo: Fill this in', css_class='alert-warning'),
         Field('json_file'),
         Field('clear_profile'),
         FormActions(

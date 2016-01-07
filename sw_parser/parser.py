@@ -155,7 +155,7 @@ def parse_sw_json(data, owner):
                 else:
                     errors.append('Unable to parse rune assigned to ' + str(mon))
         else:
-            errors.append('Unable to parse monster data. Monster type: ' + str(unit_info.get('unit_master_id')) + '. Monster ID: ' + str(unit_info.get('')))
+            errors.append('Unable to parse monster data. Monster type: ' + str(unit_info.get('unit_master_id')) + '. Monster ID: ' + str(unit_info.get('unit_id')))
 
     return errors
 

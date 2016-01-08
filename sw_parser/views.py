@@ -73,6 +73,7 @@ def import_sw_json(request):
                     summoner.storage_dark_low = results['inventory'].get('storage_dark_low', 0)
                     summoner.storage_dark_mid = results['inventory'].get('storage_dark_mid', 0)
                     summoner.storage_dark_high = results['inventory'].get('storage_dark_high', 0)
+                    summoner.save()
 
                     for mon in results['monsters']:
                         mon.save()

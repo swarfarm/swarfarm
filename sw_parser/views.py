@@ -44,13 +44,41 @@ def import_sw_json(request):
                 errors.append('Issue opening uploaded file. Please try again.')
             else:
                 # Parsed JSON successfully! Do the import.
-                if import_options['clear_profile']:
-                    MonsterInstance.objects.filter(owner=summoner).delete()
-                    RuneInstance.objects.filter(owner=summoner).delete()
                 try:
-                    errors += parse_sw_json(data, summoner, import_options)
+                    results = parse_sw_json(data, summoner, import_options)
                 except KeyError as e:
                     errors.append('Uploaded JSON is missing an expected field: ' + str(e))
+                else:
+                    if import_options['clear_profile']:
+                        MonsterInstance.objects.filter(owner=summoner).delete()
+                        RuneInstance.objects.filter(owner=summoner).delete()
+
+                    errors += results['errors']
+
+                    summoner.storage_magic_low = results['inventory'].get('storage_magic_low', 0)
+                    summoner.storage_magic_mid = results['inventory'].get('storage_magic_mid', 0)
+                    summoner.storage_magic_high = results['inventory'].get('storage_magic_high', 0)
+                    summoner.storage_fire_low = results['inventory'].get('storage_fire_low', 0)
+                    summoner.storage_fire_mid = results['inventory'].get('storage_fire_mid', 0)
+                    summoner.storage_fire_high = results['inventory'].get('storage_fire_high', 0)
+                    summoner.storage_water_low = results['inventory'].get('storage_water_low', 0)
+                    summoner.storage_water_mid = results['inventory'].get('storage_water_mid', 0)
+                    summoner.storage_water_high = results['inventory'].get('storage_water_high', 0)
+                    summoner.storage_wind_low = results['inventory'].get('storage_wind_low', 0)
+                    summoner.storage_wind_mid = results['inventory'].get('storage_wind_mid', 0)
+                    summoner.storage_wind_high = results['inventory'].get('storage_wind_high', 0)
+                    summoner.storage_light_low = results['inventory'].get('storage_light_low', 0)
+                    summoner.storage_light_mid = results['inventory'].get('storage_light_mid', 0)
+                    summoner.storage_light_high = results['inventory'].get('storage_light_high', 0)
+                    summoner.storage_dark_low = results['inventory'].get('storage_dark_low', 0)
+                    summoner.storage_dark_mid = results['inventory'].get('storage_dark_mid', 0)
+                    summoner.storage_dark_high = results['inventory'].get('storage_dark_high', 0)
+
+                    for mon in results['monsters']:
+                        mon.save()
+
+                    for rune in results['runes']:
+                        rune.save()
 
                 return render(request, 'sw_parser/import_successful.html', {'errors': errors})
     else:

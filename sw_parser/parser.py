@@ -86,6 +86,9 @@ def parse_sw_json(data, owner, options):
     unit_list = data['unit_list']
     runes_info = data['runes']
 
+    imported_mons = []
+    imported_runes = []
+
     # Buildings
     # Find which one is the storage building
     storage_building_id = None
@@ -104,31 +107,13 @@ def parse_sw_json(data, owner, options):
             if essence and quantity:
                 imported_inventory[essence] = quantity
 
-        owner.storage_magic_low = imported_inventory.get('storage_magic_low', 0)
-        owner.storage_magic_mid = imported_inventory.get('storage_magic_mid', 0)
-        owner.storage_magic_high = imported_inventory.get('storage_magic_high', 0)
-        owner.storage_fire_low = imported_inventory.get('storage_fire_low', 0)
-        owner.storage_fire_mid = imported_inventory.get('storage_fire_mid', 0)
-        owner.storage_fire_high = imported_inventory.get('storage_fire_high', 0)
-        owner.storage_water_low = imported_inventory.get('storage_water_low', 0)
-        owner.storage_water_mid = imported_inventory.get('storage_water_mid', 0)
-        owner.storage_water_high = imported_inventory.get('storage_water_high', 0)
-        owner.storage_wind_low = imported_inventory.get('storage_wind_low', 0)
-        owner.storage_wind_mid = imported_inventory.get('storage_wind_mid', 0)
-        owner.storage_wind_high = imported_inventory.get('storage_wind_high', 0)
-        owner.storage_light_low = imported_inventory.get('storage_light_low', 0)
-        owner.storage_light_mid = imported_inventory.get('storage_light_mid', 0)
-        owner.storage_light_high = imported_inventory.get('storage_light_high', 0)
-        owner.storage_dark_low = imported_inventory.get('storage_dark_low', 0)
-        owner.storage_dark_mid = imported_inventory.get('storage_dark_mid', 0)
-        owner.storage_dark_high = imported_inventory.get('storage_dark_high', 0)
-
-    # Extract Rune Inventory (unequpped)
+    # Extract Rune Inventory (unequpped runes)
     for rune_data in runes_info:
         rune = parse_rune_data(rune_data, owner)
         if rune:
             rune.owner = owner
-            rune.save()
+            # rune.save()
+            imported_runes.append(rune)
         else:
             errors.append('Unable to parse rune in inventory with this data: ' + str(rune_data))
 
@@ -157,9 +142,10 @@ def parse_sw_json(data, owner, options):
             if (level_ignored or silver_ignored or material_ignored) and not (allow_due_to_runes or allow_due_to_ld):
                 continue
 
-            mon.save()
+            # mon.save()
+            imported_mons.append(mon)
 
-            # Sometimes the fuckin SWParser returns a dict or a list in the json. Convert to list.
+            # Sometimes the runes are a dict or a list in the json. Convert to list.
             if isinstance(equipped_runes, dict):
                 equipped_runes = equipped_runes.values()
 
@@ -168,13 +154,21 @@ def parse_sw_json(data, owner, options):
                 if rune:
                     rune.owner = owner
                     rune.assigned_to = mon
-                    rune.save()
+                    # rune.save()
+                    imported_runes.append(rune)
                 else:
                     errors.append('Unable to parse rune assigned to ' + str(mon))
         else:
             errors.append('Unable to parse monster data. Monster type: ' + str(unit_info.get('unit_master_id')) + '. Monster ID: ' + str(unit_info.get('unit_id')))
 
-    return errors
+    import_results = {
+        'errors': errors,
+        'monsters': imported_mons,
+        'runes': imported_runes,
+        'inventory': imported_inventory,
+    }
+
+    return import_results
 
 
 def parse_monster_data(monster_data, owner):

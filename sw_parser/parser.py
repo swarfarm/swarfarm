@@ -79,7 +79,7 @@ def parse_pcap(filename):
                 del streams[tupl]
 
 
-def parse_sw_json(data, owner):
+def parse_sw_json(data, owner, options):
     errors = []
     building_list = data['building_list']
     inventory_info = data['inventory_info']
@@ -125,7 +125,7 @@ def parse_sw_json(data, owner):
 
     # Extract Rune Inventory (unequpped)
     for rune_data in runes_info:
-        rune = parse_rune_data(rune_data)
+        rune = parse_rune_data(rune_data, owner)
         if rune:
             rune.owner = owner
             rune.save()
@@ -134,7 +134,8 @@ def parse_sw_json(data, owner):
 
     # Extract monsters
     for unit_info in unit_list:
-        mon = parse_monster_data(unit_info)
+        mon = parse_monster_data(unit_info, owner)
+
         if mon:
             mon.owner = owner
             mon.in_storage = unit_info.get('building_id') == storage_building_id
@@ -143,17 +144,26 @@ def parse_sw_json(data, owner):
                 mon.fodder = True
                 mon.priority = MonsterInstance.PRIORITY_DONE
 
-            mon.save()
-
             # Equipped runes
             equipped_runes = unit_info.get('runes')
 
-            # Sometimes the fuckin SWParser returns a dict or a list in the json.
+            # Check import options to determine if monster should be saved
+            level_ignored = mon.stars < options['minimum_stars']
+            silver_ignored = options['ignore_silver'] and not mon.monster.can_awaken
+            material_ignored = options['ignore_material'] and mon.monster.archetype == Monster.TYPE_MATERIAL
+            allow_due_to_runes = len(equipped_runes) > 0 and options['except_with_runes']
+
+            if (level_ignored or silver_ignored or material_ignored) and not allow_due_to_runes:
+                continue
+
+            mon.save()
+
+            # Sometimes the fuckin SWParser returns a dict or a list in the json. Convert to list.
             if isinstance(equipped_runes, dict):
                 equipped_runes = equipped_runes.values()
 
             for rune_data in equipped_runes:
-                rune = parse_rune_data(rune_data)
+                rune = parse_rune_data(rune_data, owner)
                 if rune:
                     rune.owner = owner
                     rune.assigned_to = mon
@@ -166,13 +176,13 @@ def parse_sw_json(data, owner):
     return errors
 
 
-def parse_monster_data(monster_data):
+def parse_monster_data(monster_data, owner):
     # Get base monster type
     com2us_id = monster_data.get('unit_id')
     monster_type_id = str(monster_data.get('unit_master_id'))
 
     try:
-        mon = MonsterInstance.objects.get(com2us_id=com2us_id)
+        mon = MonsterInstance.objects.get(com2us_id=com2us_id, owner=owner)
     except MonsterInstance.DoesNotExist:
         mon = MonsterInstance()
 
@@ -207,14 +217,11 @@ def parse_monster_data(monster_data):
         return None
 
 
-def parse_rune_data(rune_data):
-    try:
-        com2us_id = rune_data.get('rune_id')
-    except AttributeError as e:
-        print e
+def parse_rune_data(rune_data, owner):
+    com2us_id = rune_data.get('rune_id')
 
     try:
-        rune = RuneInstance.objects.get(com2us_id=com2us_id)
+        rune = RuneInstance.objects.get(com2us_id=com2us_id, owner=owner)
     except RuneInstance.DoesNotExist:
         rune = RuneInstance()
 

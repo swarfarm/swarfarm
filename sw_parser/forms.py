@@ -74,7 +74,7 @@ class ImportPCAPForm(MonsterImportOptionsMixin, forms.Form):
 
 class ImportSWParserJSONForm(MonsterImportOptionsMixin, forms.Form):
     json_file = forms.FileField(
-        required=False,
+        required=True,
         label='SWParser JSON File',
     )
 

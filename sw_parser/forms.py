@@ -17,7 +17,7 @@ class MonsterImportOptionsMixin(forms.Form):
     minimum_stars = forms.ChoiceField(
         label='Minimum stars',
         choices=Monster.STAR_CHOICES,
-        required=False,
+        required=True,
         widget=forms.RadioSelect,
         initial=1,
     )

@@ -15,7 +15,7 @@ def home(request):
 
 @login_required
 def import_pcap(request):
-    pass
+    return render(request, 'sw_parser/coming_soon.html')
 
 
 @login_required
@@ -38,7 +38,7 @@ def import_sw_json(request):
             data = json.load(uploaded_file)
         except ValueError as e:
             errors.append('Unable to parse file: ' + str(e))
-        except AttributeError as e:
+        except AttributeError:
             errors.append('Issue opening uploaded file. Please try again.')
         else:
             # Parsed JSON successfully. Check that it has
@@ -62,9 +62,9 @@ def import_sw_json(request):
 
 @login_required
 def export_rune_optimizer(request):
-    pass
+    return render(request, 'sw_parser/coming_soon.html')
 
 
 @login_required
 def import_rune_optimizer(request):
-    pass
+    return render(request, 'sw_parser/coming_soon.html')

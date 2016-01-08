@@ -3,7 +3,7 @@ psycopg2
 bcrypt
 redis
 django-redis-cache==1.6.3
-django-autocomplete-light==2.2.8
+django-autocomplete-light
 django-crispy-forms==1.5.2
 django-markdown-deux
 django-recaptcha

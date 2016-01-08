@@ -5,12 +5,55 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
 from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert
 
-
-class ClearProfileFieldMixin(forms.Form):
-    clear_profile = forms.BooleanField(label='Clear entire profile on import', required=False, initial=False, help_text='This will clear EVERYTHING in your profile and import fresh data.')
+from herders.models import Monster
 
 
-class ImportPCAPForm(ClearProfileFieldMixin, forms.Form):
+class MonsterImportOptionsMixin(forms.Form):
+    clear_profile = forms.BooleanField(
+        required=False,
+        label='Clear entire profile on import. This is recommended for the first Com2US data import.',
+        help_text=''
+    )
+    minimum_stars = forms.ChoiceField(
+        label='Minimum monster star rating to import',
+        choices=Monster.STAR_CHOICES,
+        required=False,
+        widget=forms.RadioSelect,
+        initial=1,
+    )
+    ignore_silver = forms.BooleanField(
+        required=False,
+        label="Ignore silver star monsters that can't awaken"
+    )
+    ignore_material = forms.BooleanField(
+        required=False,
+        label="Ignore material type monsters (Rainbowmon, Angelmon, and Devilmon)"
+    )
+    except_with_runes = forms.BooleanField(
+        required=False,
+        label='Bypass filters if monster has equipped runes',
+        initial=True,
+    )
+
+
+class MonsterImportOptionsLayout(Layout):
+    def __init__(self, *args, **kwargs):
+        super(MonsterImportOptionsLayout, self).__init__(
+            Div(
+                Field('minimum_stars', template='crispy/button_radio_select.html'),
+                Field('ignore_silver'),
+                Field('ignore_material'),
+                Field('except_with_runes'),
+                css_class='list-group-item',
+            ),
+            Div(
+                Field('clear_profile'),
+                css_class='list-group-item',
+            ),
+        )
+
+
+class ImportPCAPForm(MonsterImportOptionsMixin, forms.Form):
     pcap = forms.FileField(
         required=True,
     )
@@ -20,14 +63,14 @@ class ImportPCAPForm(ClearProfileFieldMixin, forms.Form):
     helper.layout = Layout(
         Alert('Todo: Fill this in', css_class='alert-warning'),
         Field('pcap'),
-        Field('clear_profile'),
+        MonsterImportOptionsLayout(),
         FormActions(
             Submit('import', 'Import'),
         ),
     )
 
 
-class ImportSWParserJSONForm(ClearProfileFieldMixin, forms.Form):
+class ImportSWParserJSONForm(MonsterImportOptionsMixin, forms.Form):
     json_file = forms.FileField(
         required=False,
         label='SWParser JSON File',
@@ -36,15 +79,24 @@ class ImportSWParserJSONForm(ClearProfileFieldMixin, forms.Form):
     helper = FormHelper()
     helper.form_action = 'sw_parser:import_swparser'
     helper.layout = Layout(
-        Field('json_file'),
-        Field('clear_profile'),
-        FormActions(
-            Submit('import', 'Import'),
-        ),
+        Div(
+            Div(
+                Field('json_file'),
+                css_class='list-group-item',
+            ),
+            MonsterImportOptionsLayout(),
+            Div(
+                FormActions(
+                    Submit('import', 'Import'),
+                ),
+                css_class='list-group-item',
+            ),
+            css_class='list-group',
+        )
     )
 
 
-class ImportOptimizerForm(ClearProfileFieldMixin, forms.Form):
+class ImportOptimizerForm(forms.Form):
     json_data = forms.CharField(
         max_length=999999,
         required=True,

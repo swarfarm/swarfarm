@@ -34,6 +34,11 @@ class MonsterImportOptionsMixin(forms.Form):
         label='Bypass all filters if monster has equipped runes',
         initial=True,
     )
+    except_light_and_dark = forms.BooleanField(
+        required=False,
+        label='Bypass all filters if monster is Light or Dark',
+        initial=True,
+    )
 
 
 class MonsterImportOptionsLayout(Layout):
@@ -45,6 +50,7 @@ class MonsterImportOptionsLayout(Layout):
                 Field('ignore_silver'),
                 Field('ignore_material'),
                 Field('except_with_runes'),
+                Field('except_light_and_dark'),
                 Alert(content="Note: If a monster is filtered out, it's equipped runes will not be imported either!", css_class='alert-warning'),
                 css_class='list-group-item',
             ),

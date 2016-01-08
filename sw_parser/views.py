@@ -33,6 +33,7 @@ def import_sw_json(request):
                 'ignore_silver': form.cleaned_data.get('ignore_silver'),
                 'ignore_material': form.cleaned_data.get('ignore_material'),
                 'except_with_runes': form.cleaned_data.get('except_with_runes'),
+                'except_light_and_dark': form.cleaned_data.get('except_light_and_dark'),
             }
 
             try:

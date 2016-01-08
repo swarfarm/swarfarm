@@ -151,9 +151,10 @@ def parse_sw_json(data, owner, options):
             level_ignored = mon.stars < options['minimum_stars']
             silver_ignored = options['ignore_silver'] and not mon.monster.can_awaken
             material_ignored = options['ignore_material'] and mon.monster.archetype == Monster.TYPE_MATERIAL
-            allow_due_to_runes = len(equipped_runes) > 0 and options['except_with_runes']
+            allow_due_to_runes = options['except_with_runes'] and len(equipped_runes) > 0
+            allow_due_to_ld = options['except_light_and_dark'] and mon.monster.element in [Monster.ELEMENT_DARK, Monster.ELEMENT_LIGHT]
 
-            if (level_ignored or silver_ignored or material_ignored) and not allow_due_to_runes:
+            if (level_ignored or silver_ignored or material_ignored) and not (allow_due_to_runes or allow_due_to_ld):
                 continue
 
             mon.save()

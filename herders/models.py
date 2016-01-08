@@ -1013,6 +1013,41 @@ class MonsterInstance(models.Model):
     def accuracy(self):
         return self.base_accuracy + self.rune_accuracy
 
+    def update_fields(self):
+        # Update stats
+        self.base_hp = self.calc_base_hp()
+        self.base_attack = self.calc_base_attack()
+        self.base_defense = self.calc_base_defense()
+        self.base_speed = self.calc_base_speed()
+        self.base_crit_rate = self.calc_base_crit_rate()
+        self.base_crit_damage = self.calc_base_crit_damage()
+        self.base_resistance = self.calc_base_resistance()
+        self.base_accuracy = self.calc_base_accuracy()
+
+        self.rune_hp = self.calc_rune_hp()
+        self.rune_attack = self.calc_rune_attack()
+        self.rune_defense = self.calc_rune_defense()
+        self.rune_speed = self.calc_rune_speed()
+        self.rune_crit_rate = self.calc_rune_crit_rate()
+        self.rune_crit_damage = self.calc_rune_crit_damage()
+        self.rune_resistance = self.calc_rune_resistance()
+        self.rune_accuracy = self.calc_rune_accuracy()
+
+        # Limit skill levels to the max level of the skill
+        skills = self.monster.skills.all()
+
+        if len(skills) >= 1 and self.skill_1_level > skills[0].max_level:
+            self.skill_1_level = skills[0].max_level
+
+        if len(skills) >= 2 and self.skill_2_level > skills[1].max_level:
+            self.skill_2_level = skills[1].max_level
+
+        if len(skills) >= 3 and self.skill_3_level > skills[2].max_level:
+            self.skill_3_level = skills[2].max_level
+
+        if len(skills) >= 4 and self.skill_4_level > skills[3].max_level:
+            self.skill_4_level = skills[3].max_level
+
     def clean(self):
         from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
@@ -1057,40 +1092,7 @@ class MonsterInstance(models.Model):
         super(MonsterInstance, self).clean()
 
     def save(self, *args, **kwargs):
-        # Update stats
-        self.base_hp = self.calc_base_hp()
-        self.base_attack = self.calc_base_attack()
-        self.base_defense = self.calc_base_defense()
-        self.base_speed = self.calc_base_speed()
-        self.base_crit_rate = self.calc_base_crit_rate()
-        self.base_crit_damage = self.calc_base_crit_damage()
-        self.base_resistance = self.calc_base_resistance()
-        self.base_accuracy = self.calc_base_accuracy()
-
-        self.rune_hp = self.calc_rune_hp()
-        self.rune_attack = self.calc_rune_attack()
-        self.rune_defense = self.calc_rune_defense()
-        self.rune_speed = self.calc_rune_speed()
-        self.rune_crit_rate = self.calc_rune_crit_rate()
-        self.rune_crit_damage = self.calc_rune_crit_damage()
-        self.rune_resistance = self.calc_rune_resistance()
-        self.rune_accuracy = self.calc_rune_accuracy()
-
-        # Limit skill levels to the max level of the skill
-        skills = self.monster.skills.all()
-
-        if len(skills) >= 1 and self.skill_1_level > skills[0].max_level:
-            self.skill_1_level = skills[0].max_level
-
-        if len(skills) >= 2 and self.skill_2_level > skills[1].max_level:
-            self.skill_2_level = skills[1].max_level
-
-        if len(skills) >= 3 and self.skill_3_level > skills[2].max_level:
-            self.skill_3_level = skills[2].max_level
-
-        if len(skills) >= 4 and self.skill_4_level > skills[3].max_level:
-            self.skill_4_level = skills[3].max_level
-
+        self.update_fields()
         super(MonsterInstance, self).save(*args, **kwargs)
 
     def __unicode__(self):
@@ -1494,6 +1496,38 @@ class RuneInstance(models.Model):
         else:
             return ''
 
+    def update_fields(self):
+        # Set flags for filtering
+        rune_stat_types = [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]
+        self.has_hp = any([i for i in rune_stat_types if i in [self.STAT_HP, self.STAT_HP_PCT]])
+        self.has_atk = any([i for i in rune_stat_types if i in [self.STAT_ATK, self.STAT_ATK_PCT]])
+        self.has_def = any([i for i in rune_stat_types if i in [self.STAT_DEF, self.STAT_DEF_PCT]])
+        self.has_crit_rate = self.STAT_CRIT_RATE_PCT in rune_stat_types
+        self.has_crit_dmg = self.STAT_CRIT_DMG_PCT in rune_stat_types
+        self.has_speed = self.STAT_SPD in rune_stat_types
+        self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
+        self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
+
+        self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
+
+        # Clean up values that don't have a stat type picked
+        if self.innate_stat is None:
+            self.innate_stat_value = None
+        if self.substat_1 is None:
+            self.substat_1_value = None
+        if self.substat_2 is None:
+            self.substat_2_value = None
+        if self.substat_3 is None:
+            self.substat_3_value = None
+        if self.substat_4 is None:
+            self.substat_4_value = None
+
+        # Check no other runes are in this slot
+        if self.assigned_to:
+            for rune in RuneInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot):
+                rune.assigned_to = None
+                rune.save()
+
     def clean(self):
         from django.core.exceptions import ValidationError
 
@@ -1607,37 +1641,7 @@ class RuneInstance(models.Model):
         super(RuneInstance, self).clean()
 
     def save(self, *args, **kwargs):
-        # Set flags for filtering
-        rune_stat_types = [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]
-        self.has_hp = any([i for i in rune_stat_types if i in [self.STAT_HP, self.STAT_HP_PCT]])
-        self.has_atk = any([i for i in rune_stat_types if i in [self.STAT_ATK, self.STAT_ATK_PCT]])
-        self.has_def = any([i for i in rune_stat_types if i in [self.STAT_DEF, self.STAT_DEF_PCT]])
-        self.has_crit_rate = self.STAT_CRIT_RATE_PCT in rune_stat_types
-        self.has_crit_dmg = self.STAT_CRIT_DMG_PCT in rune_stat_types
-        self.has_speed = self.STAT_SPD in rune_stat_types
-        self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
-        self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
-
-        self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
-
-        # Clean up values that don't have a stat type picked
-        if self.innate_stat is None:
-            self.innate_stat_value = None
-        if self.substat_1 is None:
-            self.substat_1_value = None
-        if self.substat_2 is None:
-            self.substat_2_value = None
-        if self.substat_3 is None:
-            self.substat_3_value = None
-        if self.substat_4 is None:
-            self.substat_4_value = None
-
-        # Check no other runes are in this slot
-        if self.assigned_to:
-            for rune in RuneInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot):
-                rune.assigned_to = None
-                rune.save()
-
+        self.update_fields()
         super(RuneInstance, self).save(*args, **kwargs)
 
         # Trigger stat calc update on the assigned monster

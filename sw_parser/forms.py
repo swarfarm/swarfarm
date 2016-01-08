@@ -15,15 +15,15 @@ class MonsterImportOptionsMixin(forms.Form):
         help_text=''
     )
     minimum_stars = forms.ChoiceField(
-        label='Minimum monster star rating to import',
+        label='Minimum stars',
         choices=Monster.STAR_CHOICES,
-        required=False,
+        required=True,
         widget=forms.RadioSelect,
         initial=1,
     )
     ignore_silver = forms.BooleanField(
         required=False,
-        label="Ignore silver star monsters that can't awaken"
+        label="Ignore silver star monsters that can't be awakened"
     )
     ignore_material = forms.BooleanField(
         required=False,
@@ -31,7 +31,12 @@ class MonsterImportOptionsMixin(forms.Form):
     )
     except_with_runes = forms.BooleanField(
         required=False,
-        label='Bypass filters if monster has equipped runes',
+        label='Bypass all filters if monster has equipped runes',
+        initial=True,
+    )
+    except_light_and_dark = forms.BooleanField(
+        required=False,
+        label='Bypass all filters if monster is Light or Dark',
         initial=True,
     )
 
@@ -40,10 +45,13 @@ class MonsterImportOptionsLayout(Layout):
     def __init__(self, *args, **kwargs):
         super(MonsterImportOptionsLayout, self).__init__(
             Div(
+                HTML("""<h4 class="list-group-item-heading">Monster Import Filters</h4>"""),
                 Field('minimum_stars', template='crispy/button_radio_select.html'),
                 Field('ignore_silver'),
                 Field('ignore_material'),
                 Field('except_with_runes'),
+                Field('except_light_and_dark'),
+                Alert(content="Note: If a monster is filtered out, it's equipped runes will not be imported either!", css_class='alert-warning'),
                 css_class='list-group-item',
             ),
             Div(
@@ -72,7 +80,7 @@ class ImportPCAPForm(MonsterImportOptionsMixin, forms.Form):
 
 class ImportSWParserJSONForm(MonsterImportOptionsMixin, forms.Form):
     json_file = forms.FileField(
-        required=False,
+        required=True,
         label='SWParser JSON File',
     )
 

@@ -1572,7 +1572,7 @@ def rune_import(request, profile_name):
         if request.method == 'POST' and form.is_valid():
             data = form.cleaned_data['json_data']
 
-            if data['runes']:
+            if 'runes' in data:
                 import_count = 0
                 valid_runes = []
 

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Import SWParser JSON - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    <div class="col-sm-6 col-sm-offset-3">
+        <h2>Instructions:</h2>
+        <ol>
+            <li>Download the <a href="https://github.com/kakaroto/SWParser/releases/tag/0.94">SWParser</a> program created by <a href="https://www.reddit.com/u/kakarotoks">/u/kakarotoks</a>. Tested with version 0.94 - later versions may not work properly.</li>
+            <li>Follow it's instructions to parse your pcap file or capture your network traffic.</li>
+            <li>Upload the .json file that does not have any suffix appended to the file name. It will be approximately 1MB and be named something like '1234567910.json'</li>
+            <li>For your first upload, it is recommended to clear your profile. For subsequent uploads I can sync your monsters automatically. Note: At this time, monsters removed in-game are not removed from SWARFARM. This'll be fixed very soon.</li>
+            <li>The upload and processing can take up to about 60 seconds so be patient.</li>
+        </ol>
+
+        {% if errors|length > 0 %}
+        <div class="alert alert-danger">
+            <ul class="list-unstyled">
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+
+        </div>
+        {% endif %}
+
+        {% crispy form %}
+    </div>
+{% endblock content %}

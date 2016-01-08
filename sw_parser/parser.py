@@ -115,7 +115,7 @@ def parse_sw_json(data, owner, options):
         if rune:
             rune.owner = owner
 
-            if is_new:
+            if is_new or options['clear_profile']:
                 new_runes.append(rune)
             else:
                 updated_runes.append(rune)
@@ -147,7 +147,7 @@ def parse_sw_json(data, owner, options):
             if (level_ignored or silver_ignored or material_ignored) and not (allow_due_to_runes or allow_due_to_ld):
                 continue
 
-            if is_new:
+            if is_new or options['clear_profile']:
                 new_mons.append(mon)
             else:
                 updated_mons.append(mon)
@@ -162,7 +162,7 @@ def parse_sw_json(data, owner, options):
                     rune.owner = owner
                     rune.assigned_to = mon
 
-                    if is_new:
+                    if is_new or options['clear_profile']:
                         new_runes.append(rune)
                     else:
                         updated_runes.append(rune)

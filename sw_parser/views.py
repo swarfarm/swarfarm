@@ -85,7 +85,7 @@ def import_sw_json(request):
                     bulk_update(results['runes']['updated'])
                     RuneInstance.objects.bulk_create(results['runes']['new'])
 
-                    # Update imported monsters with equipped rune stats - can only be done after runes are saved
+                    # Update monsters with equipped rune stats - can only be done after runes are saved
                     mons_to_update = MonsterInstance.objects.filter(owner=summoner)
 
                     for mon in mons_to_update:

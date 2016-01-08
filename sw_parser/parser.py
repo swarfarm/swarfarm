@@ -182,7 +182,7 @@ def parse_monster_data(monster_data, owner):
     monster_type_id = str(monster_data.get('unit_master_id'))
 
     try:
-        mon = MonsterInstance.objects.get(com2us_id=com2us_id, owner=owner)
+        mon = MonsterInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
     except MonsterInstance.DoesNotExist:
         mon = MonsterInstance()
 
@@ -221,7 +221,7 @@ def parse_rune_data(rune_data, owner):
     com2us_id = rune_data.get('rune_id')
 
     try:
-        rune = RuneInstance.objects.get(com2us_id=com2us_id, owner=owner)
+        rune = RuneInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
     except RuneInstance.DoesNotExist:
         rune = RuneInstance()
 

@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from bulk_update.helper import bulk_update
@@ -93,7 +94,12 @@ def import_sw_json(request):
 
                     bulk_update(mons_to_update)
 
-            return render(request, 'sw_parser/import_successful.html', {'errors': errors, 'view': 'import_export'})
+                    if len(errors):
+                        messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
+                    else:
+                        messages.success(request, 'Import successful!')
+
+                    return redirect('herders:profile_default', profile_name=summoner.user.username)
     else:
         form = ImportSWParserJSONForm()
 

@@ -211,7 +211,7 @@ def parse_monster_data(monster_data, owner):
         try:
             mon.monster = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
         except Monster.DoesNotExist:
-            return None
+            return None, None
 
         mon.stars = monster_data.get('class')
         mon.level = monster_data.get('unit_level')

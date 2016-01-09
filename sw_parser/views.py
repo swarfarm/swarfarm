@@ -10,12 +10,12 @@ from .parser import *
 
 @login_required
 def home(request):
-    return render(request, 'sw_parser/home.html')
+    return render(request, 'sw_parser/base.html', context={'view': 'importexport'})
 
 
 @login_required
 def import_pcap(request):
-    return render(request, 'sw_parser/coming_soon.html')
+    return render(request, 'sw_parser/coming_soon.html', context={'view': 'importexport'})
 
 
 @login_required
@@ -93,13 +93,14 @@ def import_sw_json(request):
 
                     bulk_update(mons_to_update)
 
-            return render(request, 'sw_parser/import_successful.html', {'errors': errors})
+            return render(request, 'sw_parser/import_successful.html', {'errors': errors, 'view': 'import_export'})
     else:
         form = ImportSWParserJSONForm()
 
     context = {
         'form': form,
         'errors': errors,
+        'view': 'import_export'
     }
 
     return render(request, 'sw_parser/import_sw_json.html', context)
@@ -107,9 +108,9 @@ def import_sw_json(request):
 
 @login_required
 def export_rune_optimizer(request):
-    return render(request, 'sw_parser/coming_soon.html')
+    return render(request, 'sw_parser/coming_soon.html', context={'view': 'importexport'})
 
 
 @login_required
 def import_rune_optimizer(request):
-    return render(request, 'sw_parser/coming_soon.html')
+    return render(request, 'sw_parser/coming_soon.html', context={'view': 'importexport'})

@@ -83,6 +83,11 @@
                                 <span class="fa fa-archive hidden-sm"></span>
                                 Essence Storage
                             </a>
+                                <a href="{% url 'sw_parser:home' %}"
+                               class="btn btn-default {% if view == 'importexport' %}active{% endif %}">
+                                <span class="fa fa-cloud-download hidden-sm"></span>
+                                Import/Export
+                            </a>
                             {% endif %}
                             <a href="{% url 'herders:bestiary' %}"
                                class="btn btn-default {% if view == 'bestiary' %}active{% endif %}">

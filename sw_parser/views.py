@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from bulk_update.helper import bulk_update
@@ -10,12 +11,12 @@ from .parser import *
 
 @login_required
 def home(request):
-    return render(request, 'sw_parser/home.html')
+    return render(request, 'sw_parser/base.html', context={'view': 'importexport'})
 
 
 @login_required
 def import_pcap(request):
-    return render(request, 'sw_parser/coming_soon.html')
+    return render(request, 'sw_parser/coming_soon.html', context={'view': 'importexport'})
 
 
 @login_required
@@ -93,13 +94,19 @@ def import_sw_json(request):
 
                     bulk_update(mons_to_update)
 
-            return render(request, 'sw_parser/import_successful.html', {'errors': errors})
+                    if len(errors):
+                        messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
+                    else:
+                        messages.success(request, 'Import successful!')
+
+                    return redirect('herders:profile_default', profile_name=summoner.user.username)
     else:
         form = ImportSWParserJSONForm()
 
     context = {
         'form': form,
         'errors': errors,
+        'view': 'import_export'
     }
 
     return render(request, 'sw_parser/import_sw_json.html', context)
@@ -107,9 +114,9 @@ def import_sw_json(request):
 
 @login_required
 def export_rune_optimizer(request):
-    return render(request, 'sw_parser/coming_soon.html')
+    return render(request, 'sw_parser/coming_soon.html', context={'view': 'importexport'})
 
 
 @login_required
 def import_rune_optimizer(request):
-    return render(request, 'sw_parser/coming_soon.html')
+    return render(request, 'sw_parser/coming_soon.html', context={'view': 'importexport'})

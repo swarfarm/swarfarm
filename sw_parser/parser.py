@@ -167,6 +167,7 @@ def parse_sw_json(data, owner, options):
         rune, is_new = parse_rune_data(rune_data, owner)
         if rune:
             rune.owner = owner
+            rune.assigned_to = None
 
             if is_new or options['clear_profile']:
                 new_runes.append(rune)

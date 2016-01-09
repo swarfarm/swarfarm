@@ -64,17 +64,26 @@ class MonsterImportOptionsLayout(Layout):
 class ImportPCAPForm(MonsterImportOptionsMixin, forms.Form):
     pcap = forms.FileField(
         required=True,
+        label='PCAP File',
     )
     helper = FormHelper()
     helper.form_method = 'POST'
 
     helper.layout = Layout(
-        Alert('Todo: Fill this in', css_class='alert-warning'),
-        Field('pcap'),
-        MonsterImportOptionsLayout(),
-        FormActions(
-            Submit('import', 'Import'),
-        ),
+        Div(
+            Div(
+                Field('pcap'),
+                css_class='list-group-item',
+            ),
+            MonsterImportOptionsLayout(),
+            Div(
+                FormActions(
+                    Submit('import', 'Import'),
+                ),
+                css_class='list-group-item',
+            ),
+            css_class='list-group',
+        )
     )
 
 

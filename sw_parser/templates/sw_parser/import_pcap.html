@@ -1,0 +1,34 @@
+{% extends 'sw_parser/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Import SWParser JSON - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    <div class="col-sm-6 col-sm-offset-3">
+        <h2>Instructions:</h2>
+        <ol>
+            <li>Start your preferred method of packet capture from your phone/tablet.</li>
+            <li>Start Summoner's War and wait until the Press to Start message is displayed.</li>
+            <li>Stop the packet capture.</li>
+            <li>
+                Upload the resulting .pcap file here.
+                <ul>
+                    <li>Note: PCAP files over 5MB will not be accepted for upload.</li>
+                </ul>
+            </li>
+        </ol>
+
+        {% if errors|length > 0 %}
+        <div class="alert alert-danger">
+            <ul class="list-unstyled">
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+
+        </div>
+        {% endif %}
+
+        {% crispy form %}
+    </div>
+{% endblock content %}

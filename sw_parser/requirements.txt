@@ -1,0 +1,5 @@
+Django==1.8.5
+django-bulk-update==1.1.8
+django-crispy-forms==1.5.2
+pycrypto
+dpkt

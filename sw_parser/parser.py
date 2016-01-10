@@ -1,82 +1,135 @@
 import dpkt
 import json
 
+from bulk_update.helper import bulk_update
+
 from .data_mapping import *
 from .smon_decryptor import decrypt_response
 from herders.models import Monster, MonsterInstance, RuneInstance
 
 
-def parse_pcap(filename):
-    streams = dict()  # Connections with current buffer
-    with open(filename, "rb") as f:
-        pcap = dpkt.pcap.Reader(f)
-        for ts, buf in pcap:
-            eth = dpkt.ethernet.Ethernet(buf)
-            if eth.type != dpkt.ethernet.ETH_TYPE_IP:
-                continue
-            ip = eth.data
-            if not isinstance(ip, dpkt.ip.IP):
+def parse_pcap_new(pcap_file):
+    pcap = dpkt.pcap.Reader(pcap_file)
+    req_src = None
+    req_dst = None
+    req_sport = None
+    req_dport = None
+    #gateway_request = None
+
+    for ts, buf in pcap:
+        eth = dpkt.ethernet.Ethernet(buf)
+        ip = eth.data
+        tcp = ip.data
+
+        if len(tcp.data) > 0:
+            if tcp.dport == 80:
                 try:
-                    ip = dpkt.ip.IP(ip)
-                except:
+                    req = dpkt.http.Request(tcp.data)
+                except (dpkt.dpkt.NeedData, dpkt.dpkt.UnpackError):
                     continue
-            if ip.p != dpkt.ip.IP_PROTO_TCP:
-                continue
-            tcp = ip.data
-
-            if not isinstance(tcp, dpkt.tcp.TCP):
-                try:
-                    tcp = dpkt.tcp.TCP(tcp)
-                except:
-                    continue
-
-            tupl = (ip.src, ip.dst, tcp.sport, tcp.dport)
-            if tupl in streams:
-                streams[tupl] = streams[tupl] + tcp.data
-            else:
-                streams[tupl] = tcp.data
-
-            if (tcp.flags & dpkt.tcp.TH_FIN) != 0 and \
-                    (tcp.dport == 80 or tcp.sport == 80) and \
-                            len(streams[tupl]) > 0:
-                other_tupl = (ip.dst, ip.src, tcp.dport, tcp.sport)
-                stream1 = streams[tupl]
-                del streams[tupl]
-                try:
-                    stream2 = streams[other_tupl]
-                    del streams[other_tupl]
-                except:
-                    stream2 = ""
-                if tcp.dport == 80:
-                    requests = stream1
-                    responses = stream2
                 else:
-                    requests = stream2
-                    responses = stream1
+                    if req.method == 'POST' and req.uri == '/api/gateway.php':
+                        # Found the data request
+                        #gateway_request = (ip.src, ip.dst, tcp.sport, tcp.dport)
+                        req_src = ip.src
+                        req_dst = ip.dst
+                        req_sport = tcp.sport
+                        req_dport = tcp.dport
 
-                while len(requests):
-                    try:
-                        request = dpkt.http.Request(requests)
-                    except:
-                        request = ''
-                        requests = ''
-                    try:
-                        response = dpkt.http.Response(responses)
-                    except:
-                        response = ''
-                        responses = ''
-                    requests = requests[len(request):]
-                    responses = requests[len(responses):]
+            #if ip.dst == req_src:
+                #print 'found IP match'
+            if tcp.dport == req_sport:
+                print 'found port match'
+                try:
+                    resp = dpkt.http.Response(tcp.data)
+                    print decrypt_response(resp.body)
+                except:
+                    continue
 
-                    if len(request) > 0 and len(response) > 0 and request.method == 'POST' and request.uri == '/api/gateway.php' and response.status == '200':
-                        resp_plain = decrypt_response(response.body)
-                        resp_json = json.loads(resp_plain)
+            #if  == (ip.dst, ip.src, tcp.dport, tcp.sport):
+                # Found the response
+            #    try:
+            #        resp = dpkt.http.Response(tcp.data)
+            #    except (dpkt.dpkt.NeedData, dpkt.dpkt.UnpackError):
+            #        continue
+            #    else:
+            #        print decrypt_response(resp.body)
 
-                        if resp_json.get('command') == 'HubUserLogin':
-                            return resp_json
 
-            elif (tcp.flags & dpkt.tcp.TH_FIN) != 0:
-                del streams[tupl]
+
+
+
+def parse_pcap(pcap_file):
+    streams = dict()  # Connections with current buffer
+    pcap = dpkt.pcap.Reader(pcap_file)
+
+    for ts, buf in pcap:
+        eth = dpkt.ethernet.Ethernet(buf)
+        if eth.type != dpkt.ethernet.ETH_TYPE_IP:
+            continue
+        ip = eth.data
+        if not isinstance(ip, dpkt.ip.IP):
+            try:
+                ip = dpkt.ip.IP(ip)
+            except:
+                continue
+        if ip.p != dpkt.ip.IP_PROTO_TCP:
+            continue
+        tcp = ip.data
+
+        if not isinstance(tcp, dpkt.tcp.TCP):
+            try:
+                tcp = dpkt.tcp.TCP(tcp)
+            except:
+                continue
+
+        tupl = (ip.src, ip.dst, tcp.sport, tcp.dport)
+        if tupl in streams:
+            streams[tupl] = streams[tupl] + tcp.data
+        else:
+            streams[tupl] = tcp.data
+
+        if (tcp.flags & dpkt.tcp.TH_FIN) != 0 and \
+                (tcp.dport == 80 or tcp.sport == 80) and \
+                        len(streams[tupl]) > 0:
+            other_tupl = (ip.dst, ip.src, tcp.dport, tcp.sport)
+            stream1 = streams[tupl]
+            del streams[tupl]
+            try:
+                stream2 = streams[other_tupl]
+                del streams[other_tupl]
+            except:
+                stream2 = ""
+            if tcp.dport == 80:
+                requests = stream1
+                responses = stream2
+            else:
+                requests = stream2
+                responses = stream1
+
+            while len(requests):
+                try:
+                    request = dpkt.http.Request(requests)
+                except:
+                    request = ''
+                    requests = ''
+                try:
+                    response = dpkt.http.Response(responses)
+                except:
+                    response = ''
+                    responses = ''
+                requests = requests[len(request):]
+                responses = requests[len(responses):]
+
+                if len(request) > 0 and len(response) > 0 and request.method == 'POST' and request.uri == '/api/gateway.php' and response.status == '200':
+                    resp_plain = decrypt_response(response.body)
+                    resp_json = json.loads(resp_plain)
+
+                    if resp_json.get('command') == 'HubUserLogin':
+                        return resp_json
+
+        elif (tcp.flags & dpkt.tcp.TH_FIN) != 0:
+            del streams[tupl]
 
 
 def parse_sw_json(data, owner, options):
@@ -114,6 +167,7 @@ def parse_sw_json(data, owner, options):
         rune, is_new = parse_rune_data(rune_data, owner)
         if rune:
             rune.owner = owner
+            rune.assigned_to = None
 
             if is_new or options['clear_profile']:
                 new_runes.append(rune)
@@ -283,3 +337,58 @@ def parse_rune_data(rune_data, owner):
     rune.update_fields()
 
     return rune, is_new
+
+
+def import_objects(data, import_options, summoner):
+    errors = []
+    # Parsed JSON successfully! Do the import.
+    try:
+        results = parse_sw_json(data, summoner, import_options)
+    except KeyError as e:
+        errors.append('Uploaded JSON is missing an expected field: ' + str(e))
+    else:
+        # Importing objects from JSON didn't fail completely, so let's import what it did
+        if import_options['clear_profile']:
+            MonsterInstance.objects.filter(owner=summoner).delete()
+            RuneInstance.objects.filter(owner=summoner).delete()
+
+        errors += results['errors']
+
+        # Update essence storage
+        summoner.storage_magic_low = results['inventory'].get('storage_magic_low', 0)
+        summoner.storage_magic_mid = results['inventory'].get('storage_magic_mid', 0)
+        summoner.storage_magic_high = results['inventory'].get('storage_magic_high', 0)
+        summoner.storage_fire_low = results['inventory'].get('storage_fire_low', 0)
+        summoner.storage_fire_mid = results['inventory'].get('storage_fire_mid', 0)
+        summoner.storage_fire_high = results['inventory'].get('storage_fire_high', 0)
+        summoner.storage_water_low = results['inventory'].get('storage_water_low', 0)
+        summoner.storage_water_mid = results['inventory'].get('storage_water_mid', 0)
+        summoner.storage_water_high = results['inventory'].get('storage_water_high', 0)
+        summoner.storage_wind_low = results['inventory'].get('storage_wind_low', 0)
+        summoner.storage_wind_mid = results['inventory'].get('storage_wind_mid', 0)
+        summoner.storage_wind_high = results['inventory'].get('storage_wind_high', 0)
+        summoner.storage_light_low = results['inventory'].get('storage_light_low', 0)
+        summoner.storage_light_mid = results['inventory'].get('storage_light_mid', 0)
+        summoner.storage_light_high = results['inventory'].get('storage_light_high', 0)
+        summoner.storage_dark_low = results['inventory'].get('storage_dark_low', 0)
+        summoner.storage_dark_mid = results['inventory'].get('storage_dark_mid', 0)
+        summoner.storage_dark_high = results['inventory'].get('storage_dark_high', 0)
+        summoner.save()
+
+        # Save the imported monsters
+        bulk_update(results['monsters']['updated'])
+        MonsterInstance.objects.bulk_create(results['monsters']['new'])
+
+        # Save imported runes
+        bulk_update(results['runes']['updated'])
+        RuneInstance.objects.bulk_create(results['runes']['new'])
+
+        # Update monsters with equipped rune stats - can only be done after runes are saved due to FK relationship
+        mons_to_update = MonsterInstance.objects.filter(owner=summoner)
+
+        for mon in mons_to_update:
+            mon.update_fields()
+
+        bulk_update(mons_to_update)
+
+    return errors

@@ -8,7 +8,7 @@ from .smon_decryptor import decrypt_response
 from herders.models import Monster, MonsterInstance, RuneInstance
 
 
-def parse_pcap(pcap_file):
+def parse_pcap_new(pcap_file):
     pcap = dpkt.pcap.Reader(pcap_file)
     req_src = None
     req_dst = None
@@ -59,7 +59,7 @@ def parse_pcap(pcap_file):
 
 
 
-def parse_pcap_old(pcap_file):
+def parse_pcap(pcap_file):
     streams = dict()  # Connections with current buffer
     pcap = dpkt.pcap.Reader(pcap_file)
 

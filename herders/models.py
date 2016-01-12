@@ -759,6 +759,17 @@ class Summoner(models.Model):
         return "%s" % self.user
 
 
+class MonsterInstanceImportedManager(models.Manager):
+    def get_queryset(self):
+        return super(MonsterInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
+
+
+class MonsterInstanceManager(models.Manager):
+    # Default manager which only returns finalized instances
+    def get_queryset(self):
+        return super(MonsterInstanceManager, self).get_queryset().filter(uncommitted=False)
+
+
 class MonsterInstance(models.Model):
     PRIORITY_DONE = 0
     PRIORITY_LOW = 1
@@ -771,6 +782,9 @@ class MonsterInstance(models.Model):
         (PRIORITY_MED, 'Medium'),
         (PRIORITY_HIGH, 'High'),
     )
+
+    objects = MonsterInstanceManager()
+    imported = MonsterInstanceImportedManager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
@@ -804,6 +818,7 @@ class MonsterInstance(models.Model):
     ignore_for_fusion = models.BooleanField(default=False)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_MED)
     notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
+    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     def is_max_level(self):
         return self.level == self.monster.max_level_from_stars(self.stars)
@@ -1102,6 +1117,17 @@ class MonsterInstance(models.Model):
         ordering = ['-stars', '-level', 'monster__name']
 
 
+class RuneInstanceImportedManager(models.Manager):
+    def get_queryset(self):
+        return super(RuneInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
+
+
+class RuneInstanceManager(models.Manager):
+    # Default manager which only returns finalized instances
+    def get_queryset(self):
+        return super(RuneInstanceManager, self).get_queryset().filter(uncommitted=False)
+
+
 class RuneInstance(models.Model):
     TYPE_ENERGY = 1
     TYPE_FATAL = 2
@@ -1338,6 +1364,9 @@ class RuneInstance(models.Model):
         TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP"
     }
 
+    objects = RuneInstanceManager()
+    imported = RuneInstanceImportedManager()
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
@@ -1358,6 +1387,7 @@ class RuneInstance(models.Model):
     substat_3_value = models.IntegerField(null=True, blank=True)
     substat_4 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_4_value = models.IntegerField(null=True, blank=True)
+    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     # The following fields exist purely to allow easier filtering and are updated on model save
     quality = models.IntegerField(default=0, choices=QUALITY_CHOICES)

@@ -145,6 +145,16 @@ class ImportOptimizerForm(forms.Form):
         return data
 
 
+class ApplyImportForm(forms.Form):
+    helper = FormHelper()
+    helper.layout = Layout(
+        FormActions(
+            Submit('finalize', 'Finalize Import', css_class='btn-primary'),
+            Submit('cancel', 'Cancel', css_class='btn-default'),
+        ),
+    )
+
+
 class ExportOptimizerForm(forms.Form):
     json_data = forms.CharField(
         max_length=999999,

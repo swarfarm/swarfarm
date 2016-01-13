@@ -1,0 +1,18 @@
+{% extends 'sw_parser/base.html' %}
+
+{% block content %}
+
+    Successfully imported {{ monsters.total_imported }} monsters and {{ runes.total_imported }} runes!
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">Monsters</p>
+        </div>
+        <div class="panel-body">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active"><a href="#updated_mons" aria-controls="updated-mons"></a></li>
+            </ul>
+        </div>
+    </div>
+
+{% endblock content %}

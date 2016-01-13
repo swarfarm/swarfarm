@@ -4,6 +4,8 @@ from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
+from bulk_update.helper import bulk_update
+
 from herders.models import Summoner, Monster, MonsterInstance, RuneInstance
 
 from .forms import *
@@ -47,14 +49,12 @@ def _import_pcap(request):
                 errors.append('Exception ' + str(type(e)) + ': ' + str(e))
             else:
                 # Import the new objects
-                errors += import_objects(data, import_options, summoner)
+                errors += _import_objects(data, import_options, summoner)
 
                 if len(errors):
                     messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
-                else:
-                    messages.success(request, 'Import successful!')
 
-                return redirect('herders:profile_default', profile_name=summoner.user.username)
+                return redirect('sw_parser:import_confirm')
     else:
         form = ImportPCAPForm()
 
@@ -93,14 +93,13 @@ def import_sw_json(request):
             except AttributeError:
                 errors.append('Issue opening uploaded file. Please try again.')
             else:
-                import_objects(data, import_options, summoner)
+                # Import the new objects
+                errors += _import_objects(data, import_options, summoner)
 
                 if len(errors):
                     messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
-                else:
-                    messages.success(request, 'Import successful!')
 
-                return redirect('sw_parser:commit_import')
+                return redirect('sw_parser:import_confirm')
     else:
         form = ImportSWParserJSONForm()
 
@@ -126,3 +125,89 @@ def import_rune_optimizer(request):
 @login_required
 def commit_import(request):
     summoner = get_object_or_404(Summoner, user__username=request.user.username)
+
+    # List existing com2us IDs and newly imported com2us IDs
+    imported_mon_com2us_ids = MonsterInstance.imported.values_list('com2us_id', flat=True).filter(owner=summoner)
+    existing_mon_com2us_ids = MonsterInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, com2us_id__isnull=False)
+
+    imported_rune_com2us_ids = RuneInstance.imported.values_list('com2us_id', flat=True).filter(owner=summoner)
+    existing_rune_com2us_ids = RuneInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, com2us_id__isnull=False)
+
+    # Split import into brand new, updated, and existing monsters that were not imported.
+    new_mons = MonsterInstance.imported.filter(owner=summoner).exclude(com2us_id__in=existing_mon_com2us_ids)
+    updated_mons = MonsterInstance.objects.filter(owner=summoner, com2us_id__in=imported_mon_com2us_ids)
+    missing_mons = MonsterInstance.objects.filter(owner=summoner).exclude(com2us_id__in=imported_mon_com2us_ids)
+
+    new_runes = RuneInstance.imported.filter(owner=summoner).exclude(com2us_id__in=existing_rune_com2us_ids)
+    updated_runes = RuneInstance.objects.filter(owner=summoner, com2us_id__in=imported_rune_com2us_ids)
+    missing_runes = RuneInstance.objects.filter(owner=summoner).exclude(com2us_id__in=imported_rune_com2us_ids)
+
+    context = {
+        'monsters': {
+            'total_imported': len(imported_mon_com2us_ids),
+            'updated': updated_mons,
+            'new': new_mons,
+            'missing': missing_mons,
+        },
+        'runes': {
+            'total_imported': len(imported_rune_com2us_ids),
+            'updated': updated_runes,
+            'new': new_runes,
+            'missing': missing_runes,
+        },
+    }
+
+    return render(request, 'sw_parser/import_confirm.html', context)
+
+
+def _import_objects(data, import_options, summoner):
+    errors = []
+    # Parsed JSON successfully! Do the import.
+    try:
+        results = parse_sw_json(data, summoner, import_options)
+    except KeyError as e:
+        errors.append('Uploaded JSON is missing an expected field: ' + str(e))
+    else:
+        # Importing objects from JSON didn't fail completely, so let's import what it did
+        # Remove all previous import remnants
+        MonsterInstance.imported.filter(owner=summoner).delete()
+        RuneInstance.imported.filter(owner=summoner).delete()
+
+        errors += results['errors']
+
+        # Update essence storage
+        summoner.storage_magic_low = results['inventory'].get('storage_magic_low', 0)
+        summoner.storage_magic_mid = results['inventory'].get('storage_magic_mid', 0)
+        summoner.storage_magic_high = results['inventory'].get('storage_magic_high', 0)
+        summoner.storage_fire_low = results['inventory'].get('storage_fire_low', 0)
+        summoner.storage_fire_mid = results['inventory'].get('storage_fire_mid', 0)
+        summoner.storage_fire_high = results['inventory'].get('storage_fire_high', 0)
+        summoner.storage_water_low = results['inventory'].get('storage_water_low', 0)
+        summoner.storage_water_mid = results['inventory'].get('storage_water_mid', 0)
+        summoner.storage_water_high = results['inventory'].get('storage_water_high', 0)
+        summoner.storage_wind_low = results['inventory'].get('storage_wind_low', 0)
+        summoner.storage_wind_mid = results['inventory'].get('storage_wind_mid', 0)
+        summoner.storage_wind_high = results['inventory'].get('storage_wind_high', 0)
+        summoner.storage_light_low = results['inventory'].get('storage_light_low', 0)
+        summoner.storage_light_mid = results['inventory'].get('storage_light_mid', 0)
+        summoner.storage_light_high = results['inventory'].get('storage_light_high', 0)
+        summoner.storage_dark_low = results['inventory'].get('storage_dark_low', 0)
+        summoner.storage_dark_mid = results['inventory'].get('storage_dark_mid', 0)
+        summoner.storage_dark_high = results['inventory'].get('storage_dark_high', 0)
+        summoner.save()
+
+        # Save the imported monsters
+        MonsterInstance.objects.bulk_create(results['monsters']['new'] + results['monsters']['updated'])
+
+        # Save imported runes
+        RuneInstance.objects.bulk_create(results['runes']['new'] + results['runes']['updated'])
+
+        # Update monsters with equipped rune stats - can only be done after runes are saved due to FK relationship
+        mons_to_update = MonsterInstance.imported.filter(owner=summoner)
+
+        for mon in mons_to_update:
+            mon.update_fields()
+
+        bulk_update(mons_to_update)
+
+    return errors

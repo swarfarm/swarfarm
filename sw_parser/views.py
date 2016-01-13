@@ -22,7 +22,6 @@ def import_pcap(request):
     return _import_pcap(request)
 
 
-@login_required
 @csrf_protect
 def _import_pcap(request):
     errors = []
@@ -47,20 +46,15 @@ def _import_pcap(request):
             except Exception as e:
                 errors.append('Exception ' + str(type(e)) + ': ' + str(e))
             else:
-                try:
-                    results = parse_sw_json(data, summoner, import_options)
-                except KeyError as e:
-                    errors.append('Uploaded JSON is missing an expected field: ' + str(e))
+                # Import the new objects
+                errors += import_objects(data, import_options, summoner)
+
+                if len(errors):
+                    messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
                 else:
-                    request.session['import_results'] = results
-                    # import_objects(data, import_options, summoner)
+                    messages.success(request, 'Import successful!')
 
-                    if len(errors):
-                        messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
-                    else:
-                        messages.success(request, 'Import successful! Please review the results.')
-
-                    return redirect('sw_parser:import_commit', profile_name=summoner.user.username)
+                return redirect('herders:profile_default', profile_name=summoner.user.username)
     else:
         form = ImportPCAPForm()
 
@@ -99,23 +93,16 @@ def import_sw_json(request):
             except AttributeError:
                 errors.append('Issue opening uploaded file. Please try again.')
             else:
-                try:
-                    results = parse_sw_json(data, summoner, import_options)
-                except KeyError as e:
-                    errors.append('Uploaded JSON is missing an expected field: ' + str(e))
+                import_objects(data, import_options, summoner)
+
+                if len(errors):
+                    messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
                 else:
-                    request.session['import_results'] = results
-                    # import_objects(data, import_options, summoner)
+                    messages.success(request, 'Import successful!')
 
-                    if len(errors):
-                        messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
-                    else:
-                        messages.success(request, 'Import successful! Please review the results.')
-
-                    return redirect('sw_parser:import_commit', profile_name=summoner.user.username)
+                return redirect('sw_parser:commit_import')
     else:
         form = ImportSWParserJSONForm()
-        request.session.pop('import_results')
 
     context = {
         'form': form,
@@ -139,51 +126,3 @@ def import_rune_optimizer(request):
 @login_required
 def commit_import(request):
     summoner = get_object_or_404(Summoner, user__username=request.user.username)
-
-    if 'import_results' in request.session:
-        if request.POST:
-            results = request.session.pop('import_results', None)
-
-            if 'finalize' in request.POST:
-                # Update essence storage
-                summoner.storage_magic_low = results['inventory'].get('storage_magic_low', 0)
-                summoner.storage_magic_mid = results['inventory'].get('storage_magic_mid', 0)
-                summoner.storage_magic_high = results['inventory'].get('storage_magic_high', 0)
-                summoner.storage_fire_low = results['inventory'].get('storage_fire_low', 0)
-                summoner.storage_fire_mid = results['inventory'].get('storage_fire_mid', 0)
-                summoner.storage_fire_high = results['inventory'].get('storage_fire_high', 0)
-                summoner.storage_water_low = results['inventory'].get('storage_water_low', 0)
-                summoner.storage_water_mid = results['inventory'].get('storage_water_mid', 0)
-                summoner.storage_water_high = results['inventory'].get('storage_water_high', 0)
-                summoner.storage_wind_low = results['inventory'].get('storage_wind_low', 0)
-                summoner.storage_wind_mid = results['inventory'].get('storage_wind_mid', 0)
-                summoner.storage_wind_high = results['inventory'].get('storage_wind_high', 0)
-                summoner.storage_light_low = results['inventory'].get('storage_light_low', 0)
-                summoner.storage_light_mid = results['inventory'].get('storage_light_mid', 0)
-                summoner.storage_light_high = results['inventory'].get('storage_light_high', 0)
-                summoner.storage_dark_low = results['inventory'].get('storage_dark_low', 0)
-                summoner.storage_dark_mid = results['inventory'].get('storage_dark_mid', 0)
-                summoner.storage_dark_high = results['inventory'].get('storage_dark_high', 0)
-                summoner.save()
-
-                # Save the imported monsters
-                bulk_update(results['monsters']['updated'])
-                MonsterInstance.objects.bulk_create(results['monsters']['new'])
-
-                # Save imported runes
-                bulk_update(results['runes']['updated'])
-                RuneInstance.objects.bulk_create(results['runes']['new'])
-
-                # Update monsters with equipped rune stats - can only be done after runes are saved due to FK relationship
-                mons_to_update = MonsterInstance.objects.filter(owner=summoner)
-
-                for mon in mons_to_update:
-                    mon.update_fields()
-
-                bulk_update(mons_to_update)
-
-                messages.success(request, 'Import successfully applied.')
-
-                return redirect('herders:profile_default', profile_name=summoner.user.username)
-    else:
-        return render(request, 'sw_parser/import_not_in_progress.html')

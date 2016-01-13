@@ -1,8 +1,6 @@
 import dpkt
 import json
 
-from bulk_update.helper import bulk_update
-
 from .data_mapping import *
 from .smon_decryptor import decrypt_response
 from herders.models import Monster, MonsterInstance, RuneInstance
@@ -54,9 +52,6 @@ def parse_pcap_new(pcap_file):
             #        continue
             #    else:
             #        print decrypt_response(resp.body)
-
-
-
 
 
 def parse_pcap(pcap_file):
@@ -254,6 +249,10 @@ def parse_monster_data(monster_data, owner):
         mon = MonsterInstance()
         is_new = True
 
+    # Make sure it's saved as a new instance and marked as an import
+    mon.pk = None
+    mon.uncommitted = True
+
     if len(monster_type_id) == 5:
         mon.com2us_id = com2us_id
 
@@ -298,6 +297,10 @@ def parse_rune_data(rune_data, owner):
         rune = RuneInstance()
         is_new = True
 
+    # Make sure it's saved as a new instance and marked as an import
+    rune.pk = None
+    rune.uncommitted = True
+
     # Basic rune info
     rune.type = rune_set_map.get(rune_data.get('set_id'))
 
@@ -337,3 +340,57 @@ def parse_rune_data(rune_data, owner):
     rune.update_fields()
 
     return rune, is_new
+
+
+def import_objects(data, import_options, summoner):
+    errors = []
+    # Parsed JSON successfully! Do the import.
+    try:
+        results = parse_sw_json(data, summoner, import_options)
+    except KeyError as e:
+        errors.append('Uploaded JSON is missing an expected field: ' + str(e))
+    else:
+        # Importing objects from JSON didn't fail completely, so let's import what it did
+        # Remove all previous import remnants
+        MonsterInstance.imported.filter(owner=summoner).delete()
+        RuneInstance.imported.filter(owner=summoner).delete()
+
+        errors += results['errors']
+
+        # Update essence storage
+        summoner.storage_magic_low = results['inventory'].get('storage_magic_low', 0)
+        summoner.storage_magic_mid = results['inventory'].get('storage_magic_mid', 0)
+        summoner.storage_magic_high = results['inventory'].get('storage_magic_high', 0)
+        summoner.storage_fire_low = results['inventory'].get('storage_fire_low', 0)
+        summoner.storage_fire_mid = results['inventory'].get('storage_fire_mid', 0)
+        summoner.storage_fire_high = results['inventory'].get('storage_fire_high', 0)
+        summoner.storage_water_low = results['inventory'].get('storage_water_low', 0)
+        summoner.storage_water_mid = results['inventory'].get('storage_water_mid', 0)
+        summoner.storage_water_high = results['inventory'].get('storage_water_high', 0)
+        summoner.storage_wind_low = results['inventory'].get('storage_wind_low', 0)
+        summoner.storage_wind_mid = results['inventory'].get('storage_wind_mid', 0)
+        summoner.storage_wind_high = results['inventory'].get('storage_wind_high', 0)
+        summoner.storage_light_low = results['inventory'].get('storage_light_low', 0)
+        summoner.storage_light_mid = results['inventory'].get('storage_light_mid', 0)
+        summoner.storage_light_high = results['inventory'].get('storage_light_high', 0)
+        summoner.storage_dark_low = results['inventory'].get('storage_dark_low', 0)
+        summoner.storage_dark_mid = results['inventory'].get('storage_dark_mid', 0)
+        summoner.storage_dark_high = results['inventory'].get('storage_dark_high', 0)
+        summoner.save()
+
+        # Save the imported monsters
+        MonsterInstance.objects.bulk_create(results['monsters']['new'] + results['monsters']['updated'])
+
+        # Save imported runes
+        RuneInstance.objects.bulk_create(results['runes']['new'] + results['runes']['updated'])
+
+        # Update monsters with equipped rune stats - can only be done after runes are saved due to FK relationship
+        mons_to_update = MonsterInstance.objects.filter(owner=summoner)
+
+        for mon in mons_to_update:
+            mon.update_fields()
+
+        bulk_update(mons_to_update)
+
+    return errors
+

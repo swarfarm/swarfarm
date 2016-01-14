@@ -1,18 +1,64 @@
 {% extends 'sw_parser/base.html' %}
 
 {% block content %}
+    <h1>Please review import results. Changes are not applied until you confirm.</h1>
 
-    Successfully imported {{ monsters.total_imported }} monsters and {{ runes.total_imported }} runes!
+    <h2>Monsters</h2>
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#updated_mons" aria-controls="updated_mons" role="tab" data-toggle="tab">
+                Updated <span class="badge">{{ monsters.updated.count }}</span>
+            </a>
+        </li>
+        <li role="presentation">
+            <a href="#new_mons" aria-controls="new_mons" role="tab" data-toggle="tab">
+                New <span class="badge">{{ monsters.new.count }}</span>
+            </a>
+        </li>
+        <li role="presentation">
+            <a href="#missing_mons" aria-controls="missing_mons" role="tab" data-toggle="tab">
+                Missing <span class="badge">{{ monsters.missing.count }}</span>
+            </a>
+        </li>
+    </ul>
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <p class="panel-title">Monsters</p>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="updated_mons">
+            {% for mon in monsters.updated %}
+                {% include 'sw_parser/monster_thumb.html' with instance=mon only %}
+            {% endfor %}
         </div>
-        <div class="panel-body">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="active"><a href="#updated_mons" aria-controls="updated-mons"></a></li>
-            </ul>
+        <div role="tabpanel" class="tab-pane" id="new_mons">
+
         </div>
+        <div role="tabpanel" class="tab-pane" id="missing_mons">
+
+        </div>
+    </div>
+
+    <h2>Runes</h2>
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#updated_runes" aria-controls="updated_runes" role="tab" data-toggle="tab">
+                Updated <span class="badge">{{ runes.updated.count }}</span>
+            </a>
+        </li>
+        <li role="presentation">
+            <a href="#new_runes" aria-controls="new_runes" role="tab" data-toggle="tab">
+                New <span class="badge">{{ runes.new.count }}</span>
+            </a>
+        </li>
+        <li role="presentation">
+            <a href="#missing_runes" aria-controls="missing_runes" role="tab" data-toggle="tab">
+                Missing <span class="badge">{{ runes.missing.count }}</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="updated_runes">updated</div>
+        <div role="tabpanel" class="tab-pane" id="new_runes">new</div>
+        <div role="tabpanel" class="tab-pane" id="missing_runes">missing</div>
     </div>
 
 {% endblock content %}

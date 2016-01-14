@@ -1366,6 +1366,7 @@ class RuneInstance(models.Model):
 
     objects = RuneInstanceManager()
     imported = RuneInstanceImportedManager()
+    allobjects = models.Manager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)

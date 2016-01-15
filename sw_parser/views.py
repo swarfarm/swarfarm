@@ -1,10 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.uploadhandler import TemporaryFileUploadHandler
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-
-from bulk_update.helper import bulk_update
 
 from herders.models import Summoner, Monster, MonsterInstance, RuneInstance
 
@@ -49,7 +48,7 @@ def _import_pcap(request):
                 errors.append('Exception ' + str(type(e)) + ': ' + str(e))
             else:
                 # Import the new objects
-                errors += _import_objects(data, import_options, summoner)
+                errors += _import_objects(request, data, import_options, summoner)
 
                 if len(errors):
                     messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
@@ -94,7 +93,7 @@ def import_sw_json(request):
                 errors.append('Issue opening uploaded file. Please try again.')
             else:
                 # Import the new objects
-                errors += _import_objects(data, import_options, summoner)
+                errors += _import_objects(request, data, import_options, summoner)
 
                 if len(errors):
                     messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
@@ -160,7 +159,16 @@ def commit_import(request):
     return render(request, 'sw_parser/import_confirm.html', context)
 
 
-def _import_objects(data, import_options, summoner):
+@login_required
+def import_status(request):
+    return JsonResponse({
+        'stage': request.session.get('import_stage'),
+        'total': request.session.get('import_total'),
+        'current': request.session.get('import_current'),
+    })
+
+
+def _import_objects(request, data, import_options, summoner):
     errors = []
     # Parsed JSON successfully! Do the import.
     try:
@@ -197,17 +205,27 @@ def _import_objects(data, import_options, summoner):
         summoner.save()
 
         # Save the imported monsters
-        MonsterInstance.objects.bulk_create(results['monsters']['new'] + results['monsters']['updated'])
+        request.session['import_stage'] = 'monsters'
+        request.session['import_total'] = len(results['monsters'])
+        request.session['import_current'] = 0
+        for idx, mon in enumerate(results['monsters']):
+            mon.save()
+            if idx % 10 == 0:
+                request.session['import_current'] = idx
+                request.session.save()
 
         # Save imported runes
-        RuneInstance.objects.bulk_create(results['runes']['new'] + results['runes']['updated'])
+        request.session['import_stage'] = 'runes'
+        request.session['import_total'] = len(results['runes'])
+        request.session['import_current'] = 0
+        for idx, rune in enumerate(results['runes']):
+            # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
+            # relationship was previously set.
+            rune.assigned_to = rune.assigned_to
+            rune.save()
+            if idx % 10 == 0:
+                request.session['import_current'] = idx
+                request.session.save()
 
-        # Update monsters with equipped rune stats - can only be done after runes are saved due to FK relationship
-        mons_to_update = MonsterInstance.imported.filter(owner=summoner)
-
-        for mon in mons_to_update:
-            mon.update_fields()
-
-        bulk_update(mons_to_update)
-
+        request.session['import_stage'] = 'done'
     return errors

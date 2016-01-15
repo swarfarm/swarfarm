@@ -785,6 +785,7 @@ class MonsterInstance(models.Model):
 
     objects = MonsterInstanceManager()
     imported = MonsterInstanceImportedManager()
+    allobjects = models.Manager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')

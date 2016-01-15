@@ -219,6 +219,9 @@ def _import_objects(request, data, import_options, summoner):
         request.session['import_total'] = len(results['runes'])
         request.session['import_current'] = 0
         for idx, rune in enumerate(results['runes']):
+            # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
+            # relationship was previously set.
+            rune.assigned_to = rune.assigned_to
             rune.save()
             if idx % 10 == 0:
                 request.session['import_current'] = idx

@@ -129,10 +129,8 @@ def parse_pcap(pcap_file):
 
 def parse_sw_json(data, owner, options):
     errors = []
-    new_runes = []
-    updated_runes = []
-    new_mons = []
-    updated_mons = []
+    parsed_runes = []
+    parsed_mons = []
 
     building_list = data['building_list']
     inventory_info = data['inventory_info']
@@ -159,21 +157,17 @@ def parse_sw_json(data, owner, options):
 
     # Extract Rune Inventory (unequpped runes)
     for rune_data in runes_info:
-        rune, is_new = parse_rune_data(rune_data, owner)
+        rune = parse_rune_data(rune_data, owner)
         if rune:
             rune.owner = owner
             rune.assigned_to = None
-
-            if is_new or options['clear_profile']:
-                new_runes.append(rune)
-            else:
-                updated_runes.append(rune)
+            parsed_runes.append(rune)
         else:
             errors.append('Unable to parse rune in inventory with this data: ' + str(rune_data))
 
     # Extract monsters
     for unit_info in unit_list:
-        mon, is_new = parse_monster_data(unit_info, owner)
+        mon = parse_monster_data(unit_info, owner)
 
         if mon:
             mon.owner = owner
@@ -196,25 +190,18 @@ def parse_sw_json(data, owner, options):
             if (level_ignored or silver_ignored or material_ignored) and not (allow_due_to_runes or allow_due_to_ld):
                 continue
 
-            if is_new or options['clear_profile']:
-                new_mons.append(mon)
-            else:
-                updated_mons.append(mon)
+            parsed_mons.append(mon)
 
             # Sometimes the runes are a dict or a list in the json. Convert to list.
             if isinstance(equipped_runes, dict):
                 equipped_runes = equipped_runes.values()
 
             for rune_data in equipped_runes:
-                rune, is_new = parse_rune_data(rune_data, owner)
+                rune = parse_rune_data(rune_data, owner)
                 if rune:
                     rune.owner = owner
                     rune.assigned_to = mon
-
-                    if is_new or options['clear_profile']:
-                        new_runes.append(rune)
-                    else:
-                        updated_runes.append(rune)
+                    parsed_runes.append(rune)
                 else:
                     errors.append('Unable to parse rune assigned to ' + str(mon))
         else:
@@ -222,14 +209,8 @@ def parse_sw_json(data, owner, options):
 
     import_results = {
         'errors': errors,
-        'monsters': {
-            'new': new_mons,
-            'updated': updated_mons,
-        },
-        'runes': {
-            'new': new_runes,
-            'updated': updated_runes,
-        },
+        'monsters': parsed_mons,
+        'runes': parsed_runes,
         'inventory': imported_inventory,
     }
 
@@ -243,47 +224,39 @@ def parse_monster_data(monster_data, owner):
 
     mon = MonsterInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
 
-    if mon:
-        is_new = False
-    else:
+    if not mon:
         mon = MonsterInstance()
-        is_new = True
 
     # Make sure it's saved as a new instance and marked as an import
     mon.pk = None
     mon.uncommitted = True
 
-    if len(monster_type_id) == 5:
-        mon.com2us_id = com2us_id
+    mon.com2us_id = com2us_id
 
-        # Base monster
-        monster_family = int(monster_type_id[:3])
-        awakened = monster_type_id[3] == '1'
-        element = element_map.get(int(monster_type_id[-1:]))
+    # Base monster
+    monster_family = int(monster_type_id[:3])
+    awakened = monster_type_id[3] == '1'
+    element = element_map.get(int(monster_type_id[-1:]))
 
-        try:
-            mon.monster = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
-        except Monster.DoesNotExist:
-            return None, None
+    try:
+        mon.monster = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
+    except Monster.DoesNotExist:
+        return None
 
-        mon.stars = monster_data.get('class')
-        mon.level = monster_data.get('unit_level')
+    mon.stars = monster_data.get('class')
+    mon.level = monster_data.get('unit_level')
 
-        skills = monster_data.get('skills', [])
-        if len(skills) >= 1:
-            mon.skill_1_level = skills[0][1]
-        if len(skills) >= 2:
-            mon.skill_2_level = skills[1][1]
-        if len(skills) >= 3:
-            mon.skill_3_level = skills[2][1]
-        if len(skills) >= 4:
-            mon.skill_4_level = skills[3][1]
+    skills = monster_data.get('skills', [])
+    if len(skills) >= 1:
+        mon.skill_1_level = skills[0][1]
+    if len(skills) >= 2:
+        mon.skill_2_level = skills[1][1]
+    if len(skills) >= 3:
+        mon.skill_3_level = skills[2][1]
+    if len(skills) >= 4:
+        mon.skill_4_level = skills[3][1]
 
-        mon.update_fields()
-
-        return mon, is_new
-    else:
-        return None, None
+    return mon
 
 
 def parse_rune_data(rune_data, owner):
@@ -291,11 +264,8 @@ def parse_rune_data(rune_data, owner):
 
     rune = RuneInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
 
-    if rune:
-        is_new = False
-    else:
+    if not rune:
         rune = RuneInstance()
-        is_new = True
 
     # Make sure it's saved as a new instance and marked as an import
     rune.pk = None
@@ -337,6 +307,4 @@ def parse_rune_data(rune_data, owner):
         rune.substat_4 = rune_stat_type_map.get(substats[3][0])
         rune.substat_4_value = substats[3][1]
 
-    rune.update_fields()
-
-    return rune, is_new
+    return rune

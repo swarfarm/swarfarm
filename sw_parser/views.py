@@ -126,20 +126,20 @@ def commit_import(request):
     summoner = get_object_or_404(Summoner, user__username=request.user.username)
 
     # List existing com2us IDs and newly imported com2us IDs
-    imported_mon_com2us_ids = MonsterInstance.imported.values_list('com2us_id', flat=True).filter(owner=summoner)
-    existing_mon_com2us_ids = MonsterInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, com2us_id__isnull=False)
+    imported_mon_com2us_ids = MonsterInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, uncommitted=True)
+    existing_mon_com2us_ids = MonsterInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, uncommitted=False, com2us_id__isnull=False)
 
-    imported_rune_com2us_ids = RuneInstance.imported.values_list('com2us_id', flat=True).filter(owner=summoner)
-    existing_rune_com2us_ids = RuneInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, com2us_id__isnull=False)
+    imported_rune_com2us_ids = RuneInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, uncommitted=True)
+    existing_rune_com2us_ids = RuneInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, uncommitted=False, com2us_id__isnull=False)
 
     # Split import into brand new, updated, and existing monsters that were not imported.
-    new_mons = MonsterInstance.imported.filter(owner=summoner).exclude(com2us_id__in=existing_mon_com2us_ids)
-    updated_mons = MonsterInstance.objects.filter(owner=summoner, com2us_id__in=imported_mon_com2us_ids)
-    missing_mons = MonsterInstance.objects.filter(owner=summoner).exclude(com2us_id__in=imported_mon_com2us_ids)
+    new_mons = MonsterInstance.objects.filter(owner=summoner, uncommitted=True).exclude(com2us_id__in=existing_mon_com2us_ids)
+    updated_mons = MonsterInstance.objects.filter(owner=summoner, uncommitted=True, com2us_id__in=imported_mon_com2us_ids)
+    missing_mons = MonsterInstance.objects.filter(owner=summoner, uncommitted=False).exclude(com2us_id__in=imported_mon_com2us_ids)
 
-    new_runes = RuneInstance.imported.filter(owner=summoner).exclude(com2us_id__in=existing_rune_com2us_ids)
-    updated_runes = RuneInstance.objects.filter(owner=summoner, com2us_id__in=imported_rune_com2us_ids)
-    missing_runes = RuneInstance.objects.filter(owner=summoner).exclude(com2us_id__in=imported_rune_com2us_ids)
+    new_runes = RuneInstance.objects.filter(owner=summoner, uncommitted=True).exclude(com2us_id__in=existing_rune_com2us_ids)
+    updated_runes = RuneInstance.objects.filter(owner=summoner, uncommitted=True, com2us_id__in=imported_rune_com2us_ids)
+    missing_runes = RuneInstance.objects.filter(owner=summoner, uncommitted=False).exclude(com2us_id__in=imported_rune_com2us_ids)
 
     context = {
         'monsters': {
@@ -178,8 +178,8 @@ def _import_objects(request, data, import_options, summoner):
     else:
         # Importing objects from JSON didn't fail completely, so let's import what it did
         # Remove all previous import remnants
-        MonsterInstance.imported.filter(owner=summoner).delete()
-        RuneInstance.imported.filter(owner=summoner).delete()
+        MonsterInstance.objects.filter(owner=summoner, uncommitted=True).delete()
+        RuneInstance.objects.filter(owner=summoner, uncommitted=True).delete()
 
         errors += results['errors']
 

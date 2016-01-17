@@ -29,3 +29,10 @@ def multiply(value, arg):
 @register.filter
 def remove_extension(string):
     return string.replace('.png', '').replace("'", "").replace('(', '_').replace(')', '_')
+
+
+@register.filter
+# Get dictionary key by string
+def key(d, key_name):
+    return d[key_name]
+key = register.filter('key', key)

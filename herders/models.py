@@ -783,9 +783,10 @@ class MonsterInstance(models.Model):
         (PRIORITY_HIGH, 'High'),
     )
 
-    #objects = MonsterInstanceManager()
-    #imported = MonsterInstanceImportedManager()
-    #allobjects = models.Manager()
+    # Multiple managers to split out imported and finalized objects
+    objects = models.Manager()
+    committed = MonsterInstanceManager()
+    imported = MonsterInstanceImportedManager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
@@ -1365,15 +1366,16 @@ class RuneInstance(models.Model):
         TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP"
     }
 
-    #objects = RuneInstanceManager()
-    #imported = RuneInstanceImportedManager()
-    #allobjects = models.Manager()
+    # Multiple managers to split out imported and finalized objects
+    objects = models.Manager()
+    committed = RuneInstanceManager()
+    imported = RuneInstanceImportedManager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
     com2us_id = models.BigIntegerField(blank=True, null=True)
-    assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
+    assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True, )
     stars = models.IntegerField()
     level = models.IntegerField()
     slot = models.IntegerField()

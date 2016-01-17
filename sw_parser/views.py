@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.uploadhandler import TemporaryFileUploadHandler
@@ -126,34 +128,47 @@ def commit_import(request):
     summoner = get_object_or_404(Summoner, user__username=request.user.username)
 
     # List existing com2us IDs and newly imported com2us IDs
-    imported_mon_com2us_ids = MonsterInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, uncommitted=True)
-    existing_mon_com2us_ids = MonsterInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, uncommitted=False, com2us_id__isnull=False)
+    imported_mon_com2us_ids = MonsterInstance.imported.values_list('com2us_id', flat=True).filter(owner=summoner)
+    existing_mon_com2us_ids = MonsterInstance.committed.values_list('com2us_id', flat=True).filter(owner=summoner, com2us_id__isnull=False)
 
-    imported_rune_com2us_ids = RuneInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, uncommitted=True)
-    existing_rune_com2us_ids = RuneInstance.objects.values_list('com2us_id', flat=True).filter(owner=summoner, uncommitted=False, com2us_id__isnull=False)
+    imported_rune_com2us_ids = RuneInstance.imported.values_list('com2us_id', flat=True).filter(owner=summoner)
+    existing_rune_com2us_ids = RuneInstance.committed.values_list('com2us_id', flat=True).filter(owner=summoner, com2us_id__isnull=False)
 
     # Split import into brand new, updated, and existing monsters that were not imported.
-    new_mons = MonsterInstance.objects.filter(owner=summoner, uncommitted=True).exclude(com2us_id__in=existing_mon_com2us_ids)
-    updated_mons = MonsterInstance.objects.filter(owner=summoner, uncommitted=True, com2us_id__in=imported_mon_com2us_ids)
-    missing_mons = MonsterInstance.objects.filter(owner=summoner, uncommitted=False).exclude(com2us_id__in=imported_mon_com2us_ids)
+    new_mons = MonsterInstance.imported.filter(owner=summoner).exclude(com2us_id__in=existing_mon_com2us_ids)
+    updated_mons = MonsterInstance.imported.filter(owner=summoner, com2us_id__in=existing_mon_com2us_ids)
+    missing_mons = MonsterInstance.committed.filter(owner=summoner).exclude(com2us_id__in=imported_mon_com2us_ids)
 
-    new_runes = RuneInstance.objects.filter(owner=summoner, uncommitted=True).exclude(com2us_id__in=existing_rune_com2us_ids)
-    updated_runes = RuneInstance.objects.filter(owner=summoner, uncommitted=True, com2us_id__in=imported_rune_com2us_ids)
-    missing_runes = RuneInstance.objects.filter(owner=summoner, uncommitted=False).exclude(com2us_id__in=imported_rune_com2us_ids)
+    new_runes = OrderedDict()
+    updated_runes = OrderedDict()
+    missing_runes = OrderedDict()
+    new_rune_count = 0
+    updated_rune_count = 0
+    missing_rune_count = 0
+
+    for type_idx, type_name in RuneInstance.TYPE_CHOICES:
+        new_runes[type_name] = RuneInstance.imported.filter(owner=summoner, type=type_idx).exclude(com2us_id__in=existing_rune_com2us_ids)
+        updated_runes[type_name] = RuneInstance.imported.filter(owner=summoner, type=type_idx, com2us_id__in=existing_rune_com2us_ids)
+        missing_runes[type_name] = RuneInstance.committed.filter(owner=summoner, type=type_idx).exclude(com2us_id__in=imported_rune_com2us_ids)
+
+        new_rune_count += new_runes[type_name].count()
+        updated_rune_count += updated_runes[type_name].count()
+        missing_rune_count += missing_runes[type_name].count()
 
     context = {
         'monsters': {
-            'total_imported': len(imported_mon_com2us_ids),
-            'updated': updated_mons,
             'new': new_mons,
+            'updated': updated_mons,
             'missing': missing_mons,
         },
         'runes': {
-            'total_imported': len(imported_rune_com2us_ids),
-            'updated': updated_runes,
             'new': new_runes,
+            'updated': updated_runes,
             'missing': missing_runes,
         },
+        'new_runes': new_rune_count,
+        'updated_runes': updated_rune_count,
+        'missing_runes': missing_rune_count
     }
 
     return render(request, 'sw_parser/import_confirm.html', context)

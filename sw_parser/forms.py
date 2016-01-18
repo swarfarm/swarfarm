@@ -145,16 +145,6 @@ class ImportOptimizerForm(forms.Form):
         return data
 
 
-class ApplyImportForm(forms.Form):
-    helper = FormHelper()
-    helper.layout = Layout(
-        FormActions(
-            Submit('finalize', 'Finalize Import', css_class='btn-primary'),
-            Submit('cancel', 'Cancel', css_class='btn-default'),
-        ),
-    )
-
-
 class ExportOptimizerForm(forms.Form):
     json_data = forms.CharField(
         max_length=999999,
@@ -168,4 +158,40 @@ class ExportOptimizerForm(forms.Form):
     helper.layout = Layout(
         Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes, monsters, and saved builds currently present. It is advised to back up your existing data first.', css_class='alert-danger'),
         Field('json_data'),
+    )
+
+
+class ApplyImportForm(forms.Form):
+    missing_choices = (
+        (1, 'Delete missing'),
+        (0, 'Do not delete')
+    )
+
+    missing_monster_action = forms.TypedChoiceField(
+        label='Action for missing monsters: ',
+        initial=1,
+        required=True,
+        choices=missing_choices,
+        widget=forms.RadioSelect,
+        coerce=int,
+    )
+    missing_rune_action = forms.TypedChoiceField(
+        label='Action for missing runes: ',
+        initial=1,
+        required=True,
+        choices=missing_choices,
+        widget=forms.RadioSelect,
+        coerce=int,
+    )
+
+    helper = FormHelper()
+    helper.form_class = 'form-horizontal'
+    helper.label_class = 'col-md-2'
+    helper.field_class = 'col-md-8'
+    helper.layout = Layout(
+        Field('missing_monster_action'),
+        Field('missing_rune_action'),
+        FormActions(
+            Submit('finalize', 'Finalize Import', css_class='btn-success'),
+        ),
     )

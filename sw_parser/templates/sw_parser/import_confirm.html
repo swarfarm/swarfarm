@@ -1,43 +1,47 @@
 {% extends 'sw_parser/base.html' %}
+{% load crispy_forms_tags %}
 {% load utils %}
 
 {% block content %}
     <div class="col-md-8 col-md-offset-2">
-
-
         <h1>Please review import results. Changes are not applied until you confirm.</h1>
+
+        {% crispy form %}
 
         <h2>Monsters</h2>
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active">
-                <a href="#updated_mons" aria-controls="updated_mons" role="tab" data-toggle="tab">
+            <li role="presentation" {% if monsters.updated.count == 0 %}class="disabled"{% else %}class="active"{% endif %}>
+                <a href="#updated_mons" aria-controls="updated_mons" role="tab" {% if monsters.updated.count == 0 %}class="disabled"{% else %}data-toggle="tab"{% endif %}>
                     Updated <span class="badge">{{ monsters.updated.count }}</span>
                 </a>
             </li>
-            <li role="presentation">
-                <a href="#new_mons" aria-controls="new_mons" role="tab" data-toggle="tab">
+            <li role="presentation" {% if monsters.new.count == 0 %}class="disabled"{% elif monsters.new.count > 0 and monsters.updated.count == 0 %}class="active"{% endif %}>
+                <a href="#new_mons" aria-controls="new_mons" role="tab" {% if monsters.new.count == 0 %}class="disabled"{% else %}data-toggle="tab"{% endif %}>
                     New <span class="badge">{{ monsters.new.count }}</span>
                 </a>
             </li>
-            <li role="presentation">
-                <a href="#missing_mons" aria-controls="missing_mons" role="tab" data-toggle="tab">
+            <li role="presentation" {% if monsters.missing.count == 0 %}class="disabled"{% elif monsters.missing.count > 0 and monsters.updated.count == 0 and monsters.new.count == 0%}class="active"{% endif %}>
+                <a href="#missing_mons" aria-controls="missing_mons" role="tab" {% if monsters.missing.count == 0 %}class="disabled"{% else %}data-toggle="tab"{% endif %}>
                     Missing <span class="badge">{{ monsters.missing.count }}</span>
                 </a>
             </li>
         </ul>
 
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="updated_mons">
+            <div role="tabpanel" class="tab-pane {% if monsters.updated.count > 0 %}active{% endif %}" id="updated_mons">
+                <p>These monsters were imported once before and will be updated. Your notes, priority, teams, etc will be saved.</p>
                 {% for mon in monsters.updated %}
                     {% include 'sw_parser/monster_thumb.html' with instance=mon only %}
                 {% endfor %}
             </div>
-            <div role="tabpanel" class="tab-pane" id="new_mons">
+            <div role="tabpanel" class="tab-pane {% if monsters.new.count > 0 and monsters.updated.count == 0 %}active{% endif %}" id="new_mons">
+                <p>These monsters do not yet exist in your SWARFARM profile.</p>
                 {% for mon in monsters.new %}
                     {% include 'sw_parser/monster_thumb.html' with instance=mon only %}
                 {% endfor %}
             </div>
-            <div role="tabpanel" class="tab-pane" id="missing_mons">
+            <div role="tabpanel" class="tab-pane {% if monsters.missing.count > 0 and monsters.new.count == 0 and monsters.updated.count == 0 %}active{% endif %}" id="missing_mons">
+                <p>These monsters exist in your SWARFARM profile but do not exist in the imported data. These will be deleted by default.</p>
                 {% for mon in monsters.missing %}
                     {% include 'sw_parser/monster_thumb.html' with instance=mon only %}
                 {% endfor %}
@@ -64,15 +68,16 @@
         </ul>
 
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane{% if updated_runes > 0 %} active{% endif %}" id="updated_runes">
-                {% for type, runes in runes.updated.iteritems %}
+            <div role="tabpanel" class="tab-pane {% if updated_runes > 0 %}active{% endif %}" id="updated_runes">
+                <p>These runes were imported once before and will be updated.</p>
+                {% for type, type_runes in runes.updated.iteritems %}
                     {% if type_runes|length > 0 %}
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <p class="panel-title">{{ type }}</p>
                             </div>
                             <div class="panel-body">
-                                {% for rune in runes %}
+                                {% for rune in type_runes %}
                                     {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune popover=True only %}
                                 {% endfor %}
                             </div>
@@ -81,6 +86,7 @@
                 {% endfor %}
             </div>
             <div role="tabpanel" class="tab-pane{% if updated_runes == 0 and new_runes > 0 %} active{% endif %}" id="new_runes">
+                <p>These runes do not yet exist in your SWARFARM profile.</p>
                 {% for type, type_runes in runes.new.iteritems %}
                     {% if type_runes|length > 0 %}
                         <div class="panel panel-default">
@@ -97,6 +103,7 @@
                 {% endfor %}
             </div>
             <div role="tabpanel" class="tab-pane{% if updated_runes == 0 and new_runes == 0 and missing_runes > 0 %} active{% endif %}" id="missing_runes">
+                <p>These runes exist in your SWARFARM profile but do not exist in the imported data. These will be deleted by default.</p>
                 {% for type, runes in runes.missing.iteritems %}
                     {% if type_runes|length > 0 %}
                         <div class="panel panel-default">
@@ -104,7 +111,7 @@
                                 <p class="panel-title">{{ type }}</p>
                             </div>
                             <div class="panel-body">
-                                {% for rune in runes %}
+                                {% for rune in type_runes %}
                                     {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune popover=True only %}
                                 {% endfor %}
                             </div>

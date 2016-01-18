@@ -139,37 +139,79 @@ def commit_import(request):
     updated_mons = MonsterInstance.imported.filter(owner=summoner, com2us_id__in=existing_mon_com2us_ids)
     missing_mons = MonsterInstance.committed.filter(owner=summoner).exclude(com2us_id__in=imported_mon_com2us_ids)
 
-    new_runes = OrderedDict()
-    updated_runes = OrderedDict()
-    missing_runes = OrderedDict()
-    new_rune_count = 0
-    updated_rune_count = 0
-    missing_rune_count = 0
-
-    for type_idx, type_name in RuneInstance.TYPE_CHOICES:
-        new_runes[type_name] = RuneInstance.imported.filter(owner=summoner, type=type_idx).exclude(com2us_id__in=existing_rune_com2us_ids)
-        updated_runes[type_name] = RuneInstance.imported.filter(owner=summoner, type=type_idx, com2us_id__in=existing_rune_com2us_ids)
-        missing_runes[type_name] = RuneInstance.committed.filter(owner=summoner, type=type_idx).exclude(com2us_id__in=imported_rune_com2us_ids)
-
-        new_rune_count += new_runes[type_name].count()
-        updated_rune_count += updated_runes[type_name].count()
-        missing_rune_count += missing_runes[type_name].count()
-
     context = {
-        'monsters': {
+        'view': 'import_export',
+        'form': ApplyImportForm(),
+    }
+
+    if request.POST:
+        form = ApplyImportForm(request.POST or None)
+        new_runes = RuneInstance.imported.filter(owner=summoner).exclude(com2us_id__in=existing_rune_com2us_ids)
+        updated_runes = RuneInstance.imported.filter(owner=summoner, com2us_id__in=existing_rune_com2us_ids)
+        missing_runes = RuneInstance.committed.filter(owner=summoner).exclude(com2us_id__in=imported_rune_com2us_ids)
+
+        if form.is_valid():
+            # Delete missing if option was chosen
+            if form.cleaned_data['missing_monster_action']:
+                missing_mons.delete()
+
+            if form.cleaned_data['missing_rune_action']:
+                missing_runes.delete()
+
+            # Delete old runes and set new ones as committed
+            RuneInstance.committed.filter(owner=summoner, com2us_id__in=imported_rune_com2us_ids).delete()
+            updated_runes.update(uncommitted=False)
+
+            # Update mons - need to copy relations before scrapping the old mons
+            for mon in updated_mons:
+                # Get the preexisting instance
+                old_mon = MonsterInstance.committed.filter(owner=summoner, com2us_id=mon.com2us_id).first()
+
+                # Copy team assignments
+                mon.team_leader = old_mon.team_leader.all()
+                mon.team_set = old_mon.team_set.all()
+                mon.save()
+
+            # Delete the old mons and set new mons as committed
+            MonsterInstance.committed.filter(owner=summoner, com2us_id__in=imported_mon_com2us_ids).delete()
+            updated_mons.update(uncommitted=False)
+
+            # Add new monsters and runes
+            new_mons.update(uncommitted=False)
+            new_runes.update(uncommitted=False)
+
+            messages.success(request, 'Import successfully applied!')
+            return redirect('herders:profile_default', profile_name=summoner.user.username)
+    else:
+        new_runes = OrderedDict()
+        updated_runes = OrderedDict()
+        missing_runes = OrderedDict()
+        new_rune_count = 0
+        updated_rune_count = 0
+        missing_rune_count = 0
+
+        for type_idx, type_name in RuneInstance.TYPE_CHOICES:
+            new_runes[type_name] = RuneInstance.imported.filter(owner=summoner, type=type_idx).exclude(com2us_id__in=existing_rune_com2us_ids)
+            updated_runes[type_name] = RuneInstance.imported.filter(owner=summoner, type=type_idx, com2us_id__in=existing_rune_com2us_ids)
+            missing_runes[type_name] = RuneInstance.committed.filter(owner=summoner, type=type_idx).exclude(com2us_id__in=imported_rune_com2us_ids)
+
+            new_rune_count += new_runes[type_name].count()
+            updated_rune_count += updated_runes[type_name].count()
+            missing_rune_count += missing_runes[type_name].count()
+
+        context['monsters'] = {
             'new': new_mons,
             'updated': updated_mons,
             'missing': missing_mons,
-        },
-        'runes': {
+        }
+        context['runes'] = {
             'new': new_runes,
             'updated': updated_runes,
             'missing': missing_runes,
-        },
-        'new_runes': new_rune_count,
-        'updated_runes': updated_rune_count,
-        'missing_runes': missing_rune_count
-    }
+        }
+        context['new_runes'] = new_rune_count
+        context['updated_runes'] = updated_rune_count
+        context['missing_runes'] = missing_rune_count
 
     return render(request, 'sw_parser/import_confirm.html', context)
 

@@ -578,7 +578,8 @@ class EditMonsterInstanceForm(ModelForm):
 
     class Meta:
         model = MonsterInstance
-        exclude = ('owner', 'monster')
+        fields = ('stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority',
+                  'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level', 'notes')
 
 
 class PowerUpMonsterInstanceForm(forms.Form):

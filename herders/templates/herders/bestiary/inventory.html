@@ -124,7 +124,7 @@
                             {% for skill in monster.skills.all %}
                                 <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
                                     <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
-                                    <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+                                    {% if skill.max_level > 1 %}<span class="image-plus image-plus-right">{{ skill.max_level }}</span>{% endif %}
                                 </div>
                             {% endfor %}
                         </td>

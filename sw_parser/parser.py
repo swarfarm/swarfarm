@@ -183,7 +183,7 @@ def parse_sw_json(data, owner, options):
                 mon.priority = MonsterInstance.PRIORITY_DONE
 
             # Set ignore for fusion if requested
-            if options['ignore_fusion'] and mon.monster.fusion_food and mon.com2us_id in locked_mons:
+            if options['ignore_fusion'] and mon.monster.fusion_food and (locked_mons and mon.com2us_id in locked_mons):
                 mon.ignore_for_fusion = True
 
             # Equipped runes

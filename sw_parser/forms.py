@@ -2,17 +2,24 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert
+from crispy_forms.layout import Submit, Div, Layout, Field, HTML
+from crispy_forms.bootstrap import FormActions, Alert
 
-from herders.models import Monster
+from herders.models import Monster, MonsterInstance
 
 
 class MonsterImportOptionsMixin(forms.Form):
-    clear_profile = forms.BooleanField(
+    default_priority = forms.ChoiceField(
+        label='Default Priority for new monsters',
+        choices=MonsterInstance.PRIORITY_CHOICES,
+        required=True,
+        initial=MonsterInstance.PRIORITY_MED,
+    )
+    ignore_fusion = forms.BooleanField(
         required=False,
-        label='Clear entire profile on import. This is recommended for the first Com2US data import.',
-        help_text=''
+        label=mark_safe('If monster is locked in-game, do not use for fusion material on SWARFARM.'
+                        ' <u data-toggle="popover" title="Instructions" data-trigger="hover" data-content="Upload the ########.json file instead of the ########-swarfarm.json file. You can ignore this warning if you are uploading pcap file."><strong class=text-danger>Requires full data upload.</strong></u>'),
+        initial=True,
     )
     minimum_stars = forms.ChoiceField(
         label='Minimum stars',
@@ -31,30 +38,33 @@ class MonsterImportOptionsMixin(forms.Form):
     )
     except_with_runes = forms.BooleanField(
         required=False,
-        label='Bypass all filters if monster has equipped runes',
+        label='Import anyway if monster has equipped runes',
         initial=True,
     )
     except_light_and_dark = forms.BooleanField(
         required=False,
-        label='Bypass all filters if monster is Light or Dark',
+        label='Import anyway if monster is Light or Dark',
         initial=True,
     )
 
 
 class MonsterImportOptionsLayout(Layout):
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         super(MonsterImportOptionsLayout, self).__init__(
             Div(
-                HTML("""<h4 class="list-group-item-heading">Monster Import Filters</h4>"""),
+                HTML("""<h4 class="list-group-item-heading">Filters</h4>"""),
+                Alert(content="Note: If a monster is filtered out, it's equipped runes will not be imported either!", css_class='alert-warning'),
                 Field('minimum_stars', template='crispy/button_radio_select.html'),
                 Field('ignore_silver'),
                 Field('ignore_material'),
                 Field('except_with_runes'),
                 Field('except_light_and_dark'),
-                Alert(content="Note: If a monster is filtered out, it's equipped runes will not be imported either!", css_class='alert-warning'),
                 css_class='list-group-item',
             ),
             Div(
+                HTML("""<h4 class="list-group-item-heading">Options</h4>"""),
+                Field('default_priority'),
+                Field('ignore_fusion'),
                 Field('clear_profile'),
                 css_class='list-group-item',
             ),
@@ -184,11 +194,18 @@ class ApplyImportForm(forms.Form):
         coerce=int,
     )
 
+    clear_profile = forms.BooleanField(
+        required=False,
+        label='Clear entire profile on import. This is recommended for the first Com2US data import. All your notes, priorities, and teams will be lost!',
+        help_text=''
+    )
+
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.label_class = 'col-md-2'
     helper.field_class = 'col-md-8'
     helper.layout = Layout(
+        Field('clear_profile'),
         Field('missing_monster_action'),
         Field('missing_rune_action'),
         FormActions(

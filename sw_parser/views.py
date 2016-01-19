@@ -37,6 +37,8 @@ def _import_pcap(request):
             uploaded_file = form.cleaned_data['pcap']
             import_options = {
                 'clear_profile': form.cleaned_data.get('clear_profile'),
+                'default_priority': form.cleaned_data.get('default_priority'),
+                'ignore_fusion': form.cleaned_data.get('ignore_fusion'),
                 'minimum_stars': int(form.cleaned_data.get('minimum_stars', 1)),
                 'ignore_silver': form.cleaned_data.get('ignore_silver'),
                 'ignore_material': form.cleaned_data.get('ignore_material'),
@@ -80,6 +82,8 @@ def import_sw_json(request):
             uploaded_file = form.cleaned_data['json_file']
             import_options = {
                 'clear_profile': form.cleaned_data.get('clear_profile'),
+                'default_priority': form.cleaned_data.get('default_priority'),
+                'ignore_fusion': form.cleaned_data.get('ignore_fusion'),
                 'minimum_stars': int(form.cleaned_data.get('minimum_stars', 1)),
                 'ignore_silver': form.cleaned_data.get('ignore_silver'),
                 'ignore_material': form.cleaned_data.get('ignore_material'),
@@ -99,6 +103,8 @@ def import_sw_json(request):
 
                 if len(errors):
                     messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
+
+                request.session['import_clear_profile'] = import_options['clear_profile']
 
                 return redirect('sw_parser:import_confirm')
     else:
@@ -151,6 +157,10 @@ def commit_import(request):
         missing_runes = RuneInstance.committed.filter(owner=summoner).exclude(com2us_id__in=imported_rune_com2us_ids)
 
         if form.is_valid():
+            if form.cleaned_data['clear_profile']:
+                MonsterInstance.committed.filter(owner=summoner).delete()
+                RuneInstance.committed.filter(owner=summoner).delete()
+
             # Delete missing if option was chosen
             if form.cleaned_data['missing_monster_action']:
                 missing_mons.delete()

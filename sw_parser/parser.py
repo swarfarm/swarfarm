@@ -136,6 +136,7 @@ def parse_sw_json(data, owner, options):
     inventory_info = data['inventory_info']
     unit_list = data['unit_list']
     runes_info = data['runes']
+    locked_mons = data.get('unit_lock_list')
 
     # Buildings
     # Find which one is the storage building
@@ -167,15 +168,23 @@ def parse_sw_json(data, owner, options):
 
     # Extract monsters
     for unit_info in unit_list:
-        mon = parse_monster_data(unit_info, owner)
+        mon, is_new = parse_monster_data(unit_info, owner)
 
         if mon:
             mon.owner = owner
             mon.in_storage = unit_info.get('building_id') == storage_building_id
 
+            # Set priority levels
+            if options['default_priority'] and is_new:
+                mon.priority = options['default_priority']
+
             if mon.monster.archetype == Monster.TYPE_MATERIAL:
                 mon.fodder = True
                 mon.priority = MonsterInstance.PRIORITY_DONE
+
+            # Set ignore for fusion if requested
+            if options['ignore_fusion'] and mon.monster.fusion_food and mon.com2us_id in locked_mons:
+                mon.ignore_for_fusion = True
 
             # Equipped runes
             equipped_runes = unit_info.get('runes')
@@ -185,7 +194,7 @@ def parse_sw_json(data, owner, options):
             silver_ignored = options['ignore_silver'] and not mon.monster.can_awaken
             material_ignored = options['ignore_material'] and mon.monster.archetype == Monster.TYPE_MATERIAL
             allow_due_to_runes = options['except_with_runes'] and len(equipped_runes) > 0
-            allow_due_to_ld = options['except_light_and_dark'] and mon.monster.element in [Monster.ELEMENT_DARK, Monster.ELEMENT_LIGHT]
+            allow_due_to_ld = options['except_light_and_dark'] and mon.monster.element in [Monster.ELEMENT_DARK, Monster.ELEMENT_LIGHT] and mon.monster.archetype != Monster.TYPE_MATERIAL
 
             if (level_ignored or silver_ignored or material_ignored) and not (allow_due_to_runes or allow_due_to_ld):
                 continue
@@ -226,6 +235,9 @@ def parse_monster_data(monster_data, owner):
 
     if not mon:
         mon = MonsterInstance()
+        is_new = True
+    else:
+        is_new = False
 
     # Make sure it's saved as a new instance and marked as an import
     mon.pk = None
@@ -241,7 +253,7 @@ def parse_monster_data(monster_data, owner):
     try:
         mon.monster = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
     except Monster.DoesNotExist:
-        return None
+        return None, None
 
     mon.stars = monster_data.get('class')
     mon.level = monster_data.get('unit_level')
@@ -256,7 +268,7 @@ def parse_monster_data(monster_data, owner):
     if len(skills) >= 4:
         mon.skill_4_level = skills[3][1]
 
-    return mon
+    return mon, is_new
 
 
 def parse_rune_data(rune_data, owner):

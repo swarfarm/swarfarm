@@ -5,6 +5,7 @@
 {% block content %}
     <div class="col-md-8 col-md-offset-2">
         <h1>Please review import results. Changes are not applied until you confirm.</h1>
+        <div class="alert alert-warning">If you manually edited a monster after your last import, there was a bug that lost the unique Com2US ID. You may see the same monster listed under 'New' and 'Missing' tabs and their team assignments will be lost.</div>
 
         {% crispy form %}
 

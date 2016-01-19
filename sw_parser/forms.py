@@ -9,6 +9,11 @@ from herders.models import Monster, MonsterInstance
 
 
 class MonsterImportOptionsMixin(forms.Form):
+    clear_profile = forms.BooleanField(
+        required=False,
+        label='Clear entire profile on import. This is recommended for the first Com2US data import. All your notes, priorities, and teams will be lost!',
+        help_text=''
+    )
     default_priority = forms.ChoiceField(
         label='Default Priority for new monsters',
         choices=MonsterInstance.PRIORITY_CHOICES,
@@ -194,18 +199,11 @@ class ApplyImportForm(forms.Form):
         coerce=int,
     )
 
-    clear_profile = forms.BooleanField(
-        required=False,
-        label='Clear entire profile on import. This is recommended for the first Com2US data import. All your notes, priorities, and teams will be lost!',
-        help_text=''
-    )
-
     helper = FormHelper()
     helper.form_class = 'form-horizontal'
     helper.label_class = 'col-md-2'
     helper.field_class = 'col-md-8'
     helper.layout = Layout(
-        Field('clear_profile'),
         Field('missing_monster_action'),
         Field('missing_rune_action'),
         FormActions(

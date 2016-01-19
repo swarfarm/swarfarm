@@ -104,8 +104,6 @@ def import_sw_json(request):
                 if len(errors):
                     messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
 
-                request.session['import_clear_profile'] = import_options['clear_profile']
-
                 return redirect('sw_parser:import_confirm')
     else:
         form = ImportSWParserJSONForm()
@@ -157,10 +155,6 @@ def commit_import(request):
         missing_runes = RuneInstance.committed.filter(owner=summoner).exclude(com2us_id__in=imported_rune_com2us_ids)
 
         if form.is_valid():
-            if form.cleaned_data['clear_profile']:
-                MonsterInstance.committed.filter(owner=summoner).delete()
-                RuneInstance.committed.filter(owner=summoner).delete()
-
             # Delete missing if option was chosen
             if form.cleaned_data['missing_monster_action']:
                 missing_mons.delete()
@@ -243,10 +237,14 @@ def _import_objects(request, data, import_options, summoner):
     except KeyError as e:
         errors.append('Uploaded JSON is missing an expected field: ' + str(e))
     else:
-        # Importing objects from JSON didn't fail completely, so let's import what it did
-        # Remove all previous import remnants
-        MonsterInstance.objects.filter(owner=summoner, uncommitted=True).delete()
-        RuneInstance.objects.filter(owner=summoner, uncommitted=True).delete()
+        # Everything parsed successfully up to this point, so it's safe to clear the profile now.
+        if import_options['clear_profile']:
+            MonsterInstance.objects.filter(owner=summoner).delete()
+            RuneInstance.objects.filter(owner=summoner).delete()
+
+        # Delete anything that might have been previously imported
+        MonsterInstance.imported.filter(owner=summoner).delete()
+        RuneInstance.imported.filter(owner=summoner).delete()
 
         errors += results['errors']
 

@@ -2,17 +2,24 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert
+from crispy_forms.layout import Submit, Div, Layout, Field, HTML
+from crispy_forms.bootstrap import FormActions, Alert
 
-from herders.models import Monster
+from herders.models import Monster, MonsterInstance
 
 
 class MonsterImportOptionsMixin(forms.Form):
-    clear_profile = forms.BooleanField(
+    default_priority = forms.ChoiceField(
+        label='Default Priority for new monsters',
+        choices=MonsterInstance.PRIORITY_CHOICES,
+        required=True,
+        initial=MonsterInstance.PRIORITY_MED,
+    )
+    ignore_fusion = forms.BooleanField(
         required=False,
-        label='Clear entire profile on import. This is recommended for the first Com2US data import.',
-        help_text=''
+        label=mark_safe('If monster is locked in-game, do not use for fusion material on SWARFARM.'
+                        ' <u data-toggle="popover" title="Instructions" data-trigger="hover" data-content="Upload the ########.json file instead of the ########-swarfarm.json file. You can ignore this warning if you are uploading pcap file."><strong class=text-danger>Requires full data upload.</strong></u>'),
+        initial=True,
     )
     minimum_stars = forms.ChoiceField(
         label='Minimum stars',
@@ -31,30 +38,33 @@ class MonsterImportOptionsMixin(forms.Form):
     )
     except_with_runes = forms.BooleanField(
         required=False,
-        label='Bypass all filters if monster has equipped runes',
+        label='Import anyway if monster has equipped runes',
         initial=True,
     )
     except_light_and_dark = forms.BooleanField(
         required=False,
-        label='Bypass all filters if monster is Light or Dark',
+        label='Import anyway if monster is Light or Dark',
         initial=True,
     )
 
 
 class MonsterImportOptionsLayout(Layout):
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         super(MonsterImportOptionsLayout, self).__init__(
             Div(
-                HTML("""<h4 class="list-group-item-heading">Monster Import Filters</h4>"""),
+                HTML("""<h4 class="list-group-item-heading">Filters</h4>"""),
+                Alert(content="Note: If a monster is filtered out, it's equipped runes will not be imported either!", css_class='alert-warning'),
                 Field('minimum_stars', template='crispy/button_radio_select.html'),
                 Field('ignore_silver'),
                 Field('ignore_material'),
                 Field('except_with_runes'),
                 Field('except_light_and_dark'),
-                Alert(content="Note: If a monster is filtered out, it's equipped runes will not be imported either!", css_class='alert-warning'),
                 css_class='list-group-item',
             ),
             Div(
+                HTML("""<h4 class="list-group-item-heading">Options</h4>"""),
+                Field('default_priority'),
+                Field('ignore_fusion'),
                 Field('clear_profile'),
                 css_class='list-group-item',
             ),
@@ -118,7 +128,7 @@ class ImportOptimizerForm(forms.Form):
         max_length=999999,
         required=True,
         label='Paste Rune Data',
-        help_text=mark_safe('Data is exported from the <a href="http://www.graphactory.eu/sw/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
+        help_text=mark_safe('Data is exported from the <a href="http://swrunes.all.my/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
         widget=forms.Textarea(),
     )
 
@@ -149,7 +159,7 @@ class ExportOptimizerForm(forms.Form):
     json_data = forms.CharField(
         max_length=999999,
         label='Exported Rune Data',
-        help_text=mark_safe('You can paste this data into the <a href="http://www.graphactory.eu/sw/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
+        help_text=mark_safe('You can paste this data into the <a href="http://swrunes.all.my/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
         widget=forms.Textarea(),
     )
 
@@ -158,4 +168,47 @@ class ExportOptimizerForm(forms.Form):
     helper.layout = Layout(
         Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes, monsters, and saved builds currently present. It is advised to back up your existing data first.', css_class='alert-danger'),
         Field('json_data'),
+    )
+
+
+class ApplyImportForm(forms.Form):
+    missing_choices = (
+        (1, 'Delete missing'),
+        (0, 'Do not delete')
+    )
+
+    missing_monster_action = forms.TypedChoiceField(
+        label='Action for missing monsters: ',
+        initial=1,
+        required=True,
+        choices=missing_choices,
+        widget=forms.RadioSelect,
+        coerce=int,
+    )
+    missing_rune_action = forms.TypedChoiceField(
+        label='Action for missing runes: ',
+        initial=1,
+        required=True,
+        choices=missing_choices,
+        widget=forms.RadioSelect,
+        coerce=int,
+    )
+
+    clear_profile = forms.BooleanField(
+        required=False,
+        label='Clear entire profile on import. This is recommended for the first Com2US data import. All your notes, priorities, and teams will be lost!',
+        help_text=''
+    )
+
+    helper = FormHelper()
+    helper.form_class = 'form-horizontal'
+    helper.label_class = 'col-md-2'
+    helper.field_class = 'col-md-8'
+    helper.layout = Layout(
+        Field('clear_profile'),
+        Field('missing_monster_action'),
+        Field('missing_rune_action'),
+        FormActions(
+            Submit('finalize', 'Finalize Import', css_class='btn-success'),
+        ),
     )

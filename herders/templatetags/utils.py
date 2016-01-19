@@ -5,7 +5,10 @@ register = template.Library()
 
 @register.filter
 def get_range(value):
-    return range(value)
+    if value:
+        return range(value)
+    else:
+        return 0
 
 
 @register.filter
@@ -26,3 +29,10 @@ def multiply(value, arg):
 @register.filter
 def remove_extension(string):
     return string.replace('.png', '').replace("'", "").replace('(', '_').replace(')', '_')
+
+
+@register.filter
+# Get dictionary key by string
+def key(d, key_name):
+    return d[key_name]
+key = register.filter('key', key)

@@ -25,7 +25,7 @@ inventory_essence_map = {
     12004: "storage_light_mid",
     13004: "storage_light_high",
     11005: "storage_dark_low",
-    12005: "storage_dark_mide",
+    12005: "storage_dark_mid",
     13005: "storage_dark_high",
 }
 

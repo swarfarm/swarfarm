@@ -207,7 +207,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     box_grouping = request.session.get('profile_group_method', 'grade').lower()
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    monster_queryset = MonsterInstance.objects.filter(owner=summoner)
+    monster_queryset = MonsterInstance.committed.filter(owner=summoner)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if view_mode == 'list':
@@ -252,10 +252,10 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 monster_stable['light'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
                 monster_stable['dark'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
             elif box_grouping == 'priority':
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_HIGH][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_MED][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_LOW][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_DONE][1]] = MonsterInstance.objects.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_DONE).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_HIGH][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_MED][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_LOW][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_DONE][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_DONE).order_by('-level', 'monster__element', 'monster__name')
             else:
                 raise Http404('Invalid sort method')
 
@@ -382,7 +382,7 @@ def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
     monster_to_add = get_object_or_404(Monster, pk=monster_id)
 
     if is_owner:
-        new_monster = MonsterInstance.objects.create(owner=summoner, monster=monster_to_add, stars=int(stars), level=int(level), fodder=True, notes='', priority=MonsterInstance.PRIORITY_DONE)
+        new_monster = MonsterInstance.committed.create(owner=summoner, monster=monster_to_add, stars=int(stars), level=int(level), fodder=True, notes='', priority=MonsterInstance.PRIORITY_DONE)
         messages.success(request, 'Added %s to your collection.' % new_monster)
         return redirect(return_path)
     else:
@@ -445,7 +445,7 @@ def monster_instance_view(request, profile_name, instance_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     try:
-        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -466,7 +466,7 @@ def monster_instance_view(request, profile_name, instance_id):
 
 def monster_instance_view_sidebar(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.objects.select_related('monster').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -482,7 +482,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     try:
-        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -506,7 +506,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
 
 def monster_instance_view_stats(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -519,7 +519,7 @@ def monster_instance_view_stats(request, profile_name, instance_id):
 
 def monster_instance_view_skills(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -548,7 +548,7 @@ def monster_instance_view_skills(request, profile_name, instance_id):
 
 def monster_instance_view_info(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -905,13 +905,13 @@ def fusion_progress(request, profile_name):
             ingredients = []
 
             # Check if fusion has been completed already
-            fusion_complete = MonsterInstance.objects.filter(
+            fusion_complete = MonsterInstance.committed.filter(
                 Q(owner=summoner), Q(monster=fusion.product) | Q(monster=fusion.product.awakens_to)
             ).count() > 0
 
             # Scan summoner's collection for instances each ingredient
             for ingredient in fusion.ingredients.all().select_related('awakens_from', 'awakens_to'):
-                owned_ingredients = MonsterInstance.objects.filter(
+                owned_ingredients = MonsterInstance.committed.filter(
                     Q(owner=summoner),
                     Q(monster=ingredient) | Q(monster=ingredient.awakens_from),
                 ).order_by('-stars', '-level', '-monster__is_awakened')
@@ -1220,8 +1220,8 @@ def team_edit(request, profile_name, team_id=None):
 
     # Limit form choices to objects owned by the current user.
     edit_form.fields['group'].queryset = TeamGroup.objects.filter(owner=summoner)
-    edit_form.fields['leader'].queryset = MonsterInstance.objects.filter(owner=summoner)
-    edit_form.fields['roster'].queryset = MonsterInstance.objects.filter(owner=summoner)
+    edit_form.fields['leader'].queryset = MonsterInstance.committed.filter(owner=summoner)
+    edit_form.fields['roster'].queryset = MonsterInstance.committed.filter(owner=summoner)
     edit_form.helper.form_action = request.path + '?next=' + return_path
 
     context = {
@@ -1291,7 +1291,7 @@ def rune_inventory(request, profile_name, view_mode=None):
         return HttpResponse("Rune view mode cookie set")
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
-    rune_queryset = RuneInstance.objects.filter(owner=summoner)
+    rune_queryset = RuneInstance.committed.filter(owner=summoner)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     form = FilterRuneForm(request.POST or None)
@@ -1418,7 +1418,7 @@ def rune_edit(request, profile_name, rune_id):
 
 @login_required
 def rune_assign(request, profile_name, instance_id, slot=None):
-    rune_queryset = RuneInstance.objects.filter(owner=request.user.summoner, assigned_to=None)
+    rune_queryset = RuneInstance.committed.filter(owner=request.user.summoner, assigned_to=None)
     filter_form = AssignRuneForm(request.POST or None, initial={'slot': slot})
     filter_form.helper.form_action = reverse('herders:rune_assign', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
@@ -1530,7 +1530,7 @@ def rune_delete_all(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
-        death_row = RuneInstance.objects.filter(owner=summoner)
+        death_row = RuneInstance.committed.filter(owner=summoner)
         number_killed = death_row.count()
         assigned_mons = []
         for rune in death_row:
@@ -1621,8 +1621,8 @@ def rune_export(request, profile_name):
 
     if is_owner:
         export_data = export_runes(
-            MonsterInstance.objects.filter(owner=summoner),
-            RuneInstance.objects.filter(owner=summoner, assigned_to=None),
+            MonsterInstance.committed.filter(owner=summoner),
+            RuneInstance.committed.filter(owner=summoner, assigned_to=None),
         )
         form = ExportRuneForm(initial={'json_data': export_data})
         template = loader.get_template('herders/profile/runes/export.html')

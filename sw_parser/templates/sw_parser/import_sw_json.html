@@ -7,11 +7,17 @@
     <div class="col-sm-6 col-sm-offset-3">
         <h2>Instructions:</h2>
         <ol>
-            <li>Download the <a href="https://github.com/kakaroto/SWParser/releases/tag/0.94">SWParser</a> program created by <a href="https://www.reddit.com/u/kakarotoks">/u/kakarotoks</a>. Tested with version 0.94 - other versions may not work properly.</li>
+            <li>Download the <a href="https://github.com/kakaroto/SWParser/releases/latest">SWParser</a> program created by <a href="https://www.reddit.com/u/kakarotoks">/u/kakarotoks</a></li>
             <li>Follow it's instructions to parse your pcap file or capture your network traffic.</li>
-            <li>Upload the .json file that does not have any suffix appended to the file name. It will be approximately 1MB and be named something like '1234567910.json'</li>
+            <li>
+                Pick the correct file to upload. The numbers in the filename will be different, but the format is the same.
+                <ul>
+                    <li>Version 0.95 and later - upload the <strong>1234567-swarfarm.json</strong> file</li>
+                    <li>Version 0.94 and earlier - upload the <strong>1234567.json</strong> file</li>
+                </ul>
+            </li>
             <li>For your first upload, it is recommended to clear your profile. For subsequent uploads I can sync your monsters automatically. Note: At this time, monsters removed in-game are not removed from SWARFARM. This'll be fixed very soon.</li>
-            <li>The upload and processing can take up to about 60 seconds so be patient.
+            <li>The upload and processing can take up to about 60 seconds so be patient.</li>
             <li>Please report any issues in the feedback thread <a href="{% url 'feedback:issue_detail' pk=271 %}">here</a>. You can also email your .json file to swarfarm@porksmash.com so I can investigate specific issues.</li>
         </ol>
 

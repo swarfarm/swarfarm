@@ -8,6 +8,11 @@ element_map = {
     5: Monster.ELEMENT_DARK,
 }
 
+inventory_type_map = {
+    'inventory': 11,
+    'monster_piece': 12,
+}
+
 inventory_essence_map = {
     11006: "storage_magic_low",
     12006: "storage_magic_mid",

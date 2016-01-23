@@ -184,6 +184,10 @@ def commit_import(request):
             new_mons.update(uncommitted=False)
             new_runes.update(uncommitted=False)
 
+            # Delete old monster pieces and commit new ones
+            MonsterPiece.committed.filter(owner=summoner).delete()
+            MonsterPiece.imported.filter(owner=summoner).update(uncommitted=False)
+
             messages.success(request, 'Import successfully applied!')
             return redirect('herders:profile_default', profile_name=summoner.user.username)
     else:
@@ -239,12 +243,13 @@ def _import_objects(request, data, import_options, summoner):
     else:
         # Everything parsed successfully up to this point, so it's safe to clear the profile now.
         if import_options['clear_profile']:
-            MonsterInstance.objects.filter(owner=summoner).delete()
             RuneInstance.objects.filter(owner=summoner).delete()
+            MonsterInstance.objects.filter(owner=summoner).delete()
 
         # Delete anything that might have been previously imported
-        MonsterInstance.imported.filter(owner=summoner).delete()
         RuneInstance.imported.filter(owner=summoner).delete()
+        MonsterInstance.imported.filter(owner=summoner).delete()
+        MonsterPiece.imported.filter(owner=summoner).delete()
 
         errors += results['errors']
 
@@ -268,6 +273,10 @@ def _import_objects(request, data, import_options, summoner):
         summoner.storage_dark_mid = results['inventory'].get('storage_dark_mid', 0)
         summoner.storage_dark_high = results['inventory'].get('storage_dark_high', 0)
         summoner.save()
+
+        # Update saved monster pieces
+        for piece in results['monster_pieces']:
+            piece.save()
 
         # Save the imported monsters
         request.session['import_stage'] = 'monsters'

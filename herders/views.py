@@ -1675,6 +1675,7 @@ def bestiary_inventory(request):
             'cri-dmg': 'crit_damage',
             'res': 'resistance',
             'acc': 'accuracy',
+            'skill-ups-reqd': 'skill_ups_to_max'
         }
         sort_direction_match = {
             'asc': '',

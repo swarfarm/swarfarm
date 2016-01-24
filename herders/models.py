@@ -792,6 +792,7 @@ class MonsterInstance(models.Model):
     owner = models.ForeignKey('Summoner')
     monster = models.ForeignKey('Monster')
     com2us_id = models.BigIntegerField(blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()
     skill_1_level = models.IntegerField(blank=True, default=1)
@@ -1117,6 +1118,51 @@ class MonsterInstance(models.Model):
 
     class Meta:
         ordering = ['-stars', '-level', 'monster__name']
+
+
+class MonsterPieceImportedManager(models.Manager):
+    def get_queryset(self):
+        return super(MonsterPieceImportedManager, self).get_queryset().filter(uncommitted=True)
+
+
+class MonsterPieceManager(models.Manager):
+    # Default manager which only returns finalized instances
+    def get_queryset(self):
+        return super(MonsterPieceManager, self).get_queryset().filter(uncommitted=False)
+
+
+class MonsterPiece(models.Model):
+    # Multiple managers to split out imported and finalized objects
+    objects = models.Manager()
+    committed = MonsterPieceManager()
+    imported = MonsterPieceImportedManager()
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey('Summoner')
+    monster = models.ForeignKey('Monster')
+    pieces = models.IntegerField(default=0)
+    uncommitted = models.BooleanField(default=False)  # Used for importing
+
+    class Meta:
+        ordering = ['monster__name']
+
+    def __str__(self):
+        return str(self.monster) + ' - ' + str(self.pieces) + ' pieces'
+
+    def can_summon(self):
+        piece_requirements = {
+            1: 10,
+            2: 20,
+            3: 40,
+            4: 50,
+            5: 100,
+        }
+        base_stars = self.monster.base_stars
+
+        if self.monster.is_awakened:
+            base_stars -= 1
+
+        return self.pieces > piece_requirements[base_stars]
 
 
 class RuneInstanceImportedManager(models.Manager):

@@ -52,12 +52,15 @@ def _import_pcap(request):
                 errors.append('Exception ' + str(type(e)) + ': ' + str(e))
             else:
                 # Import the new objects
-                errors += _import_objects(request, data, import_options, summoner)
+                if data:
+                    errors += _import_objects(request, data, import_options, summoner)
 
-                if len(errors):
-                    messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
+                    if len(errors):
+                        messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
 
-                return redirect('sw_parser:import_confirm')
+                    return redirect('sw_parser:import_confirm')
+                else:
+                    errors.append("Unable to find Summoner's War data in the capture.")
     else:
         form = ImportPCAPForm()
 
@@ -239,7 +242,9 @@ def _import_objects(request, data, import_options, summoner):
     try:
         results = parse_sw_json(data, summoner, import_options)
     except KeyError as e:
-        errors.append('Uploaded JSON is missing an expected field: ' + str(e))
+        errors.append('Uploaded data is missing an expected field: ' + str(e))
+    except TypeError:
+        errors.append('Uploaded data is not valid.')
     else:
         # Everything parsed successfully up to this point, so it's safe to clear the profile now.
         if import_options['clear_profile']:

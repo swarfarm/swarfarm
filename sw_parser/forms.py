@@ -57,7 +57,7 @@ class MonsterImportOptionsLayout(Layout):
     def __init__(self):
         super(MonsterImportOptionsLayout, self).__init__(
             Div(
-                HTML("""<h4 class="list-group-item-heading">Filters</h4>"""),
+                HTML("""<h4 class="list-group-item-heading">Monster Filters</h4>"""),
                 Alert(content="Note: If a monster is filtered out, it's equipped runes will not be imported either!", css_class='alert-warning'),
                 Field('minimum_stars', template='crispy/button_radio_select.html'),
                 Field('ignore_silver'),

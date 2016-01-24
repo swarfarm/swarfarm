@@ -8,6 +8,36 @@ element_map = {
     5: Monster.ELEMENT_DARK,
 }
 
+building_map = {
+    1: "Summoner's Tower",
+    2: '',
+    3: 'pond_of_mana',
+    4: '',
+    5: '',
+    6: '',
+    7: '',
+    8: '',
+    9: '',
+    10: '',
+    11: '',
+    12: 'ancient_stones',
+    13: '',
+    14: '',
+    15: '',
+    16: '',
+    17: '',
+    18: '',
+    19: '',
+    20: '',
+    21: '',
+    22: 'tranquil_forest',
+    23: '',
+    24: 'deep_forest_ent',
+    25: 'monster_storage',
+    26: '',
+    27: '',
+}
+
 inventory_type_map = {
     'inventory': 11,
     'monster_piece': 12,

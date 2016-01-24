@@ -1,5 +1,7 @@
 import dpkt
 import json
+from dateutil.parser import *
+import pytz
 
 from .data_mapping import *
 from .smon_decryptor import decrypt_response
@@ -300,6 +302,12 @@ def parse_monster_data(monster_data, owner):
         mon.skill_3_level = skills[2][1]
     if len(skills) >= 4:
         mon.skill_4_level = skills[3][1]
+
+    try:
+        created_date = parse(monster_data.get('create_time') + ' PST', tzinfos={'PST': pytz.timezone('US/Pacific')})
+        mon.created = created_date
+    except (ValueError, TypeError):
+        mon.created = None
 
     return mon, is_new
 

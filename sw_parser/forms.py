@@ -18,7 +18,7 @@ class MonsterImportOptionsMixin(forms.Form):
         label='Default Priority for new monsters',
         choices=MonsterInstance.PRIORITY_CHOICES,
         required=True,
-        initial=MonsterInstance.PRIORITY_MED,
+        initial=MonsterInstance.PRIORITY_LOW,
     )
     ignore_fusion = forms.BooleanField(
         required=False,

@@ -25,6 +25,11 @@ bootbox.setDefaults({
     onEscape: true
 });
 
+PNotify.prototype.options.styling = "bootstrap3";
+PNotify.prototype.options.stack.firstpos1 = 110;
+PNotify.prototype.options.stack.spacing1 = 15;
+
+
 function slugify(text)
 {
   return text.toString().toLowerCase()
@@ -67,11 +72,9 @@ function DisplayMessages() {
         global: false
     }).done(function(result) {
             for (var i = 0; i < result.messages.length; i++) {
-                $.notify({
-                    message: result.messages[i].text
-                }, {
-                    type: result.messages[i].status,
-                    delay: 3000
+                new PNotify({
+                    text: result.messages[i].text,
+                    type: result.messages[i].status
                 });
             }
         }

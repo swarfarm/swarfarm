@@ -423,10 +423,6 @@ class Monster(models.Model):
 
         super(Monster, self).save(*args, **kwargs)
 
-        #if self.obtainable and self.archetype != self.TYPE_MATERIAL and ((self.element == self.ELEMENT_DARK and self.base_stars >= 3) or self.element != self.ELEMENT_DARK) and self.source.count() == 0:
-            # Trigger a clear which will re-populate with required fields. Do not do this if fields have already been added.
-        #    self.source.clear()
-
         # Automatically set awakens from/to relationship if none exists
         if self.awakens_from and self.awakens_from.awakens_to is not self:
             self.awakens_from.awakens_to = self
@@ -451,6 +447,7 @@ class MonsterSkill(models.Model):
     description = models.TextField()
     slot = models.IntegerField(default=1)
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
+    effect = models.ManyToManyField('MonsterSkillEffect', through='MonsterSkillEffectDetail', blank=True, related_name='effect')
     cooltime = models.IntegerField(null=True, blank=True)
     passive = models.BooleanField(default=False)
     max_level = models.IntegerField()
@@ -597,6 +594,17 @@ class MonsterSkillEffect(models.Model):
         ordering = ['-is_buff', 'name']
 
 
+class MonsterSkillEffectDetail(models.Model):
+    skill = models.ForeignKey(MonsterSkill, on_delete=models.CASCADE)
+    effect = models.ForeignKey(MonsterSkillEffect, on_delete=models.CASCADE)
+    aoe = models.BooleanField(default=False, help_text='Effect applies to entire friendly or enemy group')
+    single_target = models.BooleanField(default=False, help_text='Effect applies to a single monster')
+    self_effect = models.BooleanField(default=False, help_text='Effect applies to the monster using the skill')
+    random = models.BooleanField(default=False, help_text='Skill effect applies randomly to the target')
+    quantity = models.IntegerField(default=0, help_text='Number of items this effect affects on the target')
+    all = models.BooleanField(default=False, help_text='This effect affects all items on the target')
+
+
 class MonsterSkillScalingStat(models.Model):
     stat = models.CharField(max_length=20)
 
@@ -648,6 +656,7 @@ class Fusion(models.Model):
 class Summoner(models.Model):
     user = models.OneToOneField(User)
     summoner_name = models.CharField(max_length=256, null=True, blank=True)
+    com2us_id = models.BigIntegerField(default=None, null=True, blank=True)
     global_server = models.NullBooleanField(default=True, null=True, blank=True)
     following = models.ManyToManyField("self", related_name='followed_by', symmetrical=False)
     public = models.BooleanField(default=False, blank=True)
@@ -792,6 +801,7 @@ class MonsterInstance(models.Model):
     owner = models.ForeignKey('Summoner')
     monster = models.ForeignKey('Monster')
     com2us_id = models.BigIntegerField(blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True)
     stars = models.IntegerField()
     level = models.IntegerField()
     skill_1_level = models.IntegerField(blank=True, default=1)
@@ -1119,6 +1129,51 @@ class MonsterInstance(models.Model):
         ordering = ['-stars', '-level', 'monster__name']
 
 
+class MonsterPieceImportedManager(models.Manager):
+    def get_queryset(self):
+        return super(MonsterPieceImportedManager, self).get_queryset().filter(uncommitted=True)
+
+
+class MonsterPieceManager(models.Manager):
+    # Default manager which only returns finalized instances
+    def get_queryset(self):
+        return super(MonsterPieceManager, self).get_queryset().filter(uncommitted=False)
+
+
+class MonsterPiece(models.Model):
+    # Multiple managers to split out imported and finalized objects
+    objects = models.Manager()
+    committed = MonsterPieceManager()
+    imported = MonsterPieceImportedManager()
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey('Summoner')
+    monster = models.ForeignKey('Monster')
+    pieces = models.IntegerField(default=0)
+    uncommitted = models.BooleanField(default=False)  # Used for importing
+
+    class Meta:
+        ordering = ['monster__name']
+
+    def __str__(self):
+        return str(self.monster) + ' - ' + str(self.pieces) + ' pieces'
+
+    def can_summon(self):
+        piece_requirements = {
+            1: 10,
+            2: 20,
+            3: 40,
+            4: 50,
+            5: 100,
+        }
+        base_stars = self.monster.base_stars
+
+        if self.monster.is_awakened:
+            base_stars -= 1
+
+        return self.pieces > piece_requirements[base_stars]
+
+
 class RuneInstanceImportedManager(models.Manager):
     def get_queryset(self):
         return super(RuneInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
@@ -1379,6 +1434,7 @@ class RuneInstance(models.Model):
     stars = models.IntegerField()
     level = models.IntegerField()
     slot = models.IntegerField()
+    value = models.IntegerField(blank=True, null=True)
     main_stat = models.IntegerField(choices=STAT_CHOICES)
     main_stat_value = models.IntegerField(default=0)
     innate_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
@@ -1391,6 +1447,7 @@ class RuneInstance(models.Model):
     substat_3_value = models.IntegerField(null=True, blank=True)
     substat_4 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_4_value = models.IntegerField(null=True, blank=True)
+    marked_for_sale = models.BooleanField(default=False)
     uncommitted = models.BooleanField(default=False)  # Used for importing
 
     # The following fields exist purely to allow easier filtering and are updated on model save

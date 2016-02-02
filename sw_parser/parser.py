@@ -1,9 +1,11 @@
 import dpkt
 import json
+from dateutil.parser import *
+import pytz
 
 from .data_mapping import *
 from .smon_decryptor import decrypt_response
-from herders.models import Monster, MonsterInstance, RuneInstance
+from herders.models import Monster, MonsterPiece, MonsterInstance, RuneInstance
 
 
 def parse_pcap_new(pcap_file):
@@ -131,7 +133,10 @@ def parse_sw_json(data, owner, options):
     errors = []
     parsed_runes = []
     parsed_mons = []
+    parsed_inventory = {}
+    parsed_monster_pieces = []
 
+    summoner = data['wizard']
     building_list = data['building_list']
     inventory_info = data['inventory_info']
     unit_list = data['unit_list']
@@ -139,22 +144,38 @@ def parse_sw_json(data, owner, options):
     locked_mons = data.get('unit_lock_list')
 
     # Buildings
-    # Find which one is the storage building
     storage_building_id = None
     for building in building_list:
-        if building.get('building_master_id') == 25:
-            storage_building_id = building.get('building_id')
-            break
+        if building:
+            # Find which one is the storage building
+            if building.get('building_master_id') == 25:
+                storage_building_id = building.get('building_id')
+                break
 
-    # Essence Inventory
-    imported_inventory = {}
+    # Inventory - essences and summoning pieces
     for item in inventory_info:
-        if item['item_master_type'] == 11:
+        # Essence Inventory
+        if item['item_master_type'] == inventory_type_map['inventory']:
             essence = inventory_essence_map.get(item['item_master_id'])
             quantity = item.get('item_quantity')
 
             if essence and quantity:
-                imported_inventory[essence] = quantity
+                parsed_inventory[essence] = quantity
+        elif item['item_master_type'] == inventory_type_map['monster_piece']:
+            quantity = item.get('item_quantity')
+            if quantity > 0:
+                try:
+                    mon = get_monster_from_id(item['item_master_id'])
+                except ValueError as e:
+                    errors.append(e.message)
+                else:
+                    if mon:
+                        parsed_monster_pieces.append(MonsterPiece(
+                            monster=mon,
+                            pieces=quantity,
+                            owner=owner,
+                            uncommitted=True,
+                        ))
 
     # Extract Rune Inventory (unequpped runes)
     for rune_data in runes_info:
@@ -218,12 +239,28 @@ def parse_sw_json(data, owner, options):
 
     import_results = {
         'errors': errors,
+        'summoner': summoner,
         'monsters': parsed_mons,
+        'monster_pieces': parsed_monster_pieces,
         'runes': parsed_runes,
-        'inventory': imported_inventory,
+        'inventory': parsed_inventory,
     }
 
     return import_results
+
+
+def get_monster_from_id(com2us_id):
+    try:
+        com2us_id = str(com2us_id)
+        monster_family = int(com2us_id[:3])
+        awakened = com2us_id[3] == '1'
+        element = element_map.get(int(com2us_id[-1:]))
+
+        return Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
+    except (TypeError, ValueError):
+        raise ValueError('Unable to parse monster ID ' + str(com2us_id))
+    except Monster.DoesNotExist:
+        return None
 
 
 def parse_monster_data(monster_data, owner):
@@ -268,6 +305,12 @@ def parse_monster_data(monster_data, owner):
     if len(skills) >= 4:
         mon.skill_4_level = skills[3][1]
 
+    try:
+        created_date = parse(monster_data.get('create_time') + ' PST', tzinfos={'PST': pytz.timezone('US/Pacific')})
+        mon.created = created_date
+    except (ValueError, TypeError):
+        mon.created = None
+
     return mon, is_new
 
 
@@ -287,6 +330,7 @@ def parse_rune_data(rune_data, owner):
     rune.type = rune_set_map.get(rune_data.get('set_id'))
 
     rune.com2us_id = com2us_id
+    rune.value = rune_data.get('sell_value')
     rune.slot = rune_data.get('slot_no')
     rune.stars = rune_data.get('class')
     rune.level = rune_data.get('upgrade_curr')

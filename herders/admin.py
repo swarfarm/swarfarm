@@ -169,10 +169,9 @@ class MonsterSkillScalesWithInline(admin.TabularInline):
     extra = 2
 
 
-@admin.register(MonsterSkillScalingStat)
-class MonsterSkillScalingStatAdmin(admin.ModelAdmin):
-    search_fields = ['stat', ]
-    save_as = True
+class MonsterSkillEffectDetailInline(admin.TabularInline):
+    model = MonsterSkillEffectDetail
+    extra = 5
 
 
 @admin.register(MonsterSkill)
@@ -181,7 +180,7 @@ class MonsterSkillAdmin(admin.ModelAdmin):
     filter_vertical = ('skill_effect',)
     search_fields = ['name', 'icon_filename', 'description']
     list_filter = ['slot', 'skill_effect', 'passive']
-    inlines = (MonsterSkillScalesWithInline, )
+    inlines = (MonsterSkillScalesWithInline, MonsterSkillEffectDetailInline,)
     save_as = True
 
 
@@ -194,6 +193,12 @@ class MonsterLeaderSkillAdmin(admin.ModelAdmin):
 @admin.register(MonsterSkillEffect)
 class MonsterSkillEffectAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'is_buff')
+
+
+@admin.register(MonsterSkillScalingStat)
+class MonsterSkillScalingStatAdmin(admin.ModelAdmin):
+    search_fields = ['stat', ]
+    save_as = True
 
 
 @admin.register(MonsterSource)

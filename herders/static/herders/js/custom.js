@@ -25,6 +25,11 @@ bootbox.setDefaults({
     onEscape: true
 });
 
+PNotify.prototype.options.styling = "bootstrap3";
+PNotify.prototype.options.stack.firstpos1 = 110;
+PNotify.prototype.options.stack.spacing1 = 15;
+
+
 function slugify(text)
 {
   return text.toString().toLowerCase()
@@ -67,11 +72,9 @@ function DisplayMessages() {
         global: false
     }).done(function(result) {
             for (var i = 0; i < result.messages.length; i++) {
-                $.notify({
-                    message: result.messages[i].text
-                }, {
-                    type: result.messages[i].status,
-                    delay: 3000
+                new PNotify({
+                    text: result.messages[i].text,
+                    type: result.messages[i].status
                 });
             }
         }
@@ -143,7 +146,7 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
                     el.popover({
                         trigger: 'manual',
                         content: d,
-                        placement: runePopoverPlacement,
+                        placement: popoverPlacement(el),
                         html: true,
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
@@ -172,7 +175,7 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
                     trigger: 'manual',
                     content: d,
                     html: true,
-                    placement: runePopoverPlacement,
+                    placement: popoverPlacement(el),
                     container: 'body',
                     viewport: {selector: 'body', padding: 2},
                     template: '<div class="monster-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
@@ -199,7 +202,7 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
                     trigger: 'manual',
                     content: d,
                     html: true,
-                    placement: runePopoverPlacement,
+                    placement: popoverPlacement(el),
                     container: 'body',
                     viewport: {selector: 'body', padding: 2},
                     template: '<div class="monster-skill popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
@@ -221,9 +224,10 @@ $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
         return false;
     });
 
-function runePopoverPlacement(){
-    var width = window.innerWidth;
-    if (width<1200) return 'auto top';
+function popoverPlacement(element) {
+    var distance_from_right = jQuery(window).width() - element.offset().left;
+
+    if (distance_from_right < 500) return 'auto left';
     return 'right';
 }
 

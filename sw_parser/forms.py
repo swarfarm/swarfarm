@@ -18,12 +18,11 @@ class MonsterImportOptionsMixin(forms.Form):
         label='Default Priority for new monsters',
         choices=MonsterInstance.PRIORITY_CHOICES,
         required=True,
-        initial=MonsterInstance.PRIORITY_MED,
+        initial=MonsterInstance.PRIORITY_LOW,
     )
     ignore_fusion = forms.BooleanField(
         required=False,
-        label=mark_safe('If monster is locked in-game, do not use for fusion material on SWARFARM.'
-                        ' <u data-toggle="popover" title="Instructions" data-trigger="hover" data-content="Upload the ########.json file instead of the ########-swarfarm.json file. You can ignore this warning if you are uploading pcap file."><strong class=text-danger>Requires full data upload.</strong></u>'),
+        label=mark_safe('If monster is locked in-game, do not use for fusion material on SWARFARM. <strong class=text-danger>Requires SWParser 0.96.1 or later.</strong>'),
         initial=True,
     )
     minimum_stars = forms.ChoiceField(
@@ -57,7 +56,7 @@ class MonsterImportOptionsLayout(Layout):
     def __init__(self):
         super(MonsterImportOptionsLayout, self).__init__(
             Div(
-                HTML("""<h4 class="list-group-item-heading">Filters</h4>"""),
+                HTML("""<h4 class="list-group-item-heading">Monster Filters</h4>"""),
                 Alert(content="Note: If a monster is filtered out, it's equipped runes will not be imported either!", css_class='alert-warning'),
                 Field('minimum_stars', template='crispy/button_radio_select.html'),
                 Field('ignore_silver'),

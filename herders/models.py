@@ -600,6 +600,7 @@ class MonsterSkillEffectDetail(models.Model):
     aoe = models.BooleanField(default=False, help_text='Effect applies to entire friendly or enemy group')
     single_target = models.BooleanField(default=False, help_text='Effect applies to a single monster')
     self_effect = models.BooleanField(default=False, help_text='Effect applies to the monster using the skill')
+    random = models.BooleanField(default=False, help_text='Skill effect applies randomly to the target')
     quantity = models.IntegerField(default=0, help_text='Number of items this effect affects on the target')
     all = models.BooleanField(default=False, help_text='This effect affects all items on the target')
 

@@ -423,10 +423,6 @@ class Monster(models.Model):
 
         super(Monster, self).save(*args, **kwargs)
 
-        #if self.obtainable and self.archetype != self.TYPE_MATERIAL and ((self.element == self.ELEMENT_DARK and self.base_stars >= 3) or self.element != self.ELEMENT_DARK) and self.source.count() == 0:
-            # Trigger a clear which will re-populate with required fields. Do not do this if fields have already been added.
-        #    self.source.clear()
-
         # Automatically set awakens from/to relationship if none exists
         if self.awakens_from and self.awakens_from.awakens_to is not self:
             self.awakens_from.awakens_to = self
@@ -451,6 +447,7 @@ class MonsterSkill(models.Model):
     description = models.TextField()
     slot = models.IntegerField(default=1)
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
+    effect = models.ManyToManyField('MonsterSkillEffect', through='MonsterSkillEffectDetail', blank=True, related_name='effect')
     cooltime = models.IntegerField(null=True, blank=True)
     passive = models.BooleanField(default=False)
     max_level = models.IntegerField()
@@ -595,6 +592,16 @@ class MonsterSkillEffect(models.Model):
 
     class Meta:
         ordering = ['-is_buff', 'name']
+
+
+class MonsterSkillEffectDetail(models.Model):
+    skill = models.ForeignKey(MonsterSkill, on_delete=models.CASCADE)
+    effect = models.ForeignKey(MonsterSkillEffect, on_delete=models.CASCADE)
+    aoe = models.BooleanField(default=False, help_text='Effect applies to entire friendly or enemy group')
+    single_target = models.BooleanField(default=False, help_text='Effect applies to a single monster')
+    self_effect = models.BooleanField(default=False, help_text='Effect applies to the monster using the skill')
+    quantity = models.IntegerField(default=0, help_text='Number of items this effect affects on the target')
+    all = models.BooleanField(default=False, help_text='This effect affects all items on the target')
 
 
 class MonsterSkillScalingStat(models.Model):

@@ -8,6 +8,50 @@ element_map = {
     5: Monster.ELEMENT_DARK,
 }
 
+building_id_map = {
+    'summoners_tower': 1,
+    'summonhenge': 2,
+    'pond_of_mana': 3,
+    'crystal_mine': 4,
+    'gateway': 8,
+    'temple_of_wishes': 10,
+    'magic_shop': 11,
+    'ancient_stones': 12,
+    'arcane_tower': 14,
+    'crystal_titan': 15,
+    'fusion_hexagram': 16,
+    'fuse_center': 17,
+    'power_up_circle': 20,
+    'tranquil_forest': 22,
+    'deep_forest_ent': 24,
+    'monster_storage': 25,
+    'transmogrification_building': 27,
+    # Missing Gusty Cliffs
+}
+
+decoration_id_map = {
+    'guardstone': 4,
+    'mana_fountain': 5,
+    'sky_tribe_totem': 6,
+    'arcane_booster_tower': 7,
+    'crystal_altar': 8,
+    'ancient_sword': 9,
+    'sanctum_of_energy': 10,
+    'mysterious_plant': 11,
+    'fire_sanctuary': 15,
+    'water_sanctuary': 16,
+    'wind_sanctuary': 17,
+    'light_sanctuary': 18,
+    'dark_sanctuary': 19,
+    'fallen_ancient_guardian': 31,
+    'crystal_rock': 34,
+    'fairy_tree': 35,
+    'flag_of_battle': 36,
+    'flag_of_rage': 37,
+    'flag_of_hope': 38,
+    'flag_of_will': 39,
+}
+
 inventory_type_map = {
     'inventory': 11,
     'monster_piece': 12,

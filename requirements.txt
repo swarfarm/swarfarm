@@ -6,7 +6,7 @@ pytz
 python-dateutil
 pycrypto
 redis
-django-redis-cache==1.6.3
+django-redis-cache==1.6.4
 django-autocomplete-light
 django-crispy-forms==1.6.0
 django-markdown-deux

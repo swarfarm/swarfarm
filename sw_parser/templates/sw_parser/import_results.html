@@ -1,9 +1,0 @@
-{% extends 'sw_parser/base.html' %}
-
-{% block content %}
-errors: {{ results.errors|length }}
-new mons: {{ results.monsters.new|length }}
-updated mons: {{ results.monsters.updated|length }}
-new runes: {{ results.runes.new|length }}
-updated runes: {{ results.runes.updated|length }}
-{% endblock content %}

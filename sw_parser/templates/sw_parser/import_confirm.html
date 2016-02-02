@@ -105,7 +105,7 @@
             </div>
             <div role="tabpanel" class="tab-pane{% if updated_runes == 0 and new_runes == 0 and missing_runes > 0 %} active{% endif %}" id="missing_runes">
                 <p>These runes exist in your SWARFARM profile but do not exist in the imported data. These will be deleted by default.</p>
-                {% for type, runes in runes.missing.iteritems %}
+                {% for type, type_runes in runes.missing.iteritems %}
                     {% if type_runes|length > 0 %}
                         <div class="panel panel-default">
                             <div class="panel-heading">

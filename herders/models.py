@@ -655,6 +655,7 @@ class Fusion(models.Model):
 class Summoner(models.Model):
     user = models.OneToOneField(User)
     summoner_name = models.CharField(max_length=256, null=True, blank=True)
+    com2us_id = models.BigIntegerField(default=None, null=True, blank=True)
     global_server = models.NullBooleanField(default=True, null=True, blank=True)
     following = models.ManyToManyField("self", related_name='followed_by', symmetrical=False)
     public = models.BooleanField(default=False, blank=True)
@@ -1432,6 +1433,7 @@ class RuneInstance(models.Model):
     stars = models.IntegerField()
     level = models.IntegerField()
     slot = models.IntegerField()
+    value = models.IntegerField(blank=True, null=True)
     main_stat = models.IntegerField(choices=STAT_CHOICES)
     main_stat_value = models.IntegerField(default=0)
     innate_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
@@ -1444,6 +1446,7 @@ class RuneInstance(models.Model):
     substat_3_value = models.IntegerField(null=True, blank=True)
     substat_4 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_4_value = models.IntegerField(null=True, blank=True)
+    marked_for_sale = models.BooleanField(default=False)
     uncommitted = models.BooleanField(default=False)  # Used for importing
 
     # The following fields exist purely to allow easier filtering and are updated on model save

@@ -37,6 +37,7 @@
                             <th class="monster-level-column">Level</th>
                             <th class="monster-element">Element</th>
                             <th>Archetype</th>
+                            <th>Summoned On</th>
                             <th>Priority</th>
                             <th>Leader Skill</th>
                             <th data-sorter="false">Skill Effects</th>
@@ -100,6 +101,7 @@
                                     <span>{{ instance.monster.element }}</span>
                                 </td>
                                 <td>{{ instance.monster.get_archetype_display }}</td>
+                                <td>{{ instance.created }}</td>
                                 <td>
                                     <span class="hidden">{{ instance.priority }}</span>
                                     {{ instance.get_priority_display }}

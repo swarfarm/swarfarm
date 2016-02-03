@@ -101,7 +101,7 @@
                                     <span>{{ instance.monster.element }}</span>
                                 </td>
                                 <td>{{ instance.monster.get_archetype_display }}</td>
-                                <td>{{ instance.created }}</td>
+                                <td>{% if instance.created %}{{ instance.created }}{% endif %}</td>
                                 <td>
                                     <span class="hidden">{{ instance.priority }}</span>
                                     {{ instance.get_priority_display }}

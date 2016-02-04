@@ -122,7 +122,7 @@ def parse_pcap(pcap_file):
                     resp_plain = decrypt_response(response.body)
                     resp_json = json.loads(resp_plain)
 
-                    if resp_json.get('command') == 'HubUserLogin':
+                    if resp_json.get('command') == 'HubUserLogin' and 'unit_list' in resp_json:
                         return resp_json
 
         elif (tcp.flags & dpkt.tcp.TH_FIN) != 0:
@@ -136,7 +136,7 @@ def parse_sw_json(data, owner, options):
     parsed_inventory = {}
     parsed_monster_pieces = []
 
-    summoner = data['wizard']
+    wizard_id = data['wizard_id']
     building_list = data['building_list']
     inventory_info = data['inventory_info']
     unit_list = data['unit_list']
@@ -239,7 +239,7 @@ def parse_sw_json(data, owner, options):
 
     import_results = {
         'errors': errors,
-        'summoner': summoner,
+        'wizard_id': wizard_id,
         'monsters': parsed_mons,
         'monster_pieces': parsed_monster_pieces,
         'runes': parsed_runes,

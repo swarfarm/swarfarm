@@ -260,7 +260,7 @@ def _import_objects(request, data, import_options, summoner):
         errors += results['errors']
 
         # Update summoner and inventory
-        summoner.com2us_id = results['summoner'].get('wizard_id')
+        summoner.com2us_id = results['wizard_id']
         summoner.storage_magic_low = results['inventory'].get('storage_magic_low', 0)
         summoner.storage_magic_mid = results['inventory'].get('storage_magic_mid', 0)
         summoner.storage_magic_high = results['inventory'].get('storage_magic_high', 0)

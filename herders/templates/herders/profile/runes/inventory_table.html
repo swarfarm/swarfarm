@@ -22,6 +22,7 @@
             <tr>
                 <th>Type</th>
                 <th>Value</th>
+                <th>Efficiency</th>
                 <th>Slot</th>
                 <th>Stars</th>
                 <th>Level</th>
@@ -43,6 +44,7 @@
                     {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
                 </td>
                 <td>{% if rune.value %}{{ rune.value }}{% endif %}</td>
+                <td>{% if rune.efficiency %}{{ rune.efficiency|floatformat:1 }}%{% endif %}</td>
                 <td>{{ rune.slot }}</td>
                 <td>{{ rune.stars }}</td>
                 <td>{{ rune.level }}</td>

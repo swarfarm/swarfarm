@@ -11,5 +11,8 @@
         {% if rune.substat_3 %}<li>{{ rune.get_substat_3_rune_display }} +{{ rune.substat_3_value }}{% if rune.substat_3 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
         {% if rune.substat_4 %}<li>{{ rune.get_substat_4_rune_display }} +{{ rune.substat_4_value }}{% if rune.substat_4 in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
     </ul>
-    {% if rune.value %}<span class="mana-crystals">{{ rune.value }}</span>{% endif %}
+    <ul class="top-right list-unstyled">
+        {% if rune.value %}<li><img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ rune.value }}</li>{% endif %}
+        {% if rune.efficiency %}<li>Eff: {{ rune.efficiency|floatformat:1 }}%</li>{% endif %}
+    </ul>
 </div>

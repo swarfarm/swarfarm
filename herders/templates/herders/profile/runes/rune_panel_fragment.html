@@ -50,6 +50,9 @@
                 </div>
             </div>
         {% endif %}
-        {% if rune.value %}<span class="mana-crystals">{{ rune.value }}</span>{% endif %}
+        <ul class="top-right list-unstyled">
+        {% if rune.value %}<li class="mana-crystals"><img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ rune.value }}</li>{% endif %}
+        {% if rune.efficiency %}<li>Eff: {{ rune.efficiency|floatformat:1 }}%</li>{% endif %}
+    </ul>
     </div>
 </div>

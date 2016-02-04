@@ -1363,6 +1363,17 @@ class RuneInstance(models.Model):
         },
     }
 
+    SUBSTAT_MAX_VALUES = {
+        STAT_HP_PCT: 40.0,
+        STAT_ATK_PCT: 40.0,
+        STAT_DEF_PCT: 40.0,
+        STAT_SPD: 30.0,
+        STAT_CRIT_RATE_PCT: 30.0,
+        STAT_CRIT_DMG_PCT: 35.0,
+        STAT_RESIST_PCT: 40.0,
+        STAT_ACCURACY_PCT: 40.0,
+    }
+
     INNATE_STAT_TITLES = {
         STAT_HP: 'Strong',
         STAT_HP_PCT: 'Tenacious',
@@ -1460,6 +1471,7 @@ class RuneInstance(models.Model):
     has_speed = models.BooleanField(default=False)
     has_resist = models.BooleanField(default=False)
     has_accuracy = models.BooleanField(default=False)
+    efficiency = models.FloatField(blank=True, null=True)
 
     def get_main_stat_rune_display(self):
         return self.RUNE_STAT_DISPLAY.get(self.main_stat, '')
@@ -1587,6 +1599,32 @@ class RuneInstance(models.Model):
         else:
             return ''
 
+    def get_efficiency(self):
+        # https://www.youtube.com/watch?v=SBWeptNNbYc
+        if self.stars >= 5:
+            running_sum = 0
+
+            if self.innate_stat in self.SUBSTAT_MAX_VALUES:
+                running_sum += self.innate_stat_value / self.SUBSTAT_MAX_VALUES[self.innate_stat]
+
+            if self.substat_1 in self.SUBSTAT_MAX_VALUES:
+                running_sum += self.substat_1_value / self.SUBSTAT_MAX_VALUES[self.substat_1]
+
+            if self.substat_2 in self.SUBSTAT_MAX_VALUES:
+                running_sum += self.substat_2_value / self.SUBSTAT_MAX_VALUES[self.substat_2]
+
+            if self.substat_3 in self.SUBSTAT_MAX_VALUES:
+                running_sum += self.substat_3_value / self.SUBSTAT_MAX_VALUES[self.substat_3]
+
+            if self.substat_4 in self.SUBSTAT_MAX_VALUES:
+                running_sum += self.substat_4_value / self.SUBSTAT_MAX_VALUES[self.substat_4]
+
+            running_sum += 1 if self.stars == 6 else 0.85
+
+            return running_sum / 2.8 * 100
+        else:
+            return None
+
     def update_fields(self):
         # Set flags for filtering
         rune_stat_types = [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]
@@ -1600,6 +1638,7 @@ class RuneInstance(models.Model):
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
         self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
+        self.efficiency = self.get_efficiency()
 
         # Clean up values that don't have a stat type picked
         if self.innate_stat is None:

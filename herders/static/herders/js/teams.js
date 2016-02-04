@@ -25,6 +25,7 @@ page_content.on('submit', '#EditTeamForm', function() {
         type: frm.attr('method'),
         url: frm.attr('action'),
         data: frm.serialize(),
+        global: false,
         success: function (data) {
             team_detail.html(data);
             update_team_list();
@@ -39,7 +40,6 @@ page_content.on('submit', '#EditTeamForm', function() {
 $(document).ready(function() {
     update_team_list();
     load_new_team();
-    //DisplayMessages();
 });
 
 function load_new_team() {
@@ -59,5 +59,4 @@ function update_team_list() {
         $('.navbar .team-edit').toggleClass('disabled', isEmpty);
     });
     $('.autocomplete-light-widget').remove();
-    DisplayMessages();
 }

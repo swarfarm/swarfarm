@@ -23,6 +23,7 @@
                 <th>Type</th>
                 <th>Slot</th>
                 <th>Stars</th>
+                <th>Value</th>
                 <th>HP %</th>
                 <th>HP</th>
                 <th>DEF %</th>
@@ -47,6 +48,7 @@
                 </td>
                 <td>{{ rune.slot }}</td>
                 <td>{{ rune.stars }}</td>
+                <td>{% if rune.value %}{{ rune.value }}{% endif %}</td>
                 <td>{% if rune.get_hp_pct %}<span {% if rune.main_stat == rune.STAT_HP_PCT %}class="lead"{% endif %}>{{ rune.get_hp_pct }}%</span>{% endif %}</td>
                 <td>{% if rune.get_hp %}<span {% if rune.main_stat == rune.STAT_HP %}class="lead"{% endif %}>{{ rune.get_hp }}</span>{% endif %}</td>
                 <td>{% if rune.get_def_pct %}<span {% if rune.main_stat == rune.STAT_DEF_PCT %}class="lead"{% endif %}>{{ rune.get_def_pct }}%</span>{% endif %}</td>

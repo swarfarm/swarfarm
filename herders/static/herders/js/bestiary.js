@@ -59,7 +59,8 @@ $('body')
             .bind('sortBegin', function(e, table) {
                 var sortColumn = e.target.config.sortList[0][0];
                 var sortDirection = e.target.config.sortList[0][1] == 0 ? 'desc' : 'asc';
-                var sort_header = slugify($(table).find('th')[sortColumn].innerText);
+                var column_name = $(table).find('th')[sortColumn].textContent;
+                var sort_header = slugify(column_name);
 
                 $('#id_sort').val(sort_header + ';' + sortDirection);
                 update_inventory();

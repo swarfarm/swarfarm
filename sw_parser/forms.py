@@ -22,8 +22,7 @@ class MonsterImportOptionsMixin(forms.Form):
     )
     ignore_fusion = forms.BooleanField(
         required=False,
-        label=mark_safe('If monster is locked in-game, do not use for fusion material on SWARFARM.'
-                        ' <u data-toggle="popover" title="Instructions" data-trigger="hover" data-content="Upload the ########.json file instead of the ########-swarfarm.json file. You can ignore this warning if you are uploading pcap file."><strong class=text-danger>Requires full data upload.</strong></u>'),
+        label=mark_safe('If monster is locked in-game, do not use for fusion material on SWARFARM. <strong class=text-danger>Requires SWParser 0.96.1 or later.</strong>'),
         initial=True,
     )
     minimum_stars = forms.ChoiceField(

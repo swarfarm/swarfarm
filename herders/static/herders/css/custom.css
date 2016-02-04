@@ -803,6 +803,16 @@ button.rune-assign-choice {
     padding: 5px;
 }
 
+.mana-crystals {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background-size: 1em;
+    background-image: url(/static/herders/images/icons/mana.png);
+    background-repeat: no-repeat;
+    padding-left: 1.2em;
+}
+
 .spinner-overlay {
     background-color: rgba(0,0,0,.5);
     position: fixed;

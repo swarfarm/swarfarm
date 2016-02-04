@@ -3,6 +3,7 @@ from collections import OrderedDict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.uploadhandler import TemporaryFileUploadHandler
+from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -258,7 +259,8 @@ def _import_objects(request, data, import_options, summoner):
 
         errors += results['errors']
 
-        # Update essence storage
+        # Update summoner and inventory
+        summoner.com2us_id = results['wizard_id']
         summoner.storage_magic_low = results['inventory'].get('storage_magic_low', 0)
         summoner.storage_magic_mid = results['inventory'].get('storage_magic_mid', 0)
         summoner.storage_magic_high = results['inventory'].get('storage_magic_high', 0)
@@ -289,9 +291,9 @@ def _import_objects(request, data, import_options, summoner):
         request.session['import_current'] = 0
         for idx, mon in enumerate(results['monsters']):
             mon.save()
-            if idx % 10 == 0:
-                request.session['import_current'] = idx
-                request.session.save()
+
+            request.session['import_current'] = idx
+            request.session.save()
 
         # Save imported runes
         request.session['import_stage'] = 'runes'
@@ -301,10 +303,13 @@ def _import_objects(request, data, import_options, summoner):
             # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
             # relationship was previously set.
             rune.assigned_to = rune.assigned_to
-            rune.save()
-            if idx % 10 == 0:
-                request.session['import_current'] = idx
-                request.session.save()
+            try:
+                rune.save()
+            except IntegrityError:
+                errors.append('Error saving rune with ID ' + str(rune.com2us_id) + ' - assigned to monster that does not exist.')
+
+            request.session['import_current'] = idx
+            request.session.save()
 
         request.session['import_stage'] = 'done'
     return errors

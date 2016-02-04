@@ -101,7 +101,11 @@
                                     <span>{{ instance.monster.element }}</span>
                                 </td>
                                 <td>{{ instance.monster.get_archetype_display }}</td>
-                                <td>{% if instance.created %}{{ instance.created }}{% endif %}</td>
+                                <td>{% if instance.created %}
+                                    <span class="hidden">{{ instance.created|date:"U" }}</span>
+                                    {{ instance.created }}
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <span class="hidden">{{ instance.priority }}</span>
                                     {{ instance.get_priority_display }}

@@ -94,7 +94,7 @@ class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
             'substat_2', 'get_substat_2_rune_display', 'substat_2_value',
             'substat_3', 'get_substat_3_rune_display', 'substat_3_value',
             'substat_4', 'get_substat_4_rune_display', 'substat_4_value',
-            'PERCENT_STATS'
+            'PERCENT_STATS', 'efficiency',
         )
 
 

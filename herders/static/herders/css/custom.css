@@ -58,6 +58,10 @@ footer {
     padding: 5px;
 }
 
+.panel-body {
+    position: relative;
+}
+
 .form-group-condensed {
     margin-bottom: 5px;
 }
@@ -803,14 +807,34 @@ button.rune-assign-choice {
     padding: 5px;
 }
 
-.mana-crystals {
+.bottom-right {
+    text-align: right;
     position: absolute;
     right: 0;
     bottom: 0;
-    background-size: 1em;
-    background-image: url(/static/herders/images/icons/mana.png);
-    background-repeat: no-repeat;
-    padding-left: 1.2em;
+}
+
+.top-right {
+    text-align: right;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.bottom-left {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.top-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.inline-icon {
+    height: 1em;
 }
 
 .spinner-overlay {

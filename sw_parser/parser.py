@@ -136,7 +136,6 @@ def parse_sw_json(data, owner, options):
     parsed_inventory = {}
     parsed_monster_pieces = []
 
-    wizard_id = data['wizard_id']
     building_list = data['building_list']
     inventory_info = data['inventory_info']
     unit_list = data['unit_list']
@@ -239,7 +238,6 @@ def parse_sw_json(data, owner, options):
 
     import_results = {
         'errors': errors,
-        'wizard_id': wizard_id,
         'monsters': parsed_mons,
         'monster_pieces': parsed_monster_pieces,
         'runes': parsed_runes,

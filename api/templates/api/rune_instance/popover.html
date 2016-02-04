@@ -1,3 +1,6 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
 <div class="rune-panel">
     {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
     <ul class="list-unstyled">

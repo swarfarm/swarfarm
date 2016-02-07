@@ -1281,10 +1281,13 @@ def runes(request, profile_name):
         return render(request, 'herders/profile/not_public.html', context)
 
 
-def rune_inventory(request, profile_name, view_mode=None):
+def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
     # If we passed in view mode or sort method, set the session variable and redirect back to base profile URL
     if view_mode:
         request.session['rune_inventory_view_mode'] = view_mode.lower()
+
+    if box_grouping:
+        request.session['rune_inventory_box_method'] = box_grouping.lower()
 
     if request.session.modified:
         return HttpResponse("Rune view mode cookie set")
@@ -1295,6 +1298,7 @@ def rune_inventory(request, profile_name, view_mode=None):
 
     form = FilterRuneForm(request.POST or None)
     view_mode = request.session.get('rune_inventory_view_mode', 'box').lower()
+    box_grouping = request.session.get('rune_inventory_box_method', 'slot').lower()
 
     if form.is_valid():
         rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)
@@ -1309,6 +1313,30 @@ def rune_inventory(request, profile_name, view_mode=None):
 
     if is_owner or summoner.public:
         if view_mode == 'box':
+            rune_box = OrderedDict()
+            if box_grouping == 'slot':
+                rune_box['Slot 1'] = rune_filter.qs.filter(slot=1)
+                rune_box['Slot 2'] = rune_filter.qs.filter(slot=2)
+                rune_box['Slot 3'] = rune_filter.qs.filter(slot=3)
+                rune_box['Slot 4'] = rune_filter.qs.filter(slot=4)
+                rune_box['Slot 5'] = rune_filter.qs.filter(slot=5)
+                rune_box['Slot 6'] = rune_filter.qs.filter(slot=6)
+            elif box_grouping == 'grade':
+                rune_box['6*'] = rune_filter.qs.filter(stars=6)
+                rune_box['5*'] = rune_filter.qs.filter(stars=5)
+                rune_box['4*'] = rune_filter.qs.filter(stars=4)
+                rune_box['3*'] = rune_filter.qs.filter(stars=3)
+                rune_box['2*'] = rune_filter.qs.filter(stars=2)
+                rune_box['1*'] = rune_filter.qs.filter(stars=1)
+            elif box_grouping == 'equipped':
+                rune_box['Not Equipped'] = rune_filter.qs.filter(assigned_to__isnull=True)
+                rune_box['Equipped'] = rune_filter.qs.filter(assigned_to__isnull=False)
+            elif box_grouping == 'type':
+                for (type, type_name) in RuneInstance.TYPE_CHOICES:
+                    rune_box[type_name] = rune_filter.qs.filter(type=type)
+
+            context['runes'] = rune_box
+            context['box_grouping'] = box_grouping
             template = 'herders/profile/runes/inventory.html'
         elif view_mode == 'grid':
             template = 'herders/profile/runes/inventory_grid.html'

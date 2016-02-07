@@ -209,4 +209,10 @@ $('body')
         form[0].reset();
         form.find('label').toggleClass('active', false);
         update_rune_inventory();
+    })
+    .on('click', '.box-group-mode', function() {
+        var group_mode = $(this).data('mode');
+        $.get('/profile/' + PROFILE_NAME + '/runes/inventory/box/' + group_mode + '/', function() {
+            update_rune_inventory();
+        });
     });

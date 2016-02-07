@@ -15,17 +15,33 @@
                     <span class="glyphicon glyphicon-th"></span> Grid
                 </button>
             </div>
+
+            <div class="btn-group">
+                <button class="btn btn-default box-group-mode {% if box_grouping == 'type' %}active{% endif %}" data-mode="type">Type</button>
+                <button class="btn btn-default box-group-mode {% if box_grouping == 'slot' %}active{% endif %}" data-mode="grade">Slot</button>
+                <button class="btn btn-default box-group-mode {% if box_grouping == 'grade' %}active{% endif %}" data-mode="grade">Grade</button>
+                <button class="btn btn-default box-group-mode {% if box_grouping == 'equipped' %}active{% endif %}" data-mode="equipped">Equipped</button>
+            </div>
         </div>
         <div class="panel-body">
-            <div class="flex">
-            {% for rune in runes %}
-                <div data-rune-instance="{{ rune.pk.hex }}">
-                    {% include 'herders/profile/runes/rune_panel_fragment.html' with rune=rune profile_name=profile_name is_owner=is_owner only %}
+            {% for groupname, runes in runes.iteritems %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong>{{ groupname }}</strong>
                 </div>
-            {% empty %}
-                <div class="alert alert-warning">Your search returned no results or you have no runes!</div>
-            {% endfor %}
+                <div class="panel-body">
+                    <div class="flex">
+                    {% for rune in runes %}
+                        <div data-rune-instance="{{ rune.pk.hex }}">
+                            {% include 'herders/profile/runes/rune_panel_fragment.html' with rune=rune profile_name=profile_name is_owner=is_owner only %}
+                        </div>
+                    {% empty %}
+                        <div class="alert alert-warning">Your search returned no results or you have no runes!</div>
+                    {% endfor %}
+                    </div>
+                </div>
             </div>
+            {% endfor %}
         </div>
     </div>
 </div>

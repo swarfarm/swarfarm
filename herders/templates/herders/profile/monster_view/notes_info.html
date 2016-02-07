@@ -66,6 +66,21 @@
                 {% endfor %}
             </td>
         </tr>
+        {% if instance.team_set.count or instance.team_leader.count %}
+        <tr>
+            <td>Teams:</td>
+            <td>
+                <ul class="list-unstyled">
+                {% for team in instance.team_leader.all %}
+                    <li><a href="{% url 'herders:teams' profile_name=request.user.username %}#{{ team.pk.hex }}">{{ team.group.name }} - {{ team.name }} (Lead)</a></li>
+                {% endfor %}
+                {% for team in instance.team_set.all %}
+                    <li><a href="{% url 'herders:teams' profile_name=request.user.username %}#{{ team.pk.hex }}">{{ team.group.name }} - {{ team.name }}</a></li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
         <tr>
             <td>Resources:</td>
             <td>

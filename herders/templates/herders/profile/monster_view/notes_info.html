@@ -25,7 +25,7 @@
                 <td>Awakens To:</td>
                 <td>
                     <span class="monster-image">
-                        <a href="{% url 'herders:bestiary_detail' monster_slug=awakened.bestiary_slug %}" target="_blank">
+                        <a href="{% url 'bestiary:detail' monster_slug=awakened.bestiary_slug %}" target="_blank">
                             <img src="{{ img_url_prefix }}monsters/{{ awakened.image_filename }}" class="monster-thumb"/>
                             <span>
                                 {% for x in awakened.base_stars|get_range %}
@@ -70,7 +70,7 @@
             <td>Resources:</td>
             <td>
                 <ul class="list-unstyled">
-                    <li><a href="{% url 'herders:bestiary_detail' monster_slug=instance.monster.bestiary_slug %}"><span class="glyphicon glyphicon-link"></span> SWARFARM Bestiary</a></li>
+                    <li><a href="{% url 'bestiary:detail' monster_slug=instance.monster.bestiary_slug %}"><span class="glyphicon glyphicon-link"></span> SWARFARM Bestiary</a></li>
                     <li>{% if instance.monster.wikia_url %}<a href="{{ instance.monster.wikia_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> Wikia</a>{% endif %}</li>
                     <li>{% if instance.monster.summonerswar_co_url %}<a href="{{ instance.monster.summonerswar_co_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> summonerswar.co</a>{% endif %}</li>
                 </ul>

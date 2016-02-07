@@ -83,6 +83,7 @@
             {% endfor %}
         </td>
     </tr>
+
     {% if instance.runeinstance_set|length > 0 %}
     <tr>
         <td colspan="4" class="rune-popover-row">
@@ -92,6 +93,23 @@
         </td>
     </tr>
     {% endif %}
+
+    {% if instance.team_leader or instance.team_set %}
+    <tr>
+        <td colspan="4">
+            <dl>
+                <dt>Teams</dt>
+                {% for team in instance.team_leader %}
+                <dd>{{ team.group.name }} - {{ team.name }} (Lead)</dd>
+                {% endfor %}
+                {% for team in instance.team_set %}
+                <dd>{{ team.group.name }} - {{ team.name }}</dd>
+                {% endfor %}
+            </dl>
+        </td>
+    </tr>
+    {% endif %}
+
     {% if instance.notes %}
     <tr>
         <td colspan="4"><strong>Notes: </strong>{{ instance.notes|markdown }}</td>

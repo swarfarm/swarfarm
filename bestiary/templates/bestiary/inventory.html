@@ -69,11 +69,11 @@
                         </td>
                         {% endif %}
                         <td class="monster-image">
-                            <a href="{% url 'herders:bestiary_detail' monster_slug=monster.bestiary_slug %}">
+                            <a href="{% url 'bestiary:detail' monster_slug=monster.bestiary_slug %}">
                                 <div class="sprite sprite-{{ monster.image_filename|remove_extension }}"></div>
                             </a>
                         </td>
-                        <td><a href="{% url 'herders:bestiary_detail' monster_slug=monster.bestiary_slug %}">{{ monster.name|title }}</a></td>
+                        <td><a href="{% url 'bestiary:detail' monster_slug=monster.bestiary_slug %}">{{ monster.name|title }}</a></td>
                         <td>{{ monster.base_stars }}<span class="glyphicon glyphicon-star"></span></td>
                         <td class="monster-element">
                             <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" class="monster-element" />
@@ -82,14 +82,14 @@
                         <td class="monster-type">{{ monster.get_archetype_display }}</td>
                         <td class="monster-awakens">
                             {% if monster.awakens_to %}
-                            <a href="{% url 'herders:bestiary_detail' monster_slug=monster.awakens_to.bestiary_slug %}">
+                            <a href="{% url 'bestiary:detail' monster_slug=monster.awakens_to.bestiary_slug %}">
                                 <div class="sprite sprite-{{ monster.awakens_to.image_filename|remove_extension }}"></div>{{ monster.awakens_to.name|title }}
                             </a>
                             {% endif %}
                         </td>
                         <td class="monster-awakens">
                             {% if monster.awakens_from %}
-                            <a href="{% url 'herders:bestiary_detail' monster_slug=monster.awakens_from.bestiary_slug %}">
+                            <a href="{% url 'bestiary:detail' monster_slug=monster.awakens_from.bestiary_slug %}">
                                 <div class="sprite sprite-{{ monster.awakens_from.image_filename|remove_extension }}"></div>{{ monster.awakens_from.name|title }}
                             </a>
                             {% endif %}

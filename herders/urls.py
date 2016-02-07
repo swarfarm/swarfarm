@@ -5,8 +5,6 @@ from . import views
 urlpatterns = [
     # User management stuff
     url(r'^register/$', views.register, name='register'),  # Register new user
-    url(r'^skill_debug/$', views.bestiary_sanity_checks, name='skill_checks'),
-
 
     # User profiles and monster views
     url(r'^profile/(?P<profile_name>[a-zA-Z0-9_@.]+)/', include([
@@ -68,13 +66,5 @@ urlpatterns = [
             url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_add, name='profile_follow_add'),
             url(r'^remove/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_remove, name='profile_follow_remove'),
         ])),
-    ])),
-
-    # Bestiary
-    url(r'^bestiary/', include([
-        url(r'^$', views.bestiary, name='bestiary'),
-        url(r'^inventory/$', views.bestiary_inventory, name='bestiary_inventory'),
-        url(r'^(?P<monster_id>[0-9]+)/$', views.bestiary_detail_by_id, name='bestiary_detail_by_id'),  # Legacy URL pattern
-        url(r'^(?P<monster_slug>[\w-]+)/$', views.bestiary_detail, name='bestiary_detail'),
     ])),
 ]

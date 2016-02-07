@@ -10,7 +10,16 @@ urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^api/', include('api.urls')),
 
-    # Django stuff
+    # Bestiary
+    url(r'^bestiary/', include('bestiary.urls', namespace='bestiary')),
+
+    # SWARFARM app
+    url(r'^feedback/', include('feedback.urls', namespace='feedback')),
+    url(r'^data/', include('sw_parser.urls', namespace='sw_parser')),
+    url(r'^', include('herders.urls', namespace='herders')),
+    url(r'^', include('news.urls', namespace='news')),
+
+    # Django auth/admin stuff
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', auth_views.login, {'authentication_form': CrispyAuthenticationForm}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': 'news:latest_news'}, name='logout'),
@@ -37,10 +46,4 @@ urlpatterns = [
     ),
     url(r'^username_change/$', herder_views.change_username, name="username_change"),
     url(r'^username_change/done/$', herder_views.change_username_complete, name="username_change_complete"),
-
-    # SWARFARM app stuff
-    url(r'^feedback/', include('feedback.urls', namespace='feedback')),
-    url(r'^data/', include('sw_parser.urls', namespace='sw_parser')),
-    url(r'^', include('herders.urls', namespace='herders')),
-    url(r'^', include('news.urls', namespace='news')),
 ]

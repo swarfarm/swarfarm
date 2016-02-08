@@ -189,10 +189,10 @@
                                     {% if instance.team_set.count or instance.team_leader.count %}
                                     <ul class="list-unstyled">
                                     {% for team in instance.team_leader.all %}
-                                        <li><a href="{% url 'herders:teams' profile_name=request.user.username %}#{{ team.pk.hex }}">{{ team.group.name }} - {{ team.name }} (Lead)</a></li>
+                                        <li><a href="{% url 'herders:teams' profile_name=profile_name %}#{{ team.pk.hex }}">{{ team.group.name }} - {{ team.name }} (Lead)</a></li>
                                     {% endfor %}
                                     {% for team in instance.team_set.all %}
-                                        <li><a href="{% url 'herders:teams' profile_name=request.user.username %}#{{ team.pk.hex }}">{{ team.group.name }} - {{ team.name }}</a></li>
+                                        <li><a href="{% url 'herders:teams' profile_name=profile_name %}#{{ team.pk.hex }}">{{ team.group.name }} - {{ team.name }}</a></li>
                                     {% endfor %}
                                     </ul>
                                     {% endif %}

@@ -553,6 +553,7 @@ def monster_instance_view_info(request, profile_name, instance_id):
 
     context = {
         'instance': instance,
+        'profile_name': profile_name,
     }
 
     return render(request, 'herders/profile/monster_view/notes_info.html', context)

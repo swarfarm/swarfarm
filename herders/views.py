@@ -775,48 +775,24 @@ def monster_instance_awaken(request, profile_name, instance_id):
                 if form.cleaned_data['subtract_materials']:
                     summoner = Summoner.objects.get(user=request.user)
 
-                    if monster.monster.awaken_mats_magic_high:
-                        summoner.storage_magic_high -= monster.monster.awaken_mats_magic_high
-                    if monster.monster.awaken_mats_magic_mid:
-                        summoner.storage_magic_mid -= monster.monster.awaken_mats_magic_mid
-                    if monster.monster.awaken_mats_magic_low:
-                        summoner.storage_magic_low -= monster.monster.awaken_mats_magic_low
-
-                    if monster.monster.element == Monster.ELEMENT_FIRE:
-                        if monster.monster.awaken_ele_mats_high:
-                            summoner.storage_fire_high -= monster.monster.awaken_ele_mats_high
-                        if monster.monster.awaken_ele_mats_mid:
-                            summoner.storage_fire_mid -= monster.monster.awaken_ele_mats_mid
-                        if monster.monster.awaken_ele_mats_low:
-                            summoner.storage_fire_low -= monster.monster.awaken_ele_mats_low
-                    elif monster.monster.element == Monster.ELEMENT_WATER:
-                        if monster.monster.awaken_ele_mats_high:
-                            summoner.storage_water_high -= monster.monster.awaken_ele_mats_high
-                        if monster.monster.awaken_ele_mats_mid:
-                            summoner.storage_water_mid -= monster.monster.awaken_ele_mats_mid
-                        if monster.monster.awaken_ele_mats_low:
-                            summoner.storage_water_low -= monster.monster.awaken_ele_mats_low
-                    elif monster.monster.element == Monster.ELEMENT_WIND:
-                        if monster.monster.awaken_ele_mats_high:
-                            summoner.storage_wind_high -= monster.monster.awaken_ele_mats_high
-                        if monster.monster.awaken_ele_mats_mid:
-                            summoner.storage_wind_mid -= monster.monster.awaken_ele_mats_mid
-                        if monster.monster.awaken_ele_mats_low:
-                            summoner.storage_wind_low -= monster.monster.awaken_ele_mats_low
-                    elif monster.monster.element == Monster.ELEMENT_DARK:
-                        if monster.monster.awaken_ele_mats_high:
-                            summoner.storage_dark_high -= monster.monster.awaken_ele_mats_high
-                        if monster.monster.awaken_ele_mats_mid:
-                            summoner.storage_dark_mid -= monster.monster.awaken_ele_mats_mid
-                        if monster.monster.awaken_ele_mats_low:
-                            summoner.storage_dark_low -= monster.monster.awaken_ele_mats_low
-                    elif monster.monster.element == Monster.ELEMENT_LIGHT:
-                        if monster.monster.awaken_ele_mats_high:
-                            summoner.storage_light_high -= monster.monster.awaken_ele_mats_high
-                        if monster.monster.awaken_ele_mats_mid:
-                            summoner.storage_light_mid -= monster.monster.awaken_ele_mats_mid
-                        if monster.monster.awaken_ele_mats_low:
-                            summoner.storage_light_low -= monster.monster.awaken_ele_mats_low
+                    summoner.storage_magic_high -= monster.monster.awaken_mats_magic_high
+                    summoner.storage_magic_mid -= monster.monster.awaken_mats_magic_mid
+                    summoner.storage_magic_low -= monster.monster.awaken_mats_magic_low
+                    summoner.storage_fire_high -= monster.monster.awaken_mats_fire_high
+                    summoner.storage_fire_mid -= monster.monster.awaken_mats_fire_mid
+                    summoner.storage_fire_low -= monster.monster.awaken_mats_fire_low
+                    summoner.storage_water_high -= monster.monster.awaken_mats_water_high
+                    summoner.storage_water_mid -= monster.monster.awaken_mats_water_mid
+                    summoner.storage_water_low -= monster.monster.awaken_mats_water_low
+                    summoner.storage_wind_high -= monster.monster.awaken_mats_wind_high
+                    summoner.storage_wind_mid -= monster.monster.awaken_mats_wind_mid
+                    summoner.storage_wind_low -= monster.monster.awaken_mats_wind_low
+                    summoner.storage_dark_high -= monster.monster.awaken_mats_dark_high
+                    summoner.storage_dark_mid -= monster.monster.awaken_mats_dark_mid
+                    summoner.storage_dark_low -= monster.monster.awaken_mats_dark_low
+                    summoner.storage_light_high -= monster.monster.awaken_mats_light_high
+                    summoner.storage_light_mid -= monster.monster.awaken_mats_light_mid
+                    summoner.storage_light_low -= monster.monster.awaken_mats_light_low
 
                     summoner.save()
 
@@ -836,9 +812,11 @@ def monster_instance_awaken(request, profile_name, instance_id):
                 for element, essences in monster.monster.get_awakening_materials().iteritems():
                     available_essences[element] = OrderedDict()
                     for size, cost in essences.iteritems():
-                        available_essences[element][size] = dict()
-                        available_essences[element][size]['qty'] = storage[element][size]
-                        available_essences[element][size]['sufficient'] = storage[element][size] >= cost
+                        if cost > 0:
+                            available_essences[element][size] = {
+                                'qty': storage[element][size],
+                                'sufficient': storage[element][size] >= cost,
+                            }
 
                 response_data = {
                     'code': 'error',

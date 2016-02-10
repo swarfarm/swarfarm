@@ -2,36 +2,30 @@
 {% load crispy_forms_tags %}
 {% static 'herders/images/' as img_url_prefix %}
 
-{% with mats=instance.monster.get_awakening_materials %}
-    <div>
-        <h3>Essences Required:</h3>
-        <div class="monster-awaken-materials">
-            {% for element,essences in mats.iteritems %}
-                {% for size,count in essences.iteritems %}
-                    {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
-                {% endfor %}
-            {% endfor %}
-        </div>
+<div>
+    <h3>Essences Required:</h3>
+    <div class="monster-awaken-materials">
+        {% include 'bestiary/awakening_essences.html' with monster=instance.monster only %}
     </div>
-    <div>
-        <h3>Essences Available:</h3>
-        <div class="monster-awaken-materials">
-        {% for element, essences in available_essences.iteritems %}
-            {% for size, count in essences.iteritems %}
-                <div>
-                    <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" style="
-                    {% if count.sufficient %}
-                        border: 5px solid green
-                    {% else %}
-                        border: 5px solid red
-                    {% endif %}
-                    "/>
-                    <span class="image-plus image-plus-right">{{ count.qty }}</span>
-                </div>
-            {% endfor %}
+</div>
+<div>
+    <h3>Essences Available:</h3>
+    <div class="monster-awaken-materials">
+    {% for element, essences in available_essences.iteritems %}
+        {% for size, count in essences.iteritems %}
+            <div>
+                <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" style="
+                {% if count.sufficient %}
+                    border: 5px solid green
+                {% else %}
+                    border: 5px solid red
+                {% endif %}
+                "/>
+                <span class="image-plus image-plus-right">{{ count.qty }}</span>
+            </div>
         {% endfor %}
-        </div>
+    {% endfor %}
     </div>
-{% endwith %}
+</div>
 
 {% crispy awaken_form %}

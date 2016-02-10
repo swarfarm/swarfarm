@@ -1,0 +1,23 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+{# Render the series of awakening materials when given a monster #}
+
+{% if monster.awaken_mats_magic_low %}{% include 'bestiary/essence_fragment.html' with element='magic' size='low' count=monster.awaken_mats_magic_low only %}{% endif %}
+{% if monster.awaken_mats_magic_mid %}{% include 'bestiary/essence_fragment.html' with element='magic' size='mid' count=monster.awaken_mats_magic_mid only %}{% endif %}
+{% if monster.awaken_mats_magic_high %}{% include 'bestiary/essence_fragment.html' with element='magic' size='high' count=monster.awaken_mats_magic_high only %}{% endif %}
+{% if monster.awaken_mats_fire_low %}{% include 'bestiary/essence_fragment.html' with element='fire' size='low' count=monster.awaken_mats_fire_low only %}{% endif %}
+{% if monster.awaken_mats_fire_mid %}{% include 'bestiary/essence_fragment.html' with element='fire' size='mid' count=monster.awaken_mats_fire_mid only %}{% endif %}
+{% if monster.awaken_mats_fire_high %}{% include 'bestiary/essence_fragment.html' with element='fire' size='high' count=monster.awaken_mats_fire_high only %}{% endif %}
+{% if monster.awaken_mats_water_low %}{% include 'bestiary/essence_fragment.html' with element='water' size='low' count=monster.awaken_mats_water_low only %}{% endif %}
+{% if monster.awaken_mats_water_mid %}{% include 'bestiary/essence_fragment.html' with element='water' size='mid' count=monster.awaken_mats_water_mid only %}{% endif %}
+{% if monster.awaken_mats_water_high %}{% include 'bestiary/essence_fragment.html' with element='water' size='high' count=monster.awaken_mats_water_high only %}{% endif %}
+{% if monster.awaken_mats_wind_low %}{% include 'bestiary/essence_fragment.html' with element='wind' size='low' count=monster.awaken_mats_wind_low only %}{% endif %}
+{% if monster.awaken_mats_wind_mid %}{% include 'bestiary/essence_fragment.html' with element='wind' size='mid' count=monster.awaken_mats_wind_mid only %}{% endif %}
+{% if monster.awaken_mats_wind_high %}{% include 'bestiary/essence_fragment.html' with element='wind' size='high' count=monster.awaken_mats_wind_high only %}{% endif %}
+{% if monster.awaken_mats_light_low %}{% include 'bestiary/essence_fragment.html' with element='light' size='low' count=monster.awaken_mats_light_low only %}{% endif %}
+{% if monster.awaken_mats_light_mid %}{% include 'bestiary/essence_fragment.html' with element='light' size='mid' count=monster.awaken_mats_light_mid only %}{% endif %}
+{% if monster.awaken_mats_light_high %}{% include 'bestiary/essence_fragment.html' with element='light' size='high' count=monster.awaken_mats_light_high only %}{% endif %}
+{% if monster.awaken_mats_dark_low %}{% include 'bestiary/essence_fragment.html' with element='dark' size='low' count=monster.awaken_mats_dark_low only %}{% endif %}
+{% if monster.awaken_mats_dark_mid %}{% include 'bestiary/essence_fragment.html' with element='dark' size='mid' count=monster.awaken_mats_dark_mid only %}{% endif %}
+{% if monster.awaken_mats_dark_high %}{% include 'bestiary/essence_fragment.html' with element='dark' size='high' count=monster.awaken_mats_dark_high only %}{% endif %}

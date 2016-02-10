@@ -53,13 +53,7 @@
                         <tr>
                             <td>Awakening Essences:</td>
                             <td class="monster-awaken-materials">
-                                {% with mats=base_monster.get_awakening_materials %}
-                                    {% for element,essences in mats.iteritems %}
-                                        {% for size,count in essences.iteritems %}
-                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
-                                        {% endfor %}
-                                    {% endfor %}
-                                {% endwith %}
+                                {% include 'bestiary/awakening_essences.html' with monster=base_monster only %}
                             </td>
                         </tr>
                         {% endif %}

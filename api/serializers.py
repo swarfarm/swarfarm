@@ -69,7 +69,7 @@ class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
         model = Monster
         fields = (
             'pk', 'name', 'element', 'archetype', 'base_stars',
-            'obtainable', 'can_awaken', 'is_awakened', 'awakens_from', 'awakens_to', 'get_awakening_materials',
+            'obtainable', 'can_awaken', 'is_awakened', 'awakens_from', 'awakens_to',
             'fusion_food',
         )
 

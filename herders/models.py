@@ -1127,6 +1127,14 @@ class MonsterPieceManager(models.Manager):
 
 
 class MonsterPiece(models.Model):
+    PIECE_REQUIREMENTS = {
+        1: 10,
+        2: 20,
+        3: 40,
+        4: 50,
+        5: 100,
+    }
+
     # Multiple managers to split out imported and finalized objects
     objects = models.Manager()
     committed = MonsterPieceManager()
@@ -1145,19 +1153,12 @@ class MonsterPiece(models.Model):
         return str(self.monster) + ' - ' + str(self.pieces) + ' pieces'
 
     def can_summon(self):
-        piece_requirements = {
-            1: 10,
-            2: 20,
-            3: 40,
-            4: 50,
-            5: 100,
-        }
         base_stars = self.monster.base_stars
 
         if self.monster.is_awakened:
             base_stars -= 1
 
-        return self.pieces > piece_requirements[base_stars]
+        return int(floor(self.pieces / self.PIECE_REQUIREMENTS[base_stars]))
 
 
 class RuneInstanceImportedManager(models.Manager):

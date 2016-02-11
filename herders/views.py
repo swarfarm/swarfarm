@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.db.models import Q
@@ -15,7 +15,7 @@ from django.template import loader, RequestContext
 
 from .forms import *
 from .filters import *
-from .models import Monster, Summoner, MonsterInstance, MonsterSkillEffect, Fusion, TeamGroup, Team
+from .models import Monster, Summoner, MonsterInstance, MonsterPiece, Fusion, TeamGroup, Team
 from .fusion import essences_missing, total_awakening_cost
 from .rune_import_export import import_rune, export_runes
 
@@ -212,6 +212,8 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     if view_mode == 'list':
         monster_queryset = monster_queryset.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills', 'monster__skills__skill_effect')
 
+    pieces = MonsterPiece.objects.filter(owner=summoner)
+
     form = FilterMonsterInstanceForm(request.POST or None)
     if form.is_valid():
         monster_filter = MonsterInstanceFilter(form.cleaned_data, queryset=monster_queryset)
@@ -220,12 +222,16 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     context = {
         'monsters': monster_filter,
+        'monster_pieces': pieces,
         'profile_name': profile_name,
         'is_owner': is_owner,
     }
 
     if is_owner or summoner.public:
-        if view_mode == 'list':
+        if view_mode == 'pieces':
+            context['monster_pieces'] = MonsterPiece.committed.filter(owner=summoner)
+            template = 'herders/profile/monster_inventory/summoning_pieces.html'
+        elif view_mode == 'list':
             template = 'herders/profile/monster_inventory/list.html'
         else:
             # Group up the filtered monsters
@@ -854,6 +860,118 @@ def monster_instance_duplicate(request, profile_name, instance_id):
         }
 
         return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required()
+def monster_piece_add(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        if request.method == 'POST':
+            form = MonsterPieceForm(request.POST or None)
+        else:
+            form = MonsterPieceForm()
+
+        form.helper.form_action = reverse('herders:monster_piece_add', kwargs={'profile_name': profile_name})
+
+        template = loader.get_template('herders/profile/monster_inventory/monster_piece_form.html')
+
+        if request.method == 'POST' and form.is_valid():
+            # Create the monster instance
+            new_pieces = form.save(commit=False)
+            new_pieces.owner = request.user.summoner
+            new_pieces.save()
+
+            messages.success(request, 'Added %s to your collection.' % new_pieces)
+
+            response_data = {
+                'code': 'success'
+            }
+        else:
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required()
+def monster_piece_edit(request, profile_name, instance_id):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    pieces = get_object_or_404(MonsterPiece, pk=instance_id)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    template = loader.get_template('herders/profile/monster_inventory/monster_piece_form.html')
+
+    if is_owner:
+        form = MonsterPieceForm(request.POST or None, instance=pieces)
+        form.helper.form_action = request.path
+
+        if request.method == 'POST' and form.is_valid():
+            form.save()
+
+            response_data = {
+                'code': 'success'
+            }
+        else:
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+
+        return JsonResponse(response_data)
+    else:
+        raise PermissionDenied()
+
+
+@login_required()
+def monster_piece_summon(request, profile_name, instance_id):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    pieces = get_object_or_404(MonsterPiece, pk=instance_id)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        if pieces.can_summon():
+            new_monster = MonsterInstance.committed.create(owner=summoner, monster=pieces.monster, stars=pieces.monster.base_stars, level=1, fodder=False, notes='', priority=MonsterInstance.PRIORITY_DONE)
+            messages.success(request, 'Added %s to your collection.' % new_monster)
+
+            # Remove the pieces, delete if 0
+            pieces.pieces -= pieces.PIECE_REQUIREMENTS[pieces.monster.base_stars]
+            pieces.save()
+
+            if pieces.pieces <= 0:
+                pieces.delete()
+
+            response_data = {
+                'code': 'success'
+            }
+
+            return JsonResponse(response_data)
+    else:
+        raise PermissionDenied()
+
+
+@login_required()
+def monster_piece_delete(request, profile_name, instance_id):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
+    )
+    pieces = get_object_or_404(MonsterPiece, pk=instance_id)
+
+    # Check for proper owner before deleting
+    if request.user.summoner == pieces.owner:
+        messages.warning(request, 'Deleted ' + str(pieces))
+        pieces.delete()
+
+        return redirect(return_path)
     else:
         return HttpResponseForbidden()
 

@@ -81,6 +81,78 @@ function DeleteMonster(instance_id) {
     }
 }
 
+function AddMonsterPiece() {
+    $.ajax({
+        url: '/profile/' + PROFILE_NAME + '/monster/piece/add/',
+        type: 'get'
+    }).done( function(result) {
+        bootbox.dialog({
+            title: "Add Pieces",
+            message: result.html
+        });
+    })
+}
+
+function EditMonsterPiece(instance_id) {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/monster/piece/edit/' + instance_id + '/'
+    }).done(function(result) {
+        bootbox.dialog({
+            title: 'Edit Pieces',
+            message: result.html
+        });
+    });
+}
+
+function DeleteMonsterPiece(instance_id) {
+    if (instance_id) {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure?',
+            callback: function (result) {
+                if (result) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/monster/piece/delete/' + instance_id + '/',
+                        data: {
+                            "delete": "delete",
+                            "instance_id": instance_id
+                        }
+                    }).done(function () {
+                        update_monster_inventory();
+                    }).fail(function () {
+                        alert("Something went wrong! Server admin has been notified.");
+                    });
+                }
+            }
+        });
+    }
+    else {
+        alert("Unspecified piece to delete");
+    }
+}
+
+function SummonMonsterPiece(instance_id) {
+    if (instance_id) {
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/monster/piece/summon/' + instance_id + '/',
+            data: {
+                "delete": "delete",
+                "instance_id": instance_id
+            }
+        }).done(function () {
+            update_monster_inventory();
+        }).fail(function () {
+            alert("Something went wrong! Server admin has been notified.");
+        });
+    }
+    else {
+        alert("Unspecified piece to delete");
+    }
+}
+
 function QuickFodder(btn) {
     var monster_id = btn.data('monster-id');
     var stars = btn.data('stars');
@@ -129,6 +201,10 @@ $('body')
     .on('click', '.monster-copy', function() { CopyMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
     .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
+    .on('click', '.monster-piece-add', function() { AddMonsterPiece() })
+    .on('click', '.monster-piece-edit', function() { EditMonsterPiece($(this).data('instance-id')) })
+    .on('click', '.monster-piece-delete', function() { DeleteMonsterPiece($(this).data('instance-id')) })
+    .on('click', '.monster-piece-summon', function() { SummonMonsterPiece($(this).data('instance-id')) })
     .on('click', '.quick-fodder', function() { QuickFodder($(this)) })
     .on('click', '.profile-view-mode', function() {
         var view_mode = $(this).data('mode');

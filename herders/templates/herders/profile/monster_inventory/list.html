@@ -14,6 +14,9 @@
                 <button class="btn btn-default profile-view-mode" data-mode="box">
                     <span class="glyphicon glyphicon-th-large"></span> Box
                 </button>
+                <button class="btn btn-default profile-view-mode" data-mode="pieces">
+                    <span class="fa fa-puzzle-piece"></span> Pieces
+                </button>
             </div>
             <button class="btn btn-primary column-select toggle collapsed" data-toggle="collapse" data-target="#column-selector-collapse">
                 Select Columns
@@ -175,13 +178,7 @@
                                 <td>{{ instance.accuracy }}%</td>
                                 <td class="monster-awaken-materials">
                                     {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
-                                        {% with mats=instance.monster.get_awakening_materials %}
-                                            {% for element,essences in mats.iteritems %}
-                                                {% for size,count in essences.iteritems %}
-                                                    {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
-                                                {% endfor %}
-                                            {% endfor %}
-                                        {% endwith %}
+                                        {% include 'bestiary/awakening_essences.html' with monster=instance.monster only %}
                                     {% endif %}
                                 </td>
                                 <td>{% if instance.notes %}{{ instance.notes|truncatewords:25|markdown|striptags }}{% endif %}</td>

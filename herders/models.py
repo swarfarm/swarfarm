@@ -86,13 +86,9 @@ class Monster(models.Model):
     crit_damage = models.IntegerField(null=True, blank=True)
     resistance = models.IntegerField(null=True, blank=True)
     accuracy = models.IntegerField(null=True, blank=True)
+
     awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')
-
-    awaken_ele_mats_low = models.IntegerField(default=0)
-    awaken_ele_mats_mid = models.IntegerField(default=0)
-    awaken_ele_mats_high = models.IntegerField(default=0)
-
     awaken_mats_fire_low = models.IntegerField(blank=True, default=0)
     awaken_mats_fire_mid = models.IntegerField(blank=True, default=0)
     awaken_mats_fire_high = models.IntegerField(blank=True, default=0)
@@ -130,31 +126,6 @@ class Monster(models.Model):
             return 10 + stars * 5
         else:
             return 10 + self.base_stars * 5
-
-    def get_awakening_materials(self):
-        mats = OrderedDict()
-        mats['magic'] = OrderedDict()
-        mats[self.element] = OrderedDict()
-
-        if self.awaken_mats_magic_high:
-            mats['magic']['high'] = self.awaken_mats_magic_high
-
-        if self.awaken_mats_magic_mid:
-            mats['magic']['mid'] = self.awaken_mats_magic_mid
-
-        if self.awaken_mats_magic_low:
-            mats['magic']['low'] = self.awaken_mats_magic_low
-
-        if self.awaken_ele_mats_high:
-            mats[self.element]['high'] = self.awaken_ele_mats_high
-
-        if self.awaken_ele_mats_mid:
-            mats[self.element]['mid'] = self.awaken_ele_mats_mid
-
-        if self.awaken_ele_mats_low:
-            mats[self.element]['low'] = self.awaken_ele_mats_low
-
-        return mats
 
     def get_stats(self):
         from collections import OrderedDict
@@ -248,15 +219,37 @@ class Monster(models.Model):
     def all_skill_effects(self):
         return MonsterSkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))
 
+    def get_awakening_materials(self):
+        mats = OrderedDict()
+        mats['magic'] = OrderedDict()
+        mats['magic']['low'] = self.awaken_mats_magic_low
+        mats['magic']['mid'] = self.awaken_mats_magic_mid
+        mats['magic']['high'] = self.awaken_mats_magic_high
+        mats['fire'] = OrderedDict()
+        mats['fire']['low'] = self.awaken_mats_fire_low
+        mats['fire']['mid'] = self.awaken_mats_fire_mid
+        mats['fire']['high'] = self.awaken_mats_fire_high
+        mats['water'] = OrderedDict()
+        mats['water']['low'] = self.awaken_mats_water_low
+        mats['water']['mid'] = self.awaken_mats_water_mid
+        mats['water']['high'] = self.awaken_mats_water_high
+        mats['wind'] = OrderedDict()
+        mats['wind']['low'] = self.awaken_mats_wind_low
+        mats['wind']['mid'] = self.awaken_mats_wind_mid
+        mats['wind']['high'] = self.awaken_mats_wind_high
+        mats['light'] = OrderedDict()
+        mats['light']['low'] = self.awaken_mats_light_low
+        mats['light']['mid'] = self.awaken_mats_light_mid
+        mats['light']['high'] = self.awaken_mats_light_high
+        mats['dark'] = OrderedDict()
+        mats['dark']['low'] = self.awaken_mats_dark_low
+        mats['dark']['mid'] = self.awaken_mats_dark_mid
+        mats['dark']['high'] = self.awaken_mats_dark_high
+
+        return mats
+
     def clean(self):
         # Update null values
-        if self.awaken_ele_mats_low is None:
-            self.awaken_ele_mats_low = 0
-        if self.awaken_ele_mats_mid is None:
-            self.awaken_ele_mats_mid = 0
-        if self.awaken_ele_mats_high is None:
-            self.awaken_ele_mats_high = 0
-
         if self.awaken_mats_fire_high is None:
             self.awaken_mats_fire_high = 0
         if self.awaken_mats_fire_mid is None:
@@ -300,13 +293,6 @@ class Monster(models.Model):
         skip_url_gen = kwargs.pop('skip_url_gen', False)
 
         # Update null values
-        if self.awaken_ele_mats_low is None:
-            self.awaken_ele_mats_low = 0
-        if self.awaken_ele_mats_mid is None:
-            self.awaken_ele_mats_mid = 0
-        if self.awaken_ele_mats_high is None:
-            self.awaken_ele_mats_high = 0
-
         if self.awaken_mats_fire_high is None:
             self.awaken_mats_fire_high = 0
         if self.awaken_mats_fire_mid is None:
@@ -684,29 +670,29 @@ class Summoner(models.Model):
     def get_storage(self):
         storage = OrderedDict()
         storage['magic'] = OrderedDict()
-        storage['magic']['high'] = self.storage_magic_high
-        storage['magic']['mid'] = self.storage_magic_mid
         storage['magic']['low'] = self.storage_magic_low
+        storage['magic']['mid'] = self.storage_magic_mid
+        storage['magic']['high'] = self.storage_magic_high
         storage['fire'] = OrderedDict()
-        storage['fire']['high'] = self.storage_fire_high
-        storage['fire']['mid'] = self.storage_fire_mid
         storage['fire']['low'] = self.storage_fire_low
+        storage['fire']['mid'] = self.storage_fire_mid
+        storage['fire']['high'] = self.storage_fire_high
         storage['water'] = OrderedDict()
-        storage['water']['high'] = self.storage_water_high
-        storage['water']['mid'] = self.storage_water_mid
         storage['water']['low'] = self.storage_water_low
+        storage['water']['mid'] = self.storage_water_mid
+        storage['water']['high'] = self.storage_water_high
         storage['wind'] = OrderedDict()
-        storage['wind']['high'] = self.storage_wind_high
-        storage['wind']['mid'] = self.storage_wind_mid
         storage['wind']['low'] = self.storage_wind_low
+        storage['wind']['mid'] = self.storage_wind_mid
+        storage['wind']['high'] = self.storage_wind_high
         storage['light'] = OrderedDict()
-        storage['light']['high'] = self.storage_light_high
-        storage['light']['mid'] = self.storage_light_mid
         storage['light']['low'] = self.storage_light_low
+        storage['light']['mid'] = self.storage_light_mid
+        storage['light']['high'] = self.storage_light_high
         storage['dark'] = OrderedDict()
-        storage['dark']['high'] = self.storage_dark_high
-        storage['dark']['mid'] = self.storage_dark_mid
         storage['dark']['low'] = self.storage_dark_low
+        storage['dark']['mid'] = self.storage_dark_mid
+        storage['dark']['high'] = self.storage_dark_high
 
         return storage
 
@@ -1141,6 +1127,14 @@ class MonsterPieceManager(models.Manager):
 
 
 class MonsterPiece(models.Model):
+    PIECE_REQUIREMENTS = {
+        1: 10,
+        2: 20,
+        3: 40,
+        4: 50,
+        5: 100,
+    }
+
     # Multiple managers to split out imported and finalized objects
     objects = models.Manager()
     committed = MonsterPieceManager()
@@ -1159,19 +1153,12 @@ class MonsterPiece(models.Model):
         return str(self.monster) + ' - ' + str(self.pieces) + ' pieces'
 
     def can_summon(self):
-        piece_requirements = {
-            1: 10,
-            2: 20,
-            3: 40,
-            4: 50,
-            5: 100,
-        }
         base_stars = self.monster.base_stars
 
         if self.monster.is_awakened:
             base_stars -= 1
 
-        return self.pieces > piece_requirements[base_stars]
+        return int(floor(self.pieces / self.PIECE_REQUIREMENTS[base_stars]))
 
 
 class RuneInstanceImportedManager(models.Manager):

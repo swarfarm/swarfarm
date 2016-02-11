@@ -197,7 +197,7 @@ def bestiary_sanity_checks(request):
                 monster_errors.append('Missing sources')
 
             # Check that monster has awakening mats specified
-            if monster.can_awaken and monster.awaken_mats_magic_high + monster.awaken_mats_magic_low + monster.awaken_mats_magic_mid == 0:
+            if monster.can_awaken and not monster.is_awakened and monster.awaken_mats_magic_high + monster.awaken_mats_magic_low + monster.awaken_mats_magic_mid == 0:
                 monster_errors.append('Missing awakening materials')
 
             if len(monster_errors) > 0:

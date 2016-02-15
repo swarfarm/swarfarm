@@ -12,6 +12,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
+            model_name='monsterskill',
+            name='hits',
+            field=models.IntegerField(default=1),
+        ),
+        migrations.AddField(
             model_name='monsterskilleffectdetail',
             name='chance',
             field=models.IntegerField(help_text=b'Chance of effect occuring per hit', null=True, blank=True),

@@ -2,10 +2,8 @@ from rest_framework import viewsets, filters, status, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
-from herders.models import Monster, MonsterSkill, MonsterSkillEffect, MonsterLeaderSkill, MonsterSource, \
-    Summoner, MonsterInstance, RuneInstance, TeamGroup, Team
-from .serializers import MonsterSerializer, MonsterSummarySerializer, MonsterSkillSerializer, MonsterLeaderSkillSerializer, MonsterSkillEffectSerializer, MonsterSourceSerializer, \
-    SummonerSerializer, MonsterInstanceSerializer, RuneInstanceSerializer, TeamGroupSerializer, TeamSerializer
+from herders.models import *
+from .serializers import *
 
 
 # Pagination classes
@@ -41,7 +39,6 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({'data': response.data['results']}, template_name='api/bestiary/table_rows.html')
         return response
 
-    # @cache_response(1 * 60 * 60, cache_errors=False)
     def retrieve(self, request, *args, **kwargs):
         response = super(MonsterViewSet, self).retrieve(request, *args, **kwargs)
 
@@ -74,6 +71,18 @@ class MonsterLeaderSkillViewSet(viewsets.ReadOnlyModelViewSet):
 class MonsterSkillEffectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterSkillEffect.objects.all()
     serializer_class = MonsterSkillEffectSerializer
+    pagination_class = BestiarySetPagination
+
+
+class MonsterSkillScalesWithViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = MonsterSkillScalesWith.objects.all()
+    serializer_class = MonsterSkillScalesWithSerializer
+    pagination_class = BestiarySetPagination
+
+
+class MonsterSkillScalesWithDetailViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = MonsterSkillScalingStat.objects.all()
+    serializer_class = MonsterSkillScalingStatSerializer
     pagination_class = BestiarySetPagination
 
 

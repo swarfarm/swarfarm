@@ -217,7 +217,7 @@ def bestiary_sanity_checks(request):
                 skill_errors.append('max level missing for non-passive skill')
 
             # Check that skill has a cooltime if it is not a passive
-            if not skill.passive and not skill.cooltime:
+            if not skill.passive and skill.slot > 1 and not skill.cooltime:
                 skill_errors.append('Cooltime missing for non-passive skill')
 
             # Check max level of skill = num lines in level up progress + 1

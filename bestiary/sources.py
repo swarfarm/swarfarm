@@ -9,7 +9,7 @@ def set_sources():
     water_scroll = MonsterSource.objects.get(name='Water Scroll')
     wind_scroll = MonsterSource.objects.get(name='Wind Scroll')
     light_dark_scroll = MonsterSource.objects.get(name='Scroll of Light and Darkness')
-    unsummonable_monsters = ['Ifrit', 'Cow Girl']
+    unsummonable_monsters = ['Ifrit', 'Cow Girl', 'Magical Archer (Fami)', 'Fairy Queen']
 
     for monster in Monster.objects.filter(obtainable=True, is_awakened=False):
         print monster.name

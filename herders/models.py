@@ -588,6 +588,7 @@ class MonsterSkillEffectDetail(models.Model):
     single_target = models.BooleanField(default=False, help_text='Effect applies to a single monster')
     self_effect = models.BooleanField(default=False, help_text='Effect applies to the monster using the skill')
     chance = models.IntegerField(null=True, blank=True, help_text='Chance of effect occuring per hit')
+    on_crit = models.BooleanField(default=False, help_text='Effect occurs on critical hit')
     random = models.BooleanField(default=False, help_text='Skill effect applies randomly to the target')
     quantity = models.IntegerField(default=0, help_text='Number of items this effect affects on the target')
     all = models.BooleanField(default=False, help_text='This effect affects all items on the target')

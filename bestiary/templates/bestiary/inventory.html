@@ -44,7 +44,6 @@
                         <th>Awakens To</th>
                         <th>Awakens From</th>
                         <th>Leader Skill</th>
-                        <th data-sorter="false">Skill Effects</th>
                         <th data-sorter="false">Skills</th>
                         <th data-columnSelector="false">Skill-Ups Req'd</th>
                         <th data-columnSelector="false">HP (Lv.40)</th>
@@ -107,19 +106,6 @@
                                 </div>
                             {% endif %}
                         </td>
-                        <td class="monster-skill-effects">
-                            {% for effect in monster.all_skill_effects %}
-                                {% if effect.icon_filename %}
-                                    <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"
-                                            data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
-                                {% else %}
-                                    <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                                        <span>{{ effect.name }}</span>
-                                    </span>
-                                {% endif %}
-                                <span class="hidden">{{ effect.pk }}-{{ effect.name|slugify }}</span>
-                            {% endfor %}
-                        </td>
                         <td class="monster-awaken-materials">
                             {% for skill in monster.skills.all %}
                                 <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
@@ -132,7 +118,7 @@
                             {% if monster.skill_ups_to_max > 0 %}
                             <div class="monster-image">
                                 <div class="sprite sprite-devilmon_dark">
-                                    <span class="image-plus image-plus-right">{{ monster.skill_ups_to_max }}</span>
+                                    <span class="image-plus image-plus-main">{{ monster.skill_ups_to_max }}</span>
                                 </div>
                             </div>
                             {% else %}

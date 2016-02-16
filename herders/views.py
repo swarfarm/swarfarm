@@ -210,7 +210,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if view_mode == 'list':
-        monster_queryset = monster_queryset.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills', 'monster__skills__skill_effect')
+        monster_queryset = monster_queryset.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills', 'monster__skills__skill_effect', 'runeinstance_set', 'team_set', 'team_leader')
 
     pieces = MonsterPiece.objects.filter(owner=summoner)
 

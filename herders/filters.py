@@ -1,16 +1,17 @@
 from django.db.models import Q
 import django_filters
 
-from .models import Monster, MonsterInstance, MonsterSkillEffect, MonsterLeaderSkill, RuneInstance
+from bestiary.models import Monster, Effect, LeaderSkill
+from .models import MonsterInstance, RuneInstance
 
 
 class MonsterFilter(django_filters.FilterSet):
     base_stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
     element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
-    leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES)
-    leader_skill__area = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.AREA_CHOICES)
-    skills__skill_effect__pk = django_filters.MultipleChoiceFilter(choices=MonsterSkillEffect.objects.all().values_list('pk', 'name'), conjoined=True)
+    leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
+    leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
+    skills__skill_effect__pk = django_filters.MultipleChoiceFilter(choices=Effect.objects.all().values_list('pk', 'name'), conjoined=True)
 
     class Meta:
         model = Monster
@@ -32,9 +33,9 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)
-    monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES)
-    monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.AREA_CHOICES)
-    monster__skills__skill_effect__pk = django_filters.MultipleChoiceFilter(choices=MonsterSkillEffect.objects.all().values_list('pk', 'name'), conjoined=True)
+    monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
+    monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
+    monster__skills__skill_effect__pk = django_filters.MultipleChoiceFilter(choices=Effect.objects.all().values_list('pk', 'name'), conjoined=True)
     monster__fusion_food = django_filters.MethodFilter(action='filter_monster__fusion_food')
 
     class Meta:

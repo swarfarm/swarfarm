@@ -1,4 +1,5 @@
-from herders.models import Monster, RuneInstance
+from bestiary.models import Monster
+from herders.models import RuneInstance
 
 element_map = {
     1: Monster.ELEMENT_WATER,

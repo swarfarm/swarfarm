@@ -7,7 +7,8 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, Pa
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from .models import Monster, MonsterInstance, MonsterPiece, MonsterSkillEffect, MonsterLeaderSkill, Summoner, TeamGroup, Team, RuneInstance
+from bestiary.models import Monster, Effect, LeaderSkill
+from .models import MonsterInstance, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
@@ -391,31 +392,31 @@ class FilterMonsterForm(forms.Form):
     fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     leader_skill__attribute = forms.MultipleChoiceField(
         label='Leader Skill Stat',
-        choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES,
+        choices=LeaderSkill.ATTRIBUTE_CHOICES,
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
     leader_skill__area = forms.MultipleChoiceField(
         label='Leader Skill Stat',
-        choices=MonsterLeaderSkill.AREA_CHOICES,
+        choices=LeaderSkill.AREA_CHOICES,
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
     buffs = forms.MultipleChoiceField(
         label='Buffs',
-        choices=MonsterSkillEffect.buff_effect_choices.all(),
+        choices=Effect.buff_effect_choices.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
     debuffs = forms.MultipleChoiceField(
         label='Debuffs',
-        choices=MonsterSkillEffect.debuff_effect_choices.all(),
+        choices=Effect.debuff_effect_choices.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
     other_effects = forms.MultipleChoiceField(
         label='Other Effects',
-        choices=MonsterSkillEffect.other_effect_choices.all(),
+        choices=Effect.other_effect_choices.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
@@ -662,31 +663,31 @@ class FilterMonsterInstanceForm(forms.Form):
     monster__fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     monster__leader_skill__attribute = forms.MultipleChoiceField(
         label='Leader Skill Stat',
-        choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES,
+        choices=LeaderSkill.ATTRIBUTE_CHOICES,
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
     monster__leader_skill__area = forms.MultipleChoiceField(
         label='Leader Skill Stat',
-        choices=MonsterLeaderSkill.AREA_CHOICES,
+        choices=LeaderSkill.AREA_CHOICES,
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
     buffs = forms.MultipleChoiceField(
         label='Buffs',
-        choices=MonsterSkillEffect.buff_effect_choices.all(),
+        choices=Effect.buff_effect_choices.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
     debuffs = forms.MultipleChoiceField(
         label='Debuffs',
-        choices=MonsterSkillEffect.debuff_effect_choices.all(),
+        choices=Effect.debuff_effect_choices.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
     other_effects = forms.MultipleChoiceField(
         label='Other Effects',
-        choices=MonsterSkillEffect.other_effect_choices.all(),
+        choices=Effect.other_effect_choices.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )

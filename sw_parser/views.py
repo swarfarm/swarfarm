@@ -8,7 +8,8 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
-from herders.models import Summoner, Monster, MonsterInstance, RuneInstance
+from bestiary.models import Monster
+from herders.models import Summoner, MonsterInstance, RuneInstance
 
 from .forms import *
 from .parser import *

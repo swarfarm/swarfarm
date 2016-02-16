@@ -1,24 +1,25 @@
 from rest_framework import serializers
 
-from herders.models import *
+from bestiary.models import Monster, Skill, LeaderSkill, Effect, ScalesWith, ScalingStat, Source
+from herders.models import Summoner, MonsterInstance, RuneInstance, TeamGroup, Team
 
 
 # Read-only monster database stuff.
 class MonsterSourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = MonsterSource
+        model = Source
         exclude = ['meta_order', 'icon_filename']
 
 
 class MonsterSkillEffectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MonsterSkillEffect
+        model = Effect
         fields = ('name', 'is_buff', 'description', 'icon_filename')
 
 
 class MonsterSkillScalingStatSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MonsterSkillScalingStat
+        model = ScalingStat
         fields = ('stat',)
 
 
@@ -26,7 +27,7 @@ class MonsterSkillScalesWithSerializer(serializers.ModelSerializer):
     stat = serializers.ReadOnlyField(source='scalingstat.stat')
 
     class Meta:
-        model = MonsterSkillScalesWith
+        model = ScalesWith
         fields = ('stat', 'multiplier')
 
 
@@ -35,7 +36,7 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
     scales_with = MonsterSkillScalesWithSerializer(source='monsterskillscaleswith_set', many=True, read_only=True)
 
     class Meta:
-        model = MonsterSkill
+        model = Skill
         fields = (
             'pk', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
             'skill_effect', 'atk_multiplier', 'scales_with',
@@ -45,7 +46,7 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
 
 class MonsterLeaderSkillSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = MonsterLeaderSkill
+        model = LeaderSkill
 
 
 # Small serializer for necessary info for awakens_from/to on main MonsterSerializer

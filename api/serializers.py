@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from herders.models import Monster, MonsterSkill, MonsterLeaderSkill, MonsterSkillEffect, MonsterSource, \
-    Summoner, MonsterInstance, RuneInstance, TeamGroup, Team
+from herders.models import *
 
 
 # Read-only monster database stuff.
@@ -11,17 +10,37 @@ class MonsterSourceSerializer(serializers.HyperlinkedModelSerializer):
         exclude = ['meta_order', 'icon_filename']
 
 
-class MonsterSkillEffectSerializer(serializers.HyperlinkedModelSerializer):
+class MonsterSkillEffectSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonsterSkillEffect
         fields = ('name', 'is_buff', 'description', 'icon_filename')
 
 
+class MonsterSkillScalingStatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MonsterSkillScalingStat
+        fields = ('stat',)
+
+
+class MonsterSkillScalesWithSerializer(serializers.ModelSerializer):
+    stat = serializers.ReadOnlyField(source='scalingstat.stat')
+
+    class Meta:
+        model = MonsterSkillScalesWith
+        fields = ('stat', 'multiplier')
+
+
 class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
     skill_effect = MonsterSkillEffectSerializer(many=True, read_only=True)
+    scales_with = MonsterSkillScalesWithSerializer(source='monsterskillscaleswith_set', many=True, read_only=True)
 
     class Meta:
         model = MonsterSkill
+        fields = (
+            'pk', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
+            'skill_effect', 'atk_multiplier', 'scales_with',
+            'icon_filename',
+        )
 
 
 class MonsterLeaderSkillSerializer(serializers.HyperlinkedModelSerializer):
@@ -69,13 +88,12 @@ class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
         model = Monster
         fields = (
             'pk', 'name', 'element', 'archetype', 'base_stars',
-            'obtainable', 'can_awaken', 'is_awakened', 'awakens_from', 'awakens_to', 'get_awakening_materials',
+            'obtainable', 'can_awaken', 'is_awakened', 'awakens_from', 'awakens_to',
             'fusion_food',
         )
 
 
 # Individual collection stuff
-
 class SummonerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Summoner

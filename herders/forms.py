@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, Pa
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from .models import Monster, MonsterInstance, MonsterSkillEffect, MonsterLeaderSkill, Summoner, TeamGroup, Team, RuneInstance
+from .models import Monster, MonsterInstance, MonsterPiece, MonsterSkillEffect, MonsterLeaderSkill, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
@@ -722,6 +722,36 @@ class FilterMonsterInstanceForm(forms.Form):
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
         self.cleaned_data['monster__skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+
+
+# MonsterPiece forms
+class MonsterPieceForm(autocomplete_light.ModelForm):
+    monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
+
+    def __init__(self, *args, **kwargs):
+        super(MonsterPieceForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_class = 'ajax-form'
+        self.helper.layout = Layout(
+            Field(
+                'monster',
+                data_toggle='popover',
+                data_trigger='focus',
+                data_container='body',
+                title='Autocomplete Tips',
+                data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
+            ),
+            Field('pieces'),
+            FormActions(
+                Submit('save', 'Save', css_class='btn btn-primary'),
+                Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+            ),
+        )
+
+    class Meta:
+        model = MonsterPiece
+        fields = ('monster', 'pieces',)
 
 
 # Team Forms

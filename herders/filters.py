@@ -1,3 +1,4 @@
+from django.db.models import Q
 import django_filters
 
 from .models import Monster, MonsterInstance, MonsterSkillEffect, MonsterLeaderSkill, RuneInstance
@@ -34,6 +35,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.ATTRIBUTE_CHOICES)
     monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=MonsterLeaderSkill.AREA_CHOICES)
     monster__skills__skill_effect__pk = django_filters.MultipleChoiceFilter(choices=MonsterSkillEffect.objects.all().values_list('pk', 'name'), conjoined=True)
+    monster__fusion_food = django_filters.MethodFilter(action='filter_monster__fusion_food')
 
     class Meta:
         model = MonsterInstance
@@ -51,6 +53,12 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'in_storage': ['exact'],
             'monster__fusion_food': ['exact'],
         }
+
+    def filter_monster__fusion_food(self, queryset, value):
+        if value:
+            return queryset.filter(monster__fusion_food=True).exclude(ignore_for_fusion=True)
+        else:
+            return queryset.filter(Q(monster__fusion_food=False) | Q(ignore_for_fusion=True))
 
 
 class RuneInstanceFilter(django_filters.FilterSet):

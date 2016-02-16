@@ -197,7 +197,7 @@ def bestiary_sanity_checks(request):
                 monster_errors.append('Missing sources')
 
             # Check that monster has awakening mats specified
-            if monster.can_awaken and monster.awaken_mats_magic_high + monster.awaken_mats_magic_low + monster.awaken_mats_magic_mid == 0:
+            if monster.can_awaken and not monster.is_awakened and monster.awaken_mats_magic_high + monster.awaken_mats_magic_low + monster.awaken_mats_magic_mid == 0:
                 monster_errors.append('Missing awakening materials')
 
             if len(monster_errors) > 0:
@@ -215,6 +215,10 @@ def bestiary_sanity_checks(request):
             # Check that skill has a level up description if it is not a passive
             if not skill.passive and skill.max_level == 1:
                 skill_errors.append('max level missing for non-passive skill')
+
+            # Check that skill has a cooltime if it is not a passive
+            if not skill.passive and skill.slot > 1 and not skill.cooltime:
+                skill_errors.append('Cooltime missing for non-passive skill')
 
             # Check max level of skill = num lines in level up progress + 1
             if skill.max_level > 1:

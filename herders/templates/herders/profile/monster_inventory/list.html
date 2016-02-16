@@ -14,6 +14,9 @@
                 <button class="btn btn-default profile-view-mode" data-mode="box">
                     <span class="glyphicon glyphicon-th-large"></span> Box
                 </button>
+                <button class="btn btn-default profile-view-mode" data-mode="pieces">
+                    <span class="fa fa-puzzle-piece"></span> Pieces
+                </button>
             </div>
             <button class="btn btn-primary column-select toggle collapsed" data-toggle="collapse" data-target="#column-selector-collapse">
                 Select Columns
@@ -40,7 +43,6 @@
                             <th>Summoned On</th>
                             <th>Priority</th>
                             <th>Leader Skill</th>
-                            <th data-sorter="false">Skill Effects</th>
                             <th data-sorter="false" data-columnSelector="false">Skills</th>
                             <th data-columnSelector="false">Skill-Ups Remaining</th>
                             <th data-sorter="false" data-columnSelector="false">Runes</th>
@@ -120,19 +122,6 @@
                                     </div>
                                     {% endif %}
                                 </td>
-                                <td class="monster-skill-effects">
-                                {% for effect in instance.monster.all_skill_effects %}
-                                    {% if effect.icon_filename %}
-                                        <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"
-                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                                />
-                                    {% else %}
-                                        <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                                            <span>{{ effect.name }}</span>
-                                        </span>
-                                    {% endif %}
-                                {% endfor %}
-                                </td>
                                 <td class="monster-awaken-materials">
                                     {% for skill in instance.monster.skills.all %}
                                         <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
@@ -153,7 +142,7 @@
                                     {% if instance.skill_ups_to_max > 0 %}
                                     <div class="monster-image">
                                         <div class="sprite sprite-devilmon_dark">
-                                            <span class="image-plus image-plus-right">{{ instance.skill_ups_to_max }}</span>
+                                            <span class="image-plus image-plus-main">{{ instance.skill_ups_to_max }}</span>
                                         </div>
                                     </div>
                                     {% else %}
@@ -175,13 +164,7 @@
                                 <td>{{ instance.accuracy }}%</td>
                                 <td class="monster-awaken-materials">
                                     {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
-                                        {% with mats=instance.monster.get_awakening_materials %}
-                                            {% for element,essences in mats.iteritems %}
-                                                {% for size,count in essences.iteritems %}
-                                                    {% include 'herders/essence_fragment.html' with element=element size=size count=count only %}
-                                                {% endfor %}
-                                            {% endfor %}
-                                        {% endwith %}
+                                        {% include 'bestiary/awakening_essences.html' with monster=instance.monster only %}
                                     {% endif %}
                                 </td>
                                 <td>{% if instance.notes %}{{ instance.notes|truncatewords:25|markdown|striptags }}{% endif %}</td>

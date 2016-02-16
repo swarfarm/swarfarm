@@ -166,7 +166,7 @@
                                     </td>
                                     <td class="fusion-ingredients-collection">
                                         {% for owned in ingredient.owned %}
-                                            <div class="monster-image pull-left monster-popover" data-instance-id="{{ owned.pk.hex }}" title="{{ owned.monster.name }}">
+                                            <div class="monster-image pull-left monster-popover" data-instance-id="{{ owned.pk.hex }}" title="{{ owned.monster.name }} - {{ owned.monster.get_element_display }} {% if owned.monster.awakens_from %}{{ owned.monster.awakens_from.name }}{% endif %}">
                                                 <div>
                                                     {% if is_owner %}
                                                         <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=owned.pk.hex %}?next={{ return_path }}#edit">
@@ -213,7 +213,7 @@
                                 <td class="monster-awaken-materials">
                                     {% for element,sizes in fusion.awakening_materials.total_cost.items %}
                                         {% for size,count in sizes.items %}
-                                            {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
+                                            {% include 'bestiary/essence_fragment.html' with element=element size=size count=count|absolute only %}
                                         {% endfor %}
                                     {% endfor %}
                                 </td>
@@ -225,7 +225,7 @@
                                     {% for element,sizes in fusion.awakening_materials.missing.items %}
                                         {% for size,count in sizes.items %}
                                             {% if count < 0 %}
-                                                {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
+                                                {% include 'bestiary/essence_fragment.html' with element=element size=size count=count|absolute only %}
                                             {% endif %}
                                         {% endfor %}
                                     {% endfor %}
@@ -238,7 +238,7 @@
                                         {% for element, sizes in fusion.awakening_materials.combined.iteritems %}
                                             {% for size,count in sizes.iteritems %}
                                                 {% if count < 0 %}
-                                                    {% include 'herders/essence_fragment.html' with element=element size=size count=count|absolute only %}
+                                                    {% include 'bestiary/essence_fragment.html' with element=element size=size count=count|absolute only %}
                                                 {% endif %}
                                             {% endfor %}
                                         {% endfor %}

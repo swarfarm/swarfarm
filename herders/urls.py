@@ -14,8 +14,8 @@ urlpatterns = [
         url(r'^storage/$', views.profile_storage, name='profile_storage'),
         url(r'^monster/', include([
             url(r'^inventory/$', views.monster_inventory, name='monster_inventory'),
-            url(r'^inventory/(?i)(?P<view_mode>(list|box))/$', views.monster_inventory, name='monster_inventory_view_mode'),
-            url(r'^inventory/(?i)(?P<view_mode>(list|box))/(?i)(?P<box_grouping>[a-zA-Z]+)/$', views.monster_inventory, name='monster_inventory_view_mode_sorted'),
+            url(r'^inventory/(?i)(?P<view_mode>(list|box|pieces))/$', views.monster_inventory, name='monster_inventory_view_mode'),
+            url(r'^inventory/(?i)(?P<view_mode>(list|box|pieces))/(?i)(?P<box_grouping>[a-zA-Z]+)/$', views.monster_inventory, name='monster_inventory_view_mode_sorted'),
             url(r'^add/$', views.monster_instance_add, name='monster_instance_add'),
             url(r'^quick_add/(?P<monster_id>[0-9]+)/(?P<stars>[0-9])/(?P<level>[0-9]+)/$', views.monster_instance_quick_add, name='monster_instance_quick_add'),
             url(r'^bulk_add/$', views.monster_instance_bulk_add, name='monster_instance_bulk_add'),
@@ -30,6 +30,12 @@ urlpatterns = [
             url(r'^powerup/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_power_up, name='monster_instance_power_up'),
             url(r'^awaken/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_awaken, name='monster_instance_awaken'),
             url(r'^copy/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_duplicate, name='monster_instance_duplicate'),
+            url(r'^piece/', include([
+                url(r'^add/$', views.monster_piece_add, name='monster_piece_add'),
+                url(r'^edit/(?P<instance_id>[0-9a-f]{32})/$', views.monster_piece_edit, name='monster_piece_edit'),
+                url(r'^summon/(?P<instance_id>[0-9a-f]{32})/$', views.monster_piece_summon, name='monster_piece_summon'),
+                url(r'^delete/(?P<instance_id>[0-9a-f]{32})/$', views.monster_piece_delete, name='monster_piece_delete'),
+            ]))
         ])),
         url(r'^fusion/$', views.fusion_progress, name='fusion'),
         url(r'^teams/', include([

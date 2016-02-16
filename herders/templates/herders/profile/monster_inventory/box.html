@@ -14,6 +14,9 @@
                 <button class="btn btn-default profile-view-mode active" data-mode="box">
                     <span class="glyphicon glyphicon-th-large"></span> Box
                 </button>
+                <button class="btn btn-default profile-view-mode" data-mode="pieces">
+                    <span class="fa fa-puzzle-piece"></span> Pieces
+                </button>
             </div>
 
             <div class="btn-group">
@@ -35,7 +38,7 @@
                                         <div class="monster-box-actions">
                                             {{ instance.monster.name }}
                                         </div>
-                                        <div class="monster-box-thumb monster-popover" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }}">
+                                        <div class="monster-box-thumb monster-popover" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }} - {{ instance.monster.get_element_display }} {% if instance.monster.awakens_from %}{{ instance.monster.awakens_from.name }}{% endif %}">
                                             <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
                                                 <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
                                                 <span>

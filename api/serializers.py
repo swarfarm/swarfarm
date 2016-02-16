@@ -13,7 +13,7 @@ class MonsterSourceSerializer(serializers.HyperlinkedModelSerializer):
 class MonsterSkillEffectSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonsterSkillEffect
-        fields = ('name', 'is_buff', 'description',)
+        fields = ('name', 'is_buff', 'description', 'icon_filename')
 
 
 class MonsterSkillScalingStatSerializer(serializers.ModelSerializer):
@@ -38,8 +38,8 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
         model = MonsterSkill
         fields = (
             'pk', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
-            'skill_effect', 'atk_multiplier',
-            'scales_with',
+            'skill_effect', 'atk_multiplier', 'scales_with',
+            'icon_filename',
         )
 
 

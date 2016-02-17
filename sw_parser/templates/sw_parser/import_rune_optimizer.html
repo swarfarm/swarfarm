@@ -1,0 +1,22 @@
+{% extends 'sw_parser/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <form action="{% url 'sw_parser:import_optimizer' %}" method="post">
+        {% if import_error %}
+        <div class="alert alert-danger">
+            <p>Error with rune ID {{ errored_rune }}. No runes have been imported. Please fix the errors and then import again.</p>
+            {% for field, messages in import_error.iteritems %}
+            <p><strong>Field: {{ field }}</strong></p>
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% crispy import_rune_form %}
+    </form>
+{% endblock content %}

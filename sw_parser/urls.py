@@ -13,5 +13,6 @@ urlpatterns = [
     ])),
     url(r'^export/', include([
         url(r'^optimizer/$', views.export_rune_optimizer, name='export_optimizer'),
+        url(r'^optimizer/file/$', views.export_rune_optimizer, {'file': True}, name='export_optimizer_file'),
     ])),
 ]

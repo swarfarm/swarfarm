@@ -162,16 +162,14 @@ class ImportOptimizerForm(forms.Form):
 
 class ExportOptimizerForm(forms.Form):
     json_data = forms.CharField(
-        max_length=999999,
+        max_length=9999999,
         label='Exported Rune Data',
-        help_text=mark_safe('You can paste this data into the <a href="http://swrunes.all.my/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
         widget=forms.Textarea(),
     )
 
     helper = FormHelper()
     helper.form_show_labels = False
     helper.layout = Layout(
-        Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes, monsters, and saved builds currently present. It is advised to back up your existing data first.', css_class='alert-danger'),
         Field('json_data'),
     )
 

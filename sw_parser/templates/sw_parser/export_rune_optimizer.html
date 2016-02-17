@@ -1,0 +1,17 @@
+{% extends 'sw_parser/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <h2>Instructions:</h2>
+            <ol>
+                <li>Copy all the text or download the file</li>
+                <li>Paste/import the data into either <a href="http://swrunes.all.my">Summoners War Rune Database and Optimizer</a> or the <a href="https://www.microsoft.com/de-de/store/apps/summoners-war-optimizer/9nblggh5f9gg">Windows 10 desktop app</a>.</li>
+            </ol>
+            <div class="alert alert-danger">Importing this data will into the optimizer <strong>OVERWRITE</strong> all runes, monsters, and saved builds currently present. It is advised to back up your existing data first.</div>
+            {% crispy export_form %}
+            <a href="{% url 'sw_parser:export_optimizer_file' %}" class="btn btn-primary">Download File</a>
+        </div>
+    </div>
+{% endblock content %}

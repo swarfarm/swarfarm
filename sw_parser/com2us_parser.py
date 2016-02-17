@@ -6,7 +6,7 @@ import pytz
 from bestiary.models import Monster
 from herders.models import MonsterPiece, MonsterInstance, RuneInstance
 
-from .data_mapping import *
+from .com2us_mapping import *
 from .smon_decryptor import decrypt_response
 
 

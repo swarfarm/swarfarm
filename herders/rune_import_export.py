@@ -270,7 +270,7 @@ def export_runes(monsters, unassigned_runes):
         exported_runes.append(json_rune)
         rune_id += 1
 
-    return json.dumps({'runes': exported_runes, 'mons': exported_monsters, 'savedBuilds': []})
+    return json.dumps({'runes': exported_runes, 'mons': exported_monsters, 'savedBuilds': []}, indent=4)
 
 
 def _convert_rune_to_json(rune):

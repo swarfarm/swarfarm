@@ -3,9 +3,9 @@ from collections import OrderedDict
 from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render
 
-from herders.models import Monster
+from .models import Monster
 from herders.forms import FilterMonsterForm
 from herders.filters import MonsterFilter
 

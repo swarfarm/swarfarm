@@ -1,5 +1,6 @@
 import autocomplete_light
-from models import Monster, MonsterInstance
+from bestiary.models import Monster
+from .models import MonsterInstance
 
 
 class MonsterAutocomplete(autocomplete_light.AutocompleteModelTemplate):

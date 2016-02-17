@@ -13,9 +13,10 @@ from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext
 
+from bestiary.models import Monster, Fusion
 from .forms import *
 from .filters import *
-from .models import Monster, Summoner, MonsterInstance, MonsterPiece, Fusion, TeamGroup, Team
+from .models import Summoner, MonsterInstance, MonsterPiece, TeamGroup, Team
 from .fusion import essences_missing, total_awakening_cost
 from .rune_import_export import import_rune, export_runes
 
@@ -210,7 +211,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if view_mode == 'list':
-        monster_queryset = monster_queryset.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills', 'monster__skills__skill_effect')
+        monster_queryset = monster_queryset.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills', 'monster__skills__skill_effect', 'runeinstance_set', 'team_set', 'team_leader')
 
     pieces = MonsterPiece.objects.filter(owner=summoner)
 

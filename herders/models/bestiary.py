@@ -203,13 +203,30 @@ class Monster(models.Model):
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 
     def monster_family(self):
-        # Get unawakened monsters which are in the same family
-        if self.is_awakened and self.awakens_from is not None:
-            unawakened_name = self.awakens_from.name
-        else:
-            unawakened_name = self.name
+        family = Monster.objects.filter(com2us_id=self.com2us_id, obtainable=True).order_by('element')
 
-        return Monster.objects.filter(name=unawakened_name).filter(obtainable=True).order_by('element')
+        return [
+            {
+                'unawakened': family.filter(element=Monster.ELEMENT_FIRE, is_awakened=False).first(),
+                'awakened': family.filter(element=Monster.ELEMENT_FIRE, is_awakened=True).first(),
+            },
+            {
+                'unawakened': family.filter(element=Monster.ELEMENT_WATER, is_awakened=False).first(),
+                'awakened': family.filter(element=Monster.ELEMENT_WATER, is_awakened=True).first(),
+            },
+            {
+                'unawakened': family.filter(element=Monster.ELEMENT_WIND, is_awakened=False).first(),
+                'awakened': family.filter(element=Monster.ELEMENT_WIND, is_awakened=True).first(),
+            },
+            {
+                'unawakened': family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=False).first(),
+                'awakened': family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=True).first(),
+            },
+            {
+                'unawakened': family.filter(element=Monster.ELEMENT_DARK, is_awakened=False).first(),
+                'awakened': family.filter(element=Monster.ELEMENT_DARK, is_awakened=True).first(),
+            },
+        ]
 
     def all_skill_effects(self):
         return MonsterSkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))
@@ -583,7 +600,8 @@ class MonsterSkillEffectDetail(models.Model):
     single_target = models.BooleanField(default=False, help_text='Effect applies to a single monster')
     self_effect = models.BooleanField(default=False, help_text='Effect applies to the monster using the skill')
     chance = models.IntegerField(null=True, blank=True, help_text='Chance of effect occuring per hit')
-    on_crit = models.BooleanField(default=False, help_text='Effect occurs on critical hit')
+    on_crit = models.BooleanField(default=False)
+    on_death = models.BooleanField(default=False)
     random = models.BooleanField(default=False, help_text='Skill effect applies randomly to the target')
     quantity = models.IntegerField(default=0, help_text='Number of items this effect affects on the target')
     all = models.BooleanField(default=False, help_text='This effect affects all items on the target')

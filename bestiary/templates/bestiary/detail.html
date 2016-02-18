@@ -531,21 +531,25 @@
                 <div class="panel panel-default">
                     <table class="table">
                         <tbody>
-                        {% for related_monster in base_monster.monster_family %}
-                        <tr>
-                            <td class="monster-image">
-                                <a href="{% url 'bestiary:detail' monster_slug=related_monster.bestiary_slug %}">
-                                    <img src="{{ img_url_prefix }}monsters/{{ related_monster.image_filename }}" class="monster-thumb"/>
-                                </a>
-                            </td>
-                            <td class="monster-image">
-                                {% if related_monster.awakens_to %}
-                                <a href="{% url 'bestiary:detail' monster_slug=related_monster.awakens_to.bestiary_slug %}">
-                                    <img src="{{ img_url_prefix }}monsters/{{ related_monster.awakens_to.image_filename }}" class="monster-thumb"/>
-                                </a>
-                                {% endif %}
-                            </td>
-                        </tr>
+                        {% for monsters in family %}
+                            {% if monsters.unawakened or monsters.awakened %}
+                                <tr>
+                                    <td class="monster-image">
+                                        {% if monsters.unawakened %}
+                                        <a href="{% url 'bestiary:detail' monster_slug=monsters.unawakened.bestiary_slug %}">
+                                            <img src="{{ img_url_prefix }}monsters/{{ monsters.unawakened.image_filename }}" class="monster-thumb"/>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="monster-image">
+                                        {% if monsters.awakened %}
+                                        <a href="{% url 'bestiary:detail' monster_slug=monsters.awakened.bestiary_slug %}">
+                                            <img src="{{ img_url_prefix }}monsters/{{ monsters.awakened.image_filename }}" class="monster-thumb"/>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
                         {% endfor %}
                         </tbody>
                     </table>

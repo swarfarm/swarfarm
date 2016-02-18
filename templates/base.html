@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pnotify/3.0.0/pnotify.min.css">
         {% compress css %}
-            <link href="{% static "herders/css/custom.css" %}" rel="stylesheet">
+            <link href="{% static "main/css/custom.css" %}" rel="stylesheet">
             <link href="{% static 'herders/css/sprites.css' %}" rel="stylesheet">
             <link href="{% static 'herders/css/runes.css' %}" rel="stylesheet">
             <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/style.css' %}">
@@ -167,9 +167,9 @@
         </script>
         {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}
         {% compress js %}
-        <script type="text/javascript" src="{% static "herders/js/bootstrap.min.js" %}"></script>
-        <script type="text/javascript" src="{% static "herders/js/bootstrap-rating.min.js" %}"></script>
-        <script type="text/javascript" src="{% static 'herders/js/jquery.formset.js' %}"></script>
+        <script type="text/javascript" src="{% static "main/js/bootstrap.min.js" %}"></script>
+        <script type="text/javascript" src="{% static "main/js/bootstrap-rating.min.js" %}"></script>
+        <script type="text/javascript" src="{% static 'main/js/jquery.formset.js' %}"></script>
         <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
         {% block javascript_compressed %}{% endblock javascript_compressed %}
         {% endcompress %}

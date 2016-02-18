@@ -65,8 +65,6 @@ urlpatterns = [
             url(r'^inventory/(?P<view_mode>(list|box|grid))/$', views.rune_inventory, name='rune_inventory_view_mode'),
             url(r'^inventory/(?i)(?P<view_mode>(list|box|grid))/(?i)(?P<box_grouping>[a-zA-Z]+)/$', views.rune_inventory, name='rune_inventory_view_mode_sorted'),
             url(r'^inventory/counts/$', views.rune_counts, name='rune_inventory_counts'),
-            url(r'^import/$', views.rune_import, name='rune_import'),
-            url(r'^export/$', views.rune_export, name='rune_export'),
         ])),
         url(r'following/', include([
             url(r'^$', views.following, name='profile_following'),

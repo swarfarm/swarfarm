@@ -3,20 +3,33 @@ from collections import OrderedDict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.uploadhandler import TemporaryFileUploadHandler
+from django.core.urlresolvers import reverse
 from django.db import IntegrityError
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
-from herders.models import Summoner, Monster, MonsterInstance, RuneInstance
+from bestiary.models import Monster
+from herders.models import Summoner, MonsterInstance, RuneInstance
 
 from .forms import *
-from .parser import *
+from .com2us_parser import *
+from .rune_optimizer_parser import *
 
 
 @login_required
 def home(request):
     return render(request, 'sw_parser/base.html', context={'view': 'importexport'})
+
+
+@login_required
+def import_swarfarm_backup(request):
+    return render(request, 'sw_parser/coming_soon.html')
+
+
+@login_required
+def export_swarfarm_backup(request):
+    return render(request, 'sw_parser/coming_soon.html')
 
 
 @login_required
@@ -68,7 +81,7 @@ def _import_pcap(request):
     context = {
         'form': form,
         'errors': errors,
-        'view': 'import_export'
+        'view': 'importexport'
     }
 
     return render(request, 'sw_parser/import_pcap.html', context)
@@ -115,20 +128,10 @@ def import_sw_json(request):
     context = {
         'form': form,
         'errors': errors,
-        'view': 'import_export'
+        'view': 'importexport',
     }
 
     return render(request, 'sw_parser/import_sw_json.html', context)
-
-
-@login_required
-def export_rune_optimizer(request):
-    return render(request, 'sw_parser/coming_soon.html', context={'view': 'importexport'})
-
-
-@login_required
-def import_rune_optimizer(request):
-    return render(request, 'sw_parser/coming_soon.html', context={'view': 'importexport'})
 
 
 @login_required
@@ -148,7 +151,7 @@ def commit_import(request):
     missing_mons = MonsterInstance.committed.filter(owner=summoner).exclude(com2us_id__in=imported_mon_com2us_ids)
 
     context = {
-        'view': 'import_export',
+        'view': 'importexport',
         'form': ApplyImportForm(),
     }
 
@@ -313,3 +316,72 @@ def _import_objects(request, data, import_options, summoner):
 
         request.session['import_stage'] = 'done'
     return errors
+
+
+@login_required
+def import_rune_optimizer(request):
+    from django.forms import ValidationError
+
+    summoner = get_object_or_404(Summoner, user=request.user)
+    form = ImportOptimizerForm(request.POST or None)
+    form.helper.form_action = reverse('sw_parser:import_optimizer')
+    import_error = None
+    err_rune = None
+
+    if request.method == 'POST' and form.is_valid():
+        data = form.cleaned_data['json_data']
+
+        if 'runes' in data:
+            import_count = 0
+            valid_runes = []
+
+            # Validate all imported runes
+            for rune_data in data['runes']:
+                try:
+                    rune = import_rune(rune_data)
+                    rune.owner = summoner
+                    rune.full_clean()
+                    import_count += 1
+                except ValidationError as e:
+                    import_error = e.message_dict
+                    err_rune = rune_data.get('id', 'unknown')
+                    break
+                else:
+                    valid_runes.append(rune)
+            else:
+                # No exceptions! Save the valid runes.
+                for rune in valid_runes:
+                    rune.save()
+                messages.success(request, 'Successfully imported ' + str(import_count) + ' runes.')
+
+                return redirect('herders:runes', profile_name=request.user.username)
+        else:
+            import_error = 'No runes found in submitted data'
+
+    context = {
+        'import_rune_form': form,
+        'import_error': import_error,
+        'errored_rune': err_rune,
+        'view': 'importexport',
+    }
+
+    return render(request, 'sw_parser/import_rune_optimizer.html', context)
+
+
+@login_required
+def export_rune_optimizer(request, file=False):
+    summoner = get_object_or_404(Summoner, user=request.user)
+
+    export_data = export_runes(
+        MonsterInstance.committed.filter(owner=summoner),
+        RuneInstance.committed.filter(owner=summoner, assigned_to=None),
+    )
+    if file:
+        response = HttpResponse(export_data)
+        response['Content-Disposition'] = 'attachment; filename=' + request.user.username + '_swarfarm_rune_optimizer_export.json'
+
+        return response
+    else:
+        form = ExportOptimizerForm(initial={'json_data': export_data})
+
+        return render(request, 'sw_parser/export_rune_optimizer.html', {'export_form': form, 'view': 'importexport'})

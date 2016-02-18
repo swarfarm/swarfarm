@@ -5,7 +5,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, HTML
 from crispy_forms.bootstrap import FormActions, Alert
 
-from herders.models import Monster, MonsterInstance
+from bestiary.models import Monster
+from herders.models import MonsterInstance
 
 
 class MonsterImportOptionsMixin(forms.Form):
@@ -132,15 +133,13 @@ class ImportOptimizerForm(forms.Form):
         max_length=999999,
         required=True,
         label='Paste Rune Data',
-        help_text=mark_safe('Data is exported from the <a href="http://swrunes.all.my/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
-        widget=forms.Textarea(),
+        widget=forms.Textarea(attrs={'placeholder': 'Paste data here'}),
     )
 
     helper = FormHelper()
+    helper.form_show_labels = False
     helper.layout = Layout(
-        Alert('You can only import runes. Importing will create new runes, not update your current runes. Monsters and saved builds from the spreadsheet are ignored.', css_class='alert-warning'),
         Field('json_data'),
-        Field('clear_profile'),
         FormActions(
             Submit('import', 'Import'),
         ),
@@ -161,16 +160,14 @@ class ImportOptimizerForm(forms.Form):
 
 class ExportOptimizerForm(forms.Form):
     json_data = forms.CharField(
-        max_length=999999,
+        max_length=9999999,
         label='Exported Rune Data',
-        help_text=mark_safe('You can paste this data into the <a href="http://swrunes.all.my/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
         widget=forms.Textarea(),
     )
 
     helper = FormHelper()
     helper.form_show_labels = False
     helper.layout = Layout(
-        Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes, monsters, and saved builds currently present. It is advised to back up your existing data first.', css_class='alert-danger'),
         Field('json_data'),
     )
 

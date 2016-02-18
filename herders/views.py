@@ -8,16 +8,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.db.models import Q
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext
 
+from bestiary.models import Monster, Fusion
 from .forms import *
 from .filters import *
-from .models import Monster, Summoner, MonsterInstance, MonsterPiece, Fusion, TeamGroup, Team
+from .models import Summoner, MonsterInstance, MonsterPiece, TeamGroup, Team
 from .fusion import essences_missing, total_awakening_cost
-from .rune_import_export import import_rune, export_runes
 
 
 def register(request):
@@ -1676,86 +1675,3 @@ def rune_delete_all(request, profile_name):
         return HttpResponseForbidden()
 
 
-@login_required
-def rune_import(request, profile_name):
-    from django.forms import ValidationError
-
-    summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-    form = ImportRuneForm(request.POST or None)
-    form.helper.form_action = reverse('herders:rune_import', kwargs={'profile_name': profile_name})
-    template = loader.get_template('herders/profile/runes/import_form.html')
-    import_error = None
-    err_rune = None
-
-    response_data = {
-        'code': 'success',
-    }
-
-    if is_owner:
-        if request.method == 'POST' and form.is_valid():
-            data = form.cleaned_data['json_data']
-
-            if 'runes' in data:
-                import_count = 0
-                valid_runes = []
-
-                # Validate all imported runes
-                for rune_data in data['runes']:
-                    try:
-                        rune = import_rune(rune_data)
-                        rune.owner = summoner
-                        rune.full_clean()
-                        import_count += 1
-                    except ValidationError as e:
-                        import_error = e.message_dict
-                        err_rune = rune_data.get('id', 'unknown')
-                        response_data = {
-                            'code': 'error',
-                        }
-                        break
-                    else:
-                        valid_runes.append(rune)
-                else:
-                    # No exceptions! Save the valid runes.
-                    for rune in valid_runes:
-                        rune.save()
-                    messages.success(request, 'Successfully imported ' + str(import_count) + ' runes.')
-            else:
-                response_data = {
-                    'code': 'error',
-                }
-                import_error = 'No runes found in submitted data'
-        else:
-            response_data = {
-                'code': 'error',
-            }
-
-        response_data['html'] = template.render(RequestContext(request, {'import_rune_form': form, 'import_error': import_error, 'errored_rune': err_rune, 'profile_name': profile_name}))
-
-        return JsonResponse(response_data)
-    else:
-        return HttpResponseForbidden()
-
-
-@login_required
-def rune_export(request, profile_name):
-    summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
-    if is_owner:
-        export_data = export_runes(
-            MonsterInstance.committed.filter(owner=summoner),
-            RuneInstance.committed.filter(owner=summoner, assigned_to=None),
-        )
-        form = ExportRuneForm(initial={'json_data': export_data})
-        template = loader.get_template('herders/profile/runes/export.html')
-
-        response_data = {
-            'code': 'success',
-            'html': template.render(RequestContext(request, {'export_form': form}))
-        }
-
-        return JsonResponse(response_data)
-    else:
-        return HttpResponseForbidden()

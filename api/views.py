@@ -1,8 +1,9 @@
-from rest_framework import viewsets, filters, status, renderers
+from rest_framework import viewsets, filters, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
-from herders.models import *
+from bestiary.models import Monster, Skill, LeaderSkill
+from herders.models import Summoner, MonsterInstance, RuneInstance, Team, TeamGroup
 from .serializers import *
 
 
@@ -12,7 +13,7 @@ class PersonalCollectionSetPagination(PageNumberPagination):
 
 
 class BestiarySetPagination(PageNumberPagination):
-    page_size = 1000
+    page_size = 100
     page_size_query_param = 'page_size'
     max_page_size = 1000
 
@@ -48,7 +49,7 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class MonsterSkillViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = MonsterSkill.objects.all()
+    queryset = Skill.objects.all()
     renderer_classes = (renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
     serializer_class = MonsterSkillSerializer
     pagination_class = BestiarySetPagination
@@ -63,31 +64,31 @@ class MonsterSkillViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class MonsterLeaderSkillViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = MonsterLeaderSkill.objects.all()
+    queryset = LeaderSkill.objects.all()
     serializer_class = MonsterLeaderSkillSerializer
     pagination_class = BestiarySetPagination
 
 
 class MonsterSkillEffectViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = MonsterSkillEffect.objects.all()
+    queryset = Effect.objects.all()
     serializer_class = MonsterSkillEffectSerializer
     pagination_class = BestiarySetPagination
 
 
 class MonsterSkillScalesWithViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = MonsterSkillScalesWith.objects.all()
+    queryset = ScalesWith.objects.all()
     serializer_class = MonsterSkillScalesWithSerializer
     pagination_class = BestiarySetPagination
 
 
 class MonsterSkillScalesWithDetailViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = MonsterSkillScalingStat.objects.all()
+    queryset = ScalingStat.objects.all()
     serializer_class = MonsterSkillScalingStatSerializer
     pagination_class = BestiarySetPagination
 
 
 class MonsterSourceViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = MonsterSource.objects.all()
+    queryset = Source.objects.all()
     serializer_class = MonsterSourceSerializer
     pagination_class = BestiarySetPagination
 

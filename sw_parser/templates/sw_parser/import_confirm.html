@@ -2,11 +2,19 @@
 {% load crispy_forms_tags %}
 {% load utils %}
 
+{% block title %}Confirm Imported Data - {{ block.super }}{% endblock title %}
+
 {% block content %}
     <div class="col-md-8 col-md-offset-2">
-        <h1>Please review import results. Changes are not applied until you confirm.</h1>
 
-        {% crispy form %}
+        <h1>Imported Data Review</h1>
+        <p class="lead">Please review import results. Changes are not applied until you confirm.</p>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                {% crispy form %}
+            </div>
+        </div>
 
         <h2>Monsters</h2>
         <ul class="nav nav-tabs" role="tablist">

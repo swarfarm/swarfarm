@@ -3,9 +3,11 @@ import json
 from dateutil.parser import *
 import pytz
 
-from .data_mapping import *
+from bestiary.models import Monster
+from herders.models import MonsterPiece, MonsterInstance, RuneInstance
+
+from .com2us_mapping import *
 from .smon_decryptor import decrypt_response
-from herders.models import Monster, MonsterPiece, MonsterInstance, RuneInstance
 
 
 def parse_pcap_new(pcap_file):

@@ -5,7 +5,7 @@ from herders.models import Summoner, MonsterInstance, RuneInstance, TeamGroup, T
 
 
 # Read-only monster database stuff.
-class MonsterSourceSerializer(serializers.HyperlinkedModelSerializer):
+class MonsterSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source
         exclude = ['meta_order', 'icon_filename']
@@ -44,7 +44,7 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class MonsterLeaderSkillSerializer(serializers.HyperlinkedModelSerializer):
+class MonsterLeaderSkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeaderSkill
 

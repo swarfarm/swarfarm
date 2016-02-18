@@ -1,22 +1,49 @@
 {% extends 'sw_parser/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block content %}
-    <form action="{% url 'sw_parser:import_optimizer' %}" method="post">
-        {% if import_error %}
-        <div class="alert alert-danger">
-            <p>Error with rune ID {{ errored_rune }}. No runes have been imported. Please fix the errors and then import again.</p>
-            {% for field, messages in import_error.iteritems %}
-            <p><strong>Field: {{ field }}</strong></p>
-            <ul class="list-unstyled">
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endfor %}
-        </div>
-        {% endif %}
+{% block title %}Import Rune Optimizer JSON - {{ block.super }}{% endblock title %}
 
-        {% crispy import_rune_form %}
-    </form>
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h1>Import Rune Optimizer JSON</h1>
+            <h2>Instructions:</h2>
+            <ol>
+                <li>Click export in the Rune Optimizer website or app.</li>
+                <li>Copy the entire text presented.</li>
+                <li>Paste the data below and click Import</li>
+            </ol>
+            <h3>Caveats</h3>
+            <p>
+                The data format used by the optimizer tools lacks a lot of identifying information that is necessary to perform an accurate correlation between imported data and existing data in your SWARFARM profile.
+                Due to these limitations this is not a recommended import method. The network capture or SWProxy imports will provide much better results.
+                If you still wish to import, keep the following caveats in mind:
+            </p>
+                <ul>
+                    <li>Only runes are imported. Monsters and saved builds are ignored.</li>
+                    <li>Existing runes will not be updated. Imported runes will be created as new runes.</li>
+                    <li>Equipped rune status in the optimizer is not imported.</li>
+                    <li>There is no confirmation step. Runes are immediately added to your profile.</li>
+                </ul>
+            <p></p>
+
+            <form action="{% url 'sw_parser:import_optimizer' %}" method="post">
+                {% if import_error %}
+                <div class="alert alert-danger">
+                    <p>Error with rune ID {{ errored_rune }}. No runes have been imported. Please fix the errors and then import again.</p>
+                    {% for field, messages in import_error.iteritems %}
+                    <p><strong>Field: {{ field }}</strong></p>
+                    <ul class="list-unstyled">
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% crispy import_rune_form %}
+            </form>
+        </div>
+    </div>
 {% endblock content %}

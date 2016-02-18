@@ -23,6 +23,16 @@ def home(request):
 
 
 @login_required
+def import_swarfarm_backup(request):
+    return render(request, 'sw_parser/coming_soon.html')
+
+
+@login_required
+def export_swarfarm_backup(request):
+    return render(request, 'sw_parser/coming_soon.html')
+
+
+@login_required
 @csrf_exempt
 def import_pcap(request):
     request.upload_handlers = [TemporaryFileUploadHandler()]
@@ -71,7 +81,7 @@ def _import_pcap(request):
     context = {
         'form': form,
         'errors': errors,
-        'view': 'import_export'
+        'view': 'importexport'
     }
 
     return render(request, 'sw_parser/import_pcap.html', context)
@@ -118,7 +128,7 @@ def import_sw_json(request):
     context = {
         'form': form,
         'errors': errors,
-        'view': 'import_export'
+        'view': 'importexport',
     }
 
     return render(request, 'sw_parser/import_sw_json.html', context)
@@ -141,7 +151,7 @@ def commit_import(request):
     missing_mons = MonsterInstance.committed.filter(owner=summoner).exclude(com2us_id__in=imported_mon_com2us_ids)
 
     context = {
-        'view': 'import_export',
+        'view': 'importexport',
         'form': ApplyImportForm(),
     }
 
@@ -343,6 +353,8 @@ def import_rune_optimizer(request):
                 for rune in valid_runes:
                     rune.save()
                 messages.success(request, 'Successfully imported ' + str(import_count) + ' runes.')
+
+                return redirect('herders:runes', profile_name=request.user.username)
         else:
             import_error = 'No runes found in submitted data'
 
@@ -350,6 +362,7 @@ def import_rune_optimizer(request):
         'import_rune_form': form,
         'import_error': import_error,
         'errored_rune': err_rune,
+        'view': 'importexport',
     }
 
     return render(request, 'sw_parser/import_rune_optimizer.html', context)
@@ -371,4 +384,4 @@ def export_rune_optimizer(request, file=False):
     else:
         form = ExportOptimizerForm(initial={'json_data': export_data})
 
-        return render(request, 'sw_parser/export_rune_optimizer.html', {'export_form': form})
+        return render(request, 'sw_parser/export_rune_optimizer.html', {'export_form': form, 'view': 'importexport'})

@@ -1,10 +1,11 @@
 {% extends 'sw_parser/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Import SWParser JSON - {{ block.super }}{% endblock title %}
+{% block title %}Import SWProxy JSON - {{ block.super }}{% endblock title %}
 
 {% block content %}
-    <div class="col-sm-6 col-sm-offset-3">
+    <div class="col-md-8 col-md-offset-2">
+        <h1>Import SWProxy JSON</h1>
         <h2>Instructions:</h2>
         <ol>
             <li>Download the <a href="https://github.com/kakaroto/SWParser/releases/latest">SWParser</a> program created by <a href="https://www.reddit.com/u/kakarotoks">/u/kakarotoks</a>. Make sure you have version <strong>0.96.1</strong> or later.</li>
@@ -15,7 +16,7 @@
         <ul>
             <li>For your first upload, it is recommended to clear your profile or you will end up with a lot of duplicates. For subsequent uploads your monsters will by synced automatically.</li>
             <li>The upload and processing can take up to about 60 seconds so be patient.</li>
-            <li>Please report any issues in the feedback thread <a href="{% url 'feedback:issue_detail' pk=271 %}">here</a>. You can also email your .json file to swarfarm@porksmash.com so I can investigate specific issues.</li>
+            <li>Please report any issues by leaving feedback <a href="{% url 'feedback:issue_add' %}">here</a>. You can also email your .json file to swarfarm@porksmash.com so I can investigate specific issues.</li>
         </ul>
 
         {% if errors|length > 0 %}

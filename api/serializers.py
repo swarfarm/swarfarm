@@ -57,6 +57,7 @@ class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MonsterSerializer(serializers.HyperlinkedModelSerializer):
+    leader_skill = MonsterLeaderSkillSerializer(read_only=True)
     awakens_from = AwakensMonsterSerializer(read_only=True)
     awakens_to = AwakensMonsterSerializer(read_only=True)
     source = MonsterSourceSerializer(many=True, read_only=True)

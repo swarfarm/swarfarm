@@ -618,7 +618,7 @@ class MonsterSkillScalingStat(models.Model):
 class MonsterSkillScalesWith(models.Model):
     scalingstat = models.ForeignKey(MonsterSkillScalingStat)
     monsterskill = models.ForeignKey(MonsterSkill)
-    multiplier = models.IntegerField(blank=True, null=True)
+    multiplier = models.FloatField(blank=True, null=True)
 
 
 class MonsterSource(models.Model):

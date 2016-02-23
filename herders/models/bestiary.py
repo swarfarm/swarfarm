@@ -603,8 +603,9 @@ class MonsterSkillEffectDetail(models.Model):
     on_crit = models.BooleanField(default=False)
     on_death = models.BooleanField(default=False)
     random = models.BooleanField(default=False, help_text='Skill effect applies randomly to the target')
-    quantity = models.IntegerField(default=0, help_text='Number of items this effect affects on the target')
+    quantity = models.IntegerField(null=True, blank=True, help_text='Number of items this effect affects on the target')
     all = models.BooleanField(default=False, help_text='This effect affects all items on the target')
+    note = models.TextField(blank=True, null=True, help_text="Explain anything else that doesn't fit in other fields")
 
 
 class MonsterSkillScalingStat(models.Model):

@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db import models
+from django.forms.widgets import TextInput
 from .models import *
 
 
@@ -154,16 +156,23 @@ class MonsterSkillScalesWithInline(admin.TabularInline):
 class MonsterSkillEffectDetailInline(admin.TabularInline):
     model = EffectDetail
     extra = 5
+    formfield_overrides = {
+        models.TextField: {'widget': TextInput},
+    }
 
 
 @admin.register(Skill)
 class MonsterSkillAdmin(admin.ModelAdmin):
+    readonly_fields = ('used_on',)
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
     filter_vertical = ('skill_effect',)
     search_fields = ['name', 'icon_filename', 'description']
     list_filter = ['slot', 'skill_effect', 'passive']
     inlines = (MonsterSkillScalesWithInline, MonsterSkillEffectDetailInline,)
     save_as = True
+
+    def used_on(self, obj):
+        return ', '.join([str(monster) for monster in obj.monster_set.all()])
 
 
 @admin.register(LeaderSkill)

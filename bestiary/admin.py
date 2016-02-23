@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db import models
+from django.forms.widgets import TextInput
 from .models import *
 
 
@@ -154,6 +156,9 @@ class MonsterSkillScalesWithInline(admin.TabularInline):
 class MonsterSkillEffectDetailInline(admin.TabularInline):
     model = EffectDetail
     extra = 5
+    formfield_overrides = {
+        models.TextField: {'widget': TextInput},
+    }
 
 
 @admin.register(Skill)

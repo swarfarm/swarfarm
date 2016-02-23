@@ -618,7 +618,8 @@ class MonsterSkillScalingStat(models.Model):
 class MonsterSkillScalesWith(models.Model):
     scalingstat = models.ForeignKey(MonsterSkillScalingStat)
     monsterskill = models.ForeignKey(MonsterSkill)
-    multiplier = models.IntegerField(blank=True, null=True)
+    multiplier = models.FloatField(blank=True, null=True)
+    add_to_atk = models.BooleanField(default=False, help_text='Add value to ATK % value')
 
 
 class MonsterSource(models.Model):

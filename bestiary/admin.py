@@ -153,9 +153,9 @@ class MonsterSkillScalesWithInline(admin.TabularInline):
     extra = 2
 
 
-class MonsterSkillEffectDetailInline(admin.TabularInline):
+class MonsterSkillEffectDetailInline(admin.StackedInline):
     model = EffectDetail
-    extra = 5
+    extra = 3
     formfield_overrides = {
         models.TextField: {'widget': TextInput},
     }

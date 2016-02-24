@@ -605,6 +605,9 @@ class MonsterSkillEffectDetail(models.Model):
     random = models.BooleanField(default=False, help_text='Skill effect applies randomly to the target')
     quantity = models.IntegerField(null=True, blank=True, help_text='Number of items this effect affects on the target')
     all = models.BooleanField(default=False, help_text='This effect affects all items on the target')
+    self_hp = models.BooleanField(default=False, help_text="Amount of this effect is based on casting monster's HP")
+    target_hp = models.BooleanField(default=False, help_text="Amount of this effect is based on target monster's HP")
+    damage = models.BooleanField(default=False, help_text="Amount of this effect is based on damage dealt")
     note = models.TextField(blank=True, null=True, help_text="Explain anything else that doesn't fit in other fields")
 
 

@@ -252,9 +252,9 @@ def _import_objects(request, data, import_options, summoner):
     else:
         # Everything parsed successfully up to this point, so it's safe to clear the profile now.
         if import_options['clear_profile']:
-            RuneInstance.objects.filter(owner=summoner).delete()
-            MonsterInstance.objects.filter(owner=summoner).delete()
-            MonsterPiece.imported.filter(owner=summoner).delete()
+            RuneInstance.committed.filter(owner=summoner).delete()
+            MonsterInstance.committed.filter(owner=summoner).delete()
+            MonsterPiece.committed.filter(owner=summoner).delete()
 
         # Delete anything that might have been previously imported
         RuneInstance.imported.filter(owner=summoner).delete()

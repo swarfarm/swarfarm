@@ -466,7 +466,17 @@ class MonsterSkill(models.Model):
         return self.level_progress_description.splitlines()
 
     def __unicode__(self):
-        return '' if self.name is None else self.name + '' if self.icon_filename is None else ' - ' + self.icon_filename
+        if self.name:
+            name = self.name
+        else:
+            name = ''
+
+        if self.icon_filename:
+            icon = ' - ' + self.icon_filename
+        else:
+            icon = ''
+
+        return name + icon
 
     class Meta:
         ordering = ['slot', 'name']

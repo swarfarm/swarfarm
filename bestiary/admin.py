@@ -148,12 +148,12 @@ class MonsterAdmin(admin.ModelAdmin):
         form.instance.save()
 
 
-class MonsterSkillScalesWithInline(admin.TabularInline):
+class ScalesWithInline(admin.TabularInline):
     model = ScalesWith
     extra = 2
 
 
-class MonsterSkillEffectDetailInline(admin.StackedInline):
+class EffectDetailInline(admin.StackedInline):
     model = EffectDetail
     extra = 3
     formfield_overrides = {
@@ -162,13 +162,13 @@ class MonsterSkillEffectDetailInline(admin.StackedInline):
 
 
 @admin.register(Skill)
-class MonsterSkillAdmin(admin.ModelAdmin):
+class SkillAdmin(admin.ModelAdmin):
     readonly_fields = ('used_on',)
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
     filter_vertical = ('skill_effect',)
     search_fields = ['name', 'icon_filename', 'description']
     list_filter = ['slot', 'skill_effect', 'passive']
-    inlines = (MonsterSkillScalesWithInline, MonsterSkillEffectDetailInline,)
+    inlines = (ScalesWithInline, EffectDetailInline,)
     save_as = True
 
     def used_on(self, obj):
@@ -176,24 +176,24 @@ class MonsterSkillAdmin(admin.ModelAdmin):
 
 
 @admin.register(LeaderSkill)
-class MonsterLeaderSkillAdmin(admin.ModelAdmin):
+class LeaderSkillAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'attribute', 'amount', 'skill_string', 'area',)
     list_filter = ('attribute', 'area',)
 
 
 @admin.register(Effect)
-class MonsterSkillEffectAdmin(admin.ModelAdmin):
+class EffectAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'is_buff')
 
 
 @admin.register(ScalingStat)
-class MonsterSkillScalingStatAdmin(admin.ModelAdmin):
+class ScalingStatAdmin(admin.ModelAdmin):
     search_fields = ['stat', ]
     save_as = True
 
 
 @admin.register(Source)
-class MonsterSourceAdmin(admin.ModelAdmin):
+class SourceAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'meta_order',)
 
 

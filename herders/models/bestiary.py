@@ -669,3 +669,51 @@ class Fusion(models.Model):
     class Meta:
         ordering = ['meta_order']
 
+    def total_awakening_cost(self, owned_ingredients):
+        cost = OrderedDict()
+        cost['magic'] = OrderedDict()
+        cost['magic']['low'] = 0
+        cost['magic']['mid'] = 0
+        cost['magic']['high'] = 0
+        cost['fire'] = OrderedDict()
+        cost['fire']['low'] = 0
+        cost['fire']['mid'] = 0
+        cost['fire']['high'] = 0
+        cost['water'] = OrderedDict()
+        cost['water']['low'] = 0
+        cost['water']['mid'] = 0
+        cost['water']['high'] = 0
+        cost['wind'] = OrderedDict()
+        cost['wind']['low'] = 0
+        cost['wind']['mid'] = 0
+        cost['wind']['high'] = 0
+        cost['light'] = OrderedDict()
+        cost['light']['low'] = 0
+        cost['light']['mid'] = 0
+        cost['light']['high'] = 0
+        cost['dark'] = OrderedDict()
+        cost['dark']['low'] = 0
+        cost['dark']['mid'] = 0
+        cost['dark']['high'] = 0
+
+        for ingredient in self.ingredients.exclude(monster__in=owned_ingredients):
+            cost['magic']['low'] += ingredient.awaken_mats_magic_low
+            cost['magic']['mid'] += ingredient.awaken_mats_magic_mid
+            cost['magic']['high'] += ingredient.awaken_mats_magic_high
+            cost['fire']['low'] += ingredient.awaken_mats_fire_low
+            cost['fire']['mid'] += ingredient.awaken_mats_fire_mid
+            cost['fire']['high'] += ingredient.awaken_mats_fire_high
+            cost['water']['low'] += ingredient.awaken_mats_water_low
+            cost['water']['mid'] += ingredient.awaken_mats_water_mid
+            cost['water']['high'] += ingredient.awaken_mats_water_high
+            cost['wind']['low'] += ingredient.awaken_mats_wind_low
+            cost['wind']['mid'] += ingredient.awaken_mats_wind_mid
+            cost['wind']['high'] += ingredient.awaken_mats_wind_high
+            cost['light']['low'] += ingredient.awaken_mats_light_low
+            cost['light']['mid'] += ingredient.awaken_mats_light_mid
+            cost['light']['high'] += ingredient.awaken_mats_light_high
+            cost['dark']['low'] += ingredient.awaken_mats_dark_low
+            cost['dark']['mid'] += ingredient.awaken_mats_dark_mid
+            cost['dark']['high'] += ingredient.awaken_mats_dark_high
+
+        return cost

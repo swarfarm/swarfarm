@@ -308,32 +308,30 @@ def profile_edit(request, profile_name):
 
 @login_required
 def profile_storage(request, profile_name):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
-    )
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    form = EditEssenceStorageForm(request.POST or None, instance=request.user.summoner)
-    form.helper.form_action = request.path + '?next=' + return_path
+    if is_owner:
+        form = EditEssenceStorageForm(request.POST or None, instance=request.user.summoner)
+        form.helper.form_action = request.path
+        template = loader.get_template('herders/essence_storage.html')
 
-    context = {
-        'is_owner': is_owner,
-        'profile_name': request.user.username,
-        'summoner': summoner,
-        'storage_form': form,
-        'view': 'storage',
-        'profile_view': 'materials',
-    }
+        if request.method == 'POST' and form.is_valid():
+            form.save()
+            messages.success(request, 'Updated essence storage.')
 
-    if request.method == 'POST' and form.is_valid():
-        form.save()
+            response_data = {
+                'code': 'success'
+            }
+        else:
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
 
-        if request.POST.get('save', None):
-            return redirect(return_path)
-
-    return render(request, 'herders/essence_storage.html', context)
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
 
 
 @login_required()
@@ -976,10 +974,10 @@ def monster_piece_delete(request, profile_name, instance_id):
 
 
 def fusion_progress(request, profile_name):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:fusion', kwargs={'profile_name': profile_name})
-    )
+    pass
+
+
+def fusion_progress_detail(request, profile_name, monster_slug):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
@@ -987,31 +985,31 @@ def fusion_progress(request, profile_name):
         'view': 'fusion',
         'profile_name': profile_name,
         'summoner': summoner,
-        'return_path': return_path,
         'is_owner': is_owner,
     }
 
-    fusions = Fusion.objects.all().select_related()
-    progress = OrderedDict()
-
     if is_owner or summoner.public:
-        for fusion in fusions:
+        try:
+            fusion = Fusion.objects.get(product__bestiary_slug=monster_slug)
+        except Fusion.DoesNotExist:
+            return Http404()
+        else:
             level = 10 + fusion.stars * 5
             ingredients = []
 
             # Check if fusion has been completed already
             fusion_complete = MonsterInstance.committed.filter(
                 Q(owner=summoner), Q(monster=fusion.product) | Q(monster=fusion.product.awakens_to)
-            ).count() > 0
+            ).exists()
 
             # Scan summoner's collection for instances each ingredient
+            fusion_ready = True
+
             for ingredient in fusion.ingredients.all().select_related('awakens_from', 'awakens_to'):
                 owned_ingredients = MonsterInstance.committed.filter(
                     Q(owner=summoner),
                     Q(monster=ingredient) | Q(monster=ingredient.awakens_from),
                 ).order_by('-stars', '-level', '-monster__is_awakened')
-
-                sub_fusion_available = Fusion.objects.filter(product=ingredient.awakens_from).exists()
 
                 # Determine if each individual requirement is met using highest evolved/leveled monster that is not ignored for fusion
                 for owned_ingredient in owned_ingredients:
@@ -1029,9 +1027,11 @@ def fusion_progress(request, profile_name):
                     awakened = False
                     complete = False
 
+                if not complete:
+                    fusion_ready = False
+
                 ingredient_progress = {
                     'instance': ingredient,
-                    'sub_fusion_available': sub_fusion_available,
                     'owned': owned_ingredients,
                     'complete': complete,
                     'acquired': acquired,
@@ -1041,15 +1041,10 @@ def fusion_progress(request, profile_name):
                 }
                 ingredients.append(ingredient_progress)
 
-            fusion_ready = True
-            for i in ingredients:
-                if not i['complete']:
-                    fusion_ready = False
-
             total_cost = total_awakening_cost(ingredients)
             total_missing = essences_missing(summoner.get_storage(), total_cost)
 
-            progress[fusion.product.name] = {
+            progress = {
                 'instance': fusion.product,
                 'acquired': fusion_complete,
                 'stars': fusion.stars,
@@ -1063,61 +1058,47 @@ def fusion_progress(request, profile_name):
                 'ready': fusion_ready,
             }
 
-        # Iterate through again and find any sub-fusions that are possible. Add their missing essences together for a total count
-        from copy import deepcopy
-        for monster, fusion in progress.iteritems():
+            # Iterate through again and find any sub-fusions that are possible. Add their missing essences together for a total count
+            from copy import deepcopy
             # print 'Checking sub-fusions for ' + monster
-            combined_total_cost = deepcopy(fusion['awakening_materials']['total_cost'])
+            combined_total_cost = deepcopy(progress['awakening_materials']['total_cost'])
             sub_fusions_found = False
 
             # Check if ingredients for this fusion are fuseable themselves
-            for ingredient in fusion['ingredients']:
-                if ingredient['sub_fusion_available'] and not ingredient['acquired']:
-                    sub_fusions_found = True
-                    # print '    Found sub-fusion for ' + str(ingredient['instance'])
-                    # Get the totals for the sub-fusions and add to the current fusion cost
-                    sub_fusion = progress.get(ingredient['instance'].awakens_from.name, None)
-                    for element, sizes in fusion['awakening_materials']['total_cost'].iteritems():
-                        # print '        element: ' + str(element)
-                        if element not in combined_total_cost:
-                            combined_total_cost[element] = OrderedDict()
+            for ingredient in progress['ingredients']:
+                try:
+                    sub_fusion = Fusion.objects.get(product=ingredient['instance'].awakens_from)
+                except Fusion.DoesNotExist:
+                    continue
+                else:
+                    if sub_fusion and not ingredient['acquired']:
+                        progress['sub_fusion_available'] = True
+                        sub_fusions_found = True
+                        # print '    Found sub-fusion for ' + str(ingredient['instance'])
+                        # Get the totals for the sub-fusions and add to the current fusion cost
 
-                        # print sub_fusion['awakening_materials']['missing']
+                        for element, sizes in progress['awakening_materials']['total_cost'].iteritems():
+                            # print '        element: ' + str(element)
+                            if element not in combined_total_cost:
+                                combined_total_cost[element] = OrderedDict()
 
-                        for size in set(sizes.keys() + sub_fusion['awakening_materials']['missing'][element].keys()):
-                            # print '        size: ' + size
-                            # print '            sub fusion:               ' + str(sub_fusion['awakening_materials']['total_cost'][element].get(size, 0))
-                            # print '            current combined_total_cost: ' + str(combined_total_cost[element].get(size, 0))
-                            combined_total_cost[element][size] = combined_total_cost[element].get(size, 0) + sub_fusion['awakening_materials']['total_cost'][element].get(size, 0)
-                            # print '            new     combined_total_cost: ' + str(combined_total_cost[element][size])
+                            # print sub_fusion['awakening_materials']['missing']
+
+                            for size in set(sizes.keys() + sub_fusion['awakening_materials']['missing'][element].keys()):
+                                # print '        size: ' + size
+                                # print '            sub fusion:               ' + str(sub_fusion['awakening_materials']['total_cost'][element].get(size, 0))
+                                # print '            current combined_total_cost: ' + str(combined_total_cost[element].get(size, 0))
+                                combined_total_cost[element][size] = combined_total_cost[element].get(size, 0) + sub_fusion['awakening_materials']['total_cost'][element].get(size, 0)
+                                # print '            new     combined_total_cost: ' + str(combined_total_cost[element][size])
 
             if sub_fusions_found:
-                fusion['awakening_materials']['combined'] = essences_missing(summoner.get_storage(), combined_total_cost)
+                progress['awakening_materials']['combined'] = essences_missing(summoner.get_storage(), combined_total_cost)
 
-        context['fusions'] = progress
+            context['fusions'] = progress
 
-        return render(request, 'herders/profile/profile_fusion.html', context)
+            return render(request, 'herders/profile/fusion/fusion_detail.html', context)
     else:
         return render(request, 'herders/profile/not_public.html', context)
-
-
-def fusion_perform(request, profile_name, fusion_product_id):
-    return_path = request.GET.get(
-        'next',
-        reverse('herders:fusion', kwargs={'profile_name': profile_name})
-    )
-    summoner = get_object_or_404(Summoner, user__username=profile_name)
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
-    context = {
-        'view': 'fusion',
-        'profile_name': profile_name,
-        'summoner': summoner,
-        'return_path': return_path,
-        'is_owner': is_owner,
-    }
-
-    fusion = Fusion.objects.get(product__pk=fusion_product_id)
 
 
 def teams(request, profile_name):

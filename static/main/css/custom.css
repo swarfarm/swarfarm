@@ -512,12 +512,6 @@ button.filter:not(.active):focus {
     background-color: #fff;
 }
 
-.storage_group {
-    position: relative;
-    padding: 0;
-    margin: 5px;
-}
-
 img.prepended-image {
     height: 32px;
     border-top-left-radius: 4px;

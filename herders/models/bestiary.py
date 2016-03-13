@@ -424,10 +424,10 @@ class Monster(models.Model):
         # Automatically set awakens from/to relationship if none exists
         if self.awakens_from and self.awakens_from.awakens_to is not self:
             self.awakens_from.awakens_to = self
-            self.awakens_from.save()
+            self.awakens_from.save(skip_url_gen=True)
         elif self.awakens_to and self.awakens_to.awakens_from is not self:
             self.awakens_to.awakens_from = self
-            self.awakens_to.save()
+            self.awakens_to.save(skip_url_gen=True)
 
     class Meta:
         ordering = ['name', 'element']
@@ -447,7 +447,8 @@ class MonsterSkill(models.Model):
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
     effect = models.ManyToManyField('MonsterSkillEffect', through='MonsterSkillEffectDetail', blank=True, related_name='effect')
     cooltime = models.IntegerField(null=True, blank=True)
-    hits = models.IntegerField(default=1)
+    hits = models.IntegerField(default=1, null=True, blank=True)
+    aoe = models.BooleanField(default=False)
     passive = models.BooleanField(default=False)
     max_level = models.IntegerField()
     level_progress_description = models.TextField(null=True, blank=True)
@@ -465,7 +466,17 @@ class MonsterSkill(models.Model):
         return self.level_progress_description.splitlines()
 
     def __unicode__(self):
-        return self.name + ' - ' + self.icon_filename
+        if self.name:
+            name = self.name
+        else:
+            name = ''
+
+        if self.icon_filename:
+            icon = ' - ' + self.icon_filename
+        else:
+            icon = ''
+
+        return name + icon
 
     class Meta:
         ordering = ['slot', 'name']
@@ -605,6 +616,9 @@ class MonsterSkillEffectDetail(models.Model):
     random = models.BooleanField(default=False, help_text='Skill effect applies randomly to the target')
     quantity = models.IntegerField(null=True, blank=True, help_text='Number of items this effect affects on the target')
     all = models.BooleanField(default=False, help_text='This effect affects all items on the target')
+    self_hp = models.BooleanField(default=False, help_text="Amount of this effect is based on casting monster's HP")
+    target_hp = models.BooleanField(default=False, help_text="Amount of this effect is based on target monster's HP")
+    damage = models.BooleanField(default=False, help_text="Amount of this effect is based on damage dealt")
     note = models.TextField(blank=True, null=True, help_text="Explain anything else that doesn't fit in other fields")
 
 

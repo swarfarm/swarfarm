@@ -156,7 +156,7 @@ def parse_sw_json(data, owner, options):
     # Inventory - essences and summoning pieces
     for item in inventory_info:
         # Essence Inventory
-        if item['item_master_type'] == inventory_type_map['inventory']:
+        if item['item_master_type'] == inventory_type_map['essences']:
             essence = inventory_essence_map.get(item['item_master_id'])
             quantity = item.get('item_quantity')
 

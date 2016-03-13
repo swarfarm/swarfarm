@@ -54,7 +54,7 @@ decoration_id_map = {
 }
 
 inventory_type_map = {
-    'inventory': 11,
+    'essences': 11,
     'monster_piece': 12,
 }
 

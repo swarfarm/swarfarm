@@ -3969,6 +3969,111 @@
 }
 
 
+.sprite-fairy_king_fire,
+.sprite-fairy_king_water,
+.sprite-fairy_king_wind,
+.sprite-fairy_king_dark,
+.sprite-fairy_king_light,
+.sprite-fairy_king_dark_awakened,
+.sprite-fairy_king_fire_awakened,
+.sprite-fairy_king_light_awakened,
+.sprite-fairy_king_water_awakened,
+.sprite-fairy_king_wind_awakened,
+.sprite-harg_dark,
+.sprite-harg_fire,
+.sprite-harg_light,
+.sprite-harg_water,
+.sprite-harg_wind,
+.sprite-harg_dark_awakened,
+.sprite-harg_fire_awakened,
+.sprite-harg_light_awakened,
+.sprite-harg_water_awakened,
+.sprite-harg_wind_awakened {
+    background-image: url(/static/herders/images/monsters/sprite/21.png);
+    width: 50px;
+    height: 50px
+}
+
+.sprite-fairy_king_dark {
+    background-position: 0 0;
+}
+
+.sprite-fairy_king_dark_awakened {
+    background-position: -50px 0;
+}
+
+.sprite-fairy_king_fire {
+    background-position: -100px 0;
+}
+
+.sprite-fairy_king_fire_awakened {
+    background-position: -150px 0;
+}
+
+.sprite-fairy_king_light {
+    background-position: 0 -50px;
+}
+
+.sprite-fairy_king_light_awakened {
+    background-position: -50px -50px;
+}
+
+.sprite-fairy_king_water {
+    background-position: -100px -50px;
+}
+
+.sprite-fairy_king_water_awakened {
+    background-position: -150px -50px;
+}
+
+.sprite-fairy_king_wind {
+    background-position: 0 -100px;
+}
+
+.sprite-fairy_king_wind_awakened {
+    background-position: -50px -100px;
+}
+
+.sprite-harg_dark {
+    background-position: -100px -100px;
+}
+
+.sprite-harg_dark_awakened {
+    background-position: -150px -100px;
+}
+
+.sprite-harg_fire {
+    background-position: 0 -150px;
+}
+
+.sprite-harg_fire_awakened {
+    background-position: -50px -150px;
+}
+
+.sprite-harg_light {
+    background-position: -100px -150px;
+}
+
+.sprite-harg_light_awakened {
+    background-position: -150px -150px;
+}
+
+.sprite-harg_water {
+    background-position: -200px 0;
+}
+
+.sprite-harg_water_awakened {
+    background-position: -200px -50px;
+}
+
+.sprite-harg_wind {
+    background-position: -200px -100px;
+}
+
+.sprite-harg_wind_awakened {
+    background-position: -200px -150px;
+}
+
 .sprite-dark_high,
 .sprite-dark_low,
 .sprite-dark_mid,

@@ -974,7 +974,17 @@ def monster_piece_delete(request, profile_name, instance_id):
 
 
 def fusion_progress(request, profile_name):
-    pass
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    context = {
+        'view': 'fusion',
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'is_owner': is_owner,
+    }
+
+    return render(request, 'herders/profile/fusion/base.html', context)
 
 
 def fusion_progress_detail(request, profile_name, monster_slug):
@@ -1019,6 +1029,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                         leveled = owned_ingredient.level >= level
                         awakened = owned_ingredient.monster.is_awakened
                         complete = acquired & evolved & leveled & awakened
+                        # awakening_cost = ingredient.get_awakening_materials() if not awakened else None
                         break
                 else:
                     acquired = False
@@ -1041,8 +1052,8 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                 }
                 ingredients.append(ingredient_progress)
 
-            total_cost = total_awakening_cost(ingredients)
-            total_missing = essences_missing(summoner.get_storage(), total_cost)
+            total_cost = fusion.total_awakening_cost()
+            total_missing = fusion.missing_awakening_cost(summoner)
 
             progress = {
                 'instance': fusion.product,
@@ -1051,50 +1062,12 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                 'level': level,
                 'cost': fusion.cost,
                 'ingredients': ingredients,
-                'awakening_materials': {
-                    'total_cost': total_cost,
-                    'missing': total_missing,
-                },
+                'awakening_mats_cost': total_cost,
+                'awakening_mats_missing': total_missing,
                 'ready': fusion_ready,
             }
 
-            # Iterate through again and find any sub-fusions that are possible. Add their missing essences together for a total count
-            from copy import deepcopy
-            # print 'Checking sub-fusions for ' + monster
-            combined_total_cost = deepcopy(progress['awakening_materials']['total_cost'])
-            sub_fusions_found = False
-
-            # Check if ingredients for this fusion are fuseable themselves
-            for ingredient in progress['ingredients']:
-                try:
-                    sub_fusion = Fusion.objects.get(product=ingredient['instance'].awakens_from)
-                except Fusion.DoesNotExist:
-                    continue
-                else:
-                    if sub_fusion and not ingredient['acquired']:
-                        progress['sub_fusion_available'] = True
-                        sub_fusions_found = True
-                        # print '    Found sub-fusion for ' + str(ingredient['instance'])
-                        # Get the totals for the sub-fusions and add to the current fusion cost
-
-                        for element, sizes in progress['awakening_materials']['total_cost'].iteritems():
-                            # print '        element: ' + str(element)
-                            if element not in combined_total_cost:
-                                combined_total_cost[element] = OrderedDict()
-
-                            # print sub_fusion['awakening_materials']['missing']
-
-                            for size in set(sizes.keys() + sub_fusion['awakening_materials']['missing'][element].keys()):
-                                # print '        size: ' + size
-                                # print '            sub fusion:               ' + str(sub_fusion['awakening_materials']['total_cost'][element].get(size, 0))
-                                # print '            current combined_total_cost: ' + str(combined_total_cost[element].get(size, 0))
-                                combined_total_cost[element][size] = combined_total_cost[element].get(size, 0) + sub_fusion['awakening_materials']['total_cost'][element].get(size, 0)
-                                # print '            new     combined_total_cost: ' + str(combined_total_cost[element][size])
-
-            if sub_fusions_found:
-                progress['awakening_materials']['combined'] = essences_missing(summoner.get_storage(), combined_total_cost)
-
-            context['fusions'] = progress
+            context['fusion'] = progress
 
             return render(request, 'herders/profile/fusion/fusion_detail.html', context)
     else:

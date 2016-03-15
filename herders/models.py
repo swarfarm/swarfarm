@@ -708,7 +708,7 @@ class Fusion(models.Model):
         }
 
         if owned_ingredients:
-            qs = self.ingredients.exclude(monster__in=[o.pk for o in owned_ingredients])
+            qs = self.ingredients.exclude(pk__in=[o.pk for o in owned_ingredients])
         else:
             qs = self.ingredients.all()
 
@@ -735,13 +735,24 @@ class Fusion(models.Model):
         return cost
 
     def missing_awakening_cost(self, owner):
+        # This calculation takes into account owned monsters which can be used as fusion ingredients.
         owned_ingredients = MonsterInstance.objects.filter(
             monster__pk__in=self.ingredients.values_list('pk', flat=True),
             ignore_for_fusion=False,
             owner=owner,
         )
+        total_cost = self.total_awakening_cost(owned_ingredients)
+        essence_storage = owner.get_storage()
 
-        print owned_ingredients
+        missing_essences = {
+            element: {
+                size: total_cost[element][size] - essence_storage[element][size] if total_cost[element][size] > essence_storage[element][size] else 0
+                for size, qty in element_sizes.items()
+            }
+            for element, element_sizes in total_cost.items()
+        }
+
+        return missing_essences
 
 
 # Individual user/monster collection models

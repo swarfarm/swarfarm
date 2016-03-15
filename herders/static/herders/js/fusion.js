@@ -1,6 +1,3 @@
-
-
-
 function EssenceStorage() {
     $.ajax({
         type: 'get',
@@ -15,4 +12,22 @@ function EssenceStorage() {
 }
 
 $('body')
-    .on('click', '.essence-storage', function() { EssenceStorage() });
+    .on('click', '.essence-storage', function() { EssenceStorage() })
+    .on('submit', '.ajax-form', function() {
+        //Handle add ajax form submit
+        var $form = $(this);
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: $form.serialize()
+        }).done(function(data) {
+            if (data.code === 'success') {
+                $('.modal.in').modal('hide');
+            }
+            else {
+                alert('Error saving essences :(');
+            }
+        });
+
+        return false;  //cancel default on submit action.
+    });

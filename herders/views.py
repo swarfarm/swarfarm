@@ -16,8 +16,6 @@ from bestiary.models import Monster, Fusion
 from .forms import *
 from .filters import *
 from .models import Summoner, MonsterInstance, MonsterPiece, TeamGroup, Team
-from .fusion import essences_missing, total_awakening_cost
-
 
 def register(request):
     form = RegisterUserForm(request.POST or None)

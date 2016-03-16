@@ -1,38 +1,11 @@
-{% extends 'herders/profile/base.html' %}
 {% load staticfiles %}
 {% load humanize %}
 {% load utils %}
 
-{% block profile %}
-    {% static 'herders/images/' as img_url_prefix %}
-
-    <div class="panel {% if fusion.acquired %}panel-success{% else %}panel-default{% endif %}">
-    <div class="panel-heading">
-        <div class="monster-image pull-left">
-            <div>
-                <a href="{% url 'bestiary:detail' monster_slug=fusion.instance.bestiary_slug %}">
-                    <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}" class="monster-thumb"/>
-                    <span>
-                        {% for x in fusion.stars|get_range %}
-                            {% if fusion.instance.is_awakened %}
-                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% elif fusion.instance.can_awaken %}
-                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% else %}
-                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                            {% endif %}
-                        {% endfor %}
-                    </span>
-                </a>
-            </div>
-        </div>
-        <h4 style="margin-left: 60px">
-            <strong>{{ fusion.instance.name }}</strong>{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}<br />
-            <small><img src="{{ img_url_prefix }}icons/mana.png" width="18px"/>{{ fusion.cost }}</small>
-        </h4>
-    </div>
-    <div class="panel-body{% if fusion.ready %} bg-success{% endif %}">
-        <h2>Ingredients</h2>
+{% static 'herders/images/' as img_url_prefix %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        <p class="lead">Ingredients</p>
         <table class="table table-condensed monster-table fusion-ingredients">
             <thead>
                 <tr>
@@ -45,7 +18,6 @@
                     <th class="fusion-checklist">Leveled</th>
                     <th class="fusion-checklist">Awakened</th>
                     <th>Your Collection</th>
-
                 </tr>
             </thead>
             <tbody>
@@ -163,7 +135,7 @@
         </table>
 
         {# Essences required #}
-        <h2>Awakening Essences</h2>
+        <p class="lead">Awakening Essences</p>
         <table class="table table-condensed monster-table fusion-essences">
             <thead>
                 <tr>
@@ -214,4 +186,3 @@
         </table>
     </div>
 </div>
-{% endblock profile %}

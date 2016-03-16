@@ -974,12 +974,14 @@ def monster_piece_delete(request, profile_name, instance_id):
 def fusion_progress(request, profile_name):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    fusions = Fusion.objects.all()
 
     context = {
         'view': 'fusion',
         'profile_name': profile_name,
         'summoner': summoner,
         'is_owner': is_owner,
+        'fusions': fusions,
     }
 
     return render(request, 'herders/profile/fusion/base.html', context)

@@ -373,13 +373,6 @@ div.sprite {
     min-width: 205px;
 }
 
-.monster-awaken-materials img {
-    width: 50px;
-    height: 50px;
-    border: 1px solid black;
-    border-radius: 15%;
-}
-
 .rating-symbol .glyphicon {
     font-size: 140%;
 }
@@ -523,7 +516,10 @@ img.prepended-image {
 }
 
 .fusion-essences {
-    width: auto;
+    text-align: center;
+}
+
+.fusion-essences>thead th {
     text-align: center;
 }
 
@@ -540,11 +536,30 @@ img.prepended-image {
     width: 50px;
 }
 
+.fusion-tab {
+    padding: 10px 5px!important;
+}
+
+.tab-image {
+    height: 25px;
+    width: 25px;
+    border: 1px solid black;
+    border-radius: 5%;
+}
+
 .element-essence {
     position: relative;
     display: inline-block;
     margin-right: 1px;
-    line-height: 0;
+    height: 50px;
+    width: 50px;
+}
+
+.element-essence img {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    border-radius: 15%;
 }
 
 div.disabled {
@@ -859,6 +874,10 @@ button.rune-assign-choice {
 
 .inline-icon {
     height: 1em;
+}
+
+.spinner-container {
+    min-height: 60px;
 }
 
 .spinner-overlay {

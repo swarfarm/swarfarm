@@ -11,6 +11,22 @@ function EssenceStorage() {
     })
 }
 
+function updateFusion() {
+    // Get the active tab
+    var fusion = $("li.active>a").data('fusion');
+
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/fusion/' + fusion + '/'
+    }).done(function(data) {
+        $('#'+fusion).html(data);
+    });
+}
+
+$(document).ready(function() {
+    updateFusion();
+});
+
 $('body')
     .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('submit', '.ajax-form', function() {
@@ -23,6 +39,7 @@ $('body')
         }).done(function(data) {
             if (data.code === 'success') {
                 $('.modal.in').modal('hide');
+                updateFusion();
             }
             else {
                 alert('Error saving essences :(');
@@ -32,11 +49,5 @@ $('body')
         return false;  //cancel default on submit action.
     })
     .on('shown.bs.tab', function (e) {
-        var fusion = $(e.target).data('fusion');
-        $.ajax({
-            type: 'get',
-            url: '/profile/' + PROFILE_NAME + '/fusion/' + fusion + '/'
-        }).done(function(data) {
-            $('#'+fusion).html(data);
-        });
+        updateFusion();
     });

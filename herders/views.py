@@ -1104,8 +1104,6 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                             owner=summoner,
                         )
                         sub_fusion_awakening_cost = sub_fusion.total_awakening_cost(awakened_sub_fusion_ingredients)
-                        print sub_fusion.product
-                        print sub_fusion_awakening_cost
                 else:
                     sub_fusion_awakening_cost = None
 

@@ -30,4 +30,13 @@ $('body')
         });
 
         return false;  //cancel default on submit action.
+    })
+    .on('shown.bs.tab', function (e) {
+        var fusion = $(e.target).data('fusion');
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/fusion/' + fusion + '/'
+        }).done(function(data) {
+            $('#'+fusion).html(data);
+        });
     });

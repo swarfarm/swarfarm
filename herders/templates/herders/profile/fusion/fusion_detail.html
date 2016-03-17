@@ -177,7 +177,7 @@
         <tbody>
             <tr>
                 <td>Your Storage</td>
-                {% include 'herders/profile/fusion/essence_row.html' with essences=summoner.get_storage only %}
+                {% include 'herders/profile/fusion/essence_row.html' with essences=summoner.get_storage render_zero=True only %}
             </tr>
             <tr>
                 <td>Fusion Cost</td>

@@ -3,5 +3,5 @@
 
 <div class="element-essence" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ element|capfirst }} {{ size|capfirst }}">
     <img src="{{ img_url_prefix }}essences/{{ element }}_{{ size }}.png" />
-    {% if count %}<span class="image-plus image-plus-right">{{ count }}</span>{% endif %}
+    {% if not count == None %}<span class="image-plus image-plus-right">{{ count }}</span>{% endif %}
 </div>

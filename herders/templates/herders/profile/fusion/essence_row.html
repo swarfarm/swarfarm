@@ -1,124 +1,124 @@
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.magic.low %}
+	{% if essences.magic.low or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='magic' size='low' count=essences.magic.low only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.magic.mid %}
+	{% if essences.magic.mid or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='magic' size='mid' count=essences.magic.mid only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.magic.high %}
+	{% if essences.magic.high or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='magic' size='high' count=essences.magic.high only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.fire.low %}
+	{% if essences.fire.low or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='fire' size='low' count=essences.fire.low only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.fire.mid %}
+	{% if essences.fire.mid or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='fire' size='mid' count=essences.fire.mid only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.fire.high %}
+	{% if essences.fire.high or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='fire' size='high' count=essences.fire.high only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.water.low %}
+	{% if essences.water.low or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='water' size='low' count=essences.water.low only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.water.mid %}
+	{% if essences.water.mid or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='water' size='mid' count=essences.water.mid only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.water.high %}
+	{% if essences.water.high or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='water' size='high' count=essences.water.high only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.wind.low %}
+	{% if essences.wind.low or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='wind' size='low' count=essences.wind.low only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.wind.mid %}
+	{% if essences.wind.mid or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='wind' size='mid' count=essences.wind.mid only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.wind.high %}
+	{% if essences.wind.high or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='wind' size='high' count=essences.wind.high only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.light.low %}
+	{% if essences.light.low or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='light' size='low' count=essences.light.low only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.light.mid %}
+	{% if essences.light.mid or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='light' size='mid' count=essences.light.mid only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.light.high %}
+	{% if essences.light.high or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='light' size='high' count=essences.light.high only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.dark.low %}
+	{% if essences.dark.low or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='dark' size='low' count=essences.dark.low only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.dark.mid %}
+	{% if essences.dark.mid or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='dark' size='mid' count=essences.dark.mid only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}
 	{% endif %}
 </td>
 <td class="fusion-awaken-materials {{ cell_class }}">
-	{% if essences.dark.high %}
+	{% if essences.dark.high or render_zero %}
 		{% include 'bestiary/essence_fragment.html' with element='dark' size='high' count=essences.dark.high only %}
 	{% else %}
 		{% if show_check_if_zero %}<span class='glyphicon glyphicon-ok'></span>{% endif %}

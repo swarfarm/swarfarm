@@ -208,8 +208,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if view_mode == 'list':
-        monster_queryset = monster_queryset.select_related('monster', 'monster__leader_skill').prefetch_related(
-            'monster__skills', 'monster__skills__skill_effect', 'runeinstance_set', 'team_set', 'team_leader')
+        monster_queryset = monster_queryset.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills', 'monster__skills__skill_effect', 'runeinstance_set', 'team_set', 'team_leader')
 
     pieces = MonsterPiece.objects.filter(owner=summoner)
 
@@ -237,60 +236,29 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             monster_stable = OrderedDict()
 
             if box_grouping == 'grade':
-                monster_stable['6*'] = monster_filter.qs.filter(stars=6).order_by('-level', 'monster__element',
-                                                                                  'monster__name')
-                monster_stable['5*'] = monster_filter.qs.filter(stars=5).order_by('-level', 'monster__element',
-                                                                                  'monster__name')
-                monster_stable['4*'] = monster_filter.qs.filter(stars=4).order_by('-level', 'monster__element',
-                                                                                  'monster__name')
-                monster_stable['3*'] = monster_filter.qs.filter(stars=3).order_by('-level', 'monster__element',
-                                                                                  'monster__name')
-                monster_stable['2*'] = monster_filter.qs.filter(stars=2).order_by('-level', 'monster__element',
-                                                                                  'monster__name')
-                monster_stable['1*'] = monster_filter.qs.filter(stars=1).order_by('-level', 'monster__element',
-                                                                                  'monster__name')
+                monster_stable['6*'] = monster_filter.qs.filter(stars=6).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['5*'] = monster_filter.qs.filter(stars=5).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['4*'] = monster_filter.qs.filter(stars=4).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['3*'] = monster_filter.qs.filter(stars=3).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['2*'] = monster_filter.qs.filter(stars=2).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['1*'] = monster_filter.qs.filter(stars=1).order_by('-level', 'monster__element', 'monster__name')
             elif box_grouping == 'level':
-                monster_stable['40'] = monster_filter.qs.filter(level=40).order_by('-level', '-stars',
-                                                                                   'monster__element', 'monster__name')
-                monster_stable['39-31'] = monster_filter.qs.filter(level__gt=30).filter(level__lt=40).order_by('-level',
-                                                                                                               '-stars',
-                                                                                                               'monster__element',
-                                                                                                               'monster__name')
-                monster_stable['30-21'] = monster_filter.qs.filter(level__gt=20).filter(level__lte=30).order_by(
-                    '-level', '-stars', 'monster__element', 'monster__name')
-                monster_stable['20-11'] = monster_filter.qs.filter(level__gt=10).filter(level__lte=20).order_by(
-                    '-level', '-stars', 'monster__element', 'monster__name')
-                monster_stable['10-1'] = monster_filter.qs.filter(level__lte=10).order_by('-level', '-stars',
-                                                                                          'monster__element',
-                                                                                          'monster__name')
+                monster_stable['40'] = monster_filter.qs.filter(level=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
+                monster_stable['39-31'] = monster_filter.qs.filter(level__gt=30).filter(level__lt=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
+                monster_stable['30-21'] = monster_filter.qs.filter(level__gt=20).filter(level__lte=30).order_by('-level', '-stars', 'monster__element', 'monster__name')
+                monster_stable['20-11'] = monster_filter.qs.filter(level__gt=10).filter(level__lte=20).order_by('-level', '-stars', 'monster__element', 'monster__name')
+                monster_stable['10-1'] = monster_filter.qs.filter(level__lte=10).order_by('-level', '-stars', 'monster__element', 'monster__name')
             elif box_grouping == 'attribute':
-                monster_stable['water'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_WATER).order_by(
-                    '-stars', '-level', 'monster__name')
-                monster_stable['fire'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_FIRE).order_by(
-                    '-stars', '-level', 'monster__name')
-                monster_stable['wind'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_WIND).order_by(
-                    '-stars', '-level', 'monster__name')
-                monster_stable['light'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_LIGHT).order_by(
-                    '-stars', '-level', 'monster__name')
-                monster_stable['dark'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_DARK).order_by(
-                    '-stars', '-level', 'monster__name')
+                monster_stable['water'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_WATER).order_by('-stars', '-level', 'monster__name')
+                monster_stable['fire'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_FIRE).order_by('-stars', '-level', 'monster__name')
+                monster_stable['wind'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_WIND).order_by('-stars', '-level', 'monster__name')
+                monster_stable['light'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
+                monster_stable['dark'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
             elif box_grouping == 'priority':
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_HIGH][
-                    1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner,
-                                                                                     priority=MonsterInstance.PRIORITY_HIGH).order_by(
-                    '-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_MED][
-                    1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner,
-                                                                                     priority=MonsterInstance.PRIORITY_MED).order_by(
-                    '-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_LOW][
-                    1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner,
-                                                                                     priority=MonsterInstance.PRIORITY_LOW).order_by(
-                    '-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_DONE][
-                    1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner,
-                                                                                     priority=MonsterInstance.PRIORITY_DONE).order_by(
-                    '-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_HIGH][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_MED][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_LOW][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_DONE][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_DONE).order_by('-level', 'monster__element', 'monster__name')
             else:
                 raise Http404('Invalid sort method')
 
@@ -481,8 +449,7 @@ def monster_instance_view(request, profile_name, instance_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     try:
-        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related(
-            'monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -519,8 +486,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     try:
-        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related(
-            'monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -544,8 +510,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
 
 def monster_instance_view_stats(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related(
-            'monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -558,8 +523,7 @@ def monster_instance_view_stats(request, profile_name, instance_id):
 
 def monster_instance_view_skills(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related(
-            'monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -588,8 +552,7 @@ def monster_instance_view_skills(request, profile_name, instance_id):
 
 def monster_instance_view_info(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related(
-            'monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
@@ -719,8 +682,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
     template = loader.get_template('herders/profile/monster_view/power_up_form.html')
 
     form = PowerUpMonsterInstanceForm(request.POST or None)
-    form.helper.form_action = reverse('herders:monster_instance_power_up',
-                                      kwargs={'profile_name': profile_name, 'instance_id': instance_id})
+    form.helper.form_action = reverse('herders:monster_instance_power_up', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
     context = {
         'profile_name': request.user.username,
@@ -754,21 +716,17 @@ def monster_instance_power_up(request, profile_name, instance_id):
 
                 if not form.cleaned_data['ignore_evolution']:
                     if monster.level != monster.max_level_from_stars():
-                        validation_errors[
-                            'base_monster_level'] = "%s is not at max level for the current star rating (Lvl %s)." % (
-                        monster.monster.name, monster.monster.max_level_from_stars())
+                        validation_errors['base_monster_level'] = "%s is not at max level for the current star rating (Lvl %s)." % (monster.monster.name, monster.monster.max_level_from_stars())
 
                     # Check number of fodder monsters
                     if len(food_monsters) < monster.stars:
-                        validation_errors[
-                            'food_monster_quantity'] = "Evolution requres %s food monsters." % monster.stars
+                        validation_errors['food_monster_quantity'] = "Evolution requres %s food monsters." % monster.stars
 
                     # Check fodder star ratings - must be same as monster
                     for food in food_monsters:
                         if food.stars != monster.stars:
                             if 'food_monster_stars' not in validation_errors:
-                                validation_errors[
-                                    'food_monster_stars'] = "All food monsters must be %s stars or higher." % monster.stars
+                                validation_errors['food_monster_stars'] = "All food monsters must be %s stars or higher." % monster.stars
 
                 # Perform the stars++ if no errors
                 if not validation_errors:
@@ -776,9 +734,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
                     monster.stars += 1
                     monster.level = 1
                     monster.save()
-                    messages.success(request,
-                                     'Successfully evolved %s to %s<span class="glyphicon glyphicon-star"></span>' % (
-                                     monster.monster.name, monster.stars), extra_tags='safe')
+                    messages.success(request, 'Successfully evolved %s to %s<span class="glyphicon glyphicon-star"></span>' % (monster.monster.name, monster.stars), extra_tags='safe')
 
             if not validation_errors:
                 # Delete the submitted monsters
@@ -815,8 +771,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
     template = loader.get_template('herders/profile/monster_view/awaken_form.html')
 
     form = AwakenMonsterInstanceForm(request.POST or None)
-    form.helper.form_action = reverse('herders:monster_instance_awaken',
-                                      kwargs={'profile_name': profile_name, 'instance_id': instance_id})
+    form.helper.form_action = reverse('herders:monster_instance_awaken', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
     if is_owner:
         if not monster.monster.is_awakened:
@@ -1579,8 +1534,7 @@ def rune_edit(request, profile_name, rune_id):
             rune = form.save()
             messages.success(request, 'Saved changes to ' + str(rune))
             form = AddRuneInstanceForm(auto_id='edit_id_%s')
-            form.helper.form_action = reverse('herders:rune_edit',
-                                              kwargs={'profile_name': profile_name, 'rune_id': rune_id})
+            form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
 
             response_data = {
                 'code': 'success',
@@ -1602,8 +1556,7 @@ def rune_edit(request, profile_name, rune_id):
 def rune_assign(request, profile_name, instance_id, slot=None):
     rune_queryset = RuneInstance.committed.filter(owner=request.user.summoner, assigned_to=None)
     filter_form = AssignRuneForm(request.POST or None, initial={'slot': slot})
-    filter_form.helper.form_action = reverse('herders:rune_assign',
-                                             kwargs={'profile_name': profile_name, 'instance_id': instance_id})
+    filter_form.helper.form_action = reverse('herders:rune_assign', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
     if slot:
         rune_queryset = rune_queryset.filter(slot=slot)

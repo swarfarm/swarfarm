@@ -53,7 +53,7 @@ class MonsterLeaderSkillSerializer(serializers.ModelSerializer):
 class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Monster
-        fields = ('pk', 'name', 'image_filename')
+        fields = ('url', 'pk', 'name', 'element')
 
 
 class MonsterSerializer(serializers.HyperlinkedModelSerializer):
@@ -66,10 +66,11 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Monster
         fields = (
-            'pk', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
+            'url', 'pk', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
             'obtainable', 'can_awaken', 'is_awakened', 'awaken_bonus',
             'skills', 'leader_skill',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
+            'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',
             'awakens_from', 'awakens_to',
             'awaken_mats_fire_low', 'awaken_mats_fire_mid', 'awaken_mats_fire_high',
             'awaken_mats_water_low', 'awaken_mats_water_mid', 'awaken_mats_water_high',
@@ -89,7 +90,7 @@ class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Monster
         fields = (
-            'pk', 'name', 'element', 'archetype', 'base_stars',
+            'url', 'pk', 'name', 'element', 'archetype', 'base_stars',
             'obtainable', 'can_awaken', 'is_awakened', 'awakens_from', 'awakens_to',
             'fusion_food',
         )

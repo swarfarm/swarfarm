@@ -1,13 +1,6 @@
-{% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load staticfiles %}
 
-{% block title %}Essence Storage - {{ block.super }}{% endblock title %}
-
-{% block content %}
-    <div class="container-fluid">
-        {# Unable to use static tag within crispy form, so we use it here to get path #}
-        {% static 'herders/images/essences/' as essence_url_prefix %}
-        {% crispy storage_form %}
-    </div>
-{% endblock %}
+{# Unable to use static tag within crispy form, so we use it here to get path #}
+{% static 'herders/images/essences/' as essence_url_prefix %}
+{% crispy form %}

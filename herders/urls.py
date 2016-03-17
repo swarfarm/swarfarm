@@ -38,6 +38,7 @@ urlpatterns = [
             ]))
         ])),
         url(r'^fusion/$', views.fusion_progress, name='fusion'),
+        url(r'^fusion/(?P<monster_slug>[\w-]+)/$$', views.fusion_progress_detail, name='fusion'),
         url(r'^teams/', include([
             url(r'^$', views.teams, name='teams'),
             url(r'^list/$', views.team_list),

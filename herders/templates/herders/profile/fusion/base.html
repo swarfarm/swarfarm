@@ -42,9 +42,23 @@
             {% for fusion in fusions %}
             <li {% if forloop.first %}class="active"{% endif %}>
                 <a href="#{{ fusion.product.bestiary_slug }}" class="fusion-tab" aria-controls="{{ fusion.product.bestiary_slug }}" role="tab" data-toggle="tab" data-fusion="{{ fusion.product.bestiary_slug }}">
-                    <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="tab-image pull-left" />
-                    <p style="margin-left: 28px">
-                        <strong>{{ fusion.product.name }}</strong>
+                    <div class="monster-image pull-left">
+                        <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb"/>
+                        <span>
+                            {% for x in fusion.stars|get_range %}
+                                {% if fusion.product.is_awakened %}
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% elif fusion.product.can_awaken %}
+                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% else %}
+                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <p style="margin-left: 63px">
+                        {{ fusion.product.name }}{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}<br />
+                        <img src="{{ img_url_prefix }}icons/mana.png" width="18px"/>{{ fusion.cost }}
                     </p>
                 </a>
             </li>

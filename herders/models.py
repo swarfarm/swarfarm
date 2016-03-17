@@ -673,6 +673,9 @@ class Fusion(models.Model):
     class Meta:
         ordering = ['meta_order']
 
+    def sub_fusion_available(self):
+        return Fusion.objects.filter(product__in=self.ingredients.values_list('awakens_from__pk', flat=True)).exists()
+
     def total_awakening_cost(self, owned_ingredients=None):
         cost = {
             'magic': {
@@ -708,7 +711,7 @@ class Fusion(models.Model):
         }
 
         if owned_ingredients:
-            qs = self.ingredients.exclude(pk__in=[o.pk for o in owned_ingredients])
+            qs = self.ingredients.exclude(pk__in=[o.monster.pk for o in owned_ingredients])
         else:
             qs = self.ingredients.all()
 
@@ -752,7 +755,14 @@ class Fusion(models.Model):
             for element, element_sizes in total_cost.items()
         }
 
-        return missing_essences
+        # Check if there are any missing
+        sufficient_qty = True
+        for sizes in missing_essences.itervalues():
+            for qty in sizes.itervalues():
+                if qty > 0:
+                    sufficient_qty = False
+
+        return sufficient_qty, missing_essences
 
 
 # Individual user/monster collection models

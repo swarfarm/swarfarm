@@ -35,7 +35,7 @@
             </li>
         </ul>
 
-        <div class="tab-content">
+        <div class="tab-content bordered">
             <div role="tabpanel" class="tab-pane {% if monsters.updated.count > 0 %}active{% endif %}" id="updated_mons">
                 <p>These monsters were imported once before and will be updated. Your notes, priority, teams, etc will be saved.</p>
                 {% for mon in monsters.updated %}
@@ -75,7 +75,7 @@
             </li>
         </ul>
 
-        <div class="tab-content">
+        <div class="tab-content bordered">
             <div role="tabpanel" class="tab-pane {% if updated_runes > 0 %}active{% endif %}" id="updated_runes">
                 <p>These runes were imported once before and will be updated.</p>
                 {% for type, type_runes in runes.updated.iteritems %}

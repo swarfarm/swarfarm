@@ -49,7 +49,8 @@ function load_new_team() {
             $('[data-toggle="popover"]').popover();
         });
     }
-    $('.autocomplete-light-widget').remove();
+    $('[data-input-id="id_leader-autocomplete"]').remove();
+    $('[data-input-id="id_roster-autocomplete"]').remove();
     DisplayMessages();
 }
 
@@ -58,5 +59,6 @@ function update_team_list() {
         var isEmpty = team_list.children('p:contains("Group list is empty!")').length > 0;
         $('.navbar .team-edit').toggleClass('disabled', isEmpty);
     });
-    $('.autocomplete-light-widget').remove();
+    $('[data-input-id="id_leader-autocomplete"]').remove();
+    $('[data-input-id="id_roster-autocomplete"]').remove();
 }

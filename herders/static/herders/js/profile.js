@@ -153,6 +153,7 @@ function SummonMonsterPiece(instance_id) {
     }
 }
 
+
 function QuickFodder(btn) {
     var monster_id = btn.data('monster-id');
     var stars = btn.data('stars');

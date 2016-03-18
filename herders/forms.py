@@ -220,105 +220,101 @@ class EditEssenceStorageForm(ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
-        self.helper.form_show_labels = True
+        self.helper.form_class = 'ajax-form'
         self.helper.layout = Layout(
             Div(
                 Div(
                     PrependedText('storage_magic_low', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_low.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4  prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_magic_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_mid.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4  prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_magic_high', '<img src="' + STATIC_URL_PREFIX + 'essences/magic_high.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4  prepended-image-group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
                     PrependedText('storage_fire_low', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_low.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_fire_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_mid.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_fire_high', '<img src="' + STATIC_URL_PREFIX + 'essences/fire_high.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
                     PrependedText('storage_water_low', '<img src="' + STATIC_URL_PREFIX + 'essences/water_low.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_water_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/water_mid.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_water_high', '<img src="' + STATIC_URL_PREFIX + 'essences/water_high.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
                     PrependedText('storage_wind_low', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_low.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_wind_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_mid.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_wind_high', '<img src="' + STATIC_URL_PREFIX + 'essences/wind_high.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
                     PrependedText('storage_light_low', '<img src="' + STATIC_URL_PREFIX + 'essences/light_low.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_light_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/light_mid.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_light_high', '<img src="' + STATIC_URL_PREFIX + 'essences/light_high.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 css_class='row',
             ),
             Div(
                 Div(
                     PrependedText('storage_dark_low', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_low.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_dark_mid', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_mid.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 Div(
                     PrependedText('storage_dark_high', '<img src="' + STATIC_URL_PREFIX + 'essences/dark_high.png" class="prepended-image"/>', min=0),
-                    css_class='col-lg-1 storage_group prepended-image-group',
+                    css_class='col-md-4 prepended-image-group',
                 ),
                 css_class='row',
             ),
-            Div(
-                FormActions(
-                    Submit('save', 'Save and Go Back'),
-                    Submit('saveandcontinue', 'Save and Continue Editing'),
-                ),
-                css_class='row',
-            )
+            FormActions(
+                Submit('save', 'Save'),
+            ),
         )
 
     class Meta:

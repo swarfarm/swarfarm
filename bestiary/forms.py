@@ -10,14 +10,16 @@ import autocomplete_light
 
 
 class BestiaryQuickSearchForm(forms.Form):
-    monster = autocomplete_light.ModelChoiceField('BestiaryLinkAutocomplete')
+    monster_name = autocomplete_light.ModelChoiceField('BestiaryLinkAutocomplete')
 
     helper = FormHelper()
+    helper.form_action = 'bestiary:home'
+    helper.form_method = 'get'
     helper.form_class = 'navbar-form navbar-left'
     helper.form_show_labels = False
     helper.layout = Layout(
         FieldWithButtons(
-            'monster',
+            'monster_name',
             HTML("""
             <a href="{% url 'bestiary:home' %}" class="btn btn-default {% if view == 'bestiary' %}active{% endif %}">
                 <span class="fa fa-book hidden-sm"></span>

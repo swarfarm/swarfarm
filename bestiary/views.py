@@ -11,7 +11,8 @@ from herders.filters import MonsterFilter
 
 
 def bestiary(request):
-    bestiary_filter_form = FilterMonsterForm()
+    monster_name_search = request.GET.get('monster_name-autocomplete', None)
+    bestiary_filter_form = FilterMonsterForm(initial={'name__icontains': monster_name_search})
     bestiary_filter_form.helper.form_action = reverse('bestiary:inventory')
 
     context = {

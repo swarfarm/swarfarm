@@ -885,7 +885,6 @@ class Summoner(models.Model):
 
 class MonsterTag(models.Model):
     name = models.CharField(max_length=30)
-    image = models.ImageField()
     color = ColorField()
 
     def __unicode__(self):

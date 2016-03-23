@@ -16,6 +16,8 @@ from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons,
 
 from captcha.fields import ReCaptchaField
 
+from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
+
 import autocomplete_light
 
 
@@ -539,6 +541,8 @@ class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
 
 
 class EditMonsterInstanceForm(ModelForm):
+    tags = autocomplete_light.ModelMultipleChoiceField('MonsterTagAutocomplete')
+
     def __init__(self, *args, **kwargs):
         super(EditMonsterInstanceForm, self).__init__(*args, **kwargs)
 
@@ -558,11 +562,12 @@ class EditMonsterInstanceForm(ModelForm):
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
                 Field('ignore_for_fusion', css_class='checkbox'),
-                'priority',
                 'skill_1_level',
                 'skill_2_level',
                 'skill_3_level',
                 'skill_4_level',
+                'tags',
+                'priority',
                 Field('notes'),
             ),
             Div(
@@ -576,7 +581,7 @@ class EditMonsterInstanceForm(ModelForm):
     class Meta:
         model = MonsterInstance
         fields = ('stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority',
-                  'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level', 'notes')
+                  'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level', 'notes', 'tags')
 
 
 class PowerUpMonsterInstanceForm(forms.Form):

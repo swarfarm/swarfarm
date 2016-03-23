@@ -12,6 +12,8 @@ from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
+from colorfield.fields import ColorField
+
 
 # Bestiary database models
 class Monster(models.Model):
@@ -881,6 +883,15 @@ class Summoner(models.Model):
         return "%s" % self.user
 
 
+class MonsterTag(models.Model):
+    name = models.CharField(max_length=30)
+    image = models.ImageField()
+    color = ColorField()
+
+    def __unicode__(self):
+        return self.name
+
+
 class MonsterInstanceImportedManager(models.Manager):
     def get_queryset(self):
         return super(MonsterInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
@@ -942,6 +953,7 @@ class MonsterInstance(models.Model):
     in_storage = models.BooleanField(default=False)
     ignore_for_fusion = models.BooleanField(default=False)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_MED)
+    tags = models.ManyToManyField(MonsterTag)
     notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
     uncommitted = models.BooleanField(default=False)  # Used for importing
 

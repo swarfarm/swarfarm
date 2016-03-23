@@ -23,8 +23,12 @@ admin.site.register(User, UserAdmin)
 @admin.register(MonsterInstance)
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')
+    filter_vertical = ('tags',)
     exclude = ('owner',)
     search_fields = ['id',]
+
+
+admin.site.register(MonsterTag)
 
 
 @admin.register(Team)

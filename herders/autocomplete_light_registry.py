@@ -52,7 +52,7 @@ class MonsterTagAutocomplete(autocomplete_light.AutocompleteModelTemplate):
     model = MonsterTag
     search_fields = ['name']
     split_words = True
-    choice_template = 'autocomplete/monster_instance_choice.html'
+    choice_template = 'autocomplete/monster_tag_choice.html'
     limit_choices = 15
     attrs = {
         'placeholder': 'Start typing...',

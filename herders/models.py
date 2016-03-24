@@ -887,6 +887,9 @@ class MonsterTag(models.Model):
     name = models.CharField(max_length=30)
     color = ColorField()
 
+    class Meta:
+        ordering = ['name']
+
     def __unicode__(self):
         return self.name
 
@@ -909,7 +912,6 @@ class MonsterInstance(models.Model):
     PRIORITY_HIGH = 3
 
     PRIORITY_CHOICES = (
-        (PRIORITY_DONE, 'Done'),
         (PRIORITY_LOW, 'Low'),
         (PRIORITY_MED, 'Medium'),
         (PRIORITY_HIGH, 'High'),
@@ -951,8 +953,8 @@ class MonsterInstance(models.Model):
     fodder = models.BooleanField(default=False)
     in_storage = models.BooleanField(default=False)
     ignore_for_fusion = models.BooleanField(default=False)
-    priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_MED)
-    tags = models.ManyToManyField(MonsterTag)
+    priority = models.IntegerField(choices=PRIORITY_CHOICES, blank=True, null=True)
+    tags = models.ManyToManyField(MonsterTag, blank=True)
     notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
     uncommitted = models.BooleanField(default=False)  # Used for importing
 

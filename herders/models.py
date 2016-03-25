@@ -1728,29 +1728,28 @@ class RuneInstance(models.Model):
 
     def get_efficiency(self):
         # https://www.youtube.com/watch?v=SBWeptNNbYc
-        if self.stars >= 5:
-            running_sum = 0
+        running_sum = 0.0
 
-            if self.innate_stat in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.innate_stat_value / self.SUBSTAT_MAX_VALUES[self.innate_stat]
+        # Main stat efficiency
+        running_sum += float(self.MAIN_STAT_RANGES[self.main_stat][self.stars]['max']) / float(self.MAIN_STAT_RANGES[self.main_stat][6]['max'])
 
-            if self.substat_1 in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.substat_1_value / self.SUBSTAT_MAX_VALUES[self.substat_1]
+        # Substat efficiencies
+        if self.innate_stat in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.innate_stat_value / self.SUBSTAT_MAX_VALUES[self.innate_stat]
 
-            if self.substat_2 in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.substat_2_value / self.SUBSTAT_MAX_VALUES[self.substat_2]
+        if self.substat_1 in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.substat_1_value / self.SUBSTAT_MAX_VALUES[self.substat_1]
 
-            if self.substat_3 in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.substat_3_value / self.SUBSTAT_MAX_VALUES[self.substat_3]
+        if self.substat_2 in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.substat_2_value / self.SUBSTAT_MAX_VALUES[self.substat_2]
 
-            if self.substat_4 in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.substat_4_value / self.SUBSTAT_MAX_VALUES[self.substat_4]
+        if self.substat_3 in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.substat_3_value / self.SUBSTAT_MAX_VALUES[self.substat_3]
 
-            running_sum += 1 if self.stars == 6 else 0.85
+        if self.substat_4 in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.substat_4_value / self.SUBSTAT_MAX_VALUES[self.substat_4]
 
-            return running_sum / 2.8 * 100
-        else:
-            return None
+        return running_sum / 2.8 * 100
 
     def update_fields(self):
         # Set flags for filtering

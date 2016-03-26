@@ -2,10 +2,11 @@ from django.db.models import Q
 import django_filters
 
 from bestiary.models import Monster, Effect, LeaderSkill
-from .models import MonsterInstance, RuneInstance
+from .models import MonsterInstance, MonsterTag, RuneInstance
 
 
 class MonsterFilter(django_filters.FilterSet):
+    tags = django_filters.MultipleChoiceFilter(choices=MonsterTag.objects.all())
     base_stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
     element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
@@ -17,6 +18,7 @@ class MonsterFilter(django_filters.FilterSet):
         model = Monster
         fields = {
             'name': ['icontains'],
+            'tags': ['exact'],
             'element': ['exact'],
             'archetype': ['exact'],
             'base_stars': ['exact'],

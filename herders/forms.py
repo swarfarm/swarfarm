@@ -8,15 +8,13 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.models import Monster, Effect, LeaderSkill
-from .models import MonsterInstance, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance
+from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
 from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert
 
 from captcha.fields import ReCaptchaField
-
-from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 import autocomplete_light
 
@@ -635,6 +633,11 @@ class FilterMonsterInstanceForm(forms.Form):
         max_length=100,
         required=False,
     )
+    tags = forms.MultipleChoiceField(
+        choices=MonsterTag.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
     stars = forms.MultipleChoiceField(
         choices=Monster.STAR_CHOICES,
         required=False,
@@ -701,6 +704,7 @@ class FilterMonsterInstanceForm(forms.Form):
     helper.field_class = 'col-md-11 no-left-gutter'
     helper.layout = Layout(
         Field('monster__name__icontains', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
+        Field('tags', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/tag_button_checkbox_select.html'),
         Field('stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),

@@ -884,14 +884,14 @@ class Summoner(models.Model):
 
 
 class MonsterTag(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=100)
     color = ColorField()
 
     class Meta:
         ordering = ['name']
 
     def __unicode__(self):
-        return self.name
+        return mark_safe(self.name)
 
 
 class MonsterInstanceImportedManager(models.Manager):

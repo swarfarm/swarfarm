@@ -2,6 +2,6 @@
 
 {% spaceless %}
     <span class="autocomplete-results" data-value="{{ choice.pk }}">
-        {{ choice.name|safe }}
+        <span class="tag">{{ choice.name|safe }}</span>
     </span>
 {% endspaceless %}

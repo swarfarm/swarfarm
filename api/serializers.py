@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from bestiary.models import Monster, Skill, LeaderSkill, Effect, ScalesWith, ScalingStat, Source
-from herders.models import Summoner, MonsterInstance, RuneInstance, TeamGroup, Team
+from herders.models import Summoner, MonsterInstance, MonsterTag, RuneInstance, TeamGroup, Team
 
 
 # Read-only monster database stuff.
@@ -97,6 +97,12 @@ class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 # Individual collection stuff
+class MonsterTagSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = MonsterTag
+        fields = ('id', 'name')
+
+
 class SummonerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Summoner
@@ -142,6 +148,7 @@ class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
     team_leader = TeamSerializer(many=True)
     team_set = TeamSerializer(many=True)
     runeinstance_set = RuneInstanceSerializer(many=True)
+    tags = MonsterTagSerializer(many=True)
 
     class Meta:
         model = MonsterInstance
@@ -153,6 +160,6 @@ class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
             'hp', 'attack', 'defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
             'team_leader', 'team_set',
-            'runeinstance_set'
+            'runeinstance_set', 'tags'
         )
         depth = 1

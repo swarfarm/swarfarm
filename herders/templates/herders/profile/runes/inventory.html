@@ -28,6 +28,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <strong>{{ groupname }}</strong>
+                    <span class="pull-right">{% with num_runes=runes|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
                 </div>
                 <div class="panel-body">
                     <div class="flex">

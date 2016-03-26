@@ -539,8 +539,6 @@ class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
 
 
 class EditMonsterInstanceForm(ModelForm):
-    tags = autocomplete_light.ModelMultipleChoiceField('MonsterTagAutocomplete')
-
     def __init__(self, *args, **kwargs):
         super(EditMonsterInstanceForm, self).__init__(*args, **kwargs)
 
@@ -580,6 +578,9 @@ class EditMonsterInstanceForm(ModelForm):
         model = MonsterInstance
         fields = ('stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority',
                   'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level', 'notes', 'tags')
+        widgets = {
+            'tags': autocomplete_light.MultipleChoiceWidget('MonsterTagAutocomplete')
+        }
 
 
 class PowerUpMonsterInstanceForm(forms.Form):

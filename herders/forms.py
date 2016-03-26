@@ -633,8 +633,9 @@ class FilterMonsterInstanceForm(forms.Form):
         max_length=100,
         required=False,
     )
-    tags = forms.MultipleChoiceField(
-        choices=MonsterTag.objects.all(),
+    tags__pk = forms.MultipleChoiceField(
+        label='Tags',
+        choices=MonsterTag.objects.values_list('pk', 'name'),
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
@@ -704,7 +705,7 @@ class FilterMonsterInstanceForm(forms.Form):
     helper.field_class = 'col-md-11 no-left-gutter'
     helper.layout = Layout(
         Field('monster__name__icontains', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('tags', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/tag_button_checkbox_select.html'),
+        Field('tags__pk', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),

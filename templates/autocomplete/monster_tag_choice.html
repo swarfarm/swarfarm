@@ -1,8 +1,7 @@
 {% load static %}
 
 {% spaceless %}
-    {% static 'herders/images/' as img_url_prefix %}
-    <div class="block autocomplete-results" data-value="{{ choice.pk }}">
-        <span class="tag" style="background-color: {{ choice.color }};">{{ choice.name|safe }}</span>
-    </div>
+    <span class="autocomplete-results" data-value="{{ choice.pk }}">
+        {{ choice.name|safe }}
+    </span>
 {% endspaceless %}

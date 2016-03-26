@@ -6,7 +6,6 @@ from .models import MonsterInstance, MonsterTag, RuneInstance
 
 
 class MonsterFilter(django_filters.FilterSet):
-    tags = django_filters.MultipleChoiceFilter(choices=MonsterTag.objects.all())
     base_stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
     element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
@@ -18,7 +17,6 @@ class MonsterFilter(django_filters.FilterSet):
         model = Monster
         fields = {
             'name': ['icontains'],
-            'tags': ['exact'],
             'element': ['exact'],
             'archetype': ['exact'],
             'base_stars': ['exact'],
@@ -31,6 +29,7 @@ class MonsterFilter(django_filters.FilterSet):
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):
+    tags__pk = django_filters.MultipleChoiceFilter(choices=MonsterTag.objects.values_list('pk', 'name'))
     stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
     monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
@@ -44,6 +43,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
         model = MonsterInstance
         fields = {
             'monster__name': ['icontains'],
+            'tags__pk': ['exact'],
             'stars': ['exact'],
             'monster__element': ['exact'],
             'monster__archetype': ['exact'],

@@ -148,16 +148,12 @@ select.short {
 }
 
 .tag {
-	position:relative;
+    position: relative;
     display: inline-block;
     line-height: 30px;
     margin-bottom: 3px;
-    text-align: center;
-	padding-left: 10px;
-    padding-right: 10px;
-	color:#fff;
-    text-shadow: 0 0 3px #000000;
     border-radius: 4px;
+    border: 1px solid black;
 }
 
 .awakened {

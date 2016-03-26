@@ -120,8 +120,8 @@ def parse_pcap(pcap_file):
                 requests = requests[len(request):]
                 responses = requests[len(responses):]
 
-                if len(request) > 0 and len(response) > 0 and request.method == 'POST' and request.uri == '/api/gateway.php' and response.status == '200':
-                    resp_plain = decrypt_response(response.body)
+                if len(request) > 0 and len(response) > 0 and request.method == 'POST' and request.uri.startswith('/api/gateway') and response.status == '200':
+                    resp_plain = decrypt_response(response.body, 2 if '_c2.php' in request.uri else 1)
                     resp_json = json.loads(resp_plain)
 
                     if resp_json.get('command') == 'HubUserLogin' and 'unit_list' in resp_json:

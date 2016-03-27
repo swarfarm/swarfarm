@@ -25,6 +25,7 @@
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'attribute' %}active{% endif %}" data-mode="attribute">Attribute</button>
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'priority' %}active{% endif %}" data-mode="priority">Priority</button>
             </div>
+            <span class="pull-right">{{ filtered_count }} of {{ total_count }} monster{{ total_count|pluralize }}</span>
         </div>
         <div class="panel-body">
             {% if monsters %}

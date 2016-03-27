@@ -22,6 +22,8 @@
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'grade' %}active{% endif %}" data-mode="grade">Grade</button>
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'equipped' %}active{% endif %}" data-mode="equipped">Equipped</button>
             </div>
+
+            <span class="pull-right">{{ filtered_count }} of {{ total_count }} rune{{ total_count|pluralize }}</span>
         </div>
         <div class="panel-body">
             {% for groupname, runes in runes.iteritems %}

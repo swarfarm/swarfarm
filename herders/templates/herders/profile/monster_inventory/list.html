@@ -21,6 +21,7 @@
             <button class="btn btn-primary column-select toggle collapsed" data-toggle="collapse" data-target="#column-selector-collapse">
                 Select Columns
             </button>
+            <span class="pull-right">{{ filtered_count }} of {{ total_count }} monster{{ total_count|pluralize }}</span>
         </div>
 
         <div id="column-selector-collapse" class="collapse">

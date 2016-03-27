@@ -205,6 +205,8 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     monster_queryset = MonsterInstance.committed.filter(owner=summoner)
+    total_monsters = monster_queryset.count()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if view_mode == 'list':
@@ -218,9 +220,13 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     else:
         monster_filter = MonsterInstanceFilter(queryset=monster_queryset)
 
+    filtered_count = monster_filter.qs.count()
+
     context = {
         'monsters': monster_filter,
         'monster_pieces': pieces,
+        'total_count': total_monsters,
+        'filtered_count': filtered_count,
         'profile_name': profile_name,
         'is_owner': is_owner,
     }
@@ -1403,6 +1409,7 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     rune_queryset = RuneInstance.committed.filter(owner=summoner)
+    total_count = rune_queryset.count()
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     form = FilterRuneForm(request.POST or None)
@@ -1414,8 +1421,12 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
     else:
         rune_filter = RuneInstanceFilter(None, queryset=rune_queryset)
 
+    filtered_count = rune_filter.qs.count()
+
     context = {
         'runes': rune_filter,
+        'total_count': total_count,
+        'filtered_count': filtered_count,
         'profile_name': profile_name,
         'is_owner': is_owner,
     }

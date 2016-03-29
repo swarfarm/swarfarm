@@ -45,13 +45,13 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MonsterLeaderSkillSerializer(serializers.ModelSerializer):
-    stat = serializers.SerializerMethodField()
+    attribute = serializers.SerializerMethodField('get_stat')
     area = serializers.SerializerMethodField()
     element = serializers.SerializerMethodField()
 
     class Meta:
         model = LeaderSkill
-        fields = ('stat', 'amount', 'area', 'element')
+        fields = ('attribute', 'amount', 'area', 'element')
 
     def get_stat(self, instance):
         return instance.get_attribute_display()

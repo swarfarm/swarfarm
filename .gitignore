@@ -1,0 +1,3 @@
+*.pyc
+.idea/
+swarfarm/settings.py

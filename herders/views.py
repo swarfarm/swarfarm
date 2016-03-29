@@ -1675,6 +1675,38 @@ def rune_unassign(request, profile_name, rune_id):
         return HttpResponseForbidden()
 
 
+@login_required()
+def rune_unassign_all(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    assigned_mons = []
+    assigned_runes = RuneInstance.committed.filter(owner=summoner, assigned_to__isnull=False)
+    number_assigned = assigned_runes.count()
+
+    if is_owner:
+        for rune in assigned_runes:
+            if rune.assigned_to not in assigned_mons:
+                assigned_mons.append(rune.assigned_to)
+
+            rune.assigned_to = None
+            rune.save()
+
+        # Resave monster instances that had runes removed to recalc stats
+        for mon in assigned_mons:
+            mon.save()
+
+        messages.success(request, 'Unassigned ' + str(number_assigned) + ' rune(s).')
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
 @login_required
 def rune_delete(request, profile_name, rune_id):
     rune = get_object_or_404(RuneInstance, pk=rune_id)

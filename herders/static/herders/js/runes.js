@@ -103,6 +103,25 @@ $('body')
             }
         });
     })
+    .on('click', '.rune-unassign-all', function() {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure you want to unassign <strong>all</strong> of your runes? This process might take a few seconds.',
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/runes/unassign/all',
+                        global: false
+                    }).done(function() {
+                        update_rune_inventory();
+                    }).fail(function() {
+                        alert("Something went wrong! Server admin has been notified.");
+                    })
+                }
+            }
+        })
+    })
     .on('click', '.rune-delete-all', function() {
         bootbox.confirm({
             size: 'small',

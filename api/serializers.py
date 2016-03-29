@@ -45,18 +45,39 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MonsterLeaderSkillSerializer(serializers.ModelSerializer):
+    stat = serializers.SerializerMethodField()
+    area = serializers.SerializerMethodField()
+    element = serializers.SerializerMethodField()
+
     class Meta:
         model = LeaderSkill
+        fields = ('stat', 'amount', 'area', 'element')
+
+    def get_stat(self, instance):
+        return instance.get_attribute_display()
+
+    def get_area(self, instance):
+        return instance.get_area_display()
+
+    def get_element(self, instance):
+        return instance.get_element_display()
 
 
 # Small serializer for necessary info for awakens_from/to on main MonsterSerializer
 class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
+    element = serializers.SerializerMethodField()
+
     class Meta:
         model = Monster
         fields = ('url', 'pk', 'name', 'element')
 
+    def get_element(self, instance):
+        return instance.get_element_display()
+
 
 class MonsterSerializer(serializers.HyperlinkedModelSerializer):
+    element = serializers.SerializerMethodField()
+    archetype = serializers.SerializerMethodField()
     leader_skill = MonsterLeaderSkillSerializer(read_only=True)
     awakens_from = AwakensMonsterSerializer(read_only=True)
     awakens_to = AwakensMonsterSerializer(read_only=True)
@@ -81,6 +102,11 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
             'source', 'fusion_food'
         )
 
+    def get_element(self, instance):
+        return instance.get_element_display()
+
+    def get_archetype(self, instance):
+        return instance.get_archetype_display()
 
 # Limited fields for displaying list view sort of display.
 class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):

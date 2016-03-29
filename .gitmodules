@@ -1,0 +1,3 @@
+[submodule "sw_parser"]
+	path = sw_parser
+	url = git@github.com:porksmash/swarfarm_io.git

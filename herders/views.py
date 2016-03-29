@@ -508,6 +508,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     context = {
         'runes': instance_runes,
         'instance': instance,
+        'profile_name': profile_name,
         'is_owner': is_owner,
     }
 
@@ -568,6 +569,31 @@ def monster_instance_view_info(request, profile_name, instance_id):
     }
 
     return render(request, 'herders/profile/monster_view/notes_info.html', context)
+
+
+@login_required()
+def monster_instance_remove_runes(request, profile_name, instance_id):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        try:
+            instance = MonsterInstance.committed.get(pk=instance_id)
+        except ObjectDoesNotExist:
+            raise Http404()
+        else:
+            for rune in instance.runeinstance_set.all():
+                rune.assigned_to = None
+                rune.save()
+
+            instance.save()
+            messages.success(request, 'Removed all runes from ' + str(instance))
+            response_data = {
+                'code': 'success',
+            }
+            return JsonResponse(response_data)
+    else:
+        raise PermissionDenied()
 
 
 @login_required()

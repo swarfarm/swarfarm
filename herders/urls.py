@@ -29,6 +29,7 @@ urlpatterns = [
             url(r'^delete/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_delete, name='monster_instance_delete'),
             url(r'^powerup/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_power_up, name='monster_instance_power_up'),
             url(r'^awaken/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_awaken, name='monster_instance_awaken'),
+            url(r'^remove_runes/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_remove_runes, name='monster_instance_remove_runes'),
             url(r'^copy/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_duplicate, name='monster_instance_duplicate'),
             url(r'^piece/', include([
                 url(r'^add/$', views.monster_piece_add, name='monster_piece_add'),

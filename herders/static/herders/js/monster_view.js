@@ -100,6 +100,31 @@ function UnassignRune(rune_id) {
     });
 }
 
+function RemoveAllRunes(instance_id) {
+    if (instance_id) {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure?',
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/monster/remove_runes/' + instance_id + '/',
+                    }).done(function () {
+                        UpdateRunes();
+                        UpdateStats();
+                    }).fail(function () {
+                        alert("Something went wrong! Server admin has been notified.");
+                    });
+                }
+            }
+        });
+    }
+    else {
+        alert("Unspecified monster to remove runes from!");
+    }
+}
+
 function EditRune(rune_id) {
     //Pull in edit form on modal show
     $.ajax({
@@ -264,6 +289,7 @@ $('body')
     .on('click', '.rune-unassign', function() { UnassignRune($(this).data('rune-id')) })
     .on('click', '.rune-assign', function() { AssignRune($(this).data('rune-slot')) })
     .on('click', '.rune-assign-choice', function() { AssignRuneChoice($(this).data('rune-id'), $(this).data('instance-id')) })
+    .on('click', '.rune-remove-all', function() { RemoveAllRunes($(this).data('instance-id'))})
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-copy', function() { CopyMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })

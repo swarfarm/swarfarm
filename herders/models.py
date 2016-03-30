@@ -1911,6 +1911,104 @@ class RuneInstance(models.Model):
         ordering = ['slot', 'type', 'level', 'quality']
 
 
+class RuneCraftInstance(models.Model):
+    TYPE_GRINDSTONE = 0
+    TYPE_ENCHANT_GEM = 1
+
+    TYPE_CHOICES = (
+        (TYPE_GRINDSTONE, 'Grindstone'),
+        (TYPE_ENCHANT_GEM, 'Enchant Gem'),
+    )
+
+    # Valid value ranges
+    # Type > Stat > Quality > Min/Max
+    CRAFT_VALUE_RANGES = {
+        TYPE_GRINDSTONE: {
+            RuneInstance.STAT_HP: {
+                RuneInstance.QUALITY_MAGIC: {'min': 100, 'max': 200},
+                RuneInstance.QUALITY_RARE: {'min': 180, 'max': 250},
+                RuneInstance.QUALITY_HERO: {'min': 230, 'max': 450},
+                RuneInstance.QUALITY_LEGEND: {'min': 430, 'max': 550},
+            },
+            RuneInstance.STAT_HP_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneInstance.STAT_ATK: {
+                RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
+                RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
+                RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
+                RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
+            },
+            RuneInstance.STAT_ATK_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneInstance.STAT_DEF: {
+                RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
+                RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
+                RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
+                RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
+            },
+            RuneInstance.STAT_DEF_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneInstance.STAT_SPD: {
+                RuneInstance.QUALITY_MAGIC: {'min': 1, 'max': 2},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 3},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 4},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 5},
+            },
+        },
+        TYPE_ENCHANT_GEM: {
+            RuneInstance.STAT_HP: {
+                RuneInstance.QUALITY_MAGIC: {'min': 130, 'max': 220},
+                RuneInstance.QUALITY_RARE: {'min': 200, 'max': 310},
+                RuneInstance.QUALITY_HERO: {'min': 290, 'max': 420},
+                RuneInstance.QUALITY_LEGEND: {'min': 400, 'max': 580},
+            },
+            RuneInstance.STAT_HP_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            #TODO: Finish here.
+        }
+    }
+    """craftsValueMap = {
+        'E': {
+            "SPD": {g2: {min: 2, max: 4}, g3: {min: 3, max: 6}, g4: {min: 5, max: 8}, g5: {min: 7, max: 10}},
+            "ATK%": {g2: {min: 3, max: 7}, g3: {min: 5, max: 9}, g4: {min: 7, max: 11}, g5: {min: 9, max: 13}},
+            "ATK flat": {g2: {min: 10, max: 16}, g3: {min: 15, max: 23}, g4: {min: 20, max: 30},
+                         g5: {min: 28, max: 40}},
+            "HP%": {g2: {min: 3, max: 7}, g3: {min: 5, max: 9}, g4: {min: 7, max: 11}, g5: {min: 9, max: 13}},
+            "HP flat": {g2: {min: 130, max: 220}, g3: {min: 200, max: 310}, g4: {min: 290, max: 420},
+                        g5: {min: 400, max: 580}},
+            "DEF%": {g2: {min: 3, max: 7}, g3: {min: 5, max: 9}, g4: {min: 7, max: 11}, g5: {min: 9, max: 13}},
+            "DEF flat": {g2: {min: 10, max: 16}, g3: {min: 15, max: 23}, g4: {min: 20, max: 30},
+                         g5: {min: 28, max: 40}},
+            "CRate": {g2: {min: 2, max: 4}, g3: {min: 3, max: 5}, g4: {min: 4, max: 7}, g5: {min: 5, max: 8}},
+            "CDmg": {g2: {min: 3, max: 5}, g3: {min: 4, max: 6}, g4: {min: 5, max: 8}, g5: {min: 6, max: 9}},
+            "RES": {g2: {min: 3, max: 6}, g3: {min: 5, max: 8}, g4: {min: 6, max: 9}, g5: {min: 7, max: 10}},
+            "ACC": {g2: {min: 3, max: 6}, g3: {min: 5, max: 8}, g4: {min: 6, max: 9}, g5: {min: 7, max: 10}}
+        }
+    }"""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(Summoner)
+    com2us_id = models.BigIntegerField()
+    type = models.IntegerField(choices=TYPE_CHOICES)
+    stat = models.IntegerField(choices=RuneInstance.STAT_CHOICES)
+    quality = models.IntegerField(choices=RuneInstance.QUALITY_CHOICES)
+
 class TeamGroup(models.Model):
     owner = models.ForeignKey(Summoner)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

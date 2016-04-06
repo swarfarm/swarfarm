@@ -1980,34 +1980,88 @@ class RuneCraftInstance(models.Model):
                 RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
                 RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
             },
-            #TODO: Finish here.
+            RuneInstance.STAT_ATK: {
+                RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
+                RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
+                RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
+                RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
+            },
+            RuneInstance.STAT_ATK_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneInstance.STAT_DEF: {
+                RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
+                RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
+                RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
+                RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
+            },
+            RuneInstance.STAT_DEF_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneInstance.STAT_SPD: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
+            RuneInstance.STAT_CRIT_RATE_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 5},
+                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 8},
+            },
+            RuneInstance.STAT_CRIT_DMG_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 5},
+                RuneInstance.QUALITY_RARE: {'min': 4, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_LEGEND: {'min': 6, 'max': 9},
+            },
+            RuneInstance.STAT_RESIST_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
+                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
+            RuneInstance.STAT_ACCURACY_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
+                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
         }
     }
-    """craftsValueMap = {
-        'E': {
-            "SPD": {g2: {min: 2, max: 4}, g3: {min: 3, max: 6}, g4: {min: 5, max: 8}, g5: {min: 7, max: 10}},
-            "ATK%": {g2: {min: 3, max: 7}, g3: {min: 5, max: 9}, g4: {min: 7, max: 11}, g5: {min: 9, max: 13}},
-            "ATK flat": {g2: {min: 10, max: 16}, g3: {min: 15, max: 23}, g4: {min: 20, max: 30},
-                         g5: {min: 28, max: 40}},
-            "HP%": {g2: {min: 3, max: 7}, g3: {min: 5, max: 9}, g4: {min: 7, max: 11}, g5: {min: 9, max: 13}},
-            "HP flat": {g2: {min: 130, max: 220}, g3: {min: 200, max: 310}, g4: {min: 290, max: 420},
-                        g5: {min: 400, max: 580}},
-            "DEF%": {g2: {min: 3, max: 7}, g3: {min: 5, max: 9}, g4: {min: 7, max: 11}, g5: {min: 9, max: 13}},
-            "DEF flat": {g2: {min: 10, max: 16}, g3: {min: 15, max: 23}, g4: {min: 20, max: 30},
-                         g5: {min: 28, max: 40}},
-            "CRate": {g2: {min: 2, max: 4}, g3: {min: 3, max: 5}, g4: {min: 4, max: 7}, g5: {min: 5, max: 8}},
-            "CDmg": {g2: {min: 3, max: 5}, g3: {min: 4, max: 6}, g4: {min: 5, max: 8}, g5: {min: 6, max: 9}},
-            "RES": {g2: {min: 3, max: 6}, g3: {min: 5, max: 8}, g4: {min: 6, max: 9}, g5: {min: 7, max: 10}},
-            "ACC": {g2: {min: 3, max: 6}, g3: {min: 5, max: 8}, g4: {min: 6, max: 9}, g5: {min: 7, max: 10}}
-        }
-    }"""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner)
-    com2us_id = models.BigIntegerField()
+    com2us_id = models.BigIntegerField(blank=True, null=True)
     type = models.IntegerField(choices=TYPE_CHOICES)
+    rune = models.IntegerField(choices=RuneInstance.TYPE_CHOICES)
     stat = models.IntegerField(choices=RuneInstance.STAT_CHOICES)
     quality = models.IntegerField(choices=RuneInstance.QUALITY_CHOICES)
+    value = models.IntegerField(blank=True, null=True)
+    uncommitted = models.BooleanField(default=False)  # Used for importing
+
+    def __str__(self):
+        if self.stat in RuneInstance.PERCENT_STATS:
+            percent = '%'
+        else:
+            percent = ''
+
+        return self.get_type_display() + ' - ' + self.get_stat_display() + ' ' + \
+            self.get_min_value() + percent + '-' + self.get_max_value() + percent
+
+    def get_min_value(self):
+        return self.CRAFT_VALUE_RANGES.get(self.type).get(self.stat).get(self.quality).get('min')
+
+    def get_max_value(self):
+        return self.CRAFT_VALUE_RANGES.get(self.type).get(self.stat).get(self.quality).get('max')
+
 
 class TeamGroup(models.Model):
     owner = models.ForeignKey(Summoner)

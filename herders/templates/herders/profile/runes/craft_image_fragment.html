@@ -1,0 +1,11 @@
+{% load staticfiles %}
+{% load utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="rune-image pull-left" data-craft-id="{{ craft.pk.hex }}">
+    <div class="rune-bg {{ craft.get_quality_display|lower }}">
+        <div class="rune-craft {{ craft.get_type_display|slugify }} {{ craft.get_quality_display|lower }}">
+            <div class="craft-symbol {{ craft.get_rune_display|lower }}"></div>
+        </div>
+    </div>
+</div>

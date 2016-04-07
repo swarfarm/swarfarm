@@ -15,7 +15,7 @@ from django.template import loader, RequestContext
 from bestiary.models import Monster, Fusion
 from .forms import *
 from .filters import *
-from .models import Summoner, MonsterInstance, MonsterPiece, TeamGroup, Team
+from .models import Summoner, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance
 
 
 def register(request):
@@ -1432,15 +1432,17 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     if request.session.modified:
         return HttpResponse("Rune view mode cookie set")
-
-    summoner = get_object_or_404(Summoner, user__username=profile_name)
-    rune_queryset = RuneInstance.committed.filter(owner=summoner)
-    total_count = rune_queryset.count()
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
-    form = FilterRuneForm(request.POST or None)
     view_mode = request.session.get('rune_inventory_view_mode', 'box').lower()
     box_grouping = request.session.get('rune_inventory_box_method', 'slot').lower()
+
+    if view_mode == 'crafts':
+        return rune_inventory_crafts(request, profile_name)
+
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    rune_queryset = RuneInstance.committed.filter(owner=summoner)
+    total_count = rune_queryset.count()
+    form = FilterRuneForm(request.POST or None)
 
     if form.is_valid():
         rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)
@@ -1492,6 +1494,29 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
         return render(request, template, context)
     else:
         return render(request, 'herders/profile/not_public.html', context)
+
+
+def rune_inventory_crafts(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    context = {
+        'profile_name': profile_name,
+        'is_owner': is_owner,
+    }
+
+    if is_owner or summoner.public:
+        craft_box = OrderedDict()
+        for (craft, craft_name) in RuneCraftInstance.TYPE_CHOICES:
+            craft_box[craft_name] = OrderedDict()
+            for rune, rune_name in RuneInstance.TYPE_CHOICES:
+                craft_box[craft_name][rune_name] = RuneCraftInstance.committed.filter(owner=summoner, type=craft, rune=rune).order_by('stat', 'quality')
+
+        context['crafts'] = craft_box
+
+        return render(request, 'herders/profile/runes/inventory_crafts.html', context)
+    else:
+        return render(request, 'herders/profile/not_public.html')
 
 
 def rune_counts(request, profile_name):

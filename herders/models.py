@@ -1911,6 +1911,17 @@ class RuneInstance(models.Model):
         ordering = ['slot', 'type', 'level', 'quality']
 
 
+class RuneCraftInstanceImportedManager(models.Manager):
+    def get_queryset(self):
+        return super(RuneCraftInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
+
+
+class RuneCraftInstanceManager(models.Manager):
+    # Default manager which only returns finalized instances
+    def get_queryset(self):
+        return super(RuneCraftInstanceManager, self).get_queryset().filter(uncommitted=False)
+
+
 class RuneCraftInstance(models.Model):
     TYPE_GRINDSTONE = 0
     TYPE_ENCHANT_GEM = 1
@@ -2037,6 +2048,11 @@ class RuneCraftInstance(models.Model):
         }
     }
 
+    # Multiple managers to split out imported and finalized objects
+    objects = models.Manager()
+    committed = RuneCraftInstanceManager()
+    imported = RuneCraftInstanceImportedManager()
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner)
     com2us_id = models.BigIntegerField(blank=True, null=True)
@@ -2053,14 +2069,19 @@ class RuneCraftInstance(models.Model):
         else:
             percent = ''
 
-        return self.get_type_display() + ' - ' + self.get_stat_display() + ' ' + \
-            self.get_min_value() + percent + '-' + self.get_max_value() + percent
+        return RuneInstance.RUNE_STAT_DISPLAY.get(self.stat) + ' ' + str(self.get_min_value()) + percent + '-' + str(self.get_max_value()) + percent
 
     def get_min_value(self):
-        return self.CRAFT_VALUE_RANGES.get(self.type).get(self.stat).get(self.quality).get('min')
+        try:
+            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['min']
+        except KeyError:
+            return None
 
     def get_max_value(self):
-        return self.CRAFT_VALUE_RANGES.get(self.type).get(self.stat).get(self.quality).get('max')
+        try:
+            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['max']
+        except KeyError:
+            return None
 
 
 class TeamGroup(models.Model):

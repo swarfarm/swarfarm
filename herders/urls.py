@@ -65,7 +65,7 @@ urlpatterns = [
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<slot>[0-9])/$', views.rune_assign, name='rune_assign_with_slot'),
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<rune_id>[0-9a-f]{32})/$', views.rune_assign_choice, name='rune_assign_choice'),
             url(r'^inventory/$', views.rune_inventory, name='rune_inventory'),
-            url(r'^inventory/(?P<view_mode>(list|box|grid))/$', views.rune_inventory, name='rune_inventory_view_mode'),
+            url(r'^inventory/(?P<view_mode>(list|box|grid|crafts))/$', views.rune_inventory, name='rune_inventory_view_mode'),
             url(r'^inventory/(?i)(?P<view_mode>(list|box|grid))/(?i)(?P<box_grouping>[a-zA-Z]+)/$', views.rune_inventory, name='rune_inventory_view_mode_sorted'),
             url(r'^inventory/counts/$', views.rune_counts, name='rune_inventory_counts'),
         ])),

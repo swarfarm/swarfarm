@@ -1,0 +1,11 @@
+{% load utils %}
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default rune-panel">
+    <div class="panel-body condensed">
+        {% include 'herders/profile/runes/craft_image_fragment.html' with craft=craft only %}
+        <span class="craft-text rune-text-{{ craft.get_quality_display|lower }}">{{ craft }}</span>
+    </div>
+    {% if craft.value %}<span class="top-right mana-crystals"><img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ craft.value }}</span>{% endif %}
+</div>

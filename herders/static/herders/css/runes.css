@@ -69,6 +69,13 @@
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
+.craft-text {
+    display: inline-block;
+    height: 50px;
+    line-height: 50px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
 .rune-text-normal {
     text-shadow: none;
 }
@@ -222,6 +229,9 @@ span.rune-set-bonus {
 }
 .rune-craft.grindstone.epic {
     background-image: url(/static/herders/images/runes/grindstone_epic.png);
+}
+.rune-craft.grindstone.legend {
+    background-image: url(/static/herders/images/runes/grindstone_legend.png);
 }
 .rune-craft.enchant-gem.legend {
     background-image: url(/static/herders/images/runes/enchant_gem_legend.png);

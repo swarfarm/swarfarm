@@ -49,4 +49,10 @@ class RuneInstanceAdmin(admin.ModelAdmin):
     exclude = ('owner', 'assigned_to')
     readonly_fields = ('quality', 'has_hp', 'has_atk', 'has_def', 'has_crit_rate', 'has_crit_dmg', 'has_speed', 'has_resist', 'has_accuracy')
 
+
+@admin.register(RuneCraftInstance)
+class RuneCraftInstanceAdmin(admin.ModelAdmin):
+    exclude = ('owner',)
+
+
 admin.site.register(GameEvent)

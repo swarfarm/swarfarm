@@ -1760,6 +1760,7 @@ def rune_delete_all(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
+        # Delete the runes
         death_row = RuneInstance.committed.filter(owner=summoner)
         number_killed = death_row.count()
         assigned_mons = []
@@ -1768,7 +1769,10 @@ def rune_delete_all(request, profile_name):
                 assigned_mons.append(rune.assigned_to)
 
         death_row.delete()
-        messages.warning(request, 'Deleted ' + str(number_killed) + ' rune(s).')
+
+        # Delete the crafts
+        crafts_killed, __ = RuneCraftInstance.committed.filter(owner=summoner).delete()
+        messages.warning(request, 'Deleted ' + str(number_killed) + ' runes and ' + str(crafts_killed) + ' grindstones/gems.')
 
         for mon in assigned_mons:
             mon.save()
@@ -1780,3 +1784,50 @@ def rune_delete_all(request, profile_name):
         return JsonResponse(response_data)
     else:
         return HttpResponseForbidden()
+
+
+@login_required
+def rune_craft_add(request, profile_name):
+    form = AddRuneCraftInstanceForm(request.POST or None)
+    form.helper.form_action = reverse('herders:rune_craft_add', kwargs={'profile_name': profile_name})
+    template = loader.get_template('herders/profile/runes/add_craft_form.html')
+
+    if request.method == 'POST':
+        if form.is_valid():
+            # Create the monster instance
+            new_craft = form.save(commit=False)
+            new_craft.owner = request.user.summoner
+            new_craft.save()
+
+            messages.success(request, 'Added ' + new_craft.get_type_display() + ' ' + str(new_craft))
+
+            # Send back blank form
+            form = AddRuneCraftInstanceForm()
+            form.helper.form_action = reverse('herders:rune_craft_add', kwargs={'profile_name': profile_name})
+
+            response_data = {
+                'code': 'success',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+        else:
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+    else:
+        # Return form filled in and errors shown
+        response_data = {
+            'html': template.render(RequestContext(request, {'form': form}))
+        }
+
+    return JsonResponse(response_data)
+
+
+@login_required
+def rune_craft_edit(request, profile_name, craft_id):
+    pass
+
+
+@login_required
+def rune_craft_delete(request, profile_name, craft_id):
+    pass

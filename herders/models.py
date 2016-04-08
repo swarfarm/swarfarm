@@ -2087,6 +2087,17 @@ class RuneCraftInstance(models.Model):
         except KeyError:
             return None
 
+    @staticmethod
+    def get_valid_stats_for_type(craft_type):
+        try:
+            valid_stats = RuneCraftInstance.CRAFT_VALUE_RANGES[craft_type].keys()
+        except KeyError:
+            return None
+        else:
+            stat_names = {stat: RuneInstance.STAT_CHOICES[stat - 1][1] for stat in valid_stats}
+
+            return stat_names
+
 
 class TeamGroup(models.Model):
     owner = models.ForeignKey(Summoner)

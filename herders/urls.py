@@ -68,6 +68,11 @@ urlpatterns = [
             url(r'^inventory/(?P<view_mode>(list|box|grid|crafts))/$', views.rune_inventory, name='rune_inventory_view_mode'),
             url(r'^inventory/(?i)(?P<view_mode>(list|box|grid))/(?i)(?P<box_grouping>[a-zA-Z]+)/$', views.rune_inventory, name='rune_inventory_view_mode_sorted'),
             url(r'^inventory/counts/$', views.rune_counts, name='rune_inventory_counts'),
+            url(r'^craft/', include([
+                url(r'^add/$', views.rune_craft_add, name='rune_craft_add'),
+                url(r'^edit/$', views.rune_craft_edit, name='rune_craft_edit'),
+                url(r'^delete/$', views.rune_craft_delete, name='rune_craft_delete'),
+            ])),
         ])),
         url(r'following/', include([
             url(r'^$', views.following, name='profile_following'),

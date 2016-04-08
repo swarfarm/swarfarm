@@ -354,6 +354,34 @@ function update_main_slot_options(slot, main_stat_input) {
     });
 }
 
+function update_craft_stat_options(craft, stat_input) {
+    $.ajax({
+        type: 'get',
+        url: API_URL + 'runes/stats_by_craft/' + craft.toString() + '/'
+    }).done(function (response) {
+        if (response.code === 'success') {
+            // Record the current stat to see if we can pick it in the new list
+            var current_stat = stat_input.val();
+
+            stat_input.empty();
+            $.each(response.data, function (val, text) {
+                stat_input.append(
+                    $('<option></option>').val(val).html(text)
+                );
+            });
+
+            var exists = 0 != stat_input.find("option[value='"+current_stat+"']").length;
+            if (exists) {
+                stat_input.val(current_stat);
+            }
+            else {
+                for(var key in response.data) break;
+                stat_input.val(key);
+            }
+        }
+    });
+}
+
 function update_rune_counts() {
     $.ajax({
         url: '/profile/' + PROFILE_NAME + '/runes/inventory/counts/',

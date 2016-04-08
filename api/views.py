@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
 from bestiary.models import Monster, Skill, LeaderSkill
-from herders.models import Summoner, MonsterInstance, RuneInstance, Team, TeamGroup
+from herders.models import Summoner, MonsterInstance, RuneInstance, RuneCraftInstance, Team, TeamGroup
 from .serializers import *
 
 
@@ -162,6 +162,22 @@ def get_rune_stats_by_slot(request, slot):
     from django.http import JsonResponse
 
     valid_stats = RuneInstance.get_valid_stats_for_slot(int(slot))
+
+    if valid_stats:
+        return JsonResponse({
+            'code': 'success',
+            'data': valid_stats,
+        })
+    else:
+        return JsonResponse({
+            'code': 'error',
+        })
+
+
+def get_craft_stats_by_type(request, craft_type):
+    from django.http import JsonResponse
+
+    valid_stats = RuneCraftInstance.get_valid_stats_for_type(int(craft_type))
 
     if valid_stats:
         return JsonResponse({

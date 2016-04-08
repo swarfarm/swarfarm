@@ -8,7 +8,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.models import Monster, Effect, LeaderSkill
-from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance
+from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
@@ -1219,3 +1219,34 @@ class ExportRuneForm(forms.Form):
         Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes, monsters, and saved builds currently present. It is advised to back up your existing data first.', css_class='alert-danger'),
         Field('json_data'),
     )
+
+
+class AddRuneCraftInstanceForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AddRuneCraftInstanceForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'addRuneCraftForm'
+        self.helper.form_class = 'ajax-form'
+        self.helper.layout = Layout(
+            Div(
+                Field('rune', template="crispy/rune_button_radio_select.html"),
+                css_class='col-md-4',
+            ),
+            Div(
+                Field('type'),
+                Field('stat'),
+                Field('quality'),
+                css_class='col-md-8',
+            ),
+            Div(css_class='clearfix'),
+            FormActions(
+                Submit('Save', 'save'),
+            )
+        )
+
+    class Meta:
+        model = RuneCraftInstance
+        fields = (
+            'type', 'rune', 'stat', 'quality'
+        )

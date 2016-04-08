@@ -1559,6 +1559,14 @@ class RuneInstance(models.Model):
         TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP"
     }
 
+    CRAFT_GRINDSTONE = 0
+    CRAFT_ENCHANT_GEM = 1
+
+    CRAFT_CHOICES = (
+        (CRAFT_GRINDSTONE, 'Grindstone'),
+        (CRAFT_ENCHANT_GEM, 'Enchant Gem'),
+    )
+
     # Multiple managers to split out imported and finalized objects
     objects = models.Manager()
     committed = RuneInstanceManager()
@@ -1579,12 +1587,16 @@ class RuneInstance(models.Model):
     innate_stat_value = models.IntegerField(null=True, blank=True)
     substat_1 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_1_value = models.IntegerField(null=True, blank=True)
+    substat_1_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
     substat_2 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_2_value = models.IntegerField(null=True, blank=True)
+    substat_2_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
     substat_3 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_3_value = models.IntegerField(null=True, blank=True)
+    substat_3_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
     substat_4 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_4_value = models.IntegerField(null=True, blank=True)
+    substat_4_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
     marked_for_sale = models.BooleanField(default=False)
     uncommitted = models.BooleanField(default=False)  # Used for importing
 
@@ -1923,18 +1935,10 @@ class RuneCraftInstanceManager(models.Manager):
 
 
 class RuneCraftInstance(models.Model):
-    TYPE_GRINDSTONE = 0
-    TYPE_ENCHANT_GEM = 1
-
-    TYPE_CHOICES = (
-        (TYPE_GRINDSTONE, 'Grindstone'),
-        (TYPE_ENCHANT_GEM, 'Enchant Gem'),
-    )
-
     # Valid value ranges
     # Type > Stat > Quality > Min/Max
     CRAFT_VALUE_RANGES = {
-        TYPE_GRINDSTONE: {
+        RuneInstance.CRAFT_GRINDSTONE: {
             RuneInstance.STAT_HP: {
                 RuneInstance.QUALITY_MAGIC: {'min': 100, 'max': 200},
                 RuneInstance.QUALITY_RARE: {'min': 180, 'max': 250},
@@ -1978,7 +1982,7 @@ class RuneCraftInstance(models.Model):
                 RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 5},
             },
         },
-        TYPE_ENCHANT_GEM: {
+        RuneInstance.CRAFT_ENCHANT_GEM: {
             RuneInstance.STAT_HP: {
                 RuneInstance.QUALITY_MAGIC: {'min': 130, 'max': 220},
                 RuneInstance.QUALITY_RARE: {'min': 200, 'max': 310},
@@ -2056,7 +2060,7 @@ class RuneCraftInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner)
     com2us_id = models.BigIntegerField(blank=True, null=True)
-    type = models.IntegerField(choices=TYPE_CHOICES)
+    type = models.IntegerField(choices=RuneInstance.CRAFT_CHOICES)
     rune = models.IntegerField(choices=RuneInstance.TYPE_CHOICES)
     stat = models.IntegerField(choices=RuneInstance.STAT_CHOICES)
     quality = models.IntegerField(choices=RuneInstance.QUALITY_CHOICES)

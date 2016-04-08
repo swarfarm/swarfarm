@@ -139,15 +139,15 @@ class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RuneInstance
         fields = (
-            'pk', 'type', 'get_type_display', 'owner', 'assigned_to',
+            'pk', 'type', 'get_type_display', 'owner', 'assigned_to', 'efficiency',
             'stars', 'level', 'slot', 'quality', 'value', 'get_quality_display',
             'main_stat', 'get_main_stat_rune_display', 'main_stat_value',
             'innate_stat', 'get_innate_stat_rune_display', 'innate_stat_value',
-            'substat_1', 'get_substat_1_rune_display', 'substat_1_value',
-            'substat_2', 'get_substat_2_rune_display', 'substat_2_value',
-            'substat_3', 'get_substat_3_rune_display', 'substat_3_value',
-            'substat_4', 'get_substat_4_rune_display', 'substat_4_value',
-            'PERCENT_STATS', 'efficiency',
+            'substat_1', 'get_substat_1_rune_display', 'substat_1_value', 'substat_1_craft',
+            'substat_2', 'get_substat_2_rune_display', 'substat_2_value', 'substat_2_craft',
+            'substat_3', 'get_substat_3_rune_display', 'substat_3_value', 'substat_3_craft',
+            'substat_4', 'get_substat_4_rune_display', 'substat_4_value', 'substat_4_craft',
+            'PERCENT_STATS', 'CRAFT_GRINDSTONE', 'CRAFT_ENCHANT_GEM',
         )
 
 

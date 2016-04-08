@@ -66,6 +66,10 @@ footer {
     margin-bottom: 5px;
 }
 
+.inline-horizontal {
+    margin-right: 0!important;
+}
+
 input.short,
 select.short {
     max-width: 300px;
@@ -82,10 +86,6 @@ select.short {
 
 .navbar-right {
   margin-right: 5px;
-}
-
-.toggle {
-
 }
 
 .toggle:before {

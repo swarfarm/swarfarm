@@ -878,19 +878,22 @@ class AddRuneInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRuneInstanceForm, self).__init__(*args, **kwargs)
         self.fields['type'].choices = self.fields['type'].choices[1:]  # Remove the empty '----' option from the list
-        self.fields['stars'].label = False
         self.fields['main_stat'].label = False
         self.fields['main_stat_value'].label = False
         self.fields['innate_stat'].label = False
         self.fields['innate_stat_value'].label = False
         self.fields['substat_1'].label = False
         self.fields['substat_1_value'].label = False
+        self.fields['substat_1_craft'].label = False
         self.fields['substat_2'].label = False
         self.fields['substat_2_value'].label = False
+        self.fields['substat_2_craft'].label = False
         self.fields['substat_3'].label = False
         self.fields['substat_3_value'].label = False
+        self.fields['substat_3_craft'].label = False
         self.fields['substat_4'].label = False
         self.fields['substat_4_value'].label = False
+        self.fields['substat_4_craft'].label = False
         self.fields['assigned_to'].label = False
 
         self.helper = FormHelper(self)
@@ -900,69 +903,66 @@ class AddRuneInstanceForm(ModelForm):
         self.helper.layout = Layout(
             Div(
                 Field('type', template="crispy/rune_button_radio_select.html"),
-                css_class='col-lg-3',
+                css_class='col-md-2',
             ),
             Div(
                 Div(
-                    Div(Field('slot', placeholder='1-6'), css_class='col-lg-4 col-lg-offset-3'),
-                    Div(Field('level', placeholder='0-15'), css_class='col-lg-5'),
+                    Div(Field('slot', placeholder='1-6'), css_class='col-md-3'),
+                    Div(Field('stars', placeholder='1-6'), css_class='col-md-4'),
+                    Div(Field('level', placeholder='0-15'), css_class='col-md-4'),
                     css_class='row'
                 ),
                 Div(
-                    Div(HTML('<label>Stars</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div(Field('stars', placeholder='1-6'), css_class='col-lg-9'),
-                    css_class='row'
-                ),
-                Div(
-                    Div(HTML('<label>Stat Type</label>'), css_class='col-lg-4 col-lg-offset-3'),
-                    Div(HTML('<label>Stat Value</label>'), css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Main Stat</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Field('main_stat', wrapper_class='col-lg-4'),
-                    Field('main_stat_value', wrapper_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Innate Stat</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('innate_stat', css_class='col-lg-4'),
-                    Div('innate_stat_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Substat 1</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('substat_1', css_class='col-lg-4'),
-                    Div('substat_1_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Substat 2</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('substat_2', css_class='col-lg-4'),
-                    Div('substat_2_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Substat 3</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('substat_3', css_class='col-lg-4'),
-                    Div('substat_3_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Substat 4</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('substat_4', css_class='col-lg-4'),
-                    Div('substat_4_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Assign To</label>'), css_class='col-lg-3 text-right no-right-gutter'),
                     Div(
-                        Field('assigned_to'),
-                        css_class='col-lg-9',
+                        HTML('<label class="col-md-2 control-label">Main Stat</label>'),
+                        Field('main_stat', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('main_stat_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        css_class='form-group form-group-condensed',
                     ),
-                    css_class='row',
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Innate Stat</label>'),
+                        Field('innate_stat', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('innate_stat_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Substat 1</label>'),
+                        Field('substat_1', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('substat_1_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        Field('substat_1_craft', wrapper_class='col-md-3 inline-horizontal'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Substat 2</label>'),
+                        Field('substat_2', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('substat_2_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        Field('substat_2_craft', wrapper_class='col-md-3 inline-horizontal'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Substat 3</label>'),
+                        Field('substat_3', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('substat_3_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        Field('substat_3_craft', wrapper_class='col-md-3 inline-horizontal'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Substat 4</label>'),
+                        Field('substat_4', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('substat_4_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        Field('substat_4_craft', wrapper_class='col-md-3 inline-horizontal'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Assign To</label>'),
+                        Div(
+                            Field('assigned_to', wrapper_class='col-md-4'),
+                        ),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    css_class='form-horizontal',
                 ),
-                css_class='col-lg-9',
+                css_class='col-md-10',
             ),
             Div(css_class='clearfix'),
             FormActions(
@@ -976,10 +976,10 @@ class AddRuneInstanceForm(ModelForm):
             'type', 'stars', 'level', 'slot',
             'main_stat', 'main_stat_value',
             'innate_stat', 'innate_stat_value',
-            'substat_1', 'substat_1_value',
-            'substat_2', 'substat_2_value',
-            'substat_3', 'substat_3_value',
-            'substat_4', 'substat_4_value',
+            'substat_1', 'substat_1_value', 'substat_1_craft',
+            'substat_2', 'substat_2_value', 'substat_2_craft',
+            'substat_3', 'substat_3_value', 'substat_3_craft',
+            'substat_4', 'substat_4_value', 'substat_4_craft',
             'assigned_to',
         )
         widgets = {

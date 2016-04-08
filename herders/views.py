@@ -1507,7 +1507,7 @@ def rune_inventory_crafts(request, profile_name):
 
     if is_owner or summoner.public:
         craft_box = OrderedDict()
-        for (craft, craft_name) in RuneCraftInstance.TYPE_CHOICES:
+        for (craft, craft_name) in RuneInstance.CRAFT_CHOICES:
             craft_box[craft_name] = OrderedDict()
             for rune, rune_name in RuneInstance.TYPE_CHOICES:
                 craft_box[craft_name][rune_name] = RuneCraftInstance.committed.filter(owner=summoner, type=craft, rune=rune).order_by('stat', 'quality')

@@ -53,6 +53,7 @@ $('body')
         }).done(function(data) {
             bootbox.dialog({
                 title: "Add rune",
+                size: "large",
                 message: data.html
             });
 
@@ -71,6 +72,7 @@ $('body')
         }).done(function(data) {
             bootbox.dialog({
                 title: "Edit rune",
+                size: "large",
                 message: data.html
             });
             update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));

@@ -76,6 +76,11 @@
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
+.rune-grindstone-text {
+    text-shadow: 0 0 2px rgba(214, 164, 0, 0.5);
+    color: #987500;
+}
+
 .rune-text-normal {
     text-shadow: none;
 }

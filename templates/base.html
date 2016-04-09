@@ -57,40 +57,43 @@
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-mainnav">
-                        {% if user.is_authenticated %}
-                        <div class="btn-group navbar-btn navbar-left">
-                            <a href="{% url 'herders:profile_default' profile_name=user.username %}"
-                               class="btn btn-default {% if view == 'profile' and is_owner %}active{% endif %}">
-                                <img src="{% static 'herders/images/icons/monster.png' %}" class="hidden-sm" />
-                                My Monsters
-                            </a>
-                            <a href="{% url 'herders:runes' profile_name=user.username %}"
-                               class="btn btn-default {% if view == 'runes'  and is_owner %}active{% endif %}">
-                                <img src="{% static 'herders/images/icons/rune.png' %}" class="hidden-sm"/>
-                                Runes
-                            </a>
-                            <a href="{% url 'herders:fusion' profile_name=user.username %}"
-                               class="btn btn-default {% if view == 'fusion'  and is_owner %}active{% endif %}">
-                                <img src="{% static 'herders/images/icons/fusion.png' %}" class="hidden-sm" />
-                                Fusion
-                            </a>
-                            <a href="{% url 'herders:teams' profile_name=user.username %}"
-                               class="btn btn-default {% if view == 'teams' and is_owner %}active{% endif %}">
-                                <i class="fa fa-users hidden-sm"></i>
-                                Teams
-                            </a>
-                        </div>
-                        {% endif %}
-
-                        {% crispy bestiary_quick_search %}
-
-                        <div class="navbar-right">
+                        <ul class="nav navbar-nav">
                             {% if user.is_authenticated %}
-                                <div class="btn-group navbar-btn">
-                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                <li {% if view == 'profile' and is_owner %}class="active"{% endif %}>
+                                     <a href="{% url 'herders:profile_default' profile_name=user.username %}">
+                                        <img src="{% static 'herders/images/icons/monster.png' %}" class="hidden-sm" />
+                                        My Monsters
+                                    </a>
+                                </li>
+                                <li {% if view == 'runes' and is_owner %}class="active"{% endif %}>
+                                    <a href="{% url 'herders:runes' profile_name=user.username %}">
+                                        <img src="{% static 'herders/images/icons/rune.png' %}" class="hidden-sm"/>
+                                        Runes
+                                    </a>
+                                </li>
+                                <li {% if view == 'fusion' and is_owner %}class="active"{% endif %}>
+                                    <a href="{% url 'herders:fusion' profile_name=user.username %}">
+                                        <img src="{% static 'herders/images/icons/fusion.png' %}" class="hidden-sm" />
+                                        Fusion
+                                    </a>
+                                </li>
+                                <li {% if view == 'teams' and is_owner %}class="active"{% endif %}>
+                                    <a href="{% url 'herders:teams' profile_name=user.username %}">
+                                        <i class="fa fa-users hidden-sm"></i>
+                                        Teams
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            <li>{% crispy bestiary_quick_search %}</li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if user.is_authenticated %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                         {{ user.username }} <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu">
+                                    </a>
+                                    <ul class="dropdown-menu">
                                         <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
                                         {% if user.is_staff %}
                                             <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
@@ -101,10 +104,10 @@
                                         <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>
                                         <li><a href="{% url 'logout' %}">Log out</a></li>
                                     </ul>
-                                </div>
+                                </li>
                             {% else %}
                                 {# Show login form and register button #}
-                                <form class="navbar-form" role="search" action="{% url 'login' %}" method="post">
+                                <form class="navbar-form" action="{% url 'login' %}" method="post">
                                     {% csrf_token %}
                                     <input type="text" class="form-control" placeholder="Username" name="username">
                                     <input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
@@ -112,7 +115,7 @@
                                     <a href="{% url 'herders:register' %}" class="navbar-link">Register</a>
                                 </form>
                             {% endif %}
-                        </div>
+                        </ul>
                     </div><!-- /.navbar-collapse -->
                 </div><!-- /.container-fluid -->
             </nav>

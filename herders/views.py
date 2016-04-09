@@ -1825,9 +1825,51 @@ def rune_craft_add(request, profile_name):
 
 @login_required
 def rune_craft_edit(request, profile_name, craft_id):
-    pass
+    craft = get_object_or_404(RuneCraftInstance, pk=craft_id)
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    form = AddRuneCraftInstanceForm(request.POST or None, instance=craft, auto_id='edit_id_%s')
+    form.helper.form_action = reverse('herders:rune_craft_edit', kwargs={'profile_name': profile_name, 'craft_id': craft_id})
+    template = loader.get_template('herders/profile/runes/add_craft_form.html')
+
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            rune = form.save()
+            messages.success(request, 'Saved changes to ' + str(rune))
+            form = AddRuneInstanceForm(auto_id='edit_id_%s')
+            form.helper.form_action = reverse('herders:rune_craft_edit', kwargs={'profile_name': profile_name, 'craft_id': craft_id})
+
+            response_data = {
+                'code': 'success',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+        else:
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
 
 
 @login_required
 def rune_craft_delete(request, profile_name, craft_id):
-    pass
+    craft = get_object_or_404(RuneCraftInstance, pk=craft_id)
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        messages.warning(request, 'Deleted ' + craft.get_rune_display() + ' ' + str(craft))
+        craft.delete()
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()

@@ -32,18 +32,20 @@
                 {% for craft_type, craft_group in crafts.iteritems %}
                 <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="{{ craft_type|slugify }}_tab">
                     {% for rune_type, rune_crafts in craft_group.iteritems %}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <p class="panel-title">{{ rune_type }}</p>
-                        </div>
-                        <div class="panel-body">
-                            <div class="flex">
-                            {% for craft in rune_crafts %}
-                                {% include 'herders/profile/runes/craft_panel_fragment.html' with craft=craft only %}
-                            {% endfor %}
+                        {% if rune_crafts|length %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <p class="panel-title">{{ rune_type }}</p>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="flex">
+                                    {% for craft in rune_crafts %}
+                                        {% include 'herders/profile/runes/craft_panel_fragment.html' with craft=craft %}
+                                    {% endfor %}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 {% endfor %}

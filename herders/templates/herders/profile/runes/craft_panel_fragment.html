@@ -2,10 +2,20 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="panel panel-default rune-panel">
+<div class="panel panel-default craft-panel">
     <div class="panel-body condensed">
         {% include 'herders/profile/runes/craft_image_fragment.html' with craft=craft only %}
         <span class="craft-text rune-text-{{ craft.get_quality_display|lower }}">{{ craft }}</span>
     </div>
-    {% if craft.value %}<span class="top-right mana-crystals"><img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ craft.value }}</span>{% endif %}
+    {% if is_owner %}
+    <div class="btn-group top-right">
+        <button class="btn btn-default btn-xs rune-craft-edit" data-craft-id="{{ craft.pk.hex }}">
+            <span class="glyphicon glyphicon-pencil"></span>
+        </button>
+        <button class="btn btn-default btn-xs rune-craft-delete" data-craft-id="{{ craft.pk.hex }}">
+            <span class="glyphicon glyphicon-trash text-danger"></span>
+        </button>
+    </div>
+    {% endif %}
+    {% if craft.value %}<span class="bottom-right mana-crystals"><img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ craft.value }}</span>{% endif %}
 </div>

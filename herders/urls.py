@@ -70,8 +70,8 @@ urlpatterns = [
             url(r'^inventory/counts/$', views.rune_counts, name='rune_inventory_counts'),
             url(r'^craft/', include([
                 url(r'^add/$', views.rune_craft_add, name='rune_craft_add'),
-                url(r'^edit/$', views.rune_craft_edit, name='rune_craft_edit'),
-                url(r'^delete/$', views.rune_craft_delete, name='rune_craft_delete'),
+                url(r'^edit/(?P<craft_id>[0-9a-f]{32})/$', views.rune_craft_edit, name='rune_craft_edit'),
+                url(r'^delete/(?P<craft_id>[0-9a-f]{32})/$', views.rune_craft_delete, name='rune_craft_delete'),
             ])),
         ])),
         url(r'following/', include([

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load utils %}
+{% load cache %}
+
+{% block title %}Bestiary - {{ base.mon.get_element_display }} {{ base.mon.name }}{% if awakened %} ({{ awakened.mon.name }}){% endif %} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    {% static 'herders/images/' as img_url_prefix %}
+    <ul class="nav nav-tabs" role="tablist">
+        {% if base %}
+        <li role="presentation" class="active">
+            <a href="#base_monster" aria-controls="base_monster" role="tab" data-toggle="tab"><img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ base.mon.image_filename }}"/> {{ base.mon }}</a>
+        </li>
+        {% endif %}
+        {% if awakened %}
+        <li role="presentation">
+            <a href="#awakened_monster" aria-controls="awakened_monster" role="tab" data-toggle="tab"><img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ awakened.mon.image_filename }}"/> {{ awakened.mon }}</a>
+        </li>
+        {% endif %}
+    </ul>
+
+    <div class="tab-content">
+        {% if base %}
+        <div role="tabpanel" class="tab-pane active" id="base_monster">
+            {% include 'bestiary/monster_detail.html' with mon_data=base %}
+        </div>
+        {% endif %}
+
+        {% if awakened %}
+        <div role="tabpanel" class="tab-pane" id="awakened_monster">
+            {% include 'bestiary/monster_detail.html' with mon_data=awakened %}
+        </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "herders/js/bestiary.js" %}"></script>
+{% endblock javascript_compressed %}

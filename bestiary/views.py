@@ -107,23 +107,35 @@ def bestiary_detail(request, monster_slug):
 
     # Run some calcs to provide stat deltas between awakened and unawakened
     base_stats = base_monster.get_stats()
+    family = monster.monster_family()
 
-    context['base_monster'] = base_monster
-    context['base_monster_stats'] = base_stats
-    context['base_monster_leader_skill'] = base_monster.leader_skill
-    context['base_monster_skills'] = base_monster.skills.all().order_by('slot')
-    context['family'] = monster.monster_family()
+    context['base'] = {
+        'mon': base_monster,
+        'stats': base_stats,
+        'leader_skill': base_monster.leader_skill,
+        'skills': base_monster.skills.all().order_by('slot'),
+        'family': family['unawakened'],
+    }
+
 
     if base_monster.awakens_to:
         awakened_stats = awakened_monster.get_stats()
 
+        context['awakened'] = {
+            'mon': awakened_monster,
+            'stats': awakened_stats,
+            'leader_skill': awakened_monster.leader_skill,
+            'skills': awakened_monster.skills.all().order_by('slot'),
+            'family': family['awakened'],
+        }
+
         # Calculate change in stats as monster undergoes awakening
-        if base_stats['6']['1']['HP'] is not None and awakened_stats['6']['1']['HP'] is not None:
+        if base_stats['6']['HP'] is not None and awakened_stats['6']['HP'] is not None:
             awakened_stats_deltas = dict()
 
-            for stat, value in base_stats['6']['40'].iteritems():
-                if awakened_stats['6']['40'][stat] != value:
-                    awakened_stats_deltas[stat] = int(round((awakened_stats['6']['40'][stat] / float(value)) * 100 - 100))
+            for stat, value in base_stats['6'].iteritems():
+                if awakened_stats['6'][stat] != value:
+                    awakened_stats_deltas[stat] = int(round((awakened_stats['6'][stat] / float(value)) * 100 - 100))
 
             if base_monster.speed != awakened_monster.speed:
                 awakened_stats_deltas['SPD'] = awakened_monster.speed - base_monster.speed
@@ -140,14 +152,9 @@ def bestiary_detail(request, monster_slug):
             if base_monster.resistance != awakened_monster.resistance:
                 awakened_stats_deltas['Resistance'] = awakened_monster.resistance - base_monster.resistance
 
-            context['awakened_monster_stats_deltas'] = awakened_stats_deltas
+            context['awakened']['stat_deltas'] = awakened_stats_deltas
 
-        context['awakened_monster'] = awakened_monster
-        context['awakened_monster_stats'] = awakened_stats
-        context['awakened_monster_leader_skill'] = awakened_monster.leader_skill
-        context['awakened_monster_skills'] = awakened_monster.skills.all().order_by('slot')
-
-    return render(request, 'bestiary/detail.html', context)
+    return render(request, 'bestiary/detail_base.html', context)
 
 
 def bestiary_sanity_checks(request):

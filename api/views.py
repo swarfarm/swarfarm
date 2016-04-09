@@ -190,6 +190,10 @@ def get_craft_stats_by_type(request, craft_type):
         })
 
 
+def bestary_stat_charts(request, pk, stat):
+    pass
+
+
 def get_user_messages(request):
     from django.http import JsonResponse
     from django.contrib.messages import get_messages

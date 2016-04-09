@@ -1,0 +1,61 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p class="panel-title">Skills</p>
+    </div>
+    <table class="table table-condensed skill-table">
+        <thead>
+        <tr>
+            <th></th>
+            <th width="125">Name</th>
+            <th>Description</th>
+            <th>Effects</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if mon_data.leader_skill %}
+        <tr>
+            <td class="monster-image"><img src="{{ img_url_prefix }}skills/leader/{{ mon_data.leader_skill.icon_filename }}" class="monster-thumb"/></td>
+            <td>Leader Skill</td>
+            <td>{{ mon_data.leader_skill.skill_string }}</td>
+            <td></td>
+        </tr>
+        {% endif %}
+        {% for skill in mon_data.skills %}
+        <tr>
+            <td class="monster-image"
+            {% if skill.max_level > 1 %}
+            data-toggle="popover" data-trigger="hover" data-container="body" title="Skill-Up Effects" data-placement="left" data-content="{{ skill.level_progress_description|linebreaksbr }}"
+            {% endif %}
+            >
+                <div style="position:relative">
+                    <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" />
+                    {% if skill.max_level > 1 %}
+                    <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+                    {% endif %}
+                </div>
+            </td>
+            <td>{{ skill.name }} {% if skill.passive %}(Passive){% endif %}</td>
+            <td>{{ skill.description }}</td>
+            <td width="100">
+                {% for effect in skill.skill_effect.all %}
+                    {% if effect.icon_filename %}
+                    <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                            data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                            />
+                    {% else %}
+                        <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                            <span>{{ effect.name }}</span>
+                        </span>
+                    {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% empty %}
+            <tr><td colspan="4">No skills entered yet!</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

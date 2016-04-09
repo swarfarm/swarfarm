@@ -20,10 +20,6 @@ class BestiaryQuickSearchForm(forms.Form):
     helper.layout = Layout(
         FieldWithButtons(
             'monster_name',
-            HTML("""
-            <a href="{% url 'bestiary:home' %}" class="btn btn-default {% if view == 'bestiary' %}active{% endif %}">
-                <span class="fa fa-book hidden-sm"></span>
-                Bestiary
-            </a>"""),
+            Submit('Go', 'Go'),
         ),
     )

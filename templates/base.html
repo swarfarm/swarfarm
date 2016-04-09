@@ -80,7 +80,7 @@
                                     </a>
                                 </li>
                             {% endif %}
-                            <li {% if view == 'bestiary' and is_owner %}class="active"{% endif %}>
+                            <li {% if view == 'bestiary' %}class="active"{% endif %}>
                                 <a href="{% url 'bestiary:home' %}">
                                     <span class="fa fa-book hidden-sm"></span> Bestiary
                                 </a>

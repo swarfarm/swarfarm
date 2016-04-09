@@ -142,16 +142,9 @@ class Monster(models.Model):
 
             # Add the actual calculated stats
             stats_list[str(grade)] = {
-                '1': {
-                    'HP': self.actual_hp(grade, 1),
-                    'ATK': self.actual_attack(grade, 1),
-                    'DEF': self.actual_defense(grade, 1),
-                },
-                str(max_level): {
-                    'HP': self.actual_hp(grade, max_level),
-                    'ATK': self.actual_attack(grade, max_level),
-                    'DEF': self.actual_defense(grade, max_level),
-                },
+                'HP': self.actual_hp(grade, max_level),
+                'ATK': self.actual_attack(grade, max_level),
+                'DEF': self.actual_defense(grade, max_level),
             }
 
         return stats_list
@@ -211,28 +204,22 @@ class Monster(models.Model):
     def monster_family(self):
         family = Monster.objects.filter(com2us_id=self.com2us_id, obtainable=True).order_by('element')
 
-        return [
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_FIRE, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_FIRE, is_awakened=True).first(),
-            },
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_WATER, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_WATER, is_awakened=True).first(),
-            },
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_WIND, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_WIND, is_awakened=True).first(),
-            },
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=True).first(),
-            },
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_DARK, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_DARK, is_awakened=True).first(),
-            },
-        ]
+        return {
+            'unawakened': [
+                family.filter(element=Monster.ELEMENT_FIRE, is_awakened=False).first(),
+                family.filter(element=Monster.ELEMENT_WATER, is_awakened=False).first(),
+                family.filter(element=Monster.ELEMENT_WIND, is_awakened=False).first(),
+                family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=False).first(),
+                family.filter(element=Monster.ELEMENT_DARK, is_awakened=False).first(),
+            ],
+            'awakened': [
+                family.filter(element=Monster.ELEMENT_FIRE, is_awakened=True).first(),
+                family.filter(element=Monster.ELEMENT_WATER, is_awakened=True).first(),
+                family.filter(element=Monster.ELEMENT_WIND, is_awakened=True).first(),
+                family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=True).first(),
+                family.filter(element=Monster.ELEMENT_DARK, is_awakened=True).first(),
+            ]
+        }
 
     def all_skill_effects(self):
         return MonsterSkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))

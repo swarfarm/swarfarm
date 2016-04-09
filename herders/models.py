@@ -1935,6 +1935,19 @@ class RuneCraftInstanceManager(models.Manager):
 
 
 class RuneCraftInstance(models.Model):
+    QUALITY_NORMAL = 0
+    QUALITY_MAGIC = 1
+    QUALITY_RARE = 2
+    QUALITY_HERO = 3
+    QUALITY_LEGEND = 4
+
+    QUALITY_CHOICES = (
+        (QUALITY_MAGIC, 'Magic'),
+        (QUALITY_RARE, 'Rare'),
+        (QUALITY_HERO, 'Hero'),
+        (QUALITY_LEGEND, 'Legend'),
+    )
+
     # Valid value ranges
     # Type > Stat > Quality > Min/Max
     CRAFT_VALUE_RANGES = {
@@ -2063,7 +2076,7 @@ class RuneCraftInstance(models.Model):
     type = models.IntegerField(choices=RuneInstance.CRAFT_CHOICES)
     rune = models.IntegerField(choices=RuneInstance.TYPE_CHOICES)
     stat = models.IntegerField(choices=RuneInstance.STAT_CHOICES)
-    quality = models.IntegerField(choices=RuneInstance.QUALITY_CHOICES)
+    quality = models.IntegerField(choices=QUALITY_CHOICES)
     value = models.IntegerField(blank=True, null=True)
     uncommitted = models.BooleanField(default=False)  # Used for importing
 
@@ -2073,7 +2086,7 @@ class RuneCraftInstance(models.Model):
         else:
             percent = ''
 
-        return RuneInstance.RUNE_STAT_DISPLAY.get(self.stat) + ' ' + str(self.get_min_value()) + percent + '-' + str(self.get_max_value()) + percent
+        return RuneInstance.RUNE_STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + '-' + str(self.get_max_value()) + percent
 
     def get_min_value(self):
         try:

@@ -71,9 +71,6 @@ $('body')
                 title: "Add Grindstone/Gem",
                 message: data.html
             });
-
-            update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
-            $('.rating').rating();
         });
     })
     .on('click', '.rune-edit', function() {
@@ -96,17 +93,18 @@ $('body')
     })
     .on('click', '.rune-craft-edit', function() {
         //Pull in edit form on modal show
-        var rune_id = $(this).data('craft-id');
+        var craft_id = $(this).data('craft-id');
 
         $.ajax({
             type: 'get',
-            url: '/profile/' + PROFILE_NAME + '/runes/craft/edit/' + rune_id + '/',
+            url: '/profile/' + PROFILE_NAME + '/runes/craft/edit/' + craft_id + '/',
             global: false
         }).done(function(data) {
             bootbox.dialog({
                 title: "Edit Grindstone/Gem",
                 message: data.html
             });
+            update_craft_stat_options($('#id_type').val(), $('#id_stat'));
         });
     })
     .on('click', '.rune-delete', function() {

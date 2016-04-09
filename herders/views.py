@@ -1829,7 +1829,7 @@ def rune_craft_edit(request, profile_name, craft_id):
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    form = AddRuneCraftInstanceForm(request.POST or None, instance=craft, auto_id='edit_id_%s')
+    form = AddRuneCraftInstanceForm(request.POST or None, instance=craft)
     form.helper.form_action = reverse('herders:rune_craft_edit', kwargs={'profile_name': profile_name, 'craft_id': craft_id})
     template = loader.get_template('herders/profile/runes/add_craft_form.html')
 
@@ -1837,7 +1837,7 @@ def rune_craft_edit(request, profile_name, craft_id):
         if request.method == 'POST' and form.is_valid():
             rune = form.save()
             messages.success(request, 'Saved changes to ' + str(rune))
-            form = AddRuneInstanceForm(auto_id='edit_id_%s')
+            form = AddRuneInstanceForm()
             form.helper.form_action = reverse('herders:rune_craft_edit', kwargs={'profile_name': profile_name, 'craft_id': craft_id})
 
             response_data = {

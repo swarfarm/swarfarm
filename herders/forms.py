@@ -1224,6 +1224,7 @@ class ExportRuneForm(forms.Form):
 class AddRuneCraftInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRuneCraftInstanceForm, self).__init__(*args, **kwargs)
+        self.fields['rune'].choices = self.fields['rune'].choices[1:]  # Remove the empty '----' option from the list
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_id = 'addRuneCraftForm'
@@ -1241,7 +1242,7 @@ class AddRuneCraftInstanceForm(ModelForm):
             ),
             Div(css_class='clearfix'),
             FormActions(
-                Submit('Save', 'save'),
+                Submit('save', 'Save'),
             )
         )
 

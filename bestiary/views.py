@@ -93,6 +93,7 @@ def bestiary_detail(request, monster_slug):
 
     context = {
         'view': 'bestiary',
+        'active_slug': monster_slug,
     }
 
     if request.user.is_authenticated():
@@ -107,16 +108,14 @@ def bestiary_detail(request, monster_slug):
 
     # Run some calcs to provide stat deltas between awakened and unawakened
     base_stats = base_monster.get_stats()
-    family = monster.monster_family()
+    context['family'] = monster.monster_family()
 
     context['base'] = {
         'mon': base_monster,
         'stats': base_stats,
         'leader_skill': base_monster.leader_skill,
         'skills': base_monster.skills.all().order_by('slot'),
-        'family': family['unawakened'],
     }
-
 
     if base_monster.awakens_to:
         awakened_stats = awakened_monster.get_stats()
@@ -126,7 +125,6 @@ def bestiary_detail(request, monster_slug):
             'stats': awakened_stats,
             'leader_skill': awakened_monster.leader_skill,
             'skills': awakened_monster.skills.all().order_by('slot'),
-            'family': family['awakened'],
         }
 
         # Calculate change in stats as monster undergoes awakening

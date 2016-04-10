@@ -2,7 +2,7 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <p class="panel-title">Stats</p>
+        <p class="panel-title"><strong>Stats</strong></p>
     </div>
     <div class="table-responsive">
         <table class="table table-hover">
@@ -22,9 +22,9 @@
                         HP
                         {% if mon_data.stat_deltas.HP %}
                             {% if mon_data.stat_deltas.HP > 0 %}
-                                <span class="text-success">(+{{ mon_data.stat_deltas.HP }}%)</span>
+                                <span class="text-success pull-right">+{{ mon_data.stat_deltas.HP }}%</span>
                             {% else %}
-                                <span class="text-danger">({{ mon_data.stat_deltas.HP }}%)</span>
+                                <span class="text-danger pull-right">{{ mon_data.stat_deltas.HP }}%</span>
                             {% endif %}
                         {% endif %}
                     </td>
@@ -37,9 +37,9 @@
                         ATK
                         {% if mon_data.stat_deltas.ATK %}
                             {% if mon_data.stat_deltas.ATK > 0 %}
-                                <span class="text-success">(+{{ mon_data.stat_deltas.ATK }}%)</span>
+                                <span class="text-success pull-right">+{{ mon_data.stat_deltas.ATK }}%</span>
                             {% else %}
-                                <span class="text-danger">({{ mon_data.stat_deltas.ATK }}%)</span>
+                                <span class="text-danger pull-right">{{ mon_data.stat_deltas.ATK }}%</span>
                             {% endif %}
                         {% endif %}
                     </td>
@@ -52,9 +52,9 @@
                         DEF
                         {% if mon_data.stat_deltas.DEF %}
                             {% if mon_data.stat_deltas.DEF > 0 %}
-                                <span class="text-success">(+{{ mon_data.stat_deltas.DEF }}%)</span>
+                                <span class="text-success pull-right">+{{ mon_data.stat_deltas.DEF }}%</span>
                             {% else %}
-                                <span class="text-danger">({{ mon_data.stat_deltas.DEF }}%)</span>
+                                <span class="text-danger pull-right">{{ mon_data.stat_deltas.DEF }}%</span>
                             {% endif %}
                         {% endif %}
                     </td>
@@ -67,9 +67,9 @@
                         SPD
                         {% if mon_data.stat_deltas.SPD %}
                             {% if mon_data.stat_deltas.SPD > 0 %}
-                                <span class="text-success">(+{{ mon_data.stat_deltas.SPD }}%)</span>
+                                <span class="text-success pull-right">+{{ mon_data.stat_deltas.SPD }}</span>
                             {% else %}
-                                <span class="text-danger">({{ mon_data.stat_deltas.SPD }}%)</span>
+                                <span class="text-danger pull-right">{{ mon_data.stat_deltas.SPD }}</span>
                             {% endif %}
                         {% endif %}
                     </td>
@@ -80,9 +80,9 @@
                         CRIT Rate
                         {% if mon_data.stat_deltas.CRIT_Rate %}
                             {% if mon_data.stat_deltas.CRIT_Rate > 0 %}
-                                <span class="text-success">(+{{ mon_data.stat_deltas.CRIT_Rate }}%)</span>
+                                <span class="text-success pull-right">+{{ mon_data.stat_deltas.CRIT_Rate }}%</span>
                             {% else %}
-                                <span class="text-danger">({{ mon_data.stat_deltas.CRIT_Rate }}%)</span>
+                                <span class="text-danger pull-right">{{ mon_data.stat_deltas.CRIT_Rate }}%</span>
                             {% endif %}
                         {% endif %}
                     </td>
@@ -93,9 +93,9 @@
                         CRIT DMG
                         {% if mon_data.stat_deltas.CRIT_DMG %}
                             {% if mon_data.stat_deltas.CRIT_DMG > 0 %}
-                                <span class="text-success">(+{{ mon_data.stat_deltas.CRIT_DMG }}%)</span>
+                                <span class="text-success pull-right">+{{ mon_data.stat_deltas.CRIT_DMG }}%</span>
                             {% else %}
-                                <span class="text-danger">({{ mon_data.stat_deltas.CRIT_DMG }}%)</span>
+                                <span class="text-danger pull-right">{{ mon_data.stat_deltas.CRIT_DMG }}%</span>
                             {% endif %}
                         {% endif %}
                     </td>
@@ -106,9 +106,9 @@
                         Accuracy
                         {% if mon_data.stat_deltas.Accuracy %}
                             {% if mon_data.stat_deltas.Accuracy > 0 %}
-                                <span class="text-success">(+{{ mon_data.stat_deltas.Accuracy }}%)</span>
+                                <span class="text-success pull-right">+{{ mon_data.stat_deltas.Accuracy }}%</span>
                             {% else %}
-                                <span class="text-danger">({{ mon_data.stat_deltas.Accuracy }}%)</span>
+                                <span class="text-danger pull-right">{{ mon_data.stat_deltas.Accuracy }}%</span>
                             {% endif %}
                         {% endif %}
                     </td>
@@ -119,9 +119,9 @@
                         Resistance
                         {% if mon_data.stat_deltas.Resistance %}
                             {% if mon_data.stat_deltas.Resistance > 0 %}
-                                <span class="text-success">+{{ mon_data.stat_deltas.Resistance }}%</span>
+                                <span class="text-success pull-right">+{{ mon_data.stat_deltas.Resistance }}%</span>
                             {% else %}
-                                <span class="text-danger">{{ mon_data.stat_deltas.Resistance }}%</span>
+                                <span class="text-danger pull-right">{ mon_data.stat_deltas.Resistance }}%</span>
                             {% endif %}
                         {% endif %}
                     </td>

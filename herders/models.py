@@ -593,9 +593,6 @@ class MonsterSkillEffect(models.Model):
     def __unicode__(self):
         return self.name
 
-    class Meta:
-        ordering = ['-is_buff', 'name']
-
 
 class MonsterSkillEffectDetail(models.Model):
     skill = models.ForeignKey(MonsterSkill, on_delete=models.CASCADE)

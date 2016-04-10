@@ -8,10 +8,6 @@
     <table class="table table-condensed table-bordered">
         <tbody>
         <tr>
-            <td>Archetype:</td>
-            <td>{{ mon_data.mon.get_archetype_display }}</td>
-        </tr>
-        <tr>
             <td>Awakening Bonus:</td>
             <td>{{ mon_data.mon.awaken_bonus }}</td>
         </tr>
@@ -39,30 +35,18 @@
         </tr>
         {% endif %}
 
-        {% if awakened and awakened.mon.skill_ups_to_max %}
+        {% if mon_data.mon.skill_ups_to_max %}
         <tr>
             <td>Skill-ups to Max</td>
             <td>
                 <div class="monster-image">
                     <div class="sprite sprite-devilmon_dark">
-                        <span class="image-plus image-plus-right">{{ mon_data.mon.skill_ups_to_max }}</span>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        {% elif mon_data.mon.skill_ups_to_max %}
-        <tr>
-            <td>Skill-ups to Max</td>
-            <td>
-                <div class="monster-image">
-                    <div class="sprite sprite-devilmon_dark">
-                        <span class="image-plus image-plus-right">{{ mon_data.mon.skill_ups_to_max }}</span>
+                        <span class="image-plus image-plus-main">{{ mon_data.mon.skill_ups_to_max }}</span>
                     </div>
                 </div>
             </td>
         </tr>
         {% endif %}
-
         <tr>
             <td>Resources:</td>
             <td>

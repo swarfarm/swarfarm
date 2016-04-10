@@ -713,10 +713,13 @@ td>h6 {
     left: 0;
 }
 
-.bestiary-family {
-    clear: both;
-    padding-top: 5px;
-    width: 102px;
+.bestiary-name {
+    margin-left: 110px;
+    margin-top: 5px;
+}
+
+.bestiary-name span {
+    position: relative;
 }
 
 .skill-table {

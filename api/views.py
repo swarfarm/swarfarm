@@ -203,21 +203,21 @@ def bestary_stat_charts(request, pk):
     for grade in range(base_stars, 7):
         data_series.append({
             'name': 'HP ' + str(grade) + '*',
-            'data': [monster.actual_hp(grade, level) for level in range(1, 41)],
+            'data': [monster.actual_hp(grade, level) for level in range(1, monster.max_level_from_stars(grade) + 1)],
             'pointStart': 1,
             'visible': True if grade == 6 else False,
             'yAxis': 'hp',
         })
         data_series.append({
             'name': 'ATK ' + str(grade) + '*',
-            'data': [monster.actual_attack(grade, level) for level in range(1, 41)],
+            'data': [monster.actual_attack(grade, level) for level in range(1, monster.max_level_from_stars(grade) + 1)],
             'pointStart': 1,
             'visible': True if grade == 6 else False,
             'yAxis': 'atkdef',
         })
         data_series.append({
             'name': 'DEF ' + str(grade) + '*',
-            'data': [monster.actual_defense(grade, level) for level in range(1, 41)],
+            'data': [monster.actual_defense(grade, level) for level in range(1, monster.max_level_from_stars(grade) + 1)],
             'pointStart': 1,
             'visible': True if grade == 6 else False,
             'yAxis': 'atkdef',

@@ -202,24 +202,15 @@ class Monster(models.Model):
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 
     def monster_family(self):
-        family = Monster.objects.filter(com2us_id=self.com2us_id, obtainable=True).order_by('element')
+        family = Monster.objects.filter(com2us_id=self.com2us_id, obtainable=True).order_by('element', 'is_awakened')
 
-        return {
-            'unawakened': [
-                family.filter(element=Monster.ELEMENT_FIRE, is_awakened=False).first(),
-                family.filter(element=Monster.ELEMENT_WATER, is_awakened=False).first(),
-                family.filter(element=Monster.ELEMENT_WIND, is_awakened=False).first(),
-                family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=False).first(),
-                family.filter(element=Monster.ELEMENT_DARK, is_awakened=False).first(),
-            ],
-            'awakened': [
-                family.filter(element=Monster.ELEMENT_FIRE, is_awakened=True).first(),
-                family.filter(element=Monster.ELEMENT_WATER, is_awakened=True).first(),
-                family.filter(element=Monster.ELEMENT_WIND, is_awakened=True).first(),
-                family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=True).first(),
-                family.filter(element=Monster.ELEMENT_DARK, is_awakened=True).first(),
-            ]
-        }
+        return [
+            family.filter(element=Monster.ELEMENT_FIRE).first(),
+            family.filter(element=Monster.ELEMENT_WATER).first(),
+            family.filter(element=Monster.ELEMENT_WIND).first(),
+            family.filter(element=Monster.ELEMENT_LIGHT).first(),
+            family.filter(element=Monster.ELEMENT_DARK).first(),
+        ]
 
     def all_skill_effects(self):
         return MonsterSkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))

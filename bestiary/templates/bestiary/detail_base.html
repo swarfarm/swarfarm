@@ -9,12 +9,14 @@
     {% static 'herders/images/' as img_url_prefix %}
 
     <ul class="nav nav-tabs" role="tablist">
-        {% for mon in family.unawakened %}
-        <li role="presentation" {% if mon.bestiary_slug == active_slug %}class="active"{% endif %}>
-            <a href="{% url 'bestiary:detail' monster_slug=mon.bestiary_slug %}" role="tab">
-                <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ mon.image_filename }}" /> {{ mon }}
-            </a>
-        </li>
+        {% for mon in family %}
+            {% if mon %}
+            <li role="presentation" {% if mon.bestiary_slug == active_slug %}class="active"{% endif %}>
+                <a href="{% url 'bestiary:detail' monster_slug=mon.bestiary_slug %}" role="tab">
+                    <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ mon.image_filename }}" /> {{ mon }}
+                </a>
+            </li>
+            {% endif %}
         {% endfor %}
     </ul>
 

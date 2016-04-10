@@ -8,7 +8,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.models import Monster, Effect, LeaderSkill
-from .models import MonsterInstance, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance
+from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
@@ -558,11 +558,12 @@ class EditMonsterInstanceForm(ModelForm):
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
                 Field('ignore_for_fusion', css_class='checkbox'),
-                'priority',
                 'skill_1_level',
                 'skill_2_level',
                 'skill_3_level',
                 'skill_4_level',
+                'tags',
+                'priority',
                 Field('notes'),
             ),
             Div(
@@ -576,7 +577,10 @@ class EditMonsterInstanceForm(ModelForm):
     class Meta:
         model = MonsterInstance
         fields = ('stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority',
-                  'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level', 'notes')
+                  'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level', 'notes', 'tags')
+        widgets = {
+            'tags': autocomplete_light.MultipleChoiceWidget('MonsterTagAutocomplete')
+        }
 
 
 class PowerUpMonsterInstanceForm(forms.Form):
@@ -629,6 +633,12 @@ class FilterMonsterInstanceForm(forms.Form):
         label='Monster Name',
         max_length=100,
         required=False,
+    )
+    tags__pk = forms.MultipleChoiceField(
+        label='Tags',
+        choices=MonsterTag.objects.values_list('pk', 'name'),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
     )
     stars = forms.MultipleChoiceField(
         choices=Monster.STAR_CHOICES,
@@ -696,6 +706,7 @@ class FilterMonsterInstanceForm(forms.Form):
     helper.field_class = 'col-md-11 no-left-gutter'
     helper.layout = Layout(
         Field('monster__name__icontains', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
+        Field('tags__pk', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
@@ -867,19 +878,22 @@ class AddRuneInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRuneInstanceForm, self).__init__(*args, **kwargs)
         self.fields['type'].choices = self.fields['type'].choices[1:]  # Remove the empty '----' option from the list
-        self.fields['stars'].label = False
         self.fields['main_stat'].label = False
         self.fields['main_stat_value'].label = False
         self.fields['innate_stat'].label = False
         self.fields['innate_stat_value'].label = False
         self.fields['substat_1'].label = False
         self.fields['substat_1_value'].label = False
+        self.fields['substat_1_craft'].label = False
         self.fields['substat_2'].label = False
         self.fields['substat_2_value'].label = False
+        self.fields['substat_2_craft'].label = False
         self.fields['substat_3'].label = False
         self.fields['substat_3_value'].label = False
+        self.fields['substat_3_craft'].label = False
         self.fields['substat_4'].label = False
         self.fields['substat_4_value'].label = False
+        self.fields['substat_4_craft'].label = False
         self.fields['assigned_to'].label = False
 
         self.helper = FormHelper(self)
@@ -889,69 +903,66 @@ class AddRuneInstanceForm(ModelForm):
         self.helper.layout = Layout(
             Div(
                 Field('type', template="crispy/rune_button_radio_select.html"),
-                css_class='col-lg-3',
+                css_class='col-md-2',
             ),
             Div(
                 Div(
-                    Div(Field('slot', placeholder='1-6'), css_class='col-lg-4 col-lg-offset-3'),
-                    Div(Field('level', placeholder='0-15'), css_class='col-lg-5'),
+                    Div(Field('slot', placeholder='1-6'), css_class='col-md-3'),
+                    Div(Field('stars', placeholder='1-6'), css_class='col-md-4'),
+                    Div(Field('level', placeholder='0-15'), css_class='col-md-4'),
                     css_class='row'
                 ),
                 Div(
-                    Div(HTML('<label>Stars</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div(Field('stars', placeholder='1-6'), css_class='col-lg-9'),
-                    css_class='row'
-                ),
-                Div(
-                    Div(HTML('<label>Stat Type</label>'), css_class='col-lg-4 col-lg-offset-3'),
-                    Div(HTML('<label>Stat Value</label>'), css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Main Stat</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Field('main_stat', wrapper_class='col-lg-4'),
-                    Field('main_stat_value', wrapper_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Innate Stat</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('innate_stat', css_class='col-lg-4'),
-                    Div('innate_stat_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Substat 1</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('substat_1', css_class='col-lg-4'),
-                    Div('substat_1_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Substat 2</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('substat_2', css_class='col-lg-4'),
-                    Div('substat_2_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Substat 3</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('substat_3', css_class='col-lg-4'),
-                    Div('substat_3_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Substat 4</label>'), css_class='col-lg-3 text-right no-right-gutter'),
-                    Div('substat_4', css_class='col-lg-4'),
-                    Div('substat_4_value', css_class='col-lg-5'),
-                    css_class='row',
-                ),
-                Div(
-                    Div(HTML('<label>Assign To</label>'), css_class='col-lg-3 text-right no-right-gutter'),
                     Div(
-                        Field('assigned_to'),
-                        css_class='col-lg-9',
+                        HTML('<label class="col-md-2 control-label">Main Stat</label>'),
+                        Field('main_stat', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('main_stat_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        css_class='form-group form-group-condensed',
                     ),
-                    css_class='row',
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Innate Stat</label>'),
+                        Field('innate_stat', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('innate_stat_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Substat 1</label>'),
+                        Field('substat_1', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('substat_1_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        Field('substat_1_craft', wrapper_class='col-md-3 inline-horizontal'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Substat 2</label>'),
+                        Field('substat_2', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('substat_2_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        Field('substat_2_craft', wrapper_class='col-md-3 inline-horizontal'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Substat 3</label>'),
+                        Field('substat_3', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('substat_3_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        Field('substat_3_craft', wrapper_class='col-md-3 inline-horizontal'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Substat 4</label>'),
+                        Field('substat_4', wrapper_class='col-md-4 inline-horizontal'),
+                        Field('substat_4_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        Field('substat_4_craft', wrapper_class='col-md-3 inline-horizontal'),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Assign To</label>'),
+                        Div(
+                            Field('assigned_to', wrapper_class='col-md-4'),
+                        ),
+                        css_class='form-group form-group-condensed',
+                    ),
+                    css_class='form-horizontal',
                 ),
-                css_class='col-lg-9',
+                css_class='col-md-10',
             ),
             Div(css_class='clearfix'),
             FormActions(
@@ -965,10 +976,10 @@ class AddRuneInstanceForm(ModelForm):
             'type', 'stars', 'level', 'slot',
             'main_stat', 'main_stat_value',
             'innate_stat', 'innate_stat_value',
-            'substat_1', 'substat_1_value',
-            'substat_2', 'substat_2_value',
-            'substat_3', 'substat_3_value',
-            'substat_4', 'substat_4_value',
+            'substat_1', 'substat_1_value', 'substat_1_craft',
+            'substat_2', 'substat_2_value', 'substat_2_craft',
+            'substat_3', 'substat_3_value', 'substat_3_craft',
+            'substat_4', 'substat_4_value', 'substat_4_craft',
             'assigned_to',
         )
         widgets = {
@@ -1208,3 +1219,35 @@ class ExportRuneForm(forms.Form):
         Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes, monsters, and saved builds currently present. It is advised to back up your existing data first.', css_class='alert-danger'),
         Field('json_data'),
     )
+
+
+class AddRuneCraftInstanceForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AddRuneCraftInstanceForm, self).__init__(*args, **kwargs)
+        self.fields['rune'].choices = self.fields['rune'].choices[1:]  # Remove the empty '----' option from the list
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'addRuneCraftForm'
+        self.helper.form_class = 'ajax-form'
+        self.helper.layout = Layout(
+            Div(
+                Field('rune', template="crispy/rune_button_radio_select.html"),
+                css_class='col-md-4',
+            ),
+            Div(
+                Field('type'),
+                Field('stat'),
+                Field('quality'),
+                css_class='col-md-8',
+            ),
+            Div(css_class='clearfix'),
+            FormActions(
+                Submit('save', 'Save'),
+            )
+        )
+
+    class Meta:
+        model = RuneCraftInstance
+        fields = (
+            'type', 'rune', 'stat', 'quality'
+        )

@@ -13,7 +13,7 @@ function EssenceStorage() {
 
 function updateFusion() {
     // Get the active tab
-    var fusion = $("li.active>a").data('fusion');
+    var fusion = $(".fusion-tabs li.active>a").data('fusion');
 
     $.ajax({
         type: 'get',

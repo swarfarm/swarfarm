@@ -25,13 +25,17 @@
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'attribute' %}active{% endif %}" data-mode="attribute">Attribute</button>
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'priority' %}active{% endif %}" data-mode="priority">Priority</button>
             </div>
+            <span class="pull-right">{{ filtered_count }} of {{ total_count }} monster{{ total_count|pluralize }}</span>
         </div>
         <div class="panel-body">
             {% if monsters %}
                 {% for groupname, monsters in monster_stable.iteritems %}
                     {% if monsters|length > 0 %}
                         <div class="panel panel-default">
-                            <div class="panel-heading"><strong>{{ groupname|capfirst }}</strong></div>
+                            <div class="panel-heading">
+                                <strong>{{ groupname|capfirst }}</strong>
+                                <span class="pull-right">{% with num_monsters=monsters|length %}{{ num_monsters }} monster{{ num_monsters|pluralize }}{% endwith %}</span>
+                            </div>
                             <div class="panel-body">
                                 {% for instance in monsters %}
                                     <div class="monster-box">

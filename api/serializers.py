@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from bestiary.models import Monster, Skill, LeaderSkill, Effect, ScalesWith, ScalingStat, Source
-from herders.models import Summoner, MonsterInstance, RuneInstance, TeamGroup, Team
+from herders.models import Summoner, MonsterInstance, MonsterTag, RuneInstance, TeamGroup, Team
 
 
 # Read-only monster database stuff.
@@ -45,18 +45,39 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MonsterLeaderSkillSerializer(serializers.ModelSerializer):
+    attribute = serializers.SerializerMethodField('get_stat')
+    area = serializers.SerializerMethodField()
+    element = serializers.SerializerMethodField()
+
     class Meta:
         model = LeaderSkill
+        fields = ('attribute', 'amount', 'area', 'element')
+
+    def get_stat(self, instance):
+        return instance.get_attribute_display()
+
+    def get_area(self, instance):
+        return instance.get_area_display()
+
+    def get_element(self, instance):
+        return instance.get_element_display()
 
 
 # Small serializer for necessary info for awakens_from/to on main MonsterSerializer
 class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
+    element = serializers.SerializerMethodField()
+
     class Meta:
         model = Monster
         fields = ('url', 'pk', 'name', 'element')
 
+    def get_element(self, instance):
+        return instance.get_element_display()
+
 
 class MonsterSerializer(serializers.HyperlinkedModelSerializer):
+    element = serializers.SerializerMethodField()
+    archetype = serializers.SerializerMethodField()
     leader_skill = MonsterLeaderSkillSerializer(read_only=True)
     awakens_from = AwakensMonsterSerializer(read_only=True)
     awakens_to = AwakensMonsterSerializer(read_only=True)
@@ -81,6 +102,11 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
             'source', 'fusion_food'
         )
 
+    def get_element(self, instance):
+        return instance.get_element_display()
+
+    def get_archetype(self, instance):
+        return instance.get_archetype_display()
 
 # Limited fields for displaying list view sort of display.
 class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
@@ -97,6 +123,12 @@ class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 # Individual collection stuff
+class MonsterTagSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = MonsterTag
+        fields = ('id', 'name')
+
+
 class SummonerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Summoner
@@ -107,15 +139,15 @@ class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RuneInstance
         fields = (
-            'pk', 'type', 'get_type_display', 'owner', 'assigned_to',
+            'pk', 'type', 'get_type_display', 'owner', 'assigned_to', 'efficiency',
             'stars', 'level', 'slot', 'quality', 'value', 'get_quality_display',
             'main_stat', 'get_main_stat_rune_display', 'main_stat_value',
             'innate_stat', 'get_innate_stat_rune_display', 'innate_stat_value',
-            'substat_1', 'get_substat_1_rune_display', 'substat_1_value',
-            'substat_2', 'get_substat_2_rune_display', 'substat_2_value',
-            'substat_3', 'get_substat_3_rune_display', 'substat_3_value',
-            'substat_4', 'get_substat_4_rune_display', 'substat_4_value',
-            'PERCENT_STATS', 'efficiency',
+            'substat_1', 'get_substat_1_rune_display', 'substat_1_value', 'substat_1_craft',
+            'substat_2', 'get_substat_2_rune_display', 'substat_2_value', 'substat_2_craft',
+            'substat_3', 'get_substat_3_rune_display', 'substat_3_value', 'substat_3_craft',
+            'substat_4', 'get_substat_4_rune_display', 'substat_4_value', 'substat_4_craft',
+            'PERCENT_STATS', 'CRAFT_GRINDSTONE', 'CRAFT_ENCHANT_GEM',
         )
 
 
@@ -142,6 +174,7 @@ class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
     team_leader = TeamSerializer(many=True)
     team_set = TeamSerializer(many=True)
     runeinstance_set = RuneInstanceSerializer(many=True)
+    tags = MonsterTagSerializer(many=True)
 
     class Meta:
         model = MonsterInstance
@@ -153,6 +186,6 @@ class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
             'hp', 'attack', 'defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
             'team_leader', 'team_set',
-            'runeinstance_set'
+            'runeinstance_set', 'tags'
         )
         depth = 1

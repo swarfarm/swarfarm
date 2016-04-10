@@ -110,6 +110,16 @@
     </tr>
     {% endif %}
 
+    {% if instance.tags %}
+    <tr>
+        <td colspan="4">
+            {% for tag in instance.tags %}
+            <span class="tag">{{ tag.name|safe }}</span>
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
+
     {% if instance.notes %}
     <tr>
         <td colspan="4"><strong>Notes: </strong>{{ instance.notes|markdown }}</td>

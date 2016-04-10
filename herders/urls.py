@@ -29,6 +29,7 @@ urlpatterns = [
             url(r'^delete/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_delete, name='monster_instance_delete'),
             url(r'^powerup/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_power_up, name='monster_instance_power_up'),
             url(r'^awaken/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_awaken, name='monster_instance_awaken'),
+            url(r'^remove_runes/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_remove_runes, name='monster_instance_remove_runes'),
             url(r'^copy/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_duplicate, name='monster_instance_duplicate'),
             url(r'^piece/', include([
                 url(r'^add/$', views.monster_piece_add, name='monster_piece_add'),
@@ -59,13 +60,19 @@ urlpatterns = [
             url(r'^delete/all/$', views.rune_delete_all, name='rune_delete_all'),
             url(r'^delete/(?P<rune_id>[0-9a-f]{32})/$', views.rune_delete, name='rune_delete'),
             url(r'^unassign/(?P<rune_id>[0-9a-f]{32})/$', views.rune_unassign, name='rune_unassign'),
+            url(r'^unassign/all/$', views.rune_unassign_all, name='rune_unassign_all'),
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/$', views.rune_assign, name='rune_assign'),
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<slot>[0-9])/$', views.rune_assign, name='rune_assign_with_slot'),
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<rune_id>[0-9a-f]{32})/$', views.rune_assign_choice, name='rune_assign_choice'),
             url(r'^inventory/$', views.rune_inventory, name='rune_inventory'),
-            url(r'^inventory/(?P<view_mode>(list|box|grid))/$', views.rune_inventory, name='rune_inventory_view_mode'),
+            url(r'^inventory/(?P<view_mode>(list|box|grid|crafts))/$', views.rune_inventory, name='rune_inventory_view_mode'),
             url(r'^inventory/(?i)(?P<view_mode>(list|box|grid))/(?i)(?P<box_grouping>[a-zA-Z]+)/$', views.rune_inventory, name='rune_inventory_view_mode_sorted'),
             url(r'^inventory/counts/$', views.rune_counts, name='rune_inventory_counts'),
+            url(r'^craft/', include([
+                url(r'^add/$', views.rune_craft_add, name='rune_craft_add'),
+                url(r'^edit/(?P<craft_id>[0-9a-f]{32})/$', views.rune_craft_edit, name='rune_craft_edit'),
+                url(r'^delete/(?P<craft_id>[0-9a-f]{32})/$', views.rune_craft_delete, name='rune_craft_delete'),
+            ])),
         ])),
         url(r'following/', include([
             url(r'^$', views.following, name='profile_following'),

@@ -9,7 +9,12 @@
         <p class="panel-title">Personal Notes</p>
     </div>
     <div class="panel-body">
-        {{ instance.notes|markdown }}
+        <div>
+            {% for tag in instance.tags.all %}
+            <span class="tag">{{ tag }}</span>
+            {% endfor %}
+        </div>
+        <p>{{ instance.notes|markdown }}</p>
     </div>
 </div>
 {% endif %}

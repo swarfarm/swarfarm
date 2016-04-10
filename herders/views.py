@@ -15,7 +15,7 @@ from django.template import loader, RequestContext
 from bestiary.models import Monster, Fusion
 from .forms import *
 from .filters import *
-from .models import Summoner, MonsterInstance, MonsterPiece, TeamGroup, Team
+from .models import Summoner, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance
 
 
 def register(request):
@@ -205,6 +205,8 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     summoner = get_object_or_404(Summoner, user__username=profile_name)
     monster_queryset = MonsterInstance.committed.filter(owner=summoner)
+    total_monsters = monster_queryset.count()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if view_mode == 'list':
@@ -218,9 +220,13 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     else:
         monster_filter = MonsterInstanceFilter(queryset=monster_queryset)
 
+    filtered_count = monster_filter.qs.count()
+
     context = {
         'monsters': monster_filter,
         'monster_pieces': pieces,
+        'total_count': total_monsters,
+        'filtered_count': filtered_count,
         'profile_name': profile_name,
         'is_owner': is_owner,
     }
@@ -255,10 +261,10 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 monster_stable['light'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
                 monster_stable['dark'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
             elif box_grouping == 'priority':
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_HIGH][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_MED][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_LOW][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable[MonsterInstance.PRIORITY_CHOICES[MonsterInstance.PRIORITY_DONE][1]] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_DONE).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['High'] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['Medium'] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['Low'] = MonsterInstance.committed.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
+                monster_stable['None'] = MonsterInstance.committed.select_related('monster').filter(owner=summoner).filter(Q(priority=None) | Q(priority=0)).order_by('-level', 'monster__element', 'monster__name')
             else:
                 raise Http404('Invalid sort method')
 
@@ -502,6 +508,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     context = {
         'runes': instance_runes,
         'instance': instance,
+        'profile_name': profile_name,
         'is_owner': is_owner,
     }
 
@@ -562,6 +569,31 @@ def monster_instance_view_info(request, profile_name, instance_id):
     }
 
     return render(request, 'herders/profile/monster_view/notes_info.html', context)
+
+
+@login_required()
+def monster_instance_remove_runes(request, profile_name, instance_id):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        try:
+            instance = MonsterInstance.committed.get(pk=instance_id)
+        except ObjectDoesNotExist:
+            raise Http404()
+        else:
+            for rune in instance.runeinstance_set.all():
+                rune.assigned_to = None
+                rune.save()
+
+            instance.save()
+            messages.success(request, 'Removed all runes from ' + str(instance))
+            response_data = {
+                'code': 'success',
+            }
+            return JsonResponse(response_data)
+    else:
+        raise PermissionDenied()
 
 
 @login_required()
@@ -1400,22 +1432,29 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     if request.session.modified:
         return HttpResponse("Rune view mode cookie set")
-
-    summoner = get_object_or_404(Summoner, user__username=profile_name)
-    rune_queryset = RuneInstance.committed.filter(owner=summoner)
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
-    form = FilterRuneForm(request.POST or None)
     view_mode = request.session.get('rune_inventory_view_mode', 'box').lower()
     box_grouping = request.session.get('rune_inventory_box_method', 'slot').lower()
+
+    if view_mode == 'crafts':
+        return rune_inventory_crafts(request, profile_name)
+
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    rune_queryset = RuneInstance.committed.filter(owner=summoner)
+    total_count = rune_queryset.count()
+    form = FilterRuneForm(request.POST or None)
 
     if form.is_valid():
         rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)
     else:
         rune_filter = RuneInstanceFilter(None, queryset=rune_queryset)
 
+    filtered_count = rune_filter.qs.count()
+
     context = {
         'runes': rune_filter,
+        'total_count': total_count,
+        'filtered_count': filtered_count,
         'profile_name': profile_name,
         'is_owner': is_owner,
     }
@@ -1455,6 +1494,29 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
         return render(request, template, context)
     else:
         return render(request, 'herders/profile/not_public.html', context)
+
+
+def rune_inventory_crafts(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    context = {
+        'profile_name': profile_name,
+        'is_owner': is_owner,
+    }
+
+    if is_owner or summoner.public:
+        craft_box = OrderedDict()
+        for (craft, craft_name) in RuneInstance.CRAFT_CHOICES:
+            craft_box[craft_name] = OrderedDict()
+            for rune, rune_name in RuneInstance.TYPE_CHOICES:
+                craft_box[craft_name][rune_name] = RuneCraftInstance.committed.filter(owner=summoner, type=craft, rune=rune).order_by('stat', 'quality')
+
+        context['crafts'] = craft_box
+
+        return render(request, 'herders/profile/runes/inventory_crafts.html', context)
+    else:
+        return render(request, 'herders/profile/not_public.html')
 
 
 def rune_counts(request, profile_name):
@@ -1638,6 +1700,38 @@ def rune_unassign(request, profile_name, rune_id):
         return HttpResponseForbidden()
 
 
+@login_required()
+def rune_unassign_all(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    assigned_mons = []
+    assigned_runes = RuneInstance.committed.filter(owner=summoner, assigned_to__isnull=False)
+    number_assigned = assigned_runes.count()
+
+    if is_owner:
+        for rune in assigned_runes:
+            if rune.assigned_to not in assigned_mons:
+                assigned_mons.append(rune.assigned_to)
+
+            rune.assigned_to = None
+            rune.save()
+
+        # Resave monster instances that had runes removed to recalc stats
+        for mon in assigned_mons:
+            mon.save()
+
+        messages.success(request, 'Unassigned ' + str(number_assigned) + ' rune(s).')
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
 @login_required
 def rune_delete(request, profile_name, rune_id):
     rune = get_object_or_404(RuneInstance, pk=rune_id)
@@ -1666,6 +1760,7 @@ def rune_delete_all(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
+        # Delete the runes
         death_row = RuneInstance.committed.filter(owner=summoner)
         number_killed = death_row.count()
         assigned_mons = []
@@ -1674,10 +1769,102 @@ def rune_delete_all(request, profile_name):
                 assigned_mons.append(rune.assigned_to)
 
         death_row.delete()
-        messages.warning(request, 'Deleted ' + str(number_killed) + ' rune(s).')
+
+        # Delete the crafts
+        crafts_killed, __ = RuneCraftInstance.committed.filter(owner=summoner).delete()
+        messages.warning(request, 'Deleted ' + str(number_killed) + ' runes and ' + str(crafts_killed) + ' grindstones/gems.')
 
         for mon in assigned_mons:
             mon.save()
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required
+def rune_craft_add(request, profile_name):
+    form = AddRuneCraftInstanceForm(request.POST or None)
+    form.helper.form_action = reverse('herders:rune_craft_add', kwargs={'profile_name': profile_name})
+    template = loader.get_template('herders/profile/runes/add_craft_form.html')
+
+    if request.method == 'POST':
+        if form.is_valid():
+            # Create the monster instance
+            new_craft = form.save(commit=False)
+            new_craft.owner = request.user.summoner
+            new_craft.save()
+
+            messages.success(request, 'Added ' + new_craft.get_type_display() + ' ' + str(new_craft))
+
+            # Send back blank form
+            form = AddRuneCraftInstanceForm()
+            form.helper.form_action = reverse('herders:rune_craft_add', kwargs={'profile_name': profile_name})
+
+            response_data = {
+                'code': 'success',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+        else:
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+    else:
+        # Return form filled in and errors shown
+        response_data = {
+            'html': template.render(RequestContext(request, {'form': form}))
+        }
+
+    return JsonResponse(response_data)
+
+
+@login_required
+def rune_craft_edit(request, profile_name, craft_id):
+    craft = get_object_or_404(RuneCraftInstance, pk=craft_id)
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    form = AddRuneCraftInstanceForm(request.POST or None, instance=craft)
+    form.helper.form_action = reverse('herders:rune_craft_edit', kwargs={'profile_name': profile_name, 'craft_id': craft_id})
+    template = loader.get_template('herders/profile/runes/add_craft_form.html')
+
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            rune = form.save()
+            messages.success(request, 'Saved changes to ' + str(rune))
+            form = AddRuneInstanceForm()
+            form.helper.form_action = reverse('herders:rune_craft_edit', kwargs={'profile_name': profile_name, 'craft_id': craft_id})
+
+            response_data = {
+                'code': 'success',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+        else:
+            # Return form filled in and errors shown
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'form': form}))
+            }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required
+def rune_craft_delete(request, profile_name, craft_id):
+    craft = get_object_or_404(RuneCraftInstance, pk=craft_id)
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        messages.warning(request, 'Deleted ' + craft.get_rune_display() + ' ' + str(craft))
+        craft.delete()
 
         response_data = {
             'code': 'success',

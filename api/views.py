@@ -1,9 +1,12 @@
+from django.http import JsonResponse
+from django.views.decorators.cache import cache_page
+
 from rest_framework import viewsets, filters, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
 from bestiary.models import Monster, Skill, LeaderSkill
-from herders.models import Summoner, MonsterInstance, RuneInstance, Team, TeamGroup
+from herders.models import Summoner, MonsterInstance, RuneInstance, RuneCraftInstance, Team, TeamGroup
 from .serializers import *
 
 
@@ -159,8 +162,6 @@ class TeamViewSet(viewsets.ReadOnlyModelViewSet):
 
 # Custom API
 def get_rune_stats_by_slot(request, slot):
-    from django.http import JsonResponse
-
     valid_stats = RuneInstance.get_valid_stats_for_slot(int(slot))
 
     if valid_stats:
@@ -174,8 +175,61 @@ def get_rune_stats_by_slot(request, slot):
         })
 
 
+def get_craft_stats_by_type(request, craft_type):
+    valid_stats = RuneCraftInstance.get_valid_stats_for_type(int(craft_type))
+
+    if valid_stats:
+        return JsonResponse({
+            'code': 'success',
+            'data': valid_stats,
+        })
+    else:
+        return JsonResponse({
+            'code': 'error',
+        })
+
+
+@cache_page(60 * 15)
+def bestary_stat_charts(request, pk):
+    monster = Monster.objects.get(pk=pk)
+
+    data_series = []
+
+    if monster.is_awakened and monster.awakens_from and monster.base_stars >= 2:
+        base_stars = monster.awakens_from.base_stars
+    else:
+        base_stars = monster.base_stars
+
+    for grade in range(base_stars, 7):
+        data_series.append({
+            'name': 'HP ' + str(grade) + '*',
+            'data': [monster.actual_hp(grade, level) for level in range(1, monster.max_level_from_stars(grade) + 1)],
+            'pointStart': 1,
+            'visible': True if grade == 6 else False,
+            'yAxis': 'hp',
+        })
+        data_series.append({
+            'name': 'ATK ' + str(grade) + '*',
+            'data': [monster.actual_attack(grade, level) for level in range(1, monster.max_level_from_stars(grade) + 1)],
+            'pointStart': 1,
+            'visible': True if grade == 6 else False,
+            'yAxis': 'atkdef',
+        })
+        data_series.append({
+            'name': 'DEF ' + str(grade) + '*',
+            'data': [monster.actual_defense(grade, level) for level in range(1, monster.max_level_from_stars(grade) + 1)],
+            'pointStart': 1,
+            'visible': True if grade == 6 else False,
+            'yAxis': 'atkdef',
+        })
+
+    if data_series:
+        return JsonResponse(data_series, safe=False)
+    else:
+        return JsonResponse({})
+
+
 def get_user_messages(request):
-    from django.http import JsonResponse
     from django.contrib.messages import get_messages
 
     themessages = get_messages(request)

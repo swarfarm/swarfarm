@@ -1,6 +1,9 @@
 <div class="panel panel-default">
-    <div class="panel-heading">
-        <p class="panel-title">Runes</p>
+    <div class="panel-heading clearfix">
+        <h3 class="panel-title pull-left">Runes</h3>
+        {% if instance.runeinstance_set.count %}
+        <button class="btn btn-xs btn-danger pull-right rune-remove-all" data-instance-id="{{ instance.pk.hex }}">Remove All</button>
+        {% endif %}
     </div>
     <table class="table table-condensed">
         <tbody>

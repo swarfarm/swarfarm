@@ -16,6 +16,17 @@
     position: relative;
 }
 
+.craft-panel {
+    min-width: 250px;
+    height: auto;
+    position: relative;
+}
+
+.craft-panel .btn-group {
+    margin-right: -1px;
+    margin-top: -1px;
+}
+
 .rune-image {
     position: relative;
     width: 50px;
@@ -67,6 +78,18 @@
 
 .rune-text {
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.craft-text {
+    display: inline-block;
+    height: 50px;
+    line-height: 50px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.rune-grindstone-text {
+    text-shadow: 0 0 2px rgba(214, 164, 0, 0.5);
+    color: #987500;
 }
 
 .rune-text-normal {
@@ -203,6 +226,48 @@ span.rune-set-bonus {
     background-position: 10px 9px;
 }
 
+.rune-craft {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: 50px 50px;
+}
+
+.rune-craft.grindstone.common {
+    background-image: url(/static/herders/images/runes/grindstone_common.png);
+}
+.rune-craft.grindstone.magic {
+    background-image: url(/static/herders/images/runes/grindstone_magic.png);
+}
+.rune-craft.grindstone.rare {
+    background-image: url(/static/herders/images/runes/grindstone_rare.png);
+}
+.rune-craft.grindstone.epic {
+    background-image: url(/static/herders/images/runes/grindstone_epic.png);
+}
+.rune-craft.grindstone.legend {
+    background-image: url(/static/herders/images/runes/grindstone_legend.png);
+}
+.rune-craft.enchant-gem.legend {
+    background-image: url(/static/herders/images/runes/enchant_gem_legend.png);
+}
+.rune-craft.enchant-gem.common {
+    background-image: url(/static/herders/images/runes/enchant_gem_common.png);
+}
+.rune-craft.enchant-gem.magic {
+    background-image: url(/static/herders/images/runes/enchant_gem_magic.png);
+}
+.rune-craft.enchant-gem.rare {
+    background-image: url(/static/herders/images/runes/enchant_gem_rare.png);
+}
+.rune-craft.enchant-gem.epic {
+    background-image: url(/static/herders/images/runes/enchant_gem_epic.png);
+}
+.rune-craft.enchant-gem.legend {
+    background-image: url(/static/herders/images/runes/enchant_gem_legend.png);
+}
+
 .rune-symbol {
     display: inline-block;
     width: 100%;
@@ -211,69 +276,84 @@ span.rune-set-bonus {
     background-size: 30px 30px;
 }
 
-.rune-symbol.energy {
+.rune-symbol.energy, .craft-symbol.energy {
     background-image: url(/static/herders/images/runes/energy.png);
 }
 
-.rune-symbol.fatal {
+.rune-symbol.fatal, .craft-symbol.fatal {
     background-image: url(/static/herders/images/runes/fatal.png);
 }
 
-.rune-symbol.blade {
+.rune-symbol.blade, .craft-symbol.blade {
     background-image: url(/static/herders/images/runes/blade.png);
 }
 
-.rune-symbol.rage {
+.rune-symbol.rage, .craft-symbol.rage {
     background-image: url(/static/herders/images/runes/rage.png);
 }
 
-.rune-symbol.swift {
+.rune-symbol.swift, .craft-symbol.swift {
     background-image: url(/static/herders/images/runes/swift.png);
 }
 
-.rune-symbol.focus {
+.rune-symbol.focus, .craft-symbol.focus {
     background-image: url(/static/herders/images/runes/focus.png);
 }
 
-.rune-symbol.guard {
+.rune-symbol.guard, .craft-symbol.guard {
     background-image: url(/static/herders/images/runes/guard.png);
 }
 
-.rune-symbol.endure {
+.rune-symbol.endure, .craft-symbol.endure {
     background-image: url(/static/herders/images/runes/endure.png);
 }
 
-.rune-symbol.violent {
+.rune-symbol.violent, .craft-symbol.violent {
     background-image: url(/static/herders/images/runes/violent.png);
 }
 
-.rune-symbol.will {
+.rune-symbol.will, .craft-symbol.will {
     background-image: url(/static/herders/images/runes/will.png);
 }
 
-.rune-symbol.nemesis {
+.rune-symbol.nemesis, .craft-symbol.nemesis {
     background-image: url(/static/herders/images/runes/nemesis.png);
 }
 
-.rune-symbol.shield {
+.rune-symbol.shield, .craft-symbol.shield {
     background-image: url(/static/herders/images/runes/shield.png);
 }
 
-.rune-symbol.revenge {
+.rune-symbol.revenge, .craft-symbol.revenge {
     background-image: url(/static/herders/images/runes/revenge.png);
 }
 
-.rune-symbol.despair {
+.rune-symbol.despair, .craft-symbol.despair {
     background-image: url(/static/herders/images/runes/despair.png);
 }
 
-.rune-symbol.vampire {
+.rune-symbol.vampire, .craft-symbol.vampire {
     background-image: url(/static/herders/images/runes/vampire.png);
 }
 
-.rune-symbol.destroy {
+.rune-symbol.destroy, .craft-symbol.destroy {
     background-image: url(/static/herders/images/runes/destroy.png);
 }
+.craft-symbol {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position-x: 59%;
+    background-position-y: 57%;
+    background-size: 21px 21px;
+    -webkit-transform: rotate(-30deg);
+	-moz-transform: rotate(-30deg);
+	-ms-transform: rotate(-30deg);
+	-o-transform: rotate(-30deg);
+	transform: rotate(-30deg);
+}
+
 .rune-button {
     background-position: left!important;
     background-size: 30px 30px!important;

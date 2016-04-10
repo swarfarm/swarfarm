@@ -14,20 +14,26 @@
                 <button class="btn btn-default rune-view-mode" data-mode="grid">
                     <span class="glyphicon glyphicon-th"></span> Grid
                 </button>
+                <button class="btn btn-default rune-view-mode" data-mode="crafts">
+                    <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" />
+                </button>
             </div>
 
             <div class="btn-group">
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'type' %}active{% endif %}" data-mode="type">Type</button>
-                <button class="btn btn-default box-group-mode {% if box_grouping == 'slot' %}active{% endif %}" data-mode="grade">Slot</button>
+                <button class="btn btn-default box-group-mode {% if box_grouping == 'slot' %}active{% endif %}" data-mode="slot">Slot</button>
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'grade' %}active{% endif %}" data-mode="grade">Grade</button>
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'equipped' %}active{% endif %}" data-mode="equipped">Equipped</button>
             </div>
+
+            <span class="pull-right">{{ filtered_count }} of {{ total_count }} rune{{ total_count|pluralize }}</span>
         </div>
         <div class="panel-body">
             {% for groupname, runes in runes.iteritems %}
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <strong>{{ groupname }}</strong>
+                    <span class="pull-right">{% with num_runes=runes|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
                 </div>
                 <div class="panel-body">
                     <div class="flex">

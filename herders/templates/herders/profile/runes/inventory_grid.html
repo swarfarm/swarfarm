@@ -15,7 +15,11 @@
                 <button class="btn btn-default rune-view-mode active" data-mode="grid">
                     <span class="glyphicon glyphicon-th"></span> Grid
                 </button>
+                <button class="btn btn-default rune-view-mode" data-mode="crafts">
+                    <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" />
+                </button>
             </div>
+            <span class="pull-right">{{ filtered_count }} of {{ total_count }} rune{{ total_count|pluralize }}</span>
         </div>
         <table class="table table-condensed table-bordered table-hover monster-table" id="runeInventoryTable">
             <thead>

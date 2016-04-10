@@ -1,0 +1,70 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+
+<div class="row">
+    {% if mon_data.mon.leader_skill %}
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="monster-skill-thumb pull-left"><img src="{{ img_url_prefix }}skills/leader/{{ mon_data.mon.leader_skill.icon_filename }}" /></div>
+                <h4 class="list-group-item-heading">Leader Skill</h4>
+                <div class="list-group-item-text">
+                    {{ mon_data.mon.leader_skill.skill_string }}
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% for skill in mon_data.skills %}
+    <div class="{% if mon_data.mon.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title"><strong>{{ skill.name }}</strong> {% if skill.passive %}(Passive){% endif %}</p>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <div class="monster-skill-thumb pull-left">
+                        <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
+                        <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+                    </div>
+                    <p>{{ skill.description }}</p>
+                    <div class="clearfix"></div>
+                </li>
+                {% if skill.level_progress_description_list|length > 0%}
+                <li class="list-group-item">
+                    <p class="list-group-item-heading"><strong>Level-up Progress:</strong></p>
+                    <ul class="list-unstyled">
+                    {% for line in skill.level_progress_description_list %}
+                        <li>{{ line }}</li>
+                    {% endfor %}
+                    </ul>
+                </li>
+                {% endif %}
+                {% if skill.skill_effect.all|length > 0 %}
+                <li class="list-group-item">
+                    <p class="list-group-item-heading"><strong>Skill Effects:</strong></p>
+                    <p>
+                    {% for effect in skill.skill_effect.all %}
+                        {% if effect.icon_filename %}
+                        <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                />
+                        {% else %}
+                            <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                <span>{{ effect.name }}</span>
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                    </p>
+                    <div class="clearfix"></div>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="clearfix"></div>
+</div>

@@ -1,0 +1,55 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div id="rune-inventory">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="btn-group">
+                <button class="btn btn-default rune-view-mode" data-mode="list">
+                    <span class="glyphicon glyphicon-th-list"></span> List
+                </button>
+                <button class="btn btn-default rune-view-mode" data-mode="box">
+                    <span class="glyphicon glyphicon-th-large"></span> Box
+                </button>
+                <button class="btn btn-default rune-view-mode" data-mode="grid">
+                    <span class="glyphicon glyphicon-th"></span> Grid
+                </button>
+                <button class="btn btn-default rune-view-mode active" data-mode="crafts">
+                    <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" />
+                </button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <ul class="nav nav-tabs" role="tablist">
+                {% for craft_type in crafts.keys %}
+                <li role="presentation" {% if forloop.first %}class="active"{% endif %}>
+                    <a href="#{{ craft_type|slugify }}_tab" aria-controls="{{ craft_type|slugify }}_tab" role="tab" data-toggle="tab">{{ craft_type }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="tab-content bordered">
+                {% for craft_type, craft_group in crafts.iteritems %}
+                <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="{{ craft_type|slugify }}_tab">
+                    {% for rune_type, rune_crafts in craft_group.iteritems %}
+                        {% if rune_crafts|length %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <p class="panel-title">{{ rune_type }}</p>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="flex">
+                                    {% for craft in rune_crafts %}
+                                        {% include 'herders/profile/runes/craft_panel_fragment.html' with craft=craft %}
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

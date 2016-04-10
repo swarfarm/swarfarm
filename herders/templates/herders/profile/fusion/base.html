@@ -38,7 +38,7 @@
 {% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
     <div class="row">
-        <ul class="nav nav-pills nav-stacked col-md-2" role="tablist">
+        <ul class="nav nav-pills nav-stacked col-md-2 fusion-tabs" role="tablist">
             {% for fusion in fusions %}
             <li {% if forloop.first %}class="active"{% endif %}>
                 <a href="#{{ fusion.product.bestiary_slug }}" class="fusion-tab" aria-controls="{{ fusion.product.bestiary_slug }}" role="tab" data-toggle="tab" data-fusion="{{ fusion.product.bestiary_slug }}">

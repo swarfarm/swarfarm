@@ -53,11 +53,24 @@ $('body')
         }).done(function(data) {
             bootbox.dialog({
                 title: "Add rune",
+                size: "large",
                 message: data.html
             });
 
             update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
             $('.rating').rating();
+        });
+    })
+    .on('click', '.rune-craft-add', function() {
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/runes/craft/add/',
+            global: false
+        }).done(function(data) {
+            bootbox.dialog({
+                title: "Add Grindstone/Gem",
+                message: data.html
+            });
         });
     })
     .on('click', '.rune-edit', function() {
@@ -71,15 +84,32 @@ $('body')
         }).done(function(data) {
             bootbox.dialog({
                 title: "Edit rune",
+                size: "large",
                 message: data.html
             });
             update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
             $('.rating').rating();
         });
     })
+    .on('click', '.rune-craft-edit', function() {
+        //Pull in edit form on modal show
+        var craft_id = $(this).data('craft-id');
+
+        $.ajax({
+            type: 'get',
+            url: '/profile/' + PROFILE_NAME + '/runes/craft/edit/' + craft_id + '/',
+            global: false
+        }).done(function(data) {
+            bootbox.dialog({
+                title: "Edit Grindstone/Gem",
+                message: data.html
+            });
+            update_craft_stat_options($('#id_type').val(), $('#id_stat'));
+        });
+    })
     .on('click', '.rune-delete', function() {
         //Pull in delete confirmation form on modal show
-        var rune_id = $(this).data('rune-id');
+        var craft_id = $(this).data('rune-id');
 
         bootbox.confirm({
             size: 'small',
@@ -88,10 +118,10 @@ $('body')
                 if (result) {
                     $.ajax({
                         type: 'get',
-                        url: '/profile/' + PROFILE_NAME + '/runes/delete/' + rune_id + '/',
+                        url: '/profile/' + PROFILE_NAME + '/runes/delete/' + craft_id + '/',
                         data: {
                             "delete": "delete",
-                            "rune_id": rune_id
+                            "rune_id": craft_id
                         }
                     }).done(function () {
                         update_rune_inventory();
@@ -103,10 +133,55 @@ $('body')
             }
         });
     })
+    .on('click', '.rune-craft-delete', function() {
+        //Pull in delete confirmation form on modal show
+        var craft_id = $(this).data('craft-id');
+
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure?',
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/runes/craft/delete/' + craft_id + '/',
+                        data: {
+                            "delete": "delete",
+                            "rune_id": craft_id
+                        }
+                    }).done(function () {
+                        update_rune_inventory();
+                        update_rune_counts();
+                    }).fail(function () {
+                        alert("Something went wrong! Server admin has been notified.");
+                    });
+                }
+            }
+        });
+    })
+    .on('click', '.rune-unassign-all', function() {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure you want to unassign <strong>all</strong> of your runes? This process might take a few seconds.',
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/runes/unassign/all',
+                        global: false
+                    }).done(function() {
+                        update_rune_inventory();
+                    }).fail(function() {
+                        alert("Something went wrong! Server admin has been notified.");
+                    })
+                }
+            }
+        })
+    })
     .on('click', '.rune-delete-all', function() {
         bootbox.confirm({
             size: 'small',
-            message: 'Are you sure you want to delete <strong>all</strong> of your runes? Your monster rune assignments will be removed as well.',
+            message: 'Are you sure you want to delete <strong>all</strong> of your runes, grindstones, and enchant gems? Your monster rune assignments will be removed as well.',
             callback: function(result) {
                 if (result) {
                     $.ajax({
@@ -163,6 +238,9 @@ $('body')
     })
     .on('change', '#id_slot', function() {
         update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+    })
+    .on('change', '#id_type', function() {
+        update_craft_stat_options($('#id_type').val(), $('#id_stat'));
     })
     .on('change', '#filter_id_stars__gte', function() {
         var min_stars = $(this).val();

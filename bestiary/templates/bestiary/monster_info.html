@@ -1,0 +1,61 @@
+{% load staticfiles %}
+{% load utils %}
+{% static 'herders/images/' as img_url_prefix %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p class="panel-title">General Information</p>
+    </div>
+    <table class="table table-condensed table-bordered">
+        <tbody>
+        <tr>
+            <td>Awakening Bonus:</td>
+            <td>{{ mon_data.mon.awaken_bonus }}</td>
+        </tr>
+        {% if mon_data.mon.source|length %}
+        <tr>
+            <td>Sources:</td>
+            <td class="monster-sources">
+                {% for source in mon_data.mon.source.all %}
+                    {% if source.icon_filename %}
+                    <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
+                         class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
+                    {% else %}
+                    <span class="monster-source"><span>{{ source }}</span></span>
+                    {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endif %}
+        {% if mon_data.mon.can_awaken and not mon_data.mon.is_awakened %}
+        <tr>
+            <td>Awakening Essences:</td>
+            <td class="monster-awaken-materials">
+                {% include 'bestiary/awakening_essences.html' with monster=mon_data.mon only %}
+            </td>
+        </tr>
+        {% endif %}
+
+        {% if mon_data.mon.skill_ups_to_max %}
+        <tr>
+            <td>Skill-ups to Max</td>
+            <td>
+                <div class="monster-image">
+                    <div class="sprite sprite-devilmon_dark">
+                        <span class="image-plus image-plus-main">{{ mon_data.mon.skill_ups_to_max }}</span>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>Resources:</td>
+            <td>
+                <ul class="list-unstyled">
+                    <li>{% if mon_data.mon.wikia_url %}<a href="{{ mon_data.mon.wikia_url }}" target="_blank">Wikia<span class="glyphicon glyphicon-link"></span></a>{% endif %}</li>
+                    <li>{% if mon_data.mon.summonerswar_co_url %}<a href="{{ mon_data.mon.summonerswar_co_url }}" target="_blank">summonerswar.co<span class="glyphicon glyphicon-link"></span></a>{% endif %}</li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

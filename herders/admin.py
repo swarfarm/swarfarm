@@ -23,8 +23,12 @@ admin.site.register(User, UserAdmin)
 @admin.register(MonsterInstance)
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'owner')
+    filter_vertical = ('tags',)
     exclude = ('owner',)
     search_fields = ['id',]
+
+
+admin.site.register(MonsterTag)
 
 
 @admin.register(Team)
@@ -44,5 +48,11 @@ class RuneInstanceAdmin(admin.ModelAdmin):
     search_fields = ('id',)
     exclude = ('owner', 'assigned_to')
     readonly_fields = ('quality', 'has_hp', 'has_atk', 'has_def', 'has_crit_rate', 'has_crit_dmg', 'has_speed', 'has_resist', 'has_accuracy')
+
+
+@admin.register(RuneCraftInstance)
+class RuneCraftInstanceAdmin(admin.ModelAdmin):
+    exclude = ('owner',)
+
 
 admin.site.register(GameEvent)

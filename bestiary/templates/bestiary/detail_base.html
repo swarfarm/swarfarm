@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load utils %}
+{% load cache %}
+
+{% block title %}Bestiary - {{ base.mon.get_element_display }} {{ base.mon.name }}{% if awakened %} ({{ awakened.mon.name }}){% endif %} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <ul class="nav nav-tabs" role="tablist">
+        {% for mon in family %}
+            {% if mon %}
+            <li role="presentation" {% if mon.bestiary_slug == active_slug %}class="active"{% endif %}>
+                <a href="{% url 'bestiary:detail' monster_slug=mon.bestiary_slug %}" role="tab">
+                    <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ mon.image_filename }}" /> {{ mon }}
+                </a>
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content bordered">
+        <div role="tabpanel" class="tab-pane active">
+            {% if base %}{% include 'bestiary/monster_detail.html' with mon_data=base %}{% endif %}
+            {% if base and awakened %}<hr />{% endif %}
+            {% if awakened %}{% include 'bestiary/monster_detail.html' with mon_data=awakened %}{% endif %}
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascript %}
+<script src="http://code.highcharts.com/highcharts.js"></script>
+{% endblock javascript %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "bestiary/js/bestiary.js" %}"></script>
+{% endblock javascript_compressed %}

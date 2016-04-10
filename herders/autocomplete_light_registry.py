@@ -1,6 +1,7 @@
 import autocomplete_light
+
 from bestiary.models import Monster
-from .models import MonsterInstance
+from .models import MonsterTag, MonsterInstance
 
 
 class MonsterAutocomplete(autocomplete_light.AutocompleteModelTemplate):
@@ -45,3 +46,17 @@ class MonsterInstanceAutocomplete(autocomplete_light.AutocompleteModelTemplate):
         return super(MonsterInstanceAutocomplete, self).choices_for_request()
 
 autocomplete_light.register(MonsterInstanceAutocomplete)
+
+
+class MonsterTagAutocomplete(autocomplete_light.AutocompleteModelTemplate):
+    model = MonsterTag
+    search_fields = ['name']
+    split_words = True
+    choice_template = 'autocomplete/monster_tag_choice.html'
+    limit_choices = 15
+    attrs = {
+        'placeholder': 'Start typing...',
+        'data-autocomplete-minimum-characters': 0,
+    }
+
+autocomplete_light.register(MonsterTagAutocomplete)

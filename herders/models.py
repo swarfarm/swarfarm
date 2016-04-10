@@ -12,6 +12,8 @@ from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
+from colorfield.fields import ColorField
+
 
 # Bestiary database models
 class Monster(models.Model):
@@ -140,16 +142,9 @@ class Monster(models.Model):
 
             # Add the actual calculated stats
             stats_list[str(grade)] = {
-                '1': {
-                    'HP': self.actual_hp(grade, 1),
-                    'ATK': self.actual_attack(grade, 1),
-                    'DEF': self.actual_defense(grade, 1),
-                },
-                str(max_level): {
-                    'HP': self.actual_hp(grade, max_level),
-                    'ATK': self.actual_attack(grade, max_level),
-                    'DEF': self.actual_defense(grade, max_level),
-                },
+                'HP': self.actual_hp(grade, max_level),
+                'ATK': self.actual_attack(grade, max_level),
+                'DEF': self.actual_defense(grade, max_level),
             }
 
         return stats_list
@@ -207,29 +202,14 @@ class Monster(models.Model):
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 
     def monster_family(self):
-        family = Monster.objects.filter(com2us_id=self.com2us_id, obtainable=True).order_by('element')
+        family = Monster.objects.filter(com2us_id=self.com2us_id, obtainable=True).order_by('element', 'is_awakened')
 
         return [
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_FIRE, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_FIRE, is_awakened=True).first(),
-            },
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_WATER, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_WATER, is_awakened=True).first(),
-            },
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_WIND, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_WIND, is_awakened=True).first(),
-            },
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_LIGHT, is_awakened=True).first(),
-            },
-            {
-                'unawakened': family.filter(element=Monster.ELEMENT_DARK, is_awakened=False).first(),
-                'awakened': family.filter(element=Monster.ELEMENT_DARK, is_awakened=True).first(),
-            },
+            family.filter(element=Monster.ELEMENT_FIRE).first(),
+            family.filter(element=Monster.ELEMENT_WATER).first(),
+            family.filter(element=Monster.ELEMENT_WIND).first(),
+            family.filter(element=Monster.ELEMENT_LIGHT).first(),
+            family.filter(element=Monster.ELEMENT_DARK).first(),
         ]
 
     def all_skill_effects(self):
@@ -604,9 +584,6 @@ class MonsterSkillEffect(models.Model):
     def __unicode__(self):
         return self.name
 
-    class Meta:
-        ordering = ['-is_buff', 'name']
-
 
 class MonsterSkillEffectDetail(models.Model):
     skill = models.ForeignKey(MonsterSkill, on_delete=models.CASCADE)
@@ -881,6 +858,17 @@ class Summoner(models.Model):
         return "%s" % self.user
 
 
+class MonsterTag(models.Model):
+    name = models.CharField(max_length=100)
+    color = ColorField()
+
+    class Meta:
+        ordering = ['name']
+
+    def __unicode__(self):
+        return mark_safe(self.name)
+
+
 class MonsterInstanceImportedManager(models.Manager):
     def get_queryset(self):
         return super(MonsterInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
@@ -899,7 +887,6 @@ class MonsterInstance(models.Model):
     PRIORITY_HIGH = 3
 
     PRIORITY_CHOICES = (
-        (PRIORITY_DONE, 'Done'),
         (PRIORITY_LOW, 'Low'),
         (PRIORITY_MED, 'Medium'),
         (PRIORITY_HIGH, 'High'),
@@ -941,7 +928,8 @@ class MonsterInstance(models.Model):
     fodder = models.BooleanField(default=False)
     in_storage = models.BooleanField(default=False)
     ignore_for_fusion = models.BooleanField(default=False)
-    priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_MED)
+    priority = models.IntegerField(choices=PRIORITY_CHOICES, blank=True, null=True)
+    tags = models.ManyToManyField(MonsterTag, blank=True)
     notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
     uncommitted = models.BooleanField(default=False)  # Used for importing
 
@@ -1546,6 +1534,14 @@ class RuneInstance(models.Model):
         TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP"
     }
 
+    CRAFT_GRINDSTONE = 0
+    CRAFT_ENCHANT_GEM = 1
+
+    CRAFT_CHOICES = (
+        (CRAFT_GRINDSTONE, 'Grindstone'),
+        (CRAFT_ENCHANT_GEM, 'Enchant Gem'),
+    )
+
     # Multiple managers to split out imported and finalized objects
     objects = models.Manager()
     committed = RuneInstanceManager()
@@ -1566,12 +1562,16 @@ class RuneInstance(models.Model):
     innate_stat_value = models.IntegerField(null=True, blank=True)
     substat_1 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_1_value = models.IntegerField(null=True, blank=True)
+    substat_1_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
     substat_2 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_2_value = models.IntegerField(null=True, blank=True)
+    substat_2_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
     substat_3 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_3_value = models.IntegerField(null=True, blank=True)
+    substat_3_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
     substat_4 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_4_value = models.IntegerField(null=True, blank=True)
+    substat_4_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
     marked_for_sale = models.BooleanField(default=False)
     uncommitted = models.BooleanField(default=False)  # Used for importing
 
@@ -1715,29 +1715,28 @@ class RuneInstance(models.Model):
 
     def get_efficiency(self):
         # https://www.youtube.com/watch?v=SBWeptNNbYc
-        if self.stars >= 5:
-            running_sum = 0
+        running_sum = 0.0
 
-            if self.innate_stat in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.innate_stat_value / self.SUBSTAT_MAX_VALUES[self.innate_stat]
+        # Main stat efficiency
+        running_sum += float(self.MAIN_STAT_RANGES[self.main_stat][self.stars]['max']) / float(self.MAIN_STAT_RANGES[self.main_stat][6]['max'])
 
-            if self.substat_1 in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.substat_1_value / self.SUBSTAT_MAX_VALUES[self.substat_1]
+        # Substat efficiencies
+        if self.innate_stat in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.innate_stat_value / self.SUBSTAT_MAX_VALUES[self.innate_stat]
 
-            if self.substat_2 in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.substat_2_value / self.SUBSTAT_MAX_VALUES[self.substat_2]
+        if self.substat_1 in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.substat_1_value / self.SUBSTAT_MAX_VALUES[self.substat_1]
 
-            if self.substat_3 in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.substat_3_value / self.SUBSTAT_MAX_VALUES[self.substat_3]
+        if self.substat_2 in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.substat_2_value / self.SUBSTAT_MAX_VALUES[self.substat_2]
 
-            if self.substat_4 in self.SUBSTAT_MAX_VALUES:
-                running_sum += self.substat_4_value / self.SUBSTAT_MAX_VALUES[self.substat_4]
+        if self.substat_3 in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.substat_3_value / self.SUBSTAT_MAX_VALUES[self.substat_3]
 
-            running_sum += 1 if self.stars == 6 else 0.85
+        if self.substat_4 in self.SUBSTAT_MAX_VALUES:
+            running_sum += self.substat_4_value / self.SUBSTAT_MAX_VALUES[self.substat_4]
 
-            return running_sum / 2.8 * 100
-        else:
-            return None
+        return running_sum / 2.8 * 100
 
     def update_fields(self):
         # Set flags for filtering
@@ -1897,6 +1896,195 @@ class RuneInstance(models.Model):
 
     class Meta:
         ordering = ['slot', 'type', 'level', 'quality']
+
+
+class RuneCraftInstanceImportedManager(models.Manager):
+    def get_queryset(self):
+        return super(RuneCraftInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
+
+
+class RuneCraftInstanceManager(models.Manager):
+    # Default manager which only returns finalized instances
+    def get_queryset(self):
+        return super(RuneCraftInstanceManager, self).get_queryset().filter(uncommitted=False)
+
+
+class RuneCraftInstance(models.Model):
+    QUALITY_NORMAL = 0
+    QUALITY_MAGIC = 1
+    QUALITY_RARE = 2
+    QUALITY_HERO = 3
+    QUALITY_LEGEND = 4
+
+    QUALITY_CHOICES = (
+        (QUALITY_MAGIC, 'Magic'),
+        (QUALITY_RARE, 'Rare'),
+        (QUALITY_HERO, 'Hero'),
+        (QUALITY_LEGEND, 'Legend'),
+    )
+
+    # Valid value ranges
+    # Type > Stat > Quality > Min/Max
+    CRAFT_VALUE_RANGES = {
+        RuneInstance.CRAFT_GRINDSTONE: {
+            RuneInstance.STAT_HP: {
+                RuneInstance.QUALITY_MAGIC: {'min': 100, 'max': 200},
+                RuneInstance.QUALITY_RARE: {'min': 180, 'max': 250},
+                RuneInstance.QUALITY_HERO: {'min': 230, 'max': 450},
+                RuneInstance.QUALITY_LEGEND: {'min': 430, 'max': 550},
+            },
+            RuneInstance.STAT_HP_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneInstance.STAT_ATK: {
+                RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
+                RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
+                RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
+                RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
+            },
+            RuneInstance.STAT_ATK_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneInstance.STAT_DEF: {
+                RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
+                RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
+                RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
+                RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
+            },
+            RuneInstance.STAT_DEF_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneInstance.STAT_SPD: {
+                RuneInstance.QUALITY_MAGIC: {'min': 1, 'max': 2},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 3},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 4},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 5},
+            },
+        },
+        RuneInstance.CRAFT_ENCHANT_GEM: {
+            RuneInstance.STAT_HP: {
+                RuneInstance.QUALITY_MAGIC: {'min': 130, 'max': 220},
+                RuneInstance.QUALITY_RARE: {'min': 200, 'max': 310},
+                RuneInstance.QUALITY_HERO: {'min': 290, 'max': 420},
+                RuneInstance.QUALITY_LEGEND: {'min': 400, 'max': 580},
+            },
+            RuneInstance.STAT_HP_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneInstance.STAT_ATK: {
+                RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
+                RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
+                RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
+                RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
+            },
+            RuneInstance.STAT_ATK_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneInstance.STAT_DEF: {
+                RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
+                RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
+                RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
+                RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
+            },
+            RuneInstance.STAT_DEF_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneInstance.STAT_SPD: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
+            RuneInstance.STAT_CRIT_RATE_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 5},
+                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 8},
+            },
+            RuneInstance.STAT_CRIT_DMG_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 5},
+                RuneInstance.QUALITY_RARE: {'min': 4, 'max': 6},
+                RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_LEGEND: {'min': 6, 'max': 9},
+            },
+            RuneInstance.STAT_RESIST_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
+                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
+            RuneInstance.STAT_ACCURACY_PCT: {
+                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
+                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
+                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
+        }
+    }
+
+    # Multiple managers to split out imported and finalized objects
+    objects = models.Manager()
+    committed = RuneCraftInstanceManager()
+    imported = RuneCraftInstanceImportedManager()
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(Summoner)
+    com2us_id = models.BigIntegerField(blank=True, null=True)
+    type = models.IntegerField(choices=RuneInstance.CRAFT_CHOICES)
+    rune = models.IntegerField(choices=RuneInstance.TYPE_CHOICES)
+    stat = models.IntegerField(choices=RuneInstance.STAT_CHOICES)
+    quality = models.IntegerField(choices=QUALITY_CHOICES)
+    value = models.IntegerField(blank=True, null=True)
+    uncommitted = models.BooleanField(default=False)  # Used for importing
+
+    def __str__(self):
+        if self.stat in RuneInstance.PERCENT_STATS:
+            percent = '%'
+        else:
+            percent = ''
+
+        return RuneInstance.RUNE_STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + '-' + str(self.get_max_value()) + percent
+
+    def get_min_value(self):
+        try:
+            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['min']
+        except KeyError:
+            return None
+
+    def get_max_value(self):
+        try:
+            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['max']
+        except KeyError:
+            return None
+
+    @staticmethod
+    def get_valid_stats_for_type(craft_type):
+        try:
+            valid_stats = RuneCraftInstance.CRAFT_VALUE_RANGES[craft_type].keys()
+        except KeyError:
+            return None
+        else:
+            stat_names = {stat: RuneInstance.STAT_CHOICES[stat - 1][1] for stat in valid_stats}
+
+            return stat_names
 
 
 class TeamGroup(models.Model):

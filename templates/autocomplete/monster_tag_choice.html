@@ -1,0 +1,7 @@
+{% load static %}
+
+{% spaceless %}
+    <span class="autocomplete-results" data-value="{{ choice.pk }}">
+        <span class="tag">{{ choice.name|safe }}</span>
+    </span>
+{% endspaceless %}

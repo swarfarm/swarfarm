@@ -886,11 +886,11 @@ class MonsterInstance(models.Model):
     PRIORITY_MED = 2
     PRIORITY_HIGH = 3
 
-    PRIORITY_CHOICES = (
+    PRIORITY_CHOICES = [
         (PRIORITY_LOW, 'Low'),
         (PRIORITY_MED, 'Medium'),
         (PRIORITY_HIGH, 'High'),
-    )
+    ]
 
     # Multiple managers to split out imported and finalized objects
     objects = models.Manager()

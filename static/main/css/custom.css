@@ -133,7 +133,7 @@ select.short {
     list-style: none;
 }
 
-.monster-autocomplete {
+.monster-autocomplete, .autocomplete-results>span {
     line-height: 30px;
     margin-left: 3px;
     margin-bottom: 1px;
@@ -141,7 +141,7 @@ select.short {
     vertical-align: middle;
 }
 
-.monster-autocomplete>img {
+.monster-autocomplete>img, .autocomplete-results>img {
     height: 30px;
     margin-right: 3px;
     border: 1px solid black;

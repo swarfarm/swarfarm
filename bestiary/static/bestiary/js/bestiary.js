@@ -11,39 +11,40 @@ function initialize_charts() {
     $('.bestiary-stat-chart').each( function() {
         var monster_id = $(this).data('monster');
         var chart_div = $(this);
-        $.getJSON(
-            API_URL + 'bestiary/' + monster_id.toString() + '/chart/',
-            function(data) {
-                chart_div.highcharts({
-                    chart: {
-                        type: 'line'
-                    },
-                    title: {
-                        text: 'Stat Growth By Level'
-                    },
-                    xAxis: {
-                        tickInterval: 5,
-                        showFirstLabel: true
-                    },
-                    yAxis: [
-                        {
-                            title: {
-                                text: 'HP'
-                            },
-                            id: 'hp',
-                            opposite: true
+        $.ajax({
+            dataType: "json",
+            url: API_URL + 'bestiary/' + monster_id.toString() + '/chart/',
+            global: false
+        }).done(function(data) {
+            chart_div.highcharts({
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'Stat Growth By Level'
+                },
+                xAxis: {
+                    tickInterval: 5,
+                    showFirstLabel: true
+                },
+                yAxis: [
+                    {
+                        title: {
+                            text: 'HP'
                         },
-                        {
-                            title: {
-                                text: 'ATK DEF'
-                            },
-                            id: 'atkdef'
-                        }
-                    ],
-                    series: data
-                });
-            }
-        )
+                        id: 'hp',
+                        opposite: true
+                    },
+                    {
+                        title: {
+                            text: 'ATK DEF'
+                        },
+                        id: 'atkdef'
+                    }
+                ],
+                series: data
+            });
+        })
     });
 }
 

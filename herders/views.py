@@ -1771,8 +1771,8 @@ def rune_delete_all(request, profile_name):
         death_row.delete()
 
         # Delete the crafts
-        crafts_killed, __ = RuneCraftInstance.committed.filter(owner=summoner).delete()
-        messages.warning(request, 'Deleted ' + str(number_killed) + ' runes and ' + str(crafts_killed) + ' grindstones/gems.')
+        RuneCraftInstance.committed.filter(owner=summoner).delete()
+        messages.warning(request, 'Deleted ' + str(number_killed) + ' runes.')
 
         for mon in assigned_mons:
             mon.save()

@@ -28,6 +28,10 @@
 
 {% endblock content %}
 
+{% block javascript %}
+<script src="http://code.highcharts.com/highcharts.js"></script>
+{% endblock javascript %}
+
 {% block javascript_compressed %}
     <script type="text/javascript" src="{% static "bestiary/js/bestiary.js" %}"></script>
 {% endblock javascript_compressed %}

@@ -13,11 +13,10 @@
 <div id="bestiary-inventory"></div>
 {% endblock %}
 
+{% block javascript %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.24.6/js/widgets/widget-columnSelector.min.js"></script>
+{% endblock javascript %}
+
 {% block javascript_compressed %}
     <script type="text/javascript" src="{% static "bestiary/js/bestiary.js" %}"></script>
 {% endblock javascript_compressed %}
-
-{% block javascript %}
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.24.6/js/widgets/widget-columnSelector.min.js"></script>
-<script src="https://code.highcharts.com"></script>
-{% endblock javascript %}

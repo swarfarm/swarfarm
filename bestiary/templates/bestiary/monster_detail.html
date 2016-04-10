@@ -36,8 +36,6 @@
     </div>
     <div class="col-lg-6">
         {% include 'bestiary/stat_table.html' with mon_data=mon_data only %}
-        <div id="{{ mon_data.mon.pk }}_stat_chart" style="width:100%; height:400px">
-            stat chart go here
-        </div>
+        <div class="bestiary-stat-chart" data-monster="{{ mon_data.mon.pk }}" style="width:100%; height:500px"></div>
     </div>
 </div>

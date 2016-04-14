@@ -11,11 +11,12 @@
             <td>Awakening Bonus:</td>
             <td>{{ mon_data.mon.awaken_bonus }}</td>
         </tr>
-        {% if mon_data.mon.source|length %}
+        {% with sources=mon_data.mon.source.all %}
+        {% if sources|length %}
         <tr>
             <td>Sources:</td>
             <td class="monster-sources">
-                {% for source in mon_data.mon.source.all %}
+                {% for source in sources %}
                     {% if source.icon_filename %}
                     <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
                          class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
@@ -26,6 +27,7 @@
             </td>
         </tr>
         {% endif %}
+        {% endwith %}
         {% if mon_data.mon.can_awaken and not mon_data.mon.is_awakened %}
         <tr>
             <td>Awakening Essences:</td>

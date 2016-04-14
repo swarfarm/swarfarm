@@ -575,6 +575,9 @@ class MonsterSkillEffect(models.Model):
     debuff_effect_choices = MonsterSkillEffectDebuffsManager()
     other_effect_choices = MonsterSkillEffectOtherManager()
 
+    class Meta:
+        ordering = ['name']
+
     def image_url(self):
         if self.icon_filename:
             return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/buffs/' + self.icon_filename))

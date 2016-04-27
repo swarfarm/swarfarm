@@ -747,10 +747,26 @@ class Fusion(models.Model):
 
 # Individual user/monster collection models
 class Summoner(models.Model):
+    SERVER_GLOBAL = 0
+    SERVER_EUROPE = 1
+    SERVER_ASIA = 2
+    SERVER_KOREA = 3
+    SERVER_JAPAN = 4
+    SERVER_CHINA = 5
+
+    SERVER_CHOICES = [
+        (SERVER_GLOBAL, 'Global'),
+        (SERVER_EUROPE, 'Europe'),
+        (SERVER_ASIA, 'Asia'),
+        (SERVER_KOREA, 'Korea'),
+        (SERVER_JAPAN, 'Japan'),
+        (SERVER_CHINA, 'China'),
+    ]
+
     user = models.OneToOneField(User)
     summoner_name = models.CharField(max_length=256, null=True, blank=True)
     com2us_id = models.BigIntegerField(default=None, null=True, blank=True)
-    global_server = models.NullBooleanField(default=True, null=True, blank=True)
+    server = models.IntegerField(choices=SERVER_CHOICES, default=SERVER_GLOBAL, null=True, blank=True)
     following = models.ManyToManyField("self", related_name='followed_by', symmetrical=False)
     public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')

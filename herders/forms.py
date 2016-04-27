@@ -120,6 +120,7 @@ class RegisterUserForm(forms.Form):
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput)
     summoner_name = forms.CharField(label="Summoner's War Account Name", required=False, help_text='Not required. Visible to others if you make your SWARFARM account public.')
     is_public = forms.BooleanField(label='Make my SWARFARM account visible to others', required=False)
+    server = forms.ChoiceField(label="Summoner's War Server", choices=[(None, '---')] + Summoner.SERVER_CHOICES, required=False)
     captcha = ReCaptchaField()
 
     helper = FormHelper()
@@ -130,6 +131,7 @@ class RegisterUserForm(forms.Form):
         Field('password', css_class='input-sm'),
         Field('email', css_class='input-sm'),
         Field('summoner_name', css_class='input-sm'),
+        Field('server'),
         Field('is_public'),
         Field('captcha'),
         FormActions(Submit('register', 'Register', css_class='btn-lg btn-primary btn-block'))
@@ -166,6 +168,7 @@ class EditSummonerForm(ModelForm):
                 Field('summoner_name'),
                 Field('public'),
                 Field('timezone'),
+                Field('server'),
             ),
         )
 
@@ -175,6 +178,7 @@ class EditSummonerForm(ModelForm):
             'summoner_name',
             'public',
             'timezone',
+            'server',
         )
         labels = {
             'summoner_name': "Summoner's War Account Name",

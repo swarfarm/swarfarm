@@ -108,18 +108,21 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
     def get_archetype(self, instance):
         return instance.get_archetype_display()
 
+
 # Limited fields for displaying list view sort of display.
 class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
-    awakens_from = AwakensMonsterSerializer(read_only=True)
-    awakens_to = AwakensMonsterSerializer(read_only=True)
+    element = serializers.SerializerMethodField()
+    archetype = serializers.SerializerMethodField()
 
     class Meta:
         model = Monster
-        fields = (
-            'url', 'pk', 'name', 'element', 'archetype', 'base_stars',
-            'obtainable', 'can_awaken', 'is_awakened', 'awakens_from', 'awakens_to',
-            'fusion_food',
-        )
+        fields = ('url', 'pk', 'name', 'image_filename', 'element', 'archetype', 'base_stars', 'fusion_food',)
+
+    def get_element(self, instance):
+        return instance.get_element_display()
+
+    def get_archetype(self, instance):
+        return instance.get_archetype_display()
 
 
 # Individual collection stuff

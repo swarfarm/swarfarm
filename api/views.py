@@ -24,7 +24,7 @@ class BestiarySetPagination(PageNumberPagination):
 # Django REST framework views
 class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
-    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('element', 'archetype', 'base_stars', 'obtainable', 'is_awakened')
 
@@ -33,20 +33,6 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
             return MonsterSummarySerializer
         else:
             return MonsterSerializer
-
-    def list(self, request, *args, **kwargs):
-        response = super(MonsterViewSet, self).list(request, *args, **kwargs)
-
-        if request.accepted_renderer.format == 'html':
-            return Response({'data': response.data['results']}, template_name='api/bestiary/table_rows.html')
-        return response
-
-    def retrieve(self, request, *args, **kwargs):
-        response = super(MonsterViewSet, self).retrieve(request, *args, **kwargs)
-
-        if request.accepted_renderer.format == 'html':
-            return Response({'monster': response.data}, template_name='api/bestiary/detail.html')
-        return response
 
 
 class MonsterSkillViewSet(viewsets.ReadOnlyModelViewSet):

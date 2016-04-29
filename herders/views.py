@@ -1059,6 +1059,11 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                     Q(monster=ingredient) | Q(monster=ingredient.awakens_from),
                 ).order_by('-stars', '-level', '-monster__is_awakened')
 
+                owned_ingredient_pieces = MonsterPiece.committed.filter(
+                    Q(owner=summoner),
+                    Q(monster=ingredient) | Q(monster=ingredient.awakens_from),
+                ).first()
+
                 # Determine if each individual requirement is met using highest evolved/leveled monster that is not ignored for fusion
                 for owned_ingredient in owned_ingredients:
                     if not owned_ingredient.ignore_for_fusion:
@@ -1069,7 +1074,11 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                         complete = acquired & evolved & leveled & awakened
                         break
                 else:
-                    acquired = False
+                    if owned_ingredient_pieces:
+                        acquired = owned_ingredient_pieces.can_summon()
+                    else:
+                        acquired = False
+
                     evolved = False
                     leveled = False
                     awakened = False
@@ -1097,6 +1106,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                 ingredient_progress = {
                     'instance': ingredient,
                     'owned': owned_ingredients,
+                    'pieces': owned_ingredient_pieces,
                     'complete': complete,
                     'acquired': acquired,
                     'evolved': evolved,

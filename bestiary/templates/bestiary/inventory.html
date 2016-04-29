@@ -31,6 +31,7 @@
             </div>
         </div>
 
+        {% if monsters|length %}
         <div class="table-responsive">
             <table id="bestiary_table" class="table table-hover table-condensed monster-table" data-save-filters="false">
                 <thead>
@@ -143,6 +144,11 @@
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <div class="panel-body">
+            <div class="alert alert-warning">No results!</div>
+        </div>
+        {% endif %}
         <div class="panel-footer">
             <div class="btn-group pull-right">
                 <button class="btn btn-default pager-btn {% if not monsters.has_previous %}disabled"{% else %}" data-page="{{ monsters.previous_page_number }}"{% endif %} aria-label="Previous">

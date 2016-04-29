@@ -3,7 +3,7 @@
 {% load markdown_deux_tags %}
 {% static 'herders/images/' as img_url_prefix %}
 
-{% if instance.notes and instance.notes != '' %}
+{% if instance.notes and instance.notes != "" or instance.tags.all|length %}
 <div class="panel panel-default">
     <div class="panel-heading">
         <p class="panel-title">Personal Notes</p>

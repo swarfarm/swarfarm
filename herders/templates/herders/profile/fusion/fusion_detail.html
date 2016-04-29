@@ -129,6 +129,15 @@
                                 </div>
                             </div>
                         {% endfor %}
+                        {% if ingredient.pieces %}
+                            <div class="monster-image pull-left">
+                                <div>
+                                    <img src="{{ img_url_prefix }}monsters/{{ ingredient.pieces.monster.image_filename }}" class="monster-thumb"/>
+                                    <span class="image-plus image-plus-main fa fa-puzzle-piece"></span>
+                                    <span class="image-plus image-plus-right">x{{ ingredient.pieces.pieces }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

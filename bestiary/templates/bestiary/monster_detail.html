@@ -16,12 +16,19 @@
                 {% endif %}
             {% endfor %}
         </span>
+        <div class="image-plus-icon">
+            {% if mon_data.mon.fusion_food %}
+                <img src="{{ img_url_prefix }}icons/fusion.png" />
+            {% endif %}
+        </div>
     </div>
+    {% if mon_data.mon.obtainable %}
     <div class="monster-box-actions">
         <button class="btn btn-link btn-xs monster-add" data-monster="{{ mon_data.mon.pk }}" data-stars="{{ mon_data.mon.mon_data_stars }}">
             <span class="glyphicon glyphicon-plus"></span> Collection
         </button>
     </div>
+    {% endif %}
 </div>
 <div class="bestiary-name">
     <h1>{{ mon_data.mon.name }} <small><img src="{{ img_url_prefix }}elements/{{ mon_data.mon.element }}.png" style="height:1em"/> {{ mon_data.mon.get_archetype_display }}</small></h1>

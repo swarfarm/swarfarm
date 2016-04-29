@@ -25,8 +25,6 @@ class BestiarySetPagination(PageNumberPagination):
 class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
-
-    pagination_class = BestiarySetPagination
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('element', 'archetype', 'base_stars', 'obtainable', 'is_awakened')
 

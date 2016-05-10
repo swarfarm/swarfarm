@@ -85,18 +85,16 @@
                                                     {% endif %}
                                                 {% endfor %}
                                             </span>
-                                            <span class="image-plus image-plus-right">{{ instance.level }}</span>
+                                            <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
                                         </a>
                                     </div>
                                 </td>
                                 <td>{{ instance.monster.name|title }}</td>
                                 <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>
                                 <td>
-                                    {{ instance.level }}
+                                    {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}
                                     {% if instance.is_max_level %}
-                                        {% if instance.stars == 6 %}
-                                            <span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span>
-                                        {% else %}
+                                        {% if instance.stars < 6 %}
                                             <span class="glyphicon glyphicon-upload" style="color:darkorange;" data-toggle="tooltip" data-placement="top" title="Ready for Evolution!"></span>
                                         {% endif %}
                                     {% endif %}

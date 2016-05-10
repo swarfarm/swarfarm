@@ -119,7 +119,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                         </span>
-                                        <span class="image-plus image-plus-right">{{ owned.level }}</span>
+                                        <span class="image-plus image-plus-right">{% if owned.is_max_level %}MAX{% endif %}{{ owned.level }}</span>
                                         {% if owned.ignore_for_fusion %}
                                             <div class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Ignored for fusion progress"></div>
                                         {% endif %}

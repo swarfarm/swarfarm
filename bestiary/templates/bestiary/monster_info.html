@@ -36,6 +36,31 @@
             </td>
         </tr>
         {% endif %}
+        {% with fusion_set=mon_data.mon.fusion_set.all %}
+            {% if fusion_set|length %}
+                <tr>
+                    <td>Fusion Ingredient For:</td>
+                    <td>
+                        {% for fusion in fusion_set %}
+                        <div class="monster-image">
+                            <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb"/>
+                            <span>
+                                {% for x in fusion.product.base_stars|get_range %}
+                                    {% if fusion.product.is_awakened %}
+                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% elif fusion.product.can_awaken %}
+                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% else %}
+                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endwith %}
 
         {% if mon_data.mon.skill_ups_to_max %}
         <tr>

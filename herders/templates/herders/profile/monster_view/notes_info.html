@@ -65,6 +65,54 @@
                 {% endfor %}
             </td>
         </tr>
+        {% if fusion_ingredient_in|length %}
+            <tr>
+                <td>Fusion Ingredient For:</td>
+                <td>
+                    {% for fusion in fusion_ingredient_in %}
+                    <div class="monster-image">
+                        <a href="{% url 'herders:fusion' profile_name=profile_name %}#{{ fusion.product.bestiary_slug }}">
+                            <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb"/>
+                            <span>
+                                {% for x in fusion.product.base_stars|get_range %}
+                                    {% if fusion.product.is_awakened %}
+                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% elif fusion.product.can_awaken %}
+                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% else %}
+                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endif %}
+        {% if fusion_product_of %}
+            <tr>
+                <td>Fusion Product Of:</td>
+                <td>
+                    <div class="monster-image">
+                        <a href="{% url 'herders:fusion' profile_name=profile_name %}#{{ fusion_product_of.product.bestiary_slug }}">
+                            <img src="{{ img_url_prefix }}monsters/{{ fusion_product_of.product.image_filename }}" class="monster-thumb"/>
+                            <span>
+                                {% for x in fusion_product_of.product.base_stars|get_range %}
+                                    {% if fusion_product_of.product.is_awakened %}
+                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% elif fusion_product_of.product.can_awaken %}
+                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% else %}
+                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        {% endif %}
         {% if instance.team_set.count or instance.team_leader.count %}
         <tr>
             <td>Teams:</td>

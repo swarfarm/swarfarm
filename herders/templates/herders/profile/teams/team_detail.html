@@ -79,7 +79,7 @@
                                         {% endif %}
                                     {% endfor %}
                                 </span>
-                                <span class="image-plus image-plus-right">{{ team.leader.level }}</span>
+                                <span class="image-plus image-plus-right">{% if team.leader.is_max_level %}MAX{% endif %}{{ team.leader.level }}</span>
                             {% if is_owner %}
                                 </a>
                             {% endif %}
@@ -88,7 +88,7 @@
                     <td>{{ team.leader.monster.name|title }}</td>
                     <td class="monster-stars-column">{{ team.leader.stars }}<span class="glyphicon glyphicon-star"></span></td>
                     <td>
-                        {{ team.leader.level }}
+                        {% if team.leader.is_max_level %}MAX{% endif %}{{ team.leader.level }}
                         {% if team.leader.is_max_level %}
                             {% if team.leader.stars == 6 %}
                                 <span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span>
@@ -145,7 +145,7 @@
                                         {% endif %}
                                     {% endfor %}
                                 </span>
-                                <span class="image-plus image-plus-right">{{ instance.level }}</span>
+                                <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
                                 {% if is_owner %}
                                 </a>
                                 {% endif %}
@@ -154,7 +154,7 @@
                         <td>{{ instance.monster.name|title }}</td>
                         <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>
                         <td>
-                            {{ instance.level }}
+                            {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}
                             {% if instance.is_max_level %}
                                 {% if instance.stars == 6 %}
                                     <span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span>

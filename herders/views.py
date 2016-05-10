@@ -563,9 +563,25 @@ def monster_instance_view_info(request, profile_name, instance_id):
     except ObjectDoesNotExist:
         raise Http404()
 
+    if instance.monster.is_awakened:
+        ingredient_in = instance.monster.fusion_set.all()
+    elif instance.monster.can_awaken and instance.monster.awakens_to:
+        ingredient_in = instance.monster.awakens_to.fusion_set.all()
+    else:
+        ingredient_in = []
+
+    if instance.monster.is_awakened and instance.monster.awakens_from:
+        product_of = instance.monster.awakens_from.product.first()
+    elif instance.monster.can_awaken:
+        product_of = instance.monster.product.first()
+    else:
+        product_of = []
+
     context = {
         'instance': instance,
         'profile_name': profile_name,
+        'fusion_ingredient_in': ingredient_in,
+        'fusion_product_of': product_of,
     }
 
     return render(request, 'herders/profile/monster_view/notes_info.html', context)

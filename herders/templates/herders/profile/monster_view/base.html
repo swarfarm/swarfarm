@@ -6,9 +6,9 @@
 
 {% block title %}
 {% if is_owner %}
-{{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
+{{ instance.monster }} Lv. {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }} - {{ block.super }}
 {% else %}
-{{ summoner.user.username }}'s {{ instance.monster }} Lv. {{ instance.level }} - {{ block.super }}
+{{ summoner.user.username }}'s {{ instance.monster }} Lv. {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }} - {{ block.super }}
 {% endif %}
 {% endblock %}
 

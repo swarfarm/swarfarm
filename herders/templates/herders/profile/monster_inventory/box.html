@@ -76,7 +76,7 @@
                                                     {% endif %}
                                                 </div>
 
-                                                <span class="image-plus image-plus-right">{{ instance.level }}</span>
+                                                <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
                                             </a>
                                         </div>
 

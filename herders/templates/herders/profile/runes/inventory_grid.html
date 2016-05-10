@@ -68,6 +68,7 @@
                 <td>{% if rune.get_acc %}<span {% if rune.main_stat == rune.STAT_ACCURACY_PCT %}class="lead"{% endif %}>{{ rune.get_acc }}%</span>{% endif %}</td>
                 <td>
                     {% if rune.assigned_to %}
+                    <span class="hidden">{{ rune.assigned_to.monster.name }}-{{ rune.assigned_to.pk }}</span>
                     <div class="monster-image">
                         <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}" target="_blank">
                             <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb"/>

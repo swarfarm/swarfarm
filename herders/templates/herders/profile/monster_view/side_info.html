@@ -19,7 +19,7 @@
                 {% endfor %}
             </span>
             <span class="image-plus image-plus-left">{{ instance.monster.name }}</span>
-            <span class="image-plus image-plus-right">{{ instance.level }}</span>
+            <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
         </div>
         <div class="clearfix"></div>
     </div>

@@ -423,7 +423,7 @@ div.sprite {
 
 .image-plus {
     position: absolute;
-    height: 14px;
+    height: 12px;
     width: auto;
 
     padding: 0 1px;
@@ -435,7 +435,7 @@ div.sprite {
     background: black;
 
     border-radius: 3px;
-    border: 2px solid grey;
+    border: 1px solid grey;
     font-weight: bold;
 }
 

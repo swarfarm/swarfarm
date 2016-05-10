@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% load utils %}
 {% load markdown_deux_tags %}
+{% load humanize %}
 {% static 'herders/images/' as img_url_prefix %}
 
 {% if instance.notes and instance.notes != "" or instance.tags.all|length %}
@@ -24,6 +25,12 @@
     </div>
     <table class="table table-condensed table-bordered">
         <tbody>
+        {% if instance.created %}
+        <tr>
+            <td>Summoned On:</td>
+            <td>{{ instance.created }}</td>
+        </tr>
+        {% endif %}
         {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
             {% with instance.monster.awakens_to as awakened %}
             <tr>

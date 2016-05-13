@@ -11,6 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.contrib.postgres.fields import ArrayField
 
 from colorfield.fields import ColorField
 
@@ -743,6 +744,49 @@ class Fusion(models.Model):
                     sufficient_qty = False
 
         return sufficient_qty, missing_essences
+
+
+class Building(models.Model):
+    AREA_GENERAL = 0
+    AREA_GUILD = 1
+
+    AREA_CHOICES = [
+        (AREA_GENERAL, 'Everywhere'),
+        (AREA_GUILD, 'Guild Battle'),
+    ]
+
+    STAT_HP = 0
+    STAT_ATK = 1
+    STAT_DEF = 2
+    STAT_SPD = 3
+    STAT_CRIT_RATE_PCT = 4
+    STAT_CRIT_DMG_PCT = 5
+    STAT_RESIST_PCT = 6
+    STAT_ACCURACY_PCT = 7
+
+    STAT_CHOICES = [
+        (STAT_HP, 'HP'),
+        (STAT_ATK, 'ATK'),
+        (STAT_DEF, 'DEF'),
+        (STAT_SPD, 'SPD'),
+        (STAT_CRIT_RATE_PCT, 'CRI Rate %'),
+        (STAT_CRIT_DMG_PCT, 'CRI Dmg %'),
+        (STAT_RESIST_PCT, 'Resistance %'),
+        (STAT_ACCURACY_PCT, 'Accuracy %'),
+    ]
+
+    com2us_id = models.IntegerField()
+    name = models.CharField(max_length=30)
+    max_level = models.IntegerField()
+    area = models.IntegerField(choices=AREA_CHOICES)
+    affected_stat = models.IntegerField(choices=STAT_CHOICES)
+    element = models.CharField(max_length=6, choices=Monster.ELEMENT_CHOICES, blank=True, null=True)
+    stat_bonus = ArrayField(models.IntegerField(blank=True, null=True))
+    upgrade_cost = ArrayField(models.IntegerField(blank=True, null=True))
+    icon_filename = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 # Individual user/monster collection models
@@ -2136,6 +2180,11 @@ class Team(models.Model):
     def __unicode__(self):
         return self.name
 
+
+class BuildingInstance(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(Summoner)
+    level = models.IntegerField()
 
 # Game event calendar stuff
 class GameEvent(models.Model):

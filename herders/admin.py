@@ -56,3 +56,4 @@ class RuneCraftInstanceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(GameEvent)
+admin.site.register(BuildingInstance)

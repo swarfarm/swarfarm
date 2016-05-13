@@ -15,7 +15,7 @@ from django.template import loader, RequestContext
 from bestiary.models import Monster, Fusion
 from .forms import *
 from .filters import *
-from .models import Summoner, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance
+from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance
 
 
 def register(request):
@@ -187,6 +187,12 @@ def profile(request, profile_name=None):
         return render(request, 'herders/profile/monster_inventory/base.html', context)
     else:
         return render(request, 'herders/profile/not_public.html')
+
+
+def buildings(request, profile_name):
+    summoner = get_object_or_404(Summoner, user__username=profile_name)
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    buildings = BuildingInstance.objects.filter(owner=summoner)
 
 
 def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):

@@ -201,3 +201,8 @@ class SourceAdmin(admin.ModelAdmin):
 class FusionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'stars', 'cost', 'meta_order')
     filter_horizontal = ('ingredients',)
+
+
+@admin.register(Building)
+class BuildingAdmin(admin.ModelAdmin):
+    save_as = True

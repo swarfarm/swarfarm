@@ -2,6 +2,10 @@ import herders.models as herder_models
 
 
 # Proxy models soley for admin organization purposes
+class Building(herder_models.Building):
+    class Meta:
+        proxy = True
+
 class Monster(herder_models.Monster):
     class Meta:
         proxy = True

@@ -2430,6 +2430,9 @@ class BuildingInstance(models.Model):
     building = models.ForeignKey(Building)
     level = models.IntegerField()
 
+    def remaining_upgrade_cost(self):
+        return sum(self.building.upgrade_cost[self.level:])
+
     def __str__(self):
         return str(self.building) + ', Lv.' + str(self.level)
 

@@ -205,4 +205,5 @@ class FusionAdmin(admin.ModelAdmin):
 
 @admin.register(Building)
 class BuildingAdmin(admin.ModelAdmin):
+    list_display = ('image_url', 'name', 'com2us_id', 'affected_stat', 'area')
     save_as = True

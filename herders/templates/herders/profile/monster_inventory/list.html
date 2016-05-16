@@ -141,9 +141,8 @@
                                 <td>
                                     {% if instance.skill_ups_to_max > 0 %}
                                     <div class="monster-image">
-                                        <div class="sprite sprite-devilmon_dark">
-                                            <span class="image-plus image-plus-main">{{ instance.skill_ups_to_max }}</span>
-                                        </div>
+                                        <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+                                        <span class="image-plus image-plus-main">{{ instance.skill_ups_to_max }}</span>
                                     </div>
                                     {% else %}
                                     <span class="glyphicon glyphicon-ok-circle text-success"></span>

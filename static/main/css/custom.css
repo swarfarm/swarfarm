@@ -240,12 +240,6 @@ span.monster-image {
     font-size: 0;
 }
 
-div.sprite {
-    position: relative;
-    border: 1px solid black;
-    border-radius: 10%;
-}
-
 .monster-image-full {
     padding: 0 !important;
     position: relative;

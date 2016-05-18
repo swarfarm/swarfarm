@@ -40,7 +40,7 @@
             {% if fusion_set|length %}
                 <tr>
                     <td>Fusion Ingredient For:</td>
-                    <td>
+                    <td class="monster-awaken-materials">
                         {% for fusion in fusion_set %}
                         <div class="monster-image">
                             <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb"/>
@@ -65,11 +65,10 @@
         {% if mon_data.mon.skill_ups_to_max %}
         <tr>
             <td>Skill-ups to Max</td>
-            <td>
+            <td class="monster-awaken-materials">
                 <div class="monster-image">
-                    <div class="sprite sprite-devilmon_dark">
-                        <span class="image-plus image-plus-main">{{ mon_data.mon.skill_ups_to_max }}</span>
-                    </div>
+                    <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+                    <span class="image-plus image-plus-main">{{ mon_data.mon.skill_ups_to_max }}</span>
                 </div>
             </td>
         </tr>

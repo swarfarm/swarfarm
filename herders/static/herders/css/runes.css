@@ -343,9 +343,7 @@ span.rune-set-bonus {
     display: inline-block;
     width: 100%;
     height: 100%;
-    background-repeat: no-repeat;
-    background-position-x: 59%;
-    background-position-y: 57%;
+    background: no-repeat 59% 57%;
     background-size: 21px 21px;
     -webkit-transform: rotate(-30deg);
 	-moz-transform: rotate(-30deg);

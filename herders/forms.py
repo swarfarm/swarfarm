@@ -899,6 +899,7 @@ class AddRuneInstanceForm(ModelForm):
         self.fields['substat_4_value'].label = False
         self.fields['substat_4_craft'].label = False
         self.fields['assigned_to'].label = False
+        self.fields['notes'].label = False
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
@@ -964,6 +965,14 @@ class AddRuneInstanceForm(ModelForm):
                         ),
                         css_class='form-group form-group-condensed',
                     ),
+                    Div(
+                        HTML('<label class="col-md-2 control-label">Notes</label>'),
+                        Div(
+                            Field('notes', rows="4", wrapper_class='col-md-10'),
+                            Field('marked_for_sale', wrapper_class='col-md-offset-2 col-md-10'),
+                        ),
+                        css_class='form-group form-group-condensed',
+                    ),
                     css_class='form-horizontal',
                 ),
                 css_class='col-md-10',
@@ -984,7 +993,7 @@ class AddRuneInstanceForm(ModelForm):
             'substat_2', 'substat_2_value', 'substat_2_craft',
             'substat_3', 'substat_3_value', 'substat_3_craft',
             'substat_4', 'substat_4_value', 'substat_4_craft',
-            'assigned_to',
+            'assigned_to', 'notes', 'marked_for_sale',
         )
         widgets = {
             'assigned_to': autocomplete_light.ChoiceWidget('MonsterInstanceAutocomplete'),
@@ -1100,6 +1109,12 @@ class FilterRuneForm(forms.Form):
         required=False,
         widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
     )
+    marked_for_sale = forms.NullBooleanField(
+        label="Marked for Sale",
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))),
+    )
+
     has_hp = forms.NullBooleanField(label='Has HP', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     has_atk = forms.NullBooleanField(label='Has ATK', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     has_def = forms.NullBooleanField(label='Has DEF', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
@@ -1169,6 +1184,10 @@ class FilterRuneForm(forms.Form):
                         css_class='col-sm-12',
                     ),
                     css_class='row',
+                ),
+                Div(
+                    Field('marked_for_sale', css_class='auto-submit', wrapper_class='col-sm-1'),
+                    css_class='row'
                 ),
                 css_class='col-sm-10',
             ),

@@ -1857,7 +1857,11 @@ class RuneInstance(models.Model):
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
     com2us_id = models.BigIntegerField(blank=True, null=True)
-    assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True, )
+    assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
+    marked_for_sale = models.BooleanField(default=False)
+    notes = models.TextField(null=True, blank=True)
+    uncommitted = models.BooleanField(default=False)  # Used for importing
+
     stars = models.IntegerField()
     level = models.IntegerField()
     slot = models.IntegerField()
@@ -1878,8 +1882,6 @@ class RuneInstance(models.Model):
     substat_4 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_4_value = models.IntegerField(null=True, blank=True)
     substat_4_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
-    marked_for_sale = models.BooleanField(default=False)
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     # The following fields exist purely to allow easier filtering and are updated on model save
     quality = models.IntegerField(default=0, choices=QUALITY_CHOICES)

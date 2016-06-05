@@ -108,6 +108,7 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'has_speed': ['exact'],
             'has_resist': ['exact'],
             'has_accuracy': ['exact'],
+            'marked_for_sale': ['exact'],
         }
 
     def filter_assigned_to(self, queryset, value):

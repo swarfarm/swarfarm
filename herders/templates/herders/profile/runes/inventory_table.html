@@ -37,6 +37,8 @@
                 <th>Substat 3</th>
                 <th>Substat 4</th>
                 <th>Assigned To</th>
+                <th>Notes</th>
+                <th>Marked for Sale</th>
                 {% if is_owner %}<th data-sorter="false"></th>{% endif %}
             </tr>
             </thead>
@@ -78,6 +80,14 @@
                             <span class="image-plus image-plus-right">{{ rune.assigned_to.level }}</span>
                         </a>
                     </div>
+                    {% endif %}
+                </td>
+                <td>{% if rune.notes %}{{ rune.notes }}{% endif %}</td>
+                <td>
+                    {% if rune.marked_for_sale %}
+                    <span class="hidden">Yes</span><span class="text-succes glyphicon glyphicon-ok"></span>
+                    {% else %}
+                    <span class="hidden">No</span>
                     {% endif %}
                 </td>
                 {% if is_owner %}

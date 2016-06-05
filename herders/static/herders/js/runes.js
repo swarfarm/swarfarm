@@ -277,6 +277,7 @@ $('body')
                     stickyHeaders_offset: 100
                 }
             });
+            $('[data-toggle="tooltip"]').tooltip();
         });
 
         return false;  //cancel default on submit action.

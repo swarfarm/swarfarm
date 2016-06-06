@@ -1,7 +1,6 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-
 <div class="row">
     {% if mon_data.mon.leader_skill %}
     <div class="col-lg-12">
@@ -22,6 +21,7 @@
     <div class="{% if mon_data.mon.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
         <div class="panel panel-default">
             <div class="panel-heading">
+                {% if request.user.is_superuser %}<button class="btn btn-xs edit-skill pull-right" data-skill-id="{{ skill.pk }}"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}
                 <p class="panel-title"><strong>{{ skill.name }}</strong> {% if skill.passive %}(Passive){% endif %}</p>
             </div>
             <ul class="list-group">

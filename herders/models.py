@@ -1101,7 +1101,7 @@ class MonsterInstance(models.Model):
 
         rune_set_bonus = self.rune_bonus_energy()
 
-        return int(ceil(base * (hp_percent / 100.0)) + rune_set_bonus + hp_flat)
+        return int(ceil(round(base * (hp_percent / 100.0), 3)) + rune_set_bonus + hp_flat)
 
     def hp(self):
         return self.base_hp + self.rune_hp
@@ -1118,7 +1118,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_hp * bonus))
+        return int(ceil(round(self.base_hp * bonus, 3)))
 
     def guild_hp(self):
         buildings = BuildingInstance.objects.filter(
@@ -1132,7 +1132,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_hp * bonus))
+        return int(ceil(round(self.base_hp * bonus, 3)))
 
     def calc_base_attack(self):
         return self.monster.actual_attack(self.stars, self.level)
@@ -1149,7 +1149,7 @@ class MonsterInstance(models.Model):
 
         rune_set_bonus = self.rune_bonus_fatal()
 
-        return int(ceil(base * (atk_percent / 100.0)) + rune_set_bonus + atk_flat)
+        return int(ceil(round(base * (atk_percent / 100.0), 3)) + rune_set_bonus + atk_flat)
 
     def attack(self):
         return self.base_attack + self.rune_attack
@@ -1166,7 +1166,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_attack * bonus))
+        return int(ceil(round(self.base_attack * bonus, 3)))
 
     def guild_attack(self):
         buildings = BuildingInstance.objects.filter(
@@ -1180,7 +1180,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_attack * bonus))
+        return int(ceil(round(self.base_attack * bonus, 3)))
 
     def calc_base_defense(self):
         return self.monster.actual_defense(self.stars, self.level)
@@ -1197,7 +1197,7 @@ class MonsterInstance(models.Model):
 
         rune_set_bonus = self.rune_bonus_guard()
 
-        return int(ceil(base * (def_percent / 100.0)) + rune_set_bonus + def_flat)
+        return int(ceil(round(base * (def_percent / 100.0), 3)) + rune_set_bonus + def_flat)
 
     def defense(self):
         return self.base_defense + self.rune_defense
@@ -1214,7 +1214,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_defense * bonus))
+        return int(ceil(round(self.base_defense * bonus, 3)))
 
     def guild_defense(self):
         buildings = BuildingInstance.objects.filter(
@@ -1228,7 +1228,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_defense * bonus))
+        return int(ceil(round(self.base_defense * bonus, 3)))
 
     def calc_base_speed(self):
         return self.monster.speed
@@ -1242,7 +1242,7 @@ class MonsterInstance(models.Model):
         for rune in runes:
             spd_flat += rune.get_stat(RuneInstance.STAT_SPD)
 
-        return int(ceil(base * (spd_percent / 100.0)) + spd_flat)
+        return int(ceil(round(base * (spd_percent / 100.0), 3)) + spd_flat)
 
     def speed(self):
         return self.base_speed + self.rune_speed
@@ -1259,7 +1259,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_speed * bonus))
+        return int(ceil(round(self.base_speed * bonus, 3)))
 
     def guild_speed(self):
         buildings = BuildingInstance.objects.filter(
@@ -1273,7 +1273,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_speed * bonus))
+        return int(ceil(round(self.base_speed * bonus, 3)))
 
     def calc_base_crit_rate(self):
         return self.monster.crit_rate
@@ -1302,7 +1302,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_crit_rate * bonus))
+        return int(ceil(round(self.base_crit_rate * bonus, 3)))
 
     def guild_crit_rate(self):
         buildings = BuildingInstance.objects.filter(
@@ -1316,7 +1316,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_crit_rate * bonus))
+        return int(ceil(round(self.base_crit_rate * bonus, 3)))
 
     def calc_base_crit_damage(self):
         return self.monster.crit_damage
@@ -1345,7 +1345,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_crit_damage * bonus))
+        return int(ceil(round(self.base_crit_damage * bonus, 3)))
 
     def guild_crit_damage(self):
         buildings = BuildingInstance.objects.filter(
@@ -1359,7 +1359,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_crit_damage * bonus))
+        return int(ceil(round(self.base_crit_damage * bonus, 3)))
 
     def calc_base_resistance(self):
         return self.monster.resistance
@@ -1388,7 +1388,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_resistance * bonus))
+        return int(ceil(round(self.base_resistance * bonus, 3)))
 
     def guild_resistance(self):
         buildings = BuildingInstance.objects.filter(
@@ -1402,7 +1402,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_resistance * bonus))
+        return int(ceil(round(self.base_resistance * bonus)))
 
     def calc_base_accuracy(self):
         return self.monster.accuracy
@@ -1431,7 +1431,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_accuracy * bonus))
+        return int(ceil(round(self.base_accuracy * bonus)))
 
     def guild_accuracy(self):
         buildings = BuildingInstance.objects.filter(
@@ -1445,7 +1445,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_accuracy * bonus))
+        return int(ceil(round(self.base_accuracy * bonus)))
 
     def update_fields(self):
         # Update stats

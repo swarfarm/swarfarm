@@ -234,7 +234,7 @@ span.rune-set-bonus {
     background-size: 50px 50px;
 }
 
-.rune-craft.grindstone.common {
+.rune-craft.grindstone.normal {
     background-image: url(/static/herders/images/runes/grindstone_common.png);
 }
 .rune-craft.grindstone.magic {
@@ -252,7 +252,7 @@ span.rune-set-bonus {
 .rune-craft.enchant-gem.legend {
     background-image: url(/static/herders/images/runes/enchant_gem_legend.png);
 }
-.rune-craft.enchant-gem.common {
+.rune-craft.enchant-gem.normal {
     background-image: url(/static/herders/images/runes/enchant_gem_common.png);
 }
 .rune-craft.enchant-gem.magic {

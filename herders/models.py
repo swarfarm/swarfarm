@@ -2225,6 +2225,7 @@ class RuneCraftInstance(models.Model):
     QUALITY_LEGEND = 4
 
     QUALITY_CHOICES = (
+        (QUALITY_NORMAL, 'Normal'),
         (QUALITY_MAGIC, 'Magic'),
         (QUALITY_RARE, 'Rare'),
         (QUALITY_HERO, 'Hero'),
@@ -2236,114 +2237,160 @@ class RuneCraftInstance(models.Model):
     CRAFT_VALUE_RANGES = {
         RuneInstance.CRAFT_GRINDSTONE: {
             RuneInstance.STAT_HP: {
+                RuneInstance.QUALITY_NORMAL: {'min': 80, 'max': 120},
                 RuneInstance.QUALITY_MAGIC: {'min': 100, 'max': 200},
                 RuneInstance.QUALITY_RARE: {'min': 180, 'max': 250},
                 RuneInstance.QUALITY_HERO: {'min': 230, 'max': 450},
                 RuneInstance.QUALITY_LEGEND: {'min': 430, 'max': 550},
             },
             RuneInstance.STAT_HP_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
                 RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
             },
             RuneInstance.STAT_ATK: {
+                RuneInstance.QUALITY_NORMAL: {'min': 4, 'max': 8},
                 RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
                 RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
                 RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
                 RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
             },
             RuneInstance.STAT_ATK_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
                 RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
             },
             RuneInstance.STAT_DEF: {
+                RuneInstance.QUALITY_NORMAL: {'min': 4, 'max': 8},
                 RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
                 RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
                 RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
                 RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
             },
             RuneInstance.STAT_DEF_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
                 RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
             },
             RuneInstance.STAT_SPD: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 2},
                 RuneInstance.QUALITY_MAGIC: {'min': 1, 'max': 2},
                 RuneInstance.QUALITY_RARE: {'min': 2, 'max': 3},
                 RuneInstance.QUALITY_HERO: {'min': 3, 'max': 4},
                 RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 5},
             },
+            RuneInstance.STAT_CRIT_RATE_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 2},
+                RuneInstance.QUALITY_MAGIC: {'min': 1, 'max': 3},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 6},
+            },
+            RuneInstance.STAT_CRIT_DMG_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 7},
+            },
+            RuneInstance.STAT_RESIST_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
+            RuneInstance.STAT_ACCURACY_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
         },
         RuneInstance.CRAFT_ENCHANT_GEM: {
             RuneInstance.STAT_HP: {
+                RuneInstance.QUALITY_NORMAL: {'min': 100, 'max': 150},
                 RuneInstance.QUALITY_MAGIC: {'min': 130, 'max': 220},
                 RuneInstance.QUALITY_RARE: {'min': 200, 'max': 310},
                 RuneInstance.QUALITY_HERO: {'min': 290, 'max': 420},
                 RuneInstance.QUALITY_LEGEND: {'min': 400, 'max': 580},
             },
             RuneInstance.STAT_HP_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
                 RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
                 RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
             },
             RuneInstance.STAT_ATK: {
+                RuneInstance.QUALITY_NORMAL: {'min': 8, 'max': 12},
                 RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
                 RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
                 RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
                 RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
             },
             RuneInstance.STAT_ATK_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
                 RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
                 RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
             },
             RuneInstance.STAT_DEF: {
+                RuneInstance.QUALITY_NORMAL: {'min': 8, 'max': 12},
                 RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
                 RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
                 RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
                 RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
             },
             RuneInstance.STAT_DEF_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
                 RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
                 RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
             },
             RuneInstance.STAT_SPD: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
                 RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
             },
             RuneInstance.STAT_CRIT_RATE_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 5},
                 RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
-                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_LEGEND: {'min': 6, 'max': 9},
             },
             RuneInstance.STAT_CRIT_DMG_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 5},
                 RuneInstance.QUALITY_RARE: {'min': 4, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
-                RuneInstance.QUALITY_LEGEND: {'min': 6, 'max': 9},
+                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
             },
             RuneInstance.STAT_RESIST_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
                 RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
-                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+                RuneInstance.QUALITY_LEGEND: {'min': 8, 'max': 11},
             },
             RuneInstance.STAT_ACCURACY_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
                 RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
-                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+                RuneInstance.QUALITY_LEGEND: {'min': 8, 'max': 11},
             },
         }
     }
@@ -2369,7 +2416,7 @@ class RuneCraftInstance(models.Model):
         else:
             percent = ''
 
-        return RuneInstance.RUNE_STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + '-' + str(self.get_max_value()) + percent
+        return RuneInstance.RUNE_STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + ' - ' + str(self.get_max_value()) + percent
 
     def get_min_value(self):
         try:

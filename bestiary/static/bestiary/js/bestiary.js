@@ -148,4 +148,19 @@ $('body')
         });
 
         return false;  //cancel default on submit action.
+    })
+    .on('click', '.edit-skill', function() {
+        var skill_id = $(this).data('skill-id');
+
+        $.ajax({
+            type: 'get',
+            url: '/bestiary/edit/skill/' + skill_id + '/',
+            global: false
+        }).done(function(data) {
+            bootbox.dialog({
+                title: "Edit Skill",
+                size: "large",
+                message: data.html
+            });
+        });
     });

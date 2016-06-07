@@ -438,8 +438,8 @@ class MonsterSkill(models.Model):
     max_level = models.IntegerField()
     level_progress_description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
-    atk_multiplier = models.IntegerField(blank=True, null=True)
-    scales_with = models.ManyToManyField('MonsterSkillScalingStat', through='MonsterSkillScalesWith')
+    multiplier_formula = models.CharField(max_length=100, null=True, blank=True)
+    scaling_stats = models.ManyToManyField('MonsterSkillScalingStat')
 
     def image_url(self):
         if self.icon_filename:
@@ -461,7 +461,12 @@ class MonsterSkill(models.Model):
         else:
             icon = ''
 
-        return name + icon
+        if self.com2us_id:
+            com2us_id = ' - ' + str(self.com2us_id)
+        else:
+            com2us_id = ''
+
+        return name + com2us_id + icon
 
     class Meta:
         ordering = ['slot', 'name']
@@ -1101,7 +1106,7 @@ class MonsterInstance(models.Model):
 
         rune_set_bonus = self.rune_bonus_energy()
 
-        return int(ceil(base * (hp_percent / 100.0)) + rune_set_bonus + hp_flat)
+        return int(ceil(round(base * (hp_percent / 100.0), 3)) + rune_set_bonus + hp_flat)
 
     def hp(self):
         return self.base_hp + self.rune_hp
@@ -1118,7 +1123,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_hp * bonus))
+        return int(ceil(round(self.base_hp * bonus, 3)))
 
     def guild_hp(self):
         buildings = BuildingInstance.objects.filter(
@@ -1132,7 +1137,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_hp * bonus))
+        return int(ceil(round(self.base_hp * bonus, 3)))
 
     def calc_base_attack(self):
         return self.monster.actual_attack(self.stars, self.level)
@@ -1149,7 +1154,7 @@ class MonsterInstance(models.Model):
 
         rune_set_bonus = self.rune_bonus_fatal()
 
-        return int(ceil(base * (atk_percent / 100.0)) + rune_set_bonus + atk_flat)
+        return int(ceil(round(base * (atk_percent / 100.0), 3)) + rune_set_bonus + atk_flat)
 
     def attack(self):
         return self.base_attack + self.rune_attack
@@ -1166,7 +1171,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_attack * bonus))
+        return int(ceil(round(self.base_attack * bonus, 3)))
 
     def guild_attack(self):
         buildings = BuildingInstance.objects.filter(
@@ -1180,7 +1185,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_attack * bonus))
+        return int(ceil(round(self.base_attack * bonus, 3)))
 
     def calc_base_defense(self):
         return self.monster.actual_defense(self.stars, self.level)
@@ -1197,7 +1202,7 @@ class MonsterInstance(models.Model):
 
         rune_set_bonus = self.rune_bonus_guard()
 
-        return int(ceil(base * (def_percent / 100.0)) + rune_set_bonus + def_flat)
+        return int(ceil(round(base * (def_percent / 100.0), 3)) + rune_set_bonus + def_flat)
 
     def defense(self):
         return self.base_defense + self.rune_defense
@@ -1214,7 +1219,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_defense * bonus))
+        return int(ceil(round(self.base_defense * bonus, 3)))
 
     def guild_defense(self):
         buildings = BuildingInstance.objects.filter(
@@ -1228,7 +1233,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_defense * bonus))
+        return int(ceil(round(self.base_defense * bonus, 3)))
 
     def calc_base_speed(self):
         return self.monster.speed
@@ -1242,7 +1247,7 @@ class MonsterInstance(models.Model):
         for rune in runes:
             spd_flat += rune.get_stat(RuneInstance.STAT_SPD)
 
-        return int(ceil(base * (spd_percent / 100.0)) + spd_flat)
+        return int(ceil(round(base * (spd_percent / 100.0), 3)) + spd_flat)
 
     def speed(self):
         return self.base_speed + self.rune_speed
@@ -1259,7 +1264,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_speed * bonus))
+        return int(ceil(round(self.base_speed * bonus, 3)))
 
     def guild_speed(self):
         buildings = BuildingInstance.objects.filter(
@@ -1273,7 +1278,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_speed * bonus))
+        return int(ceil(round(self.base_speed * bonus, 3)))
 
     def calc_base_crit_rate(self):
         return self.monster.crit_rate
@@ -1302,7 +1307,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_crit_rate * bonus))
+        return int(ceil(round(self.base_crit_rate * bonus, 3)))
 
     def guild_crit_rate(self):
         buildings = BuildingInstance.objects.filter(
@@ -1316,7 +1321,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_crit_rate * bonus))
+        return int(ceil(round(self.base_crit_rate * bonus, 3)))
 
     def calc_base_crit_damage(self):
         return self.monster.crit_damage
@@ -1345,7 +1350,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_crit_damage * bonus))
+        return int(ceil(round(self.base_crit_damage * bonus, 3)))
 
     def guild_crit_damage(self):
         buildings = BuildingInstance.objects.filter(
@@ -1359,7 +1364,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_crit_damage * bonus))
+        return int(ceil(round(self.base_crit_damage * bonus, 3)))
 
     def calc_base_resistance(self):
         return self.monster.resistance
@@ -1388,7 +1393,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_resistance * bonus))
+        return int(ceil(round(self.base_resistance * bonus, 3)))
 
     def guild_resistance(self):
         buildings = BuildingInstance.objects.filter(
@@ -1402,7 +1407,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_resistance * bonus))
+        return int(ceil(round(self.base_resistance * bonus)))
 
     def calc_base_accuracy(self):
         return self.monster.accuracy
@@ -1431,7 +1436,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_accuracy * bonus))
+        return int(ceil(round(self.base_accuracy * bonus)))
 
     def guild_accuracy(self):
         buildings = BuildingInstance.objects.filter(
@@ -1445,7 +1450,7 @@ class MonsterInstance(models.Model):
         for building in buildings:
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
-        return int(ceil(self.base_accuracy * bonus))
+        return int(ceil(round(self.base_accuracy * bonus)))
 
     def update_fields(self):
         # Update stats
@@ -2225,6 +2230,7 @@ class RuneCraftInstance(models.Model):
     QUALITY_LEGEND = 4
 
     QUALITY_CHOICES = (
+        (QUALITY_NORMAL, 'Normal'),
         (QUALITY_MAGIC, 'Magic'),
         (QUALITY_RARE, 'Rare'),
         (QUALITY_HERO, 'Hero'),
@@ -2236,114 +2242,160 @@ class RuneCraftInstance(models.Model):
     CRAFT_VALUE_RANGES = {
         RuneInstance.CRAFT_GRINDSTONE: {
             RuneInstance.STAT_HP: {
+                RuneInstance.QUALITY_NORMAL: {'min': 80, 'max': 120},
                 RuneInstance.QUALITY_MAGIC: {'min': 100, 'max': 200},
                 RuneInstance.QUALITY_RARE: {'min': 180, 'max': 250},
                 RuneInstance.QUALITY_HERO: {'min': 230, 'max': 450},
                 RuneInstance.QUALITY_LEGEND: {'min': 430, 'max': 550},
             },
             RuneInstance.STAT_HP_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
                 RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
             },
             RuneInstance.STAT_ATK: {
+                RuneInstance.QUALITY_NORMAL: {'min': 4, 'max': 8},
                 RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
                 RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
                 RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
                 RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
             },
             RuneInstance.STAT_ATK_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
                 RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
             },
             RuneInstance.STAT_DEF: {
+                RuneInstance.QUALITY_NORMAL: {'min': 4, 'max': 8},
                 RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
                 RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
                 RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
                 RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
             },
             RuneInstance.STAT_DEF_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
                 RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
             },
             RuneInstance.STAT_SPD: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 2},
                 RuneInstance.QUALITY_MAGIC: {'min': 1, 'max': 2},
                 RuneInstance.QUALITY_RARE: {'min': 2, 'max': 3},
                 RuneInstance.QUALITY_HERO: {'min': 3, 'max': 4},
                 RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 5},
             },
+            RuneInstance.STAT_CRIT_RATE_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 2},
+                RuneInstance.QUALITY_MAGIC: {'min': 1, 'max': 3},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 6},
+            },
+            RuneInstance.STAT_CRIT_DMG_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 7},
+            },
+            RuneInstance.STAT_RESIST_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
+            RuneInstance.STAT_ACCURACY_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
         },
         RuneInstance.CRAFT_ENCHANT_GEM: {
             RuneInstance.STAT_HP: {
+                RuneInstance.QUALITY_NORMAL: {'min': 100, 'max': 150},
                 RuneInstance.QUALITY_MAGIC: {'min': 130, 'max': 220},
                 RuneInstance.QUALITY_RARE: {'min': 200, 'max': 310},
                 RuneInstance.QUALITY_HERO: {'min': 290, 'max': 420},
                 RuneInstance.QUALITY_LEGEND: {'min': 400, 'max': 580},
             },
             RuneInstance.STAT_HP_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
                 RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
                 RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
             },
             RuneInstance.STAT_ATK: {
+                RuneInstance.QUALITY_NORMAL: {'min': 8, 'max': 12},
                 RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
                 RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
                 RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
                 RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
             },
             RuneInstance.STAT_ATK_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
                 RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
                 RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
             },
             RuneInstance.STAT_DEF: {
+                RuneInstance.QUALITY_NORMAL: {'min': 8, 'max': 12},
                 RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
                 RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
                 RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
                 RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
             },
             RuneInstance.STAT_DEF_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
                 RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
                 RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
             },
             RuneInstance.STAT_SPD: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
                 RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
             },
             RuneInstance.STAT_CRIT_RATE_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
                 RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_RARE: {'min': 3, 'max': 5},
                 RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
-                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 8},
+                RuneInstance.QUALITY_LEGEND: {'min': 6, 'max': 9},
             },
             RuneInstance.STAT_CRIT_DMG_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 5},
                 RuneInstance.QUALITY_RARE: {'min': 4, 'max': 6},
                 RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
-                RuneInstance.QUALITY_LEGEND: {'min': 6, 'max': 9},
+                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
             },
             RuneInstance.STAT_RESIST_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
                 RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
-                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+                RuneInstance.QUALITY_LEGEND: {'min': 8, 'max': 11},
             },
             RuneInstance.STAT_ACCURACY_PCT: {
+                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
                 RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
                 RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
                 RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
-                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
+                RuneInstance.QUALITY_LEGEND: {'min': 8, 'max': 11},
             },
         }
     }
@@ -2369,7 +2421,7 @@ class RuneCraftInstance(models.Model):
         else:
             percent = ''
 
-        return RuneInstance.RUNE_STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + '-' + str(self.get_max_value()) + percent
+        return RuneInstance.RUNE_STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + ' - ' + str(self.get_max_value()) + percent
 
     def get_min_value(self):
         try:

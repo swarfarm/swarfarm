@@ -1,11 +1,13 @@
 from collections import OrderedDict
 
-from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
+from django.http import Http404, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
+from django.template import loader, RequestContext
 
-from .models import Monster
+from .models import *
+from .forms import *
 from herders.forms import FilterMonsterForm
 from herders.filters import MonsterFilter
 
@@ -252,3 +254,32 @@ def bestiary_sanity_checks(request):
                 errors[str(skill)] = skill_errors
 
         return render(request, 'herders/skill_debug.html', {'errors': errors})
+
+
+def edit_skill(request, pk):
+    skill = Skill.objects.get(pk=pk)
+    form = SkillForm(request.POST or None, instance=skill)
+
+    if request.user.is_superuser:
+        template = loader.get_template('bestiary/edit_skill_form.html')
+
+        if request.method == 'POST' and form.is_valid():
+            form.save()
+            response_data = {
+                'code': 'success'
+            }
+        else:
+
+            form.helper.form_action = reverse('bestiary:edit_skill', kwargs={'pk': pk})
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, {'form': form})),
+            }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden('Unauthorized')
+
+
+def edit_monster(request):
+    pass

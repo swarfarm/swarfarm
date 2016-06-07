@@ -39,8 +39,7 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
         model = Skill
         fields = (
             'pk', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
-            'skill_effect', 'atk_multiplier', 'scales_with',
-            'icon_filename',
+            'skill_effect', 'multiplier_formula', 'scales_with', 'icon_filename',
         )
 
 

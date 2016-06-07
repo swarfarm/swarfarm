@@ -439,7 +439,7 @@ class MonsterSkill(models.Model):
     level_progress_description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
     multiplier_formula = models.CharField(max_length=100, null=True, blank=True)
-    scaling_stats = models.ManyToManyField('MonsterSkillScalingStat')
+    scaling_stats = models.ManyToManyField('MonsterSkillScalingStat', blank=True)
 
     def image_url(self):
         if self.icon_filename:

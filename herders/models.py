@@ -438,8 +438,8 @@ class MonsterSkill(models.Model):
     max_level = models.IntegerField()
     level_progress_description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
-    atk_multiplier = models.IntegerField(blank=True, null=True)
-    scales_with = models.ManyToManyField('MonsterSkillScalingStat', through='MonsterSkillScalesWith')
+    multiplier_formula = models.CharField(max_length=100, null=True, blank=True)
+    scaling_stats = models.ManyToManyField('MonsterSkillScalingStat')
 
     def image_url(self):
         if self.icon_filename:
@@ -461,7 +461,12 @@ class MonsterSkill(models.Model):
         else:
             icon = ''
 
-        return name + icon
+        if self.com2us_id:
+            com2us_id = ' - ' + str(self.com2us_id)
+        else:
+            com2us_id = ''
+
+        return name + com2us_id + icon
 
     class Meta:
         ordering = ['slot', 'name']

@@ -148,11 +148,6 @@ class MonsterAdmin(admin.ModelAdmin):
         form.instance.save()
 
 
-class ScalesWithInline(admin.TabularInline):
-    model = ScalesWith
-    extra = 2
-
-
 class EffectDetailInline(admin.StackedInline):
     model = EffectDetail
     extra = 3
@@ -165,10 +160,10 @@ class EffectDetailInline(admin.StackedInline):
 class SkillAdmin(admin.ModelAdmin):
     readonly_fields = ('used_on',)
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
-    filter_vertical = ('skill_effect',)
+    filter_vertical = ('skill_effect', 'scaling_stats')
     search_fields = ['name', 'icon_filename', 'description']
     list_filter = ['slot', 'skill_effect', 'passive']
-    inlines = (ScalesWithInline, EffectDetailInline,)
+    inlines = (EffectDetailInline,)
     save_as = True
 
     def used_on(self, obj):

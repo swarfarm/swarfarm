@@ -95,25 +95,46 @@ def parse_skill_data():
                 # maybe this later. Data seems incomplete sometimes.
 
                 # Scaling formula
+                scaling_stats = {
+                    'ATK': 'ATK',
+                    'DEF': 'DEF',
+                    'ATTACK_SPEED': 'SPD',
+                    'ATTACK_TOT_HP': 'MAXHP',
+                    'DIE_RATE': 'SurvivingAllies',
+                    'TARGET_TOT_HP': 'EnemyMAXHP',
+                    'ATTACK_LOSS_HP': 'MissingHP',
+                    'ATTACK_CUR_HP_RATE': 'HP%',
+                    'TARGET_CUR_HP_RATE': 'EnemyHP%',
+                    'LIFE_SHARE_ALL': 'LifeShareAOE',
+                    'LIFE_SHARE_TARGET': 'LifeShare',
+                    'ATTACK_LV': 'Level',
+                    'ATTACK_WIZARD_LIFE_RATE': 'LivingAllyRatio'
+
+                }
                 formula = ''
                 formula_array = [''.join(map(str, scale)) for scale in json.loads(csv_skill['fun data'])]
                 plain_operators = '+-*/'
+                if len(formula_array):
+                    for operation in formula_array:
+                        if operation == 'FIXED':
+                            formula += ' FIXED'
+                        elif operation not in plain_operators:
+                            formula += '({0})'.format(operation)
+                        else:
+                            formula += '{0}'.format(operation)
 
-                for operation in formula_array:
-                    if operation not in plain_operators:
-                        formula += '({0})'.format(operation)
-                    else:
-                        formula += '{0}'.format(operation)
+                    formula = simplify(formula)
 
-                formula = simplify(formula)
-                if skill.multiplier_formula != str(formula):
-                    skill.multiplier_formula = str(formula)
-                    updated = True
+                    # Replace
 
-                # Finally save it if required
-                if updated:
-                    skill.save()
-                    print 'Updated skill ' + str(skill)
+                    if skill.multiplier_formula != str(formula):
+                        skill.multiplier_formula = str(formula)
+                        updated = True
+
+                    # Finally save it if required
+                    if updated:
+                        skill.save()
+                        print 'Updated skill ' + str(skill)
 
 
 def parse_monster_data():

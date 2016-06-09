@@ -17,3 +17,4 @@ django-timezone-field
 django_compressor
 djangorestframework==3.3.2
 django-filter
+sympy>=1.0.0

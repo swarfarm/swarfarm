@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from bestiary.models import Monster, Skill, LeaderSkill, Effect, ScalesWith, ScalingStat, Source
+from bestiary.models import Monster, Skill, LeaderSkill, Effect, ScalingStat, Source
 from herders.models import Summoner, MonsterInstance, MonsterTag, RuneInstance, TeamGroup, Team
 
 
@@ -23,17 +23,9 @@ class MonsterSkillScalingStatSerializer(serializers.ModelSerializer):
         fields = ('stat',)
 
 
-class MonsterSkillScalesWithSerializer(serializers.ModelSerializer):
-    stat = serializers.ReadOnlyField(source='scalingstat.stat')
-
-    class Meta:
-        model = ScalesWith
-        fields = ('stat', 'multiplier')
-
-
 class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
     skill_effect = MonsterSkillEffectSerializer(many=True, read_only=True)
-    scales_with = MonsterSkillScalesWithSerializer(source='monsterskillscaleswith_set', many=True, read_only=True)
+    scales_with = MonsterSkillScalingStatSerializer(many=True, read_only=True)
 
     class Meta:
         model = Skill

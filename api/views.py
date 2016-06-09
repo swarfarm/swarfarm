@@ -62,18 +62,6 @@ class MonsterSkillEffectViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = BestiarySetPagination
 
 
-class MonsterSkillScalesWithViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ScalesWith.objects.all()
-    serializer_class = MonsterSkillScalesWithSerializer
-    pagination_class = BestiarySetPagination
-
-
-class MonsterSkillScalesWithDetailViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ScalingStat.objects.all()
-    serializer_class = MonsterSkillScalingStatSerializer
-    pagination_class = BestiarySetPagination
-
-
 class MonsterSourceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Source.objects.all()
     serializer_class = MonsterSourceSerializer

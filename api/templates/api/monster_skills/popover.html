@@ -22,7 +22,7 @@
         <p>
         {% for effect in skill.skill_effect %}
             {% if effect.icon_filename %}
-                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"/>
+                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect" />
             {% else %}
                 <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}">
                     <span>{{ effect.name }}</span>
@@ -30,7 +30,13 @@
             {% endif %}
         {% endfor %}
         </p>
-        <div class="clearfix"></div>
+        <p class="clearfix"></p>
+    </li>
+    {% endif %}
+    {% if skill.multiplier_formula %}
+    <li>
+        <p class="list-group-item-heading"><strong>Multiplier Formula:</strong></p>
+        <p>{{ skill.multiplier_formula }}</p>
     </li>
     {% endif %}
 </ul>

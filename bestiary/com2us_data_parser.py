@@ -112,21 +112,23 @@ def parse_skill_data():
 
                 }
                 formula = ''
+                fixed = False
                 formula_array = [''.join(map(str, scale)) for scale in json.loads(csv_skill['fun data'])]
                 plain_operators = '+-*/'
                 if len(formula_array):
                     for operation in formula_array:
                         if operation == 'FIXED':
-                            formula += ' FIXED'
+                            fixed = True
                         elif operation not in plain_operators:
                             formula += '({0})'.format(operation)
                         else:
                             formula += '{0}'.format(operation)
 
-                    formula = simplify(formula)
+                    formula = str(simplify(formula))
 
-                    # Replace
-
+                    if fixed:
+                        formula += ' (Fixed)'
+                        
                     if skill.multiplier_formula != str(formula):
                         skill.multiplier_formula = str(formula)
                         updated = True

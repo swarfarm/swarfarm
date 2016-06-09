@@ -1,3 +1,5 @@
+from glob import iglob
+from PIL import Image
 import csv
 import json
 from sympy import simplify
@@ -47,7 +49,7 @@ def parse_skill_data():
             try:
                 skill = Skill.objects.get(com2us_id=csv_skill['master id'])
             except Skill.DoesNotExist:
-                print 'Unable to find skill ' + str(csv_skill['master id'])
+                continue
             else:
                 updated = False
 
@@ -112,3 +114,46 @@ def parse_skill_data():
                 if updated:
                     skill.save()
                     print 'Updated skill ' + str(skill)
+
+
+def parse_monster_data():
+    with open('monsters.csv', 'rb') as csvfile:
+        monster_data = csv.DictReader(csvfile)
+
+        for row in monster_data:
+            monster_family = int(row['unit master id'][:3])
+            awakened = row['unit master id'][3] == '1'
+            element = element_map.get(int(row['unit master id'][-1:]))
+
+            try:
+                monster = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
+            except Monster.DoesNotExist:
+                continue
+            else:
+                updated = False
+
+                # Awaken materials
+
+                # Archetype
+
+                # Leader skill
+
+                # Icon
+                icon_nums = json.loads(row['thumbnail'])
+                icon_filename = 'unit_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
+                if monster.image_filename != icon_filename:
+                    monster.image_filename = icon_filename
+                    updated = True
+
+                if updated:
+                    monster.save()
+
+def crop_monster_images():
+    # If the image is 102x102, we need to crop out the 1px white border.
+    for im_path in iglob('herders/static/herders/images/monsters/*.png'):
+        im = Image.open(im_path)
+
+        if im.size == (102, 102):
+            crop = im.crop((1, 1, 101, 101))
+            im.close()
+            crop.save(im_path)

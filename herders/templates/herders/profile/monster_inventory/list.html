@@ -110,7 +110,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <span class="hidden">{{ instance.priority }}</span>
+                                    <span class="hidden">{% if instance.priority %}{{ instance.priority }}{% else %}-1{% endif %}</span>
                                     {{ instance.get_priority_display }}
                                 </td>
                                 <td class="monster-leader-skill">

@@ -117,9 +117,11 @@ def parse_skill_data():
                 plain_operators = '+-*/'
                 if len(formula_array):
                     for operation in formula_array:
-                        if operation == 'FIXED':
+                        if 'FIXED' in operation:
+                            operation = operation.replace('FIXED', '')
                             fixed = True
-                        elif operation not in plain_operators:
+
+                        if operation not in plain_operators:
                             formula += '({0})'.format(operation)
                         else:
                             formula += '{0}'.format(operation)

@@ -334,10 +334,8 @@ class Monster(models.Model):
 
         # Update image filename and slugs on save.
         if self.is_awakened and self.awakens_from:
-            self.image_filename = self.awakens_from.image_filename.replace('.png', '_awakened.png')
             self.bestiary_slug = self.awakens_from.bestiary_slug
         else:
-            self.image_filename = self.name.lower().replace(' ', '_') + '_' + str(self.element) + '.png'
             if self.awakens_to is not None:
                 self.bestiary_slug = slugify(" ".join([self.element, self.name, self.awakens_to.name]))
             else:

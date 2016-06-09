@@ -62,6 +62,12 @@
                     <div class="clearfix"></div>
                 </li>
                 {% endif %}
+                {% if skill.multiplier_formula %}
+                <li class="list-group-item">
+                    <p class="list-group-item-heading"><strong>Multiplier Formula:</strong></p>
+                    <p>{{ skill.multiplier_formula }}</p>
+                </li>
+                {% endif %}
             </ul>
         </div>
     </div>

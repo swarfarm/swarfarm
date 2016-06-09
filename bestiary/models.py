@@ -36,11 +36,6 @@ class ScalingStat(herder_models.MonsterSkillScalingStat):
         proxy = True
 
 
-class ScalesWith(herder_models.MonsterSkillScalesWith):
-    class Meta:
-        proxy = True
-
-
 class Source(herder_models.MonsterSource):
     class Meta:
         proxy = True

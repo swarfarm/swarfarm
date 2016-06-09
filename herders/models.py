@@ -612,16 +612,10 @@ class MonsterSkillEffectDetail(models.Model):
 
 class MonsterSkillScalingStat(models.Model):
     stat = models.CharField(max_length=20)
+    com2us_desc = models.CharField(max_length=30, null=True, blank=True)
 
     def __unicode__(self):
         return self.stat
-
-
-class MonsterSkillScalesWith(models.Model):
-    scalingstat = models.ForeignKey(MonsterSkillScalingStat)
-    monsterskill = models.ForeignKey(MonsterSkill)
-    multiplier = models.FloatField(blank=True, null=True)
-    add_to_atk = models.BooleanField(default=False, help_text='Add value to ATK % value')
 
 
 class MonsterSource(models.Model):

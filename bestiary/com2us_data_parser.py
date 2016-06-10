@@ -146,32 +146,35 @@ def parse_monster_data():
         monster_data = csv.DictReader(csvfile)
 
         for row in monster_data:
-            monster_family = int(row['unit master id'][:3])
-            awakened = row['unit master id'][3] == '1'
-            element = element_map.get(int(row['unit master id'][-1:]))
+            if len(row['unit master id']) == 5:
+                monster_family = int(row['unit master id'][:3])
+                awakened = row['unit master id'][3] == '1'
+                element = element_map.get(int(row['unit master id'][-1:]))
 
-            try:
-                monster = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
-            except Monster.DoesNotExist:
-                continue
-            else:
-                updated = False
+                try:
+                    monster = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
+                except Monster.DoesNotExist:
+                    continue
+                else:
+                    updated = False
 
-                # Awaken materials
+                    # Awaken materials
 
-                # Archetype
+                    # Archetype
 
-                # Leader skill
+                    # Leader skill
 
-                # Icon
-                icon_nums = json.loads(row['thumbnail'])
-                icon_filename = 'unit_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
-                if monster.image_filename != icon_filename:
-                    monster.image_filename = icon_filename
-                    updated = True
+                    # Icon
+                    icon_nums = json.loads(row['thumbnail'])
+                    icon_filename = 'unit_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
+                    if monster.image_filename != icon_filename:
+                        monster.image_filename = icon_filename
+                        updated = True
 
-                if updated:
-                    monster.save()
+                    if updated:
+                        monster.save()
+                        print 'Updated ' + str(monster)
+
 
 def crop_monster_images():
     # If the image is 102x102, we need to crop out the 1px white border.

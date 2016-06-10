@@ -44,6 +44,8 @@
                             <th>Summoned On</th>
                             <th>Priority</th>
                             <th>Leader Skill</th>
+                            <th data-columnSelector="false">Awakens From</th>
+                            <th data-columnSelector="false">Awakens To</th>
                             <th data-sorter="false" data-columnSelector="false">Skills</th>
                             <th data-columnSelector="false">Skill-Ups Remaining</th>
                             <th data-sorter="false" data-columnSelector="false">Runes</th>
@@ -110,7 +112,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <span class="hidden">{{ instance.priority }}</span>
+                                    <span class="hidden">{% if instance.priority %}{{ instance.priority }}{% else %}-1{% endif %}</span>
                                     {{ instance.get_priority_display }}
                                 </td>
                                 <td class="monster-leader-skill">
@@ -120,6 +122,20 @@
                                              data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
                                         <span class="image-plus image-plus-top-left">{{ instance.monster.leader_skill.amount }}%</span>
                                     </div>
+                                    {% endif %}
+                                </td>
+                                <td class="monster-awakens">
+                                    {% if instance.monster.awakens_from %}
+                                    <a href="{% url 'bestiary:detail' monster_slug=instance.monster.awakens_from.bestiary_slug %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ instance.monster.awakens_from.image_filename }}" class="monster-thumb"/> {{ instance.monster.awakens_from.name }}
+                                    </a>
+                                    {% endif %}
+                                </td>
+                                <td class="monster-awakens">
+                                    {% if instance.monster.awakens_to %}
+                                    <a href="{% url 'bestiary:detail' monster_slug=instance.monster.awakens_to.bestiary_slug %}">
+                                        <img src="{{ img_url_prefix }}monsters/{{ instance.monster.awakens_to.image_filename }}" class="monster-thumb"/> {{ instance.monster.awakens_to.name }}
+                                    </a>
                                     {% endif %}
                                 </td>
                                 <td class="monster-awaken-materials">

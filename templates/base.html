@@ -78,11 +78,11 @@
                                     </a>
                                 </li>
                             {% endif %}
-                                <li {% if view == 'data' and is_owner %}class="active"{% endif %}>
-                                    <a href="{% url 'sw_parser:log_home' %}">
-                                        <i class="fa fa-database hidden-sm"></i> Data Logs
-                                    </a>
-                                </li>
+                            <li {% if view == 'data' %}class="active"{% endif %}>
+                                <a href="{% url 'sw_parser:log_home' %}">
+                                    <i class="fa fa-database hidden-sm"></i> Data Logs
+                                </a>
+                            </li>
                             <li {% if view == 'bestiary' %}class="active"{% endif %}>
                                 <a href="{% url 'bestiary:home' %}">
                                     <span class="fa fa-book hidden-sm"></span> Bestiary

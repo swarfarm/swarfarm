@@ -1768,6 +1768,12 @@ class RuneInstance(models.Model):
         },
     }
 
+    # Copy a few ranges that are the same
+    MAIN_STAT_RANGES[STAT_ATK_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
+    MAIN_STAT_RANGES[STAT_DEF] = MAIN_STAT_RANGES[STAT_ATK]
+    MAIN_STAT_RANGES[STAT_DEF_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
+    MAIN_STAT_RANGES[STAT_ACCURACY_PCT] = MAIN_STAT_RANGES[STAT_RESIST_PCT]
+
     SUBSTAT_MAX_VALUES = {
         STAT_HP_PCT: 40.0,
         STAT_ATK_PCT: 40.0,
@@ -1792,12 +1798,6 @@ class RuneInstance(models.Model):
         STAT_RESIST_PCT: 'Resistant',
         STAT_ACCURACY_PCT: 'Intricate',
     }
-
-    # Copy a few ranges that are the same
-    MAIN_STAT_RANGES[STAT_ATK_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
-    MAIN_STAT_RANGES[STAT_DEF] = MAIN_STAT_RANGES[STAT_ATK]
-    MAIN_STAT_RANGES[STAT_DEF_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
-    MAIN_STAT_RANGES[STAT_ACCURACY_PCT] = MAIN_STAT_RANGES[STAT_RESIST_PCT]
 
     RUNE_SET_COUNT_REQUIREMENTS = {
         TYPE_ENERGY: 2,
@@ -1844,6 +1844,18 @@ class RuneInstance(models.Model):
         (CRAFT_GRINDSTONE, 'Grindstone'),
         (CRAFT_ENCHANT_GEM, 'Enchant Gem'),
     )
+
+    # Upgrade success rate based on rune level
+    UPGRADE_SUCCESS_RATE = [1.0, 1.0, 1.0, 0.85, 0.70, 0.60, 0.50, 0.40, 0.30, 0.25, 0.20, 0.15, 0.10, 0.08, 0.05]
+
+    UPGRADE_COST = {
+        1: [100, 175, 250, 400, 550, 775, 1000, 1300, 1600, 2000, 2400, 2925, 3450, 4100, 4750],
+        2: [150, 300, 450, 700, 950, 1275, 1600, 2025, 2450, 3000, 3550, 4225, 4900, 5700, 6500],
+        3: [225, 475, 725, 1075, 1425, 1875, 2325, 2850, 3375, 4075, 4775, 5600, 6425, 7375, 8325],
+        4: [330, 680, 1030, 1480, 1930, 2455, 2980, 3680, 4380, 5205, 6030, 6980, 7930, 9130, 10330],
+        5: [500, 950, 1400, 1925, 2450, 3175, 3900, 4750, 5600, 6600, 7600, 8850, 10100, 11600, 13100],
+        6: [750, 1475, 2200, 3050, 3900, 4875, 5850, 6975, 8100, 9350, 10600, 11975, 13350, 14850, 16350],
+    }
 
     # Multiple managers to split out imported and finalized objects
     objects = models.Manager()
@@ -2042,6 +2054,12 @@ class RuneInstance(models.Model):
             running_sum += self.substat_4_value / self.SUBSTAT_MAX_VALUES[self.substat_4]
 
         return running_sum / 2.8 * 100
+
+    def remaining_upgrade_cost(self, to_level=15):
+        if self.level < 15:
+            return int(sum([cost * (1.0 / rate) for cost, rate in zip(self.UPGRADE_COST[self.stars], self.UPGRADE_SUCCESS_RATE)][self.level:to_level]))
+        else:
+            return 0
 
     def update_fields(self):
         # Set flags for filtering

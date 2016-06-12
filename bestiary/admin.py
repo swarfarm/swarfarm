@@ -18,6 +18,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'archetype',
                 'fusion_food',
                 'obtainable',
+                'image_filename',
             ),
         }),
         ('Awakening', {

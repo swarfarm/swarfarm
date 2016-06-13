@@ -57,6 +57,7 @@ class Monster(models.Model):
 
     name = models.CharField(max_length=40)
     com2us_id = models.IntegerField(blank=True, null=True)
+    family_id = models.IntegerField(blank=True, null=True)
     image_filename = models.CharField(max_length=250, null=True, blank=True)
     element = models.CharField(max_length=6, choices=ELEMENT_CHOICES, default=ELEMENT_FIRE)
     archetype = models.CharField(max_length=10, choices=TYPE_CHOICES, default=TYPE_ATTACK)
@@ -332,7 +333,6 @@ class Monster(models.Model):
         self.max_lvl_defense = self.actual_defense(6, 40)
         self.max_lvl_attack = self.actual_attack(6, 40)
 
-        # Update image filename and slugs on save.
         if self.is_awakened and self.awakens_from:
             self.bestiary_slug = self.awakens_from.bestiary_slug
         else:
@@ -437,6 +437,7 @@ class MonsterSkill(models.Model):
     level_progress_description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
     multiplier_formula = models.CharField(max_length=100, null=True, blank=True)
+    multiplier_formula_raw = models.CharField(max_length=100, null=True, blank=True)
     scaling_stats = models.ManyToManyField('MonsterSkillScalingStat', blank=True)
 
     def image_url(self):
@@ -613,6 +614,7 @@ class MonsterSkillEffectDetail(models.Model):
 class MonsterSkillScalingStat(models.Model):
     stat = models.CharField(max_length=20)
     com2us_desc = models.CharField(max_length=30, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         return self.stat

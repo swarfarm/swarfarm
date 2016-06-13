@@ -31,7 +31,7 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
         model = Skill
         fields = (
             'pk', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
-            'skill_effect', 'multiplier_formula', 'scales_with', 'icon_filename',
+            'skill_effect', 'multiplier_formula', 'multiplier_formula_raw', 'scales_with', 'icon_filename',
         )
 
 
@@ -78,7 +78,7 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Monster
         fields = (
-            'url', 'pk', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
+            'url', 'pk', 'com2us_id', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
             'obtainable', 'can_awaken', 'is_awakened', 'awaken_bonus',
             'skills', 'leader_skill',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',

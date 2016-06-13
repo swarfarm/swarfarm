@@ -44,6 +44,9 @@ def parse_skill_data():
     with open('skills.csv', 'rb') as csvfile:
         skill_data = csv.DictReader(csvfile)
 
+        scaling_stats = ScalingStat.objects.all()
+        ignore_def_effect = Effect.objects.get(name='Ignore Defense')
+
         for csv_skill in skill_data:
             # Get matching skill in DB
             try:
@@ -94,23 +97,14 @@ def parse_skill_data():
                 # Buffs
                 # maybe this later. Data seems incomplete sometimes.
 
-                # Scaling formula
-                scaling_stats = {
-                    'ATK': 'ATK',
-                    'DEF': 'DEF',
-                    'ATTACK_SPEED': 'SPD',
-                    'ATTACK_TOT_HP': 'MAXHP',
-                    'DIE_RATE': 'SurvivingAllies',
-                    'TARGET_TOT_HP': 'EnemyMAXHP',
-                    'ATTACK_LOSS_HP': 'MissingHP',
-                    'ATTACK_CUR_HP_RATE': 'HP%',
-                    'TARGET_CUR_HP_RATE': 'EnemyHP%',
-                    'LIFE_SHARE_ALL': 'LifeShareAOE',
-                    'LIFE_SHARE_TARGET': 'LifeShare',
-                    'ATTACK_LV': 'Level',
-                    'ATTACK_WIZARD_LIFE_RATE': 'LivingAllyRatio'
+                # Scaling formula and stats
+                skill.scaling_stats.clear()
 
-                }
+                # Skill multiplier formula
+                if skill.multiplier_formula_raw != json.loads(csv_skill['fun data']):
+                    skill.multiplier_formula_raw = json.loads(csv_skill['fun data'])
+                    updated = True
+
                 formula = ''
                 fixed = False
                 formula_array = [''.join(map(str, scale)) for scale in json.loads(csv_skill['fun data'])]
@@ -120,6 +114,12 @@ def parse_skill_data():
                         if 'FIXED' in operation:
                             operation = operation.replace('FIXED', '')
                             fixed = True
+                            #TODO: Add Ignore Defense effect to skill if not present already
+
+                        # Find the scaling stat used in this section of formula
+                        for stat in scaling_stats:
+                            if stat.com2us_desc in operation:
+                                skill.scaling_stats.add(stat)
 
                         if operation not in plain_operators:
                             formula += '({0})'.format(operation)

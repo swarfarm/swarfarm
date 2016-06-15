@@ -27,10 +27,11 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('element', 'archetype', 'base_stars', 'obtainable', 'is_awakened')
+    filter_fields = ('element', 'archetype', 'base_stars', 'obtainable', 'is_awakened', 'com2us_id', 'family_id')
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == 'list' and not self.request.GET:
+            # Return a summary view if no filters are applied
             return MonsterSummarySerializer
         else:
             return MonsterSerializer

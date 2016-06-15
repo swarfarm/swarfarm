@@ -204,7 +204,7 @@ class Monster(models.Model):
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 
     def monster_family(self):
-        family = Monster.objects.filter(com2us_id=self.com2us_id, obtainable=True).order_by('element', 'is_awakened')
+        family = Monster.objects.filter(family_id=self.com2us_id, obtainable=True).order_by('element', 'is_awakened')
 
         return [
             family.filter(element=Monster.ELEMENT_FIRE).first(),

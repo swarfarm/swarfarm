@@ -215,9 +215,9 @@ def get_user_messages(request):
 
 def summoner_monster_view_list(request, profile_name):
     try:
-        summoner = Summoner.objects.get(user__username=profile_name)
+        summoner = Summoner.objects.get(user__username=profile_name, public=True)
     except Summoner.DoesNotExist:
-        return Http404()
+        raise Http404()
     else:
         url_list = []
         monsters = MonsterInstance.committed.filter(owner=summoner)

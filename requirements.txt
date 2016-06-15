@@ -1,4 +1,4 @@
-Django==1.8.11
+Django==1.8.13
 psycopg2
 bcrypt
 dpkt

@@ -1,4 +1,5 @@
-from django.http import JsonResponse
+from django.core.urlresolvers import reverse
+from django.http import JsonResponse, Http404
 from django.views.decorators.cache import cache_page
 
 from rest_framework import viewsets, filters, renderers
@@ -66,11 +67,6 @@ class MonsterSourceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Source.objects.all()
     serializer_class = MonsterSourceSerializer
     pagination_class = BestiarySetPagination
-
-
-class SummonerViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Summoner.objects.filter(public=True)
-    serializer_class = SummonerSerializer
 
 
 class MonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -214,3 +210,21 @@ def get_user_messages(request):
         })
 
     return JsonResponse({'messages': data})
+
+
+def summoner_monster_view_list(request, profile_name):
+    try:
+        summoner = Summoner.objects.get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return Http404()
+    else:
+        url_list = []
+        monsters = MonsterInstance.committed.filter(owner=summoner)
+
+        for m in monsters:
+            url_list.append({
+                'monster': str(m),
+                'url': request.build_absolute_uri(reverse('herders:monster_instance_view', kwargs={'profile_name': summoner.user.username, 'instance_id': m.pk.hex}))
+            })
+
+        return JsonResponse(url_list, safe=False)

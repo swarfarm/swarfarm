@@ -14,6 +14,7 @@ class MonsterAdmin(admin.ModelAdmin):
             'fields': (
                 'name',
                 'com2us_id',
+                'family_id',
                 'element',
                 'archetype',
                 'fusion_food',
@@ -162,7 +163,7 @@ class SkillAdmin(admin.ModelAdmin):
     readonly_fields = ('used_on',)
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
     filter_vertical = ('skill_effect', 'scaling_stats')
-    search_fields = ['name', 'icon_filename', 'description']
+    search_fields = ['com2us_id', 'name', 'description']
     list_filter = ['slot', 'skill_effect', 'passive']
     inlines = (EffectDetailInline,)
     save_as = True
@@ -184,7 +185,8 @@ class EffectAdmin(admin.ModelAdmin):
 
 @admin.register(ScalingStat)
 class ScalingStatAdmin(admin.ModelAdmin):
-    search_fields = ['stat', ]
+    list_display = ['stat', 'com2us_desc', 'description']
+    search_fields = ['stat', 'com2us_desc']
     save_as = True
 
 

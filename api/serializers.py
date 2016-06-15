@@ -123,12 +123,6 @@ class MonsterTagSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'name')
 
 
-class SummonerSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Summoner
-        fields = ('id', 'summoner_name', 'global_server',)
-
-
 class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RuneInstance
@@ -163,7 +157,17 @@ class TeamSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
+class MonsterInstanceSummarySerializer(serializers.HyperlinkedModelSerializer):
+    monster = MonsterSummarySerializer(read_only=True)
+
+    class Meta:
+        model = MonsterInstance
+        fields = [
+            'url', 'pk', 'monster', 'stars', 'level',
+        ]
+
+
+class MonsterInstanceSerializer(serializers.ModelSerializer):
     monster = MonsterSerializer(read_only=True)
     team_leader = TeamSerializer(many=True)
     team_set = TeamSerializer(many=True)
@@ -183,3 +187,17 @@ class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
             'runeinstance_set', 'tags'
         )
         depth = 1
+
+
+class SummonerSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Summoner
+        fields = ('summoner_name',)
+
+
+class SummonerSerializer(serializers.ModelSerializer):
+    monsterinstance_set = MonsterInstanceSummarySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Summoner
+        fields = ('summoner_name', 'monsterinstance_set', 'server')

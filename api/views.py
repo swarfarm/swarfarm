@@ -27,10 +27,11 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('element', 'archetype', 'base_stars', 'obtainable', 'is_awakened')
+    filter_fields = ('element', 'archetype', 'base_stars', 'obtainable', 'is_awakened', 'com2us_id', 'family_id')
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == 'list' and not self.request.GET:
+            # Return a summary view if no filters are applied
             return MonsterSummarySerializer
         else:
             return MonsterSerializer
@@ -214,9 +215,9 @@ def get_user_messages(request):
 
 def summoner_monster_view_list(request, profile_name):
     try:
-        summoner = Summoner.objects.get(user__username=profile_name)
+        summoner = Summoner.objects.get(user__username=profile_name, public=True)
     except Summoner.DoesNotExist:
-        return Http404()
+        raise Http404()
     else:
         url_list = []
         monsters = MonsterInstance.committed.filter(owner=summoner)

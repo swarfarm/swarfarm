@@ -45,7 +45,7 @@ def parse_skill_data():
         skill_data = csv.DictReader(csvfile)
 
         scaling_stats = ScalingStat.objects.all()
-        ignore_def_effect = Effect.objects.get(name='Ignore Defense')
+        ignore_def_effect = Effect.objects.get(name='Ignore DEF')
 
         for csv_skill in skill_data:
             # Get matching skill in DB
@@ -127,14 +127,17 @@ def parse_skill_data():
                     for stat in scaling_stats:
                         if stat.com2us_desc in formula:
                             skill.scaling_stats.add(stat)
-                            human_readable = '<mark data-toggle="tooltip" data-placement="top" title="' + stat.description + '">' + stat.stat + '</mark>'
-                            formula.replace(stat.com2us_desc, human_readable)
+                            if stat.description:
+                                human_readable = '<mark data-toggle="tooltip" data-placement="top" title="' + stat.description + '">' + stat.stat + '</mark>'
+                            else:
+                                human_readable = '<mark>' + stat.stat + '</mark>'
+                            formula = formula.replace(stat.com2us_desc, human_readable)
 
                     if fixed:
                         formula += ' (Fixed)'
                         
-                    if skill.multiplier_formula != str(formula):
-                        skill.multiplier_formula = str(formula)
+                    if skill.multiplier_formula != formula:
+                        skill.multiplier_formula = formula
                         updated = True
 
                     # Finally save it if required

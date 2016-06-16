@@ -696,24 +696,25 @@ class Fusion(models.Model):
             qs = self.ingredients.all()
 
         for ingredient in qs:
-            cost['magic']['low'] += ingredient.awaken_mats_magic_low
-            cost['magic']['mid'] += ingredient.awaken_mats_magic_mid
-            cost['magic']['high'] += ingredient.awaken_mats_magic_high
-            cost['fire']['low'] += ingredient.awaken_mats_fire_low
-            cost['fire']['mid'] += ingredient.awaken_mats_fire_mid
-            cost['fire']['high'] += ingredient.awaken_mats_fire_high
-            cost['water']['low'] += ingredient.awaken_mats_water_low
-            cost['water']['mid'] += ingredient.awaken_mats_water_mid
-            cost['water']['high'] += ingredient.awaken_mats_water_high
-            cost['wind']['low'] += ingredient.awaken_mats_wind_low
-            cost['wind']['mid'] += ingredient.awaken_mats_wind_mid
-            cost['wind']['high'] += ingredient.awaken_mats_wind_high
-            cost['light']['low'] += ingredient.awaken_mats_light_low
-            cost['light']['mid'] += ingredient.awaken_mats_light_mid
-            cost['light']['high'] += ingredient.awaken_mats_light_high
-            cost['dark']['low'] += ingredient.awaken_mats_dark_low
-            cost['dark']['mid'] += ingredient.awaken_mats_dark_mid
-            cost['dark']['high'] += ingredient.awaken_mats_dark_high
+            if ingredient.awakens_from:
+                cost['magic']['low'] += ingredient.awakens_from.awaken_mats_magic_low
+                cost['magic']['mid'] += ingredient.awakens_from.awaken_mats_magic_mid
+                cost['magic']['high'] += ingredient.awakens_from.awaken_mats_magic_high
+                cost['fire']['low'] += ingredient.awakens_from.awaken_mats_fire_low
+                cost['fire']['mid'] += ingredient.awakens_from.awaken_mats_fire_mid
+                cost['fire']['high'] += ingredient.awakens_from.awaken_mats_fire_high
+                cost['water']['low'] += ingredient.awakens_from.awaken_mats_water_low
+                cost['water']['mid'] += ingredient.awakens_from.awaken_mats_water_mid
+                cost['water']['high'] += ingredient.awakens_from.awaken_mats_water_high
+                cost['wind']['low'] += ingredient.awakens_from.awaken_mats_wind_low
+                cost['wind']['mid'] += ingredient.awakens_from.awaken_mats_wind_mid
+                cost['wind']['high'] += ingredient.awakens_from.awaken_mats_wind_high
+                cost['light']['low'] += ingredient.awakens_from.awaken_mats_light_low
+                cost['light']['mid'] += ingredient.awakens_from.awaken_mats_light_mid
+                cost['light']['high'] += ingredient.awakens_from.awaken_mats_light_high
+                cost['dark']['low'] += ingredient.awakens_from.awaken_mats_dark_low
+                cost['dark']['mid'] += ingredient.awakens_from.awaken_mats_dark_mid
+                cost['dark']['high'] += ingredient.awakens_from.awaken_mats_dark_high
 
         return cost
 

@@ -107,7 +107,7 @@ class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Monster
-        fields = ('url', 'pk', 'name', 'image_filename', 'element', 'archetype', 'base_stars', 'fusion_food',)
+        fields = ('url', 'pk', 'com2us_id', 'name', 'image_filename', 'element', 'archetype', 'base_stars', 'fusion_food',)
 
     def get_element(self, instance):
         return instance.get_element_display()

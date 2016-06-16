@@ -1,7 +1,7 @@
 from django.db.models import Q
 import django_filters
 
-from bestiary.models import Monster, Effect, Skill, LeaderSkill
+from bestiary.models import Monster, Effect, Skill, LeaderSkill, ScalingStat
 from .models import MonsterInstance, MonsterTag, RuneInstance
 
 
@@ -11,6 +11,7 @@ class MonsterFilter(django_filters.FilterSet):
     archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
     leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
+    skills__scaling_stats__pk = django_filters.MultipleChoiceFilter(choices=ScalingStat.objects.values_list('pk', 'stat'), conjoined=True)
     skills__skill_effect__pk = django_filters.MethodFilter(action='filter_skills__skill_effect__pk')
 
     class Meta:
@@ -24,6 +25,7 @@ class MonsterFilter(django_filters.FilterSet):
             'leader_skill__attribute': ['exact'],
             'leader_skill__area': ['exact'],
             'skills__skill_effect__pk': ['exact'],
+            'skills__scaling_stats__pk': ['exact'],
             'fusion_food': ['exact'],
         }
 
@@ -47,6 +49,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)
     monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
     monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
+    monster__skills__scaling_stats__pk = django_filters.MultipleChoiceFilter(choices=ScalingStat.objects.values_list('pk', 'stat'), conjoined=True)
     monster__skills__skill_effect__pk = django_filters.MethodFilter(action='filter_monster__skills__skill_effect__pk') # django_filters.MultipleChoiceFilter(choices=Effect.objects.all().values_list('pk', 'name'), conjoined=True)
     monster__fusion_food = django_filters.MethodFilter(action='filter_monster__fusion_food')
 
@@ -63,6 +66,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__leader_skill__attribute': ['exact'],
             'monster__leader_skill__area': ['exact'],
             'monster__skills__skill_effect__pk': ['exact'],
+            'monster__skills__scaling_stats__pk': ['exact'],
             'fodder': ['exact'],
             'in_storage': ['exact'],
             'monster__fusion_food': ['exact'],

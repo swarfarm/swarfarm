@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, Pa
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from bestiary.models import Monster, Effect, LeaderSkill
+from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance
 
 from crispy_forms.helper import FormHelper
@@ -402,6 +402,12 @@ class FilterMonsterForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
+    skills__scaling_stats__pk = forms.MultipleChoiceField(
+        label='Skill Scales With',
+        choices=ScalingStat.objects.values_list('pk', 'stat'),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
     buffs = forms.MultipleChoiceField(
         label='Buffs',
         choices=Effect.buff_effect_choices.all(),
@@ -438,6 +444,7 @@ class FilterMonsterForm(forms.Form):
         Field('fusion_food', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
         Field('leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('skills__scaling_stats__pk', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
@@ -683,6 +690,12 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
+    monster__skills__scaling_stats__pk = forms.MultipleChoiceField(
+        label='Skill Scales With',
+        choices=ScalingStat.objects.values_list('pk', 'stat'),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
     buffs = forms.MultipleChoiceField(
         label='Buffs',
         choices=Effect.buff_effect_choices.all(),
@@ -721,6 +734,7 @@ class FilterMonsterInstanceForm(forms.Form):
         Field('monster__fusion_food', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
         Field('monster__leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('monster__leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('monster__skills__scaling_stats__pk', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),

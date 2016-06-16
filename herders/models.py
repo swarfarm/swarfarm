@@ -619,6 +619,9 @@ class MonsterSkillScalingStat(models.Model):
     def __unicode__(self):
         return self.stat
 
+    class Meta:
+        ordering = ['stat',]
+
 
 class MonsterSource(models.Model):
     name = models.CharField(max_length=100)

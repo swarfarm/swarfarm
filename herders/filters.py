@@ -59,6 +59,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__name': ['icontains'],
             'tags__pk': ['exact'],
             'stars': ['exact'],
+            'level': ['gte', 'lte'],
             'monster__element': ['exact'],
             'monster__archetype': ['exact'],
             'priority': ['exact'],

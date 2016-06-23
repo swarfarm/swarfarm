@@ -656,6 +656,18 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
         widget=forms.CheckboxSelectMultiple,
     )
+    level__gte = forms.IntegerField(
+        label="Minimum Level",
+        min_value=0,
+        max_value=40,
+        required=False,
+    )
+    level__lte = forms.IntegerField(
+        label="Maximum Level",
+        min_value=0,
+        max_value=40,
+        required=False,
+    )
     monster__element = forms.MultipleChoiceField(
         label='Element',
         choices=Monster.ELEMENT_CHOICES,
@@ -685,7 +697,7 @@ class FilterMonsterInstanceForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
     )
     monster__leader_skill__area = forms.MultipleChoiceField(
-        label='Leader Skill Stat',
+        label='Leader Skill Area',
         choices=LeaderSkill.AREA_CHOICES,
         required=False,
         widget=forms.CheckboxSelectMultiple,
@@ -718,22 +730,30 @@ class FilterMonsterInstanceForm(forms.Form):
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_id = 'FilterInventoryForm'
-    helper.form_class = 'form-horizontal'
-    helper.label_class = 'col-md-1 text-right'
-    helper.field_class = 'col-md-11 no-left-gutter'
     helper.layout = Layout(
-        Field('monster__name__icontains', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('tags__pk', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('monster__element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('monster__archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('monster__is_awakened', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('priority', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('fodder', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('in_storage', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('monster__fusion_food', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('monster__leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('monster__leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Div(
+            Field('monster__name__icontains', css_class='auto-submit input-sm', wrapper_class='pull-left condensed'),
+            Field('stars', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
+            Field('level__gte', css_class='auto-submit input-sm', wrapper_class='pull-left condensed'),
+            Field('level__lte', css_class='auto-submit input-sm', wrapper_class='pull-left condensed'),
+            Field('fodder', css_class='auto-submit input-sm short', wrapper_class='pull-left condensed'),
+            Field('in_storage', css_class='auto-submit input-sm short', wrapper_class='pull-left condensed'),
+            Field('monster__fusion_food', css_class='auto-submit input-sm short', wrapper_class='pull-left condensed'),
+            Field('priority', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
+            css_class='clearfix'
+        ),
+        Div(
+            Field('monster__is_awakened', css_class='auto-submit input-sm', wrapper_class='pull-left condensed'),
+            Field('monster__archetype', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
+            Field('monster__element', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
+            Field('tags__pk', css_class='auto-submit', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
+            css_class='clearfix'
+        ),
+        Div(
+            Field('monster__leader_skill__attribute', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
+            Field('monster__leader_skill__area', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
+            css_class='clearfix',
+        ),
         Field('monster__skills__scaling_stats__pk', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
         Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
         Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),

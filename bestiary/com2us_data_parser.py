@@ -111,6 +111,8 @@ def parse_skill_data():
                 plain_operators = '+-*/'
                 if len(formula_array):
                     for operation in formula_array:
+                        # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
+                        operation = operation.replace('*1.0', '')
                         if 'FIXED' in operation:
                             operation = operation.replace('FIXED', '')
                             fixed = True

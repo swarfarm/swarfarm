@@ -236,6 +236,8 @@ def summoner_monster_view_list(request, profile_name):
 
 
 def nightbot_monsters(request, profile_name, monster_name):
+    if monster_name == 'null':
+        return HttpResponse('Please specify a monster name like this: !monster baretta')
     try:
         summoner = Summoner.objects.get(user__username=profile_name, public=True)
     except Summoner.DoesNotExist:
@@ -279,5 +281,5 @@ def nightbot_monsters(request, profile_name, monster_name):
 
                 nightbot_responses.append(desc)
 
-            return JsonResponse('\r\n'.join(nightbot_responses), safe=False)
+            return HttpResponse(' -AND- '.join(nightbot_responses))
 

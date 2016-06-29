@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.utils.safestring import mark_safe
@@ -1033,8 +1033,39 @@ class MonsterInstance(models.Model):
 
         return skill_ups_remaining
 
+    def get_rune_set_summary(self):
+        sets = []
+
+        # Determine rune sets
+        rune_counts = self.runeinstance_set.values('type').order_by().annotate(count=Count('type'))
+        num_equipped = self.runeinstance_set.count()
+
+        for rune_count in rune_counts:
+            type_name = RuneInstance.TYPE_CHOICES[rune_count['type'] - 1][1]
+            required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[rune_count['type']]
+            present = rune_count['count']
+
+            if present >= required:
+                num_equipped -= required * (present // required)
+                sets += [type_name] * (present // required)
+
+        if num_equipped:
+            # Some runes are present that aren't in a set
+            sets.append('Broken')
+
+        # Summarize slot 2/4/6 main stats
+        stats = []
+
+        for x in [2, 4, 6]:
+            try:
+                stats.append(self.runeinstance_set.get(slot=x).get_main_stat_display())
+            except:
+                continue
+
+        return '/'.join(sets) + ' - ' + '/'.join(stats)
+
+
     def get_rune_set_bonuses(self):
-        from django.db.models import Count
         rune_counts = self.runeinstance_set.values('type').order_by().annotate(count=Count('type'))
         rune_bonuses = []
 

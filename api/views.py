@@ -1,10 +1,14 @@
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse, Http404
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.cache import cache_page
 
 from rest_framework import viewsets, filters, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+
+from urllib2 import Request, urlopen, HTTPError
+import json
 
 from bestiary.models import Monster, Skill, LeaderSkill
 from herders.models import Summoner, MonsterInstance, RuneInstance, RuneCraftInstance, Team, TeamGroup
@@ -229,3 +233,51 @@ def summoner_monster_view_list(request, profile_name):
             })
 
         return JsonResponse(url_list, safe=False)
+
+
+def nightbot_monsters(request, profile_name, monster_name):
+    try:
+        summoner = Summoner.objects.get(user__username=profile_name, public=True)
+    except Summoner.DoesNotExist:
+        return HttpResponse('Error: No profile with the name "' + profile_name + '" found.')
+    else:
+        mons = MonsterInstance.objects.filter(owner=summoner, monster__name__iexact=monster_name, runeinstance__isnull=False).distinct()
+
+        # TODO: filter queryset from request.GET parameters
+        # Min stars
+        # Min level
+        # Not storage
+        # Not fodder
+
+        if mons.count() == 0:
+            return HttpResponse('No monsters found with that name!')
+        else:
+            nightbot_responses = []
+
+            for mon in mons:
+                desc = mon.get_rune_set_summary()
+                if mon.notes is not None and mon.notes != '':
+                    desc += ' - ' + mon.notes
+
+                # get short URL
+                long_url = request.build_absolute_uri(reverse('herders:monster_instance_view', kwargs={'profile_name': summoner.user.username, 'instance_id': mon.pk.hex}))
+                google_api = 'https://www.googleapis.com/urlshortener/v1/url?key=' + settings.GOOGLE_API_KEY
+                data = json.dumps({
+                    'longUrl': long_url
+                })
+                try:
+                    req = Request(google_api, data, {'Content-Type': 'application/json'})
+                    f = urlopen(req)
+                    response = f.read()
+                    f.close()
+                    response = json.loads(response)
+                    short_url = response['id']
+                except HTTPError:
+                    desc += ' - ' + long_url
+                else:
+                    desc += ' - ' + short_url
+
+                nightbot_responses.append(desc)
+
+            return JsonResponse('\r\n'.join(nightbot_responses), safe=False)
+

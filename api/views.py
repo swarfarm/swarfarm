@@ -243,21 +243,36 @@ def nightbot_monsters(request, profile_name, monster_name):
     except Summoner.DoesNotExist:
         return HttpResponse('Error: No profile with the name "' + profile_name + '" found.')
     else:
-        mons = MonsterInstance.objects.filter(owner=summoner, monster__name__iexact=monster_name, runeinstance__isnull=False).distinct()
+        # Filter options
+        min_stars = int(request.GET.get('min_stars', 0))
+        min_level = int(request.GET.get('min_level', 0))
 
-        # TODO: filter queryset from request.GET parameters
-        # Min stars
-        # Min level
-        # Not storage
-        # Not fodder
+        # Do some smart detection with the name. Nightbot won't pass the second part of the name if there's a space but
+        # you don't also want to return something with Su and Succubus in the same response.
+        if Monster.objects.filter(name__iexact=monster_name).count():
+            mons = MonsterInstance.committed.filter(
+                monster__name__iexact=monster_name,
+                owner=summoner,
+                runeinstance__isnull=False,
+                stars__gte=min_stars,
+                level__gte=min_level,
+            ).distinct()
+        else:
+            mons = MonsterInstance.committed.filter(
+                monster__name__istartswith=monster_name,
+                owner=summoner,
+                runeinstance__isnull=False,
+                stars__gte=min_stars,
+                level__gte=min_level,
+            ).distinct()
 
         if mons.count() == 0:
-            return HttpResponse('No monsters found with that name!')
+            return HttpResponse(summoner.user.username + " doesn't own one or they were filtered out!")
         else:
             nightbot_responses = []
 
             for mon in mons:
-                desc = mon.get_rune_set_summary()
+                desc = mon.monster.name + ': ' + mon.get_rune_set_summary()
                 if mon.notes is not None and mon.notes != '':
                     desc += ' - ' + mon.notes
 

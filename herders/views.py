@@ -1062,7 +1062,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
         try:
             fusion = Fusion.objects.get(product__bestiary_slug=monster_slug)
         except Fusion.DoesNotExist:
-            return Http404()
+            raise Http404()
         else:
             level = 10 + fusion.stars * 5
             ingredients = []

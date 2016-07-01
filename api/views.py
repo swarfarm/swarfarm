@@ -34,7 +34,8 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
     filter_fields = ('element', 'archetype', 'base_stars', 'obtainable', 'is_awakened', 'com2us_id', 'family_id')
 
     def get_serializer_class(self):
-        if self.action == 'list' and not self.request.GET:
+        com2us_id = self.request.GET.get('com2us_id', '')
+        if self.action == 'list' and len(com2us_id) != 5:
             # Return a summary view if no filters are applied
             return MonsterSummarySerializer
         else:

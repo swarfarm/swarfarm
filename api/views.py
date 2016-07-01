@@ -267,7 +267,11 @@ def nightbot_monsters(request, profile_name, monster_name):
             ).distinct()
 
         if mons.count() == 0:
-            return HttpResponse(summoner.user.username + " doesn't own one or they were filtered out!")
+            if MonsterInstance.committed.filter(monster__name__istartswith=monster_name, owner=summoner, stars__gte=min_stars, level__gte=min_level).count():
+                # See if there were any without runes
+                return HttpResponse("Currently not runed.")
+            else:
+                return HttpResponse(summoner.user.username + " doesn't own one or they were filtered out!")
         else:
             nightbot_responses = []
 

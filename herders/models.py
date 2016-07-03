@@ -1064,7 +1064,6 @@ class MonsterInstance(models.Model):
 
         return '/'.join(sets) + ' - ' + '/'.join(stats)
 
-
     def get_rune_set_bonuses(self):
         rune_counts = self.runeinstance_set.values('type').order_by().annotate(count=Count('type'))
         rune_bonuses = []
@@ -1079,6 +1078,10 @@ class MonsterInstance(models.Model):
                 rune_bonuses.extend([type_name + ' ' + bonus_text] * (present // required))
 
         return rune_bonuses
+
+    def avg_rune_efficiency(self):
+        efficiencies = sum(self.runeinstance_set.all().values_list('efficiency', flat=True))
+        return efficiencies / 6
 
     # Rune bonus calculations
     def rune_bonus_energy(self):

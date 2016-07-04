@@ -1080,7 +1080,7 @@ class MonsterInstance(models.Model):
         return rune_bonuses
 
     def avg_rune_efficiency(self):
-        efficiencies = sum(self.runeinstance_set.all().values_list('efficiency', flat=True))
+        efficiencies = sum(self.runeinstance_set.filter(efficiency__isnull=False).values_list('efficiency', flat=True))
         return efficiencies / 6
 
     # Rune bonus calculations

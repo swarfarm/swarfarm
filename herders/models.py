@@ -1840,9 +1840,13 @@ class RuneInstance(models.Model):
         },
     }
 
+    # The flat stats are guesses.
     SUBSTAT_MAX_VALUES = {
+        STAT_HP: 1250,
         STAT_HP_PCT: 40.0,
+        STAT_ATK: 125,
         STAT_ATK_PCT: 40.0,
+        STAT_DEF: 125,
         STAT_DEF_PCT: 40.0,
         STAT_SPD: 30.0,
         STAT_CRIT_RATE_PCT: 30.0,
@@ -1942,7 +1946,7 @@ class RuneInstance(models.Model):
     slot = models.IntegerField()
     value = models.IntegerField(blank=True, null=True)
     main_stat = models.IntegerField(choices=STAT_CHOICES)
-    main_stat_value = models.IntegerField(default=0)
+    main_stat_value = models.IntegerField()
     innate_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     innate_stat_value = models.IntegerField(null=True, blank=True)
     substat_1 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
@@ -2212,13 +2216,7 @@ class RuneInstance(models.Model):
             )
 
         # Check if stat type was specified that it has value > 0
-        if self.main_stat_value is None or self.main_stat_value <= 0:
-            raise ValidationError({
-                'main_stat_value': ValidationError(
-                    'Must provide a value greater than 0.',
-                    code='invalid_rune_main_stat_value'
-                ),
-            })
+        self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
         if self.innate_stat is not None and (self.innate_stat_value is None or self.innate_stat_value <= 0):
             raise ValidationError({
@@ -2228,37 +2226,68 @@ class RuneInstance(models.Model):
                 ),
             })
 
-        if self.substat_1 is not None and (self.substat_1_value is None or self.substat_1_value <= 0):
-            raise ValidationError({
-                'substat_1_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_substat_1_value'
-                ),
-            })
+        if self.substat_1 is not None:
+            if self.substat_1_value is None or self.substat_1_value <= 0:
+                raise ValidationError({
+                    'substat_1_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_1_value'
+                    )
+                })
+            if self.substat_1_value > self.SUBSTAT_MAX_VALUES[self.substat_1]:
+                raise ValidationError({
+                    'substat_1_value': ValidationError(
+                        'Must be less than ' + str(self.SUBSTAT_MAX_VALUES[self.substat_1]) + '.',
+                        code='invalid_rune_substat_1_value'
+                    )
+                })
+        if self.substat_2 is not None:
+            if self.substat_2_value is None or self.substat_2_value <= 0:
+                raise ValidationError({
+                    'substat_2_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_2_value'
+                    )
+                })
+            if self.substat_2_value > self.SUBSTAT_MAX_VALUES[self.substat_2]:
+                raise ValidationError({
+                    'substat_2_value': ValidationError(
+                        'Must be less than ' + str(self.SUBSTAT_MAX_VALUES[self.substat_2]) + '.',
+                        code='invalid_rune_substat_2_value'
+                    )
+                })
 
-        if self.substat_2 is not None and (self.substat_2_value is None or self.substat_2_value <= 0):
-            raise ValidationError({
-                'substat_2_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_substat_2_value'
-                ),
-            })
+        if self.substat_3 is not None:
+            if self.substat_3_value is None or self.substat_3_value <= 0:
+                raise ValidationError({
+                    'substat_3_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_3_value'
+                    )
+                })
+            if self.substat_3_value > self.SUBSTAT_MAX_VALUES[self.substat_3]:
+                raise ValidationError({
+                    'substat_3_value': ValidationError(
+                        'Must be less than ' + str(self.SUBSTAT_MAX_VALUES[self.substat_3]) + '.',
+                        code='invalid_rune_substat_3_value'
+                    )
+                })
 
-        if self.substat_3 is not None and (self.substat_3_value is None or self.substat_3_value <= 0):
-            raise ValidationError({
-                'substat_3_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_substat_3_value'
-                ),
-            })
-
-        if self.substat_4 is not None and (self.substat_4_value is None or self.substat_4_value <= 0):
-            raise ValidationError({
-                'substat_4_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_substat_4_value'
-                ),
-            })
+        if self.substat_4 is not None:
+            if self.substat_4_value is None or self.substat_4_value <= 0:
+                raise ValidationError({
+                    'substat_4_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_4_value'
+                    )
+                })
+            if self.substat_4_value > self.SUBSTAT_MAX_VALUES[self.substat_4]:
+                raise ValidationError({
+                    'substat_4_value': ValidationError(
+                        'Must be less than ' + str(self.SUBSTAT_MAX_VALUES[self.substat_4]) + '.',
+                        code='invalid_rune_substat_4_value'
+                    )
+                })
 
         # Check that monster rune is assigned to does not already have rune in that slot
         if self.assigned_to is not None and self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0:

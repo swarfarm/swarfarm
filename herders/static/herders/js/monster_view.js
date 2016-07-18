@@ -8,6 +8,7 @@ function AssignRune(slot) {
     }).done(function (response) {
         dialog = bootbox.dialog({
             title: "Assign Rune",
+            size: "large",
             message: response.html
         });
         $('.rating').rating();
@@ -42,6 +43,7 @@ function CreateNewRune(slot) {
         else {
             dialog = bootbox.dialog({
                 title: "Add new rune",
+                size: "large",
                 message: response.html
             });
         }
@@ -65,7 +67,7 @@ function UnassignRune(rune_id) {
                     $.ajax({
                         type: 'get',
                         url: '/profile/' + PROFILE_NAME + '/runes/unassign/' + rune_id + '/',
-                        global: false,
+                        global: false
                     }).done(function (response) {
                         if (response.code === 'success') {
                             $('tr[data-rune-id]').popover('hide');
@@ -133,6 +135,7 @@ function EditRune(rune_id) {
     }).done(function(result) {
         bootbox.dialog({
             title: "Edit rune",
+            size: "large",
             message: result.html
         });
         update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
@@ -312,6 +315,31 @@ $('body')
         });
 
         return false;  //cancel default on submit action.
+    })
+    .on('change', '#edit_id_slot', function() {
+        update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
+    })
+    .on('change', '#id_slot', function() {
+        update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+    })
+    .on('change', '#id_stars, #id_level, #id_main_stat', function() {
+        var stat = $('#id_main_stat').val();
+        var grade = $('#id_stars').val();
+        var level = $('#id_level').val();
+
+        if (stat && grade && level) {
+            update_main_stat_value(stat, grade, level, $('#id_main_stat_value'));
+        }
+
+    })
+    .on('change', '#edit_id_stars, #edit_id_level, #edit_id_main_stat', function() {
+        var stat = $('#edit_id_main_stat').val();
+        var grade = $('#edit_id_stars').val();
+        var level = $('#edit_id_level').val();
+
+        if (stat && grade && level) {
+            update_main_stat_value(stat, grade, level, $('#edit_id_main_stat_value'));
+        }
     })
     .on('click', ':submit', function() {
         var $form = $(this).closest('form');

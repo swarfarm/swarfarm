@@ -354,6 +354,10 @@ function update_main_slot_options(slot, main_stat_input) {
     });
 }
 
+function update_main_stat_value(stat, grade, level, main_stat_value_element) {
+    main_stat_value_element.val(RUNE_MAIN_STAT_VALUES[stat][grade][level]);
+}
+
 function update_craft_stat_options(craft, stat_input) {
     $.ajax({
         type: 'get',
@@ -497,3 +501,5 @@ const RUNE_MAIN_STAT_VALUES = {
     "6": [12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 64]
   }
 };
+
+const RUNE_SUBSTAT_MAX_VALUES = {"1": 1250, "2": 40.0, "3": 125, "4": 40.0, "5": 125, "6": 40.0, "7": 30.0, "8": 30.0, "9": 35.0, "10": 40.0, "11": 40.0};

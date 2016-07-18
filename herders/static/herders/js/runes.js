@@ -239,6 +239,25 @@ $('body')
     .on('change', '#id_slot', function() {
         update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
     })
+    .on('change', '#id_stars, #id_level, #id_main_stat', function() {
+        var stat = $('#id_main_stat').val();
+        var grade = $('#id_stars').val();
+        var level = $('#id_level').val();
+
+        if (stat && grade && level) {
+            update_main_stat_value(stat, grade, level, $('#id_main_stat_value'));
+        }
+
+    })
+    .on('change', '#edit_id_stars, #edit_id_level, #edit_id_main_stat', function() {
+        var stat = $('#edit_id_main_stat').val();
+        var grade = $('#edit_id_stars').val();
+        var level = $('#edit_id_level').val();
+
+        if (stat && grade && level) {
+            update_main_stat_value(stat, grade, level, $('#edit_id_main_stat_value'));
+        }
+    })
     .on('change', '#id_type', function() {
         update_craft_stat_options($('#id_type').val(), $('#id_stat'));
     })

@@ -946,16 +946,16 @@ class AddRuneInstanceForm(ModelForm):
             ),
             Div(
                 Div(
-                    Div(Field('slot', placeholder='1-6'), css_class='col-md-3'),
-                    Div(Field('stars', placeholder='1-6'), css_class='col-md-4'),
-                    Div(Field('level', placeholder='0-15'), css_class='col-md-4'),
+                    Div(Field('slot', placeholder='1-6', min=1, max=6), css_class='col-md-3'),
+                    Div(Field('stars', placeholder='1-6', min=1, max=6), css_class='col-md-4'),
+                    Div(Field('level', placeholder='0-15', min=0, max=15), css_class='col-md-4'),
                     css_class='row'
                 ),
                 Div(
                     Div(
                         HTML('<label class="col-md-2 control-label">Main Stat</label>'),
                         Field('main_stat', wrapper_class='col-md-4 inline-horizontal'),
-                        Field('main_stat_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
+                        Field('main_stat_value', wrapper_class='col-md-3 inline-horizontal', readonly=True),
                         css_class='form-group form-group-condensed',
                     ),
                     Div(

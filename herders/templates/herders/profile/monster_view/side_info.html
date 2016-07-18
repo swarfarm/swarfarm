@@ -43,6 +43,12 @@
         <p class="list-group-item-text">None!</p>
         {% endif %}
     </div>
+    {% if instance.priority %}
+    <div class="list-group-item">
+        <h4>Priority</h4>
+        <p class="list-group-item-text">{{ instance.get_priority_display }}</p>
+    </div>
+    {% endif %}
     {% if instance.fodder or instance.in_storage or instance.monster.fusion_food %}
     <div class="list-group-item">
         <h4 class="list-group-item-heading">Flags</h4>

@@ -2219,8 +2219,8 @@ class RuneInstance(models.Model):
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
         substat_types = [self.substat_1, self.substat_2, self.substat_3, self.substat_4]
-        self.substat_upgrades_remaining = floor((self.quality * 3 - self.level) / 3)
         self.quality = len(filter(None, substat_types))
+        self.substat_upgrades_remaining = max(floor((self.quality * 3 - self.level) / 3), 0)
         self.efficiency = self.get_efficiency()
         self.max_efficiency = self.efficiency + (self.substat_upgrades_remaining * 0.2) / 2.8 * 100
 

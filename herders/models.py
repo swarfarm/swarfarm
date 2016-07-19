@@ -1840,19 +1840,95 @@ class RuneInstance(models.Model):
         },
     }
 
-    # The flat stats are guesses.
-    SUBSTAT_MAX_VALUES = {
-        STAT_HP: 1250,
-        STAT_HP_PCT: 40.0,
-        STAT_ATK: 125,
-        STAT_ATK_PCT: 40.0,
-        STAT_DEF: 125,
-        STAT_DEF_PCT: 40.0,
-        STAT_SPD: 30.0,
-        STAT_CRIT_RATE_PCT: 30.0,
-        STAT_CRIT_DMG_PCT: 35.0,
-        STAT_RESIST_PCT: 40.0,
-        STAT_ACCURACY_PCT: 40.0,
+    SUBSTAT_INCREMENTS = {
+        STAT_HP: {
+            1: 60,
+            2: 105,
+            3: 165,
+            4: 225,
+            5: 300,
+            6: 375,
+        },
+        STAT_HP_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        STAT_ATK: {
+            1: 4,
+            2: 5,
+            3: 8,
+            4: 10,
+            5: 15,
+            6: 20,
+        },
+        STAT_ATK_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        STAT_DEF: {
+            1: 4,
+            2: 5,
+            3: 8,
+            4: 10,
+            5: 15,
+            6: 20,
+        },
+        STAT_DEF_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        STAT_SPD: {
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 5,
+            6: 6,
+        },
+        STAT_CRIT_RATE_PCT: {
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 5,
+            6: 6,
+        },
+        STAT_CRIT_DMG_PCT: {
+            1: 2,
+            2: 3,
+            3: 4,
+            4: 5,
+            5: 6,
+            6: 7,
+        },
+        STAT_RESIST_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        STAT_ACCURACY_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
     }
 
     INNATE_STAT_TITLES = {
@@ -1972,7 +2048,9 @@ class RuneInstance(models.Model):
     has_speed = models.BooleanField(default=False)
     has_resist = models.BooleanField(default=False)
     has_accuracy = models.BooleanField(default=False)
+    has_substat_upgrades = models.BooleanField(default=False)
     efficiency = models.FloatField(blank=True, null=True)
+    max_efficiency = models.FloatField(blank=True, null=True)
 
     def get_main_stat_rune_display(self):
         return self.RUNE_STAT_DISPLAY.get(self.main_stat, '')
@@ -2102,28 +2180,33 @@ class RuneInstance(models.Model):
 
     def get_efficiency(self):
         # https://www.youtube.com/watch?v=SBWeptNNbYc
+        # All runes are compared against max stat values for perfect 6* runes.
         running_sum = 0.0
 
         # Main stat efficiency
         running_sum += float(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15]) / float(self.MAIN_STAT_VALUES[self.main_stat][6][15])
 
         # Substat efficiencies
-        if self.innate_stat in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.innate_stat_value / self.SUBSTAT_MAX_VALUES[self.innate_stat]
+        if self.innate_stat is not None:
+            running_sum += self.innate_stat_value / (self.SUBSTAT_INCREMENTS[self.innate_stat][6] * 5)
 
-        if self.substat_1 in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.substat_1_value / self.SUBSTAT_MAX_VALUES[self.substat_1]
+        if self.substat_1 is not None:
+            running_sum += self.substat_1_value / (self.SUBSTAT_INCREMENTS[self.substat_1][6] * 5)
 
-        if self.substat_2 in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.substat_2_value / self.SUBSTAT_MAX_VALUES[self.substat_2]
+        if self.substat_2 is not None:
+            running_sum += self.substat_2_value / (self.SUBSTAT_INCREMENTS[self.substat_2][6] * 5)
 
-        if self.substat_3 in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.substat_3_value / self.SUBSTAT_MAX_VALUES[self.substat_3]
+        if self.substat_3 is not None:
+            running_sum += self.substat_3_value / (self.SUBSTAT_INCREMENTS[self.substat_3][6] * 5)
 
-        if self.substat_4 in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.substat_4_value / self.SUBSTAT_MAX_VALUES[self.substat_4]
+        if self.substat_4 is not None:
+            running_sum += self.substat_4_value / (self.SUBSTAT_INCREMENTS[self.substat_4][6] * 5)
 
         return running_sum / 2.8 * 100
+
+    def get_max_efficiency(self):
+        raise NotImplementedError
+
 
     def remaining_upgrade_cost(self, to_level=15):
         if self.level < 15:
@@ -2157,6 +2240,24 @@ class RuneInstance(models.Model):
             self.substat_3_value = None
         if self.substat_4 is None:
             self.substat_4_value = None
+
+        # Cap stat values based on defined max values or substat increment rates and rune level
+        self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+
+        if self.innate_stat and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]:
+            self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat] * int(floor(min(self.level, 12) / 3) + 1)
+
+        if self.substat_1 and self.substat_1_value > self.SUBSTAT_INCREMENTS[self.substat_1][self.stars]:
+            self.substat_1_value = self.SUBSTAT_INCREMENTS[self.substat_1] * int(floor(min(self.level, 12) / 3) + 1)
+
+        if self.substat_2 and self.substat_2_value > self.SUBSTAT_INCREMENTS[self.substat_2][self.stars]:
+            self.substat_2_value = self.SUBSTAT_INCREMENTS[self.substat_2] * int(floor(min(self.level, 12) / 3) + 1)
+
+        if self.substat_3 and self.substat_3_value > self.SUBSTAT_INCREMENTS[self.substat_3][self.stars]:
+            self.substat_3_value = self.SUBSTAT_INCREMENTS[self.substat_3] * int(floor(min(self.level, 12) / 3) + 1)
+
+        if self.substat_4 and self.substat_4_value > self.SUBSTAT_INCREMENTS[self.substat_4][self.stars]:
+            self.substat_4_value = self.SUBSTAT_INCREMENTS[self.substat_4] * int(floor(min(self.level, 12) / 3) + 1)
 
         # Check no other runes are in this slot
         if self.assigned_to:
@@ -2218,13 +2319,21 @@ class RuneInstance(models.Model):
         # Check if stat type was specified that it has value > 0
         self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
-        if self.innate_stat is not None and (self.innate_stat_value is None or self.innate_stat_value <= 0):
-            raise ValidationError({
-                'innate_stat_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_innate_stat_value'
-                ),
-            })
+        if self.innate_stat is not None:
+            if self.innate_stat_value is None or self.innate_stat_value <= 0:
+                raise ValidationError({
+                    'innate_stat_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_innate_stat_value'
+                    )
+                })
+            if self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat] * int(floor(min(self.level, 12) / 3) + 1):
+                raise ValidationError({
+                    'innate_stat_value': ValidationError(
+                        'Must be less than ' + str(self.SUBSTAT_MAX_VALUES[self.substat_1]) + '.',
+                        code='invalid_rune_innate_stat_value'
+                    )
+                })
 
         if self.substat_1 is not None:
             if self.substat_1_value is None or self.substat_1_value <= 0:
@@ -2234,13 +2343,14 @@ class RuneInstance(models.Model):
                         code='invalid_rune_substat_1_value'
                     )
                 })
-            if self.substat_1_value > self.SUBSTAT_MAX_VALUES[self.substat_1]:
+            if self.substat_1_value > self.SUBSTAT_INCREMENTS[self.substat_1] * int(floor(min(self.level, 12) / 3) + 1):
                 raise ValidationError({
                     'substat_1_value': ValidationError(
                         'Must be less than ' + str(self.SUBSTAT_MAX_VALUES[self.substat_1]) + '.',
                         code='invalid_rune_substat_1_value'
                     )
                 })
+
         if self.substat_2 is not None:
             if self.substat_2_value is None or self.substat_2_value <= 0:
                 raise ValidationError({
@@ -2249,14 +2359,13 @@ class RuneInstance(models.Model):
                         code='invalid_rune_substat_2_value'
                     )
                 })
-            if self.substat_2_value > self.SUBSTAT_MAX_VALUES[self.substat_2]:
+            if self.substat_2_value > self.SUBSTAT_INCREMENTS[self.substat_2] * int(floor(min(self.level, 12) / 3) + 1):
                 raise ValidationError({
                     'substat_2_value': ValidationError(
                         'Must be less than ' + str(self.SUBSTAT_MAX_VALUES[self.substat_2]) + '.',
                         code='invalid_rune_substat_2_value'
                     )
                 })
-
         if self.substat_3 is not None:
             if self.substat_3_value is None or self.substat_3_value <= 0:
                 raise ValidationError({
@@ -2265,7 +2374,7 @@ class RuneInstance(models.Model):
                         code='invalid_rune_substat_3_value'
                     )
                 })
-            if self.substat_3_value > self.SUBSTAT_MAX_VALUES[self.substat_3]:
+            if self.substat_3_value > self.SUBSTAT_INCREMENTS[self.substat_3] * int(floor(min(self.level, 12) / 3) + 1):
                 raise ValidationError({
                     'substat_3_value': ValidationError(
                         'Must be less than ' + str(self.SUBSTAT_MAX_VALUES[self.substat_3]) + '.',
@@ -2281,7 +2390,7 @@ class RuneInstance(models.Model):
                         code='invalid_rune_substat_4_value'
                     )
                 })
-            if self.substat_4_value > self.SUBSTAT_MAX_VALUES[self.substat_4]:
+            if self.substat_4_value > self.SUBSTAT_INCREMENTS[self.substat_4] * int(floor(min(self.level, 12) / 3) + 1):
                 raise ValidationError({
                     'substat_4_value': ValidationError(
                         'Must be less than ' + str(self.SUBSTAT_MAX_VALUES[self.substat_4]) + '.',

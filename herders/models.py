@@ -1750,6 +1750,7 @@ class RuneInstance(models.Model):
     )
 
     MAIN_STAT_VALUES = {
+        # [stat][stars][level]: value
         STAT_HP: {
             1: [40, 85, 130, 175, 220, 265, 310, 355, 400, 445, 490, 535, 580, 625, 670, 804],
             2: [70, 130, 190, 250, 310, 370, 430, 490, 550, 610, 670, 730, 790, 850, 910, 1092],
@@ -1841,6 +1842,7 @@ class RuneInstance(models.Model):
     }
 
     SUBSTAT_INCREMENTS = {
+        # [stat][stars]: value
         STAT_HP: {
             1: 60,
             2: 105,

@@ -2048,7 +2048,7 @@ class RuneInstance(models.Model):
     has_speed = models.BooleanField(default=False)
     has_resist = models.BooleanField(default=False)
     has_accuracy = models.BooleanField(default=False)
-    has_substat_upgrades = models.BooleanField(default=False)
+    substat_upgrades_remaining = models.IntegerField(blank=True, null=True)
     efficiency = models.FloatField(blank=True, null=True)
     max_efficiency = models.FloatField(blank=True, null=True)
 
@@ -2188,31 +2188,21 @@ class RuneInstance(models.Model):
 
         # Substat efficiencies
         if self.innate_stat is not None:
-            running_sum += self.innate_stat_value / (self.SUBSTAT_INCREMENTS[self.innate_stat][6] * 5)
+            running_sum += self.innate_stat_value / float(self.SUBSTAT_INCREMENTS[self.innate_stat][6] * 5)
 
         if self.substat_1 is not None:
-            running_sum += self.substat_1_value / (self.SUBSTAT_INCREMENTS[self.substat_1][6] * 5)
+            running_sum += self.substat_1_value / float(self.SUBSTAT_INCREMENTS[self.substat_1][6] * 5)
 
         if self.substat_2 is not None:
-            running_sum += self.substat_2_value / (self.SUBSTAT_INCREMENTS[self.substat_2][6] * 5)
+            running_sum += self.substat_2_value / float(self.SUBSTAT_INCREMENTS[self.substat_2][6] * 5)
 
         if self.substat_3 is not None:
-            running_sum += self.substat_3_value / (self.SUBSTAT_INCREMENTS[self.substat_3][6] * 5)
+            running_sum += self.substat_3_value / float(self.SUBSTAT_INCREMENTS[self.substat_3][6] * 5)
 
         if self.substat_4 is not None:
-            running_sum += self.substat_4_value / (self.SUBSTAT_INCREMENTS[self.substat_4][6] * 5)
+            running_sum += self.substat_4_value / float(self.SUBSTAT_INCREMENTS[self.substat_4][6] * 5)
 
         return running_sum / 2.8 * 100
-
-    def get_max_efficiency(self):
-        raise NotImplementedError
-
-
-    def remaining_upgrade_cost(self, to_level=15):
-        if self.level < 15:
-            return int(sum([cost * (1.0 / rate) for cost, rate in zip(self.UPGRADE_COST[self.stars], self.UPGRADE_SUCCESS_RATE)][self.level:to_level]))
-        else:
-            return 0
 
     def update_fields(self):
         # Set flags for filtering
@@ -2226,8 +2216,11 @@ class RuneInstance(models.Model):
         self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
-        self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
+        substat_types = [self.substat_1, self.substat_2, self.substat_3, self.substat_4]
+        self.substat_upgrades_remaining = floor((self.quality * 3 - self.level) / 3)
+        self.quality = len(filter(None, substat_types))
         self.efficiency = self.get_efficiency()
+        self.max_efficiency = self.efficiency + (self.substat_upgrades_remaining * 0.2) / 2.8 * 100
 
         # Clean up values that don't have a stat type picked
         if self.innate_stat is None:
@@ -2244,8 +2237,8 @@ class RuneInstance(models.Model):
         # Cap stat values based on defined max values or substat increment rates and rune level
         self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
-        if self.innate_stat and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
-            self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+        if self.innate_stat and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]:
+            self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
 
         if self.substat_1 and self.substat_1_value > self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
             self.substat_1_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
@@ -2327,7 +2320,7 @@ class RuneInstance(models.Model):
                         code='invalid_rune_innate_stat_value'
                     )
                 })
-            max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+            max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
             if self.innate_stat_value > max_sub_value:
                 raise ValidationError({
                     'innate_stat_value': ValidationError(

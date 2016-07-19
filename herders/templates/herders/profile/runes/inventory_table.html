@@ -27,6 +27,7 @@
                 <th>Type</th>
                 <th>Value</th>
                 <th>Efficiency</th>
+                <th data-toggle="tooltip" title="With perfect substat upgrades to +12">Max Efficiency</th>
                 <th>Slot</th>
                 <th>Stars</th>
                 <th>Level</th>
@@ -51,6 +52,7 @@
                 </td>
                 <td>{% if rune.value %}{{ rune.value }}{% endif %}</td>
                 <td>{% if rune.efficiency %}{{ rune.efficiency|floatformat:1 }}%{% endif %}</td>
+                <td>{% if rune.max_efficiency %}{{ rune.max_efficiency|floatformat:1 }}%{% endif %}</td>
                 <td>{{ rune.slot }}</td>
                 <td>{{ rune.stars }}</td>
                 <td>{{ rune.level }}</td>

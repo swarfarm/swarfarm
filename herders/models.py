@@ -1749,80 +1749,188 @@ class RuneInstance(models.Model):
         (QUALITY_LEGEND, 'Legend'),
     )
 
-    MAIN_STAT_RANGES = {
+    MAIN_STAT_VALUES = {
+        # [stat][stars][level]: value
         STAT_HP: {
-            1: {'min': 40, 'max': 804},
-            2: {'min': 70, 'max': 1092},
-            3: {'min': 100, 'max': 1380},
-            4: {'min': 160, 'max': 1704},
-            5: {'min': 270, 'max': 2088},
-            6: {'min': 360, 'max': 2448},
+            1: [40, 85, 130, 175, 220, 265, 310, 355, 400, 445, 490, 535, 580, 625, 670, 804],
+            2: [70, 130, 190, 250, 310, 370, 430, 490, 550, 610, 670, 730, 790, 850, 910, 1092],
+            3: [100, 175, 250, 325, 400, 475, 550, 625, 700, 775, 850, 925, 1000, 1075, 1150, 1380],
+            4: [160, 250, 340, 430, 520, 610, 700, 790, 880, 970, 1060, 1150, 1240, 1330, 1420, 1704],
+            5: [270, 375, 480, 585, 690, 795, 900, 1005, 1110, 1215, 1320, 1425, 1530, 1635, 1740, 2088],
+            6: [360, 480, 600, 720, 840, 960, 1080, 1200, 1320, 1440, 1560, 1680, 1800, 1920, 2040, 2448],
         },
         STAT_HP_PCT: {
-            1: {'min': 1, 'max': 18},
-            2: {'min': 2, 'max': 20},
-            3: {'min': 4, 'max': 38},
-            4: {'min': 5, 'max': 43},
-            5: {'min': 8, 'max': 51},
-            6: {'min': 11, 'max': 63},
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [5, 7, 9, 11, 13, 16, 18, 20, 22, 24, 27, 29, 31, 33, 36, 43],
+            5: [8, 10, 12, 15, 17, 20, 22, 24, 27, 29, 32, 34, 37, 40, 43, 51],
+            6: [11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 63],
         },
         STAT_ATK: {
-            1: {'min': 3, 'max': 54},
-            2: {'min': 5, 'max': 74},
-            3: {'min': 7, 'max': 93},
-            4: {'min': 10, 'max': 113},
-            5: {'min': 15, 'max': 135},
-            6: {'min': 22, 'max': 160},
+            1: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 54],
+            2: [5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 73],
+            3: [7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77, 92],
+            4: [10, 16, 22, 28, 34, 40, 46, 52, 58, 64, 70, 76, 82, 88, 94, 112],
+            5: [15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99, 106, 113, 135],
+            6: [22, 30, 38, 46, 54, 62, 70, 78, 86, 94, 102, 110, 118, 126, 134, 160],
+        },
+        STAT_ATK_PCT: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [5, 7, 9, 11, 13, 16, 18, 20, 22, 24, 27, 29, 31, 33, 36, 43],
+            5: [8, 10, 12, 15, 17, 20, 22, 24, 27, 29, 32, 34, 37, 40, 43, 51],
+            6: [11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 63],
+        },
+        STAT_DEF: {
+            1: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 54],
+            2: [5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 73],
+            3: [7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77, 92],
+            4: [10, 16, 22, 28, 34, 40, 46, 52, 58, 64, 70, 76, 82, 88, 94, 112],
+            5: [15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99, 106, 113, 135],
+            6: [22, 30, 38, 46, 54, 62, 70, 78, 86, 94, 102, 110, 118, 126, 134, 160],
+        },
+        STAT_DEF_PCT: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [5, 7, 9, 11, 13, 16, 18, 20, 22, 24, 27, 29, 31, 33, 36, 43],
+            5: [8, 10, 12, 15, 17, 20, 22, 24, 27, 29, 32, 34, 37, 40, 43, 51],
+            6: [11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 63],
         },
         STAT_SPD: {
-            1: {'min': 1, 'max': 18},
-            2: {'min': 2, 'max': 19},
-            3: {'min': 3, 'max': 25},
-            4: {'min': 4, 'max': 30},
-            5: {'min': 5, 'max': 39},
-            6: {'min': 7, 'max': 42},
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 18, 19, 21, 25],
+            4: [4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25, 30],
+            5: [5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 39],
+            6: [7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 42],
         },
         STAT_CRIT_RATE_PCT: {
-            1: {'min': 1, 'max': 18},
-            2: {'min': 2, 'max': 20},
-            3: {'min': 4, 'max': 37},
-            4: {'min': 5, 'max': 41},
-            5: {'min': 8, 'max': 47},
-            6: {'min': 11, 'max': 58},
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 37],
+            4: [4, 6, 8, 11, 13, 15, 17, 19, 22, 24, 26, 28, 30, 33, 35, 41],
+            5: [5, 7, 10, 12, 15, 17, 19, 22, 24, 27, 29, 31, 34, 36, 39, 47],
+            6: [7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 58],
         },
         STAT_CRIT_DMG_PCT: {
-            1: {'min': 2, 'max': 20},
-            2: {'min': 3, 'max': 37},
-            3: {'min': 4, 'max': 43},
-            4: {'min': 6, 'max': 58},
-            5: {'min': 9, 'max': 65},
-            6: {'min': 12, 'max': 80},
+            1: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            2: [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 37],
+            3: [4, 6, 9, 11, 13, 16, 18, 20, 22, 25, 27, 29, 32, 34, 36, 43],
+            4: [6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 57],
+            5: [8, 11, 15, 18, 21, 25, 28, 31, 34, 38, 41, 44, 48, 51, 54, 65],
+            6: [11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59, 63, 67, 80],
         },
         STAT_RESIST_PCT: {
-            1: {'min': 1, 'max': 18},
-            2: {'min': 2, 'max': 20},
-            3: {'min': 4, 'max': 38},
-            4: {'min': 6, 'max': 44},
-            5: {'min': 9, 'max': 51},
-            6: {'min': 12, 'max': 64},
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [6, 8, 10, 13, 15, 17, 19, 21, 24, 26, 28, 30, 32, 35, 37, 44],
+            5: [9, 11, 14, 16, 19, 21, 23, 26, 28, 31, 33, 35, 38, 40, 43, 51],
+            6: [12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 64],
+        },
+        STAT_ACCURACY_PCT: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [6, 8, 10, 13, 15, 17, 19, 21, 24, 26, 28, 30, 32, 35, 37, 44],
+            5: [9, 11, 14, 16, 19, 21, 23, 26, 28, 31, 33, 35, 38, 40, 43, 51],
+            6: [12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 64],
         },
     }
 
-    # Copy a few ranges that are the same
-    MAIN_STAT_RANGES[STAT_ATK_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
-    MAIN_STAT_RANGES[STAT_DEF] = MAIN_STAT_RANGES[STAT_ATK]
-    MAIN_STAT_RANGES[STAT_DEF_PCT] = MAIN_STAT_RANGES[STAT_HP_PCT]
-    MAIN_STAT_RANGES[STAT_ACCURACY_PCT] = MAIN_STAT_RANGES[STAT_RESIST_PCT]
-
-    SUBSTAT_MAX_VALUES = {
-        STAT_HP_PCT: 40.0,
-        STAT_ATK_PCT: 40.0,
-        STAT_DEF_PCT: 40.0,
-        STAT_SPD: 30.0,
-        STAT_CRIT_RATE_PCT: 30.0,
-        STAT_CRIT_DMG_PCT: 35.0,
-        STAT_RESIST_PCT: 40.0,
-        STAT_ACCURACY_PCT: 40.0,
+    SUBSTAT_INCREMENTS = {
+        # [stat][stars]: value
+        STAT_HP: {
+            1: 60,
+            2: 105,
+            3: 165,
+            4: 225,
+            5: 300,
+            6: 375,
+        },
+        STAT_HP_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        STAT_ATK: {
+            1: 4,
+            2: 5,
+            3: 8,
+            4: 10,
+            5: 15,
+            6: 20,
+        },
+        STAT_ATK_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        STAT_DEF: {
+            1: 4,
+            2: 5,
+            3: 8,
+            4: 10,
+            5: 15,
+            6: 20,
+        },
+        STAT_DEF_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        STAT_SPD: {
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 5,
+            6: 6,
+        },
+        STAT_CRIT_RATE_PCT: {
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 5,
+            6: 6,
+        },
+        STAT_CRIT_DMG_PCT: {
+            1: 2,
+            2: 3,
+            3: 4,
+            4: 5,
+            5: 6,
+            6: 7,
+        },
+        STAT_RESIST_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        STAT_ACCURACY_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
     }
 
     INNATE_STAT_TITLES = {
@@ -1916,7 +2024,7 @@ class RuneInstance(models.Model):
     slot = models.IntegerField()
     value = models.IntegerField(blank=True, null=True)
     main_stat = models.IntegerField(choices=STAT_CHOICES)
-    main_stat_value = models.IntegerField(default=0)
+    main_stat_value = models.IntegerField()
     innate_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     innate_stat_value = models.IntegerField(null=True, blank=True)
     substat_1 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
@@ -1942,7 +2050,9 @@ class RuneInstance(models.Model):
     has_speed = models.BooleanField(default=False)
     has_resist = models.BooleanField(default=False)
     has_accuracy = models.BooleanField(default=False)
+    substat_upgrades_remaining = models.IntegerField(blank=True, null=True)
     efficiency = models.FloatField(blank=True, null=True)
+    max_efficiency = models.FloatField(blank=True, null=True)
 
     def get_main_stat_rune_display(self):
         return self.RUNE_STAT_DISPLAY.get(self.main_stat, '')
@@ -2072,34 +2182,29 @@ class RuneInstance(models.Model):
 
     def get_efficiency(self):
         # https://www.youtube.com/watch?v=SBWeptNNbYc
+        # All runes are compared against max stat values for perfect 6* runes.
         running_sum = 0.0
 
         # Main stat efficiency
-        running_sum += float(self.MAIN_STAT_RANGES[self.main_stat][self.stars]['max']) / float(self.MAIN_STAT_RANGES[self.main_stat][6]['max'])
+        running_sum += float(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15]) / float(self.MAIN_STAT_VALUES[self.main_stat][6][15])
 
         # Substat efficiencies
-        if self.innate_stat in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.innate_stat_value / self.SUBSTAT_MAX_VALUES[self.innate_stat]
+        if self.innate_stat is not None:
+            running_sum += self.innate_stat_value / float(self.SUBSTAT_INCREMENTS[self.innate_stat][6] * 5)
 
-        if self.substat_1 in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.substat_1_value / self.SUBSTAT_MAX_VALUES[self.substat_1]
+        if self.substat_1 is not None:
+            running_sum += self.substat_1_value / float(self.SUBSTAT_INCREMENTS[self.substat_1][6] * 5)
 
-        if self.substat_2 in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.substat_2_value / self.SUBSTAT_MAX_VALUES[self.substat_2]
+        if self.substat_2 is not None:
+            running_sum += self.substat_2_value / float(self.SUBSTAT_INCREMENTS[self.substat_2][6] * 5)
 
-        if self.substat_3 in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.substat_3_value / self.SUBSTAT_MAX_VALUES[self.substat_3]
+        if self.substat_3 is not None:
+            running_sum += self.substat_3_value / float(self.SUBSTAT_INCREMENTS[self.substat_3][6] * 5)
 
-        if self.substat_4 in self.SUBSTAT_MAX_VALUES:
-            running_sum += self.substat_4_value / self.SUBSTAT_MAX_VALUES[self.substat_4]
+        if self.substat_4 is not None:
+            running_sum += self.substat_4_value / float(self.SUBSTAT_INCREMENTS[self.substat_4][6] * 5)
 
         return running_sum / 2.8 * 100
-
-    def remaining_upgrade_cost(self, to_level=15):
-        if self.level < 15:
-            return int(sum([cost * (1.0 / rate) for cost, rate in zip(self.UPGRADE_COST[self.stars], self.UPGRADE_SUCCESS_RATE)][self.level:to_level]))
-        else:
-            return 0
 
     def update_fields(self):
         # Set flags for filtering
@@ -2113,8 +2218,11 @@ class RuneInstance(models.Model):
         self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
-        self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
+        substat_types = [self.substat_1, self.substat_2, self.substat_3, self.substat_4]
+        self.substat_upgrades_remaining = floor((self.quality * 3 - self.level) / 3)
+        self.quality = len(filter(None, substat_types))
         self.efficiency = self.get_efficiency()
+        self.max_efficiency = self.efficiency + (self.substat_upgrades_remaining * 0.2) / 2.8 * 100
 
         # Clean up values that don't have a stat type picked
         if self.innate_stat is None:
@@ -2127,6 +2235,24 @@ class RuneInstance(models.Model):
             self.substat_3_value = None
         if self.substat_4 is None:
             self.substat_4_value = None
+
+        # Cap stat values based on defined max values or substat increment rates and rune level
+        self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+
+        if self.innate_stat and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]:
+            self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
+
+        if self.substat_1 and self.substat_1_value > self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
+            self.substat_1_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+
+        if self.substat_2 and self.substat_2_value > self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
+            self.substat_2_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+
+        if self.substat_3 and self.substat_3_value > self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
+            self.substat_3_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+
+        if self.substat_4 and self.substat_4_value > self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
+            self.substat_4_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
 
         # Check no other runes are in this slot
         if self.assigned_to:
@@ -2186,53 +2312,91 @@ class RuneInstance(models.Model):
             )
 
         # Check if stat type was specified that it has value > 0
-        if self.main_stat_value is None or self.main_stat_value <= 0:
-            raise ValidationError({
-                'main_stat_value': ValidationError(
-                    'Must provide a value greater than 0.',
-                    code='invalid_rune_main_stat_value'
-                ),
-            })
+        self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
-        if self.innate_stat is not None and (self.innate_stat_value is None or self.innate_stat_value <= 0):
-            raise ValidationError({
-                'innate_stat_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_innate_stat_value'
-                ),
-            })
+        if self.innate_stat is not None:
+            if self.innate_stat_value is None or self.innate_stat_value <= 0:
+                raise ValidationError({
+                    'innate_stat_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_innate_stat_value'
+                    )
+                })
+            max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
+            if self.innate_stat_value > max_sub_value:
+                raise ValidationError({
+                    'innate_stat_value': ValidationError(
+                        'Must be less than ' + str(max_sub_value) + '.',
+                        code='invalid_rune_innate_stat_value'
+                    )
+                })
 
-        if self.substat_1 is not None and (self.substat_1_value is None or self.substat_1_value <= 0):
-            raise ValidationError({
-                'substat_1_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_substat_1_value'
-                ),
-            })
+        if self.substat_1 is not None:
+            if self.substat_1_value is None or self.substat_1_value <= 0:
+                raise ValidationError({
+                    'substat_1_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_1_value'
+                    )
+                })
+            max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+            if self.substat_1_value > max_sub_value:
+                raise ValidationError({
+                    'substat_1_value': ValidationError(
+                        'Must be less than ' + str(max_sub_value) + '.',
+                        code='invalid_rune_substat_1_value'
+                    )
+                })
 
-        if self.substat_2 is not None and (self.substat_2_value is None or self.substat_2_value <= 0):
-            raise ValidationError({
-                'substat_2_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_substat_2_value'
-                ),
-            })
+        if self.substat_2 is not None:
+            if self.substat_2_value is None or self.substat_2_value <= 0:
+                raise ValidationError({
+                    'substat_2_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_2_value'
+                    )
+                })
+            max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+            if self.substat_2_value > max_sub_value:
+                raise ValidationError({
+                    'substat_2_value': ValidationError(
+                        'Must be less than ' + str(max_sub_value) + '.',
+                        code='invalid_rune_substat_2_value'
+                    )
+                })
+        if self.substat_3 is not None:
+            if self.substat_3_value is None or self.substat_3_value <= 0:
+                raise ValidationError({
+                    'substat_3_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_3_value'
+                    )
+                })
+            max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+            if self.substat_3_value > max_sub_value:
+                raise ValidationError({
+                    'substat_3_value': ValidationError(
+                        'Must be less than ' + str(max_sub_value) + '.',
+                        code='invalid_rune_substat_3_value'
+                    )
+                })
 
-        if self.substat_3 is not None and (self.substat_3_value is None or self.substat_3_value <= 0):
-            raise ValidationError({
-                'substat_3_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_substat_3_value'
-                ),
-            })
-
-        if self.substat_4 is not None and (self.substat_4_value is None or self.substat_4_value <= 0):
-            raise ValidationError({
-                'substat_4_value': ValidationError(
-                    'Must be greater than 0.',
-                    code='invalid_rune_substat_4_value'
-                ),
-            })
+        if self.substat_4 is not None:
+            if self.substat_4_value is None or self.substat_4_value <= 0:
+                raise ValidationError({
+                    'substat_4_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_4_value'
+                    )
+                })
+            max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+            if self.substat_4_value > max_sub_value:
+                raise ValidationError({
+                    'substat_4_value': ValidationError(
+                        'Must be less than ' + str(max_sub_value) + '.',
+                        code='invalid_rune_substat_4_value'
+                    )
+                })
 
         # Check that monster rune is assigned to does not already have rune in that slot
         if self.assigned_to is not None and self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0:

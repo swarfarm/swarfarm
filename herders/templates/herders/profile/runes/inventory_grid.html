@@ -29,6 +29,7 @@
                 <th>Stars</th>
                 <th>Value</th>
                 <th>Efficiency</th>
+                <th data-toggle="tooltip" title="With perfect substat upgrades to +12">Max Efficiency</th>
                 <th>HP %</th>
                 <th>HP</th>
                 <th>DEF %</th>
@@ -57,6 +58,7 @@
                 <td>{{ rune.stars }}</td>
                 <td>{% if rune.value %}<img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ rune.value }}{% endif %}</td>
                 <td>{% if rune.efficiency %}{{ rune.efficiency|floatformat:1 }}%{% endif %}</td>
+                <td>{% if rune.max_efficiency %}{{ rune.max_efficiency|floatformat:1 }}%{% endif %}</td>
                 <td>{% if rune.get_hp_pct %}<span {% if rune.main_stat == rune.STAT_HP_PCT %}class="lead"{% endif %}>{{ rune.get_hp_pct }}%</span>{% endif %}</td>
                 <td>{% if rune.get_hp %}<span {% if rune.main_stat == rune.STAT_HP %}class="lead"{% endif %}>{{ rune.get_hp }}</span>{% endif %}</td>
                 <td>{% if rune.get_def_pct %}<span {% if rune.main_stat == rune.STAT_DEF_PCT %}class="lead"{% endif %}>{{ rune.get_def_pct }}%</span>{% endif %}</td>

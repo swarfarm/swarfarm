@@ -1,0 +1,183 @@
+{% load staticfiles %}
+{% load utils %}
+{% load markdown_deux_tags %}
+
+{% static 'herders/images/' as img_url_prefix %}
+
+<tr class="inventory-element" data-instance-id="{{ instance.pk.hex }}">
+    <td class="monster-image">
+        <div>
+            <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
+                <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
+                <span>
+                    {% for x in instance.stars|get_range %}
+                        {% if instance.monster.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% elif instance.monster.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
+            </a>
+        </div>
+    </td>
+    <td>{{ instance.monster.name|title }}</td>
+    <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>
+    <td>
+        {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}
+        {% if instance.is_max_level %}
+            {% if instance.stars < 6 %}
+                <span class="glyphicon glyphicon-upload" style="color:darkorange;" data-toggle="tooltip" data-placement="top" title="Ready for Evolution!"></span>
+            {% endif %}
+        {% endif %}
+    </td>
+    <td class="monster-element">
+        <img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" />
+        <span>{{ instance.monster.element }}</span>
+    </td>
+    <td>{{ instance.monster.get_archetype_display }}</td>
+    <td>{% if instance.created %}
+        <span class="hidden">{{ instance.created|date:"U" }}</span>
+        {{ instance.created }}
+        {% endif %}
+    </td>
+    <td>
+        <span class="hidden">{% if instance.priority %}{{ instance.priority }}{% else %}-1{% endif %}</span>
+        {{ instance.get_priority_display }}
+    </td>
+    <td class="monster-leader-skill">
+        {% if instance.monster.leader_skill %}
+        <div>
+            <img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}"
+                 data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
+            <span class="image-plus image-plus-top-left">{{ instance.monster.leader_skill.amount }}%</span>
+        </div>
+        {% endif %}
+    </td>
+    <td class="monster-awakens">
+        {% if instance.monster.awakens_from %}
+        <a href="{% url 'bestiary:detail' monster_slug=instance.monster.awakens_from.bestiary_slug %}">
+            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.awakens_from.image_filename }}" class="monster-thumb"/> {{ instance.monster.awakens_from.name }}
+        </a>
+        {% endif %}
+    </td>
+    <td class="monster-awakens">
+        {% if instance.monster.awakens_to %}
+        <a href="{% url 'bestiary:detail' monster_slug=instance.monster.awakens_to.bestiary_slug %}">
+            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.awakens_to.image_filename }}" class="monster-thumb"/> {{ instance.monster.awakens_to.name }}
+        </a>
+        {% endif %}
+    </td>
+    <td class="monster-awaken-materials">
+        {% for skill in instance.monster.skills.all %}
+            <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
+                <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
+                {% if forloop.counter == 1 %}
+                <span class="image-plus image-plus-right">{{ instance.skill_1_level }}/{{ skill.max_level }}</span>
+                {% elif forloop.counter == 2 %}
+                <span class="image-plus image-plus-right">{{ instance.skill_2_level }}/{{ skill.max_level }}</span>
+                {% elif forloop.counter == 3 %}
+                <span class="image-plus image-plus-right">{{ instance.skill_3_level }}/{{ skill.max_level }}</span>
+                {% elif forloop.counter == 4 %}
+                <span class="image-plus image-plus-right">{{ instance.skill_4_level }}/{{ skill.max_level }}</span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </td>
+    <td>
+        {% if instance.skill_ups_to_max > 0 %}
+        <div class="monster-image">
+            <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+            <span class="image-plus image-plus-main">{{ instance.skill_ups_to_max }}</span>
+        </div>
+        {% else %}
+        <span class="glyphicon glyphicon-ok-circle text-success"></span>
+        {% endif %}
+    </td>
+    <td>
+        {% for rune in instance.runeinstance_set.all %}
+        {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune popover=True only %}
+        {% endfor %}
+    </td>
+    <td>{{ instance.hp }}</td>
+    <td>{{ instance.defense }}</td>
+    <td>{{ instance.attack }}</td>
+    <td>{{ instance.speed }}</td>
+    <td>{{ instance.crit_rate }}%</td>
+    <td>{{ instance.crit_damage }}%</td>
+    <td>{{ instance.resistance }}%</td>
+    <td>{{ instance.accuracy }}%</td>
+    <td class="monster-awaken-materials">
+        {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
+            {% include 'bestiary/awakening_essences.html' with monster=instance.monster only %}
+        {% endif %}
+    </td>
+    <td>{% if instance.notes %}{{ instance.notes|truncatewords:25|markdown|striptags }}{% endif %}</td>
+    <td>
+        {% if instance.team_set.count or instance.team_leader.count %}
+        <ul class="list-unstyled">
+        {% for team in instance.team_leader.all %}
+            <li><a href="{% url 'herders:teams' profile_name=profile_name %}#{{ team.pk.hex }}">{{ team.group.name }} - {{ team.name }} (Lead)</a></li>
+        {% endfor %}
+        {% for team in instance.team_set.all %}
+            <li><a href="{% url 'herders:teams' profile_name=profile_name %}#{{ team.pk.hex }}">{{ team.group.name }} - {{ team.name }}</a></li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </td>
+    <td>
+        {% for tag in instance.tags.all %}
+            <span class="tag">{{ tag }}</span>
+        {% endfor %}
+    </td>
+    <td class="monster-info-icons-column">
+        {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
+            <img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/>
+            <span class="hidden">0</span>
+        {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
+            <img src="{{ img_url_prefix }}icons/fusion_ignored.png"  data-toggle="tooltip" data-placement="top" title="Ignored for monster fusion"/>
+            <span class="hidden">1</span>
+        {% else %}
+            <span class="hidden">2</span>
+        {% endif %}
+    </td>
+    <td class="monster-info-icons-column">
+        {% if instance.fodder %}
+            <span class="fa fa-birthday-cake" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Marked as food"></span>
+            <span class="hidden">0</span>
+        {% else %}
+            <span class="hidden">1</span>
+        {% endif %}
+    </td>
+    <td class="monster-info-icons-column">
+        {% if instance.in_storage %}
+            <span class="fa fa-bed" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="In Monster Storage"></span>
+            <span class="hidden">0</span>
+        {% else %}
+            <span class="hidden">1</span>
+        {% endif %}
+    </td>
+    {% if is_owner %}
+        <td class="monster-actions-column">
+            <div class="btn-group">
+                <button class="btn btn-link btn-xs monster-edit" data-instance-id="{{ instance.pk.hex }}">
+                    <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
+                </button>
+                <button class="btn btn-link btn-xs monster-copy" data-instance-id="{{ instance.pk.hex }}">
+                    <span class="glyphicon glyphicon-copy" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Copy"></span>
+                </button>
+                {% if not instance.monster.is_awakened and instance.monster.can_awaken %}
+                <button class="btn btn-link btn-xs monster-awaken" data-instance-id="{{ instance.pk.hex }}">
+                    <span class="glyphicon glyphicon-star" style="color:purple" data-toggle="tooltip" data-placement="top" title="Awaken"></span>
+                </button>
+                {% endif %}
+            </div>
+            <button class="btn btn-link btn-xs monster-delete pull-right" data-instance-id="{{ instance.pk.hex }}">
+                <span class="glyphicon glyphicon-trash text-danger" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
+            </button>
+        </td>
+    {% endif %}
+</tr>

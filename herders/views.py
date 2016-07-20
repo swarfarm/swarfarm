@@ -386,10 +386,6 @@ def monster_instance_add(request, profile_name):
         else:
             form = AddMonsterInstanceForm(initial=request.GET.dict())
 
-        form.helper.form_action = reverse('herders:monster_instance_add', kwargs={'profile_name': profile_name})
-
-        template = loader.get_template('herders/profile/monster_inventory/add_monster_form.html')
-
         if request.method == 'POST' and form.is_valid():
             # Create the monster instance
             new_monster = form.save(commit=False)
@@ -398,10 +394,22 @@ def monster_instance_add(request, profile_name):
 
             messages.success(request, 'Added %s to your collection.' % new_monster)
 
+            template = loader.get_template('herders/profile/monster_inventory/monster_list_row_snippet.html')
+
+            context = {
+                'profile_name': profile_name,
+                'instance': new_monster,
+                'is_owner': is_owner,
+            }
+
             response_data = {
-                'code': 'success'
+                'code': 'success',
+                'html': template.render(RequestContext(request, context)),
             }
         else:
+            form.helper.form_action = reverse('herders:monster_instance_add', kwargs={'profile_name': profile_name})
+            template = loader.get_template('herders/profile/monster_inventory/add_monster_form.html')
+
             # Return form filled in and errors shown
             response_data = {
                 'code': 'error',

@@ -471,6 +471,7 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_class = 'ajax-form'
+        self.helper.form_id = 'id_AddMonsterInstanceForm'
         self.helper.layout = Layout(
             Field(
                 'monster',

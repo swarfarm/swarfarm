@@ -30,7 +30,7 @@
                 </div>
                 <div class="panel-body">
                     {% for piece in monster_pieces %}
-                    <div class="monster-box">
+                    <div class="monster-box inventory-element" data-instance-id="{{ piece.pk.hex }}">
                         <div class="monster-box-actions">
                             {{ piece.monster.name }}
                         </div>

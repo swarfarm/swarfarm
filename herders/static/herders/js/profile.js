@@ -68,7 +68,10 @@ function DeleteMonster(instance_id) {
                             "instance_id": instance_id
                         }
                     }).done(function () {
-                        update_monster_inventory();
+                        $(".inventory-element[data-instance-id='" + instance_id + "']").remove();
+                        if ($('#monster_table').length) {
+                            $('#monster_table').trigger('update');
+                        }
                     }).fail(function () {
                         alert("Something went wrong! Server admin has been notified.");
                     });
@@ -120,7 +123,7 @@ function DeleteMonsterPiece(instance_id) {
                             "instance_id": instance_id
                         }
                     }).done(function () {
-                        update_monster_inventory();
+                        $(".inventory-element[data-instance-id='" + instance_id + "']").remove();
                     }).fail(function () {
                         alert("Something went wrong! Server admin has been notified.");
                     });
@@ -187,7 +190,16 @@ $('body')
         }).done(function(data) {
             if (data.code === 'success') {
                 $('.modal.in').modal('hide');
-                update_monster_inventory();
+
+                var $inventory_container = $('#inventory-container');
+                if ($inventory_container.length) {
+                    var $new_row = $(data.html);
+                    $inventory_container.append($new_row);
+                    $('#monster_table').trigger('addRows', [$new_row, true]);
+                }
+                else {
+                    update_monster_inventory();
+                }
             }
             else {
                 $form.replaceWith(data.html);

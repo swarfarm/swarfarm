@@ -38,7 +38,7 @@
                             </div>
                             <div class="panel-body">
                                 {% for instance in monsters %}
-                                    <div class="monster-box">
+                                    <div class="monster-box inventory-element" data-instance-id="{{ instance.pk.hex }}">
                                         <div class="monster-box-actions">
                                             {{ instance.monster.name }}
                                         </div>

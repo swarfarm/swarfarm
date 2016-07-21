@@ -254,6 +254,8 @@ $('body')
             });
 
             $('#monster_table').tablesorter({
+                sortList: [[2,1],[3,1]],
+                sortReset: true,
                 widgets: ['saveSort', 'columnSelector', 'stickyHeaders'],
                 widgetOptions: {
                     filter_reset: '.reset',

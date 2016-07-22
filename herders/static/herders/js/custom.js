@@ -12,11 +12,40 @@ $(function () {
     $('.rating').rating();
     DisplayMessages();
 
-    $('.select2').select2({
-        theme: "bootstrap",
-        width: "100%"
-    });
+   initSelect();
 });
+
+// Various select2 templates for the types of autocompletes
+function starsSelect2SelectedTemplate(stars, container) {
+    if (stars.id) {
+        return $('<span>' + stars.text + '<span class="glyphicon glyphicon-star"></span></span>');
+    }
+    else {
+        return stars.text;
+    }
+}
+
+function starsSelect2ResultTemplate(stars) {
+    if (stars.id) {
+        return $('<span>' + stars.text + '<span class="glyphicon glyphicon-star"></span></span>');
+    }
+    else {
+        return stars.text;
+    }
+}
+
+// Init all the select2s with the appropriate templates
+$.fn.select2.defaults.set("theme", "bootstrap");
+$.fn.select2.defaults.set("width", "100%");
+$.fn.select2.defaults.set("allowClear", true);
+
+function initSelect() {
+    $('.select2').select2();
+    $('.select2-stars').select2({
+        templateSelection: starsSelect2SelectedTemplate,
+        templateResult: starsSelect2ResultTemplate
+    })
+}
 
 $(document).ajaxComplete(function() {
     DisplayMessages();

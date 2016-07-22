@@ -1,10 +1,4 @@
-{% load staticfiles %}
-{% load crispy_forms_tags %}
-{% load utils %}
-
 <div id="monster-inventory">
-    {% static 'herders/images/' as img_url_prefix %}
-
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="btn-group">
@@ -30,48 +24,7 @@
                 </div>
                 <div class="panel-body">
                     {% for piece in monster_pieces %}
-                    <div class="monster-box inventory-element" data-instance-id="{{ piece.pk.hex }}">
-                        <div class="monster-box-actions">
-                            {{ piece.monster.name }}
-                        </div>
-                        <div class="monster-box-thumb">
-                            <img src="{{ img_url_prefix }}monsters/{{ piece.monster.image_filename }}"/>
-                            <span>
-                                {% for x in piece.monster.base_stars|get_range %}
-                                    {% if piece.monster.is_awakened %}
-                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% elif piece.monster.can_awaken %}
-                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% else %}
-                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% endif %}
-                                {% endfor %}
-                            </span>
-                            <div class="image-plus-icon">
-                                {% if piece.monster.fusion_food %}<img src="{{ img_url_prefix }}icons/fusion.png" />{% endif %}
-                            </div>
-                            <span class="image-plus image-plus-left">x{{ piece.pieces }} Pieces</span>
-                        </div>
-
-                        {% if is_owner %}
-                        <div class="monster-box-actions">
-                            <button class="btn btn-link btn-xs monster-piece-delete pull-right" data-instance-id="{{ piece.pk.hex }}">
-                                <span class="glyphicon glyphicon-trash text-danger" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
-                            </button>
-
-                            <div class="btn-group pull-left">
-                                <button class="btn btn-link btn-xs monster-piece-edit" data-instance-id="{{ piece.pk.hex }}">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
-                                </button>
-                                {% if piece.can_summon %}
-                                <button class="btn btn-link btn-xs monster-piece-summon pull-right" data-instance-id="{{ piece.pk.hex }}">
-                                    <span class="glyphicon glyphicon-plus text-success" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Summon"></span>
-                                </button>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
+                        {% include 'herders/profile/monster_inventory/monster_piece_snippet.html' %}
                     {% endfor %}
                 </div>
             </div>

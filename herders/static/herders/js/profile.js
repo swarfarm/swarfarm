@@ -33,8 +33,12 @@ function EditMonster(instance_id) {
 }
 
 function CopyMonster(instance_id) {
-    $.get('/profile/' + PROFILE_NAME + '/monster/copy/' + instance_id + '/', function() {
-        update_monster_inventory();
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/monster/copy/' + instance_id + '/'
+    }).done(function(result) {
+        $('.inventory-element[data-instance-id="' + instance_id + '"]').after(result.html);
+        //update_monster_inventory();
     });
 }
 
@@ -63,10 +67,6 @@ function DeleteMonster(instance_id) {
                     $.ajax({
                         type: 'get',
                         url: '/profile/' + PROFILE_NAME + '/monster/delete/' + instance_id + '/',
-                        data: {
-                            "delete": "delete",
-                            "instance_id": instance_id
-                        }
                     }).done(function () {
                         $(".inventory-element[data-instance-id='" + instance_id + "']").remove();
                         if ($('#monster_table').length) {
@@ -117,11 +117,7 @@ function DeleteMonsterPiece(instance_id) {
                 if (result) {
                     $.ajax({
                         type: 'get',
-                        url: '/profile/' + PROFILE_NAME + '/monster/piece/delete/' + instance_id + '/',
-                        data: {
-                            "delete": "delete",
-                            "instance_id": instance_id
-                        }
+                        url: '/profile/' + PROFILE_NAME + '/monster/piece/delete/' + instance_id + '/'
                     }).done(function () {
                         $(".inventory-element[data-instance-id='" + instance_id + "']").remove();
                     }).fail(function () {
@@ -140,13 +136,9 @@ function SummonMonsterPiece(instance_id) {
     if (instance_id) {
         $.ajax({
             type: 'get',
-            url: '/profile/' + PROFILE_NAME + '/monster/piece/summon/' + instance_id + '/',
-            data: {
-                "delete": "delete",
-                "instance_id": instance_id
-            }
-        }).done(function () {
-            update_monster_inventory();
+            url: '/profile/' + PROFILE_NAME + '/monster/piece/summon/' + instance_id + '/'
+        }).done(function (result) {
+            $(".inventory-element[data-instance-id='" + instance_id + "']").replaceWith(result.html);
         }).fail(function () {
             alert("Something went wrong! Server admin has been notified.");
         });
@@ -155,7 +147,6 @@ function SummonMonsterPiece(instance_id) {
         alert("Unspecified piece to delete");
     }
 }
-
 
 function QuickFodder(btn) {
     var monster_id = btn.data('monster-id');
@@ -191,11 +182,27 @@ $('body')
             if (data.code === 'success') {
                 $('.modal.in').modal('hide');
 
-                var $inventory_container = $('#inventory-container');
-                if ($inventory_container.length) {
-                    var $new_row = $(data.html);
-                    $inventory_container.append($new_row);
-                    $('#monster_table').trigger('addRows', [$new_row, true]);
+                if (data.instance_id != 'undefined') {
+                    // Try to find a matching monster container and replace it
+                    var $monster_container = $('.inventory-element[data-instance-id="' + data.instance_id + '"]');
+
+                    if ($monster_container.length) {
+                        // Replace it
+                        $monster_container.replaceWith(data.html);
+                    }
+                    else {
+                        // Append it if we can in list mode. Box/pieces require server side grouping so just request it again.
+                        var $inventory_container = $('#inventory-container');
+                        if ($inventory_container.length) {
+                            var $new_row = $(data.html);
+                            $inventory_container.append($new_row);
+                            $('#monster_table').trigger('addRows', [$new_row, true]);
+                        }
+                        else {
+                            // This is also the default action for form submit
+                            update_monster_inventory();
+                        }
+                    }
                 }
                 else {
                     update_monster_inventory();

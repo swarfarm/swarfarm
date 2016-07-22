@@ -404,6 +404,7 @@ def monster_instance_add(request, profile_name):
 
             response_data = {
                 'code': 'success',
+                'instance_id': new_monster.pk.hex,
                 'html': template.render(RequestContext(request, context)),
             }
         else:
@@ -679,7 +680,6 @@ def monster_instance_edit(request, profile_name, instance_id):
         raise Http404
     instance = get_object_or_404(MonsterInstance, pk=instance_id)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-    template = loader.get_template('herders/profile/monster_view/edit_form.html')
 
     if is_owner:
         # Reconcile skill level with actual skill from base monster
@@ -749,13 +749,30 @@ def monster_instance_edit(request, profile_name, instance_id):
             form.helper['ignore_for_fusion'].wrap(Div, css_class="hidden")
 
         if request.method == 'POST' and form.is_valid():
-            form.save()
+            mon = form.save()
+            messages.success(request, 'Successfully edited ' + str(mon))
+
+            view_mode = request.session.get('profile_view_mode', 'list').lower()
+
+            if view_mode == 'list':
+                template = loader.get_template('herders/profile/monster_inventory/monster_list_row_snippet.html')
+            else:
+                template = loader.get_template('herders/profile/monster_inventory/monster_box_snippet.html')
+
+            context = {
+                'profile_name': profile_name,
+                'instance': mon,
+                'is_owner': is_owner,
+            }
 
             response_data = {
-                'code': 'success'
+                'code': 'success',
+                'instance_id': mon.pk.hex,
+                'html': template.render(RequestContext(request, context)),
             }
         else:
             # Return form filled in and errors shown
+            template = loader.get_template('herders/profile/monster_view/edit_form.html')
             response_data = {
                 'code': 'error',
                 'html': template.render(RequestContext(request, {'edit_monster_form': form}))
@@ -792,7 +809,6 @@ def monster_instance_power_up(request, profile_name, instance_id):
         raise Http404
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
-    template = loader.get_template('herders/profile/monster_view/power_up_form.html')
 
     form = PowerUpMonsterInstanceForm(request.POST or None)
     form.helper.form_action = reverse('herders:monster_instance_power_up', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
@@ -868,6 +884,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
     else:
         raise PermissionDenied("Trying to power up or evolve a monster you don't own")
 
+    template = loader.get_template('herders/profile/monster_view/power_up_form.html')
     # Any errors in the form will fall through to here and be displayed
     context['validation_errors'] = validation_errors
     response_data['html'] = template.render(RequestContext(request, context))
@@ -970,8 +987,23 @@ def monster_instance_duplicate(request, profile_name, instance_id):
         newmonster.save()
         messages.success(request, 'Succesfully copied ' + str(newmonster))
 
+        view_mode = request.session.get('profile_view_mode', 'list').lower()
+
+        if view_mode == 'list':
+            template = loader.get_template('herders/profile/monster_inventory/monster_list_row_snippet.html')
+        else:
+            template = loader.get_template('herders/profile/monster_inventory/monster_box_snippet.html')
+
+        context = {
+            'profile_name': profile_name,
+            'is_owner': True,
+            'instance': newmonster,
+        }
+
         response_data = {
             'code': 'success',
+            'instance_id': newmonster.pk.hex,
+            'html': template.render(RequestContext(request, context))
         }
 
         return JsonResponse(response_data)
@@ -1035,10 +1067,18 @@ def monster_piece_edit(request, profile_name, instance_id):
         form.helper.form_action = request.path
 
         if request.method == 'POST' and form.is_valid():
-            form.save()
+            new_piece = form.save()
+            template = loader.get_template('herders/profile/monster_inventory/monster_piece_snippet.html')
+
+            context = {
+                'piece': new_piece,
+                'is_owner': is_owner,
+            }
 
             response_data = {
-                'code': 'success'
+                'code': 'success',
+                'instance_id': new_piece.pk.hex,
+                'html': template.render(RequestContext(request, context))
             }
         else:
             # Return form filled in and errors shown
@@ -1075,8 +1115,17 @@ def monster_piece_summon(request, profile_name, instance_id):
             if pieces.pieces <= 0:
                 pieces.delete()
 
+            template = loader.get_template('herders/profile/monster_inventory/monster_piece_snippet.html')
+
+            context = {
+                'piece': pieces,
+                'is_owner': is_owner,
+            }
+
             response_data = {
-                'code': 'success'
+                'code': 'success',
+                'instance_id': pieces.pk.hex,
+                'html': template.render(RequestContext(request, context))
             }
 
             return JsonResponse(response_data)

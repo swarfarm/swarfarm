@@ -374,19 +374,16 @@ class FilterMonsterForm(forms.Form):
     base_stars = forms.MultipleChoiceField(
         choices=Monster.STAR_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     element = forms.MultipleChoiceField(
         label='Element',
         choices=Monster.ELEMENT_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     archetype = forms.MultipleChoiceField(
         label='Archetype',
         choices=Monster.TYPE_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     is_awakened = forms.NullBooleanField(label='Is Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
@@ -394,37 +391,31 @@ class FilterMonsterForm(forms.Form):
         label='Leader Skill Stat',
         choices=LeaderSkill.ATTRIBUTE_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     leader_skill__area = forms.MultipleChoiceField(
         label='Leader Skill Stat',
         choices=LeaderSkill.AREA_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     skills__scaling_stats__pk = forms.MultipleChoiceField(
         label='Skill Scales With',
         choices=ScalingStat.objects.values_list('pk', 'stat'),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     buffs = forms.MultipleChoiceField(
         label='Buffs',
         choices=Effect.buff_effect_choices.all(),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     debuffs = forms.MultipleChoiceField(
         label='Debuffs',
         choices=Effect.debuff_effect_choices.all(),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     other_effects = forms.MultipleChoiceField(
         label='Other Effects',
         choices=Effect.other_effect_choices.all(),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     page = forms.IntegerField(required=False)
     sort = forms.CharField(required=False)
@@ -437,17 +428,17 @@ class FilterMonsterForm(forms.Form):
     helper.field_class = 'col-md-11 no-left-gutter'
     helper.layout = Layout(
         Field('name__icontains', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('base_stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('base_stars', css_class='auto-submit select2', wrapper_class='form-group-sm form-group-condensed'),
+        Field('element', css_class='auto-submit select2', wrapper_class='form-group-sm form-group-condensed'),
+        Field('archetype', css_class='auto-submit select2', wrapper_class='form-group-sm form-group-condensed'),
         Field('is_awakened', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
         Field('fusion_food', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('skills__scaling_stats__pk', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
-        Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
-        Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
+        Field('leader_skill__attribute', css_class='auto-submit select2', wrapper_class='form-group-sm form-group-condensed'),
+        Field('leader_skill__area', css_class='auto-submit select2', wrapper_class='form-group-sm form-group-condensed'),
+        Field('skills__scaling_stats__pk', css_class='auto-submit select2', wrapper_class='form-group-sm form-group-condensed'),
+        Field('buffs', css_class='auto-submit select2', wrapper_class='form-group-sm form-group-condensed'),
+        Field('debuffs', css_class='auto-submit select2', wrapper_class='form-group-sm form-group-condensed'),
+        Field('other_effects', css_class='auto-submit select2', wrapper_class='form-group-sm form-group-condensed'),
         Field('page', value=1, type='hidden'),
         Field('sort', value='', type='hidden'),
     )

@@ -9,28 +9,30 @@ $(function () {
         html:true,
         viewport: {selector: 'body', padding: 2}
     });
-    $('.rating').rating();
-    DisplayMessages();
 
-   initSelect();
+    $('.rating').rating();
+    $('[data-toggle="toggle"]').bootstrapSwitch();
+
+    DisplayMessages();
+    initSelect();
 });
 
 // Various select2 templates for the types of autocompletes
-function starsSelect2SelectedTemplate(stars, container) {
-    if (stars.id) {
-        return $('<span>' + stars.text + '<span class="glyphicon glyphicon-star"></span></span>');
+function starsSelect2Template(option) {
+    if (option.id) {
+        return $('<span>' + option.text + '<span class="glyphicon glyphicon-star"></span></span>');
     }
     else {
-        return stars.text;
+        return option.text;
     }
 }
 
-function starsSelect2ResultTemplate(stars) {
-    if (stars.id) {
-        return $('<span>' + stars.text + '<span class="glyphicon glyphicon-star"></span></span>');
+function elementSelect2Template(option) {
+    if (option.id) {
+        return $('<span><img src="/static/herders/images/elements/' + option.text.toLowerCase() + '.png" /> ' + option.text + '</span>');
     }
     else {
-        return stars.text;
+        return option.text;
     }
 }
 
@@ -42,9 +44,13 @@ $.fn.select2.defaults.set("allowClear", true);
 function initSelect() {
     $('.select2').select2();
     $('.select2-stars').select2({
-        templateSelection: starsSelect2SelectedTemplate,
-        templateResult: starsSelect2ResultTemplate
-    })
+        templateSelection: starsSelect2Template,
+        templateResult: starsSelect2Template
+    });
+    $('.select2-element').select2({
+        templateSelection: elementSelect2Template,
+        templateResult: elementSelect2Template
+    });
 }
 
 $(document).ajaxComplete(function() {

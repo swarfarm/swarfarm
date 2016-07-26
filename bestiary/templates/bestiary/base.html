@@ -1,17 +1,30 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load crispy_forms_tags %}
 {% load utils %}
 {% load cache %}
 
 {% block title %}Bestiary - {{ block.super }}{% endblock title %}
 
-{% block subnav %}
-    {% include 'bestiary/subnav.html' %}
-{% endblock subnav %}
-
 {% block content %}
-<div id="bestiary-inventory"></div>
-{% endblock %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="btn-toolbar">
+                <button class="btn btn-primary toggle collapsed" data-toggle="collapse" data-target="#dropdownFilters">
+                    Filters
+                </button>
+                <button class="btn btn-danger reset">Reset Filters</button>
+            </div>
+            <div class="collapse" id="dropdownFilters">
+                <div id="monster-inventory-filters" class="container-fluid">
+                    {% crispy bestiary_filter_form %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="bestiary-inventory"></div>
+{% endblock content %}
 
 {% block javascript %}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.24.6/js/widgets/widget-columnSelector.min.js"></script>

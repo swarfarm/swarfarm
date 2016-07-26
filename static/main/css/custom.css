@@ -75,7 +75,7 @@ select.short {
     max-width: 300px;
 }
 
-.navbar img, .btn-group img {
+.navbar img, .btn-group img, .select2 img, .select2-results img {
     height: 18px;
 }
 

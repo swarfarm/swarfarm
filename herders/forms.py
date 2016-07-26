@@ -11,8 +11,8 @@ from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert
+from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset, Fieldset
+from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert, InlineRadios
 
 from captcha.fields import ReCaptchaField
 
@@ -385,7 +385,7 @@ class FilterMonsterForm(forms.Form):
         choices=Monster.TYPE_CHOICES,
         required=False,
     )
-    is_awakened = forms.NullBooleanField(label='Is Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    is_awakened = forms.NullBooleanField(label='Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     leader_skill__attribute = forms.MultipleChoiceField(
         label='Leader Skill Stat',
@@ -393,7 +393,7 @@ class FilterMonsterForm(forms.Form):
         required=False,
     )
     leader_skill__area = forms.MultipleChoiceField(
-        label='Leader Skill Stat',
+        label='Leader Skill Area',
         choices=LeaderSkill.AREA_CHOICES,
         required=False,
     )
@@ -417,28 +417,51 @@ class FilterMonsterForm(forms.Form):
         choices=Effect.other_effect_choices.all(),
         required=False,
     )
+    effects_logic = forms.BooleanField(
+        label='',
+        required=False,
+    )
     page = forms.IntegerField(required=False)
     sort = forms.CharField(required=False)
 
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_id = 'FilterBestiaryForm'
-    helper.form_class = 'form-horizontal'
-    helper.label_class = 'col-md-1 text-right'
-    helper.field_class = 'col-md-11 no-left-gutter'
     helper.layout = Layout(
-        Field('name__icontains', wrapper_class='form-group-sm form-group-condensed'),
-        Field('base_stars', css_class='select2-stars', wrapper_class='form-group-sm form-group-condensed'),
-        Field('element', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-        Field('archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-        Field('is_awakened', css_class='short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('fusion_food', css_class='short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('leader_skill__attribute', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-        Field('leader_skill__area', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-        Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-        Field('buffs', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-        Field('debuffs', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-        Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+        Div(
+            Fieldset(
+                'General',
+                Field('name__icontains', wrapper_class='form-group-sm form-group-condensed'),
+                Div(
+                    Field('base_stars', css_class='select2-stars', wrapper_class='form-group-sm form-group-condensed col-md-4'),
+                    Field('is_awakened', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed col-md-4'),
+                    Field('fusion_food', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed col-md-4'),
+                    css_class='row'
+                ),
+                Div(
+                    Field('element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field('archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    css_class='row',
+                ),
+                css_class='col-md-5'
+            ),
+            Fieldset(
+                'Skills',
+                Field('buffs', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3'),
+                Field('debuffs', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3'),
+                Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3'),
+                Field('effects_logic', data_toggle='toggle', data_on_text='OR', data_on_color='primary', data_off_text='AND', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed col-md-3'),
+                css_class='row'
+            ),
+            Fieldset(
+                'Leader Skills',
+                Field('leader_skill__attribute', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                Field('leader_skill__area', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                css_class='row'
+            ),
+            css_class='row',
+        ),
+        Submit('apply', 'Apply'),
         Field('page', value=1, type='hidden'),
         Field('sort', value='', type='hidden'),
     )

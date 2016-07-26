@@ -5,42 +5,6 @@ from bestiary.models import Monster, Effect, Skill, LeaderSkill, ScalingStat
 from .models import MonsterInstance, MonsterTag, RuneInstance
 
 
-class MonsterFilter(django_filters.FilterSet):
-    base_stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
-    element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
-    archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
-    leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
-    leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
-    skills__scaling_stats__pk = django_filters.MultipleChoiceFilter(choices=ScalingStat.objects.values_list('pk', 'stat'), conjoined=True)
-    skills__skill_effect__pk = django_filters.MethodFilter(action='filter_skills__skill_effect__pk')
-
-    class Meta:
-        model = Monster
-        fields = {
-            'name': ['icontains'],
-            'element': ['exact'],
-            'archetype': ['exact'],
-            'base_stars': ['exact'],
-            'is_awakened': ['exact'],
-            'leader_skill__attribute': ['exact'],
-            'leader_skill__area': ['exact'],
-            'skills__skill_effect__pk': ['exact'],
-            'skills__scaling_stats__pk': ['exact'],
-            'fusion_food': ['exact'],
-        }
-
-    def filter_skills__skill_effect__pk(self, queryset, value):
-        # Filter effects based on effects of each individual skill. This ensures a monster will not show up unless it has
-        # the desired effects on the same skill rather than across any skills.
-
-        skills = Skill.objects.all()
-
-        for pk in value:
-            skills = skills.filter(skill_effect__pk=pk)
-
-        return queryset.filter(skills__in=skills).distinct()
-
-
 class MonsterInstanceFilter(django_filters.FilterSet):
     tags__pk = django_filters.MultipleChoiceFilter(choices=MonsterTag.objects.values_list('pk', 'name'), conjoined=True)
     stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)

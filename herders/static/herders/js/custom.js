@@ -36,6 +36,19 @@ function elementSelect2Template(option) {
     }
 }
 
+function skillEffectSelect2Template(option) {
+    if (option.id) {
+        var vals = option.text.split(';'),
+            img = vals[0],
+            name = vals[1];
+
+        return $('<span><img src="' + img + '" /> ' + name + '</span>');
+    }
+    else {
+        return option.text;
+    }
+}
+
 // Init all the select2s with the appropriate templates
 $.fn.select2.defaults.set("theme", "bootstrap");
 $.fn.select2.defaults.set("width", "100%");
@@ -50,6 +63,10 @@ function initSelect() {
     $('.select2-element').select2({
         templateSelection: elementSelect2Template,
         templateResult: elementSelect2Template
+    });
+    $('.select2-effect').select2({
+        templateSelection: skillEffectSelect2Template,
+        templateResult: skillEffectSelect2Template
     });
 }
 

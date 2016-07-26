@@ -32,11 +32,15 @@ class MonsterFilter(django_filters.FilterSet):
 
     def filter_skills__skill_effect__pk(self, queryset, value):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)
+        stat_scaling = self.form.cleaned_data.get('skills__scaling_stats__pk', [])
 
         if old_filtering:
             # Filter if any skill on the monster has the designated fields
             for pk in value:
-                queryset = queryset.filter(skills__skill_effect__pk=pk)
+                queryset = queryset.filter(skills__skill_effect=pk)
+
+            for pk in stat_scaling:
+                queryset = queryset.filter(skills__scaling_stats=pk)
 
             return queryset.distinct()
 
@@ -47,7 +51,10 @@ class MonsterFilter(django_filters.FilterSet):
             skills = Skill.objects.all()
 
             for pk in value:
-                skills = skills.filter(skill_effect__pk=pk)
+                skills = skills.filter(skill_effect=pk)
+
+            for pk in stat_scaling:
+                skills = skills.filter(scaling_stats=pk)
 
             return queryset.filter(skills__in=skills).distinct()
 

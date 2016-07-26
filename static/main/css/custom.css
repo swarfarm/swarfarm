@@ -46,7 +46,8 @@ footer {
     padding-right:0;
 }
 
-.no-left-gutter {
+.no-left-gutter,
+.no-left-gutter label{
     padding-left: 0!important;
 }
 

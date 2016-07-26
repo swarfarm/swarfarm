@@ -1,4 +1,5 @@
 from django import forms
+from django.templatetags.static import static
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, Fieldset
@@ -7,6 +8,8 @@ from crispy_forms.bootstrap import FormActions, FieldWithButtons
 from bestiary.models import *
 
 import autocomplete_light
+
+STATIC_URL_PREFIX = static('herders/images/')
 
 
 # Bestiary forms
@@ -24,6 +27,16 @@ class BestiaryQuickSearchForm(forms.Form):
             Submit('Go', 'Go'),
         ),
     )
+
+
+def effect_choices(effects):
+    choices = []
+
+    for buff in effects.order_by('name'):
+        # Select2 template splits the string at ; to get an image and nameoi
+        choices.append((buff.pk, STATIC_URL_PREFIX + 'buffs/' + buff.icon_filename + ';' + buff.name))
+
+    return choices
 
 
 class FilterMonsterForm(forms.Form):
@@ -59,18 +72,18 @@ class FilterMonsterForm(forms.Form):
         required=False,
     )
     skills__scaling_stats__pk = forms.MultipleChoiceField(
-        label='Skill Scales With',
+        label='Scales With',
         choices=ScalingStat.objects.values_list('pk', 'stat'),
         required=False,
     )
     buffs = forms.MultipleChoiceField(
         label='Buffs',
-        choices=Effect.buff_effect_choices.all(),
+        choices=effect_choices(Effect.objects.filter(is_buff=True).exclude(icon_filename='')),
         required=False,
     )
     debuffs = forms.MultipleChoiceField(
         label='Debuffs',
-        choices=Effect.debuff_effect_choices.all(),
+        choices=effect_choices(Effect.objects.filter(is_buff=False).exclude(icon_filename='')),
         required=False,
     )
     other_effects = forms.MultipleChoiceField(
@@ -79,7 +92,7 @@ class FilterMonsterForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label='Effect filter logic',
+        label='',
         required=False,
     )
     page = forms.IntegerField(required=False)
@@ -92,11 +105,14 @@ class FilterMonsterForm(forms.Form):
         Div(
             Fieldset(
                 'General',
-                Field('name__icontains', wrapper_class='form-group-sm form-group-condensed'),
                 Div(
+                    Field('name__icontains', wrapper_class='form-group-sm form-group-condensed col-md-8'),
                     Field('base_stars', css_class='select2-stars', wrapper_class='form-group-sm form-group-condensed col-md-4'),
-                    Field('is_awakened', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed col-md-4'),
-                    Field('fusion_food', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed col-md-4'),
+                    css_class='row'
+                ),
+                Div(
+                    Field('is_awakened', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field('fusion_food', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed col-md-6'),
                     css_class='row'
                 ),
                 Div(
@@ -108,10 +124,20 @@ class FilterMonsterForm(forms.Form):
             ),
             Fieldset(
                 'Skills',
-                Field('buffs', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                Field('debuffs', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                Field('effects_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ONE', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed'),
+                Div(
+                    Div(
+                        Field('buffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed'),
+                        Field('debuffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed'),
+                        Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                        css_class='col-md-6'
+                    ),
+                    Div(
+                        Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                        Field('effects_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ONE', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter'),
+                        css_class='col-md-6'
+                    ),
+                    css_class='row'
+                ),
                 css_class='col-md-4'
             ),
             Fieldset(

@@ -2,7 +2,37 @@
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
-<div id="subnav">{% block subnav %}{% endblock subnav %}</div>
+{% block subnav %}
+    <p class="navmenu-brand">My Profile</p>
+    <ul class="nav navmenu-nav">
+        <li {% if view == 'profile' %}class="dropdown open"{% endif %}>
+             <a href="{% url 'herders:profile_default' profile_name=user.username %}">
+                <img src="{% static 'herders/images/icons/monster.png' %}" class="hidden-sm" /> Monsters
+            </a>
+            {% if view == 'profile' and is_owner%}
+            <ul class="dropdown-menu navmenu-nav">
+                <li><a href="#"><span class="glyphicon glyphicon-plus"></span> Add Monster</a></li>
+                <li><a href="#"><span class="fa fa-clock-o"></span> Quick Fodder</a></li>
+            </ul>
+            {% endif %}
+        </li>
+        <li {% if view == 'runes' and is_owner %}class="active"{% endif %}>
+            <a href="{% url 'herders:runes' profile_name=user.username %}">
+                <img src="{% static 'herders/images/icons/rune.png' %}" class="hidden-sm"/> Runes
+            </a>
+        </li>
+        <li {% if view == 'fusion' and is_owner %}class="active"{% endif %}>
+            <a href="{% url 'herders:fusion' profile_name=user.username %}">
+                <img src="{% static 'herders/images/icons/fusion.png' %}" class="hidden-sm" /> Fusion
+            </a>
+        </li>
+        <li {% if view == 'teams' and is_owner %}class="active"{% endif %}>
+            <a href="{% url 'herders:teams' profile_name=user.username %}">
+                <i class="fa fa-users hidden-sm"></i> Teams
+            </a>
+        </li>
+    </ul>
+{% endblock subnav %}
 
 {% block content %}
     {% if not is_owner %}

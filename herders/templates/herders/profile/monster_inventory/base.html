@@ -5,18 +5,19 @@
 {% load utils %}
 
 {% block title %}
-{% if is_owner %}
-My Monsters - {{ block.super }}
-{% else %}
-{{ summoner.user.username }}'s Monsters - {{ block.super }}
-{% endif %}
+    {% if is_owner %}
+        My Monsters - {{ block.super }}
+    {% else %}
+        {{ summoner.user.username }}'s Monsters - {{ block.super }}
+    {% endif %}
 {% endblock %}
 
-{% block subnav %}
-    {% include 'herders/profile/monster_inventory/subnav.html' %}
-{% endblock subnav %}
-
 {% block profile %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {% crispy monster_filter_form %}
+        </div>
+    </div>
     <div id="monster-inventory"></div>
 {% endblock profile %}
 

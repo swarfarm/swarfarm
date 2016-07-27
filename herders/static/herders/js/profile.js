@@ -271,7 +271,7 @@ $('body')
                     columnSelector_mediaquery: false,
                     columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>',
                     stickyHeaders_zIndex : 2,
-                    stickyHeaders_offset: 100
+                    stickyHeaders_offset: 50
                 }
             });
         });

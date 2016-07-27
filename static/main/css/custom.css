@@ -2,12 +2,11 @@ html, body {
     height: 100%;
 }
 body {
-    padding-top: 100px;
+    padding-top: 70px;
 }
 
 #wrap {
     min-height: 100%;
-    padding-top: 20px;
     position: relative;
 }
 
@@ -23,10 +22,17 @@ thead {
 }
 
 .container {
+    width: auto;
     position: relative;
     min-height: 100%;
     overflow: auto;
     padding-bottom: 40px;
+}
+
+@media (min-width: 992px) {
+  body {
+    padding: 0 0 0 305px;
+  }
 }
 
 footer {
@@ -76,7 +82,7 @@ select.short {
     max-width: 300px;
 }
 
-.navbar img, .btn-group img, .select2 img, .select2-results img {
+.navbar img, .navmenu img, .btn-group img, .select2 img, .select2-results img {
     height: 18px;
 }
 
@@ -87,6 +93,18 @@ select.short {
 
 .navbar-right {
   margin-right: 5px;
+}
+
+.subnavmenu-fixed-left {
+    z-index: 1305;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    right: auto;
+    bottom: 0;
+    overflow-y: auto;
+    border-width: 0 1px 0 0;
+    border-radius: 0;
 }
 
 .toggle:before {
@@ -126,9 +144,6 @@ select.short {
     border-bottom-right-radius: 4px;
 }
 
-.container {
-    width: 95%;
-}
 
 .alert ul {
     list-style: none;

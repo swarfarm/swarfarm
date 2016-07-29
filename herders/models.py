@@ -2312,91 +2312,93 @@ class RuneInstance(models.Model):
             )
 
         # Check if stat type was specified that it has value > 0
-        self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+        if self.stars and self.level:
+            self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
-        if self.innate_stat is not None:
-            if self.innate_stat_value is None or self.innate_stat_value <= 0:
-                raise ValidationError({
-                    'innate_stat_value': ValidationError(
-                        'Must be greater than 0.',
-                        code='invalid_rune_innate_stat_value'
-                    )
-                })
-            max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
-            if self.innate_stat_value > max_sub_value:
-                raise ValidationError({
-                    'innate_stat_value': ValidationError(
-                        'Must be less than ' + str(max_sub_value) + '.',
-                        code='invalid_rune_innate_stat_value'
-                    )
-                })
+        if self.stars:
+            if self.innate_stat is not None:
+                if self.innate_stat_value is None or self.innate_stat_value <= 0:
+                    raise ValidationError({
+                        'innate_stat_value': ValidationError(
+                            'Must be greater than 0.',
+                            code='invalid_rune_innate_stat_value'
+                        )
+                    })
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
+                if self.innate_stat_value > max_sub_value:
+                    raise ValidationError({
+                        'innate_stat_value': ValidationError(
+                            'Must be less than ' + str(max_sub_value) + '.',
+                            code='invalid_rune_innate_stat_value'
+                        )
+                    })
 
-        if self.substat_1 is not None:
-            if self.substat_1_value is None or self.substat_1_value <= 0:
-                raise ValidationError({
-                    'substat_1_value': ValidationError(
-                        'Must be greater than 0.',
-                        code='invalid_rune_substat_1_value'
-                    )
-                })
-            max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-            if self.substat_1_value > max_sub_value:
-                raise ValidationError({
-                    'substat_1_value': ValidationError(
-                        'Must be less than ' + str(max_sub_value) + '.',
-                        code='invalid_rune_substat_1_value'
-                    )
-                })
+            if self.substat_1 is not None:
+                if self.substat_1_value is None or self.substat_1_value <= 0:
+                    raise ValidationError({
+                        'substat_1_value': ValidationError(
+                            'Must be greater than 0.',
+                            code='invalid_rune_substat_1_value'
+                        )
+                    })
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_1_value > max_sub_value:
+                    raise ValidationError({
+                        'substat_1_value': ValidationError(
+                            'Must be less than ' + str(max_sub_value) + '.',
+                            code='invalid_rune_substat_1_value'
+                        )
+                    })
 
-        if self.substat_2 is not None:
-            if self.substat_2_value is None or self.substat_2_value <= 0:
-                raise ValidationError({
-                    'substat_2_value': ValidationError(
-                        'Must be greater than 0.',
-                        code='invalid_rune_substat_2_value'
-                    )
-                })
-            max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-            if self.substat_2_value > max_sub_value:
-                raise ValidationError({
-                    'substat_2_value': ValidationError(
-                        'Must be less than ' + str(max_sub_value) + '.',
-                        code='invalid_rune_substat_2_value'
-                    )
-                })
-        if self.substat_3 is not None:
-            if self.substat_3_value is None or self.substat_3_value <= 0:
-                raise ValidationError({
-                    'substat_3_value': ValidationError(
-                        'Must be greater than 0.',
-                        code='invalid_rune_substat_3_value'
-                    )
-                })
-            max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-            if self.substat_3_value > max_sub_value:
-                raise ValidationError({
-                    'substat_3_value': ValidationError(
-                        'Must be less than ' + str(max_sub_value) + '.',
-                        code='invalid_rune_substat_3_value'
-                    )
-                })
+            if self.substat_2 is not None:
+                if self.substat_2_value is None or self.substat_2_value <= 0:
+                    raise ValidationError({
+                        'substat_2_value': ValidationError(
+                            'Must be greater than 0.',
+                            code='invalid_rune_substat_2_value'
+                        )
+                    })
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_2_value > max_sub_value:
+                    raise ValidationError({
+                        'substat_2_value': ValidationError(
+                            'Must be less than ' + str(max_sub_value) + '.',
+                            code='invalid_rune_substat_2_value'
+                        )
+                    })
+            if self.substat_3 is not None:
+                if self.substat_3_value is None or self.substat_3_value <= 0:
+                    raise ValidationError({
+                        'substat_3_value': ValidationError(
+                            'Must be greater than 0.',
+                            code='invalid_rune_substat_3_value'
+                        )
+                    })
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_3_value > max_sub_value:
+                    raise ValidationError({
+                        'substat_3_value': ValidationError(
+                            'Must be less than ' + str(max_sub_value) + '.',
+                            code='invalid_rune_substat_3_value'
+                        )
+                    })
 
-        if self.substat_4 is not None:
-            if self.substat_4_value is None or self.substat_4_value <= 0:
-                raise ValidationError({
-                    'substat_4_value': ValidationError(
-                        'Must be greater than 0.',
-                        code='invalid_rune_substat_4_value'
-                    )
-                })
-            max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-            if self.substat_4_value > max_sub_value:
-                raise ValidationError({
-                    'substat_4_value': ValidationError(
-                        'Must be less than ' + str(max_sub_value) + '.',
-                        code='invalid_rune_substat_4_value'
-                    )
-                })
+            if self.substat_4 is not None:
+                if self.substat_4_value is None or self.substat_4_value <= 0:
+                    raise ValidationError({
+                        'substat_4_value': ValidationError(
+                            'Must be greater than 0.',
+                            code='invalid_rune_substat_4_value'
+                        )
+                    })
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_4_value > max_sub_value:
+                    raise ValidationError({
+                        'substat_4_value': ValidationError(
+                            'Must be less than ' + str(max_sub_value) + '.',
+                            code='invalid_rune_substat_4_value'
+                        )
+                    })
 
         # Check that monster rune is assigned to does not already have rune in that slot
         if self.assigned_to is not None and self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0:

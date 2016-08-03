@@ -2222,7 +2222,7 @@ class RuneInstance(models.Model):
         self.quality = len(filter(None, substat_types))
         self.substat_upgrades_remaining = max(floor((self.quality * 3 - self.level) / 3), 0)
         self.efficiency = self.get_efficiency()
-        self.max_efficiency = self.efficiency + (self.substat_upgrades_remaining * 0.2) / 2.8 * 100
+        self.max_efficiency = self.efficiency + max(ceil((12 - self.level) / 3.0), 0) * 0.2 / 2.8 * 100
 
         # Clean up values that don't have a stat type picked
         if self.innate_stat is None:

@@ -25,8 +25,8 @@ class MonsterFilter(django_filters.FilterSet):
             'leader_skill__attribute': ['exact'],
             'leader_skill__area': ['exact'],
             'skills__skill_effect__pk': ['exact'],
-            'effects_logic': ['exact'],
             'skills__scaling_stats__pk': ['exact'],
+            'effects_logic': ['exact'],
             'fusion_food': ['exact'],
         }
 

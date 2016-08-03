@@ -141,7 +141,7 @@ class FilterMonsterForm(forms.Form):
                 css_class='col-md-4'
             ),
             Fieldset(
-                'Leader Skills',
+                'Leader Skill',
                 Field('leader_skill__attribute', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
                 Field('leader_skill__area', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
                 css_class='col-md-4'

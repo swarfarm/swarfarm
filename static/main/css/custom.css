@@ -2,7 +2,7 @@ html, body {
     height: 100%;
 }
 body {
-    padding-top: 70px;
+    padding-top: 50px;
 }
 
 #wrap {
@@ -27,12 +27,16 @@ thead {
     min-height: 100%;
     overflow: auto;
     padding-bottom: 40px;
+    padding-top: 10px;
 }
 
 @media (min-width: 992px) {
-  body {
-    padding-left: 305px;
-  }
+    body {
+        padding-left: 300px;
+    }
+    .spinner-overlay {
+        left: 300px!important;
+    }
 }
 
 footer {
@@ -944,7 +948,7 @@ button.rune-assign-choice {
 .spinner-overlay {
     background-color: rgba(0,0,0,.5);
     position: fixed;
-    top: 100px;
+    top: 50px;
     right: 0;
     bottom: 0;
     left: 0;

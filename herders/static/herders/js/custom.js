@@ -53,6 +53,7 @@ function skillEffectSelect2Template(option) {
 $.fn.select2.defaults.set("theme", "bootstrap");
 $.fn.select2.defaults.set("width", "100%");
 $.fn.select2.defaults.set("allowClear", true);
+$.fn.select2.defaults.set("escapeMarkup", function(m) {return m;});
 
 function initSelect() {
     $('.select2').select2();

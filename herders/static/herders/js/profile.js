@@ -280,8 +280,10 @@ $('body')
     })
     .on('click', '.reset', function() {
         $('#monster_table').trigger('sortReset');
-        var form = $('#FilterInventoryForm');
-        form[0].reset();
-        form.find('label').toggleClass('active', false);
+        var $form = $('#FilterInventoryForm');
+        $form[0].reset();
+        $form.find('select').each(function() {
+            $(this).val(null).trigger("change");
+        });
         update_monster_inventory();
     });

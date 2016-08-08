@@ -2,71 +2,78 @@
 {% load crispy_forms_tags %}
 
 <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle hidden-md hidden-lg" data-toggle="offcanvas" data-target=".navmenu">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand hidden-sm hidden-md" href="{% url 'news:latest_news' %}">
-            SWARFARM
-        </a>
-    </div>
-    <ul class="nav navbar-nav">
-        {% if user.is_authenticated %}
-            <li {% if view == 'profile' and is_owner %}class="active"{% endif %}>
-                 <a href="{% url 'herders:profile_default' profile_name=user.username %}">
-                    <img src="{% static 'herders/images/icons/monster.png' %}" class="hidden-sm" /> My Profile
-                </a>
-            </li>
-        {% endif %}
-        <li {% if view == 'data' %}class="active"{% endif %}>
-            <a href="{% url 'sw_parser:log_home' %}">
-                <i class="fa fa-database hidden-sm"></i> Data Logs
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-mainnav">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand hidden-sm" href="{% url 'news:latest_news' %}">
+                SWARFARM
             </a>
-        </li>
-        <li {% if view == 'bestiary' %}class="active"{% endif %}>
-            <a href="{% url 'bestiary:home' %}">
-                <span class="fa fa-book hidden-sm"></span> Bestiary
-            </a>
-        </li>
-        {% crispy bestiary_quick_search %}
-    </ul>
-    {% if user.is_authenticated %}
-    <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                {{ user.username }} <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
-                {% if user.is_staff %}
-                    <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-mainnav">
+            <ul class="nav navbar-nav">
+                {% if user.is_authenticated %}
+                    <li {% if view == 'profile' and is_owner %}class="active"{% endif %}>
+                         <a href="{% url 'herders:profile_default' profile_name=user.username %}">
+                            <img src="{% static 'herders/images/icons/monster.png' %}" /> My Profile
+                        </a>
+                    </li>
                 {% endif %}
-                <li><a href="{% url 'sw_parser:home' %}"><span class="fa fa-cloud-download"></span> Import/Export</a></li>
-                <li><a href="{% url 'feedback:index' %}"><span class="fa fa-comments"></span> Feedback</a></li>
-                <li><a href="{% url 'herders:profile_following' profile_name=user.username %}"><span class="fa fa-user"></span> Friends</a></li>
-                <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>
-                <li><a href="{% url 'logout' %}">Log out</a></li>
+                <li {% if view == 'data' %}class="active"{% endif %}>
+                    <a href="{% url 'sw_parser:log_home' %}">
+                        <i class="fa fa-database"></i> Data Logs
+                    </a>
+                </li>
+                <li {% if view == 'bestiary' %}class="active"{% endif %}>
+                    <a href="{% url 'bestiary:home' %}">
+                        <span class="fa fa-book"></span> Bestiary
+                    </a>
+                </li>
+                {% crispy bestiary_quick_search %}
             </ul>
-        </li>
-    </ul>
-    {% else %}
-    {# Show login form and register button #}
-    <ul class="nav navbar-nav navbar-right">
-        <li><a href="{% url 'herders:register' %}" class="navbar-link">Register</a></li>
-    </ul>
-    <form class="navbar-form navbar-right" role="form" action="{% url 'login' %}" method="post">
-        <div class="input-group">
-            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-            <input type="text" class="form-control" placeholder="Username" name="username">
+            {% if user.is_authenticated %}
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        {{ user.username }} <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
+                        {% if user.is_staff %}
+                            <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'sw_parser:home' %}"><span class="fa fa-cloud-download"></span> Import/Export</a></li>
+                        <li><a href="{% url 'feedback:index' %}"><span class="fa fa-comments"></span> Feedback</a></li>
+                        <li><a href="{% url 'herders:profile_following' profile_name=user.username %}"><span class="fa fa-user"></span> Friends</a></li>
+                        <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>
+                        <li><a href="{% url 'logout' %}">Log out</a></li>
+                    </ul>
+                </li>
+            </ul>
+            {% else %}
+            {# Show login form and register button #}
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'herders:register' %}" class="navbar-link">Register</a></li>
+            </ul>
+            <form class="navbar-form navbar-right" role="form" action="{% url 'login' %}" method="post">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    <input type="text" class="form-control" placeholder="Username" name="username">
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                    <input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
+                </div>
+                <button type="submit" class="btn btn-default">Sign in</button>
+                {% csrf_token %}
+            </form>
+            {% endif %}
         </div>
-        <div class="input-group">
-            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-            <input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
-        </div>
-        <button type="submit" class="btn btn-default">Sign in</button>
-        {% csrf_token %}
-    </form>
-    {% endif %}
+    </div>
 </nav>

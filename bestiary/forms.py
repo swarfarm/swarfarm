@@ -19,7 +19,7 @@ class BestiaryQuickSearchForm(forms.Form):
     helper = FormHelper()
     helper.form_action = 'bestiary:home'
     helper.form_method = 'get'
-    helper.form_class = 'navbar-form navbar-left hidden-md hidden-sm'
+    helper.form_class = 'navbar-form navbar-left hidden-sm'
     helper.form_show_labels = False
     helper.layout = Layout(
         FieldWithButtons(

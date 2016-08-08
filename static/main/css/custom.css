@@ -30,12 +30,41 @@ thead {
     padding-top: 10px;
 }
 
+.navmenu-collapsed {
+    z-index: 999;
+    position: fixed;
+    top: 50px;
+    width: 100%;
+    display: block;
+    background: white;
+    border: 1px solid transparent;
+}
+
+.navmenu-collapsed button {
+    float: left;
+    margin-left: 15px;
+}
+
+.navmenu-content {
+    padding-top: 50px;
+}
+
+@media (min-width: 1px) {
+    .navmenu-collapsed .navbar-toggle {
+        display: block !important;
+    }
+}
+
 @media (min-width: 992px) {
-    body {
+    .navmenu-content {
         padding-left: 300px;
+        padding-top: 0;
     }
     .spinner-overlay {
         left: 300px!important;
+    }
+    .navmenu-collapsed {
+        display: none;
     }
 }
 
@@ -100,7 +129,7 @@ select.short {
 }
 
 .subnavmenu-fixed-left {
-    z-index: 1305;
+    z-index: 999;
     position: fixed;
     top: 50px;
     left: 0;

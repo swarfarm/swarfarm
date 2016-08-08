@@ -43,10 +43,8 @@
             <![endif]-->
 
             {% include 'base/main_nav.html' %}
+            {% block subnav %}{% endblock subnav %}
 
-            <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
-                {% block subnav %}{% endblock subnav %}
-            </div>
 
             <div class="container">
                 {% block content %}

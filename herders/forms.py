@@ -555,20 +555,12 @@ class FilterMonsterInstanceForm(forms.Form):
         choices=MonsterTag.objects.values_list('pk', 'name'),
         required=False,
     )
-    stars = forms.MultipleChoiceField(
-        choices=Monster.STAR_CHOICES,
+    stars = forms.CharField(
+        label="Stars",
         required=False,
     )
-    level__gte = forms.IntegerField(
-        label="Min Level",
-        min_value=0,
-        max_value=40,
-        required=False,
-    )
-    level__lte = forms.IntegerField(
-        label="Max Level",
-        min_value=0,
-        max_value=40,
+    level = forms.CharField(
+        label="Level",
         required=False,
     )
     monster__element = forms.MultipleChoiceField(
@@ -634,7 +626,17 @@ class FilterMonsterInstanceForm(forms.Form):
                 'General',
                 Div(
                     Field('monster__name__icontains', wrapper_class='form-group-sm form-group-condensed col-md-8'),
-                    Field('stars', css_class='select2-stars', wrapper_class='form-group-sm form-group-condensed col-md-4'),
+                    Field(
+                        'stars',
+                        data_provide='slider',
+                        data_slider_min='1',
+                        data_slider_max='6',
+                        data_slider_value='[1, 6]',
+                        data_slider_step='1',
+                        data_slider_ticks='[1, 6]',
+                        data_slider_ticks_labels='["1", "6"]',
+                        wrapper_class='form-group-sm form-group-condensed col-md-4'
+                    ),
                     css_class='row'
                 ),
                 Div(
@@ -644,8 +646,17 @@ class FilterMonsterInstanceForm(forms.Form):
                     css_class='row'
                 ),
                 Div(
-                    Field('level__gte', wrapper_class='form-group-sm form-group-condensed col-md-4'),
-                    Field('level__lte', wrapper_class='form-group-sm form-group-condensed col-md-4'),
+                    Field(
+                        'level',
+                        data_provide='slider',
+                        data_slider_min='1',
+                        data_slider_max='40',
+                        data_slider_value='[1, 40]',
+                        data_slider_step='1',
+                        data_slider_ticks='[1, 40]',
+                        data_slider_ticks_labels='["1", "40"]',
+                        wrapper_class='form-group-sm form-group-condensed col-md-4',
+                    ),
                     Field('monster__is_awakened', wrapper_class='form-group-sm form-group-condensed col-md-4'),
                     css_class='row'
                 ),
@@ -689,9 +700,15 @@ class FilterMonsterInstanceForm(forms.Form):
             css_class='row',
         ),
         Div(
-            Submit('apply', 'Apply', css_class='btn-success'),
-            Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
-            css_class='btn-toolbar'
+            Div(
+                Submit('apply', 'Apply', css_class='btn-success '),
+                css_class='btn-group'
+            ),
+            Div(
+                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
+                css_class='btn-group'
+            ),
+            css_class='btn-group btn-group-justified'
         ),
     )
 
@@ -703,6 +720,25 @@ class FilterMonsterInstanceForm(forms.Form):
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
         self.cleaned_data['monster__skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_lv, max_lv] = self.cleaned_data['level'].split(',')
+        except:
+            min_lv = 1
+            max_lv = 40
+
+        self.cleaned_data['level__gte'] = int(min_lv)
+        self.cleaned_data['level__lte'] = int(max_lv)
+
+        try:
+            [min_stars, max_stars] = self.cleaned_data['stars'].split(',')
+        except:
+            min_stars = 1
+            max_stars = 6
+
+        self.cleaned_data['stars__gte'] = int(min_stars)
+        self.cleaned_data['stars__lte'] = int(max_stars)
 
 
 # MonsterPiece forms

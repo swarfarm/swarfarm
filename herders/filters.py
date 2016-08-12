@@ -7,7 +7,6 @@ from .models import MonsterInstance, MonsterTag, RuneInstance
 
 class MonsterInstanceFilter(django_filters.FilterSet):
     tags__pk = django_filters.MultipleChoiceFilter(choices=MonsterTag.objects.values_list('pk', 'name'), conjoined=True)
-    stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
     monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)
@@ -23,7 +22,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
         fields = {
             'monster__name': ['icontains'],
             'tags__pk': ['exact'],
-            'stars': ['exact'],
+            'stars': ['gte', 'lte'],
             'level': ['gte', 'lte'],
             'monster__element': ['exact'],
             'monster__archetype': ['exact'],

@@ -13,11 +13,15 @@
 {% endblock %}
 
 {% block profile %}
-    <div class="panel panel-default">
-        <div class="panel-body">
+    <div class="filters">
+        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#monsterFilterCollapse">
+            <span class="glyphicon glyphicon-filter"></span> Filters
+        </button>
+        <div class="collapse" id="monsterFilterCollapse">
             {% crispy monster_filter_form %}
         </div>
     </div>
+
     <div id="monster-inventory"></div>
 {% endblock profile %}
 

@@ -568,6 +568,34 @@ span.monster-image {
     content: "\e113";
 }
 
+.filters {
+    margin-bottom: 15px;
+}
+
+.filter-header {
+    display: block;
+    cursor: pointer;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.filter-header::after {
+    float: right;
+    font-family: "Glyphicons Halflings";
+    content: "\e114";
+}
+
+.filter-header.collapsed::after {
+    float: right;
+    font-family: "Glyphicons Halflings";
+    content: "\e080";
+}
+
+.slider.slider-horizontal {
+    width: 90%;
+    margin-left: 5%;
+}
+
 .tablesorter-filter-row {
     display: none;
 }

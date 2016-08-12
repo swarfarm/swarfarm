@@ -278,12 +278,25 @@ $('body')
 
         return false;  //cancel default on submit action.
     })
+    .on('shown.bs.collapse', '#monsterFilterCollapse', function() {
+        $("[data-provide='slider']").slider('relayout');
+    })
     .on('click', '.reset', function() {
         $('#monster_table').trigger('sortReset');
         var $form = $('#FilterInventoryForm');
         $form[0].reset();
+
+        //Select2 inputs
         $form.find('select').each(function() {
             $(this).val(null).trigger("change");
+        });
+
+        //Sliders
+        $form.find("[data-provide='slider']").each(function() {
+            var $el = $(this),
+                min = $el.data('slider-min'),
+                max = $el.data('slider-max');
+            $(this).slider('setValue', [min, max]);
         });
         update_monster_inventory();
     });

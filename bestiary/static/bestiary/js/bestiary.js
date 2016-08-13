@@ -132,6 +132,9 @@ $('body')
         $('#id_page').val($(this).data('page'));
         update_inventory();
     })
+    .on('shown.bs.collapse', '#monsterFilterCollapse', function() {
+        $("[data-provide='slider']").slider('relayout');
+    })
     .on('submit', '.ajax-form', function() {
         //Handle add ajax form submit
         var $form = $(this);

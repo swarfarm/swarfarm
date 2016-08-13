@@ -5,7 +5,6 @@ from bestiary.models import Monster, Effect, Skill, LeaderSkill, ScalingStat
 
 
 class MonsterFilter(django_filters.FilterSet):
-    base_stars = django_filters.MultipleChoiceFilter(choices=Monster.STAR_CHOICES)
     element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
@@ -20,7 +19,7 @@ class MonsterFilter(django_filters.FilterSet):
             'name': ['icontains'],
             'element': ['exact'],
             'archetype': ['exact'],
-            'base_stars': ['exact'],
+            'base_stars': ['lte', 'gte'],
             'is_awakened': ['exact'],
             'leader_skill__attribute': ['exact'],
             'leader_skill__area': ['exact'],

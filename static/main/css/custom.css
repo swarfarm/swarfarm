@@ -60,9 +60,6 @@ thead {
         padding-left: 300px;
         padding-top: 0;
     }
-    .spinner-overlay {
-        left: 300px!important;
-    }
     .navmenu-collapsed {
         display: none;
     }
@@ -244,6 +241,10 @@ select.short {
 .navbar-sub .checkbox>label
 {
     color: #e5e5e5;
+}
+
+.bootstrap-switch {
+    margin-left: 15px;
 }
 
 div.profile {

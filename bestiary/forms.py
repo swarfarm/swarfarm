@@ -45,8 +45,8 @@ class FilterMonsterForm(forms.Form):
         max_length=100,
         required=False,
     )
-    base_stars = forms.MultipleChoiceField(
-        choices=Monster.STAR_CHOICES,
+    base_stars = forms.CharField(
+        label='Base Stars',
         required=False,
     )
     element = forms.MultipleChoiceField(
@@ -107,15 +107,19 @@ class FilterMonsterForm(forms.Form):
                 'General',
                 Div(
                     Field('name__icontains', wrapper_class='form-group-sm form-group-condensed col-md-8'),
-                    Field('base_stars', css_class='select2-stars', wrapper_class='form-group-sm form-group-condensed col-md-4'),
-                    css_class='row'
-                ),
-                Div(
-                    Field('is_awakened', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed col-md-6'),
-                    Field('fusion_food', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed col-md-6'),
-                    css_class='row'
-                ),
-                Div(
+                    Field(
+                        'base_stars',
+                        data_provide='slider',
+                        data_slider_min='1',
+                        data_slider_max='6',
+                        data_slider_value='[1, 6]',
+                        data_slider_step='1',
+                        data_slider_ticks='[1, 6]',
+                        data_slider_ticks_labels='["1", "6"]',
+                        wrapper_class='form-group-sm form-group-condensed col-md-4'
+                    ),
+                    Field('is_awakened', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field('fusion_food', wrapper_class='form-group-sm form-group-condensed col-md-6'),
                     Field('element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-md-6'),
                     Field('archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
                     css_class='row',
@@ -125,17 +129,11 @@ class FilterMonsterForm(forms.Form):
             Fieldset(
                 'Skills',
                 Div(
-                    Div(
-                        Field('buffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed'),
-                        Field('debuffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed'),
-                        Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                        css_class='col-md-6'
-                    ),
-                    Div(
-                        Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                        Field('effects_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ONE', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter'),
-                        css_class='col-md-6'
-                    ),
+                    Field('buffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('debuffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('effects_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ONE', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-lg-6'),
                     css_class='row'
                 ),
                 css_class='col-md-4'
@@ -149,9 +147,15 @@ class FilterMonsterForm(forms.Form):
             css_class='row'
         ),
         Div(
-            Submit('apply', 'Apply', css_class='btn-success'),
-            Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
-            css_class='btn-toolbar'
+            Div(
+                Submit('apply', 'Apply', css_class='btn-success'),
+                css_class='btn-group'
+            ),
+            Div(
+                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
+                css_class='btn-group'
+            ),
+            css_class='btn-group btn-group-justified'
         ),
         Field('page', value=1, type='hidden'),
         Field('sort', value='', type='hidden'),
@@ -165,6 +169,16 @@ class FilterMonsterForm(forms.Form):
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
         self.cleaned_data['skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_stars, max_stars] = self.cleaned_data['base_stars'].split(',')
+        except:
+            min_stars = 1
+            max_stars = 6
+
+        self.cleaned_data['base_stars__gte'] = int(min_stars)
+        self.cleaned_data['base_stars__lte'] = int(max_stars)
 
 
 # Superuser edit forms

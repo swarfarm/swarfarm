@@ -7,18 +7,12 @@
 {% block title %}Bestiary - {{ block.super }}{% endblock title %}
 
 {% block content %}
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="btn-toolbar">
-                <button class="btn btn-primary toggle collapsed" data-toggle="collapse" data-target="#dropdownFilters">
-                    Filters
-                </button>
-            </div>
-            <div class="collapse" id="dropdownFilters">
-                <div id="monster-inventory-filters" class="container-fluid">
-                    {% crispy bestiary_filter_form %}
-                </div>
-            </div>
+    <div class="filters">
+        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#monsterFilterCollapse">
+            <span class="glyphicon glyphicon-filter"></span> Filters
+        </button>
+        <div class="collapse" id="monsterFilterCollapse">
+            {% crispy bestiary_filter_form %}
         </div>
     </div>
 

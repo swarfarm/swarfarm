@@ -182,9 +182,23 @@ function SetMaxSkillLevel() {
     skill_level_field.val(maxlv)
 }
 
+function EssenceStorage() {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/storage/'
+    }).done(function(result) {
+        bootbox.dialog({
+            title: 'Essence Inventory',
+            size: 'large',
+            message: result.html
+        });
+    })
+}
+
 $('body').on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('click', '*[data-skill-field]', SetMaxSkillLevel)
     .on('selectChoice', '*[data-set-stars]', SetStars)
+    .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
     .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
     .on('change', '.auto-submit', function() {

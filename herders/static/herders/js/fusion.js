@@ -4,37 +4,22 @@ if (url.match('#')) {
     $('.nav-pills a[href="#' + url.split('#')[1] + '"]').tab('show');
 }
 
-function EssenceStorage() {
-    $.ajax({
-        type: 'get',
-        url: '/profile/' + PROFILE_NAME + '/storage/'
-    }).done(function(result) {
-        bootbox.dialog({
-            title: 'Essence Inventory',
-            size: 'large',
-            message: result.html
-        });
-    })
-}
-
-function updateFusion() {
-    // Get the active tab
-    var fusion = $(".fusion-tabs li.active>a").data('fusion');
-
+function updateFusion(fusion) {
     $.ajax({
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/fusion/' + fusion + '/'
     }).done(function(data) {
-        $('#'+fusion).html(data);
+        $('#fusion').html(data);
     });
 }
 
 $(document).ready(function() {
-    updateFusion();
+    // Find the first fusion link and load it
+    var fusion = $('.fusion-tab').first().data('fusion');
+    updateFusion(fusion);
 });
 
 $('body')
-    .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('submit', '.ajax-form', function() {
         //Handle add ajax form submit
         var $form = $(this);
@@ -54,6 +39,7 @@ $('body')
 
         return false;  //cancel default on submit action.
     })
-    .on('shown.bs.tab', function (e) {
-        updateFusion();
+    .on('click', '.fusion-tab', function () {
+        var fusion = $(this).data('fusion');
+        updateFusion(fusion);
     });

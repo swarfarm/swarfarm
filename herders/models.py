@@ -2027,6 +2027,11 @@ class RuneInstance(models.Model):
     main_stat_value = models.IntegerField()
     innate_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     innate_stat_value = models.IntegerField(null=True, blank=True)
+    substats = ArrayField(models.IntegerField(choices=STAT_CHOICES, null=True, blank=True), size=4, null=True, blank=True)
+    substat_values = ArrayField(models.IntegerField(blank=True, null=True), size=4, null=True, blank=True)
+    substat_crafts = ArrayField(models.IntegerField(choices=CRAFT_CHOICES, blank=True, null=True), size=4, null=True, blank=True)
+
+    # The following substat fields will be removed eventually. Replaced with the arrayfields above.
     substat_1 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     substat_1_value = models.IntegerField(null=True, blank=True)
     substat_1_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
@@ -2207,6 +2212,31 @@ class RuneInstance(models.Model):
         return running_sum / 2.8 * 100
 
     def update_fields(self):
+        # Update substat arrays
+        self.substats = []
+        self.substat_values = []
+        self.substat_crafts = []
+
+        if self.substat_1:
+            self.substats.append(self.substat_1)
+            self.substat_values.append(self.substat_1_value)
+            self.substat_crafts.append(self.substat_1_craft)
+
+        if self.substat_2:
+            self.substats.append(self.substat_2)
+            self.substat_values.append(self.substat_2_value)
+            self.substat_crafts.append(self.substat_2_craft)
+
+        if self.substat_3:
+            self.substats.append(self.substat_3)
+            self.substat_values.append(self.substat_3_value)
+            self.substat_crafts.append(self.substat_3_craft)
+
+        if self.substat_4:
+            self.substats.append(self.substat_4)
+            self.substat_values.append(self.substat_4_value)
+            self.substat_crafts.append(self.substat_4_craft)
+
         # Set flags for filtering
         rune_stat_types = [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]
         self.has_hp = any([i for i in rune_stat_types if i in [self.STAT_HP, self.STAT_HP_PCT]])
@@ -2315,7 +2345,6 @@ class RuneInstance(models.Model):
         if self.stars and self.level:
             self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
-        if self.stars:
             if self.innate_stat is not None:
                 if self.innate_stat_value is None or self.innate_stat_value <= 0:
                     raise ValidationError({

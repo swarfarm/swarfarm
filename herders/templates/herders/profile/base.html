@@ -19,35 +19,25 @@
                  <a href="{% url 'herders:profile_default' profile_name=user.username %}">
                     <img src="{% static 'herders/images/icons/monster.png' %}" /> Monsters
                 </a>
-                {% if view == 'profile' and is_owner%}
-                <ul class="dropdown-menu navmenu-nav">
-                    <li><a href="#" class="monster-add"><span class="glyphicon glyphicon-plus"></span> Add Monster</a></li>
-                    <li><a href="#" class="quick-fodder"><span class="fa fa-clock-o"></span> Quick Fodder</a></li>
-                </ul>
-                {% endif %}
+                {% block monster_menu %}{% endblock monster_menu %}
             </li>
             <li {% if view == 'runes' and is_owner %}class="dropdown open"{% endif %}>
                 <a href="{% url 'herders:runes' profile_name=user.username %}">
                     <img src="{% static 'herders/images/icons/rune.png' %}" /> Runes
                 </a>
-                {% if view == 'runes' and is_owner %}
-                <ul class="dropdown-menu navmenu-nav">
-                    <li><a href="#" class="rune-add"><span class="glyphicon glyphicon-plus"></span> Add Rune</a></li>
-                    <li><a href="#" class="rune-craft-add"><span class="glyphicon glyphicon-plus"></span> Add Grindstone/Gem</li>
-                    <li><a href="#" class="rune-delete-all"><span class="glyphicon glyphicon-minus-sign text-danger"></span> Delete All</a></li>
-                    <li><a href="#" class="rune-unassign-all"><span class="glyphicon glyphicon-remove-sign text-warning"></span> Unassign All</a></li>
-                </ul>
-                {% endif %}
+                {% block rune_menu %}{% endblock rune_menu %}
             </li>
             <li {% if view == 'fusion' and is_owner %}class="active"{% endif %}>
                 <a href="{% url 'herders:fusion' profile_name=user.username %}">
                     <img src="{% static 'herders/images/icons/fusion.png' %}" /> Fusion
                 </a>
+                {% block fusion_menu %}{% endblock fusion_menu %}
             </li>
             <li {% if view == 'teams' and is_owner %}class="active"{% endif %}>
                 <a href="{% url 'herders:teams' profile_name=user.username %}">
                     <i class="fa fa-users"></i> Teams
                 </a>
+                {% block team_menu %}{% endblock team_menu %}
             </li>
         </ul>
     </div>

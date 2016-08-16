@@ -12,6 +12,15 @@
     {% endif %}
 {% endblock %}
 
+{% block monster_menu %}
+    {% if is_owner%}
+        <ul class="dropdown-menu navmenu-nav">
+            <li><a href="#" class="monster-add"><span class="glyphicon glyphicon-plus"></span> Add Monster</a></li>
+            <li><a href="#" class="quick-fodder"><span class="fa fa-clock-o"></span> Quick Fodder</a></li>
+        </ul>
+    {% endif %}
+{% endblock monster_menu %}
+
 {% block profile %}
     <div class="filters">
         <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#monsterFilterCollapse">

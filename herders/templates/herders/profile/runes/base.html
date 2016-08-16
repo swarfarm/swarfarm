@@ -12,6 +12,17 @@
     {% endif %}
 {% endblock %}
 
+{% block rune_menu %}
+    {% if is_owner %}
+        <ul class="dropdown-menu navmenu-nav">
+            <li><a href="#" class="rune-add"><span class="glyphicon glyphicon-plus"></span> Add Rune</a></li>
+            <li><a href="#" class="rune-craft-add"><span class="glyphicon glyphicon-plus"></span> Add Grindstone/Gem</li>
+            <li><a href="#" class="rune-delete-all"><span class="glyphicon glyphicon-minus-sign text-danger"></span> Delete All</a></li>
+            <li><a href="#" class="rune-unassign-all"><span class="glyphicon glyphicon-remove-sign text-warning"></span> Unassign All</a></li>
+        </ul>
+    {% endif %}
+{% endblock rune_menu %}
+
 {% block profile %}
     <div class="filters">
         <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#runeFilterCollapse">

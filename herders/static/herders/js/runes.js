@@ -289,7 +289,7 @@ $('body')
                 widgetOptions: {
                     filter_reset: '.reset',
                     stickyHeaders_zIndex : 2,
-                    stickyHeaders_offset: 100
+                    stickyHeaders_offset: 50
                 }
             });
             $('[data-toggle="tooltip"]').tooltip();

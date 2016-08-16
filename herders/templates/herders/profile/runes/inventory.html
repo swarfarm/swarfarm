@@ -29,25 +29,33 @@
             <span class="pull-right">{{ filtered_count }} of {{ total_count }} rune{{ total_count|pluralize }}</span>
         </div>
         <div class="panel-body">
-            {% for groupname, runes in runes.iteritems %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <strong>{{ groupname }}</strong>
-                    <span class="pull-right">{% with num_runes=runes|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
-                </div>
-                <div class="panel-body">
-                    <div class="flex">
-                    {% for rune in runes %}
-                        <div data-rune-instance="{{ rune.pk.hex }}">
-                            {% include 'herders/profile/runes/rune_panel_fragment.html' with rune=rune profile_name=profile_name is_owner=is_owner only %}
+            {% if not total_count %}
+                <div class="alert alert-warning">You don't have any runes!</div>
+            {% elif not filtered_count %}
+                <div class="alert alert-warning">All runes were filtered out.</div>
+            {% else %}
+                {% for groupname, runes_grouped in runes.iteritems %}
+                    {% if runes_grouped|length %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <strong>{{ groupname }}</strong>
+                                <span class="pull-right">{% with num_runes=runes_grouped|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
+                            </div>
+                            <div class="panel-body">
+                                <div class="flex">
+                                {% for rune in runes_grouped %}
+                                    <div data-rune-instance="{{ rune.pk.hex }}">
+                                        {% include 'herders/profile/runes/rune_panel_fragment.html' with rune=rune profile_name=profile_name is_owner=is_owner only %}
+                                    </div>
+                                {% empty %}
+                                    <div class="alert alert-warning">Your search returned no results or you have no runes!</div>
+                                {% endfor %}
+                                </div>
+                            </div>
                         </div>
-                    {% empty %}
-                        <div class="alert alert-warning">Your search returned no results or you have no runes!</div>
-                    {% endfor %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 </div>

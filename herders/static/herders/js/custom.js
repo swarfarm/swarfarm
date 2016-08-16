@@ -84,8 +84,8 @@ bootbox.setDefaults({
 });
 
 PNotify.prototype.options.styling = "bootstrap3";
-PNotify.prototype.options.stack.firstpos1 = 110;
-PNotify.prototype.options.stack.spacing1 = 15;
+PNotify.prototype.options.stack.firstpos1 = 60;
+PNotify.prototype.options.stack.spacing1 = 10;
 
 
 function slugify(text)

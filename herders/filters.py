@@ -81,6 +81,8 @@ class RuneInstanceFilter(django_filters.FilterSet):
     type = django_filters.MultipleChoiceFilter(choices=RuneInstance.TYPE_CHOICES)
     main_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     innate_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
+    substats = django_filters.MethodFilter()
+    substat_logic = django_filters.MethodFilter()
     assigned_to = django_filters.MethodFilter(action='filter_assigned_to')
 
     class Meta:
@@ -95,6 +97,21 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'innate_stat': ['exact'],
             'marked_for_sale': ['exact'],
         }
+
+    def filter_substats(self, queryset, value):
+        any_substat = self.form.cleaned_data.get('substat_logic', False)
+
+        if len(value):
+            if any_substat:
+                return queryset.filter(substats__overlap=value)
+            else:
+                return queryset.filter(substats__contains=value)
+        else:
+            return queryset
+
+    def filter_substat_logic(self, queryset, value):
+        # This field is just used to alter the logic of substat filter
+        return queryset
 
     def filter_assigned_to(self, queryset, value):
         return queryset.filter(assigned_to__isnull=not value)

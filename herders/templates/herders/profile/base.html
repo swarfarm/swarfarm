@@ -3,6 +3,8 @@
 {% load crispy_forms_tags %}
 
 {% block subnav %}
+    {% static 'herders/images/' as img_url_prefix %}
+
     <div class="navbar navbar-default navmenu-collapsed">
         <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
             <span class="icon-bar"></span>
@@ -24,10 +26,18 @@
                 </ul>
                 {% endif %}
             </li>
-            <li {% if view == 'runes' and is_owner %}class="active"{% endif %}>
+            <li {% if view == 'runes' and is_owner %}class="dropdown open"{% endif %}>
                 <a href="{% url 'herders:runes' profile_name=user.username %}">
                     <img src="{% static 'herders/images/icons/rune.png' %}" /> Runes
                 </a>
+                {% if view == 'runes' and is_owner %}
+                <ul class="dropdown-menu navmenu-nav">
+                    <li><a href="#"><span class="glyphicon glyphicon-plus"></span> Add Rune</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-plus"></span> Add Grindstone/Gem</li>
+                    <li><a href="#"><span class="glyphicon glyphicon-minus-sign text-danger"></span> Delete All</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-remove-sign text-warning"></span> Unassign All</a></li>
+                </ul>
+                {% endif %}
             </li>
             <li {% if view == 'fusion' and is_owner %}class="active"{% endif %}>
                 <a href="{% url 'herders:fusion' profile_name=user.username %}">

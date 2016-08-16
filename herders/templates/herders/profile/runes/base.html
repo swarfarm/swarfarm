@@ -5,46 +5,23 @@
 {% load utils %}
 
 {% block title %}
-{% if is_owner %}
-My Runes - {{ block.super }}
-{% else %}
-{{ summoner.user.username }}'s Runes - {{ block.super }}
-{% endif %}
+    {% if is_owner %}
+        My Runes - {{ block.super }}
+    {% else %}
+        {{ summoner.user.username }}'s Runes - {{ block.super }}
+    {% endif %}
 {% endblock %}
 
-{% block subnav %}
-    {% static 'herders/images/' as img_url_prefix %}
-
-    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
-        <div class="container-fluid">
-            <button class="btn btn-primary navbar-btn toggle collapsed" data-toggle="collapse" data-target="#dropdownFilters">
-                Filters
-            </button>
-            <button class="btn btn-danger reset">Reset Filters</button>
-            {% if is_owner %}
-            <button class="btn btn-default navbar-btn rune-add">
-                <span class="glyphicon glyphicon-plus"></span> Add Rune
-            </button>
-                <button class="btn btn-default navbar-btn rune-craft-add">
-                <span class="glyphicon glyphicon-plus"></span> Add <img src="{{ img_url_prefix }}runes/grindstone_legend.png" /> <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" />
-            </button>
-            <button class="btn btn-danger navbar-btn pull-right rune-delete-all">
-                <span class="glyphicon glyphicon-minus-sign"></span> Delete All
-            </button>
-            <button class="btn btn-warning navbar-btn pull-right rune-unassign-all">
-                <span class="glyphicon glyphicon-remove-sign"></span> Unassign All
-            </button>
-            {% endif %}
-        </div>
-        <div class="collapse" id="dropdownFilters">
-            <div id="rune-inventory-filters" class="container-fluid">
-                {% crispy rune_filter_form %}
-            </div>
-        </div>
-    </nav>
-{% endblock subnav %}
-
 {% block profile %}
+    <div class="filters">
+        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#runeFilterCollapse">
+            <span class="glyphicon glyphicon-filter"></span> Filters
+        </button>
+        <div class="collapse" id="runeFilterCollapse">
+            {% crispy rune_filter_form %}
+        </div>
+    </div>
+
     <div id="rune-inventory"></div>
 {% endblock profile %}
 

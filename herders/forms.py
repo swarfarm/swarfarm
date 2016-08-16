@@ -1061,129 +1061,122 @@ class AssignRuneForm(forms.Form):
 class FilterRuneForm(forms.Form):
     type = forms.MultipleChoiceField(
         choices=RuneInstance.TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
         required=False,
     )
     main_stat = forms.MultipleChoiceField(
         choices=RuneInstance.STAT_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
         required=False,
     )
-    level__gte = forms.IntegerField(
-        label="Minimum Level",
-        min_value=0,
-        max_value=15,
+    innate_stat = forms.MultipleChoiceField(
+        choices=RuneInstance.STAT_CHOICES,
         required=False,
     )
-    level__lte = forms.IntegerField(
-        label="Maximum Level",
-        min_value=0,
-        max_value=15,
+    substats = forms.MultipleChoiceField(
+        choices=RuneInstance.STAT_CHOICES,
         required=False,
     )
-    stars__gte = forms.IntegerField(
-        label="Minimum Stars",
+    substat_logic = forms.BooleanField(
+        label='',
+        required=False,
+    )
+    level = forms.CharField(
+        label='Level',
+        required=False,
+    )
+    stars = forms.CharField(
+        label='Stars',
         required=False
     )
-    stars__lte = forms.IntegerField(
-        label="Maximum Stars",
-        required=False
-    )
-    slot = forms.IntegerField(
-        min_value=1,
-        max_value=6,
-        required=False
+    slot = forms.MultipleChoiceField(
+        choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)),
+        required=False,
     )
     assigned_to = forms.NullBooleanField(
-        label="Is Assigned",
+        label='Is Assigned',
         required=False,
         widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
     )
     marked_for_sale = forms.NullBooleanField(
-        label="Marked for Sale",
+        label='Marked for Sale',
         required=False,
         widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))),
     )
-
-    has_hp = forms.NullBooleanField(label='Has HP', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_atk = forms.NullBooleanField(label='Has ATK', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_def = forms.NullBooleanField(label='Has DEF', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_crit_rate = forms.NullBooleanField(label='Has CRI Rate', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_crit_dmg = forms.NullBooleanField(label='Has CRI Dmg', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_speed = forms.NullBooleanField(label='Has SPD', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_resist = forms.NullBooleanField(label='Has RES', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_accuracy = forms.NullBooleanField(label='Has ACC', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
 
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_id = 'FilterInventoryForm'
     helper.layout = Layout(
         Div(
-            Div(
-                Field('main_stat', css_class='auto-submit'),
-                css_class='col-sm-1',
+            Field('type', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Field('slot', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Field('main_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Field(
+                'stars',
+                data_provide='slider',
+                data_slider_min='1',
+                data_slider_max='6',
+                data_slider_value='[1, 6]',
+                data_slider_step='1',
+                data_slider_ticks='[1, 6]',
+                data_slider_ticks_labels='["1", "6"]',
+                wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'
             ),
-            Div(
-                Div(
-                    Div(
-                        Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select_notext.html'),
-                        css_class='col-sm-12',
-                    ),
-                    css_class='row'
-                ),
-                Div(
-                    Div(
-                        Div(
-                            Field('slot', css_class='auto-submit'),
-                            css_class='pull-left condensed',
-                        ),
-                        Div(
-                            Field('assigned_to', css_class='auto-submit'),
-                            css_class='pull-left condensed',
-                        ),
-                        Div(
-                            Field('level__gte', css_class='auto-submit'),
-                            css_class='pull-left condensed',
-                        ),
-                        Div(
-                            Field('level__lte', css_class='auto-submit'),
-                            css_class='pull-left condensed',
-                        ),
-                        Div(
-                            Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                            css_class='pull-left condensed'
-                        ),
-                        Div(
-                            Field('stars__lte', css_class='rating hidden', value=6, data_start=0, data_stop=6, data_stars=6),
-                            css_class='pull-left condensed'
-                        ),
-                        css_class='col-sm-12',
-                    ),
-                    css_class='row',
-                ),
-                Div(
-                    Div(
-                        Div(Field('has_hp', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_atk', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_def', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_crit_rate', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_crit_dmg', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_speed', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_resist', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_accuracy', css_class='auto-submit'), css_class='pull-left condensed'),
-                        css_class='col-sm-12',
-                    ),
-                    css_class='row',
-                ),
-                Div(
-                    Field('marked_for_sale', css_class='auto-submit', wrapper_class='col-sm-1'),
-                    css_class='row'
-                ),
-                css_class='col-sm-10',
+            Field(
+                'level',
+                data_provide='slider',
+                data_slider_min='0',
+                data_slider_max='15',
+                data_slider_value='[0, 15]',
+                data_slider_step='1',
+                data_slider_ticks='[0, 15]',
+                data_slider_ticks_labels='["0", "15"]',
+                wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'
             ),
+            Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Div(
+                Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-8'),
+                Field('substat_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ALL', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-sm-4'),
+                css_class='row col-md-4 col-sm-4'
+            ),
+            Field('assigned_to', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
             css_class='row',
         ),
+        Div(
+            Div(
+                Submit('apply', 'Apply', css_class='btn-success '),
+                css_class='btn-group'
+            ),
+            Div(
+                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
+                css_class='btn-group'
+            ),
+            css_class='btn-group btn-group-justified'
+        ),
     )
+
+    def clean(self):
+        super(FilterRuneForm, self).clean()
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_lv, max_lv] = self.cleaned_data['level'].split(',')
+        except:
+            min_lv = 0
+            max_lv = 15
+
+        self.cleaned_data['level__gte'] = int(min_lv)
+        self.cleaned_data['level__lte'] = int(max_lv)
+
+        try:
+            [min_stars, max_stars] = self.cleaned_data['stars'].split(',')
+        except:
+            min_stars = 1
+            max_stars = 6
+
+        self.cleaned_data['stars__gte'] = int(min_stars)
+        self.cleaned_data['stars__lte'] = int(max_stars)
+
 
 
 class ImportRuneForm(forms.Form):

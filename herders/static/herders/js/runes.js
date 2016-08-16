@@ -7,12 +7,8 @@ function update_rune_inventory() {
     $('#FilterInventoryForm').submit();
 }
 
-$('.container').click(function() {
-    $('.collapse.in').collapse('hide');
-});
-
 $('body')
-    .on('click', ':submit', function() {
+    .on('click', '#FilterInventoryForm :submit', function() {
         var $form = $(this).closest('form');
         $('<input>').attr({
             type: 'hidden',
@@ -301,11 +297,27 @@ $('body')
 
         return false;  //cancel default on submit action.
     })
+    .on('shown.bs.collapse', '#runeFilterCollapse', function() {
+        $("[data-provide='slider']").slider('relayout');
+    })
     .on('click', '.reset', function() {
         $('#runeInventoryTable').trigger('sortReset');
-        var form = $('#FilterInventoryForm');
-        form[0].reset();
-        form.find('label').toggleClass('active', false);
+        var $form = $('#FilterInventoryForm');
+        $form[0].reset();
+
+        //Select2 inputs
+        $form.find('select').each(function() {
+            $(this).val(null).trigger("change");
+        });
+
+        //Sliders
+        $form.find("[data-provide='slider']").each(function() {
+            var $el = $(this),
+                min = $el.data('slider-min'),
+                max = $el.data('slider-max');
+            $(this).slider('setValue', [min, max]);
+        });
+
         update_rune_inventory();
     })
     .on('click', '.box-group-mode', function() {

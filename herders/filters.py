@@ -80,6 +80,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
 class RuneInstanceFilter(django_filters.FilterSet):
     type = django_filters.MultipleChoiceFilter(choices=RuneInstance.TYPE_CHOICES)
     main_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
+    innate_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     assigned_to = django_filters.MethodFilter(action='filter_assigned_to')
 
     class Meta:
@@ -91,14 +92,7 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'slot': ['exact'],
             'assigned_to': ['exact'],
             'main_stat': ['exact'],
-            'has_hp': ['exact'],
-            'has_def': ['exact'],
-            'has_atk': ['exact'],
-            'has_crit_rate': ['exact'],
-            'has_crit_dmg': ['exact'],
-            'has_speed': ['exact'],
-            'has_resist': ['exact'],
-            'has_accuracy': ['exact'],
+            'innate_stat': ['exact'],
             'marked_for_sale': ['exact'],
         }
 

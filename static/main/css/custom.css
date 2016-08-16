@@ -126,7 +126,7 @@ select.short {
 }
 
 .subnavmenu-fixed-left {
-    z-index: 999;
+    z-index: 1001;
     position: fixed;
     top: 50px;
     left: 0;

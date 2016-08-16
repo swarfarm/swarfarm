@@ -195,7 +195,11 @@ function EssenceStorage() {
     })
 }
 
-$('body').on('click', '*[data-set-max-level]', SetMaxLevel)
+$('body')
+    .on('click', '.canvas-slid a', function() {
+        $('.navmenu').offcanvas('hide');
+    })
+    .on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('click', '*[data-skill-field]', SetMaxSkillLevel)
     .on('selectChoice', '*[data-set-stars]', SetStars)
     .on('click', '.essence-storage', function() { EssenceStorage() })

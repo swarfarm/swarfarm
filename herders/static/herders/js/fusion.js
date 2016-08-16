@@ -5,13 +5,13 @@ if (url.match('#')) {
 }
 
 function updateFusion(fusion) {
-    ToggleLoading($('body'), true);
+    ToggleLoading($('.navmenu-content'), true);
     $.ajax({
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/fusion/' + fusion + '/'
     }).done(function(data) {
         $('#fusion').html(data);
-        ToggleLoading($('body'), false);
+        ToggleLoading($('.navmenu-content'), false);
     });
 }
 

@@ -1,24 +1,29 @@
 // Check for hash pointing at specific fusion product
 var url = document.location.toString();
-if (url.match('#')) {
-    $('.nav-pills a[href="#' + url.split('#')[1] + '"]').tab('show');
-}
+var selected_fusion;
 
-function updateFusion(fusion) {
+function updateFusion() {
     ToggleLoading($('.navmenu-content'), true);
     $.ajax({
         type: 'get',
-        url: '/profile/' + PROFILE_NAME + '/fusion/' + fusion + '/'
+        url: '/profile/' + PROFILE_NAME + '/fusion/' + selected_fusion + '/'
     }).done(function(data) {
         $('#fusion').html(data);
         ToggleLoading($('.navmenu-content'), false);
+        document.location.hash = "#" + selected_fusion;
     });
 }
 
 $(document).ready(function() {
-    // Find the first fusion link and load it
-    var fusion = $('.fusion-tab').first().data('fusion');
-    updateFusion(fusion);
+    if (document.location.hash) {
+        selected_fusion = document.location.hash.replace('#', '');
+    }
+    else {
+        // Load the first one
+        selected_fusion = $('.fusion-tab').first().data('fusion');
+    }
+
+    updateFusion();
 });
 
 $('body')
@@ -42,6 +47,6 @@ $('body')
         return false;  //cancel default on submit action.
     })
     .on('click', '.fusion-tab', function () {
-        var fusion = $(this).data('fusion');
-        updateFusion(fusion);
+        selected_fusion = $(this).data('fusion');
+        updateFusion();
     });

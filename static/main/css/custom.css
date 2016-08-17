@@ -65,6 +65,10 @@ thead {
     }
 }
 
+.navmenu a {
+    cursor: pointer;
+}
+
 footer {
     position: relative;
 	margin-top: -40px;

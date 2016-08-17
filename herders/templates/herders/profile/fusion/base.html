@@ -15,7 +15,7 @@
         <ul class="dropdown-menu navmenu-nav">
             {% for fusion in fusions %}
             <li>
-                <a href="#{{ fusion.product.bestiary_slug }}" class="fusion-tab" aria-controls="{{ fusion.product.bestiary_slug }}" role="tab" data-toggle="tab" data-fusion="{{ fusion.product.bestiary_slug }}">
+                <a class="fusion-tab" data-fusion="{{ fusion.product.bestiary_slug }}">
                     <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-inline"/>
                     {{ fusion.product.base_stars }}<span class="glyphicon glyphicon-star"></span> {{ fusion.product.name }}{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}
                 </a>

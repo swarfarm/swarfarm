@@ -1072,6 +1072,7 @@ class FilterRuneForm(forms.Form):
         required=False,
     )
     substats = forms.MultipleChoiceField(
+        label="""Substats <span class="glyphicon glyphicon-info-sign" data-toggle="popover" data-trigger="hover" title="Important" data-container="body" data-content="If this filter is not working properly, your runes need to be resaved to update a few new data fields. If you don't see the resave link in the menu, you're good to go."></span>""",
         choices=RuneInstance.STAT_CHOICES,
         required=False,
     )
@@ -1176,7 +1177,6 @@ class FilterRuneForm(forms.Form):
 
         self.cleaned_data['stars__gte'] = int(min_stars)
         self.cleaned_data['stars__lte'] = int(max_stars)
-
 
 
 class ImportRuneForm(forms.Form):

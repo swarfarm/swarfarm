@@ -37,6 +37,10 @@ $('body')
             }
             $form.replaceWith(result.html);
             $('.rating').rating();
+            $('[data-toggle="popover"]').popover({
+                html:true,
+                viewport: {selector: 'body', padding: 2}
+            });
         });
 
         return false;  //cancel default on submit action.
@@ -193,6 +197,26 @@ $('body')
                 }
             }
         })
+    })
+    .on('click', '.rune-resave-all', function() {
+        bootbox.confirm(
+            'The data structure for saving runes was changed and your runes need to be updated so the filters work properly. Click OK to start saving the runes. This process may take a minute or two depending on how many runes you own.',
+            function(result) {
+                if (result) {
+                    ToggleLoading($('body'), true);
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/runes/resave/all/',
+                        global: false
+                    }).done(function() {
+                        location.reload();
+                    }).fail(function() {
+                        alert("Something went wrong! Server admin has been notified.");
+                        ToggleLoading($('body'), false);
+                    })
+                }
+            }
+        )
     })
     .on('click', '.rune-import', function() {
         $.ajax({

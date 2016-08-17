@@ -1595,6 +1595,7 @@ def runes(request, profile_name):
         'profile_name': profile_name,
         'summoner': summoner,
         'is_owner': is_owner,
+        'old_rune_count': RuneInstance.objects.filter(owner=summoner, substats__isnull=True).count(),
         'rune_filter_form': filter_form,
     }
 
@@ -1992,6 +1993,26 @@ def rune_delete_all(request, profile_name):
     else:
         return HttpResponseForbidden()
 
+
+@login_required
+def rune_resave_all(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        raise Http404
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        for r in RuneInstance.objects.filter(owner=summoner, substats__isnull=True):
+            r.save()
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
 
 @login_required
 def rune_craft_add(request, profile_name):

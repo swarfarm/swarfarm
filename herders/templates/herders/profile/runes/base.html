@@ -15,10 +15,11 @@
 {% block rune_menu %}
     {% if is_owner %}
         <ul class="dropdown-menu navmenu-nav">
-            <li><a href="#" class="rune-add"><span class="glyphicon glyphicon-plus"></span> Add Rune</a></li>
-            <li><a href="#" class="rune-craft-add"><span class="glyphicon glyphicon-plus"></span> Add Grindstone/Gem</li>
-            <li><a href="#" class="rune-delete-all"><span class="glyphicon glyphicon-minus-sign text-danger"></span> Delete All</a></li>
-            <li><a href="#" class="rune-unassign-all"><span class="glyphicon glyphicon-remove-sign text-warning"></span> Unassign All</a></li>
+            <li><a class="rune-add"><span class="glyphicon glyphicon-plus"></span> Add Rune</a></li>
+            <li><a class="rune-craft-add"><span class="glyphicon glyphicon-plus"></span> Add Grindstone/Gem</li>
+            <li><a class="rune-delete-all"><span class="glyphicon glyphicon-minus-sign text-danger"></span> Delete All</a></li>
+            <li><a class="rune-unassign-all"><span class="glyphicon glyphicon-remove-sign text-warning"></span> Unassign All</a></li>
+            {% if old_rune_count %}<li><a class="rune-resave-all"><span class="glyphicon glyphicon-floppy-disk"></span> Resave All</a></li>{% endif %}
         </ul>
     {% endif %}
 {% endblock rune_menu %}

@@ -16,25 +16,25 @@
         <p class="navmenu-brand">My Profile</p>
         <ul class="nav navmenu-nav">
             <li {% if view == 'profile' %}class="dropdown open"{% endif %}>
-                 <a href="{% url 'herders:profile_default' profile_name=user.username %}">
+                 <a href="{% url 'herders:profile_default' profile_name=profile_name %}">
                     <img src="{% static 'herders/images/icons/monster.png' %}" /> Monsters
                 </a>
                 {% block monster_menu %}{% endblock monster_menu %}
             </li>
             <li {% if view == 'runes' and is_owner %}class="dropdown open"{% endif %}>
-                <a href="{% url 'herders:runes' profile_name=user.username %}">
+                <a href="{% url 'herders:runes' profile_name=profile_name %}">
                     <img src="{% static 'herders/images/icons/rune.png' %}" /> Runes
                 </a>
                 {% block rune_menu %}{% endblock rune_menu %}
             </li>
             <li {% if view == 'fusion' and is_owner %}class="dropdown open"{% endif %}>
-                <a href="{% url 'herders:fusion' profile_name=user.username %}">
+                <a href="{% url 'herders:fusion' profile_name=profile_name %}">
                     <img src="{% static 'herders/images/icons/fusion.png' %}" /> Fusion
                 </a>
                 {% block fusion_menu %}{% endblock fusion_menu %}
             </li>
             <li {% if view == 'teams' and is_owner %}class="dropdown open"{% endif %}>
-                <a href="{% url 'herders:teams' profile_name=user.username %}">
+                <a href="{% url 'herders:teams' profile_name=profile_name %}">
                     <i class="fa fa-users"></i> Teams
                 </a>
                 {% block team_menu %}{% endblock team_menu %}

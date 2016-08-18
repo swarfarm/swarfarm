@@ -79,6 +79,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
 
 class RuneInstanceFilter(django_filters.FilterSet):
     type = django_filters.MultipleChoiceFilter(choices=RuneInstance.TYPE_CHOICES)
+    slot = django_filters.MultipleChoiceFilter(choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)))
     main_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     innate_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     substats = django_filters.MethodFilter()

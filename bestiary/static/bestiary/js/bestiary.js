@@ -95,7 +95,7 @@ $('body')
                     columnSelector_mediaquery: false,
                     columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>',
                     stickyHeaders_zIndex : 2,
-                    stickyHeaders_offset: 100
+                    stickyHeaders_offset: 50
                 }
             })
             .bind('sortBegin', function(e, table) {
@@ -119,16 +119,21 @@ $('body')
     })
     .on('click', '.reset', function() {
         $('#monster_table').trigger('sortReset');
-        var form = $('#FilterBestiaryForm');
-        form[0].reset();
+        var $form = $('#FilterBestiaryForm');
+        $form[0].reset();
+        $form.find('select').each(function() {
+            $(this).val(null).trigger("change");
+        });
         $('#id_sort').val('');
-        form.find('label').toggleClass('active', false);
 
         update_inventory();
     })
     .on('click', '.pager-btn', function() {
         $('#id_page').val($(this).data('page'));
         update_inventory();
+    })
+    .on('shown.bs.collapse', '#monsterFilterCollapse', function() {
+        $("[data-provide='slider']").slider('relayout');
     })
     .on('submit', '.ajax-form', function() {
         //Handle add ajax form submit

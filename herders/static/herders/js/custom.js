@@ -9,9 +9,67 @@ $(function () {
         html:true,
         viewport: {selector: 'body', padding: 2}
     });
+
     $('.rating').rating();
+    $('[data-toggle="toggle"]').bootstrapSwitch();
+
     DisplayMessages();
+    initSelect();
 });
+
+// Various select2 templates for the types of autocompletes
+function starsSelect2Template(option) {
+    if (option.id) {
+        return $('<span>' + option.text + '<span class="glyphicon glyphicon-star"></span></span>');
+    }
+    else {
+        return option.text;
+    }
+}
+
+function elementSelect2Template(option) {
+    if (option.id) {
+        return $('<span><img src="/static/herders/images/elements/' + option.text.toLowerCase() + '.png" /> ' + option.text + '</span>');
+    }
+    else {
+        return option.text;
+    }
+}
+
+function skillEffectSelect2Template(option) {
+    if (option.id) {
+        var vals = option.text.split(';'),
+            img = vals[0],
+            name = vals[1];
+
+        return $('<span><img src="' + img + '" /> ' + name + '</span>');
+    }
+    else {
+        return option.text;
+    }
+}
+
+// Init all the select2s with the appropriate templates
+$.fn.select2.defaults.set("theme", "bootstrap");
+$.fn.select2.defaults.set("width", "100%");
+$.fn.select2.defaults.set("allowClear", true);
+$.fn.select2.defaults.set("escapeMarkup", function(m) {return m;});
+
+function initSelect() {
+    $('.select2').select2();
+    $('.select2-stars').select2({
+        templateSelection: starsSelect2Template,
+        templateResult: starsSelect2Template
+    });
+    $('.select2-element').select2({
+        templateSelection: elementSelect2Template,
+        templateResult: elementSelect2Template
+    });
+    $('.select2-effect').select2({
+        templateSelection: skillEffectSelect2Template,
+        templateResult: skillEffectSelect2Template
+    });
+}
 
 $(document).ajaxComplete(function() {
     DisplayMessages();
@@ -26,8 +84,8 @@ bootbox.setDefaults({
 });
 
 PNotify.prototype.options.styling = "bootstrap3";
-PNotify.prototype.options.stack.firstpos1 = 110;
-PNotify.prototype.options.stack.spacing1 = 15;
+PNotify.prototype.options.stack.firstpos1 = 60;
+PNotify.prototype.options.stack.spacing1 = 10;
 
 
 function slugify(text)
@@ -124,9 +182,27 @@ function SetMaxSkillLevel() {
     skill_level_field.val(maxlv)
 }
 
-$('body').on('click', '*[data-set-max-level]', SetMaxLevel)
+function EssenceStorage() {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/storage/'
+    }).done(function(result) {
+        bootbox.dialog({
+            title: 'Essence Inventory',
+            size: 'large',
+            message: result.html
+        });
+    })
+}
+
+$('body')
+    .on('click', '.canvas-slid a', function() {
+        $('.navmenu').offcanvas('hide');
+    })
+    .on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('click', '*[data-skill-field]', SetMaxSkillLevel)
     .on('selectChoice', '*[data-set-stars]', SetStars)
+    .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
     .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
     .on('change', '.auto-submit', function() {

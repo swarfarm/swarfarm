@@ -5,18 +5,32 @@
 {% load utils %}
 
 {% block title %}
-{% if is_owner %}
-My Monsters - {{ block.super }}
-{% else %}
-{{ summoner.user.username }}'s Monsters - {{ block.super }}
-{% endif %}
+    {% if is_owner %}
+        My Monsters - {{ block.super }}
+    {% else %}
+        {{ summoner.user.username }}'s Monsters - {{ block.super }}
+    {% endif %}
 {% endblock %}
 
-{% block subnav %}
-    {% include 'herders/profile/monster_inventory/subnav.html' %}
-{% endblock subnav %}
+{% block monster_menu %}
+    {% if is_owner%}
+        <ul class="dropdown-menu navmenu-nav">
+            <li><a class="monster-add"><span class="glyphicon glyphicon-plus"></span> Add Monster</a></li>
+            <li><a class="quick-fodder-menu"><span class="fa fa-clock-o"></span> Quick Fodder</a></li>
+        </ul>
+    {% endif %}
+{% endblock monster_menu %}
 
 {% block profile %}
+    <div class="filters">
+        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#monsterFilterCollapse">
+            <span class="glyphicon glyphicon-filter"></span> Filters
+        </button>
+        <div class="collapse" id="monsterFilterCollapse">
+            {% crispy monster_filter_form %}
+        </div>
+    </div>
+
     <div id="monster-inventory"></div>
 {% endblock profile %}
 

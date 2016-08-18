@@ -8,8 +8,7 @@ from django.template import loader, RequestContext
 
 from .models import *
 from .forms import *
-from herders.forms import FilterMonsterForm
-from herders.filters import MonsterFilter
+from .filters import MonsterFilter
 
 
 def bestiary(request):

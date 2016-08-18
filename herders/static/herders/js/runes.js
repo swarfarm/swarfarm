@@ -7,12 +7,8 @@ function update_rune_inventory() {
     $('#FilterInventoryForm').submit();
 }
 
-$('.container').click(function() {
-    $('.collapse.in').collapse('hide');
-});
-
 $('body')
-    .on('click', ':submit', function() {
+    .on('click', '#FilterInventoryForm :submit', function() {
         var $form = $(this).closest('form');
         $('<input>').attr({
             type: 'hidden',
@@ -41,6 +37,10 @@ $('body')
             }
             $form.replaceWith(result.html);
             $('.rating').rating();
+            $('[data-toggle="popover"]').popover({
+                html:true,
+                viewport: {selector: 'body', padding: 2}
+            });
         });
 
         return false;  //cancel default on submit action.
@@ -198,6 +198,26 @@ $('body')
             }
         })
     })
+    .on('click', '.rune-resave-all', function() {
+        bootbox.confirm(
+            'The data structure for saving runes was changed and your runes need to be updated so the filters work properly. Click OK to start saving the runes. This process may take a minute or two depending on how many runes you own.',
+            function(result) {
+                if (result) {
+                    ToggleLoading($('body'), true);
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/runes/resave/all/',
+                        global: false
+                    }).done(function() {
+                        location.reload();
+                    }).fail(function() {
+                        alert("Something went wrong! Server admin has been notified.");
+                        ToggleLoading($('body'), false);
+                    })
+                }
+            }
+        )
+    })
     .on('click', '.rune-import', function() {
         $.ajax({
             type: 'get',
@@ -293,7 +313,7 @@ $('body')
                 widgetOptions: {
                     filter_reset: '.reset',
                     stickyHeaders_zIndex : 2,
-                    stickyHeaders_offset: 100
+                    stickyHeaders_offset: 50
                 }
             });
             $('[data-toggle="tooltip"]').tooltip();
@@ -301,11 +321,27 @@ $('body')
 
         return false;  //cancel default on submit action.
     })
+    .on('shown.bs.collapse', '#runeFilterCollapse', function() {
+        $("[data-provide='slider']").slider('relayout');
+    })
     .on('click', '.reset', function() {
         $('#runeInventoryTable').trigger('sortReset');
-        var form = $('#FilterInventoryForm');
-        form[0].reset();
-        form.find('label').toggleClass('active', false);
+        var $form = $('#FilterInventoryForm');
+        $form[0].reset();
+
+        //Select2 inputs
+        $form.find('select').each(function() {
+            $(this).val(null).trigger("change");
+        });
+
+        //Sliders
+        $form.find("[data-provide='slider']").each(function() {
+            var $el = $(this),
+                min = $el.data('slider-min'),
+                max = $el.data('slider-max');
+            $(this).slider('setValue', [min, max]);
+        });
+
         update_rune_inventory();
     })
     .on('click', '.box-group-mode', function() {

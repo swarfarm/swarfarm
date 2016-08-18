@@ -1,15 +1,6 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="btn-group btn-group-justified team-list-expand">
-    <div class="btn-group" role="group">
-        <button class="btn btn-default openall"><span class="fa fa-angle-double-down"></span> Expand All</button>
-    </div>
-    <div class="btn-group" role="group">
-        <button class="btn btn-default closeall"><span class="fa fa-angle-double-up"></span> Collapse All</button>
-    </div>
-</div>
-
 {% for group in team_groups %}
     <div class="list-group">
         <div class="team-list-group">
@@ -38,12 +29,3 @@
 {% empty %}
     <p><strong>Group list is empty!</strong></p>
 {% endfor %}
-
-<div class="btn-group btn-group-justified team-list-expand">
-    <div class="btn-group" role="group">
-        <button class="btn btn-default openall"><span class="fa fa-angle-double-down"></span> Expand All</button>
-    </div>
-    <div class="btn-group" role="group">
-        <button class="btn btn-default closeall"><span class="fa fa-angle-double-up"></span> Collapse All</button>
-    </div>
-</div>

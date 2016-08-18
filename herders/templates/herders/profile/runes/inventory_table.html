@@ -21,92 +21,102 @@
             </div>
             <span class="pull-right">{{ filtered_count }} of {{ total_count }} rune{{ total_count|pluralize }}</span>
         </div>
-        <table class="table table-condensed monster-table" id="runeInventoryTable">
-            <thead>
-            <tr>
-                <th>Type</th>
-                <th>Value</th>
-                <th>Efficiency</th>
-                <th data-toggle="tooltip" title="With perfect substat upgrades to +12">Max Efficiency</th>
-                <th>Slot</th>
-                <th>Stars</th>
-                <th>Level</th>
-                <th>Main Stat</th>
-                <th>Innate Stat</th>
-                <th>Substat 1</th>
-                <th>Substat 2</th>
-                <th>Substat 3</th>
-                <th>Substat 4</th>
-                <th>Assigned To</th>
-                <th>Notes</th>
-                <th>Marked for Sale</th>
-                {% if is_owner %}<th data-sorter="false"></th>{% endif %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for rune in runes %}
-            <tr>
-                <td>
-                    <span class="hidden">{{ rune.get_type_display }}</span>
-                    {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
-                </td>
-                <td>{% if rune.value %}{{ rune.value }}{% endif %}</td>
-                <td>{% if rune.efficiency %}{{ rune.efficiency|floatformat:1 }}%{% endif %}</td>
-                <td>{% if rune.max_efficiency %}{{ rune.max_efficiency|floatformat:1 }}%{% endif %}</td>
-                <td>{{ rune.slot }}</td>
-                <td>{{ rune.stars }}</td>
-                <td>{{ rune.level }}</td>
-                <td>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</td>
-                <td>{% if rune.innate_stat %}{{ rune.get_innate_stat_rune_display }} +{{ rune.innate_stat_value }}{% if rune.innate_stat in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
-                <td>{% if rune.substat_1 %}{{ rune.get_substat_1_rune_display }} <span class="{% if rune.substat_1_craft == rune.CRAFT_GRINDSTONE %}rune-grindstone-text{% endif %}">+{{ rune.substat_1_value }}{% if rune.substat_1 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substat_1_craft == rune.CRAFT_ENCHANT_GEM %}<img src="{{ img_url_prefix }}runes/enchanted.png" />{% endif %}</span>{% endif %}</td>
-                <td>{% if rune.substat_2 %}{{ rune.get_substat_2_rune_display }} <span class="{% if rune.substat_2_craft == rune.CRAFT_GRINDSTONE %}rune-grindstone-text{% endif %}">+{{ rune.substat_2_value }}{% if rune.substat_2 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substat_2_craft == rune.CRAFT_ENCHANT_GEM %}<img src="{{ img_url_prefix }}runes/enchanted.png" />{% endif %}</span>{% endif %}</td>
-                <td>{% if rune.substat_3 %}{{ rune.get_substat_3_rune_display }} <span class="{% if rune.substat_3_craft == rune.CRAFT_GRINDSTONE %}rune-grindstone-text{% endif %}">+{{ rune.substat_3_value }}{% if rune.substat_3 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substat_3_craft == rune.CRAFT_ENCHANT_GEM %}<img src="{{ img_url_prefix }}runes/enchanted.png" />{% endif %}</span>{% endif %}</td>
-                <td>{% if rune.substat_4 %}{{ rune.get_substat_4_rune_display }} <span class="{% if rune.substat_4_craft == rune.CRAFT_GRINDSTONE %}rune-grindstone-text{% endif %}">+{{ rune.substat_4_value }}{% if rune.substat_4 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substat_4_craft == rune.CRAFT_ENCHANT_GEM %}<img src="{{ img_url_prefix }}runes/enchanted.png" />{% endif %}</span>{% endif %}</td>
-                <td>
-                    {% if rune.assigned_to %}
-                    <span class="hidden">{{ rune.assigned_to.monster.name }}-{{ rune.assigned_to.pk }}</span>
-                    <div class="monster-image">
-                        <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}" target="_blank">
-                            <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb"/>
-                            <span>
-                                {% for x in rune.assigned_to.stars|get_range %}
-                                    {% if rune.assigned_to.monster.is_awakened %}
-                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% elif rune.assigned_to.monster.can_awaken %}
-                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% else %}
-                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% endif %}
-                                {% endfor %}
-                            </span>
-                            <span class="image-plus image-plus-right">{{ rune.assigned_to.level }}</span>
-                        </a>
-                    </div>
+        {% if not total_count %}
+            <div class="panel-body">
+                <div class="alert alert-warning">You don't have any runes!</div>
+            </div>
+        {% elif not filtered_count %}
+            <div class="panel-body">
+                <div class="alert alert-warning">All runes were filtered out.</div>
+            </div>
+        {% else %}
+            <table class="table table-condensed monster-table" id="runeInventoryTable">
+                <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Value</th>
+                    <th>Efficiency</th>
+                    <th data-toggle="tooltip" title="With perfect substat upgrades to +12">Max Efficiency</th>
+                    <th>Slot</th>
+                    <th>Stars</th>
+                    <th>Level</th>
+                    <th>Main Stat</th>
+                    <th>Innate Stat</th>
+                    <th>Substat 1</th>
+                    <th>Substat 2</th>
+                    <th>Substat 3</th>
+                    <th>Substat 4</th>
+                    <th>Assigned To</th>
+                    <th>Notes</th>
+                    <th>Marked for Sale</th>
+                    {% if is_owner %}<th data-sorter="false"></th>{% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for rune in runes %}
+                <tr>
+                    <td>
+                        <span class="hidden">{{ rune.get_type_display }}</span>
+                        {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
+                    </td>
+                    <td>{% if rune.value %}{{ rune.value }}{% endif %}</td>
+                    <td>{% if rune.efficiency %}{{ rune.efficiency|floatformat:1 }}%{% endif %}</td>
+                    <td>{% if rune.max_efficiency %}{{ rune.max_efficiency|floatformat:1 }}%{% endif %}</td>
+                    <td>{{ rune.slot }}</td>
+                    <td>{{ rune.stars }}</td>
+                    <td>{{ rune.level }}</td>
+                    <td>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</td>
+                    <td>{% if rune.innate_stat %}{{ rune.get_innate_stat_rune_display }} +{{ rune.innate_stat_value }}{% if rune.innate_stat in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
+                    <td>{% if rune.substat_1 %}{{ rune.get_substat_1_rune_display }} <span class="{% if rune.substat_1_craft == rune.CRAFT_GRINDSTONE %}rune-grindstone-text{% endif %}">+{{ rune.substat_1_value }}{% if rune.substat_1 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substat_1_craft == rune.CRAFT_ENCHANT_GEM %}<img src="{{ img_url_prefix }}runes/enchanted.png" />{% endif %}</span>{% endif %}</td>
+                    <td>{% if rune.substat_2 %}{{ rune.get_substat_2_rune_display }} <span class="{% if rune.substat_2_craft == rune.CRAFT_GRINDSTONE %}rune-grindstone-text{% endif %}">+{{ rune.substat_2_value }}{% if rune.substat_2 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substat_2_craft == rune.CRAFT_ENCHANT_GEM %}<img src="{{ img_url_prefix }}runes/enchanted.png" />{% endif %}</span>{% endif %}</td>
+                    <td>{% if rune.substat_3 %}{{ rune.get_substat_3_rune_display }} <span class="{% if rune.substat_3_craft == rune.CRAFT_GRINDSTONE %}rune-grindstone-text{% endif %}">+{{ rune.substat_3_value }}{% if rune.substat_3 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substat_3_craft == rune.CRAFT_ENCHANT_GEM %}<img src="{{ img_url_prefix }}runes/enchanted.png" />{% endif %}</span>{% endif %}</td>
+                    <td>{% if rune.substat_4 %}{{ rune.get_substat_4_rune_display }} <span class="{% if rune.substat_4_craft == rune.CRAFT_GRINDSTONE %}rune-grindstone-text{% endif %}">+{{ rune.substat_4_value }}{% if rune.substat_4 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substat_4_craft == rune.CRAFT_ENCHANT_GEM %}<img src="{{ img_url_prefix }}runes/enchanted.png" />{% endif %}</span>{% endif %}</td>
+                    <td>
+                        {% if rune.assigned_to %}
+                        <span class="hidden">{{ rune.assigned_to.monster.name }}-{{ rune.assigned_to.pk }}</span>
+                        <div class="monster-image">
+                            <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}" target="_blank">
+                                <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb"/>
+                                <span>
+                                    {% for x in rune.assigned_to.stars|get_range %}
+                                        {% if rune.assigned_to.monster.is_awakened %}
+                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        {% elif rune.assigned_to.monster.can_awaken %}
+                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        {% else %}
+                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="image-plus image-plus-right">{{ rune.assigned_to.level }}</span>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>{% if rune.notes %}{{ rune.notes }}{% endif %}</td>
+                    <td>
+                        {% if rune.marked_for_sale %}
+                        <span class="hidden">Yes</span><span class="text-succes glyphicon glyphicon-ok"></span>
+                        {% else %}
+                        <span class="hidden">No</span>
+                        {% endif %}
+                    </td>
+                    {% if is_owner %}
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </button>
+                            <button class="btn btn-default btn-xs rune-delete" data-rune-id="{{ rune.pk.hex }}">
+                                <span class="glyphicon glyphicon-trash text-danger"></span>
+                            </button>
+                        </div>
+                    </td>
                     {% endif %}
-                </td>
-                <td>{% if rune.notes %}{{ rune.notes }}{% endif %}</td>
-                <td>
-                    {% if rune.marked_for_sale %}
-                    <span class="hidden">Yes</span><span class="text-succes glyphicon glyphicon-ok"></span>
-                    {% else %}
-                    <span class="hidden">No</span>
-                    {% endif %}
-                </td>
-                {% if is_owner %}
-                <td>
-                    <div class="btn-group">
-                        <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
-                            <span class="glyphicon glyphicon-pencil"></span>
-                        </button>
-                        <button class="btn btn-default btn-xs rune-delete" data-rune-id="{{ rune.pk.hex }}">
-                            <span class="glyphicon glyphicon-trash text-danger"></span>
-                        </button>
-                    </div>
-                </td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
     </div>
 </div>

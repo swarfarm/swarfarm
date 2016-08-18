@@ -10,68 +10,23 @@
     {% endif %}
 {% endblock title %}
 
-{% block subnav %}
-    {% static 'herders/images/' as img_url_prefix %}
-    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse navbar-sub">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-subnav">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-subnav">
-                <button class="btn btn-default navbar-btn essence-storage">
-                    <span class="fa fa-archive"></span>
-                    Essence Storage
-                </button>
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-    </nav>
-{% endblock subnav %}
-
-{% block profile %}
-    {% static 'herders/images/' as img_url_prefix %}
-    <div class="row">
-        <ul class="nav nav-pills nav-stacked col-md-2 fusion-tabs" role="tablist">
+{% block fusion_menu %}
+    {% if is_owner %}
+        <ul class="dropdown-menu navmenu-nav">
             {% for fusion in fusions %}
-            <li {% if forloop.first %}class="active"{% endif %}>
-                <a href="#{{ fusion.product.bestiary_slug }}" class="fusion-tab" aria-controls="{{ fusion.product.bestiary_slug }}" role="tab" data-toggle="tab" data-fusion="{{ fusion.product.bestiary_slug }}">
-                    <div class="monster-image pull-left">
-                        <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb"/>
-                        <span>
-                            {% for x in fusion.stars|get_range %}
-                                {% if fusion.product.is_awakened %}
-                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                {% elif fusion.product.can_awaken %}
-                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                {% else %}
-                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                {% endif %}
-                            {% endfor %}
-                        </span>
-                    </div>
-                    <p style="margin-left: 63px">
-                        {{ fusion.product.name }}{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}<br />
-                        <img src="{{ img_url_prefix }}icons/mana.png" width="18px"/>{{ fusion.cost }}
-                    </p>
+            <li>
+                <a class="fusion-tab" data-fusion="{{ fusion.product.bestiary_slug }}">
+                    <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-inline"/>
+                    {{ fusion.product.base_stars }}<span class="glyphicon glyphicon-star"></span> {{ fusion.product.name }}{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}
                 </a>
             </li>
             {% endfor %}
         </ul>
-        <div class="tab-content col-md-10">
-            {% for fusion in fusions %}
-                <div role="tabpanel" class="tab-pane{% if forloop.first %} active{% endif %}" id="{{ fusion.product.bestiary_slug }}">
-                    {% include 'loading.html' %}
-                </div>
-            {% endfor %}
-        </div>
-    </div>
+    {% endif %}
+{% endblock fusion_menu %}
+
+{% block profile %}
+    <div id="fusion"></div>
 {% endblock profile %}
 
 {% block javascript_compressed %}

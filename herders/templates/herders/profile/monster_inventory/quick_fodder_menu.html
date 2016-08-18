@@ -2,8 +2,10 @@
 {% load utils %}
 {% static 'herders/images/' as img_url_prefix %}
 
+<p>Click on the monster image you wish to add. Click multiple times to add as many copies as you want.</p>
+
 {# Rainbowmon #}
-<div class="form-group pull-left">
+<div class="form-group">
     <label class="control-label">Rainbowmon</label>
     <div class="btn-group input-group">
         {% include 'herders/monster_icon_button.html' with filename='rainbowmon_light.png' monster_id=799 stars=2 level=20 awakened=1 extra_classes='quick-fodder' only %}
@@ -12,7 +14,7 @@
     </div>
 </div>
 
-<div class="form-group pull-left">
+<div class="form-group">
     <label class="control-label">Hydeni Ruins</label>
     <div class="btn-group input-group">
         {% include 'herders/monster_icon_button.html' with filename='howl_water.png' monster_id=61 stars=2 level=1 can_awaken=1 extra_classes='quick-fodder' only %}
@@ -21,7 +23,7 @@
     </div>
 </div>
 
-<div class="form-group pull-left">
+<div class="form-group">
     <label class="control-label">Tamor Desert</label>
     <div class="btn-group input-group">
         {% include 'herders/monster_icon_button.html' with filename='salamander_wind.png' monster_id=107 stars=2 level=1 can_awaken=1 extra_classes='quick-fodder' only %}
@@ -30,7 +32,7 @@
     </div>
 </div>
 
-<div class="form-group pull-left">
+<div class="form-group">
     <label class="control-label">Faimon Volcano</label>
     <div class="btn-group input-group">
         {% include 'herders/monster_icon_button.html' with filename='hellhound_fire.png' monster_id=24 stars=2 level=1 can_awaken=1 extra_classes='quick-fodder' only %}
@@ -39,7 +41,7 @@
     </div>
 </div>
 
-<div class="form-group pull-left">
+<div class="form-group">
     <label class="control-label">Aiden Forest</label>
     <div class="btn-group input-group">
         {% include 'herders/monster_icon_button.html' with filename='monster_flower_wind.png' monster_id=87 stars=2 level=7 extra_classes='quick-fodder' only %}
@@ -49,7 +51,7 @@
     </div>
 </div>
 
-<div class="form-group pull-left">
+<div class="form-group">
     <label class="control-label">Chiruka Remains</label>
     <div class="btn-group input-group">
         {% include 'herders/monster_icon_button.html' with filename='monster_flower_water.png' monster_id=47 stars=2 level=7 extra_classes='quick-fodder' only %}

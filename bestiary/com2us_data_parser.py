@@ -64,7 +64,7 @@ def parse_skill_data():
                     updated = True
 
                 # Cooltime
-                cooltime = int(csv_skill['cool time']) if int(csv_skill['cool time']) > 0 else None
+                cooltime = int(csv_skill['cool time'] + 1) if int(csv_skill['cool time']) > 0 else None
 
                 if skill.cooltime != cooltime:
                     skill.cooltime = cooltime

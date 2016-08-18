@@ -1,40 +1,32 @@
 // Check for hash pointing at specific fusion product
 var url = document.location.toString();
-if (url.match('#')) {
-    $('.nav-pills a[href="#' + url.split('#')[1] + '"]').tab('show');
-}
-
-function EssenceStorage() {
-    $.ajax({
-        type: 'get',
-        url: '/profile/' + PROFILE_NAME + '/storage/'
-    }).done(function(result) {
-        bootbox.dialog({
-            title: 'Essence Inventory',
-            size: 'large',
-            message: result.html
-        });
-    })
-}
+var selected_fusion;
 
 function updateFusion() {
-    // Get the active tab
-    var fusion = $(".fusion-tabs li.active>a").data('fusion');
-
+    ToggleLoading($('.navmenu-content'), true);
     $.ajax({
         type: 'get',
-        url: '/profile/' + PROFILE_NAME + '/fusion/' + fusion + '/'
+        url: '/profile/' + PROFILE_NAME + '/fusion/' + selected_fusion + '/'
     }).done(function(data) {
-        $('#'+fusion).html(data);
+        $('#fusion').html(data);
+        ToggleLoading($('.navmenu-content'), false);
+        document.location.hash = "#" + selected_fusion;
     });
 }
 
 $(document).ready(function() {
+    if (document.location.hash) {
+        selected_fusion = document.location.hash.replace('#', '');
+    }
+    else {
+        // Load the first one
+        selected_fusion = $('.fusion-tab').first().data('fusion');
+    }
+
     updateFusion();
 });
 
 $('body')
-    .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('submit', '.ajax-form', function() {
         //Handle add ajax form submit
         var $form = $(this);
@@ -54,6 +46,7 @@ $('body')
 
         return false;  //cancel default on submit action.
     })
-    .on('shown.bs.tab', function (e) {
+    .on('click', '.fusion-tab', function () {
+        selected_fusion = $(this).data('fusion');
         updateFusion();
     });

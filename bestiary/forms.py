@@ -1,21 +1,25 @@
 from django import forms
+from django.templatetags.static import static
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert
+from crispy_forms.layout import Submit, Div, Layout, Field, Button, Fieldset
+from crispy_forms.bootstrap import FormActions, FieldWithButtons
 
 from bestiary.models import *
 
 import autocomplete_light
 
+STATIC_URL_PREFIX = static('herders/images/')
 
+
+# Bestiary forms
 class BestiaryQuickSearchForm(forms.Form):
     monster_name = autocomplete_light.ModelChoiceField('BestiaryLinkAutocomplete')
 
     helper = FormHelper()
     helper.form_action = 'bestiary:home'
     helper.form_method = 'get'
-    helper.form_class = 'navbar-form navbar-left hidden-md hidden-sm'
+    helper.form_class = 'navbar-form navbar-left hidden-sm'
     helper.form_show_labels = False
     helper.layout = Layout(
         FieldWithButtons(
@@ -25,6 +29,159 @@ class BestiaryQuickSearchForm(forms.Form):
     )
 
 
+def effect_choices(effects):
+    choices = []
+
+    for buff in effects.order_by('name'):
+        # Select2 template splits the string at ; to get an image and nameoi
+        choices.append((buff.pk, STATIC_URL_PREFIX + 'buffs/' + buff.icon_filename + ';' + buff.name))
+
+    return choices
+
+
+class FilterMonsterForm(forms.Form):
+    name__icontains = forms.CharField(
+        label='Monster Name',
+        max_length=100,
+        required=False,
+    )
+    base_stars = forms.CharField(
+        label='Base Stars',
+        required=False,
+    )
+    element = forms.MultipleChoiceField(
+        label='Element',
+        choices=Monster.ELEMENT_CHOICES,
+        required=False,
+    )
+    archetype = forms.MultipleChoiceField(
+        label='Archetype',
+        choices=Monster.TYPE_CHOICES,
+        required=False,
+    )
+    is_awakened = forms.NullBooleanField(label='Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    leader_skill__attribute = forms.MultipleChoiceField(
+        label='Leader Skill Stat',
+        choices=LeaderSkill.ATTRIBUTE_CHOICES,
+        required=False,
+    )
+    leader_skill__area = forms.MultipleChoiceField(
+        label='Leader Skill Area',
+        choices=LeaderSkill.AREA_CHOICES,
+        required=False,
+    )
+    skills__scaling_stats__pk = forms.MultipleChoiceField(
+        label='Scales With',
+        choices=ScalingStat.objects.values_list('pk', 'stat'),
+        required=False,
+    )
+    buffs = forms.MultipleChoiceField(
+        label='Buffs',
+        choices=effect_choices(Effect.objects.filter(is_buff=True).exclude(icon_filename='')),
+        required=False,
+    )
+    debuffs = forms.MultipleChoiceField(
+        label='Debuffs',
+        choices=effect_choices(Effect.objects.filter(is_buff=False).exclude(icon_filename='')),
+        required=False,
+    )
+    other_effects = forms.MultipleChoiceField(
+        label='Other Effects',
+        choices=Effect.other_effect_choices.all(),
+        required=False,
+    )
+    effects_logic = forms.BooleanField(
+        label='',
+        required=False,
+    )
+    page = forms.IntegerField(required=False)
+    sort = forms.CharField(required=False)
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_id = 'FilterBestiaryForm'
+    helper.layout = Layout(
+        Div(
+            Fieldset(
+                'General',
+                Div(
+                    Field('name__icontains', wrapper_class='form-group-sm form-group-condensed col-md-8'),
+                    Field(
+                        'base_stars',
+                        data_provide='slider',
+                        data_slider_min='1',
+                        data_slider_max='6',
+                        data_slider_value='[1, 6]',
+                        data_slider_step='1',
+                        data_slider_ticks='[1, 6]',
+                        data_slider_ticks_labels='["1", "6"]',
+                        wrapper_class='form-group-sm form-group-condensed col-md-4'
+                    ),
+                    Field('is_awakened', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field('fusion_food', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field('element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field('archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    css_class='row',
+                ),
+                css_class='col-md-4'
+            ),
+            Fieldset(
+                'Skills',
+                Div(
+                    Field('buffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('debuffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('effects_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ONE', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-lg-6'),
+                    css_class='row'
+                ),
+                css_class='col-md-4'
+            ),
+            Fieldset(
+                'Leader Skill',
+                Field('leader_skill__attribute', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('leader_skill__area', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                css_class='col-md-4'
+            ),
+            css_class='row'
+        ),
+        Div(
+            Div(
+                Submit('apply', 'Apply', css_class='btn-success'),
+                css_class='btn-group'
+            ),
+            Div(
+                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
+                css_class='btn-group'
+            ),
+            css_class='btn-group btn-group-justified'
+        ),
+        Field('page', value=1, type='hidden'),
+        Field('sort', value='', type='hidden'),
+    )
+
+    def clean(self):
+        super(FilterMonsterForm, self).clean()
+
+        # Coalesce the effect fields into a single one that the filter can understand
+        selected_buff_effects = self.cleaned_data.get('buffs')
+        selected_debuff_effects = self.cleaned_data.get('debuffs')
+        selected_other_effects = self.cleaned_data.get('other_effects')
+        self.cleaned_data['skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_stars, max_stars] = self.cleaned_data['base_stars'].split(',')
+        except:
+            min_stars = 1
+            max_stars = 6
+
+        self.cleaned_data['base_stars__gte'] = int(min_stars)
+        self.cleaned_data['base_stars__lte'] = int(max_stars)
+
+
+# Superuser edit forms
 class SkillForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SkillForm, self).__init__(*args, **kwargs)

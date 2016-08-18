@@ -2,12 +2,11 @@ html, body {
     height: 100%;
 }
 body {
-    padding-top: 100px;
+    padding-top: 50px;
 }
 
 #wrap {
     min-height: 100%;
-    padding-top: 20px;
     position: relative;
 }
 
@@ -23,10 +22,51 @@ thead {
 }
 
 .container {
+    width: auto;
     position: relative;
     min-height: 100%;
     overflow: auto;
     padding-bottom: 40px;
+    padding-top: 10px;
+}
+
+.navmenu-collapsed {
+    z-index: 999;
+    position: fixed;
+    top: 50px;
+    width: 100%;
+    display: block;
+    background: white;
+    border: 1px solid transparent;
+}
+
+.navmenu-collapsed button {
+    float: left;
+    margin-left: 15px;
+}
+
+.navmenu-content {
+    padding-top: 50px;
+}
+
+@media (min-width: 1px) {
+    .navmenu-collapsed .navbar-toggle {
+        display: block !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .navmenu-content {
+        padding-left: 300px;
+        padding-top: 0;
+    }
+    .navmenu-collapsed {
+        display: none;
+    }
+}
+
+.navmenu a {
+    cursor: pointer;
 }
 
 footer {
@@ -46,7 +86,8 @@ footer {
     padding-right:0;
 }
 
-.no-left-gutter {
+.no-left-gutter,
+.no-left-gutter label{
     padding-left: 0!important;
 }
 
@@ -75,7 +116,7 @@ select.short {
     max-width: 300px;
 }
 
-.navbar img, .btn-group img {
+.navbar img, .navmenu img, .btn-group img, .select2 img, .select2-results img {
     height: 18px;
 }
 
@@ -86,6 +127,18 @@ select.short {
 
 .navbar-right {
   margin-right: 5px;
+}
+
+.subnavmenu-fixed-left {
+    z-index: 1001;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    right: auto;
+    bottom: 0;
+    overflow-y: auto;
+    border-width: 0 1px 0 0;
+    border-radius: 0;
 }
 
 .toggle:before {
@@ -125,9 +178,6 @@ select.short {
     border-bottom-right-radius: 4px;
 }
 
-.container {
-    width: 95%;
-}
 
 .alert ul {
     list-style: none;
@@ -195,6 +245,11 @@ select.short {
 .navbar-sub .checkbox>label
 {
     color: #e5e5e5;
+}
+
+.bootstrap-switch {
+    margin-left: 15px;
+    margin-top: 15px;
 }
 
 div.profile {
@@ -519,6 +574,34 @@ span.monster-image {
     content: "\e113";
 }
 
+.filters {
+    margin-bottom: 15px;
+}
+
+.filter-header {
+    display: block;
+    cursor: pointer;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.filter-header::after {
+    float: right;
+    font-family: "Glyphicons Halflings";
+    content: "\e114";
+}
+
+.filter-header.collapsed::after {
+    float: right;
+    font-family: "Glyphicons Halflings";
+    content: "\e080";
+}
+
+.slider.slider-horizontal {
+    width: 90%;
+    margin-left: 5%;
+}
+
 .tablesorter-filter-row {
     display: none;
 }
@@ -576,10 +659,6 @@ img.prepended-image {
 .fusion-awaken-materials {
     padding: 0!important;
     width: 50px;
-}
-
-.fusion-tab {
-    padding: 10px 5px!important;
 }
 
 .tab-image {
@@ -928,7 +1007,7 @@ button.rune-assign-choice {
 .spinner-overlay {
     background-color: rgba(0,0,0,.5);
     position: fixed;
-    top: 100px;
+    top: 50px;
     right: 0;
     bottom: 0;
     left: 0;

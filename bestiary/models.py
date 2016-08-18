@@ -1,7 +1,7 @@
 import herders.models as herder_models
 
 
-# Proxy models soley for admin organization purposes
+# Proxy models solely for admin organization purposes
 class Building(herder_models.Building):
     class Meta:
         proxy = True

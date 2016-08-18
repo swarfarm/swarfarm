@@ -3,9 +3,36 @@
 {% load utils %}
 
 {% static 'herders/images/' as img_url_prefix %}
+<div class="monster-box">
+    <div class="monster-box-thumb">
+        <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}"/>
+        <span>
+            {% for x in fusion.instance.base_stars|get_range %}
+                {% if fusion.instance.is_awakened %}
+                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                {% elif fusion.instance.can_awaken %}
+                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                {% else %}
+                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                {% endif %}
+            {% endfor %}
+        </span>
+    </div>
+</div>
+
+<div class="bestiary-name">
+    <h1>
+        {{fusion.instance.name }}
+        <small><img src="{{ img_url_prefix }}elements/{{fusion.instance.element }}.png" style="height:1em"/>{{fusion.instance.get_archetype_display }}</small>
+    </h1>
+    <p>Fusion Cost: <img src="{{ img_url_prefix }}icons/mana.png" style="height: 1em;"/> {{ fusion.cost }}</p>
+</div>
+
+<div class="clearfix"></div>
+
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h1 class="panel-title">Monster Ingredients</h1>
+        <h1 class="panel-title">Fusion Ingredients</h1>
     </div>
     <table class="table table-condensed monster-table fusion-ingredients">
         <thead>

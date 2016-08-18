@@ -8,10 +8,11 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
+from bestiary.forms import effect_choices
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset
+from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset, Fieldset
 from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert
 
 from captcha.fields import ReCaptchaField
@@ -365,103 +366,6 @@ class EditEssenceStorageForm(ModelForm):
         }
 
 
-class FilterMonsterForm(forms.Form):
-    name__icontains = forms.CharField(
-        label='Monster Name',
-        max_length=100,
-        required=False,
-    )
-    base_stars = forms.MultipleChoiceField(
-        choices=Monster.STAR_CHOICES,
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    element = forms.MultipleChoiceField(
-        label='Element',
-        choices=Monster.ELEMENT_CHOICES,
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    archetype = forms.MultipleChoiceField(
-        label='Archetype',
-        choices=Monster.TYPE_CHOICES,
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    is_awakened = forms.NullBooleanField(label='Is Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    leader_skill__attribute = forms.MultipleChoiceField(
-        label='Leader Skill Stat',
-        choices=LeaderSkill.ATTRIBUTE_CHOICES,
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    leader_skill__area = forms.MultipleChoiceField(
-        label='Leader Skill Stat',
-        choices=LeaderSkill.AREA_CHOICES,
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    skills__scaling_stats__pk = forms.MultipleChoiceField(
-        label='Skill Scales With',
-        choices=ScalingStat.objects.values_list('pk', 'stat'),
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    buffs = forms.MultipleChoiceField(
-        label='Buffs',
-        choices=Effect.buff_effect_choices.all(),
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    debuffs = forms.MultipleChoiceField(
-        label='Debuffs',
-        choices=Effect.debuff_effect_choices.all(),
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    other_effects = forms.MultipleChoiceField(
-        label='Other Effects',
-        choices=Effect.other_effect_choices.all(),
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    page = forms.IntegerField(required=False)
-    sort = forms.CharField(required=False)
-
-    helper = FormHelper()
-    helper.form_method = 'post'
-    helper.form_id = 'FilterBestiaryForm'
-    helper.form_class = 'form-horizontal'
-    helper.label_class = 'col-md-1 text-right'
-    helper.field_class = 'col-md-11 no-left-gutter'
-    helper.layout = Layout(
-        Field('name__icontains', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('base_stars', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('element', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('archetype', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('is_awakened', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('fusion_food', css_class='auto-submit short', wrapper_class='form-group-sm form-group-condensed'),
-        Field('leader_skill__attribute', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('leader_skill__area', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('skills__scaling_stats__pk', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
-        Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
-        Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('page', value=1, type='hidden'),
-        Field('sort', value='', type='hidden'),
-    )
-
-    def clean(self):
-        super(FilterMonsterForm, self).clean()
-
-        # Coalesce the effect fields into a single one that the filter can understand
-        selected_buff_effects = self.cleaned_data.get('buffs')
-        selected_debuff_effects = self.cleaned_data.get('debuffs')
-        selected_other_effects = self.cleaned_data.get('other_effects')
-        self.cleaned_data['skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
-
-
 # MonsterInstance Forms
 class AddMonsterInstanceForm(autocomplete_light.ModelForm):
     monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
@@ -471,6 +375,7 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_class = 'ajax-form'
+        self.helper.form_id = 'id_AddMonsterInstanceForm'
         self.helper.layout = Layout(
             Field(
                 'monster',
@@ -649,44 +554,31 @@ class FilterMonsterInstanceForm(forms.Form):
         label='Tags',
         choices=MonsterTag.objects.values_list('pk', 'name'),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
-    stars = forms.MultipleChoiceField(
-        choices=Monster.STAR_CHOICES,
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-    )
-    level__gte = forms.IntegerField(
-        label="Minimum Level",
-        min_value=0,
-        max_value=40,
+    stars = forms.CharField(
+        label="Stars",
         required=False,
     )
-    level__lte = forms.IntegerField(
-        label="Maximum Level",
-        min_value=0,
-        max_value=40,
+    level = forms.CharField(
+        label="Level",
         required=False,
     )
     monster__element = forms.MultipleChoiceField(
         label='Element',
         choices=Monster.ELEMENT_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     monster__archetype = forms.MultipleChoiceField(
         label='Archetype',
         choices=Monster.TYPE_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     priority = forms.MultipleChoiceField(
         label='Priority',
         choices=MonsterInstance.PRIORITY_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
-    monster__is_awakened = forms.NullBooleanField(label='Is Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    monster__is_awakened = forms.NullBooleanField(label='Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     fodder = forms.NullBooleanField(label='Fodder', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     in_storage = forms.NullBooleanField(label='Storage', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     monster__fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
@@ -694,37 +586,35 @@ class FilterMonsterInstanceForm(forms.Form):
         label='Leader Skill Stat',
         choices=LeaderSkill.ATTRIBUTE_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     monster__leader_skill__area = forms.MultipleChoiceField(
         label='Leader Skill Area',
         choices=LeaderSkill.AREA_CHOICES,
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     monster__skills__scaling_stats__pk = forms.MultipleChoiceField(
         label='Skill Scales With',
         choices=ScalingStat.objects.values_list('pk', 'stat'),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     buffs = forms.MultipleChoiceField(
         label='Buffs',
-        choices=Effect.buff_effect_choices.all(),
+        choices=effect_choices(Effect.objects.filter(is_buff=True).exclude(icon_filename='')),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     debuffs = forms.MultipleChoiceField(
         label='Debuffs',
-        choices=Effect.debuff_effect_choices.all(),
+        choices=effect_choices(Effect.objects.filter(is_buff=False).exclude(icon_filename='')),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
     )
     other_effects = forms.MultipleChoiceField(
         label='Other Effects',
         choices=Effect.other_effect_choices.all(),
         required=False,
-        widget=forms.CheckboxSelectMultiple,
+    )
+    effects_logic = forms.BooleanField(
+        label='',
+        required=False,
     )
 
     helper = FormHelper()
@@ -732,32 +622,79 @@ class FilterMonsterInstanceForm(forms.Form):
     helper.form_id = 'FilterInventoryForm'
     helper.layout = Layout(
         Div(
-            Field('monster__name__icontains', css_class='auto-submit input-sm', wrapper_class='pull-left condensed'),
-            Field('stars', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
-            Field('level__gte', css_class='auto-submit input-sm', wrapper_class='pull-left condensed'),
-            Field('level__lte', css_class='auto-submit input-sm', wrapper_class='pull-left condensed'),
-            Field('fodder', css_class='auto-submit input-sm short', wrapper_class='pull-left condensed'),
-            Field('in_storage', css_class='auto-submit input-sm short', wrapper_class='pull-left condensed'),
-            Field('monster__fusion_food', css_class='auto-submit input-sm short', wrapper_class='pull-left condensed'),
-            Field('priority', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
-            css_class='clearfix'
+            Fieldset(
+                'General',
+                Div(
+                    Field('monster__name__icontains', wrapper_class='form-group-sm form-group-condensed col-lg-8 col-md-6 col-sm-6'),
+                    Field('tags__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
+                    Field(
+                        'stars',
+                        data_provide='slider',
+                        data_slider_min='1',
+                        data_slider_max='6',
+                        data_slider_value='[1, 6]',
+                        data_slider_step='1',
+                        data_slider_ticks='[1, 6]',
+                        data_slider_ticks_labels='["1", "6"]',
+                        wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6'
+                    ),
+                    Field(
+                        'level',
+                        data_provide='slider',
+                        data_slider_min='1',
+                        data_slider_max='40',
+                        data_slider_value='[1, 40]',
+                        data_slider_step='1',
+                        data_slider_ticks='[1, 40]',
+                        data_slider_ticks_labels='["1", "40"]',
+                        wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6',
+                    ),
+                    Field('priority', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
+                    Field('monster__archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
+                    Field('monster__element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
+                    Field('monster__is_awakened', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
+                    Field('fodder', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
+                    Field('in_storage', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
+                    Field('monster__fusion_food', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
+                    css_class='row'
+                ),
+                css_class='col-md-7'
+            ),
+            Div(
+                Fieldset(
+                    'Skills',
+                    Div(
+                        Field('buffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field('debuffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field('monster__skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field('effects_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ONE', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-lg-6'),
+                        css_class='row'
+                    ),
+                ),
+                Fieldset(
+                    'Leader Skill',
+                    Div(
+                        Field('monster__leader_skill__attribute', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                        Field('monster__leader_skill__area', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                        css_class='row'
+                    )
+                ),
+                css_class='col-md-5'
+            ),
+            css_class='row',
         ),
         Div(
-            Field('monster__is_awakened', css_class='auto-submit input-sm', wrapper_class='pull-left condensed'),
-            Field('monster__archetype', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
-            Field('monster__element', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
-            Field('tags__pk', css_class='auto-submit', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
-            css_class='clearfix'
+            Div(
+                Submit('apply', 'Apply', css_class='btn-success '),
+                css_class='btn-group'
+            ),
+            Div(
+                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
+                css_class='btn-group'
+            ),
+            css_class='btn-group btn-group-justified'
         ),
-        Div(
-            Field('monster__leader_skill__attribute', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
-            Field('monster__leader_skill__area', css_class='auto-submit input-sm', template='crispy/button_checkbox_select.html', wrapper_class='pull-left condensed'),
-            css_class='clearfix',
-        ),
-        Field('monster__skills__scaling_stats__pk', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
-        Field('buffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
-        Field('debuffs', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/skill_button_checkbox_select.html'),
-        Field('other_effects', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed', template='crispy/button_checkbox_select.html'),
     )
 
     def clean(self):
@@ -768,6 +705,25 @@ class FilterMonsterInstanceForm(forms.Form):
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
         self.cleaned_data['monster__skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_lv, max_lv] = self.cleaned_data['level'].split(',')
+        except:
+            min_lv = 1
+            max_lv = 40
+
+        self.cleaned_data['level__gte'] = int(min_lv)
+        self.cleaned_data['level__lte'] = int(max_lv)
+
+        try:
+            [min_stars, max_stars] = self.cleaned_data['stars'].split(',')
+        except:
+            min_stars = 1
+            max_stars = 6
+
+        self.cleaned_data['stars__gte'] = int(min_stars)
+        self.cleaned_data['stars__lte'] = int(max_stars)
 
 
 # MonsterPiece forms
@@ -1105,129 +1061,122 @@ class AssignRuneForm(forms.Form):
 class FilterRuneForm(forms.Form):
     type = forms.MultipleChoiceField(
         choices=RuneInstance.TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
         required=False,
     )
     main_stat = forms.MultipleChoiceField(
         choices=RuneInstance.STAT_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
         required=False,
     )
-    level__gte = forms.IntegerField(
-        label="Minimum Level",
-        min_value=0,
-        max_value=15,
+    innate_stat = forms.MultipleChoiceField(
+        choices=RuneInstance.STAT_CHOICES,
         required=False,
     )
-    level__lte = forms.IntegerField(
-        label="Maximum Level",
-        min_value=0,
-        max_value=15,
+    substats = forms.MultipleChoiceField(
+        label="""Substats <span class="glyphicon glyphicon-info-sign" data-toggle="popover" data-trigger="hover" title="Important" data-container="body" data-content="If this filter is not working properly, your runes need to be resaved to update a few new data fields. If you don't see the resave link in the menu, you're good to go."></span>""",
+        choices=RuneInstance.STAT_CHOICES,
         required=False,
     )
-    stars__gte = forms.IntegerField(
-        label="Minimum Stars",
+    substat_logic = forms.BooleanField(
+        label='',
+        required=False,
+    )
+    level = forms.CharField(
+        label='Level',
+        required=False,
+    )
+    stars = forms.CharField(
+        label='Stars',
         required=False
     )
-    stars__lte = forms.IntegerField(
-        label="Maximum Stars",
-        required=False
-    )
-    slot = forms.IntegerField(
-        min_value=1,
-        max_value=6,
-        required=False
+    slot = forms.MultipleChoiceField(
+        choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)),
+        required=False,
     )
     assigned_to = forms.NullBooleanField(
-        label="Is Assigned",
+        label='Is Assigned',
         required=False,
         widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
     )
     marked_for_sale = forms.NullBooleanField(
-        label="Marked for Sale",
+        label='Marked for Sale',
         required=False,
         widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))),
     )
-
-    has_hp = forms.NullBooleanField(label='Has HP', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_atk = forms.NullBooleanField(label='Has ATK', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_def = forms.NullBooleanField(label='Has DEF', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_crit_rate = forms.NullBooleanField(label='Has CRI Rate', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_crit_dmg = forms.NullBooleanField(label='Has CRI Dmg', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_speed = forms.NullBooleanField(label='Has SPD', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_resist = forms.NullBooleanField(label='Has RES', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_accuracy = forms.NullBooleanField(label='Has ACC', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
 
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_id = 'FilterInventoryForm'
     helper.layout = Layout(
         Div(
-            Div(
-                Field('main_stat', css_class='auto-submit'),
-                css_class='col-sm-1',
+            Field('type', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Field('slot', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Field('main_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Field(
+                'stars',
+                data_provide='slider',
+                data_slider_min='1',
+                data_slider_max='6',
+                data_slider_value='[1, 6]',
+                data_slider_step='1',
+                data_slider_ticks='[1, 6]',
+                data_slider_ticks_labels='["1", "6"]',
+                wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'
             ),
-            Div(
-                Div(
-                    Div(
-                        Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select_notext.html'),
-                        css_class='col-sm-12',
-                    ),
-                    css_class='row'
-                ),
-                Div(
-                    Div(
-                        Div(
-                            Field('slot', css_class='auto-submit'),
-                            css_class='pull-left condensed',
-                        ),
-                        Div(
-                            Field('assigned_to', css_class='auto-submit'),
-                            css_class='pull-left condensed',
-                        ),
-                        Div(
-                            Field('level__gte', css_class='auto-submit'),
-                            css_class='pull-left condensed',
-                        ),
-                        Div(
-                            Field('level__lte', css_class='auto-submit'),
-                            css_class='pull-left condensed',
-                        ),
-                        Div(
-                            Field('stars__gte', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-                            css_class='pull-left condensed'
-                        ),
-                        Div(
-                            Field('stars__lte', css_class='rating hidden', value=6, data_start=0, data_stop=6, data_stars=6),
-                            css_class='pull-left condensed'
-                        ),
-                        css_class='col-sm-12',
-                    ),
-                    css_class='row',
-                ),
-                Div(
-                    Div(
-                        Div(Field('has_hp', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_atk', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_def', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_crit_rate', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_crit_dmg', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_speed', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_resist', css_class='auto-submit'), css_class='pull-left condensed'),
-                        Div(Field('has_accuracy', css_class='auto-submit'), css_class='pull-left condensed'),
-                        css_class='col-sm-12',
-                    ),
-                    css_class='row',
-                ),
-                Div(
-                    Field('marked_for_sale', css_class='auto-submit', wrapper_class='col-sm-1'),
-                    css_class='row'
-                ),
-                css_class='col-sm-10',
+            Field(
+                'level',
+                data_provide='slider',
+                data_slider_min='0',
+                data_slider_max='15',
+                data_slider_value='[0, 15]',
+                data_slider_step='1',
+                data_slider_ticks='[0, 15]',
+                data_slider_ticks_labels='["0", "15"]',
+                wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'
             ),
+            Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Div(
+                Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-8'),
+                Field('substat_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ALL', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-sm-4'),
+                css_class='row col-md-4 col-sm-4'
+            ),
+            Field('assigned_to', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
             css_class='row',
         ),
+        Div(
+            Div(
+                Submit('apply', 'Apply', css_class='btn-success '),
+                css_class='btn-group'
+            ),
+            Div(
+                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
+                css_class='btn-group'
+            ),
+            css_class='btn-group btn-group-justified'
+        ),
     )
+
+    def clean(self):
+        super(FilterRuneForm, self).clean()
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_lv, max_lv] = self.cleaned_data['level'].split(',')
+        except:
+            min_lv = 0
+            max_lv = 15
+
+        self.cleaned_data['level__gte'] = int(min_lv)
+        self.cleaned_data['level__lte'] = int(max_lv)
+
+        try:
+            [min_stars, max_stars] = self.cleaned_data['stars'].split(',')
+        except:
+            min_stars = 1
+            max_stars = 6
+
+        self.cleaned_data['stars__gte'] = int(min_stars)
+        self.cleaned_data['stars__lte'] = int(max_stars)
 
 
 class ImportRuneForm(forms.Form):

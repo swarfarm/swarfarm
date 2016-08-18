@@ -2,6 +2,20 @@ var team_detail = $('#team-detail');
 var team_list = $('#team-list');
 var page_content = $('#wrap');
 
+$('body').on('submit', '.ajax-form', function() {
+    //Handle add ajax form submit
+    var $form = $(this);
+    $.ajax({
+        type: $form.attr('method'),
+        url: $form.attr('action'),
+        data: $form.serialize()
+    }).done(function(result) {
+        $('.modal.in').modal('hide');
+    });
+
+    return false;  //cancel default on submit action.
+});
+
 page_content.on('click', '.team-link', function() {
     var team_id = $(this).data('team-id');
     team_detail.load('/profile/' + PROFILE_NAME + '/teams/detail/' + team_id + '/', function() {

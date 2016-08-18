@@ -1,20 +1,33 @@
-{% extends 'herders/profile/monster_inventory/../base.html' %}
+{% extends 'herders/profile/base.html' %}
 {% load staticfiles %}
 {% load utils %}
 {% load crispy_forms_tags %}
 {% load crispy_forms_filters %}
 
 {% block title %}
-{% if is_owner %}
-{{ instance.monster }} Lv. {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }} - {{ block.super }}
-{% else %}
-{{ summoner.user.username }}'s {{ instance.monster }} Lv. {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }} - {{ block.super }}
-{% endif %}
+    {% if is_owner %}
+        {{ instance.monster }} Lv. {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }} - {{ block.super }}
+    {% else %}
+        {{ summoner.user.username }}'s {{ instance.monster }} Lv. {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }} - {{ block.super }}
+    {% endif %}
 {% endblock %}
 
-{% block subnav %}
-    {% if is_owner %} {% include 'herders/profile/monster_view/subnav.html' %} {% endif %}
-{% endblock subnav %}
+{% block monster_menu %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    {% if is_owner%}
+        <ul class="dropdown-menu navmenu-nav">
+            <li><a><img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-inline" /> {{ instance.monster.name }}</a></li>
+            <li><a class="monster-edit" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-edit"></span> Edit</a></li>
+            <li><a class="monster-copy" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-copy"></span> Copy</a></li>
+            <li><a class="monster-power-up" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-arrow-up"></span> Power Up</a></li>
+            {% if not instance.monster.is_awakened and instance.monster.can_awaken %}
+                <li><a class="monster-awaken" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-star" style="color:purple"></span> Awaken</a></li>
+            {% endif %}
+            <li><a class="monster-delete" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-trash text-danger"></span> Delete</a></li>
+        </ul>
+    {% endif %}
+{% endblock monster_menu %}
 
 {% block profile %}
     <div class="bestiary-detail">

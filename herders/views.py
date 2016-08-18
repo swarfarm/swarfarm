@@ -530,12 +530,19 @@ def monster_instance_view(request, profile_name, instance_id):
 
 def monster_instance_view_sidebar(request, profile_name, instance_id):
     try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        raise Http404
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    try:
         instance = MonsterInstance.committed.select_related('monster').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
     context = {
         'instance': instance,
+        'is_owner': is_owner,
     }
 
     return render(request, 'herders/profile/monster_view/side_info.html', context)

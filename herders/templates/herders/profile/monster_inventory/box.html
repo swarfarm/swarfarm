@@ -22,7 +22,7 @@
             <div class="btn-group">
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'grade' %}active{% endif %}" data-mode="grade">Grade</button>
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'level' %}active{% endif %}" data-mode="level">Level</button>
-                <button class="btn btn-default box-group-mode {% if box_grouping == 'attribute' %}active{% endif %}" data-mode="attribute">Attribute</button>
+                <button class="btn btn-default box-group-mode {% if box_grouping == 'attribute' %}active{% endif %}" data-mode="attribute">Element</button>
                 <button class="btn btn-default box-group-mode {% if box_grouping == 'priority' %}active{% endif %}" data-mode="priority">Priority</button>
             </div>
             <span class="pull-right">{{ filtered_count }} of {{ total_count }} monster{{ total_count|pluralize }}</span>

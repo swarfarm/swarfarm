@@ -148,6 +148,18 @@ function SummonMonsterPiece(instance_id) {
     }
 }
 
+function QuickFodderMenu() {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/monster/quick_fodder/'
+    }).done(function(result) {
+        bootbox.dialog({
+            title: 'Quick Fodder Menu',
+            message: result.html
+        });
+    })
+}
+
 function QuickFodder(btn) {
     var monster_id = btn.data('monster-id');
     var stars = btn.data('stars');
@@ -225,6 +237,7 @@ $('body')
     .on('click', '.monster-piece-edit', function() { EditMonsterPiece($(this).data('instance-id')) })
     .on('click', '.monster-piece-delete', function() { DeleteMonsterPiece($(this).data('instance-id')) })
     .on('click', '.monster-piece-summon', function() { SummonMonsterPiece($(this).data('instance-id')) })
+    .on('click', '.quick-fodder-menu', function() { QuickFodderMenu() })
     .on('click', '.quick-fodder', function() { QuickFodder($(this)) })
     .on('click', '.profile-view-mode', function() {
         var view_mode = $(this).data('mode');

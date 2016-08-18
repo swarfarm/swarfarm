@@ -19,6 +19,7 @@ urlpatterns = [
             url(r'^inventory/(?i)(?P<view_mode>(list|box|pieces))/(?i)(?P<box_grouping>[a-zA-Z]+)/$', views.monster_inventory, name='monster_inventory_view_mode_sorted'),
             url(r'^add/$', views.monster_instance_add, name='monster_instance_add'),
             url(r'^quick_add/(?P<monster_id>[0-9]+)/(?P<stars>[0-9])/(?P<level>[0-9]+)/$', views.monster_instance_quick_add, name='monster_instance_quick_add'),
+            url(r'^quick_fodder/$', views.quick_fodder_menu, name='quick_fodder_menu'),
             url(r'^bulk_add/$', views.monster_instance_bulk_add, name='monster_instance_bulk_add'),
             url(r'^view/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_view, name='monster_instance_view'),
             url(r'^view/(?P<instance_id>[0-9a-f]{32})/sidebar/$', views.monster_instance_view_sidebar, name='monster_instance_view_sidebar'),

@@ -372,6 +372,26 @@ def profile_storage(request, profile_name):
         return HttpResponseForbidden()
 
 
+@login_required
+def quick_fodder_menu(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        raise Http404
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        template = loader.get_template('herders/profile/monster_inventory/quick_fodder_menu.html')
+        response_data = {
+            'code': 'success',
+            'html': template.render(),
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
 @login_required()
 def monster_instance_add(request, profile_name):
     try:

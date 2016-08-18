@@ -1,3 +1,5 @@
+var quickFodderAdded = false;
+
 $(document).ready(function() {
     update_monster_inventory();
 });
@@ -156,6 +158,11 @@ function QuickFodderMenu() {
         bootbox.dialog({
             title: 'Quick Fodder Menu',
             message: result.html
+        }).on('hide.bs.modal', function() {
+            if (quickFodderAdded) {
+                update_monster_inventory();
+                quickFodderAdded = false;
+            }
         });
     })
 }
@@ -168,8 +175,6 @@ function QuickFodder(btn) {
     $.ajax({
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/monster/quick_add/' + monster_id.toString() + '/' + stars.toString() + '/' + level.toString() + '/'
-    }).done(function() {
-        update_monster_inventory();
     });
 }
 
@@ -238,7 +243,10 @@ $('body')
     .on('click', '.monster-piece-delete', function() { DeleteMonsterPiece($(this).data('instance-id')) })
     .on('click', '.monster-piece-summon', function() { SummonMonsterPiece($(this).data('instance-id')) })
     .on('click', '.quick-fodder-menu', function() { QuickFodderMenu() })
-    .on('click', '.quick-fodder', function() { QuickFodder($(this)) })
+    .on('click', '.quick-fodder', function() {
+        quickFodderAdded = true;
+        QuickFodder($(this))
+    })
     .on('click', '.profile-view-mode', function() {
         var view_mode = $(this).data('mode');
         $.get('/profile/' + PROFILE_NAME + '/monster/inventory/' + view_mode + '/', function() {

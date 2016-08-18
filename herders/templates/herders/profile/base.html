@@ -13,7 +13,20 @@
         </button>
     </div>
     <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
-        <p class="navmenu-brand">My Profile</p>
+        {% if is_owner %}
+            <p class="navmenu-brand">My Profile</p>
+        {% else %}
+            <p class="navmenu-brand">
+                {{ profile_name }}'s Profile
+                {% if user.is_authenticated %}
+                    {% if summoner not in user.summoner.following.all %}
+                        <small><a href="{% url 'herders:profile_follow_add' profile_name=user.username follow_username=summoner.user.username%}?next={{ request.path }}" class="pull-right text-success"><span class="fa fa-user"></span> Follow</a></small>
+                    {% else %}
+                        <small><a href="{% url 'herders:profile_follow_remove' profile_name=user.username follow_username=summoner.user.username%}?next={{ request.path }}" class="pull-right text-danger"><span class="glyphicon glyphicon-remove-circle"></span> Unfollow</a></small>
+                    {% endif %}
+                {% endif %}
+            </p>
+        {% endif %}
         <ul class="nav navmenu-nav">
             <li {% if view == 'profile' %}class="dropdown open"{% endif %}>
                  <a href="{% url 'herders:profile_default' profile_name=profile_name %}">
@@ -46,42 +59,6 @@
 
 {% block content %}
     <div class="navmenu-content">
-        {% if not is_owner %}
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <span class="lead">{{ summoner.user.username }}'s profile </span>
-                    <div class="btn-group" role="group">
-                        <a href="{% url 'herders:profile_default' profile_name=summoner.user.username %}" class="btn btn-default {% if view == 'profile' %}active{% endif %}">
-                            <img src="{% static 'herders/images/icons/monster.png' %}" />
-                            Monsters
-                        </a>
-                        <a href="{% url 'herders:runes' profile_name=summoner.user.username %}"
-                           class="btn btn-default {% if view == 'runes' %}active{% endif %}">
-                            <img src="{% static 'herders/images/icons/rune.png' %}" />
-                            Runes
-                        </a>
-                        <a href="{% url 'herders:fusion' profile_name=summoner.user.username %}"
-                           class="btn btn-default {% if view == 'fusion' %}active{% endif %}">
-                            <img src="{% static 'herders/images/icons/fusion.png' %}" />
-                            Fusion
-                        </a>
-                        <a href="{% url 'herders:teams' profile_name=summoner.user.username %}"
-                           class="btn btn-default {% if view == 'teams' %}active{% endif %}">
-                            <i class="fa fa-users"></i>
-                            Teams
-                        </a>
-                    </div>
-                    {% if user.is_authenticated %}
-                        {% if summoner not in user.summoner.following.all %}
-                            <a href="{% url 'herders:profile_follow_add' profile_name=user.username follow_username=summoner.user.username%}?next={{ request.path }}" class="btn btn-success pull-right"><span class="fa fa-user"></span> Follow</a>
-                        {% else %}
-                            <a href="{% url 'herders:profile_follow_remove' profile_name=user.username follow_username=summoner.user.username%}?next={{ request.path }}" class="btn btn-danger pull-right"><span class="glyphicon glyphicon-remove-circle"></span> Unfollow</a>
-                        {% endif %}
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
-
         <div class="profile">
             {% block profile %}
             {% endblock profile %}

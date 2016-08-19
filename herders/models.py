@@ -1009,6 +1009,7 @@ class MonsterInstance(models.Model):
     rune_resistance = models.IntegerField(blank=True, default=0)
     base_accuracy = models.IntegerField(blank=True, default=0)
     rune_accuracy = models.IntegerField(blank=True, default=0)
+    avg_rune_efficiency = models.FloatField(blank=True, null=True)
 
     fodder = models.BooleanField(default=False)
     in_storage = models.BooleanField(default=False)
@@ -1079,7 +1080,7 @@ class MonsterInstance(models.Model):
 
         return rune_bonuses
 
-    def avg_rune_efficiency(self):
+    def get_avg_rune_efficiency(self):
         efficiencies = sum(self.runeinstance_set.filter(efficiency__isnull=False).values_list('efficiency', flat=True))
         return efficiencies / 6
 
@@ -1503,6 +1504,8 @@ class MonsterInstance(models.Model):
         self.rune_crit_damage = self.calc_rune_crit_damage()
         self.rune_resistance = self.calc_rune_resistance()
         self.rune_accuracy = self.calc_rune_accuracy()
+
+        self.avg_rune_efficiency = self.get_avg_rune_efficiency()
 
         # Limit skill levels to the max level of the skill
         skills = self.monster.skills.all()

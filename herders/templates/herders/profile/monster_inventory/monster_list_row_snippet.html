@@ -102,6 +102,7 @@
         {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune popover=True only %}
         {% endfor %}
     </td>
+    <td>{% if instance.avg_rune_efficiency %}{{ instance.avg_rune_efficiency|floatformat:-2 }}%{% endif %}</td>
     <td>{{ instance.hp }}</td>
     <td>{{ instance.defense }}</td>
     <td>{{ instance.attack }}</td>

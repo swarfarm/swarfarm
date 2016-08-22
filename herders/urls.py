@@ -77,6 +77,10 @@ urlpatterns = [
                 url(r'^delete/(?P<craft_id>[0-9a-f]{32})/$', views.rune_craft_delete, name='rune_craft_delete'),
             ])),
         ])),
+        url(r'^buildings/', include([
+            url(r'^$', views.buildings, name='buildings'),
+            url(r'^edit/(?P<building_id>[0-9]+)/$', views.building_edit, name='building_edit'),
+        ])),
         url(r'following/', include([
             url(r'^$', views.following, name='profile_following'),
             url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_add, name='profile_follow_add'),

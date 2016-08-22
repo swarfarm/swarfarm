@@ -1,0 +1,37 @@
+{% extends 'herders/profile/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    {% if is_owner %}
+        My Buildings - {{ block.super }}
+    {% else %}
+        {{ summoner.user.username }}'s Buildings - {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block profile %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <table class="table table-condensed table-hover">
+    <thead>
+    <tr>
+        <th data-sorter="false"></th>
+        <th>Building</th>
+        <th>Level</th>
+        <th>Bonus</th>
+        <th>Area of Effect</th>
+        <th>Remaining Upgrade Cost</th>
+        {% if is_owner %}<th data-sorter="false"></th>{% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for bldg in buildings %}
+        {% include 'herders/profile/buildings/building_row_snippet.html' with bldg=bldg is_owner=is_owner only %}
+    {% endfor %}
+    </tbody>
+    </table>
+{% endblock profile %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static 'herders/js/buildings.js' %}"></script>
+{% endblock javascript_compressed %}

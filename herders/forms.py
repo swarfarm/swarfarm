@@ -2,6 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseModelFormSet
 from django.core.validators import RegexValidator
+from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.templatetags.static import static
@@ -9,7 +10,7 @@ from django.utils.safestring import mark_safe
 
 from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
 from bestiary.forms import effect_choices
-from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance
+from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance, BuildingInstance
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset, Fieldset
@@ -218,7 +219,7 @@ class DeleteProfileForm(forms.Form):
     )
 
 
-# SWARFARM forms
+# Profile forms
 class EditEssenceStorageForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditEssenceStorageForm, self).__init__(*args, **kwargs)
@@ -364,6 +365,28 @@ class EditEssenceStorageForm(ModelForm):
             'storage_dark_mid': 'Dark Mid',
             'storage_dark_high': 'Dark High',
         }
+
+
+class EditBuildingForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditBuildingForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'ajax-form'
+        # self.helper.form_action must be set in view
+        self.helper.layout = Layout(
+            Field('level'),
+            FormActions(
+                Submit('save', 'Save', css_class='btn-success')
+            )
+        )
+
+    class Meta:
+        model = BuildingInstance
+        fields = [
+            'level',
+        ]
 
 
 # MonsterInstance Forms

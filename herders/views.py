@@ -12,7 +12,7 @@ from django.db import IntegrityError
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext
-from bestiary.models import Monster, Fusion
+from bestiary.models import Monster, Fusion, Building
 from .forms import *
 from .filters import *
 from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance
@@ -210,7 +210,97 @@ def buildings(request, profile_name):
     except Summoner.DoesNotExist:
         raise Http404
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-    buildings = BuildingInstance.objects.filter(owner=summoner)
+
+    all_buildings = Building.objects.all().order_by('name')
+
+    building_data = []
+
+    for b in all_buildings:
+        building_data.append(_building_data(summoner, b))
+
+    context = {
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+        'buildings': building_data
+    }
+
+    return render(request, 'herders/profile/buildings/base.html', context)
+
+
+@login_required
+def building_edit(request, profile_name, building_id):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        raise Http404
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    base_building = get_object_or_404(Building, pk=building_id)
+
+    try:
+        owned_instance = BuildingInstance.objects.get(owner=summoner, building=base_building)
+    except BuildingInstance.DoesNotExist:
+        owned_instance = BuildingInstance.objects.create(owner=summoner, level=0, building=base_building)
+
+    form = EditBuildingForm(request.POST or None, instance=owned_instance)
+    form.helper.form_action = reverse('herders:building_edit', kwargs={'profile_name': profile_name, 'building_id': building_id})
+
+    context = {
+        'form': form,
+    }
+
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            owned_instance = form.save()
+            messages.success(request, 'Updated ' + owned_instance.building.name + ' to level ' + str(owned_instance.level))
+
+            template = loader.get_template('herders/profile/buildings/building_row_snippet.html')
+            context = {
+                'is_owner': is_owner,
+                'bldg': _building_data(summoner, base_building)
+            }
+
+            response_data = {
+                'code': 'success',
+                'instance_id': building_id,
+                'html': template.render(RequestContext(request, context))
+            }
+        else:
+            template = loader.get_template('herders/profile/buildings/edit_form.html')
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, context))
+            }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+def _building_data(summoner, building):
+    try:
+        instance = BuildingInstance.objects.get(owner=summoner, building=building)
+        stat_bonus = building.stat_bonus[instance.level - 1]
+        remaining_upgrade_cost = instance.remaining_upgrade_cost()
+    except BuildingInstance.DoesNotExist:
+        instance = None
+        stat_bonus = 0
+        remaining_upgrade_cost = sum(building.upgrade_cost),
+
+    percent_stat = building.affected_stat in Building.PERCENT_STATS
+
+    if building.area == Building.AREA_GENERAL:
+        currency = 'glory_points.png'
+    else:
+        currency = 'guild_points.png'
+
+    return {
+        'base': building,
+        'instance': instance,
+        'stat_bonus': stat_bonus,
+        'percent_stat': percent_stat,
+        'remaining_upgrade_cost': remaining_upgrade_cost,
+        'currency': currency,
+    }
 
 
 def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):

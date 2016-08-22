@@ -53,6 +53,11 @@
                 {% block team_menu %}{% endblock team_menu %}
             </li>
             <li><a class="essence-storage"><span class="fa fa-archive"></span> Essence Storage</a></li>
+            <li>
+                <a href="{% url 'herders:buildings' profile_name=profile_name %}">
+                    <span class="fa fa-building"></span> Buildings
+                </a>
+            </li>
         </ul>
     </div>
 {% endblock subnav %}

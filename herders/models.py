@@ -778,16 +778,31 @@ class Building(models.Model):
         (STAT_ATK, 'ATK'),
         (STAT_DEF, 'DEF'),
         (STAT_SPD, 'SPD'),
-        (STAT_CRIT_RATE_PCT, 'CRI Rate %'),
-        (STAT_CRIT_DMG_PCT, 'CRI Dmg %'),
-        (STAT_RESIST_PCT, 'Resistance %'),
-        (STAT_ACCURACY_PCT, 'Accuracy %'),
+        (STAT_CRIT_RATE_PCT, 'CRI Rate'),
+        (STAT_CRIT_DMG_PCT, 'CRI Dmg'),
+        (STAT_RESIST_PCT, 'Resistance'),
+        (STAT_ACCURACY_PCT, 'Accuracy'),
         (MAX_ENERGY, 'Max. Energy'),
         (MANA_STONE_STORAGE, 'Mana Stone Storage'),
         (MANA_STONE_PRODUCTION, 'Mana Stone Production Rate'),
         (ENERGY_PRODUCTION, 'Energy Production Rate'),
         (ARCANE_TOWER_ATK, 'Arcane Tower ATK'),
         (ARCANE_TOWER_SPD, 'Arcane Tower SPD'),
+    ]
+
+    PERCENT_STATS = [
+        STAT_HP,
+        STAT_ATK,
+        STAT_DEF,
+        STAT_SPD,
+        STAT_CRIT_RATE_PCT,
+        STAT_CRIT_DMG_PCT,
+        STAT_RESIST_PCT,
+        STAT_ACCURACY_PCT,
+        MANA_STONE_PRODUCTION,
+        ENERGY_PRODUCTION,
+        ARCANE_TOWER_ATK,
+        ARCANE_TOWER_SPD,
     ]
 
     com2us_id = models.IntegerField()
@@ -2738,8 +2753,18 @@ class BuildingInstance(models.Model):
     def __str__(self):
         return str(self.building) + ', Lv.' + str(self.level)
 
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.level and self.building and (self.level < 0 or self.level > self.building.max_level):
+            raise ValidationError({
+                    'level': ValidationError(
+                        'Level must be between %s and %s' % (0, self.building.max_level),
+                        code='invalid_level',
+                    )
+                })
+
     def save(self, *args, **kwargs):
-        self.level = min(max(1, self.level), self.building.max_level)
+        self.level = min(max(0, self.level), self.building.max_level)
         super(BuildingInstance, self).save(*args, **kwargs)
 
 

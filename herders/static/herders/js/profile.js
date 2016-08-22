@@ -198,8 +198,7 @@ $('body')
         }).done(function(data) {
             if (data.code === 'success') {
                 $('.modal.in').modal('hide');
-                update_monster_inventory();
-                /*if (data.instance_id != 'undefined') {
+                if (data.instance_id != 'undefined') {
                     // Try to find a matching monster container and replace it
                     var $monster_container = $('.inventory-element[data-instance-id="' + data.instance_id + '"]');
 
@@ -223,7 +222,7 @@ $('body')
                 }
                 else {
                     update_monster_inventory();
-                }*/
+                }
             }
             else {
                 $form.replaceWith(data.html);

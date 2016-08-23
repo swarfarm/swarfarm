@@ -211,6 +211,22 @@ def buildings(request, profile_name):
         raise Http404
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
+    context = {
+        'summoner': summoner,
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+    }
+
+    return render(request, 'herders/profile/buildings/base.html', context)
+
+
+def buildings_inventory(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        raise Http404
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
     all_buildings = Building.objects.all().order_by('name')
 
     building_data = []
@@ -242,7 +258,7 @@ def buildings(request, profile_name):
         'guild_progress': float(spent_guild) / total_guild_cost * 100,
     }
 
-    return render(request, 'herders/profile/buildings/base.html', context)
+    return render(request, 'herders/profile/buildings/inventory.html', context)
 
 
 @login_required
@@ -271,16 +287,8 @@ def building_edit(request, profile_name, building_id):
             owned_instance = form.save()
             messages.success(request, 'Updated ' + owned_instance.building.name + ' to level ' + str(owned_instance.level))
 
-            template = loader.get_template('herders/profile/buildings/building_row_snippet.html')
-            context = {
-                'is_owner': is_owner,
-                'bldg': _building_data(summoner, base_building)
-            }
-
             response_data = {
                 'code': 'success',
-                'instance_id': building_id,
-                'html': template.render(RequestContext(request, context))
             }
         else:
             template = loader.get_template('herders/profile/buildings/edit_form.html')

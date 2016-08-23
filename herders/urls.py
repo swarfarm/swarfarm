@@ -79,6 +79,7 @@ urlpatterns = [
         ])),
         url(r'^buildings/', include([
             url(r'^$', views.buildings, name='buildings'),
+            url(r'^inventory/$', views.buildings_inventory, name='buildings_inventory'),
             url(r'^edit/(?P<building_id>[0-9]+)/$', views.building_edit, name='building_edit'),
         ])),
         url(r'following/', include([

@@ -214,14 +214,32 @@ def buildings(request, profile_name):
     all_buildings = Building.objects.all().order_by('name')
 
     building_data = []
+    total_glory_cost = 0
+    spent_glory = 0
+    total_guild_cost = 0
+    spent_guild = 0
 
     for b in all_buildings:
-        building_data.append(_building_data(summoner, b))
+        bldg_data = _building_data(summoner, b)
+        if b.area == Building.AREA_GENERAL:
+            total_glory_cost += sum(b.upgrade_cost)
+            spent_glory += bldg_data['spent_upgrade_cost']
+        elif b.area == Building.AREA_GUILD:
+            total_guild_cost += sum(b.upgrade_cost)
+            spent_guild += bldg_data['spent_upgrade_cost']
+
+        building_data.append(bldg_data)
 
     context = {
         'is_owner': is_owner,
         'profile_name': profile_name,
-        'buildings': building_data
+        'buildings': building_data,
+        'total_glory_cost': total_glory_cost,
+        'spent_glory': spent_glory,
+        'glory_progress': float(spent_glory) / total_glory_cost * 100,
+        'total_guild_cost': total_guild_cost,
+        'spent_guild': spent_guild,
+        'guild_progress': float(spent_guild) / total_guild_cost * 100,
     }
 
     return render(request, 'herders/profile/buildings/base.html', context)
@@ -277,28 +295,34 @@ def building_edit(request, profile_name, building_id):
 
 
 def _building_data(summoner, building):
-    try:
-        instance = BuildingInstance.objects.get(owner=summoner, building=building)
-        stat_bonus = building.stat_bonus[instance.level - 1]
-        remaining_upgrade_cost = instance.remaining_upgrade_cost()
-    except BuildingInstance.DoesNotExist:
-        instance = None
-        stat_bonus = 0
-        remaining_upgrade_cost = sum(building.upgrade_cost),
-
     percent_stat = building.affected_stat in Building.PERCENT_STATS
-
+    total_upgrade_cost = sum(building.upgrade_cost)
     if building.area == Building.AREA_GENERAL:
         currency = 'glory_points.png'
     else:
         currency = 'guild_points.png'
+
+    try:
+        instance = BuildingInstance.objects.get(owner=summoner, building=building)
+        if instance.level > 0:
+            stat_bonus = building.stat_bonus[instance.level - 1]
+        else:
+            stat_bonus = 0
+
+        remaining_upgrade_cost = instance.remaining_upgrade_cost()
+    except BuildingInstance.DoesNotExist:
+        instance = None
+        stat_bonus = 0
+        remaining_upgrade_cost = total_upgrade_cost
 
     return {
         'base': building,
         'instance': instance,
         'stat_bonus': stat_bonus,
         'percent_stat': percent_stat,
-        'remaining_upgrade_cost': remaining_upgrade_cost,
+        'spent_upgrade_cost': total_upgrade_cost - remaining_upgrade_cost,
+        'total_upgrade_cost': total_upgrade_cost,
+        'upgrade_progress': float(total_upgrade_cost - remaining_upgrade_cost) / total_upgrade_cost * 100,
         'currency': currency,
     }
 

@@ -11,9 +11,7 @@
         {% if bldg.base.element %}(<img src="{{ img_url_prefix }}elements/{{ bldg.base.element }}.png" class="image-inline" /> only){% endif %}
     </td>
     <td>
-        {% if bldg.remaining_upgrade_cost %}
-            {{ bldg.remaining_upgrade_cost }}<img src="{{ img_url_prefix }}icons/{{ bldg.currency }}" class="image-inline" />
-        {% endif %}
+        {{ bldg.spent_upgrade_cost }} / {{ bldg.total_upgrade_cost }}<img src="{{ img_url_prefix }}icons/{{ bldg.currency }}" class="image-inline" />
     </td>
     {% if is_owner %}<td><button class="btn btn-xs btn-link edit-building" data-building-id="{{ bldg.base.pk }}"><span class="glyphicon glyphicon-pencil"></span></button></td>{% endif %}
 </tr>

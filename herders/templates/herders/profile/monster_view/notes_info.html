@@ -23,6 +23,27 @@
     <div class="panel-heading">
         <p class="panel-title">Monster Info</p>
     </div>
+    <div class="panel-body">
+        <div class="monster-box">
+            <span>
+                <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
+                {% for x in instance.stars|get_range %}
+                    {% if instance.monster.is_awakened %}
+                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                    {% elif instance.monster.can_awaken %}
+                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                    {% else %}
+                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                    {% endif %}
+                {% endfor %}
+            </span>
+            <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
+        </div>
+        <div class="bestiary-name">
+            <h1>{{ instance.monster.name }} <small></small></h1>
+            <p class="lead"><img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" style="height:1em"/> {{ instance.monster.get_archetype_display }}</p>
+        </div>
+    </div>
     <table class="table table-condensed table-bordered">
         <tbody>
         {% if instance.created %}
@@ -143,6 +164,19 @@
                     <li>{% if instance.monster.wikia_url %}<a href="{{ instance.monster.wikia_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> Wikia</a>{% endif %}</li>
                     <li>{% if instance.monster.summonerswar_co_url %}<a href="{{ instance.monster.summonerswar_co_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> summonerswar.co</a>{% endif %}</li>
                 </ul>
+            </td>
+        </tr>
+        <tr>
+            <td>Skills to Max:</td>
+            <td>
+                {% if instance.skill_ups_to_max > 0 %}
+                <div class="monster-image">
+                    <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+                    <span class="image-plus image-plus-main">{{ instance.skill_ups_to_max }}</span>
+                </div>
+                {% else %}
+                <p class="list-group-item-text">None!</p>
+                {% endif %}
             </td>
         </tr>
     </table>

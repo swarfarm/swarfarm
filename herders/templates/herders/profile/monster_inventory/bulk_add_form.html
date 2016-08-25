@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'herders/profile/monster_inventory/base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% load crispy_forms_filters %}
@@ -6,7 +6,7 @@
 
 {% block title %}Bulk Add Monsters - {{ block.super }}{% endblock title %}
 
-{% block content %}
+{% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
 
     {% if validation_errors %}
@@ -63,4 +63,4 @@
     </div>
 
 <p>{{ bulk_add_formset.media }}</p>
-{% endblock content %}
+{% endblock profile %}

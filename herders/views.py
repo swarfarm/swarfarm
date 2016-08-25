@@ -12,7 +12,7 @@ from django.db import IntegrityError
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext
-from bestiary.models import Monster, Fusion
+from bestiary.models import Monster, Fusion, Building
 from .forms import *
 from .filters import *
 from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance
@@ -210,7 +210,121 @@ def buildings(request, profile_name):
     except Summoner.DoesNotExist:
         raise Http404
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-    buildings = BuildingInstance.objects.filter(owner=summoner)
+
+    all_buildings = Building.objects.all().order_by('name')
+
+    building_data = []
+    total_glory_cost = 0
+    spent_glory = 0
+    total_guild_cost = 0
+    spent_guild = 0
+
+    for b in all_buildings:
+        bldg_data = _building_data(summoner, b)
+        if b.area == Building.AREA_GENERAL:
+            total_glory_cost += sum(b.upgrade_cost)
+            spent_glory += bldg_data['spent_upgrade_cost']
+        elif b.area == Building.AREA_GUILD:
+            total_guild_cost += sum(b.upgrade_cost)
+            spent_guild += bldg_data['spent_upgrade_cost']
+
+        building_data.append(bldg_data)
+
+    context = {
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+        'buildings': building_data,
+        'total_glory_cost': total_glory_cost,
+        'spent_glory': spent_glory,
+        'glory_progress': float(spent_glory) / total_glory_cost * 100,
+        'total_guild_cost': total_guild_cost,
+        'spent_guild': spent_guild,
+        'guild_progress': float(spent_guild) / total_guild_cost * 100,
+    }
+
+    return render(request, 'herders/profile/buildings/base.html', context)
+
+
+@login_required
+def building_edit(request, profile_name, building_id):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        raise Http404
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+    base_building = get_object_or_404(Building, pk=building_id)
+
+    try:
+        owned_instance = BuildingInstance.objects.get(owner=summoner, building=base_building)
+    except BuildingInstance.DoesNotExist:
+        owned_instance = BuildingInstance.objects.create(owner=summoner, level=0, building=base_building)
+
+    form = EditBuildingForm(request.POST or None, instance=owned_instance)
+    form.helper.form_action = reverse('herders:building_edit', kwargs={'profile_name': profile_name, 'building_id': building_id})
+
+    context = {
+        'form': form,
+    }
+
+    if is_owner:
+        if request.method == 'POST' and form.is_valid():
+            owned_instance = form.save()
+            messages.success(request, 'Updated ' + owned_instance.building.name + ' to level ' + str(owned_instance.level))
+
+            template = loader.get_template('herders/profile/buildings/building_row_snippet.html')
+            context = {
+                'is_owner': is_owner,
+                'bldg': _building_data(summoner, base_building)
+            }
+
+            response_data = {
+                'code': 'success',
+                'instance_id': building_id,
+                'html': template.render(RequestContext(request, context))
+            }
+        else:
+            template = loader.get_template('herders/profile/buildings/edit_form.html')
+            response_data = {
+                'code': 'error',
+                'html': template.render(RequestContext(request, context))
+            }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+def _building_data(summoner, building):
+    percent_stat = building.affected_stat in Building.PERCENT_STATS
+    total_upgrade_cost = sum(building.upgrade_cost)
+    if building.area == Building.AREA_GENERAL:
+        currency = 'glory_points.png'
+    else:
+        currency = 'guild_points.png'
+
+    try:
+        instance = BuildingInstance.objects.get(owner=summoner, building=building)
+        if instance.level > 0:
+            stat_bonus = building.stat_bonus[instance.level - 1]
+        else:
+            stat_bonus = 0
+
+        remaining_upgrade_cost = instance.remaining_upgrade_cost()
+    except BuildingInstance.DoesNotExist:
+        instance = None
+        stat_bonus = 0
+        remaining_upgrade_cost = total_upgrade_cost
+
+    return {
+        'base': building,
+        'instance': instance,
+        'stat_bonus': stat_bonus,
+        'percent_stat': percent_stat,
+        'spent_upgrade_cost': total_upgrade_cost - remaining_upgrade_cost,
+        'total_upgrade_cost': total_upgrade_cost,
+        'upgrade_progress': float(total_upgrade_cost - remaining_upgrade_cost) / total_upgrade_cost * 100,
+        'currency': currency,
+    }
 
 
 def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
@@ -601,12 +715,14 @@ def monster_instance_view_runes(request, profile_name, instance_id):
 
 def monster_instance_view_stats(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
     context = {
         'instance': instance,
+        'bldg_stats': instance.get_building_stats(),
+        'guild_stats': instance.get_building_stats(Building.AREA_GUILD),
     }
 
     return render(request, 'herders/profile/monster_view/stats.html', context)

@@ -49,7 +49,11 @@
             </ul>
         </div>
         <div class="list-group-item">
-            <p>Avg. Rune Efficiency: {{ instance.avg_rune_efficiency|floatformat:"-2" }}%</p>
+            {% if instance.avg_rune_efficiency != None %}
+                <p>Avg. Rune Efficiency: {{ instance.avg_rune_efficiency|floatformat:"-2" }}%</p>
+            {% else %}
+                <p>Re-save monster to see average rune efficiency.</p>
+            {% endif %}
         </div>
     </div>
 </div>

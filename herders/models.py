@@ -1008,24 +1008,32 @@ class MonsterInstance(models.Model):
     skill_2_level = models.IntegerField(blank=True, default=1)
     skill_3_level = models.IntegerField(blank=True, default=1)
     skill_4_level = models.IntegerField(blank=True, default=1)
+
     base_hp = models.IntegerField(blank=True, default=0)
     rune_hp = models.IntegerField(blank=True, default=0)
+
     base_attack = models.IntegerField(blank=True, default=0)
     rune_attack = models.IntegerField(blank=True, default=0)
+
     base_defense = models.IntegerField(blank=True, default=0)
     rune_defense = models.IntegerField(blank=True, default=0)
+
     base_speed = models.IntegerField(blank=True, default=0)
     rune_speed = models.IntegerField(blank=True, default=0)
+
     base_crit_rate = models.IntegerField(blank=True, default=0)
     rune_crit_rate = models.IntegerField(blank=True, default=0)
+
     base_crit_damage = models.IntegerField(blank=True, default=0)
     rune_crit_damage = models.IntegerField(blank=True, default=0)
+
     base_resistance = models.IntegerField(blank=True, default=0)
     rune_resistance = models.IntegerField(blank=True, default=0)
+
     base_accuracy = models.IntegerField(blank=True, default=0)
     rune_accuracy = models.IntegerField(blank=True, default=0)
-    avg_rune_efficiency = models.FloatField(blank=True, null=True)
 
+    avg_rune_efficiency = models.FloatField(blank=True, null=True)
     fodder = models.BooleanField(default=False)
     in_storage = models.BooleanField(default=False)
     ignore_for_fusion = models.BooleanField(default=False)
@@ -1178,7 +1186,7 @@ class MonsterInstance(models.Model):
             Q(building__element__isnull=True) | Q(building__element=self.monster.element),
             owner=self.owner,
             building__affected_stat=Building.STAT_HP,
-            building_area=Building.AREA_GUILD,
+            building__area=Building.AREA_GUILD,
         )
 
         bonus = 0
@@ -1226,7 +1234,7 @@ class MonsterInstance(models.Model):
             Q(building__element__isnull=True) | Q(building__element=self.monster.element),
             owner=self.owner,
             building__affected_stat=Building.STAT_ATK,
-            building_area=Building.AREA_GUILD,
+            building__area=Building.AREA_GUILD,
         )
 
         bonus = 0
@@ -1274,7 +1282,7 @@ class MonsterInstance(models.Model):
             Q(building__element__isnull=True) | Q(building__element=self.monster.element),
             owner=self.owner,
             building__affected_stat=Building.STAT_DEF,
-            building_area=Building.AREA_GUILD,
+            building__area=Building.AREA_GUILD,
         )
 
         bonus = 0
@@ -1319,7 +1327,7 @@ class MonsterInstance(models.Model):
             Q(building__element__isnull=True) | Q(building__element=self.monster.element),
             owner=self.owner,
             building__affected_stat=Building.STAT_SPD,
-            building_area=Building.AREA_GUILD,
+            building__area=Building.AREA_GUILD,
         )
 
         bonus = 0
@@ -1362,7 +1370,7 @@ class MonsterInstance(models.Model):
             Q(building__element__isnull=True) | Q(building__element=self.monster.element),
             owner=self.owner,
             building__affected_stat=Building.STAT_CRIT_RATE_PCT,
-            building_area=Building.AREA_GUILD,
+            building__area=Building.AREA_GUILD,
         )
 
         bonus = 0
@@ -1405,7 +1413,7 @@ class MonsterInstance(models.Model):
             Q(building__element__isnull=True) | Q(building__element=self.monster.element),
             owner=self.owner,
             building__affected_stat=Building.STAT_CRIT_DMG_PCT,
-            building_area=Building.AREA_GUILD,
+            building__area=Building.AREA_GUILD,
         )
 
         bonus = 0
@@ -1448,7 +1456,7 @@ class MonsterInstance(models.Model):
             Q(building__element__isnull=True) | Q(building__element=self.monster.element),
             owner=self.owner,
             building__affected_stat=Building.STAT_RESIST_PCT,
-            building_area=Building.AREA_GUILD,
+            building__area=Building.AREA_GUILD,
         )
 
         bonus = 0
@@ -1491,7 +1499,7 @@ class MonsterInstance(models.Model):
             Q(building__element__isnull=True) | Q(building__element=self.monster.element),
             owner=self.owner,
             building__affected_stat=Building.STAT_ACCURACY_PCT,
-            building_area=Building.AREA_GUILD,
+            building__area=Building.AREA_GUILD,
         )
 
         bonus = 0
@@ -1499,6 +1507,42 @@ class MonsterInstance(models.Model):
             bonus += building.building.stat_bonus[building.level - 1] / 100.0
 
         return int(ceil(round(self.base_accuracy * bonus)))
+
+    def get_building_stats(self, area=Building.AREA_GENERAL):
+        owned_bldgs = BuildingInstance.objects.filter(
+            Q(building__element__isnull=True) | Q(building__element=self.monster.element),
+            owner=self.owner,
+            building__area=area,
+        ).select_related('building')
+
+        bonuses = {
+            Building.STAT_HP: 0,
+            Building.STAT_ATK: 0,
+            Building.STAT_DEF: 0,
+            Building.STAT_SPD: 0,
+            Building.STAT_CRIT_RATE_PCT: 0,
+            Building.STAT_CRIT_DMG_PCT: 0,
+            Building.STAT_RESIST_PCT: 0,
+            Building.STAT_ACCURACY_PCT: 0,
+        }
+
+        for b in owned_bldgs:
+            if b.building.affected_stat in bonuses.keys():
+                bonuses[b.building.affected_stat] += b.building.stat_bonus[b.level - 1] / 100.0
+
+        return {
+            'hp': int(ceil(round(self.base_hp * bonuses[Building.STAT_HP], 3))),
+            'attack': int(ceil(round(self.base_attack * bonuses[Building.STAT_ATK], 3))),
+            'defense': int(ceil(round(self.base_defense * bonuses[Building.STAT_DEF], 3))),
+            'speed': int(ceil(round(self.base_speed * bonuses[Building.STAT_SPD], 3))),
+            'crit_rate': int(ceil(round(self.base_crit_rate * bonuses[Building.STAT_CRIT_RATE_PCT], 3))),
+            'crit_damage': int(ceil(round(self.base_crit_damage * bonuses[Building.STAT_CRIT_DMG_PCT], 3))),
+            'resistance': int(ceil(round(self.base_resistance * bonuses[Building.STAT_RESIST_PCT], 3))),
+            'accuracy': int(ceil(round(self.base_accuracy * bonuses[Building.STAT_ACCURACY_PCT], 3))),
+        }
+
+    def get_guild_stats(self):
+        return self.get_building_stats(Building.AREA_GUILD)
 
     def update_fields(self):
         # Update stats

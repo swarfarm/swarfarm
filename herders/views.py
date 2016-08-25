@@ -715,12 +715,14 @@ def monster_instance_view_runes(request, profile_name, instance_id):
 
 def monster_instance_view_stats(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
     context = {
         'instance': instance,
+        'bldg_stats': instance.get_building_stats(),
+        'guild_stats': instance.get_building_stats(Building.AREA_GUILD),
     }
 
     return render(request, 'herders/profile/monster_view/stats.html', context)

@@ -232,6 +232,7 @@ def buildings(request, profile_name):
 
     context = {
         'is_owner': is_owner,
+        'summoner': summoner,
         'profile_name': profile_name,
         'buildings': building_data,
         'total_glory_cost': total_glory_cost,

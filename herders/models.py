@@ -2334,17 +2334,49 @@ class RuneInstance(models.Model):
         if self.innate_stat and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]:
             self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
 
-        if self.substat_1 and self.substat_1_value > self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
-            self.substat_1_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+        if self.substat_1:
+            if self.substat_1_craft == RuneInstance.CRAFT_ENCHANT_GEM:
+                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
+            else:
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_1_craft == RuneInstance.CRAFT_GRINDSTONE:
+                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
 
-        if self.substat_2 and self.substat_2_value > self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
-            self.substat_2_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+            if self.substat_1_value > max_sub_value:
+                self.substat_1_value = max_sub_value
 
-        if self.substat_3 and self.substat_3_value > self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
-            self.substat_3_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+        if self.substat_2:
+            if self.substat_2_craft == RuneInstance.CRAFT_ENCHANT_GEM:
+                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
+            else:
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_2_craft == RuneInstance.CRAFT_GRINDSTONE:
+                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
 
-        if self.substat_4 and self.substat_4_value > self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1):
-            self.substat_4_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+            if self.substat_2_value > max_sub_value:
+                self.substat_2_value = max_sub_value
+
+        if self.substat_3:
+            if self.substat_3_craft == RuneInstance.CRAFT_ENCHANT_GEM:
+                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
+            else:
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_3_craft == RuneInstance.CRAFT_GRINDSTONE:
+                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
+
+            if self.substat_3_value > max_sub_value:
+                self.substat_3_value = max_sub_value
+
+        if self.substat_4:
+            if self.substat_4_craft == RuneInstance.CRAFT_ENCHANT_GEM:
+                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
+            else:
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_4_craft == RuneInstance.CRAFT_GRINDSTONE:
+                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
+
+            if self.substat_4_value > max_sub_value:
+                self.substat_4_value = max_sub_value
 
         # Check no other runes are in this slot
         if self.assigned_to:
@@ -2404,7 +2436,7 @@ class RuneInstance(models.Model):
             )
 
         # Check if stat type was specified that it has value > 0
-        if self.stars and self.level:
+        if self.stars is not None and self.level is not None:
             self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
             if self.innate_stat is not None:
@@ -2432,7 +2464,13 @@ class RuneInstance(models.Model):
                             code='invalid_rune_substat_1_value'
                         )
                     })
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_1_craft == RuneInstance.CRAFT_ENCHANT_GEM:
+                    max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
+                else:
+                    max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                    if self.substat_1_craft == RuneInstance.CRAFT_GRINDSTONE:
+                        max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
+
                 if self.substat_1_value > max_sub_value:
                     raise ValidationError({
                         'substat_1_value': ValidationError(
@@ -2449,7 +2487,13 @@ class RuneInstance(models.Model):
                             code='invalid_rune_substat_2_value'
                         )
                     })
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_2_craft == RuneInstance.CRAFT_ENCHANT_GEM:
+                    max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
+                else:
+                    max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                    if self.substat_2_craft == RuneInstance.CRAFT_GRINDSTONE:
+                        max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
+
                 if self.substat_2_value > max_sub_value:
                     raise ValidationError({
                         'substat_2_value': ValidationError(
@@ -2465,7 +2509,14 @@ class RuneInstance(models.Model):
                             code='invalid_rune_substat_3_value'
                         )
                     })
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+
+                if self.substat_3_craft == RuneInstance.CRAFT_ENCHANT_GEM:
+                    max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
+                else:
+                    max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                    if self.substat_3_craft == RuneInstance.CRAFT_GRINDSTONE:
+                        max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
+
                 if self.substat_3_value > max_sub_value:
                     raise ValidationError({
                         'substat_3_value': ValidationError(
@@ -2482,7 +2533,13 @@ class RuneInstance(models.Model):
                             code='invalid_rune_substat_4_value'
                         )
                     })
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                if self.substat_4_craft == RuneInstance.CRAFT_ENCHANT_GEM:
+                    max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
+                else:
+                    max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
+                    if self.substat_4_craft == RuneInstance.CRAFT_GRINDSTONE:
+                        max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
+
                 if self.substat_4_value > max_sub_value:
                     raise ValidationError({
                         'substat_4_value': ValidationError(

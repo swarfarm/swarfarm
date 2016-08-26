@@ -187,7 +187,7 @@ def profile(request, profile_name=None):
 
     # Determine if the person logged in is the one requesting the view
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-    monster_filter_form = FilterMonsterInstanceForm()
+    monster_filter_form = FilterMonsterInstanceForm(auto_id='id_filter_%s')
     monster_filter_form.helper.form_action = reverse('herders:monster_inventory', kwargs={'profile_name': profile_name})
 
     context = {
@@ -356,7 +356,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     pieces = MonsterPiece.objects.filter(owner=summoner)
 
-    form = FilterMonsterInstanceForm(request.POST or None)
+    form = FilterMonsterInstanceForm(request.POST or None, auto_id='id_filter_%s')
     if form.is_valid():
         monster_filter = MonsterInstanceFilter(form.cleaned_data, queryset=monster_queryset)
     else:

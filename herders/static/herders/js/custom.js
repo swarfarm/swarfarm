@@ -279,8 +279,8 @@ $('body')
                     content: d,
                     html: true,
                     placement: popoverPlacement(el),
-                    container: 'body',
-                    viewport: {selector: 'body', padding: 2},
+                    container: '#wrap',
+                    viewport: {selector: '#wrap', padding: 2},
                     template: '<div class="monster-skill popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
                 });
 
@@ -301,10 +301,19 @@ $('body')
     });
 
 function popoverPlacement(element) {
-    var distance_from_right = jQuery(window).width() - element.offset().left;
+    var windowWidth = jQuery(window).width(),
+        elWidth = element.width(),
+        elDistanceFromRight = windowWidth - (element.offset().left + elWidth);
 
-    if (distance_from_right < 500) return 'auto left';
-    return 'right';
+    if (windowWidth - elWidth < 250) {
+        return 'auto top';
+    }
+    else if (elDistanceFromRight < 500) {
+        return 'auto left';
+    }
+    else {
+        return 'auto right';
+    }
 }
 
 //Bulk add

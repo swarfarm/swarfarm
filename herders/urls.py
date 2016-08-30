@@ -22,7 +22,6 @@ urlpatterns = [
             url(r'^quick_fodder/$', views.quick_fodder_menu, name='quick_fodder_menu'),
             url(r'^bulk_add/$', views.monster_instance_bulk_add, name='monster_instance_bulk_add'),
             url(r'^view/(?P<instance_id>[0-9a-f]{32})/$', views.monster_instance_view, name='monster_instance_view'),
-            url(r'^view/(?P<instance_id>[0-9a-f]{32})/sidebar/$', views.monster_instance_view_sidebar, name='monster_instance_view_sidebar'),
             url(r'^view/(?P<instance_id>[0-9a-f]{32})/runes/$', views.monster_instance_view_runes, name='monster_instance_view_runes'),
             url(r'^view/(?P<instance_id>[0-9a-f]{32})/stats/$', views.monster_instance_view_stats, name='monster_instance_view_stats'),
             url(r'^view/(?P<instance_id>[0-9a-f]{32})/skills/$', views.monster_instance_view_skills, name='monster_instance_view_skills'),

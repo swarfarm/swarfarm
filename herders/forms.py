@@ -2,7 +2,6 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseModelFormSet
 from django.core.validators import RegexValidator
-from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.templatetags.static import static
@@ -14,7 +13,7 @@ from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGro
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset, Fieldset
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, Alert
+from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, InlineRadios, Alert
 
 from captcha.fields import ReCaptchaField
 
@@ -601,10 +600,30 @@ class FilterMonsterInstanceForm(forms.Form):
         choices=MonsterInstance.PRIORITY_CHOICES,
         required=False,
     )
-    monster__is_awakened = forms.NullBooleanField(label='Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    fodder = forms.NullBooleanField(label='Fodder', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    in_storage = forms.NullBooleanField(label='Storage', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    monster__fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    monster__is_awakened = forms.ChoiceField(
+        label='Awakened',
+        required=False,
+        choices=[(None, 'N/A'), (True, 'Yes'), (False, 'No')],
+        widget=forms.RadioSelect,
+    )
+    fodder = forms.ChoiceField(
+        label='Fodder',
+        required=False,
+        choices=[(None, 'N/A'), (True, 'Yes'), (False, 'No')],
+        widget=forms.RadioSelect,
+    )
+    in_storage = forms.ChoiceField(
+        label='Storage',
+        required=False,
+        choices=[(None, 'N/A'), (True, 'Yes'), (False, 'No')],
+        widget=forms.RadioSelect,
+    )
+    monster__fusion_food = forms.ChoiceField(
+        label='Fusion Food',
+        required=False,
+        choices=[(None, 'N/A'), (True, 'Yes'), (False, 'No')],
+        widget=forms.RadioSelect,
+    )
     monster__leader_skill__attribute = forms.MultipleChoiceField(
         label='Leader Skill Stat',
         choices=LeaderSkill.ATTRIBUTE_CHOICES,
@@ -636,7 +655,7 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label='',
+        label='Effects required on one/any skill',
         required=False,
     )
 
@@ -648,37 +667,46 @@ class FilterMonsterInstanceForm(forms.Form):
             Fieldset(
                 'General',
                 Div(
-                    Field('monster__name__icontains', wrapper_class='form-group-sm form-group-condensed col-lg-8 col-md-6 col-sm-6'),
-                    Field('tags__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
-                    Field(
-                        'stars',
-                        data_provide='slider',
-                        data_slider_min='1',
-                        data_slider_max='6',
-                        data_slider_value='[1, 6]',
-                        data_slider_step='1',
-                        data_slider_ticks='[1, 6]',
-                        data_slider_ticks_labels='["1", "6"]',
-                        wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6'
+                    Div(
+                        Field('monster__name__icontains', wrapper_class='form-group-sm form-group-condensed'),
+                        Div(
+                            Field(
+                                'stars',
+                                data_provide='slider',
+                                data_slider_min='1',
+                                data_slider_max='6',
+                                data_slider_value='[1, 6]',
+                                data_slider_step='1',
+                                data_slider_ticks='[1, 6]',
+                                data_slider_ticks_labels='["1", "6"]',
+                                wrapper_class='form-group-sm form-group-condensed col-sm-6'
+                            ),
+                            Field(
+                                'level',
+                                data_provide='slider',
+                                data_slider_min='1',
+                                data_slider_max='40',
+                                data_slider_value='[1, 40]',
+                                data_slider_step='1',
+                                data_slider_ticks='[1, 40]',
+                                data_slider_ticks_labels='["1", "40"]',
+                                wrapper_class='form-group-sm form-group-condensed col-sm-6',
+                            ),
+                            Field('tags__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
+                            Field('priority', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
+                            Field('monster__archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
+                            Field('monster__element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
+                            css_class='row',
+                        ),
+                        css_class='col-md-8'
                     ),
-                    Field(
-                        'level',
-                        data_provide='slider',
-                        data_slider_min='1',
-                        data_slider_max='40',
-                        data_slider_value='[1, 40]',
-                        data_slider_step='1',
-                        data_slider_ticks='[1, 40]',
-                        data_slider_ticks_labels='["1", "40"]',
-                        wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6',
+                    Div(
+                        InlineRadios('monster__is_awakened', wrapper_class='form-group-sm form-group-condensed'),
+                        InlineRadios('fodder', wrapper_class='form-group-sm form-group-condensed'),
+                        InlineRadios('in_storage', wrapper_class='form-group-sm form-group-condensed'),
+                        InlineRadios('monster__fusion_food', wrapper_class='form-group-sm form-group-condensed'),
+                        css_class='col-md-4'
                     ),
-                    Field('priority', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
-                    Field('monster__archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
-                    Field('monster__element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
-                    Field('monster__is_awakened', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
-                    Field('fodder', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
-                    Field('in_storage', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
-                    Field('monster__fusion_food', wrapper_class='form-group-sm form-group-condensed col-lg-4 col-md-6 col-sm-6'),
                     css_class='row'
                 ),
                 css_class='col-md-7'
@@ -728,6 +756,19 @@ class FilterMonsterInstanceForm(forms.Form):
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
         self.cleaned_data['monster__skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+
+        # Convert the select fields with None/True/False options into actual boolean values
+        choices = {
+            'None': None,
+            'True': True,
+            'False': False,
+        }
+
+        self.cleaned_data['monster__is_awakened'] = choices[self.cleaned_data.get('monster__is_awakened', 'None')]
+        self.cleaned_data['fodder'] = choices[self.cleaned_data.get('fodder', 'None')]
+        self.cleaned_data['in_storage'] = choices[self.cleaned_data.get('in_storage', 'None')]
+        self.cleaned_data['monster__fusion_food'] = choices[self.cleaned_data.get('monster__fusion_food', 'None')]
+
 
         # Split the slider ranges into two min/max fields for the filters
         try:

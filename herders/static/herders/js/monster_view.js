@@ -221,16 +221,6 @@ function PowerUpMonster(instance_id) {
 }
 
 // Page update functions
-function UpdateSidebar() {
-    $.ajax({
-        url: '/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/sidebar/',
-        type: 'get',
-        global: false
-    }).done(function(result) {
-        $('#monster-view-sidebar').html(result);
-    });
-}
-
 function UpdateRunes() {
     $.ajax({
         url: '/profile/' + PROFILE_NAME + '/monster/view/' + INSTANCE_ID + '/runes/',
@@ -277,7 +267,6 @@ function UpdateNotes() {
 }
 
 function UpdateAll() {
-    UpdateSidebar();
     UpdateRunes();
     UpdateStats();
     UpdateSkills();

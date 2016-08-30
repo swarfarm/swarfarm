@@ -187,7 +187,7 @@ def profile(request, profile_name=None):
 
     # Determine if the person logged in is the one requesting the view
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-    monster_filter_form = FilterMonsterInstanceForm()
+    monster_filter_form = FilterMonsterInstanceForm(auto_id='id_filter_%s')
     monster_filter_form.helper.form_action = reverse('herders:monster_inventory', kwargs={'profile_name': profile_name})
 
     context = {
@@ -248,6 +248,7 @@ def buildings_inventory(request, profile_name):
 
     context = {
         'is_owner': is_owner,
+        'summoner': summoner,
         'profile_name': profile_name,
         'buildings': building_data,
         'total_glory_cost': total_glory_cost,
@@ -363,7 +364,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     pieces = MonsterPiece.objects.filter(owner=summoner)
 
-    form = FilterMonsterInstanceForm(request.POST or None)
+    form = FilterMonsterInstanceForm(request.POST or None, auto_id='id_filter_%s')
     if form.is_valid():
         monster_filter = MonsterInstanceFilter(form.cleaned_data, queryset=monster_queryset)
     else:
@@ -670,26 +671,6 @@ def monster_instance_view(request, profile_name, instance_id):
         return render(request, 'herders/profile/not_public.html')
 
 
-def monster_instance_view_sidebar(request, profile_name, instance_id):
-    try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
-    except Summoner.DoesNotExist:
-        raise Http404
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
-    try:
-        instance = MonsterInstance.committed.select_related('monster').get(pk=instance_id)
-    except ObjectDoesNotExist:
-        raise Http404()
-
-    context = {
-        'instance': instance,
-        'is_owner': is_owner,
-    }
-
-    return render(request, 'herders/profile/monster_view/side_info.html', context)
-
-
 def monster_instance_view_runes(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
@@ -723,12 +704,14 @@ def monster_instance_view_runes(request, profile_name, instance_id):
 
 def monster_instance_view_stats(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.committed.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.committed.select_related('monster').get(pk=instance_id)
     except ObjectDoesNotExist:
         raise Http404()
 
     context = {
         'instance': instance,
+        'bldg_stats': instance.get_building_stats(),
+        'guild_stats': instance.get_building_stats(Building.AREA_GUILD),
     }
 
     return render(request, 'herders/profile/monster_view/stats.html', context)

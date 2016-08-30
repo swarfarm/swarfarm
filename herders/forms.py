@@ -375,7 +375,7 @@ class EditBuildingForm(ModelForm):
         self.helper.form_class = 'ajax-form'
         # self.helper.form_action must be set in view
         self.helper.layout = Layout(
-            Field('level'),
+            Field('level', autocomplete='off'),
             FormActions(
                 Submit('save', 'Save', css_class='btn-success')
             )
@@ -625,28 +625,23 @@ class FilterMonsterInstanceForm(forms.Form):
         widget=forms.RadioSelect,
     )
     monster__leader_skill__attribute = forms.MultipleChoiceField(
-        label='Leader Skill Stat',
+        label='Stat',
         choices=LeaderSkill.ATTRIBUTE_CHOICES,
         required=False,
     )
     monster__leader_skill__area = forms.MultipleChoiceField(
-        label='Leader Skill Area',
+        label='Area',
         choices=LeaderSkill.AREA_CHOICES,
         required=False,
     )
     monster__skills__scaling_stats__pk = forms.MultipleChoiceField(
-        label='Skill Scales With',
+        label='Scales With',
         choices=ScalingStat.objects.values_list('pk', 'stat'),
         required=False,
     )
-    buffs = forms.MultipleChoiceField(
-        label='Buffs',
-        choices=effect_choices(Effect.objects.filter(is_buff=True).exclude(icon_filename='')),
-        required=False,
-    )
-    debuffs = forms.MultipleChoiceField(
-        label='Debuffs',
-        choices=effect_choices(Effect.objects.filter(is_buff=False).exclude(icon_filename='')),
+    buff_debuff_effects = forms.MultipleChoiceField(
+        label='Buffs/Debuffs',
+        choices=effect_choices(Effect.objects.exclude(icon_filename='')),
         required=False,
     )
     other_effects = forms.MultipleChoiceField(
@@ -655,7 +650,8 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label='Effects required on one/any skill',
+        label='',
+        help_text='Filter on one or any skill',
         required=False,
     )
 
@@ -698,25 +694,24 @@ class FilterMonsterInstanceForm(forms.Form):
                             Field('monster__element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
                             css_class='row',
                         ),
-                        css_class='col-md-8'
+                        css_class='col-lg-8 col-md-6'
                     ),
                     Div(
                         InlineRadios('monster__is_awakened', wrapper_class='form-group-sm form-group-condensed'),
                         InlineRadios('fodder', wrapper_class='form-group-sm form-group-condensed'),
                         InlineRadios('in_storage', wrapper_class='form-group-sm form-group-condensed'),
                         InlineRadios('monster__fusion_food', wrapper_class='form-group-sm form-group-condensed'),
-                        css_class='col-md-4'
+                        css_class='col-lg-4 col-md-6'
                     ),
                     css_class='row'
                 ),
-                css_class='col-md-7'
+                css_class='col-md-8'
             ),
             Div(
                 Fieldset(
                     'Skills',
                     Div(
-                        Field('buffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
-                        Field('debuffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field('buff_debuff_effects', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('monster__skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('effects_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ONE', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-lg-6'),
@@ -726,12 +721,12 @@ class FilterMonsterInstanceForm(forms.Form):
                 Fieldset(
                     'Leader Skill',
                     Div(
-                        Field('monster__leader_skill__attribute', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
-                        Field('monster__leader_skill__area', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                        Field('monster__leader_skill__attribute', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field('monster__leader_skill__area', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         css_class='row'
                     )
                 ),
-                css_class='col-md-5'
+                css_class='col-md-4'
             ),
             css_class='row',
         ),
@@ -752,10 +747,9 @@ class FilterMonsterInstanceForm(forms.Form):
         super(FilterMonsterInstanceForm, self).clean()
 
         # Coalesce the effect fields into a single one that the filter can understand
-        selected_buff_effects = self.cleaned_data.get('buffs')
-        selected_debuff_effects = self.cleaned_data.get('debuffs')
-        selected_other_effects = self.cleaned_data.get('other_effects')
-        self.cleaned_data['monster__skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+        buff_debuff_effects = self.cleaned_data.get('buff_debuff_effects')
+        other_effects = self.cleaned_data.get('other_effects')
+        self.cleaned_data['monster__skills__skill_effect__pk'] = buff_debuff_effects + other_effects
 
         # Convert the select fields with None/True/False options into actual boolean values
         choices = {

@@ -46,7 +46,7 @@
     </div>
     <table class="table table-condensed table-bordered">
         <tbody>
-        {% if instance.created %}
+        {% if instance.created and is_owner %}
         <tr>
             <td>Summoned On:</td>
             <td>{{ instance.created }}</td>

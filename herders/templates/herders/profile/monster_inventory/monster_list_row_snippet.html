@@ -39,11 +39,13 @@
         <span>{{ instance.monster.element }}</span>
     </td>
     <td>{{ instance.monster.get_archetype_display }}</td>
-    <td>{% if instance.created %}
-        <span class="hidden">{{ instance.created|date:"U" }}</span>
-        {{ instance.created }}
-        {% endif %}
-    </td>
+    {% if is_owner %}
+        <td>{% if instance.created %}
+            <span class="hidden">{{ instance.created|date:"U" }}</span>
+            {{ instance.created }}
+            {% endif %}
+        </td>
+    {% endif %}
     <td>
         <span class="hidden">{% if instance.priority %}{{ instance.priority }}{% else %}-1{% endif %}</span>
         {{ instance.get_priority_display }}

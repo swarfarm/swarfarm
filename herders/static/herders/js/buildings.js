@@ -27,12 +27,16 @@ function EditBuilding($el) {
     }).done(function(result) {
         bootbox.dialog({
             title: 'Edit Building',
+            className: 'edit-building-dialog',
             message: result.html
         });
     })
 }
 
 $('body')
+    .on('shown.bs.modal', '.edit-building-dialog', function() {
+        $('#id_level').select();
+    })
     .on('submit', '.ajax-form', function() {
         //Handle add ajax form submit
         var $form = $(this);

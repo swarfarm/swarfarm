@@ -4,21 +4,6 @@
 {% load humanize %}
 {% static 'herders/images/' as img_url_prefix %}
 
-{% if instance.notes and instance.notes != "" or instance.tags.all|length %}
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <p class="panel-title">Personal Notes</p>
-    </div>
-    <div class="panel-body">
-        <div>
-            {% for tag in instance.tags.all %}
-            <span class="tag">{{ tag }}</span>
-            {% endfor %}
-        </div>
-        <p>{{ instance.notes|markdown }}</p>
-    </div>
-</div>
-{% endif %}
 <div class="panel panel-default">
     <div class="panel-heading">
         <p class="panel-title">Monster Info</p>
@@ -80,6 +65,25 @@
             </td>
         </tr>
         {% endif %}
+        {% if instance.tags.all|length %}<tr>
+            <td>Tags</td>
+            <td>
+                {% for tag in instance.tags.all %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </td>
+        </tr>
+        {% endif %}
+        {% if instance.notes and instance.notes != "" %}
+        <tr>
+            <td>Notes</td>
+            <td>{{ instance.notes|markdown }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>Priority</td>
+            <td>{{ instance.get_priority_display }}</td>
+        </tr>
         <tr>
             <td>Sources:</td>
             <td class="monster-sources">

@@ -758,11 +758,10 @@ class FilterMonsterInstanceForm(forms.Form):
             'False': False,
         }
 
-        self.cleaned_data['monster__is_awakened'] = choices[self.cleaned_data.get('monster__is_awakened', 'None')]
-        self.cleaned_data['fodder'] = choices[self.cleaned_data.get('fodder', 'None')]
-        self.cleaned_data['in_storage'] = choices[self.cleaned_data.get('in_storage', 'None')]
-        self.cleaned_data['monster__fusion_food'] = choices[self.cleaned_data.get('monster__fusion_food', 'None')]
-
+        self.cleaned_data['monster__is_awakened'] = choices.get(self.cleaned_data.get('monster__is_awakened', 'None'), None)
+        self.cleaned_data['fodder'] = choices.get(self.cleaned_data.get('fodder', 'None'), None)
+        self.cleaned_data['in_storage'] = choices.get(self.cleaned_data.get('in_storage', 'None'), None)
+        self.cleaned_data['monster__fusion_food'] = choices.get(self.cleaned_data.get('monster__fusion_food', 'None'), None)
 
         # Split the slider ranges into two min/max fields for the filters
         try:

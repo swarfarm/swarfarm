@@ -339,6 +339,27 @@ span.rune-set-bonus {
 .rune-symbol.destroy, .craft-symbol.destroy {
     background-image: url(/static/herders/images/runes/destroy.png);
 }
+
+.rune-symbol.fight, .craft-symbol.fight {
+    background-image: url(/static/herders/images/runes/fight.png);
+}
+
+.rune-symbol.determination, .craft-symbol.determination {
+    background-image: url(/static/herders/images/runes/determination.png);
+}
+
+.rune-symbol.enhance, .craft-symbol.enhance {
+    background-image: url(/static/herders/images/runes/enhance.png);
+}
+
+.rune-symbol.accuracy, .craft-symbol.accuracy {
+    background-image: url(/static/herders/images/runes/accuracy.png);
+}
+
+.rune-symbol.tolerance, .craft-symbol.tolerance {
+    background-image: url(/static/herders/images/runes/tolerance.png);
+}
+
 .craft-symbol {
     display: inline-block;
     width: 100%;
@@ -384,3 +405,8 @@ span.rune-set-bonus {
 .rune-button-despair { background-image: url(/static/herders/images/runes/despair.png)!important;}
 .rune-button-vampire { background-image: url(/static/herders/images/runes/vampire.png)!important;}
 .rune-button-destroy { background-image: url(/static/herders/images/runes/destroy.png)!important;}
+.rune-button-fight { background-image: url(/static/herders/images/runes/fight.png)!important;}
+.rune-button-determination { background-image: url(/static/herders/images/runes/determination.png)!important;}
+.rune-button-enhance { background-image: url(/static/herders/images/runes/enhance.png)!important;}
+.rune-button-accuracy { background-image: url(/static/herders/images/runes/accuracy.png)!important;}
+.rune-button-tolerance { background-image: url(/static/herders/images/runes/tolerance.png)!important;}

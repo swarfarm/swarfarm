@@ -1146,6 +1146,26 @@ class MonsterInstance(models.Model):
         rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENDURE).count()
         return 20 * floor(rune_count / 2)
 
+    def rune_bonus_fight(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_FIGHT).count()
+        return ceil(self.base_attack * 0.07) * floor(rune_count / 2)
+
+    def rune_bonus_determination(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_DETERMINATION).count()
+        return ceil(self.base_defense * 0.07) * floor(rune_count / 2)
+
+    def rune_bonus_enhance(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENHANCE).count()
+        return ceil(self.base_hp * 0.07) * floor(rune_count / 2)
+
+    def rune_bonus_accuracy(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ACCURACY).count()
+        return ceil(self.base_accuracy * 0.07) * floor(rune_count / 2)
+
+    def rune_bonus_tolerance(self):
+        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_TOLERANCE).count()
+        return ceil(self.base_resistance * 0.07) * floor(rune_count / 2)
+
     # Stat callables. Base = monster's own stat. Rune = amount gained from runes. Stat by itself is combined total
     def calc_base_hp(self):
         return self.monster.actual_hp(self.stars, self.level)
@@ -1160,7 +1180,7 @@ class MonsterInstance(models.Model):
             hp_flat += rune.get_stat(RuneInstance.STAT_HP)
             hp_percent += rune.get_stat(RuneInstance.STAT_HP_PCT)
 
-        rune_set_bonus = self.rune_bonus_energy()
+        rune_set_bonus = self.rune_bonus_energy() + self.rune_bonus_enhance()
 
         return int(ceil(round(base * (hp_percent / 100.0), 3)) + rune_set_bonus + hp_flat)
 
@@ -1208,7 +1228,7 @@ class MonsterInstance(models.Model):
             atk_flat += rune.get_stat(RuneInstance.STAT_ATK)
             atk_percent += rune.get_stat(RuneInstance.STAT_ATK_PCT)
 
-        rune_set_bonus = self.rune_bonus_fatal()
+        rune_set_bonus = self.rune_bonus_fatal() + self.rune_bonus_fight()
 
         return int(ceil(round(base * (atk_percent / 100.0), 3)) + rune_set_bonus + atk_flat)
 
@@ -1256,7 +1276,7 @@ class MonsterInstance(models.Model):
             def_flat += rune.get_stat(RuneInstance.STAT_DEF)
             def_percent += rune.get_stat(RuneInstance.STAT_DEF_PCT)
 
-        rune_set_bonus = self.rune_bonus_guard()
+        rune_set_bonus = self.rune_bonus_guard() + self.rune_bonus_determination()
 
         return int(ceil(round(base * (def_percent / 100.0), 3)) + rune_set_bonus + def_flat)
 
@@ -1427,7 +1447,7 @@ class MonsterInstance(models.Model):
 
     def calc_rune_resistance(self):
         runes = self.runeinstance_set.filter(has_resist=True)
-        resist = self.rune_bonus_endure()
+        resist = self.rune_bonus_endure() + self.rune_bonus_tolerance()
 
         for rune in runes:
             resist += rune.get_stat(RuneInstance.STAT_RESIST_PCT)
@@ -1470,7 +1490,7 @@ class MonsterInstance(models.Model):
 
     def calc_rune_accuracy(self):
         runes = self.runeinstance_set.filter(has_accuracy=True)
-        accuracy = self.rune_bonus_focus()
+        accuracy = self.rune_bonus_focus() + self.rune_bonus_accuracy()
 
         for rune in runes:
             accuracy += rune.get_stat(RuneInstance.STAT_ACCURACY_PCT)
@@ -1709,6 +1729,12 @@ class RuneInstance(models.Model):
     TYPE_DESPAIR = 14
     TYPE_VAMPIRE = 15
     TYPE_DESTROY = 16
+    TYPE_FIGHT = 17
+    TYPE_DETERMINATION = 18
+    TYPE_ENHANCE = 19
+    TYPE_ACCURACY = 20
+    TYPE_TOLERANCE = 21
+
 
     TYPE_CHOICES = (
         (TYPE_ENERGY, 'Energy'),
@@ -1727,6 +1753,11 @@ class RuneInstance(models.Model):
         (TYPE_DESPAIR, 'Despair'),
         (TYPE_VAMPIRE, 'Vampire'),
         (TYPE_DESTROY, 'Destroy'),
+        (TYPE_FIGHT, 'Fight'),
+        (TYPE_DETERMINATION, 'Determination'),
+        (TYPE_ENHANCE, 'Enhance'),
+        (TYPE_ACCURACY, 'Accuracy'),
+        (TYPE_TOLERANCE, 'Tolerance'),
     )
 
     STAR_CHOICES = (
@@ -2026,6 +2057,11 @@ class RuneInstance(models.Model):
         TYPE_DESPAIR: 4,
         TYPE_VAMPIRE: 4,
         TYPE_DESTROY: 2,
+        TYPE_FIGHT: 2,
+        TYPE_DETERMINATION: 2,
+        TYPE_ENHANCE: 2,
+        TYPE_ACCURACY: 2,
+        TYPE_TOLERANCE: 2,
     }
 
     RUNE_SET_BONUSES = {
@@ -2044,7 +2080,12 @@ class RuneInstance(models.Model):
         TYPE_REVENGE: '2 Set: Counterattack +15%',
         TYPE_DESPAIR: '4 Set: Stun Rate +25%',
         TYPE_VAMPIRE: '4 Set: Life Drain +35%',
-        TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP"
+        TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP",
+        TYPE_FIGHT: '2 Set: Increase the Attack Power of all allies by 7%',
+        TYPE_DETERMINATION: '2 Set: Increase the Defense of all allies by 7%',
+        TYPE_ENHANCE: '2 Set: Increase the HP of all allies by 7%',
+        TYPE_ACCURACY: '2 Set: Increase the Accuracy of all allies by 10%',
+        TYPE_TOLERANCE: '2 Set: Increase the Resistance of all allies by 10%',
     }
 
     CRAFT_GRINDSTONE = 0

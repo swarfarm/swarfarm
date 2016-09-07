@@ -2081,11 +2081,11 @@ class RuneInstance(models.Model):
         TYPE_DESPAIR: '4 Set: Stun Rate +25%',
         TYPE_VAMPIRE: '4 Set: Life Drain +35%',
         TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP",
-        TYPE_FIGHT: 'Increase the Attack Power of all allies by 7%',
-        TYPE_DETERMINATION: 'Increase the Defense of all allies by 7%',
-        TYPE_ENHANCE: 'Increase the HP of all allies by 7%',
-        TYPE_ACCURACY: 'Increase the Accuracy of all allies by 10%',
-        TYPE_TOLERANCE: 'Increase the Resistance of all allies by 10%',
+        TYPE_FIGHT: '2 Set: Increase the Attack Power of all allies by 7%',
+        TYPE_DETERMINATION: '2 Set: Increase the Defense of all allies by 7%',
+        TYPE_ENHANCE: '2 Set: Increase the HP of all allies by 7%',
+        TYPE_ACCURACY: '2 Set: Increase the Accuracy of all allies by 10%',
+        TYPE_TOLERANCE: '2 Set: Increase the Resistance of all allies by 10%',
     }
 
     CRAFT_GRINDSTONE = 0

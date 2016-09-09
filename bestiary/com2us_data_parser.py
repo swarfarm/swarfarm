@@ -155,10 +155,12 @@ def parse_monster_data():
         for row in monster_data:
             master_id = int(row['unit master id'])
 
-            if master_id < 40000 and row['unit master id'][3] != '2':   # Non-summonable monsters appear with IDs above 40000 and a 2 in that position represents the japanese 'incomplete' monsters
-                monster_family = int(row['unit master id'][:3])
-                awakened = row['unit master id'][3] == '1'
-                element = element_map.get(int(row['unit master id'][-1:]))
+            if (master_id < 40000 and row['unit master id'][3] != '2') or (1000101 <= master_id <= 1000113):
+                # Non-summonable monsters appear with IDs above 40000 and a 2 in that position represents the japanese 'incomplete' monsters
+                # Homonculus IDs start at 1000101
+                monster_family = int(row['group id'])
+                awakened = row['unit master id'][-2] == '1'
+                element = element_map.get(int(row['attribute']))
 
                 try:
                     monster = Monster.objects.get(family_id=monster_family, is_awakened=awakened, element=element)

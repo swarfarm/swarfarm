@@ -1,6 +1,7 @@
 Django==1.8.13
 psycopg2
 bcrypt
+bitstring
 dpkt
 pytz
 python-dateutil

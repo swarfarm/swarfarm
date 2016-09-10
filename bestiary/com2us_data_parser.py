@@ -3,6 +3,9 @@ from PIL import Image
 import csv
 import json
 from sympy import simplify
+import struct
+from binascii import hexlify
+from bitstring import ConstBitStream
 
 from .models import *
 from sw_parser.com2us_mapping import *
@@ -158,6 +161,9 @@ def parse_monster_data():
             if (master_id < 40000 and row['unit master id'][3] != '2') or (1000101 <= master_id <= 1000113):
                 # Non-summonable monsters appear with IDs above 40000 and a 2 in that position represents the japanese 'incomplete' monsters
                 # Homonculus IDs start at 1000101
+                if master_id > 1000000:
+                    pass
+
                 monster_family = int(row['group id'])
                 awakened = row['unit master id'][-2] == '1'
                 element = element_map.get(int(row['attribute']))
@@ -381,3 +387,38 @@ def crop_monster_images():
             crop = im.crop((1, 1, 101, 101))
             im.close()
             crop.save(im_path)
+
+
+def get_monster_name_by_id(monster_id):
+    start_pos = 0x7e * 8
+    end_pos = 0x4f14 * 8
+    hex_id = '0x{}'.format(hexlify(struct.pack("<I", monster_id)))
+
+    return _get_string_from_dat(start_pos, end_pos, hex_id)
+
+
+def get_skill_name_by_id(skill_id):
+    start_pos = 0x2776d * 8
+    end_pos = 0x3195b * 8
+    hex_id = '0x{}'.format(hexlify(struct.pack("<I", skill_id)))
+
+    return _get_string_from_dat(start_pos, end_pos, hex_id)
+
+
+def get_skill_desc_by_id(skill_id):
+    start_pos = 0x31983 * 8
+    end_pos = 0x6b53c * 8
+    hex_id = '0x{}'.format(hexlify(struct.pack("<I", skill_id)))
+
+    return _get_string_from_dat(start_pos, end_pos, hex_id)
+
+
+def _get_string_from_dat(start_pos, end_pos, hex_id):
+    text = ConstBitStream(filename='text_eng.dat', offset=start_pos, length=end_pos - start_pos)
+    found = text.find(hex_id, bytealigned=True)
+
+    if found:
+        __, str_len = text.readlist('intle:32, intle:32')
+        return text.read('hex:{}'.format(str_len * 8))[:-4].decode('hex')
+    else:
+        return None

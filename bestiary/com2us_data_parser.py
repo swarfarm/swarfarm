@@ -3,6 +3,8 @@ from PIL import Image
 import csv
 import json
 from sympy import simplify
+import struct
+from binascii import hexlify
 from bitstring import ConstBitStream
 
 from .models import *
@@ -387,17 +389,36 @@ def crop_monster_images():
             crop.save(im_path)
 
 
-def parse_text_data():
-    # Parse monster names
-    monster_name_start_pos = 0x7e * 8
-    monster_name_end_pos = 0x4f13 * 8
+def get_monster_name_by_id(monster_id):
+    start_pos = 0x7e * 8
+    end_pos = 0x4f14 * 8
+    hex_id = '0x{}'.format(hexlify(struct.pack("<I", monster_id)))
 
-    text = ConstBitStream(filename='text_eng.dat', offset=monster_name_start_pos, length=monster_name_end_pos - monster_name_start_pos)
+    return _get_string_from_dat(start_pos, end_pos, hex_id)
 
-    try:
-        while True:
-            monster_id, monster_name_len = text.readlist('intle:32, intle:32')
-            monster_name = text.read('hex:{}'.format(monster_name_len*8))[:-4].decode('hex')
-            print '{} - {}'.format(monster_id, monster_name)
-    except:
-        pass
+
+def get_skill_name_by_id(skill_id):
+    start_pos = 0x2776d * 8
+    end_pos = 0x3195b * 8
+    hex_id = '0x{}'.format(hexlify(struct.pack("<I", skill_id)))
+
+    return _get_string_from_dat(start_pos, end_pos, hex_id)
+
+
+def get_skill_desc_by_id(skill_id):
+    start_pos = 0x31983 * 8
+    end_pos = 0x6b53c * 8
+    hex_id = '0x{}'.format(hexlify(struct.pack("<I", skill_id)))
+
+    return _get_string_from_dat(start_pos, end_pos, hex_id)
+
+
+def _get_string_from_dat(start_pos, end_pos, hex_id):
+    text = ConstBitStream(filename='text_eng.dat', offset=start_pos, length=end_pos - start_pos)
+    found = text.find(hex_id, bytealigned=True)
+
+    if found:
+        __, str_len = text.readlist('intle:32, intle:32')
+        return text.read('hex:{}'.format(str_len * 8))[:-4].decode('hex')
+    else:
+        return None

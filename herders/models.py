@@ -341,58 +341,58 @@ class Monster(models.Model):
             else:
                 self.bestiary_slug = slugify(" ".join([self.element, self.name]))
 
-        if not skip_url_gen:
-            # Generate summonerswar.co URL if possible
-            if self.can_awaken and self.base_stars > 1 and self.archetype is not self.TYPE_MATERIAL and (self.summonerswar_co_url is None or self.summonerswar_co_url == ''):
-                base = 'http://summonerswar.co/'
-                try:
-                    # Generate the URL
-                    if self.is_awakened:
-                        unawakened_name = self.awakens_from.name
-                        awakened_name = self.name
-                    else:
-                        unawakened_name = self.name
-                        awakened_name = self.awakens_to.name
-
-                    url = base + slugify(self.element + '-' + unawakened_name + '-' + awakened_name)
-
-                    # Check that it is valid
-                    from urllib2 import Request, urlopen
-                    request = Request(url)
-                    request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
-                    code = urlopen(request).code
-                    if code == 200:
-                        self.summonerswar_co_url = url
-                    else:
-                        self.summonerswar_co_url = None
-                except:
-                    # Something prevented getting the correct names or verifying the URL, so clear it out
-                    self.summonerswar_co_url = None
-
-            # Generate wikia URL if possible
-            if self.wikia_url is None or self.wikia_url == '':
-                base = 'http://summonerswar.wikia.com/wiki/'
-                try:
-                    # Generate the URL
-                    if self.is_awakened:
-                        unawakened_name = self.awakens_from.name
-                    else:
-                        unawakened_name = self.name
-
-                    url = base + unawakened_name.replace(' ', '_') + '_(' + self.get_element_display() + ')'
-
-                    # Check that it is valid
-                    from urllib2 import Request, urlopen
-                    request = Request(url)
-                    request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
-                    code = urlopen(request).code
-                    if code == 200:
-                        self.wikia_url = url
-                    else:
-                        self.wikia_url = None
-                except:
-                    # Something prevented getting the correct names or verifying the URL, so clear it out
-                    self.wikia_url = None
+        # if not skip_url_gen:
+        #     # Generate summonerswar.co URL if possible
+        #     if self.can_awaken and self.base_stars > 1 and self.archetype is not self.TYPE_MATERIAL and (self.summonerswar_co_url is None or self.summonerswar_co_url == ''):
+        #         base = 'http://summonerswar.co/'
+        #         try:
+        #             # Generate the URL
+        #             if self.is_awakened:
+        #                 unawakened_name = self.awakens_from.name
+        #                 awakened_name = self.name
+        #             else:
+        #                 unawakened_name = self.name
+        #                 awakened_name = self.awakens_to.name
+        #
+        #             url = base + slugify(self.element + '-' + unawakened_name + '-' + awakened_name)
+        #
+        #             # Check that it is valid
+        #             from urllib2 import Request, urlopen
+        #             request = Request(url)
+        #             request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
+        #             code = urlopen(request).code
+        #             if code == 200:
+        #                 self.summonerswar_co_url = url
+        #             else:
+        #                 self.summonerswar_co_url = None
+        #         except:
+        #             # Something prevented getting the correct names or verifying the URL, so clear it out
+        #             self.summonerswar_co_url = None
+        #
+        #     # Generate wikia URL if possible
+        #     if self.wikia_url is None or self.wikia_url == '':
+        #         base = 'http://summonerswar.wikia.com/wiki/'
+        #         try:
+        #             # Generate the URL
+        #             if self.is_awakened:
+        #                 unawakened_name = self.awakens_from.name
+        #             else:
+        #                 unawakened_name = self.name
+        #
+        #             url = base + unawakened_name.replace(' ', '_') + '_(' + self.get_element_display() + ')'
+        #
+        #             # Check that it is valid
+        #             from urllib2 import Request, urlopen
+        #             request = Request(url)
+        #             request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
+        #             code = urlopen(request).code
+        #             if code == 200:
+        #                 self.wikia_url = url
+        #             else:
+        #                 self.wikia_url = None
+        #         except:
+        #             # Something prevented getting the correct names or verifying the URL, so clear it out
+        #             self.wikia_url = None
 
         # Pull info from unawakened version of this monster. This copying of data is one directional only
         if self.awakens_from:

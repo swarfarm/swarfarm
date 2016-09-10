@@ -3,6 +3,7 @@ from PIL import Image
 import csv
 import json
 from sympy import simplify
+from bitstring import ConstBitStream
 
 from .models import *
 from sw_parser.com2us_mapping import *
@@ -158,6 +159,9 @@ def parse_monster_data():
             if (master_id < 40000 and row['unit master id'][3] != '2') or (1000101 <= master_id <= 1000113):
                 # Non-summonable monsters appear with IDs above 40000 and a 2 in that position represents the japanese 'incomplete' monsters
                 # Homonculus IDs start at 1000101
+                if master_id > 1000000:
+                    pass
+
                 monster_family = int(row['group id'])
                 awakened = row['unit master id'][-2] == '1'
                 element = element_map.get(int(row['attribute']))
@@ -381,3 +385,19 @@ def crop_monster_images():
             crop = im.crop((1, 1, 101, 101))
             im.close()
             crop.save(im_path)
+
+
+def parse_text_data():
+    # Parse monster names
+    monster_name_start_pos = 0x7e * 8
+    monster_name_end_pos = 0x4f13 * 8
+
+    text = ConstBitStream(filename='text_eng.dat', offset=monster_name_start_pos, length=monster_name_end_pos - monster_name_start_pos)
+
+    try:
+        while True:
+            monster_id, monster_name_len = text.readlist('intle:32, intle:32')
+            monster_name = text.read('hex:{}'.format(monster_name_len*8))[:-4].decode('hex')
+            print '{} - {}'.format(monster_id, monster_name)
+    except:
+        pass

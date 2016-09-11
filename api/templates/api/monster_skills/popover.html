@@ -7,7 +7,12 @@
             <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
             <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
         </div>
-        <p>{{ skill.description }}</p>
+        <p>
+            {{ skill.description }}
+            {% if skill.cooltime %}
+                (Reusable in {{ skill.cooltime }} turn{{ skill.cooltime|pluralize }}).
+            {% endif %}
+        </p>
         <div class="clearfix"></div>
     </li>
     {% if skill.level_progress_description %}

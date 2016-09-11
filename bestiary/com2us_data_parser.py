@@ -3,9 +3,7 @@ from PIL import Image
 import csv
 import json
 from sympy import simplify
-import struct
-from binascii import hexlify
-from bitstring import ConstBitStream
+from bitstring import ConstBitStream, ReadError
 
 from .models import *
 from sw_parser.com2us_mapping import *
@@ -52,12 +50,28 @@ def parse_skill_data():
 
         for csv_skill in skill_data:
             # Get matching skill in DB
+            master_id = int(csv_skill['master id'])
+
             try:
-                skill = Skill.objects.get(com2us_id=csv_skill['master id'])
+                skill = Skill.objects.get(com2us_id=master_id)
             except Skill.DoesNotExist:
                 continue
             else:
+                print 'Processing skill {}'.format(skill)
                 updated = False
+
+                # Name
+                name = get_skill_name_by_id(master_id)
+                if name != skill.name:
+                    skill.name = name
+                    updated = True
+
+                # Description
+                description = get_skill_desc_by_id(master_id)
+
+                if description != skill.description:
+                    skill.description = description
+                    updated = True
 
                 # Icon
                 icon_nums = json.loads(csv_skill['thumbnail'])
@@ -67,7 +81,7 @@ def parse_skill_data():
                     updated = True
 
                 # Cooltime
-                cooltime = int(csv_skill['cool time'] + 1) if int(csv_skill['cool time']) > 0 else None
+                cooltime = int(csv_skill['cool time']) + 1 if int(csv_skill['cool time']) > 0 else None
 
                 if skill.cooltime != cooltime:
                     skill.cooltime = cooltime
@@ -145,10 +159,10 @@ def parse_skill_data():
                         skill.multiplier_formula = formula
                         updated = True
 
-                    # Finally save it if required
-                    if updated:
-                        skill.save()
-                        print 'Updated skill ' + str(skill)
+                # Finally save it if required
+                if updated:
+                    skill.save()
+                    print 'Updated skill ' + str(skill)
 
 
 def parse_monster_data():
@@ -185,6 +199,9 @@ def parse_monster_data():
                         monster.family_id = monster_family
                         print "Updated " + str(monster) + " family id to " + str(monster_family)
                         updated = True
+
+                    # Name
+                    monster.name = get_monster_name_by_id(master_id)
 
                     # Archetype
                     archetype = row['style type']
@@ -390,35 +407,27 @@ def crop_monster_images():
 
 
 def get_monster_name_by_id(monster_id):
-    start_pos = 0x7e * 8
-    end_pos = 0x4f14 * 8
-    hex_id = '0x{}'.format(hexlify(struct.pack("<I", monster_id)))
-
-    return _get_string_from_dat(start_pos, end_pos, hex_id)
+    return _get_string_from_dat(0x7e * 8, 0x4f14 * 8, monster_id)
 
 
 def get_skill_name_by_id(skill_id):
-    start_pos = 0x2776d * 8
-    end_pos = 0x3195b * 8
-    hex_id = '0x{}'.format(hexlify(struct.pack("<I", skill_id)))
-
-    return _get_string_from_dat(start_pos, end_pos, hex_id)
+    return _get_string_from_dat(0x2776d * 8, 0x3195b * 8, skill_id)
 
 
 def get_skill_desc_by_id(skill_id):
-    start_pos = 0x31983 * 8
-    end_pos = 0x6b53c * 8
-    hex_id = '0x{}'.format(hexlify(struct.pack("<I", skill_id)))
-
-    return _get_string_from_dat(start_pos, end_pos, hex_id)
+    return _get_string_from_dat(0x31983 * 8, 0x6b53c * 8, skill_id)
 
 
-def _get_string_from_dat(start_pos, end_pos, hex_id):
+def _get_string_from_dat(start_pos, end_pos, item_id):
     text = ConstBitStream(filename='text_eng.dat', offset=start_pos, length=end_pos - start_pos)
-    found = text.find(hex_id, bytealigned=True)
 
-    if found:
-        __, str_len = text.readlist('intle:32, intle:32')
-        return text.read('hex:{}'.format(str_len * 8))[:-4].decode('hex')
-    else:
+    # Iterate through translations to avoid random pattern matching when ID is valid ASCII too
+    try:
+        while True:
+            parsed_id, str_len = text.readlist('intle:32, intle:32')
+            parsed_str = text.read('hex:{}'.format(str_len * 8))[:-4].decode('hex')
+
+            if item_id == parsed_id:
+                return parsed_str
+    except ReadError:
         return None

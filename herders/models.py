@@ -952,6 +952,8 @@ class Summoner(models.Model):
         if self.storage_light_high < 0:
             self.storage_light_high = 0
 
+        super(Summoner, self).save(*args, **kwargs)
+
         # Update new storage model
         if not hasattr(self, 'storage'):
             new_storage = Storage.objects.create(
@@ -979,7 +981,6 @@ class Summoner(models.Model):
         self.storage.dark_essence[Storage.ESSENCE_HIGH] = self.storage_dark_high
         self.storage.save()
 
-        super(Summoner, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "%s" % self.user

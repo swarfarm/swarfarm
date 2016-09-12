@@ -952,10 +952,103 @@ class Summoner(models.Model):
         if self.storage_light_high < 0:
             self.storage_light_high = 0
 
+        # Update new storage model
+        if not hasattr(self, 'storage'):
+            new_storage = Storage.objects.create(
+                owner=self,
+            )
+            new_storage.save()
+
+        self.storage.magic_essence[Storage.ESSENCE_LOW] = self.storage_magic_low
+        self.storage.magic_essence[Storage.ESSENCE_MID] = self.storage_magic_mid
+        self.storage.magic_essence[Storage.ESSENCE_HIGH] = self.storage_magic_high
+        self.storage.fire_essence[Storage.ESSENCE_LOW] = self.storage_fire_low
+        self.storage.fire_essence[Storage.ESSENCE_MID] = self.storage_fire_mid
+        self.storage.fire_essence[Storage.ESSENCE_HIGH] = self.storage_fire_high
+        self.storage.water_essence[Storage.ESSENCE_LOW] = self.storage_water_low
+        self.storage.water_essence[Storage.ESSENCE_MID] = self.storage_water_mid
+        self.storage.water_essence[Storage.ESSENCE_HIGH] = self.storage_water_high
+        self.storage.wind_essence[Storage.ESSENCE_LOW] = self.storage_wind_low
+        self.storage.wind_essence[Storage.ESSENCE_MID] = self.storage_wind_mid
+        self.storage.wind_essence[Storage.ESSENCE_HIGH] = self.storage_wind_high
+        self.storage.light_essence[Storage.ESSENCE_LOW] = self.storage_light_low
+        self.storage.light_essence[Storage.ESSENCE_MID] = self.storage_light_mid
+        self.storage.light_essence[Storage.ESSENCE_HIGH] = self.storage_light_high
+        self.storage.dark_essence[Storage.ESSENCE_LOW] = self.storage_dark_low
+        self.storage.dark_essence[Storage.ESSENCE_MID] = self.storage_dark_mid
+        self.storage.dark_essence[Storage.ESSENCE_HIGH] = self.storage_dark_high
+        self.storage.save()
+
         super(Summoner, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "%s" % self.user
+
+
+class Storage(models.Model):
+    ESSENCE_LOW = 0
+    ESSENCE_MID = 1
+    ESSENCE_HIGH = 2
+
+    owner = models.OneToOneField(Summoner)
+    uncommitted = models.BooleanField(default=False)  # Used for importing
+
+    # Elemental Essences
+    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
+    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
+    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
+    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
+    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
+    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
+
+    # Crafting materials
+    wood = models.IntegerField(default=0)
+    leather = models.IntegerField(default=0)
+    rock = models.IntegerField(default=0)
+    ore = models.IntegerField(default=0)
+    mithril = models.IntegerField(default=0)
+    cloth = models.IntegerField(default=0)
+    rune_piece = models.IntegerField(default=0)
+    dust = models.IntegerField(default=0)
+    symbol_harmony = models.IntegerField(default=0)
+    symbol_transcendance = models.IntegerField(default=0)
+    symbol_chaos = models.IntegerField(default=0)
+    crystal_water = models.IntegerField(default=0)
+    crystal_fire = models.IntegerField(default=0)
+    crystal_wind = models.IntegerField(default=0)
+    crystal_light = models.IntegerField(default=0)
+    crystal_dark = models.IntegerField(default=0)
+    crystal_magic = models.IntegerField(default=0)
+    crystal_pure = models.IntegerField(default=0)
+
+    def get_storage(self):
+        storage = OrderedDict()
+        storage['magic'] = OrderedDict()
+        storage['magic']['low'] = self.magic_essence[Storage.ESSENCE_LOW]
+        storage['magic']['mid'] = self.magic_essence[Storage.ESSENCE_MID]
+        storage['magic']['high'] = self.magic_essence[Storage.ESSENCE_HIGH]
+        storage['fire'] = OrderedDict()
+        storage['fire']['low'] = self.fire_essence[Storage.ESSENCE_LOW]
+        storage['fire']['mid'] = self.fire_essence[Storage.ESSENCE_MID]
+        storage['fire']['high'] = self.fire_essence[Storage.ESSENCE_HIGH]
+        storage['water'] = OrderedDict()
+        storage['water']['low'] = self.water_essence[Storage.ESSENCE_LOW]
+        storage['water']['mid'] = self.water_essence[Storage.ESSENCE_MID]
+        storage['water']['high'] = self.water_essence[Storage.ESSENCE_HIGH]
+        storage['wind'] = OrderedDict()
+        storage['wind']['low'] = self.wind_essence[Storage.ESSENCE_LOW]
+        storage['wind']['mid'] = self.wind_essence[Storage.ESSENCE_MID]
+        storage['wind']['high'] = self.wind_essence[Storage.ESSENCE_HIGH]
+        storage['light'] = OrderedDict()
+        storage['light']['low'] = self.light_essence[Storage.ESSENCE_LOW]
+        storage['light']['mid'] = self.light_essence[Storage.ESSENCE_MID]
+        storage['light']['high'] = self.light_essence[Storage.ESSENCE_HIGH]
+        storage['dark'] = OrderedDict()
+        storage['dark']['low'] = self.dark_essence[Storage.ESSENCE_LOW]
+        storage['dark']['mid'] = self.dark_essence[Storage.ESSENCE_MID]
+        storage['dark']['high'] = self.dark_essence[Storage.ESSENCE_HIGH]
+
+        return storage
 
 
 class MonsterTag(models.Model):

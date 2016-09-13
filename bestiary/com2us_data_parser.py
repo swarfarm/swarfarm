@@ -42,6 +42,9 @@ def assign_skill_ids():
 
 
 def parse_skill_data():
+    parsed_skill_names = get_skill_names_by_id()
+    parsed_skill_descs = get_skill_descs_by_id()
+
     with open('skills.csv', 'rb') as csvfile:
         skill_data = csv.DictReader(csvfile)
 
@@ -61,16 +64,13 @@ def parse_skill_data():
                 updated = False
 
                 # Name
-                name = get_skill_name_by_id(master_id)
-                if name != skill.name:
-                    skill.name = name
+                if skill.name != parsed_skill_names[master_id]:
+                    skill.name = parsed_skill_names[master_id]
                     updated = True
 
                 # Description
-                description = get_skill_desc_by_id(master_id)
-
-                if description != skill.description:
-                    skill.description = description
+                if skill.description != parsed_skill_descs[master_id]:
+                    skill.description = parsed_skill_descs[master_id]
                     updated = True
 
                 # Icon
@@ -166,6 +166,8 @@ def parse_skill_data():
 
 
 def parse_monster_data():
+    parsed_monster_names = get_monster_names_by_id()
+
     with open('monsters.csv', 'rb') as csvfile:
         monster_data = csv.DictReader(csvfile)
 
@@ -201,7 +203,7 @@ def parse_monster_data():
                         updated = True
 
                     # Name
-                    monster.name = get_monster_name_by_id(master_id)
+                    monster.name = parsed_monster_names[master_id]
 
                     # Archetype
                     archetype = row['style type']
@@ -406,28 +408,32 @@ def crop_monster_images():
             crop.save(im_path)
 
 
-def get_monster_name_by_id(monster_id):
-    return _get_string_from_dat(0x7e * 8, 0x4f14 * 8, monster_id)
+def get_monster_names_by_id():
+    return _get_strings_from_dat(0x7e * 8, 0x4f14 * 8)
 
 
-def get_skill_name_by_id(skill_id):
-    return _get_string_from_dat(0x2776d * 8, 0x3195c * 8, skill_id)
+def get_skill_names_by_id():
+    return _get_strings_from_dat(0x2776d * 8, 0x3195c * 8)
 
 
-def get_skill_desc_by_id(skill_id):
-    return _get_string_from_dat(0x31983 * 8, 0x6b53d * 8, skill_id)
+def get_skill_descs_by_id():
+    return _get_strings_from_dat(0x31983 * 8, 0x6b53d * 8)
 
 
-def _get_string_from_dat(start_pos, end_pos, item_id):
+def _get_strings_from_dat(start_pos, end_pos):
     text = ConstBitStream(filename='text_eng.dat', offset=start_pos, length=end_pos - start_pos)
+
+    strings = dict()
 
     # Iterate through translations to avoid random pattern matching when ID is valid ASCII too
     try:
         while True:
             parsed_id, str_len = text.readlist('intle:32, intle:32')
             parsed_str = text.read('hex:{}'.format(str_len * 8))[:-4].decode('hex')
-
-            if item_id == parsed_id:
-                return parsed_str
+            strings[parsed_id] = parsed_str
     except ReadError:
-        return None
+        #EOF
+        pass
+
+    return strings
+

@@ -411,11 +411,11 @@ def get_monster_name_by_id(monster_id):
 
 
 def get_skill_name_by_id(skill_id):
-    return _get_string_from_dat(0x2776d * 8, 0x3195b * 8, skill_id)
+    return _get_string_from_dat(0x2776d * 8, 0x3195c * 8, skill_id)
 
 
 def get_skill_desc_by_id(skill_id):
-    return _get_string_from_dat(0x31983 * 8, 0x6b53c * 8, skill_id)
+    return _get_string_from_dat(0x31983 * 8, 0x6b53d * 8, skill_id)
 
 
 def _get_string_from_dat(start_pos, end_pos, item_id):

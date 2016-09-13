@@ -22,7 +22,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 {% if request.user.is_superuser %}<button class="btn btn-xs edit-skill pull-right" data-skill-id="{{ skill.pk }}"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}
-                <p class="panel-title"><strong>{{ skill.name }}</strong> {% if skill.passive %}(Passive){% endif %}</p>
+                <p class="panel-title"><strong>{{ skill.name }}</strong></p>
             </div>
             <ul class="list-group">
                 <li class="list-group-item">

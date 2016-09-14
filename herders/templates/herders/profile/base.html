@@ -40,7 +40,7 @@
                 </a>
                 {% block rune_menu %}{% endblock rune_menu %}
             </li>
-            <li {% if view == 'fusion' and is_owner %}class="dropdown open"{% endif %}>
+            <li {% if view == 'fusion' %}class="dropdown open"{% endif %}>
                 <a href="{% url 'herders:fusion' profile_name=profile_name %}">
                     <img src="{% static 'herders/images/icons/fusion.png' %}" /> Fusion
                 </a>
@@ -52,7 +52,11 @@
                 </a>
                 {% block team_menu %}{% endblock team_menu %}
             </li>
-            {% if is_owner %}<li><a class="essence-storage"><span class="fa fa-archive"></span> Essence Storage</a></li>{% endif %}
+            {% if is_owner %}
+                <li>
+                    <a class="essence-storage"><span class="fa fa-archive"></span> Essence Storage</a>
+                </li>
+            {% endif %}
             <li>
                 <a href="{% url 'herders:buildings' profile_name=profile_name %}">
                     <span class="fa fa-building"></span> Buildings

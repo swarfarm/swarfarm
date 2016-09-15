@@ -26,10 +26,10 @@
         {% block css %}{% endblock css %}
 
         {% compress css %}
+            {% block css_compressed %}{% endblock css_compressed %}
             <link href="{% static "main/css/custom.css" %}" rel="stylesheet">
             <link href="{% static 'herders/css/runes.css' %}" rel="stylesheet">
             <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/style.css' %}">
-            {% block css_compressed %}{% endblock css_compressed %}
         {% endcompress %}
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->

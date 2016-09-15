@@ -465,7 +465,7 @@ def profile_edit(request, profile_name):
 
 
 @login_required
-def profile_storage(request, profile_name):
+def storage(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
@@ -473,24 +473,28 @@ def profile_storage(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
-        form = EditEssenceStorageForm(request.POST or None, instance=request.user.summoner)
-        form.helper.form_action = request.path
-        template = loader.get_template('herders/essence_storage.html')
+        context = {
+            'is_owner': is_owner,
+            'profile_name': profile_name,
+            'summoner': summoner,
+            'storage': summoner.storage,
+        }
 
-        if request.method == 'POST' and form.is_valid():
-            form.save()
-            messages.success(request, 'Updated essence storage.')
+        return render(request, 'herders/profile/storage/base.html', context=context)
+    else:
+        return HttpResponseForbidden()
 
-            response_data = {
-                'code': 'success'
-            }
-        else:
-            response_data = {
-                'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
-            }
 
-        return JsonResponse(response_data)
+@login_required
+def storage_update(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        raise Http404
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner:
+        pass
     else:
         return HttpResponseForbidden()
 

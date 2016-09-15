@@ -324,6 +324,10 @@ span.monster-image {
     height: 1em!important;
 }
 
+.bordered {
+    border: 1px solid black;
+    border-radius: 0.2em;
+}
 
 .monster-star {
     position: absolute;

@@ -981,7 +981,6 @@ class Summoner(models.Model):
         self.storage.dark_essence[Storage.ESSENCE_HIGH] = self.storage_dark_high
         self.storage.save()
 
-
     def __unicode__(self):
         return "%s" % self.user
 
@@ -990,6 +989,12 @@ class Storage(models.Model):
     ESSENCE_LOW = 0
     ESSENCE_MID = 1
     ESSENCE_HIGH = 2
+
+    ESSENCE_SIZES = [
+        (ESSENCE_LOW, 'Low'),
+        (ESSENCE_MID, 'Mid'),
+        (ESSENCE_HIGH, 'High'),
+    ]
 
     owner = models.OneToOneField(Summoner)
     uncommitted = models.BooleanField(default=False)  # Used for importing

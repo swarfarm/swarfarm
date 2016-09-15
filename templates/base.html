@@ -86,7 +86,7 @@
           ga('create', 'UA-63688026-1', 'auto');
           ga('send', 'pageview');
         </script>
-        {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}
+
         {% compress js %}
         <script type="text/javascript" src="{% static "main/js/bootstrap.min.js" %}"></script>
         <script type="text/javascript" src="{% static "main/js/bootstrap-rating.min.js" %}"></script>
@@ -94,6 +94,8 @@
         <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
         {% block javascript_compressed %}{% endblock javascript_compressed %}
         {% endcompress %}
+
+        {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}
         {% include 'autocomplete_light/static.html' %}
     </body>
 </html>

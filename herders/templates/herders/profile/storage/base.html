@@ -4,7 +4,7 @@
 {% load staticfiles %}
 
 {% block css %}
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" />
+   <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
 {% endblock css %}
 
 {% block title %}
@@ -30,75 +30,81 @@
                 <td>Magic</td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/magic_low.png" class="monster-inline" />
-                    <span> {{ storage.magic_essence.0 }}</span>
+                    <div class="inline-editable"
+                         data-type="number"
+                         data-name="magic_essence.low"
+                         data-send="always"
+                         data-url="{% url 'herders:storage_update' profile_name=profile_name %}">
+                        {{ storage.magic_essence.0 }}
+                    </div>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/magic_mid.png" class="monster-inline" />
-                    <span> {{ storage.magic_essence.1 }}</span>
+                    <span>{{ storage.magic_essence.1 }}</span>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/magic_high.png" class="monster-inline" />
-                    <span> {{ storage.magic_essence.2 }}</span>
+                    <span>{{ storage.magic_essence.2 }}</span>
                 </td>
             </tr>
             <tr>
                 <td>Fire</td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/fire_low.png" class="monster-inline" />
-                    <span> {{ storage.fire_essence.0 }}</span>
+                    <span>{{ storage.fire_essence.0 }}</span>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/fire_mid.png" class="monster-inline" />
-                    <span> {{ storage.fire_essence.1 }}</span>
+                    <span>{{ storage.fire_essence.1 }}</span>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/fire_high.png" class="monster-inline" />
-                    <span> {{ storage.fire_essence.2 }}</span>
+                    <span>{{ storage.fire_essence.2 }}</span>
                 </td>
             </tr>
             <tr>
                 <td>Water</td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/water_low.png" class="monster-inline" />
-                    <span> {{ storage.water_essence.0 }}</span>
+                    <span>{{ storage.water_essence.0 }}</span>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/water_mid.png" class="monster-inline" />
-                    <span> {{ storage.water_essence.1 }}</span>
+                    <span>{{ storage.water_essence.1 }}</span>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/water_high.png" class="monster-inline" />
-                    <span> {{ storage.water_essence.2 }}</span>
+                    <span>{{ storage.water_essence.2 }}</span>
                 </td>
             </tr>
             <tr>
                 <td>Light</td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/light_low.png" class="monster-inline" />
-                    <span> {{ storage.light_essence.0 }}</span>
+                    <span>{{ storage.light_essence.0 }}</span>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/light_mid.png" class="monster-inline" />
-                    <span> {{ storage.light_essence.1 }}</span>
+                    <span>{{ storage.light_essence.1 }}</span>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/light_high.png" class="monster-inline" />
-                    <span> {{ storage.light_essence.2 }}</span>
+                    <span>{{ storage.light_essence.2 }}</span>
                 </td>
             </tr>
             <tr>
                 <td>Dark</td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/dark_low.png" class="monster-inline" />
-                    <span> {{ storage.dark_essence.0 }}</span>
+                    <span>{{ storage.dark_essence.0 }}</span>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/dark_mid.png" class="monster-inline" />
-                    <span> {{ storage.dark_essence.1 }}</span>
+                    <span>{{ storage.dark_essence.1 }}</span>
                 </td>
                 <td>
                     <img src="{{ img_url_prefix }}/essences/dark_high.png" class="monster-inline" />
-                    <span> {{ storage.dark_essence.2 }}</span>
+                    <span>{{ storage.dark_essence.2 }}</span>
                 </td>
             </tr>
         </table>
@@ -113,8 +119,8 @@
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
-                            <img src="{{ img_url_prefix }}/crafts/wood.png" class="monster-inline" />
-                            <span> {{ storage.wood }}</span>
+                            <img src="{{ img_url_prefix }}/crafts/wood.png" class="monster-inline float-left" />
+                            <div>{{ storage.wood }}</div>
                         </div>
                     </div>
                 </div>
@@ -122,7 +128,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/leather.png" class="monster-inline" />
-                            <span> {{ storage.leather }}</span>
+                            <span>{{ storage.leather }}</span>
                         </div>
                     </div>
                 </div>
@@ -130,7 +136,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/rock.png" class="monster-inline" />
-                            <span> {{ storage.rock }}</span>
+                            <span>{{ storage.rock }}</span>
                         </div>
                     </div>
                 </div>
@@ -138,7 +144,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/ore.png" class="monster-inline" />
-                            <span> {{ storage.ore }}</span>
+                            <span>{{ storage.ore }}</span>
                         </div>
                     </div>
                 </div>
@@ -146,7 +152,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/mythril.png" class="monster-inline" />
-                            <span> {{ storage.mithril }}</span>
+                            <span>{{ storage.mithril }}</span>
                         </div>
                     </div>
                 </div>
@@ -154,7 +160,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/cloth.png" class="monster-inline" />
-                            <span> {{ storage.cloth }}</span>
+                            <span>{{ storage.cloth }}</span>
                         </div>
                     </div>
                 </div>
@@ -162,7 +168,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/rune_piece.png" class="monster-inline" />
-                            <span> {{ storage.rune_piece }}</span>
+                            <span>{{ storage.rune_piece }}</span>
                         </div>
                     </div>
                 </div>
@@ -170,7 +176,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/dust.png" class="monster-inline" />
-                            <span> {{ storage.dust }}</span>
+                            <span>{{ storage.dust }}</span>
                         </div>
                     </div>
                 </div>
@@ -178,7 +184,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/symbol_harmony.png" class="monster-inline" />
-                            <span> {{ storage.symbol_harmony }}</span>
+                            <span>{{ storage.symbol_harmony }}</span>
                         </div>
                     </div>
                 </div>
@@ -186,7 +192,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/symbol_transcendance.png" class="monster-inline" />
-                            <span> {{ storage.symbol_transcendance }}</span>
+                            <span>{{ storage.symbol_transcendance }}</span>
                         </div>
                     </div>
                 </div>
@@ -194,7 +200,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/symbol_chaos.png" class="monster-inline" />
-                            <span> {{ storage.symbol_chaos }}</span>
+                            <span>{{ storage.symbol_chaos }}</span>
                         </div>
                     </div>
                 </div>
@@ -202,7 +208,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/water_crystal.png" class="monster-inline" />
-                            <span> {{ storage.crystal_water }}</span>
+                            <span>{{ storage.crystal_water }}</span>
                         </div>
                     </div>
                 </div>
@@ -210,7 +216,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/fire_crystal.png" class="monster-inline" />
-                            <span> {{ storage.crystal_fire }}</span>
+                            <span>{{ storage.crystal_fire }}</span>
                         </div>
                     </div>
                 </div>
@@ -218,7 +224,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/wind_crystal.png" class="monster-inline" />
-                            <span> {{ storage.crystal_wind }}</span>
+                            <span>{{ storage.crystal_wind }}</span>
                         </div>
                     </div>
                 </div>
@@ -226,7 +232,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/light_crystal.png" class="monster-inline" />
-                            <span> {{ storage.crystal_light }}</span>
+                            <span>{{ storage.crystal_light }}</span>
                         </div>
                     </div>
                 </div>
@@ -234,7 +240,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/dark_crystal.png" class="monster-inline" />
-                            <span> {{ storage.crystal_dark }}</span>
+                            <span>{{ storage.crystal_dark }}</span>
                         </div>
                     </div>
                 </div>
@@ -242,7 +248,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/magic_crystal.png" class="monster-inline" />
-                            <span> {{ storage.crystal_magic }}</span>
+                            <span>{{ storage.crystal_magic }}</span>
                         </div>
                     </div>
                 </div>
@@ -250,7 +256,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <img src="{{ img_url_prefix }}/crafts/pure_crystal.png" class="monster-inline" />
-                            <span> {{ storage.crystal_pure }}</span>
+                            <span>{{ storage.crystal_pure }}</span>
                         </div>
                     </div>
                 </div>
@@ -260,5 +266,5 @@
 {% endblock profile %}
 
 {% block javascript %}
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 {% endblock javascript %}

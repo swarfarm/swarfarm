@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from copy import deepcopy
 
-from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse
+from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
@@ -12,10 +12,11 @@ from django.db import IntegrityError
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext
+
 from bestiary.models import Monster, Fusion, Building
 from .forms import *
 from .filters import *
-from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance
+from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance, Storage
 
 
 def register(request):
@@ -493,8 +494,40 @@ def storage_update(request, profile_name):
         raise Http404
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
-    if is_owner:
-        pass
+    if is_owner and request.POST:
+        field_name = request.POST.get('name')
+        try:
+            new_value = int(request.POST.get('value'))
+        except ValueError:
+            return HttpResponseBadRequest('Invalid Entry')
+
+        essence_size = None
+
+        if 'essence' in field_name:
+            # Split the actual field name off from the size
+            try:
+                field_name, essence_size = field_name.split('.')
+                size_map = {
+                    'low': Storage.ESSENCE_LOW,
+                    'mid': Storage.ESSENCE_MID,
+                    'high': Storage.ESSENCE_HIGH,
+                }
+                essence_size = size_map[essence_size]
+            except (ValueError, KeyError):
+                return HttpResponseBadRequest()
+
+        if field_name in Storage._meta.get_all_field_names():
+            if essence_size is not None:
+                # Get a copy of the size array and set the correct index to new value
+                essence_list = getattr(summoner.storage, field_name)
+                essence_list[essence_size] = new_value
+                new_value = essence_list
+
+            setattr(summoner.storage, field_name, new_value)
+            summoner.storage.save()
+            return HttpResponse()
+        else:
+            return HttpResponseBadRequest()
     else:
         return HttpResponseForbidden()
 

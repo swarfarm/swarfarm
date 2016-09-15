@@ -10,6 +10,8 @@ $(function () {
         viewport: {selector: 'body', padding: 2}
     });
 
+    $('.inline-editable').editable();
+
     $('.rating').rating();
     $('[data-toggle="toggle"]').bootstrapSwitch();
 

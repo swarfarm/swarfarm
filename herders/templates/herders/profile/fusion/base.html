@@ -11,18 +11,16 @@
 {% endblock title %}
 
 {% block fusion_menu %}
-    {% if is_owner %}
-        <ul class="dropdown-menu navmenu-nav">
-            {% for fusion in fusions %}
-            <li>
-                <a class="fusion-tab" data-fusion="{{ fusion.product.bestiary_slug }}">
-                    <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-inline"/>
-                    {{ fusion.product.base_stars }}<span class="glyphicon glyphicon-star"></span> {{ fusion.product.name }}{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    <ul class="dropdown-menu navmenu-nav">
+        {% for fusion in fusions %}
+        <li>
+            <a class="fusion-tab" data-fusion="{{ fusion.product.bestiary_slug }}">
+                <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-inline"/>
+                {{ fusion.product.base_stars }}<span class="glyphicon glyphicon-star"></span> {{ fusion.product.name }}{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
 {% endblock fusion_menu %}
 
 {% block profile %}

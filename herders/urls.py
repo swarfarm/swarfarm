@@ -11,7 +11,10 @@ urlpatterns = [
         url(r'^$', views.profile, name='profile_default'),
         url(r'^edit/$', views.profile_edit, name='edit_profile'),
         url(r'^delete/$', views.profile_delete, name='profile_delete'),
-        url(r'^storage/$', views.profile_storage, name='profile_storage'),
+        url(r'^storage/', include([
+            url(r'^$', views.storage, name='storage'),
+            url(r'^update/$', views.storage_update, name='storage_update'),
+        ])),
         url(r'^buildings/$', views.buildings, name='profile_buildings'),
         url(r'^monster/', include([
             url(r'^inventory/$', views.monster_inventory, name='monster_inventory'),

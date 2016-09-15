@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from copy import deepcopy
 
-from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse
+from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
@@ -12,10 +12,11 @@ from django.db import IntegrityError
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext
+
 from bestiary.models import Monster, Fusion, Building
 from .forms import *
 from .filters import *
-from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance
+from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance, Storage
 
 
 def register(request):
@@ -465,7 +466,7 @@ def profile_edit(request, profile_name):
 
 
 @login_required
-def profile_storage(request, profile_name):
+def storage(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
@@ -473,24 +474,79 @@ def profile_storage(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
-        form = EditEssenceStorageForm(request.POST or None, instance=request.user.summoner)
-        form.helper.form_action = request.path
-        template = loader.get_template('herders/essence_storage.html')
+        craft_mats = []
+        essence_mats = []
 
-        if request.method == 'POST' and form.is_valid():
-            form.save()
-            messages.success(request, 'Updated essence storage.')
+        for field_name in Storage.ESSENCE_FIELDS:
+            essence_mats.append({
+                'name': summoner.storage._meta.get_field(field_name).help_text,
+                'field_name': field_name,
+                'element': field_name.split('_')[0],
+                'qty': getattr(summoner.storage, field_name)
+            })
 
-            response_data = {
-                'code': 'success'
-            }
+        for field_name in Storage.CRAFT_FIELDS:
+            craft_mats.append({
+                'name': summoner.storage._meta.get_field(field_name).help_text,
+                'field_name': field_name,
+                'qty': getattr(summoner.storage, field_name)
+            })
+
+        context = {
+            'is_owner': is_owner,
+            'profile_name': profile_name,
+            'summoner': summoner,
+            'essence_mats': essence_mats,
+            'craft_mats': craft_mats,
+        }
+
+        return render(request, 'herders/profile/storage/base.html', context=context)
+    else:
+        return HttpResponseForbidden()
+
+
+@login_required
+def storage_update(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        raise Http404
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+
+    if is_owner and request.POST:
+        field_name = request.POST.get('name')
+        try:
+            new_value = int(request.POST.get('value'))
+        except ValueError:
+            return HttpResponseBadRequest('Invalid Entry')
+
+        essence_size = None
+
+        if 'essence' in field_name:
+            # Split the actual field name off from the size
+            try:
+                field_name, essence_size = field_name.split('.')
+                size_map = {
+                    'low': Storage.ESSENCE_LOW,
+                    'mid': Storage.ESSENCE_MID,
+                    'high': Storage.ESSENCE_HIGH,
+                }
+                essence_size = size_map[essence_size]
+            except (ValueError, KeyError):
+                return HttpResponseBadRequest()
+
+        if field_name in Storage._meta.get_all_field_names():
+            if essence_size is not None:
+                # Get a copy of the size array and set the correct index to new value
+                essence_list = getattr(summoner.storage, field_name)
+                essence_list[essence_size] = new_value
+                new_value = essence_list
+
+            setattr(summoner.storage, field_name, new_value)
+            summoner.storage.save()
+            return HttpResponse()
         else:
-            response_data = {
-                'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
-            }
-
-        return JsonResponse(response_data)
+            return HttpResponseBadRequest()
     else:
         return HttpResponseForbidden()
 

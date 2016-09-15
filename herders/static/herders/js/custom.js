@@ -10,12 +10,17 @@ $(function () {
         viewport: {selector: 'body', padding: 2}
     });
 
+    $('.inline-editable').editable();
+
     $('.rating').rating();
     $('[data-toggle="toggle"]').bootstrapSwitch();
 
     DisplayMessages();
     initSelect();
 });
+
+//x-editable options
+$.fn.editable.defaults.container = 'body';
 
 // Various select2 templates for the types of autocompletes
 function starsSelect2Template(option) {

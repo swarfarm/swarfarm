@@ -111,6 +111,30 @@ footer {
     margin-right: 0!important;
 }
 
+.inline-editable {
+
+}
+
+.inline-editable:hover {
+    cursor: pointer;
+    position: relative;
+}
+
+.editable-click, a.editable-click {
+    border-bottom: dashed 1px #eeeeee;
+}
+
+.editable-click:hover, a.editable-click:hover {
+    border-bottom: dashed 1px #0088cc;
+}
+
+.inline-editable:hover:after {
+    padding-right: 5px;
+    float: right;
+    font-family: "Glyphicons Halflings";
+    content: "\270f";
+}
+
 input.short,
 select.short {
     max-width: 300px;
@@ -318,6 +342,7 @@ span.monster-image {
     height: 25px!important;
     border: 1px solid black;
     border-radius: 4px;
+    margin-right: 5px;
 }
 
 .image-inline {
@@ -689,6 +714,9 @@ img.prepended-image {
     height: 50px;
     border: 1px solid black;
     border-radius: 15%;
+}
+.essence-input {
+    margin-left: 30px;
 }
 
 div.disabled {

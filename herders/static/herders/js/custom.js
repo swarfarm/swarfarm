@@ -19,6 +19,9 @@ $(function () {
     initSelect();
 });
 
+//x-editable options
+$.fn.editable.defaults.container = 'body';
+
 // Various select2 templates for the types of autocompletes
 function starsSelect2Template(option) {
     if (option.id) {

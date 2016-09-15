@@ -474,11 +474,30 @@ def storage(request, profile_name):
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
+        craft_mats = []
+        essence_mats = []
+
+        for field_name in Storage.ESSENCE_FIELDS:
+            essence_mats.append({
+                'name': summoner.storage._meta.get_field(field_name).help_text,
+                'field_name': field_name,
+                'element': field_name.split('_')[0],
+                'qty': getattr(summoner.storage, field_name)
+            })
+
+        for field_name in Storage.CRAFT_FIELDS:
+            craft_mats.append({
+                'name': summoner.storage._meta.get_field(field_name).help_text,
+                'field_name': field_name,
+                'qty': getattr(summoner.storage, field_name)
+            })
+
         context = {
             'is_owner': is_owner,
             'profile_name': profile_name,
             'summoner': summoner,
-            'storage': summoner.storage,
+            'essence_mats': essence_mats,
+            'craft_mats': craft_mats,
         }
 
         return render(request, 'herders/profile/storage/base.html', context=context)

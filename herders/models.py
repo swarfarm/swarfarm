@@ -996,36 +996,40 @@ class Storage(models.Model):
         (ESSENCE_HIGH, 'High'),
     ]
 
+    ESSENCE_FIELDS = ['magic_essence', 'fire_essence', 'water_essence', 'wind_essence', 'light_essence', 'dark_essence']
+    CRAFT_FIELDS = ['wood', 'leather', 'rock', 'ore', 'mithril', 'cloth', 'rune_piece', 'dust', 'symbol_harmony', 'symbol_transcendance', 'symbol_chaos', 'crystal_water', 'crystal_fire', 'crystal_wind', 'crystal_light', 'crystal_dark', 'crystal_magic', 'crystal_pure']
+
+
     owner = models.OneToOneField(Summoner)
     uncommitted = models.BooleanField(default=False)  # Used for importing
 
     # Elemental Essences
-    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
-    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
-    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
-    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
-    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
-    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]))
+    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Magic Essence")
+    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Fire Essence")
+    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Water Essence")
+    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Wind Essence")
+    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Light Essence")
+    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Dark Essence")
 
     # Crafting materials
-    wood = models.IntegerField(default=0)
-    leather = models.IntegerField(default=0)
-    rock = models.IntegerField(default=0)
-    ore = models.IntegerField(default=0)
-    mithril = models.IntegerField(default=0)
-    cloth = models.IntegerField(default=0)
-    rune_piece = models.IntegerField(default=0)
-    dust = models.IntegerField(default=0)
-    symbol_harmony = models.IntegerField(default=0)
-    symbol_transcendance = models.IntegerField(default=0)
-    symbol_chaos = models.IntegerField(default=0)
-    crystal_water = models.IntegerField(default=0)
-    crystal_fire = models.IntegerField(default=0)
-    crystal_wind = models.IntegerField(default=0)
-    crystal_light = models.IntegerField(default=0)
-    crystal_dark = models.IntegerField(default=0)
-    crystal_magic = models.IntegerField(default=0)
-    crystal_pure = models.IntegerField(default=0)
+    wood = models.IntegerField(default=0, help_text="Hard Wood")
+    leather = models.IntegerField(default=0, help_text="Tough Leather")
+    rock = models.IntegerField(default=0, help_text="Solid Rock")
+    ore = models.IntegerField(default=0, help_text="Solid Iron Ore")
+    mithril = models.IntegerField(default=0, help_text="Shining Mythril")
+    cloth = models.IntegerField(default=0, help_text="Thick Cloth")
+    rune_piece = models.IntegerField(default=0, help_text="Rune Piece")
+    dust = models.IntegerField(default=0, help_text="Magic Dust")
+    symbol_harmony = models.IntegerField(default=0, help_text="Symbol of Harmony")
+    symbol_transcendance = models.IntegerField(default=0, help_text="Symbol of Transcendance")
+    symbol_chaos = models.IntegerField(default=0, help_text="Symbol of Chaos")
+    crystal_water = models.IntegerField(default=0, help_text="Frozen Water Crystal")
+    crystal_fire = models.IntegerField(default=0, help_text="Flaming Fire Crystal")
+    crystal_wind = models.IntegerField(default=0, help_text="Whirling Wind Crystal")
+    crystal_light = models.IntegerField(default=0, help_text="Shiny Light Crystal")
+    crystal_dark = models.IntegerField(default=0, help_text="Pitch-black Dark Crystal")
+    crystal_magic = models.IntegerField(default=0, help_text="Condensed Magic Crystal")
+    crystal_pure = models.IntegerField(default=0, help_text="Pure Magic Crystal")
 
     def get_storage(self):
         storage = OrderedDict()

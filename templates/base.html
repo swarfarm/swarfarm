@@ -79,6 +79,8 @@
             {% if profile_name %}var PROFILE_NAME = '{{ profile_name }}';{% endif %}
             var API_URL = '{% url 'api-root' %}';
         </script>
+        {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}
+
         <script type="text/javascript">
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -97,7 +99,6 @@
         <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
         {% endcompress %}
 
-        {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}
         {% include 'autocomplete_light/static.html' %}
     </body>
 </html>

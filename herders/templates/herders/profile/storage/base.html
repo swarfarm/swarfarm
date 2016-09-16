@@ -27,7 +27,9 @@
                                  data-type="number"
                                  data-name="{{ essence.field_name }}.low"
                                  data-send="always"
-                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}">
+                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
+                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
+                            >
                                 {{ essence.qty.0 }}
                             </div>
                         </div>
@@ -37,7 +39,9 @@
                                  data-type="number"
                                  data-name="{{ essence.field_name }}.mid"
                                  data-send="always"
-                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}">
+                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
+                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
+                            >
                                 {{ essence.qty.1 }}
                             </div>
                         </div>
@@ -47,7 +51,9 @@
                                  data-type="number"
                                  data-name="{{ essence.field_name }}.high"
                                  data-send="always"
-                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}">
+                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
+                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
+                            >
                                 {{ essence.qty.2 }}
                             </div>
                         </div>
@@ -74,7 +80,9 @@
                                  data-type="number"
                                  data-name="{{ craft.field_name }}"
                                  data-send="always"
-                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}">
+                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
+                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
+                            >
                                 {{ craft.qty }}
                             </div>
                         </div>

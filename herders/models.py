@@ -90,6 +90,12 @@ class Monster(models.Model):
     resistance = models.IntegerField(null=True, blank=True)
     accuracy = models.IntegerField(null=True, blank=True)
 
+    homunculus = models.BooleanField(default=False)
+    craft_materials = models.ManyToManyField('CraftCost', blank=True)
+    craft_cost = models.IntegerField(null=True, blank=True)
+    skill_reset_craft_materials = models.ManyToManyField('CraftCost', blank=True, related_name="skill_reset_craft_materials")
+    skill_reset_crystals = models.IntegerField(null=True, blank=True)
+
     awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awaken_mats_fire_low = models.IntegerField(blank=True, default=0)
@@ -288,8 +294,6 @@ class Monster(models.Model):
         super(Monster, self).clean()
 
     def save(self, *args, **kwargs):
-        skip_url_gen = kwargs.pop('skip_url_gen', False)
-
         # Update null values
         if self.awaken_mats_fire_high is None:
             self.awaken_mats_fire_high = 0
@@ -340,59 +344,6 @@ class Monster(models.Model):
                 self.bestiary_slug = slugify(" ".join([self.element, self.name, self.awakens_to.name]))
             else:
                 self.bestiary_slug = slugify(" ".join([self.element, self.name]))
-
-        # if not skip_url_gen:
-        #     # Generate summonerswar.co URL if possible
-        #     if self.can_awaken and self.base_stars > 1 and self.archetype is not self.TYPE_MATERIAL and (self.summonerswar_co_url is None or self.summonerswar_co_url == ''):
-        #         base = 'http://summonerswar.co/'
-        #         try:
-        #             # Generate the URL
-        #             if self.is_awakened:
-        #                 unawakened_name = self.awakens_from.name
-        #                 awakened_name = self.name
-        #             else:
-        #                 unawakened_name = self.name
-        #                 awakened_name = self.awakens_to.name
-        #
-        #             url = base + slugify(self.element + '-' + unawakened_name + '-' + awakened_name)
-        #
-        #             # Check that it is valid
-        #             from urllib2 import Request, urlopen
-        #             request = Request(url)
-        #             request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
-        #             code = urlopen(request).code
-        #             if code == 200:
-        #                 self.summonerswar_co_url = url
-        #             else:
-        #                 self.summonerswar_co_url = None
-        #         except:
-        #             # Something prevented getting the correct names or verifying the URL, so clear it out
-        #             self.summonerswar_co_url = None
-        #
-        #     # Generate wikia URL if possible
-        #     if self.wikia_url is None or self.wikia_url == '':
-        #         base = 'http://summonerswar.wikia.com/wiki/'
-        #         try:
-        #             # Generate the URL
-        #             if self.is_awakened:
-        #                 unawakened_name = self.awakens_from.name
-        #             else:
-        #                 unawakened_name = self.name
-        #
-        #             url = base + unawakened_name.replace(' ', '_') + '_(' + self.get_element_display() + ')'
-        #
-        #             # Check that it is valid
-        #             from urllib2 import Request, urlopen
-        #             request = Request(url)
-        #             request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
-        #             code = urlopen(request).code
-        #             if code == 200:
-        #                 self.wikia_url = url
-        #             else:
-        #                 self.wikia_url = None
-        #         except:
-        #             # Something prevented getting the correct names or verifying the URL, so clear it out
-        #             self.wikia_url = None
 
         # Pull info from unawakened version of this monster. This copying of data is one directional only
         if self.awakens_from:
@@ -469,6 +420,8 @@ class MonsterSkill(models.Model):
 
     class Meta:
         ordering = ['slot', 'name']
+        verbose_name = 'Skill'
+        verbose_name_plural = 'Skills'
 
 
 class MonsterLeaderSkill(models.Model):
@@ -552,6 +505,8 @@ class MonsterLeaderSkill(models.Model):
 
     class Meta:
         ordering = ['attribute', 'amount', 'element']
+        verbose_name = 'Leader Skill'
+        verbose_name_plural = 'Leader Skills'
 
 
 class MonsterSkillEffectBuffsManager(models.Manager):
@@ -582,6 +537,8 @@ class MonsterSkillEffect(models.Model):
 
     class Meta:
         ordering = ['name']
+        verbose_name = 'Skill Effect'
+        verbose_name_plural = 'Skill Effects'
 
     def image_url(self):
         if self.icon_filename:
@@ -621,6 +578,16 @@ class MonsterSkillScalingStat(models.Model):
 
     class Meta:
         ordering = ['stat',]
+        verbose_name = 'Scaling Stat'
+        verbose_name_plural = 'Scaling Stats'
+
+
+class HomunculusSkill(models.Model):
+    skill = models.ForeignKey(MonsterSkill)
+    monsters = models.ManyToManyField(Monster)
+    materials = models.ManyToManyField('CraftCost', blank=True)
+    mana_cost = models.IntegerField(default=0)
+    prerequisites = models.ManyToManyField(MonsterSkill, blank=True, related_name='homunculus_prereq')
 
 
 class MonsterSource(models.Model):
@@ -824,6 +791,31 @@ class Building(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CraftMaterial(models.Model):
+    com2us_id = models.IntegerField()
+    name = models.CharField(max_length=40)
+    icon_filename = models.CharField(max_length=100, null=True, blank=True)
+    sell_value = models.IntegerField(blank=True, null=True)
+    source = models.ManyToManyField(MonsterSource, blank=True)
+
+    def image_url(self):
+        if self.icon_filename:
+            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/crafts/' + self.icon_filename))
+        else:
+            return 'No Image'
+
+    def __unicode__(self):
+        return self.name
+
+
+class CraftCost(models.Model):
+    craft = models.ForeignKey(CraftMaterial)
+    quantity = models.IntegerField()
+
+    def __unicode__(self):
+        return  '{} - qty. {}'.format(self.craft.name, self.quantity)
 
 
 # Individual user/monster collection models

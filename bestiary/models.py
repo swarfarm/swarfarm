@@ -6,6 +6,7 @@ class Building(herder_models.Building):
     class Meta:
         proxy = True
 
+
 class Monster(herder_models.Monster):
     class Meta:
         proxy = True

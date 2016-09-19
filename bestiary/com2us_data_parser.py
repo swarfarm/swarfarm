@@ -41,7 +41,7 @@ def assign_skill_ids():
                             print 'Error! Skill ' + str(skills[x]) + ' already has an ID assigned. Tried to assign ' + str(skill_id)
 
 
-def parse_skill_data():
+def parse_skill_data(preview_changes=False):
     parsed_skill_names = get_skill_names_by_id()
     parsed_skill_descs = get_skill_descs_by_id()
 
@@ -66,11 +66,13 @@ def parse_skill_data():
                 # Name
                 if skill.name != parsed_skill_names[master_id]:
                     skill.name = parsed_skill_names[master_id]
+                    print 'Updated name to {}'.format(skill.name)
                     updated = True
 
                 # Description
                 if skill.description != parsed_skill_descs[master_id]:
                     skill.description = parsed_skill_descs[master_id]
+                    print 'Updated description to {}'.format(skill.description)
                     updated = True
 
                 # Icon
@@ -78,6 +80,7 @@ def parse_skill_data():
                 icon_filename = 'skill_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
                 if skill.icon_filename != icon_filename:
                     skill.icon_filename = icon_filename
+                    print 'Updated icon to {}'.format(skill.icon_filename)
                     updated = True
 
                 # Cooltime
@@ -85,12 +88,14 @@ def parse_skill_data():
 
                 if skill.cooltime != cooltime:
                     skill.cooltime = cooltime
+                    print 'Updated cooltime to {}'.format(skill.cooltime)
                     updated = True
 
                 # Max Level
                 max_lv = int(csv_skill['max level'])
                 if skill.max_level != max_lv:
                     skill.max_level = max_lv
+                    print 'Updated max level to {}'.format(skill.max_level)
                     updated = True
 
                 # Level up progress
@@ -109,6 +114,7 @@ def parse_skill_data():
 
                 if skill.level_progress_description != level_up_text:
                     skill.level_progress_description = level_up_text
+                    print 'Updated level-up progress description'
                     updated = True
 
                 # Buffs
@@ -120,6 +126,7 @@ def parse_skill_data():
                 # Skill multiplier formula
                 if skill.multiplier_formula_raw != csv_skill['fun data']:
                     skill.multiplier_formula_raw = csv_skill['fun data']
+                    print 'Updated raw multiplier formula to {}'.format(skill.multiplier_formula_raw)
                     updated = True
 
                 formula = ''
@@ -157,15 +164,19 @@ def parse_skill_data():
                         
                     if skill.multiplier_formula != formula:
                         skill.multiplier_formula = formula
+                        print 'Updated multiplier formula to {}'.format(skill.multiplier_formula)
                         updated = True
 
                 # Finally save it if required
-                if updated:
+                if updated and not preview_changes:
                     skill.save()
                     print 'Updated skill ' + str(skill)
 
+        if preview_changes:
+            print 'No changes were saved.'
 
-def parse_monster_data():
+
+def parse_monster_data(preview_changes=False):
     parsed_monster_names = get_monster_names_by_id()
 
     with open('monsters.csv', 'rb') as csvfile:
@@ -177,10 +188,8 @@ def parse_monster_data():
             if (master_id < 40000 and row['unit master id'][3] != '2') or (1000101 <= master_id <= 1000113):
                 # Non-summonable monsters appear with IDs above 40000 and a 2 in that position represents the japanese 'incomplete' monsters
                 # Homonculus IDs start at 1000101
-                if master_id > 1000000:
-                    pass
 
-                monster_family = int(row['group id'])
+                monster_family = int(row['discussion id'])
                 awakened = row['unit master id'][-2] == '1'
                 element = element_map.get(int(row['attribute']))
 
@@ -203,7 +212,10 @@ def parse_monster_data():
                         updated = True
 
                     # Name
-                    monster.name = parsed_monster_names[master_id]
+                    if monster.name != parsed_monster_names[master_id]:
+                        print "Updated {}'s name to {}".format(monster.name, parsed_monster_names[master_id])
+                        monster.name = parsed_monster_names[master_id]
+                        updated = True
 
                     # Archetype
                     archetype = row['style type']
@@ -227,6 +239,39 @@ def parse_monster_data():
                     elif archetype == 5 and monster.archetype != Monster.TYPE_MATERIAL:
                         monster.archetype = Monster.TYPE_MATERIAL
                         print "Updated " + str(monster) + " archetype to material"
+                        updated = True
+
+                    # Base stars
+                    if monster.base_stars != int(row['base class']):
+                        monster.base_stars = int(row['base class'])
+                        print 'Updated {} base stars to {}'.format(monster.name, monster.base_stars)
+                        updated = True
+
+                    # Base Stats
+                    # Need to figure out how to translate base stats from given 1* values to base values.
+                    if monster.resistance != int(row['resistance']):
+                        monster.resistance = int(row['resistance'])
+                        print 'Updated {} resistance to {}'.format(monster.name, monster.resistance)
+                        updated = True
+
+                    if monster.accuracy != int(row['resistance']):
+                        monster.accuracy = int(row['accuracy'])
+                        print 'Updated {} accuracy to {}'.format(monster.name, monster.accuracy)
+                        updated = True
+
+                    if monster.speed != int(row['base speed']):
+                        monster.speed = int(row['base speed'])
+                        print 'Updated {} speed to {}'.format(monster.name, monster.speed)
+                        updated = True
+
+                    if monster.crit_rate != int(row['critical rate']):
+                        monster.crit_rate = int(row['critical rate'])
+                        print 'Updated {} critical rate to {}'.format(monster.name, monster.crit_rate)
+                        updated = True
+
+                    if monster.crit_damage != int(row['critical damage']):
+                        monster.crit_damage = int(row['critical damage'])
+                        print 'Updated {} critical damage to {}'.format(monster.name, monster.crit_damage)
                         updated = True
 
                     # Awaken materials
@@ -383,6 +428,10 @@ def parse_monster_data():
                             updated = True
 
                     # Leader skill
+                    # TODO
+
+                    # Skills
+                    # TODO
 
                     # Icon
                     icon_nums = json.loads(row['thumbnail'])
@@ -392,9 +441,12 @@ def parse_monster_data():
                         print "Updated " + str(monster) + " icon filename"
                         updated = True
 
-                    if updated:
+                    if updated and not preview_changes:
                         monster.save()
                         print 'Saved updates to ' + str(monster)
+
+        if preview_changes:
+            print 'No changes were saved.'
 
 
 def crop_monster_images():

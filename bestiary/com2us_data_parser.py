@@ -245,9 +245,34 @@ def parse_monster_data(preview_changes=False):
                     if monster.base_stars != int(row['base class']):
                         monster.base_stars = int(row['base class'])
                         print 'Updated {} base stars to {}'.format(monster.name, monster.base_stars)
+                        updated = True
 
                     # Base Stats
                     # Need to figure out how to translate base stats from given 1* values to base values.
+                    if monster.resistance != int(row['resistance']):
+                        monster.resistance = int(row['resistance'])
+                        print 'Updated {} resistance to {}'.format(monster.name, monster.resistance)
+                        updated = True
+
+                    if monster.accuracy != int(row['resistance']):
+                        monster.accuracy = int(row['accuracy'])
+                        print 'Updated {} accuracy to {}'.format(monster.name, monster.accuracy)
+                        updated = True
+
+                    if monster.speed != int(row['base speed']):
+                        monster.speed = int(row['base speed'])
+                        print 'Updated {} speed to {}'.format(monster.name, monster.speed)
+                        updated = True
+
+                    if monster.crit_rate != int(row['critical rate']):
+                        monster.crit_rate = int(row['critical rate'])
+                        print 'Updated {} critical rate to {}'.format(monster.name, monster.crit_rate)
+                        updated = True
+
+                    if monster.crit_damage != int(row['critical damage']):
+                        monster.crit_damage = int(row['critical damage'])
+                        print 'Updated {} critical damage to {}'.format(monster.name, monster.crit_damage)
+                        updated = True
 
                     # Awaken materials
                     awaken_materials = json.loads(row['awaken materials'])
@@ -403,6 +428,10 @@ def parse_monster_data(preview_changes=False):
                             updated = True
 
                     # Leader skill
+                    # TODO
+
+                    # Skills
+                    # TODO
 
                     # Icon
                     icon_nums = json.loads(row['thumbnail'])

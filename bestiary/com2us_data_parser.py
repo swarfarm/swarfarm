@@ -254,7 +254,7 @@ def parse_monster_data(preview_changes=False):
                         print 'Updated {} resistance to {}'.format(monster.name, monster.resistance)
                         updated = True
 
-                    if monster.accuracy != int(row['resistance']):
+                    if monster.accuracy != int(row['accuracy']):
                         monster.accuracy = int(row['accuracy'])
                         print 'Updated {} accuracy to {}'.format(monster.name, monster.accuracy)
                         updated = True

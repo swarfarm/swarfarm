@@ -189,7 +189,7 @@ def parse_monster_data(preview_changes=False):
                 # Non-summonable monsters appear with IDs above 40000 and a 2 in that position represents the japanese 'incomplete' monsters
                 # Homonculus IDs start at 1000101
 
-                monster_family = int(row['group id'])
+                monster_family = int(row['discussion id'])
                 awakened = row['unit master id'][-2] == '1'
                 element = element_map.get(int(row['attribute']))
 
@@ -243,7 +243,7 @@ def parse_monster_data(preview_changes=False):
 
                     # Base stars
                     if monster.base_stars != int(row['base class']):
-                        monster.base_stars = int(row['base_class'])
+                        monster.base_stars = int(row['base class'])
                         print 'Updated {} base stars to {}'.format(monster.name, monster.base_stars)
 
                     # Base Stats

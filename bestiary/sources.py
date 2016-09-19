@@ -43,6 +43,6 @@ def set_sources():
     # Now re-save all awakened monsters so they pull the sources from the unawakened versions
     for monster in Monster.objects.filter(obtainable=True, is_awakened=True):
         print monster
-        monster.save(skip_url_gen=True)
+        monster.save()
 
     print 'Done!'

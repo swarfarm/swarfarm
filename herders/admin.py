@@ -128,7 +128,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 obj.source.clear()
                 obj.source = obj.awakens_from.source.all()
 
-            obj.save(skip_url_gen=True)
+            obj.save()
     resave.short_description = 'Resave model instances and update data'
 
     def save_related(self, request, form, formsets, change):

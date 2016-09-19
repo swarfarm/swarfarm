@@ -243,7 +243,7 @@ def parse_monster_data(preview_changes=False):
 
                     # Base stars
                     if monster.base_stars != int(row['base class']):
-                        monster.base_stars = int(row['base_class'])
+                        monster.base_stars = int(row['base class'])
                         print 'Updated {} base stars to {}'.format(monster.name, monster.base_stars)
 
                     # Base Stats

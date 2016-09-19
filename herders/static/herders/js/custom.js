@@ -1,4 +1,5 @@
 var element_loading_template = '<div class="spinner-overlay"><div class="spinner"></div></div>';
+var popoverDelay = null;
 
 //Initialize all bootstrap tooltips and popovers
 $(function () {
@@ -213,9 +214,9 @@ $('body')
     .on('change', '.auto-submit', function() {
         $(this).parents("form").submit();
     })
-    .on('mouseenter mouseleave', '.rune-popover', function(event) {
-        if (event.type === 'mouseenter') {
-            var el = $(this);
+    .on('mouseenter', '.rune-popover', function() {
+        var el = $(this);
+        popoverDelay = setTimeout(function () {
             var rune_id = el.data('rune-id');
 
             if (rune_id.length > 0) {
@@ -239,13 +240,11 @@ $('body')
                     }
                 });
             }
-        } else {
-            $(this).popover('hide');
-        }
+        }, 250);
     })
-    .on('mouseenter mouseleave', '.monster-popover', function(event) {
-        if (event.type === 'mouseenter') {
-            var el = $(this);
+    .on('mouseenter', '.monster-popover', function() {
+        var el = $(this);
+        popoverDelay = setTimeout(function () {
             var url = API_URL + 'instance/' + el.data('instance-id') + '.html';
             $.ajax({
                 url: url,
@@ -266,13 +265,11 @@ $('body')
                     el.popover('show');
                 }
             });
-        } else {
-            $(this).popover('hide');
-        }
+        }, 250);
     })
-    .on('mouseenter mouseleave', '.skill-popover', function(event) {
-        if (event.type === 'mouseenter') {
-            var el = $(this);
+    .on('mouseenter', '.skill-popover', function() {
+        var el = $(this);
+        popoverDelay = setTimeout(function () {
             var url = API_URL + 'skill/' + el.data('skill-id') + '.html';
             $.ajax({
                 url: url,
@@ -288,14 +285,14 @@ $('body')
                     viewport: {selector: '#wrap', padding: 2},
                     template: '<div class="monster-skill popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
                 });
-
-                if (el.is(":hover")) {
-                    el.popover('show');
-                }
+                el.popover('show');
             });
-        } else {
-            $(this).popover('hide');
-        }
+
+        }, 250);
+    })
+    .on('mouseleave', '.skill-popover, .monster-popover, .rune-popover', function(event) {
+        $(this).popover('hide');
+        clearTimeout(popoverDelay);
     })
     .on('click', 'input[type=reset]', function() {
         var $form = $(this).parents('form');

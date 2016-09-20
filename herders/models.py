@@ -91,10 +91,8 @@ class Monster(models.Model):
     accuracy = models.IntegerField(null=True, blank=True)
 
     homunculus = models.BooleanField(default=False)
-    craft_materials = models.ManyToManyField('CraftCost', blank=True)
+    craft_materials = models.ManyToManyField('CraftMaterial', through='MonsterCraftCost')
     craft_cost = models.IntegerField(null=True, blank=True)
-    skill_reset_craft_materials = models.ManyToManyField('CraftCost', blank=True, related_name="skill_reset_craft_materials")
-    skill_reset_crystals = models.IntegerField(null=True, blank=True)
 
     awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')
@@ -585,7 +583,7 @@ class MonsterSkillScalingStat(models.Model):
 class HomunculusSkill(models.Model):
     skill = models.ForeignKey(MonsterSkill)
     monsters = models.ManyToManyField(Monster)
-    materials = models.ManyToManyField('CraftCost', blank=True)
+    craft_materials = models.ManyToManyField('CraftMaterial', through='HomunculusSkillCraftCost')
     mana_cost = models.IntegerField(default=0)
     prerequisites = models.ManyToManyField(MonsterSkill, blank=True, related_name='homunculus_prereq')
 
@@ -810,12 +808,22 @@ class CraftMaterial(models.Model):
         return self.name
 
 
-class CraftCost(models.Model):
-    craft = models.ForeignKey(CraftMaterial)
+class MonsterCraftCost(models.Model):
+    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
+    craft = models.ForeignKey(CraftMaterial, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
     def __unicode__(self):
-        return  '{} - qty. {}'.format(self.craft.name, self.quantity)
+        return '{} - qty. {}'.format(self.craft.name, self.quantity)
+
+
+class HomunculusSkillCraftCost(models.Model):
+    skill = models.ForeignKey(HomunculusSkill, on_delete=models.CASCADE)
+    craft = models.ForeignKey(CraftMaterial, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+    def __unicode__(self):
+        return '{} - qty. {}'.format(self.craft.name, self.quantity)
 
 
 # Individual user/monster collection models

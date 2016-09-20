@@ -6,6 +6,11 @@ from .models import *
 
 
 # Monster Database stuff
+class MonsterCraftCostInline(admin.TabularInline):
+    model = MonsterCraftCost
+    extra = 4
+
+
 @admin.register(Monster)
 class MonsterAdmin(admin.ModelAdmin):
     suit_form_tabs = (('basic', 'Basic Info'), ('awakening', 'Awakening'), ('other', 'Other'))
@@ -22,10 +27,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'obtainable',
                 'image_filename',
                 'homunculus',
-                'craft_materials',
                 'craft_cost',
-                'skill_reset_craft_materials',
-                'skill_reset_crystals',
             ),
         }),
         ('Awakening', {
@@ -109,7 +111,8 @@ class MonsterAdmin(admin.ModelAdmin):
     list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken')
     list_per_page = 100
     filter_vertical = ('skills',)
-    filter_horizontal = ('source', 'craft_materials', 'skill_reset_craft_materials')
+    filter_horizontal = ('source',)
+    inlines = (MonsterCraftCostInline,)
     readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack', 'skill_ups_to_max',)
     search_fields = ['name']
     save_as = True
@@ -178,10 +181,16 @@ class SkillAdmin(admin.ModelAdmin):
         return ', '.join([str(monster) for monster in obj.monster_set.all()])
 
 
+class HomunculusSkillCraftCostInline(admin.TabularInline):
+    model = HomunculusSkillCraftCost
+    extra = 4
+
+
 @admin.register(HomunculusSkill)
 class HomunculusSkillAdmin(admin.ModelAdmin):
     list_display = ['skill', 'mana_cost']
-    filter_horizontal = ['monsters', 'materials', 'prerequisites']
+    filter_horizontal = ['monsters', 'prerequisites']
+    inlines = (HomunculusSkillCraftCostInline,)
     save_as = True
 
 
@@ -223,12 +232,8 @@ class BuildingAdmin(admin.ModelAdmin):
 @admin.register(CraftMaterial)
 class CraftMaterialAdmin(admin.ModelAdmin):
     list_display = ('image_url', '__unicode__')
+    filter_horizontal = ['source',]
     save_as = True
-
-
-@admin.register(CraftCost)
-class CraftCostAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__',)
 
 
 # User management stuff

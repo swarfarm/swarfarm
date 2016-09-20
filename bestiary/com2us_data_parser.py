@@ -60,7 +60,6 @@ def parse_skill_data(preview=False):
             except Skill.DoesNotExist:
                 continue
             else:
-                print 'Processing skill {}'.format(skill)
                 updated = False
 
                 # Name

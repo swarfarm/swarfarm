@@ -694,7 +694,7 @@ class Fusion(models.Model):
             owner=owner,
         )
         total_cost = self.total_awakening_cost(owned_ingredients)
-        essence_storage = owner.get_storage()
+        essence_storage = owner.storage.get_storage()
 
         missing_essences = {
             element: {
@@ -871,35 +871,6 @@ class Summoner(models.Model):
     storage_dark_mid = models.IntegerField(default=0)
     storage_dark_high = models.IntegerField(default=0)
 
-    def get_storage(self):
-        storage = OrderedDict()
-        storage['magic'] = OrderedDict()
-        storage['magic']['low'] = self.storage_magic_low
-        storage['magic']['mid'] = self.storage_magic_mid
-        storage['magic']['high'] = self.storage_magic_high
-        storage['fire'] = OrderedDict()
-        storage['fire']['low'] = self.storage_fire_low
-        storage['fire']['mid'] = self.storage_fire_mid
-        storage['fire']['high'] = self.storage_fire_high
-        storage['water'] = OrderedDict()
-        storage['water']['low'] = self.storage_water_low
-        storage['water']['mid'] = self.storage_water_mid
-        storage['water']['high'] = self.storage_water_high
-        storage['wind'] = OrderedDict()
-        storage['wind']['low'] = self.storage_wind_low
-        storage['wind']['mid'] = self.storage_wind_mid
-        storage['wind']['high'] = self.storage_wind_high
-        storage['light'] = OrderedDict()
-        storage['light']['low'] = self.storage_light_low
-        storage['light']['mid'] = self.storage_light_mid
-        storage['light']['high'] = self.storage_light_high
-        storage['dark'] = OrderedDict()
-        storage['dark']['low'] = self.storage_dark_low
-        storage['dark']['mid'] = self.storage_dark_mid
-        storage['dark']['high'] = self.storage_dark_high
-
-        return storage
-
     def get_rune_counts(self):
         counts = {}
 
@@ -909,49 +880,6 @@ class Summoner(models.Model):
         return counts
 
     def save(self, *args, **kwargs):
-        # Bounds checks on essences
-        if self.storage_magic_low < 0:
-            self.storage_magic_low = 0
-        if self.storage_magic_mid < 0:
-            self.storage_magic_mid = 0
-        if self.storage_magic_high < 0:
-            self.storage_magic_high = 0
-
-        if self.storage_fire_low < 0:
-            self.storage_fire_low = 0
-        if self.storage_fire_mid < 0:
-            self.storage_fire_mid = 0
-        if self.storage_fire_high < 0:
-            self.storage_fire_high = 0
-
-        if self.storage_wind_low < 0:
-            self.storage_wind_low = 0
-        if self.storage_wind_mid < 0:
-            self.storage_wind_mid = 0
-        if self.storage_wind_high < 0:
-            self.storage_wind_high = 0
-
-        if self.storage_water_low < 0:
-            self.storage_water_low = 0
-        if self.storage_water_mid < 0:
-            self.storage_water_mid = 0
-        if self.storage_water_high < 0:
-            self.storage_water_high = 0
-
-        if self.storage_dark_low < 0:
-            self.storage_dark_low = 0
-        if self.storage_dark_mid < 0:
-            self.storage_dark_mid = 0
-        if self.storage_dark_high < 0:
-            self.storage_dark_high = 0
-
-        if self.storage_light_low < 0:
-            self.storage_light_low = 0
-        if self.storage_light_mid < 0:
-            self.storage_light_mid = 0
-        if self.storage_light_high < 0:
-            self.storage_light_high = 0
-
         super(Summoner, self).save(*args, **kwargs)
 
         # Update new storage model
@@ -961,28 +889,8 @@ class Summoner(models.Model):
             )
             new_storage.save()
 
-        self.storage.magic_essence[Storage.ESSENCE_LOW] = self.storage_magic_low
-        self.storage.magic_essence[Storage.ESSENCE_MID] = self.storage_magic_mid
-        self.storage.magic_essence[Storage.ESSENCE_HIGH] = self.storage_magic_high
-        self.storage.fire_essence[Storage.ESSENCE_LOW] = self.storage_fire_low
-        self.storage.fire_essence[Storage.ESSENCE_MID] = self.storage_fire_mid
-        self.storage.fire_essence[Storage.ESSENCE_HIGH] = self.storage_fire_high
-        self.storage.water_essence[Storage.ESSENCE_LOW] = self.storage_water_low
-        self.storage.water_essence[Storage.ESSENCE_MID] = self.storage_water_mid
-        self.storage.water_essence[Storage.ESSENCE_HIGH] = self.storage_water_high
-        self.storage.wind_essence[Storage.ESSENCE_LOW] = self.storage_wind_low
-        self.storage.wind_essence[Storage.ESSENCE_MID] = self.storage_wind_mid
-        self.storage.wind_essence[Storage.ESSENCE_HIGH] = self.storage_wind_high
-        self.storage.light_essence[Storage.ESSENCE_LOW] = self.storage_light_low
-        self.storage.light_essence[Storage.ESSENCE_MID] = self.storage_light_mid
-        self.storage.light_essence[Storage.ESSENCE_HIGH] = self.storage_light_high
-        self.storage.dark_essence[Storage.ESSENCE_LOW] = self.storage_dark_low
-        self.storage.dark_essence[Storage.ESSENCE_MID] = self.storage_dark_mid
-        self.storage.dark_essence[Storage.ESSENCE_HIGH] = self.storage_dark_high
-        self.storage.save()
-
     def __unicode__(self):
-        return "%s" % self.user
+        return self.user.username
 
 
 class Storage(models.Model):

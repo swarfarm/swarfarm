@@ -1101,26 +1101,26 @@ def monster_instance_awaken(request, profile_name, instance_id):
                 if form.cleaned_data['subtract_materials']:
                     summoner = Summoner.objects.get(user=request.user)
 
-                    summoner.storage_magic_high -= monster.monster.awaken_mats_magic_high
-                    summoner.storage_magic_mid -= monster.monster.awaken_mats_magic_mid
-                    summoner.storage_magic_low -= monster.monster.awaken_mats_magic_low
-                    summoner.storage_fire_high -= monster.monster.awaken_mats_fire_high
-                    summoner.storage_fire_mid -= monster.monster.awaken_mats_fire_mid
-                    summoner.storage_fire_low -= monster.monster.awaken_mats_fire_low
-                    summoner.storage_water_high -= monster.monster.awaken_mats_water_high
-                    summoner.storage_water_mid -= monster.monster.awaken_mats_water_mid
-                    summoner.storage_water_low -= monster.monster.awaken_mats_water_low
-                    summoner.storage_wind_high -= monster.monster.awaken_mats_wind_high
-                    summoner.storage_wind_mid -= monster.monster.awaken_mats_wind_mid
-                    summoner.storage_wind_low -= monster.monster.awaken_mats_wind_low
-                    summoner.storage_dark_high -= monster.monster.awaken_mats_dark_high
-                    summoner.storage_dark_mid -= monster.monster.awaken_mats_dark_mid
-                    summoner.storage_dark_low -= monster.monster.awaken_mats_dark_low
-                    summoner.storage_light_high -= monster.monster.awaken_mats_light_high
-                    summoner.storage_light_mid -= monster.monster.awaken_mats_light_mid
-                    summoner.storage_light_low -= monster.monster.awaken_mats_light_low
+                    summoner.storage.magic_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_magic_high
+                    summoner.storage.magic_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_magic_mid
+                    summoner.storage.magic_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_magic_low
+                    summoner.storage.fire_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_fire_high
+                    summoner.storage.fire_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_fire_mid
+                    summoner.storage.fire_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_fire_low
+                    summoner.storage.water_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_water_high
+                    summoner.storage.water_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_water_mid
+                    summoner.storage.water_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_water_low
+                    summoner.storage.wind_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_wind_high
+                    summoner.storage.wind_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_wind_mid
+                    summoner.storage.wind_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_wind_low
+                    summoner.storage.dark_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_dark_high
+                    summoner.storage.dark_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_dark_mid
+                    summoner.storage.dark_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_dark_low
+                    summoner.storage.light_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_light_high
+                    summoner.storage.light_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_light_mid
+                    summoner.storage.light_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_light_low
 
-                    summoner.save()
+                    summoner.storage.save()
 
                 # Perform the awakening by instance's monster source ID
                 monster.monster = monster.monster.awakens_to

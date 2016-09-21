@@ -999,7 +999,6 @@ class Storage(models.Model):
     ESSENCE_FIELDS = ['magic_essence', 'fire_essence', 'water_essence', 'wind_essence', 'light_essence', 'dark_essence']
     CRAFT_FIELDS = ['wood', 'leather', 'rock', 'ore', 'mithril', 'cloth', 'rune_piece', 'dust', 'symbol_harmony', 'symbol_transcendance', 'symbol_chaos', 'crystal_water', 'crystal_fire', 'crystal_wind', 'crystal_light', 'crystal_dark', 'crystal_magic', 'crystal_pure']
 
-
     owner = models.OneToOneField(Summoner)
     uncommitted = models.BooleanField(default=False)  # Used for importing
 

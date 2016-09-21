@@ -1132,7 +1132,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
                 }
 
             else:
-                storage = summoner.get_storage()
+                storage = summoner.storage.get_storage()
                 available_essences = OrderedDict()
 
                 for element, essences in monster.monster.get_awakening_materials().iteritems():
@@ -1470,7 +1470,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                                 total_sub_fusion_cost[element][size] += ingredient['sub_fusion_cost'][element][size]
 
                 # Now determine what's missing based on owner's storage
-                storage = summoner.get_storage()
+                storage = summoner.storage.get_storage()
 
                 sub_fusion_total_missing = {
                     element: {

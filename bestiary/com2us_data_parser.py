@@ -480,6 +480,10 @@ def _get_strings_from_dat(start_pos, end_pos):
         while True:
             parsed_id, str_len = text.readlist('intle:32, intle:32')
             parsed_str = text.read('hex:{}'.format(str_len * 8))[:-4].decode('hex')
+
+            # Replace random unicode shit with closest ASCII equivalent
+            parsed_str = parsed_str.replace('\xe2\x80\x93', '-')  # U-2013 EN-DASH to ASCII dash
+
             strings[parsed_id] = parsed_str
     except ReadError:
         #EOF

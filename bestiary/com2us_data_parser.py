@@ -484,7 +484,7 @@ def _get_strings_from_dat(start_pos, end_pos):
             # Replace random unicode shit with closest ASCII equivalent
             parsed_str = parsed_str.replace('\xe2\x80\x93', '-')  # U-2013 EN-DASH to ASCII dash
 
-            strings[parsed_id] = parsed_str
+            strings[parsed_id] = parsed_str.decode('ascii', 'ignore')
     except ReadError:
         #EOF
         pass

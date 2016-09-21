@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.forms.widgets import TextInput
 
+from django_select2.forms import Select2Widget
+
 from .models import *
 
 
@@ -192,6 +194,9 @@ class HomunculusSkillAdmin(admin.ModelAdmin):
     filter_horizontal = ['monsters', 'prerequisites']
     inlines = (HomunculusSkillCraftCostInline,)
     save_as = True
+    formfield_overrides = {
+        models.ForeignKey: {'widget': Select2Widget}
+    }
 
 
 @admin.register(MonsterLeaderSkill)

@@ -285,7 +285,9 @@ $('body')
                     viewport: {selector: '#wrap', padding: 2},
                     template: '<div class="monster-skill popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
                 });
-                el.popover('show');
+                if (el.is(":hover")) {
+                    el.popover('show');
+                }
             });
 
         }, 250);

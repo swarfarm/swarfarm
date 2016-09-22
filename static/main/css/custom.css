@@ -1086,9 +1086,11 @@ button.rune-assign-choice {
 }
 
 .tab-content.bordered {
+    border-top: none;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
+    border-radius: 0;
     padding: 10px;
 }
 

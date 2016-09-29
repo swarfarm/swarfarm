@@ -2001,15 +2001,14 @@ def rune_edit(request, profile_name, rune_id):
 @login_required
 def rune_assign(request, profile_name, instance_id, slot=None):
     rune_queryset = RuneInstance.committed.filter(owner=request.user.summoner, assigned_to=None)
-    filter_form = AssignRuneForm(request.POST or None, initial={'slot': slot})
+    filter_form = AssignRuneForm(request.POST or None, initial={'slot': slot}, prefix='assign')
     filter_form.helper.form_action = reverse('herders:rune_assign', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
     if slot:
         rune_queryset = rune_queryset.filter(slot=slot)
 
-    rune_filter = RuneInstanceFilter(request.POST, queryset=rune_queryset)
-
-    if request.method == 'POST':
+    if request.method == 'POST' and filter_form.is_valid():
+        rune_filter = RuneInstanceFilter(filter_form.cleaned_data, queryset=rune_queryset)
         template = loader.get_template('herders/profile/runes/assign_results.html')
 
         response_data = {
@@ -2021,6 +2020,7 @@ def rune_assign(request, profile_name, instance_id, slot=None):
             }))
         }
     else:
+        rune_filter = RuneInstanceFilter(queryset=rune_queryset)
         template = loader.get_template('herders/profile/runes/assign_form.html')
 
         response_data = {

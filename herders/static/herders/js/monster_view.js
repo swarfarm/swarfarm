@@ -11,8 +11,11 @@ function AssignRune(slot) {
             size: "large",
             message: response.html
         });
-        $('.rating').rating();
-        update_rune_counts();
+
+        //Init form elements
+        $("[data-toggle='toggle']").bootstrapSwitch();
+        $("[data-provide='slider']").slider();
+        initSelect();
     });
 }
 
@@ -329,6 +332,9 @@ $('body')
         if (stat && grade && level) {
             update_main_stat_value(stat, grade, level, $('#edit_id_main_stat_value'));
         }
+    })
+    .on('shown.bs.modal', function() {
+        $("[data-provide='slider']").slider('relayout');
     })
     .on('click', ':submit', function() {
         var $form = $(this).closest('form');

@@ -1,5 +1,6 @@
 var element_loading_template = '<div class="spinner-overlay"><div class="spinner"></div></div>';
 var popoverDelay = null;
+var autosubmitDelay = null;
 
 //Initialize all bootstrap tooltips and popovers
 $(function () {
@@ -211,8 +212,15 @@ $('body')
     .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
     .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
-    .on('change', '.auto-submit', function() {
-        $(this).parents("form").submit();
+    .on('change switchChange.bootstrapSwitch', '.auto-submit', function() {
+        clearTimeout(autosubmitDelay);
+        var $form = $(this).parents("form");
+        autosubmitDelay = setTimeout(function() {
+            $form.submit();
+        }, 1000);
+    })
+    .on('hide.bs.modal', function() {
+        clearTimeout(autosubmitDelay);
     })
     .on('mouseenter', '.rune-popover', function() {
         var el = $(this);

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+{% endblock css %}
+
+{% block javascript %}
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<script type="application/javascript">
+simpleMDE_Options = {
+    hideIcons: ["strikethrough", "fullscreen", "side-by-side"],
+    showIcons: ["code"]
+}
+</script>
+{% endblock javascript %}

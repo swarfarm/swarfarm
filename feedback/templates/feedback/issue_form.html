@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'feedback/base.html' %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -9,3 +9,10 @@
         </div>
     </div>
 {% endblock content %}
+
+{% block javascript %}
+{{ block.super }}
+<script type="application/javascript">
+    var simplemde = new SimpleMDE(simpleMDE_Options);
+</script>
+{% endblock %}

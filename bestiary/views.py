@@ -20,6 +20,7 @@ def bestiary(request):
         'view': 'bestiary',
         'bestiary_filter_form': bestiary_filter_form,
     }
+    context.update(_bestiary_inventory(request))
 
     if request.user.is_authenticated():
         context['profile_name'] = request.user.username
@@ -28,6 +29,11 @@ def bestiary(request):
 
 
 def bestiary_inventory(request):
+    context = _bestiary_inventory(request)
+    return render(request, 'bestiary/inventory.html', context)
+
+
+def _bestiary_inventory(request):
     monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to', 'leader_skill').prefetch_related('skills', 'skills__skill_effect')
     form = FilterMonsterForm(request.POST or None)
 
@@ -83,7 +89,7 @@ def bestiary_inventory(request):
         'page_range': paginator.page_range,
     }
 
-    return render(request, 'bestiary/inventory.html', context)
+    return context
 
 
 def bestiary_detail(request, monster_slug):
@@ -154,105 +160,6 @@ def bestiary_detail(request, monster_slug):
             context['awakened']['stat_deltas'] = awakened_stats_deltas
 
     return render(request, 'bestiary/detail_base.html', context)
-
-
-def bestiary_sanity_checks(request):
-    from herders.models import MonsterSkill
-
-    if request.user.is_staff:
-        errors = OrderedDict()
-        monsters = Monster.objects.filter(obtainable=True)
-
-        for monster in monsters:
-            monster_errors = []
-
-            # Check for missing skills
-            if monster.skills.count() == 0:
-                monster_errors.append('Missing skills')
-
-            # Check for same slot
-            for slot in range(1, 5):
-                if monster.skills.all().filter(slot=slot).count() > 1:
-                    monster_errors.append("More than one skill in slot " + str(slot))
-
-            # Check for missing stats
-            if monster.base_hp is None:
-                monster_errors.append('Missing base HP')
-
-            if monster.base_attack is None:
-                monster_errors.append('Missing base ATK')
-            if monster.base_defense is None:
-                monster_errors.append('Missing base DEF')
-            if monster.speed is None:
-                monster_errors.append('Missing SPD')
-            if monster.crit_damage is None:
-                monster_errors.append('Missing crit DMG')
-            if monster.crit_rate is None:
-                monster_errors.append('Missing crit rate')
-            if monster.resistance is None:
-                monster_errors.append('Missing resistance')
-            if monster.accuracy is None:
-                monster_errors.append('Missing accuracy')
-
-            # Check missing links resource
-            if monster.can_awaken and monster.archetype != monster.TYPE_MATERIAL and (monster.summonerswar_co_url is None or monster.summonerswar_co_url == ''):
-                monster_errors.append('Missing summonerswar.co link')
-
-            if monster.wikia_url is None or monster.wikia_url == '':
-                monster_errors.append('Missing wikia link')
-
-            # Check missing skills
-            if monster.source.count() == 0:
-                monster_errors.append('Missing sources')
-
-            # Check that monster has awakening mats specified
-            if monster.can_awaken and not monster.is_awakened and monster.awaken_mats_magic_high + monster.awaken_mats_magic_low + monster.awaken_mats_magic_mid == 0:
-                monster_errors.append('Missing awakening materials')
-
-            if len(monster_errors) > 0:
-                errors[str(monster)] = monster_errors
-
-        prev_skill_slot = 0
-        for skill in MonsterSkill.objects.all():
-            skill_errors = []
-
-            # Check that skill slots are not skipped
-            if skill.slot - prev_skill_slot > 1 and prev_skill_slot >= 1:
-                skill_errors.append('slot skipped from previous skill')
-            prev_skill_slot = skill.slot
-
-            # Check that skill has a level up description if it is not a passive
-            if not skill.passive and skill.max_level == 1:
-                skill_errors.append('max level missing for non-passive skill')
-
-            # Check that skill has a cooltime if it is not a passive
-            if not skill.passive and skill.slot > 1 and not skill.cooltime:
-                skill_errors.append('Cooltime missing for non-passive skill')
-
-            # Check max level of skill = num lines in level up progress + 1
-            if skill.max_level > 1:
-                line_count = len(skill.level_progress_description.split('\r\n'))
-
-                if skill.max_level != line_count + 1:
-                    skill_errors.append('inconsistent level up text and max level')
-
-            # Check that skill is used
-            if skill.monster_set.count() == 0:
-                skill_errors.append('unused skill')
-
-            # Check passives are in slot 3 (with some exceptions)
-            if skill.passive and skill.slot != 3:
-                if skill.monster_set.first().archetype != Monster.TYPE_MATERIAL:
-                    skill_errors.append('passive not in slot 3')
-
-            # Check missing skill description
-            if 'Missing' in skill.level_progress_description:
-                skill_errors.append('missing level-up description and possibly max level.')
-
-            if len(skill_errors) > 0:
-                errors[str(skill)] = skill_errors
-
-        return render(request, 'herders/skill_debug.html', {'errors': errors})
 
 
 def edit_skill(request, pk):

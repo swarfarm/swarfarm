@@ -11,8 +11,11 @@ function AssignRune(slot) {
             size: "large",
             message: response.html
         });
-        $('.rating').rating();
-        update_rune_counts();
+
+        //Init form elements
+        $("[data-toggle='toggle']").bootstrapSwitch();
+        $("[data-provide='slider']").slider();
+        initSelect();
     });
 }
 
@@ -287,7 +290,7 @@ $('body')
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
     .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
     .on('click', '.monster-power-up', function() { PowerUpMonster($(this).data('instance-id')) })
-    .on('click', '#addNewRune', function() { CreateNewRune($("#id_slot").val()) })
+    .on('click', '#addNewRune', function() { CreateNewRune($("#id_assign-slot_0").val()) })
     .on('submit', '#AssignRuneForm', function() {
         var $form = $(this);
         $.ajax({
@@ -329,6 +332,9 @@ $('body')
         if (stat && grade && level) {
             update_main_stat_value(stat, grade, level, $('#edit_id_main_stat_value'));
         }
+    })
+    .on('shown.bs.modal', function() {
+        $("[data-provide='slider']").slider('relayout');
     })
     .on('click', ':submit', function() {
         var $form = $(this).closest('form');

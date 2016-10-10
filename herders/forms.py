@@ -903,37 +903,37 @@ class AddRuneInstanceForm(ModelForm):
 class AssignRuneForm(forms.Form):
     type = forms.MultipleChoiceField(
         choices=RuneInstance.TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-    level__gte = forms.IntegerField(
-        label="Minimum Level",
-        min_value=0,
-        max_value=15,
         required=False,
     )
-    stars__gte = forms.IntegerField(
-        label="Minimum Stars",
+    main_stat = forms.MultipleChoiceField(
+        choices=RuneInstance.STAT_CHOICES,
+        required=False,
+    )
+    innate_stat = forms.MultipleChoiceField(
+        choices=RuneInstance.STAT_CHOICES,
+        required=False,
+    )
+    substats = forms.MultipleChoiceField(
+        label="""Substats <span class="glyphicon glyphicon-info-sign" data-toggle="popover" data-trigger="hover" title="Important" data-container="body" data-content="If this filter is not working properly, your runes need to be resaved to update a few new data fields. If you don't see the resave link in the menu, you're good to go."></span>""",
+        choices=RuneInstance.STAT_CHOICES,
+        required=False,
+    )
+    substat_logic = forms.BooleanField(
+        label='',
+        required=False,
+    )
+    level = forms.CharField(
+        label='Level',
+        required=False,
+    )
+    stars = forms.CharField(
+        label='Stars',
         required=False
     )
-    stars__lte = forms.IntegerField(
-        label="Maximum Stars",
-        required=False
+    slot = forms.MultipleChoiceField(
+        choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)),
+        required=False,
     )
-    slot = forms.IntegerField(
-        min_value=1,
-        max_value=6,
-        required=False
-    )
-
-    has_hp = forms.NullBooleanField(label='Has HP', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_atk = forms.NullBooleanField(label='Has ATK', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_def = forms.NullBooleanField(label='Has DEF', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_crit_rate = forms.NullBooleanField(label='Has CRI Rate', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_crit_dmg = forms.NullBooleanField(label='Has CRI Dmg', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_speed = forms.NullBooleanField(label='Has SPD', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_resist = forms.NullBooleanField(label='Has RES', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
-    has_accuracy = forms.NullBooleanField(label='Has ACC', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -943,29 +943,66 @@ class AssignRuneForm(forms.Form):
             StrictButton('Create New', id='addNewRune', css_class='btn btn-primary btn-block'),
             Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger btn-block'),
         ),
+        Field('type', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Div(
-            Div(
-                Field('type', css_class='auto-submit', template='crispy/rune_button_checkbox_select_notext.html'),
-                Field('has_hp', css_class='auto-submit'),
-                Field('has_atk', css_class='auto-submit'),
-                Field('has_def', css_class='auto-submit'),
-                Field('has_crit_rate', css_class='auto-submit'),
-                Field('has_crit_dmg', css_class='auto-submit'),
-                Field('has_speed', css_class='auto-submit'),
-                Field('has_resist', css_class='auto-submit'),
-                Field('has_accuracy', css_class='auto-submit'),
-                css_class='col-md-6',
+            Field(
+                'level',
+                data_provide='slider',
+                data_slider_min='0',
+                data_slider_max='15',
+                data_slider_value='[0, 15]',
+                data_slider_step='1',
+                data_slider_ticks='[0, 15]',
+                data_slider_ticks_labels='["0", "15"]',
+                css_class='auto-submit',
+                wrapper_class='form-group-sm form-group-condensed col-sm-6'
             ),
-            Div(
-                Field('level__gte', css_class='auto-submit'),
-                Field('stars__gte', css_class='rating hidden auto-submit', value=1, data_start=0, data_stop=6, data_stars=6),
-                Field('stars__lte', css_class='rating hidden auto-submit', value=6, data_start=0, data_stop=6, data_stars=6),
-                css_class='col-md-6',
+            Field(
+                'stars',
+                data_provide='slider',
+                data_slider_min='1',
+                data_slider_max='6',
+                data_slider_value='[1, 6]',
+                data_slider_step='1',
+                data_slider_ticks='[1, 6]',
+                data_slider_ticks_labels='["1", "6"]',
+                css_class='auto-submit',
+                wrapper_class='form-group-sm form-group-condensed col-sm-6'
             ),
-            css_class='row',
+            css_class='row'
         ),
-        Field('slot', type='hidden', css_class='auto-submit'),
+        Field('main_stat', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+
+        Field('innate_stat', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Div(
+            Field('substats', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed  col-sm-8'),
+            Field('substat_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ALL', data_off_color='primary', data_size='small', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-sm-4'),
+            css_class='row'
+        ),
+        Field('slot', type='hidden'),
     )
+
+    def clean(self):
+        super(AssignRuneForm, self).clean()
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_lv, max_lv] = self.cleaned_data['level'].split(',')
+        except:
+            min_lv = 0
+            max_lv = 15
+
+        self.cleaned_data['level__gte'] = int(min_lv)
+        self.cleaned_data['level__lte'] = int(max_lv)
+
+        try:
+            [min_stars, max_stars] = self.cleaned_data['stars'].split(',')
+        except:
+            min_stars = 1
+            max_stars = 6
+
+        self.cleaned_data['stars__gte'] = int(min_stars)
+        self.cleaned_data['stars__lte'] = int(max_stars)
 
 
 class FilterRuneForm(forms.Form):

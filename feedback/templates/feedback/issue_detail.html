@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'feedback/base.html' %}
 {% load crispy_forms_tags %}
 {% load markdown_deux_tags %}
 {% load humanize %}
@@ -38,3 +38,10 @@
     </div>
 
 {% endblock content %}
+
+{% block javascript %}
+{{ block.super }}
+<script type="application/javascript">
+    var simplemde = new SimpleMDE(simpleMDE_Options);
+</script>
+{% endblock %}

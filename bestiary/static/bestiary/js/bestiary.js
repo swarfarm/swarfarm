@@ -1,10 +1,40 @@
-$(document).ready(function() {
-    update_inventory();
-    initialize_charts();
-});
+initialize_table();
+initialize_charts();
 
 function update_inventory() {
     $('#FilterBestiaryForm').submit();
+}
+
+function initialize_table() {
+    var bestiary_table = $('#bestiary_table');
+    bestiary_table.tablesorter({
+        widgets: ['saveSort', 'columnSelector', 'stickyHeaders'],
+        serverSideSorting: true,
+        widgetOptions: {
+            filter_reset: '.reset',
+            columnSelector_container : '#column-selectors',
+            columnSelector_saveColumns: true,
+            columnSelector_mediaquery: false,
+            columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>',
+            stickyHeaders_zIndex : 2,
+            stickyHeaders_offset: 50
+        }
+    })
+    .bind('sortBegin', function(e, table) {
+        var sortColumn = e.target.config.sortList[0][0];
+        var sortDirection = e.target.config.sortList[0][1] == 0 ? 'desc' : 'asc';
+        var column_name = $(table).find('th')[sortColumn].textContent;
+        var sort_header = slugify(column_name);
+
+        $('#id_sort').val(sort_header + ';' + sortDirection);
+        update_inventory();
+    });
+
+    // Trigger a sort reset if the sort form field is empty
+    if (!$('#id_sort').val()) {
+        bestiary_table.trigger('sortReset');
+        bestiary_table.trigger('saveSortReset');
+    }
 }
 
 function initialize_charts() {
@@ -77,6 +107,7 @@ $('body')
             $('#bestiary-inventory').replaceWith(data);
 
             //Reinit everything
+            initialize_table();
             $('[data-toggle="tooltip"]').tooltip({
                 container: 'body'
             });
@@ -84,35 +115,6 @@ $('body')
                 html:true,
                 viewport: {selector: 'body', padding: 2}
             });
-            var bestiary_table = $('#bestiary_table');
-            bestiary_table.tablesorter({
-                widgets: ['saveSort', 'columnSelector', 'stickyHeaders'],
-                serverSideSorting: true,
-                widgetOptions: {
-                    filter_reset: '.reset',
-                    columnSelector_container : '#column-selectors',
-                    columnSelector_saveColumns: true,
-                    columnSelector_mediaquery: false,
-                    columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>',
-                    stickyHeaders_zIndex : 2,
-                    stickyHeaders_offset: 50
-                }
-            })
-            .bind('sortBegin', function(e, table) {
-                var sortColumn = e.target.config.sortList[0][0];
-                var sortDirection = e.target.config.sortList[0][1] == 0 ? 'desc' : 'asc';
-                var column_name = $(table).find('th')[sortColumn].textContent;
-                var sort_header = slugify(column_name);
-
-                $('#id_sort').val(sort_header + ';' + sortDirection);
-                update_inventory();
-            });
-
-            // Trigger a sort reset if the sort form field is empty
-            if (!$('#id_sort').val()) {
-                bestiary_table.trigger('sortReset');
-                bestiary_table.trigger('saveSortReset');
-            }
         });
 
         return false;  //cancel default on submit action.

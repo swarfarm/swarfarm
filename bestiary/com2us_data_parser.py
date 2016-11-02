@@ -167,9 +167,10 @@ def parse_skill_data(preview=False):
                         updated = True
 
                 # Finally save it if required
-                if updated and not preview:
-                    skill.save()
+                if updated:
                     print 'Updated skill ' + str(skill)
+                    if not preview:
+                        skill.save()
 
         if preview:
             print 'No changes were saved.'

@@ -181,28 +181,28 @@
                     <td>CRI Rate</td>
                     <td>{{ instance.crit_rate }}</td>
                     <td class="text-success">{% if bldg_stats.crit_rate > 0 %}<span>+{{ bldg_stats.crit_rate }}</span>%{% endif %}</td>
-                    <td class="text-success">{% if guild_stats.crit_rate > 0 %}<span>+{{ guild_stats.crit_rate }}</span>{% endif %}</td>
+                    <td class="text-success">{% if guild_stats.crit_rate > 0 %}<span>+{{ guild_stats.crit_rate }}</span>%{% endif %}</td>
                     <td {% if instance.crit_rate >= 100 %} class="text-danger"{% endif %}>{{ instance.crit_rate|add:bldg_stats.crit_rate|add:guild_stats.crit_rate }}%</td>
                 </tr>
                 <tr>
                     <td>CRI Dmg</td>
                     <td>{{ instance.crit_damage }}</td>
                     <td class="text-success">{% if bldg_stats.crit_damage > 0 %}<span>+{{ bldg_stats.crit_damage }}%</span>{% endif %}</td>
-                    <td class="text-success">{% if guild_stats.crit_damage > 0 %}<span>+{{ guild_stats.crit_damage }}</span>{% endif %}</td>
+                    <td class="text-success">{% if guild_stats.crit_damage > 0 %}<span>+{{ guild_stats.crit_damage }}%</span>{% endif %}</td>
                     <td>{{ instance.crit_damage|add:bldg_stats.crit_damage|add:guild_stats.crit_damage }}%</td>
                 </tr>
                 <tr>
                     <td>Resistance</td>
                     <td>{{ instance.resistance }}</td>
                     <td class="text-success">{% if bldg_stats.resistance > 0 %}<span>+{{ bldg_stats.resistance }}</span>%{% endif %}</td>
-                    <td class="text-success">{% if guild_stats.resistance > 0 %}<span>+{{ guild_stats.resistance }}</span>{% endif %}</td>
+                    <td class="text-success">{% if guild_stats.resistance > 0 %}<span>+{{ guild_stats.resistance }}</span>%{% endif %}</td>
                     <td {% if instance.resistance >= 100 %} class="text-danger"{% endif %}>{{ instance.resistance|add:bldg_stats.resistance|add:guild_stats.resistance }}%</td>
                 </tr>
                 <tr>
                     <td>Accuracy</td>
                     <td>{{ instance.accuracy }}</td>
                     <td class="text-success">{% if bldg_stats.accuracy > 0 %}<span>+{{ bldg_stats.accuracy }}</span>%{% endif %}</td>
-                    <td class="text-success">{% if guild_stats.accuracy > 0 %}<span>+{{ guild_stats.accuracy }}</span>{% endif %}</td>
+                    <td class="text-success">{% if guild_stats.accuracy > 0 %}<span>+{{ guild_stats.accuracy }}</span>%{% endif %}</td>
                     <td {% if instance.accuracy >= 100 %} class="text-danger"{% endif %}>{{ instance.accuracy|add:bldg_stats.accuracy|add:guild_stats.accuracy }}%</td>
                 </tr>
                 </tbody>

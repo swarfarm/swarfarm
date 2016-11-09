@@ -1180,9 +1180,10 @@ class MonsterInstance(models.Model):
     def calc_base_hp(self):
         return self.monster.actual_hp(self.stars, self.level)
 
-    def calc_rune_hp(self):
+    def calc_rune_hp(self, base=None):
         runes = self.runeinstance_set.filter(has_hp=True)
-        base = self.base_hp
+        if base is None:
+            base = self.base_hp
         hp_percent = 0
         hp_flat = 0
 
@@ -1200,9 +1201,10 @@ class MonsterInstance(models.Model):
     def calc_base_attack(self):
         return self.monster.actual_attack(self.stars, self.level)
 
-    def calc_rune_attack(self):
+    def calc_rune_attack(self, base=None):
         runes = self.runeinstance_set.filter(has_atk=True)
-        base = self.base_attack
+        if base is None:
+            base = self.base_attack
         atk_percent = 0
         atk_flat = 0
 
@@ -1220,9 +1222,10 @@ class MonsterInstance(models.Model):
     def calc_base_defense(self):
         return self.monster.actual_defense(self.stars, self.level)
 
-    def calc_rune_defense(self):
+    def calc_rune_defense(self, base=None):
         runes = self.runeinstance_set.filter(has_def=True)
-        base = self.base_defense
+        if base is None:
+            base = self.base_defense
         def_percent = 0
         def_flat = 0
 
@@ -1313,6 +1316,32 @@ class MonsterInstance(models.Model):
 
     def accuracy(self):
         return self.base_accuracy + self.rune_accuracy
+
+    def get_max_level_stats(self):
+        max_base_hp = self.monster.actual_hp(6, 40)
+        max_base_atk = self.monster.actual_attack(6, 40)
+        max_base_def = self.monster.actual_defense(6, 40)
+
+        stats = {
+            'base': {
+                'hp': max_base_hp,
+                'attack': max_base_atk,
+                'defense': max_base_def,
+            },
+            'rune': {
+                'hp': self.calc_rune_hp(base=max_base_hp),
+                'attack': self.calc_rune_attack(base=max_base_atk),
+                'defense': self.calc_rune_defense(base=max_base_def),
+            },
+        }
+
+        stats['deltas'] = {
+            'hp': int(round(float(stats['base']['hp'] + stats['rune']['hp']) / self.hp() * 100 - 100)),
+            'attack': int(round(float(stats['base']['attack'] + stats['rune']['attack']) / self.attack() * 100 - 100)),
+            'defense': int(round(float(stats['base']['defense'] + stats['rune']['defense']) / self.defense() * 100 - 100)),
+        }
+
+        return stats
 
     def get_building_stats(self, area=Building.AREA_GENERAL):
         owned_bldgs = BuildingInstance.objects.filter(

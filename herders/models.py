@@ -1333,7 +1333,7 @@ class MonsterInstance(models.Model):
         }
 
         for b in owned_bldgs:
-            if b.building.affected_stat in bonuses.keys():
+            if b.building.affected_stat in bonuses.keys() and b.level > 0:
                 bonuses[b.building.affected_stat] += b.building.stat_bonus[b.level - 1]
 
         return {

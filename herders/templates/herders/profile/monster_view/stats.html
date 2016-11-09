@@ -10,13 +10,14 @@
     <div class="tab-content">
         {# Base stats #}
         <div role="tabpanel" class="tab-pane active" id="stats_base">
-            <table class="table table-condensed">
+            <table class="table table-condensed table-bordered text-center">
                 <thead>
                 <tr>
-                    <th>Stat</th>
-                    <th>Base</th>
-                    <th>Rune</th>
-                    <th>Total</th>
+                    <th class="text-center">Stat</th>
+                    <th class="text-center">Base</th>
+                    <th class="text-center">Rune</th>
+                    <th class="text-center">Total</th>
+                    {% if instance.level < 40 %}<th class="text-center">6<span class="glyphicon glyphicon-star"></span> Lv. 40</th>{% endif %}
                 </tr>
                 </thead>
                 <tbody>
@@ -25,48 +26,51 @@
                     <td>{{ instance.base_hp }}</td>
                     <td class="text-success">{% if instance.rune_hp > 0 %}<span>+{{ instance.rune_hp }}</span>{% endif %}</td>
                     <td>{{ instance.hp }}</td>
+                    {% if instance.level < 40 %}<td>{{ max_stats.base.hp|add:max_stats.rune.hp }} <span class="text-success">(+{{ max_stats.deltas.hp }}%)</span></td>{% endif %}
                 </tr>
                 <tr>
                     <td>ATK</td>
                     <td>{{ instance.base_attack }}</td>
                     <td class="text-success">{% if instance.rune_attack > 0 %}<span>+{{ instance.rune_attack }}</span>{% endif %}</td>
                     <td>{{ instance.attack }}</td>
+                    {% if instance.level < 40 %}<td>{{ max_stats.base.attack|add:max_stats.rune.attack }} <span class="text-success">(+{{ max_stats.deltas.attack }}%)</span></td>{% endif %}
                 </tr>
                 <tr>
                     <td>DEF</td>
                     <td>{{ instance.base_defense }}</td>
                     <td class="text-success">{% if instance.rune_defense > 0 %}<span>+{{ instance.rune_defense }}</span>{% endif %}</td>
                     <td>{{ instance.defense }}</td>
+                    {% if instance.level < 40 %}<td>{{ max_stats.base.defense|add:max_stats.rune.defense }} <span class="text-success">(+{{ max_stats.deltas.defense }}%)</span></td>{% endif %}
                 </tr>
                 <tr>
                     <td>SPD</td>
                     <td>{{ instance.base_speed }}</td>
                     <td class="text-success">{% if instance.rune_speed > 0 %}<span>+{{ instance.rune_speed }}</span>{% endif %}</td>
-                    <td>{{ instance.speed }}</td>
+                    <td {% if instance.level < 40 %}colspan="2"{% endif %}>{{ instance.speed }}</td>
                 </tr>
                 <tr>
                     <td>CRI Rate</td>
                     <td>{{ instance.base_crit_rate }}%</td>
                     <td class="text-success">{% if instance.rune_crit_rate > 0 %}<span>+{{ instance.rune_crit_rate }}</span>%{% endif %}</td>
-                    <td {% if instance.crit_rate >= 100 %} class="text-danger"{% endif %}>{{ instance.crit_rate }}%</td>
+                    <td {% if instance.crit_rate >= 100 %} class="text-danger"{% endif %} {% if instance.level < 40 %}colspan="2"{% endif %}>{{ instance.crit_rate }}%</td>
                 </tr>
                 <tr>
                     <td>CRI Dmg</td>
                     <td>{{ instance.base_crit_damage }}%</td>
                     <td class="text-success">{% if instance.rune_crit_damage > 0 %}<span>+{{ instance.rune_crit_damage }}%</span>{% endif %}</td>
-                    <td>{{ instance.crit_damage }}%</td>
+                    <td {% if instance.level < 40 %}colspan="2"{% endif %}>{{ instance.crit_damage }}%</td>
                 </tr>
                 <tr>
                     <td>Resistance</td>
                     <td>{{ instance.base_resistance }}%</td>
                     <td class="text-success">{% if instance.rune_resistance > 0 %}<span>+{{ instance.rune_resistance }}</span>%{% endif %}</td>
-                    <td {% if instance.resistance >= 100 %} class="text-danger"{% endif %}>{{ instance.resistance }}%</td>
+                    <td {% if instance.resistance >= 100 %} class="text-danger"{% endif %} {% if instance.level < 40 %}colspan="2"{% endif %}>{{ instance.resistance }}%</td>
                 </tr>
                 <tr>
                     <td>Accuracy</td>
                     <td>{{ instance.base_accuracy }}%</td>
                     <td class="text-success">{% if instance.rune_accuracy > 0 %}<span>+{{ instance.rune_accuracy }}</span>%{% endif %}</td>
-                    <td {% if instance.accuracy >= 100 %} class="text-danger"{% endif %}>{{ instance.accuracy }}%</td>
+                    <td {% if instance.accuracy >= 100 %} class="text-danger"{% endif %} {% if instance.level < 40 %}colspan="2"{% endif %}>{{ instance.accuracy }}%</td>
                 </tr>
                 </tbody>
             </table>
@@ -74,13 +78,13 @@
 
         {# Building stats #}
         <div role="tabpanel" class="tab-pane" id="stats_buildings">
-            <table class="table table-condensed">
+            <table class="table table-condensed table-bordered text-center">
                 <thead>
                 <tr>
-                    <th>Stat</th>
-                    <th>Runed</th>
-                    <th>Buildings</th>
-                    <th>Total</th>
+                    <th class="text-center">Stat</th>
+                    <th class="text-center">Runed</th>
+                    <th class="text-center">Buildings</th>
+                    <th class="text-center">Total</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -138,14 +142,14 @@
 
         {# Guild battle stats #}
         <div role="tabpanel" class="tab-pane" id="stats_guild">
-            <table class="table table-condensed" id="stats_guild">
+            <table class="table table-condensed table-bordered text-center">
                 <thead>
                 <tr>
-                    <th>Stat</th>
-                    <th>Runed</th>
-                    <th>Buildings</th>
-                    <th>Flags</th>
-                    <th>Total</th>
+                    <th class="text-center">Stat</th>
+                    <th class="text-center">Runed</th>
+                    <th class="text-center">Buildings</th>
+                    <th class="text-center">Flags</th>
+                    <th class="text-center">Total</th>
                 </tr>
                 </thead>
                 <tbody>

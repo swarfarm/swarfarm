@@ -766,6 +766,7 @@ def monster_instance_view_stats(request, profile_name, instance_id):
 
     context = {
         'instance': instance,
+        'max_stats': instance.get_max_level_stats(),
         'bldg_stats': instance.get_building_stats(),
         'guild_stats': instance.get_building_stats(Building.AREA_GUILD),
     }

@@ -80,7 +80,7 @@
                     </td>
 
                     <td class="fusion-checklist">
-                        {% if ingredient.sub_fusion_available %}
+                        {% if ingredient.is_fuseable %}
                         <a href="#{{ ingredient.instance.awakens_from.name }}"><span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></a>
                         {% else %}
                         <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true">

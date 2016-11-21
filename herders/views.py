@@ -1425,20 +1425,20 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                     fusion_ready = False
 
                 # Check if this ingredient is fusable
-                if not acquired:
-                    try:
-                        sub_fusion = Fusion.objects.get(product=ingredient.awakens_from)
-                    except Fusion.DoesNotExist:
-                        sub_fusion_awakening_cost = None
-                    else:
+                sub_fusion = None
+                sub_fusion_awakening_cost = None
+                try:
+                    sub_fusion = Fusion.objects.get(product=ingredient.awakens_from)
+                except Fusion.DoesNotExist:
+                    pass
+                else:
+                    if not acquired:
                         awakened_sub_fusion_ingredients = MonsterInstance.committed.filter(
                             monster__pk__in=sub_fusion.ingredients.values_list('pk', flat=True),
                             ignore_for_fusion=False,
                             owner=summoner,
                         )
                         sub_fusion_awakening_cost = sub_fusion.total_awakening_cost(awakened_sub_fusion_ingredients)
-                else:
-                    sub_fusion_awakening_cost = None
 
                 ingredient_progress = {
                     'instance': ingredient,
@@ -1449,6 +1449,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                     'evolved': evolved,
                     'leveled': leveled,
                     'awakened': awakened,
+                    'is_fuseable': True if sub_fusion else False,
                     'sub_fusion_cost': sub_fusion_awakening_cost,
                 }
                 ingredients.append(ingredient_progress)

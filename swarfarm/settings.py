@@ -1,17 +1,29 @@
 import os
+import environ
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.environ['LANG'] = 'en_US.UTF-8'
 
+env = environ.Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, []),
+    COMPRESS_ENABLED=(bool, False),
+    EMAIL_HOST=(str, ''),
+    EMAIL_PORT=(int, 587),
+    EMAIL_HOST_USER=(str, ''),
+    EMAIL_HOST_PASSWORD=(str, ''),
+)
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 SITE_ID = 1
-SECRET_KEY = os.environ['SECRET_KEY']
-DEBUG = os.environ.get('DEBUG', False)
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
 WSGI_APPLICATION = 'swarfarm.wsgi.application'
 
 # Security settings
-ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split(',')
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
@@ -37,10 +49,10 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 SERVER_EMAIL = 'noreply@swarfarm.com'
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
@@ -99,6 +111,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 
+if DEBUG:
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware', )
+
 # URL stuff
 ROOT_URLCONF = 'swarfarm.urls'
 LOGIN_REDIRECT_URL = 'news:latest_news'
@@ -131,21 +146,14 @@ TEMPLATES = [
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': os.environ['DATABASE_HOST'],
-        'PORT': os.environ['DATABASE_PORT'],
-        'NAME': os.environ['DATABASE_NAME'],
-        'USER': os.environ['DATABASE_USER'],
-        'PASSWORD': os.environ['DATABASE_PASSWORD'],
-    }
+    'default': env.db(),
 }
 
 # Cache
 CACHES = {
     'default': {
-        'BACKEND': os.environ['CACHE_BACKEND'],
-        'LOCATION': os.environ['CACHE_LOCATION'],
+        'BACKEND': env('CACHE_BACKEND'),
+        'LOCATION': env('CACHE_LOCATION'),
     }
 }
 
@@ -171,7 +179,7 @@ USE_TZ = True
 
 # Package configurations
 # compress
-COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', not DEBUG)
+COMPRESS_ENABLED = env('COMPRESS_ENABLED')
 COMPRESS_CSS_FILTERS = ['compressor.filters.cssmin.rCSSMinFilter']
 
 # crispyforms
@@ -188,9 +196,9 @@ CORS_ALLOW_METHODS = (
 )
 
 # Google APIs
-GOOGLE_API_KEY = os.environ['GOOGLE_API_KEY']
-RECAPTCHA_PUBLIC_KEY = os.environ['RECAPTCHA_PUBLIC_KEY']
-RECAPTCHA_PRIVATE_KEY = os.environ['RECAPTCHA_PRIVATE_KEY']
+GOOGLE_API_KEY = env('GOOGLE_API_KEY')
+RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
 RECAPTCHA_USE_SSL = True
 NOCAPTCHA = True
 

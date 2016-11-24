@@ -14,6 +14,7 @@ env = environ.Env(
     EMAIL_PORT=(int, 587),
     EMAIL_HOST_USER=(str, ''),
     EMAIL_HOST_PASSWORD=(str, ''),
+    CACHE_LOCATION=(str, None),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
@@ -143,6 +144,13 @@ TEMPLATES = [
         },
     },
 ]
+
+if DEBUG:
+    # Non-cached loader
+    TEMPLATES[0]['OPTIONS']['loaders'] = [
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    ]
 
 # Database
 DATABASES = {

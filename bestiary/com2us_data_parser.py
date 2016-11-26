@@ -460,15 +460,15 @@ def crop_monster_images():
 
 
 def get_monster_names_by_id():
-    return _get_strings_from_dat(0x7e * 8, 0x4f14 * 8)
+    return _get_strings_from_dat(0x7e * 8, 0x50a1 * 8)
 
 
 def get_skill_names_by_id():
-    return _get_strings_from_dat(0x2778b * 8, 0x31978 * 8)
+    return _get_strings_from_dat(0x279b7 * 8, 0x31e92 * 8)
 
 
 def get_skill_descs_by_id():
-    return _get_strings_from_dat(0x3199f * 8, 0x6b88c * 8)
+    return _get_strings_from_dat(0x31eb9 * 8, 0x6d624 * 8)
 
 
 def _get_strings_from_dat(start_pos, end_pos):
@@ -485,7 +485,7 @@ def _get_strings_from_dat(start_pos, end_pos):
             # Replace random unicode shit with closest ASCII equivalent
             parsed_str = parsed_str.replace('\xe2\x80\x93', '-')  # U-2013 EN-DASH to ASCII dash
 
-            strings[parsed_id] = parsed_str.decode('ascii', 'ignore')
+            strings[parsed_id] = parsed_str.decode('ascii', 'ignore').strip()
     except ReadError:
         #EOF
         pass

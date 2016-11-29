@@ -468,35 +468,42 @@ def decrypt_localvalue_dat():
             decrypted_file.write(data)
 
 
+MONSTER_NAME_TABLE = 1
+SKILL_NAME_TABLE = 19
+SKILL_DESCRIPTION_TABLE = 20
+
 def get_monster_names_by_id():
-    return _get_strings_from_dat(0x7e * 8, 0x5097 * 8)
+    return _get_translation_tables()[MONSTER_NAME_TABLE]
 
 
 def get_skill_names_by_id():
-    return _get_strings_from_dat(0x279ad * 8, 0x31e77 * 8)
+    return _get_translation_tables()[SKILL_NAME_TABLE]
 
 
 def get_skill_descs_by_id():
-    return _get_strings_from_dat(0x31e9e * 8, 0x6d590 * 8)
+    return _get_translation_tables()[SKILL_DESCRIPTION_TABLE]
 
 
-def _get_strings_from_dat(start_pos, end_pos):
-    text = ConstBitStream(filename='text_eng.dat', offset=start_pos, length=end_pos - start_pos)
+def _get_translation_tables():
+    raw = ConstBitStream(filename='text_eng.dat', offset=0x8 * 8)
+    tables = []
 
-    strings = dict()
-
-    # Iterate through translations to avoid random pattern matching when ID is valid ASCII too
     try:
         while True:
-            parsed_id, str_len = text.readlist('intle:32, intle:32')
-            parsed_str = text.read('hex:{}'.format(str_len * 8))[:-4].decode('hex')
+            table_len = raw.read('intle:32')
+            table = {}
 
-            # Replace random unicode shit with closest ASCII equivalent
-            parsed_str = parsed_str.replace('\xe2\x80\x93', '-')  # U-2013 EN-DASH to ASCII dash
+            for _ in range(table_len):
+                parsed_id, str_len = raw.readlist('intle:32, intle:32')
+                parsed_str = raw.read('hex:{}'.format(str_len * 8))[:-4].decode('hex')
 
-            strings[parsed_id] = parsed_str.decode('ascii', 'ignore')
+                # Replace random unicode shit with closest ASCII equivalent
+                parsed_str = parsed_str.replace('\xe2\x80\x93', '-')  # U-2013 EN-DASH to ASCII dash
+                table[parsed_id] = parsed_str.decode('ascii', 'ignore')
+
+            tables.append(table)
     except ReadError:
-        #EOF
+        # EOF
         pass
 
-    return strings
+    return tables

@@ -469,15 +469,15 @@ def decrypt_localvalue_dat():
 
 
 def get_monster_names_by_id():
-    return _get_strings_from_dat(0x7e * 8, 0x4f14 * 8)
+    return _get_strings_from_dat(0x7e * 8, 0x5097 * 8)
 
 
 def get_skill_names_by_id():
-    return _get_strings_from_dat(0x2778b * 8, 0x31978 * 8)
+    return _get_strings_from_dat(0x279ad * 8, 0x31e77 * 8)
 
 
 def get_skill_descs_by_id():
-    return _get_strings_from_dat(0x3199f * 8, 0x6b88c * 8)
+    return _get_strings_from_dat(0x31e9e * 8, 0x6d590 * 8)
 
 
 def _get_strings_from_dat(start_pos, end_pos):

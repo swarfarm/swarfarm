@@ -7,6 +7,7 @@ from bitstring import ConstBitStream, ReadError
 
 from .models import *
 from sw_parser.com2us_mapping import *
+from sw_parser.smon_decryptor import decrypt_response
 
 # This routine expects two CSV files in the root of the project.
 # One is the monster definition table and the other is the skill definition table in localvalue.dat
@@ -178,6 +179,7 @@ def parse_skill_data(preview=False):
 
 def parse_monster_data(preview=False):
     parsed_monster_names = get_monster_names_by_id()
+
 
     with open('monsters.csv', 'rb') as csvfile:
         monster_data = csv.DictReader(csvfile)
@@ -457,6 +459,13 @@ def crop_monster_images():
             crop = im.crop((1, 1, 101, 101))
             im.close()
             crop.save(im_path)
+
+
+def decrypt_localvalue_dat():
+    with open('localvalue.dat') as f:
+        data = decrypt_response(f.read().strip('\0'), 2)
+        with open('localvalue.txt', 'w') as decrypted_file:
+            decrypted_file.write(data)
 
 
 def get_monster_names_by_id():

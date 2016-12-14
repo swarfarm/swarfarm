@@ -35,7 +35,7 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_serializer_class(self):
         com2us_id = self.request.GET.get('com2us_id', '')
-        if self.action == 'list' and len(com2us_id) != 5:
+        if self.action == 'list' and len(com2us_id) not in [5, 7]:
             # Return a summary view if no filters are applied
             return MonsterSummarySerializer
         else:

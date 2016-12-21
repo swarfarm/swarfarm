@@ -1301,21 +1301,20 @@ def monster_piece_summon(request, profile_name, instance_id):
             pieces.pieces -= pieces.PIECE_REQUIREMENTS[pieces.monster.base_stars]
             pieces.save()
 
-            if pieces.pieces <= 0:
-                pieces.delete()
-
-            template = loader.get_template('herders/profile/monster_inventory/monster_piece_snippet.html')
-
-            context = {
-                'piece': pieces,
-                'is_owner': is_owner,
-            }
-
             response_data = {
                 'code': 'success',
-                'instance_id': pieces.pk.hex,
-                'html': template.render(RequestContext(request, context))
             }
+
+            if pieces.pieces <= 0:
+                pieces.delete()
+            else:
+                template = loader.get_template('herders/profile/monster_inventory/monster_piece_snippet.html')
+                context = {
+                    'piece': pieces,
+                    'is_owner': is_owner,
+                }
+                response_data['instance_id'] = pieces.pk.hex
+                response_data['html'] = template.render(RequestContext(request, context))
 
             return JsonResponse(response_data)
     else:

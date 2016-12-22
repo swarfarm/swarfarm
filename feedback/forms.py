@@ -22,7 +22,7 @@ class IssueForm(ModelForm):
             Div(
                 Field('topic'),
                 Field('subject'),
-                Field('description'),
+                Field('description', data_provide='markdown'),
                 Field('public'),
                 Field('captcha'),
             ),
@@ -71,7 +71,7 @@ class CommentForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
-            Field('comment'),
+            Field('comment', data_provide='markdown'),
             Field('captcha'),
             FormActions(
                 Submit('save', 'Save', css_class='btn btn-primary'),

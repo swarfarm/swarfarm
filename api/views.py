@@ -165,6 +165,37 @@ def get_craft_stats_by_type(request, craft_type):
 
 @cache_page(60 * 15)
 def bestary_stat_charts(request, pk):
+    chart_template = {
+        'chart': {
+            'type': 'line'
+        },
+        'title': {
+            'text': 'Stat Growth By Level'
+        },
+        'xAxis': {
+            'tickInterval': 5,
+            'showFirstLabel': True
+        },
+        'yAxis': [
+            {
+                'title': {
+                    'text': 'HP'
+                },
+                'id': 'hp',
+                'opposite': True,
+                'endOnTick': False,
+            },
+            {
+                'title': {
+                    'text': 'ATK DEF'
+                },
+                'id': 'atkdef',
+                'endOnTick': False,
+            }
+        ],
+        'series': None
+    }
+
     monster = Monster.objects.get(pk=pk)
 
     data_series = []
@@ -198,7 +229,18 @@ def bestary_stat_charts(request, pk):
         })
 
     if data_series:
-        return JsonResponse(data_series, safe=False)
+        # Determine max values for Y axis
+        max_stat_value = max(
+            monster.max_lvl_hp / 15,
+            monster.max_lvl_attack,
+            monster.max_lvl_defense,
+        )
+
+        chart_template['series'] = data_series
+        chart_template['yAxis'][0]['max'] = max_stat_value * 15
+        chart_template['yAxis'][1]['max'] = max_stat_value
+
+        return JsonResponse(chart_template, safe=False)
     else:
         return JsonResponse({})
 

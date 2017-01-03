@@ -46,34 +46,7 @@ function initialize_charts() {
             url: API_URL + 'bestiary/' + monster_id.toString() + '/chart/',
             global: false
         }).done(function(data) {
-            chart_div.highcharts({
-                chart: {
-                    type: 'line'
-                },
-                title: {
-                    text: 'Stat Growth By Level'
-                },
-                xAxis: {
-                    tickInterval: 5,
-                    showFirstLabel: true
-                },
-                yAxis: [
-                    {
-                        title: {
-                            text: 'HP'
-                        },
-                        id: 'hp',
-                        opposite: true
-                    },
-                    {
-                        title: {
-                            text: 'ATK DEF'
-                        },
-                        id: 'atkdef'
-                    }
-                ],
-                series: data
-            });
+            chart_div.highcharts(data);
         })
     });
 }

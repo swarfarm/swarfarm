@@ -205,6 +205,7 @@ $('body')
                     if ($monster_container.length) {
                         // Replace it
                         $monster_container.replaceWith(data.html);
+                        $('#monster_table').trigger('update', [true]);
                     }
                     else {
                         // Append it if we can in list mode. Box/pieces require server side grouping so just request it again.

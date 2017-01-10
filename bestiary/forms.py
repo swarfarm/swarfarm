@@ -40,7 +40,7 @@ def effect_choices(effects):
 
 
 class FilterMonsterForm(forms.Form):
-    name__icontains = forms.CharField(
+    name = forms.CharField(
         label='Monster Name',
         max_length=100,
         required=False,
@@ -106,7 +106,7 @@ class FilterMonsterForm(forms.Form):
             Fieldset(
                 'General',
                 Div(
-                    Field('name__icontains', wrapper_class='form-group-sm form-group-condensed col-md-8'),
+                    Field('name', wrapper_class='form-group-sm form-group-condensed col-md-8'),
                     Field(
                         'base_stars',
                         data_provide='slider',

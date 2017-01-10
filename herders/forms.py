@@ -420,7 +420,7 @@ class AwakenMonsterInstanceForm(forms.Form):
 
 
 class FilterMonsterInstanceForm(forms.Form):
-    monster__name__icontains = forms.CharField(
+    monster__name = forms.CharField(
         label='Monster Name',
         max_length=100,
         required=False,
@@ -517,7 +517,7 @@ class FilterMonsterInstanceForm(forms.Form):
                 'General',
                 Div(
                     Div(
-                        Field('monster__name__icontains', wrapper_class='form-group-sm form-group-condensed'),
+                        Field('monster__name', wrapper_class='form-group-sm form-group-condensed'),
                         Div(
                             Field(
                                 'stars',

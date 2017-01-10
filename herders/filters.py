@@ -6,6 +6,7 @@ from .models import MonsterInstance, MonsterTag, RuneInstance
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):
+    monster__name = django_filters.MethodFilter(action='filter_monster__name')
     tags__pk = django_filters.MultipleChoiceFilter(choices=MonsterTag.objects.values_list('pk', 'name'), conjoined=True)
     monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
@@ -20,7 +21,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     class Meta:
         model = MonsterInstance
         fields = {
-            'monster__name': ['icontains'],
+            'monster__name': ['exact'],
             'tags__pk': ['exact'],
             'stars': ['gte', 'lte'],
             'level': ['gte', 'lte'],
@@ -37,6 +38,12 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'in_storage': ['exact'],
             'monster__fusion_food': ['exact'],
         }
+
+    def filter_monster__name(self, queryset, value):
+        if value:
+            return queryset.filter(Q(monster__name__icontains=value) | Q(monster__awakens_from__name__icontains=value))
+        else:
+            return queryset
 
     def filter_monster__fusion_food(self, queryset, value):
         if value:

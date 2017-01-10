@@ -5,6 +5,7 @@ from bestiary.models import Monster, Effect, Skill, LeaderSkill, ScalingStat
 
 
 class MonsterFilter(django_filters.FilterSet):
+    name = django_filters.MethodFilter(action='filter_name')
     element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
@@ -16,7 +17,7 @@ class MonsterFilter(django_filters.FilterSet):
     class Meta:
         model = Monster
         fields = {
-            'name': ['icontains'],
+            'name': ['exact'],
             'element': ['exact'],
             'archetype': ['exact'],
             'base_stars': ['lte', 'gte'],
@@ -28,6 +29,12 @@ class MonsterFilter(django_filters.FilterSet):
             'effects_logic': ['exact'],
             'fusion_food': ['exact'],
         }
+
+    def filter_name(self, queryset, value):
+        if value:
+            return queryset.filter(Q(name__icontains=value) | Q(awakens_from__name__icontains=value))
+        else:
+            return queryset
 
     def filter_skills__skill_effect__pk(self, queryset, value):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)

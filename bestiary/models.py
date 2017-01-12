@@ -1,3 +1,5 @@
+from django.db import models
+
 import herders.models as herder_models
 
 
@@ -45,3 +47,15 @@ class Source(herder_models.MonsterSource):
 class Fusion(herder_models.Fusion):
     class Meta:
         proxy = True
+
+
+class PatchNotes(models.Model):
+    major = models.IntegerField()
+    minor = models.IntegerField()
+    dev = models.IntegerField()
+    description = models.CharField(max_length=60, blank=True, null=True)
+    timestamp = models.DateTimeField()
+    detailed_notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return '{}.{}.{} - {}'.format(self.major, self.minor, self.dev, self.description)

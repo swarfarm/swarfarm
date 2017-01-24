@@ -80,10 +80,12 @@
             <td>{{ instance.notes|markdown }}</td>
         </tr>
         {% endif %}
+        {% if instance.priority %}
         <tr>
             <td>Priority</td>
             <td>{{ instance.get_priority_display }}</td>
         </tr>
+        {% endif %}
         <tr>
             <td>Sources:</td>
             <td class="monster-sources">
@@ -174,14 +176,54 @@
             <td>Skills to Max:</td>
             <td>
                 {% if instance.skill_ups_to_max > 0 %}
-                <div class="monster-image">
-                    <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
-                    <span class="image-plus image-plus-main">{{ instance.skill_ups_to_max }}</span>
-                </div>
+                    {{ instance.skill_ups_to_max }}
                 {% else %}
                 <p class="list-group-item-text">None!</p>
                 {% endif %}
             </td>
         </tr>
+        {% if instance.skill_ups_to_max %}
+        <tr>
+            <td>Possible skill-ups</td>
+            <td>
+                {% if skillups.none %}
+                    None!
+                {% else %}
+                    {% if skillups.devilmon %}
+                    <div class="monster-image">
+                        <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+                        <span class="image-plus image-plus-main">{{ skillups.devilmon }}</span>
+                    </div>
+                    {% endif %}
+                    {% if skillups.family %}
+                        {% for food_mon in skillups.family %}
+                            <div class="monster-image pull-left monster-popover" data-instance-id="{{ food_mon.pk.hex }}" title="{{ food_mon.monster.name }} - {{ food_mon.monster.get_element_display }} {% if food_mon.monster.awakens_from %}{{ food_mon.monster.awakens_from.name }}{% endif %}">
+                                <div>
+                                    <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=food_mon.pk.hex %}?next={{ return_path }}#edit">
+                                        <img src="{{ img_url_prefix }}monsters/{{ food_mon.monster.image_filename }}" class="monster-thumb"/>
+                                        <span>
+                                            {% for x in food_mon.stars|get_range %}
+                                                {% if food_mon.monster.is_awakened %}
+                                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                {% elif food_mon.monster.can_awaken %}
+                                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                {% else %}
+                                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+                                        <span class="image-plus image-plus-right">{% if food_mon.is_max_level %}MAX{% endif %}{{ food_mon.level }}</span>
+                                        {% if food_mon.ignore_for_fusion %}
+                                            <div class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Ignored for fusion progress"></div>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% endif %}
     </table>
 </div>

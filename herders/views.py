@@ -828,6 +828,7 @@ def monster_instance_view_info(request, profile_name, instance_id):
         'profile_name': profile_name,
         'fusion_ingredient_in': ingredient_in,
         'fusion_product_of': product_of,
+        'skillups': instance.get_possible_skillups(),
     }
 
     return render(request, 'herders/profile/monster_view/notes_info.html', context)
@@ -933,9 +934,6 @@ def monster_instance_edit(request, profile_name, instance_id):
             form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
         else:
             form.helper['skill_4_level'].wrap(Div, css_class="hidden")
-
-        if not instance.monster.fusion_food:
-            form.helper['ignore_for_fusion'].wrap(Div, css_class="hidden")
 
         if request.method == 'POST' and form.is_valid():
             mon = form.save()

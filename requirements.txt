@@ -3,12 +3,14 @@ psycopg2
 bcrypt
 bitstring
 dpkt
+celery
 pytz
 python-dateutil
 pycrypto
 redis
 pillow==3.1.1
 django-environ
+django-celery-results
 django-suit
 django-redis-cache==1.6.4
 django-autocomplete-light==2.3.3

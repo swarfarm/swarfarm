@@ -1379,6 +1379,16 @@ class MonsterInstance(models.Model):
     def get_guild_stats(self):
         return self.get_building_stats(Building.AREA_GUILD)
 
+    def get_possible_skillups(self):
+        devilmon = MonsterInstance.committed.filter(owner=self.owner, monster__name='Devilmon').count()
+        family = MonsterInstance.committed.filter(owner=self.owner, monster__family_id=self.monster.family_id).exclude(pk=self.pk).order_by('ignore_for_fusion')
+
+        return {
+            'devilmon': devilmon,
+            'family': family,
+            'none': devilmon + family.count() == 0,
+        }
+
     def update_fields(self):
         # Update stats
         self.base_hp = self.calc_base_hp()

@@ -283,6 +283,9 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
     class Meta:
         model = MonsterInstance
         fields = ('monster', 'stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes')
+        labels = {
+            'ignore_for_fusion': mark_safe('<span class="glyphicon glyphicon-lock"></span>Locked'),
+        }
 
 
 class BulkAddMonsterInstanceFormset(BaseModelFormSet):
@@ -333,8 +336,6 @@ class EditMonsterInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditMonsterInstanceForm, self).__init__(*args, **kwargs)
 
-        self.fields['ignore_for_fusion'].label = 'Do not use as fusion ingredient'
-
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'ajax-form'
@@ -369,6 +370,9 @@ class EditMonsterInstanceForm(ModelForm):
         model = MonsterInstance
         fields = ('stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority',
                   'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level', 'notes', 'tags')
+        labels = {
+            'ignore_for_fusion': mark_safe('<span class="glyphicon glyphicon-lock"></span>Locked'),
+        }
         widgets = {
             'tags': autocomplete_light.MultipleChoiceWidget('MonsterTagAutocomplete')
         }

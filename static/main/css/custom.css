@@ -69,6 +69,13 @@ thead {
     cursor: pointer;
 }
 
+.dropdown-menu>li>form {
+    padding: 3px 20px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    white-space: nowrap;
+}
+
 footer {
     position: relative;
 	margin-top: -40px;

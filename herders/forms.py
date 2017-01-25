@@ -825,7 +825,7 @@ class AddRuneInstanceForm(ModelForm):
                     Div(
                         HTML('<label class="col-md-2 control-label">Main Stat</label>'),
                         Field('main_stat', wrapper_class='col-md-4 inline-horizontal'),
-                        Field('main_stat_value', wrapper_class='col-md-3 inline-horizontal', readonly=True),
+                        Field('main_stat_value', wrapper_class='col-md-3 inline-horizontal'),
                         css_class='form-group form-group-condensed',
                     ),
                     Div(

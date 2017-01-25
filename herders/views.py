@@ -1922,7 +1922,7 @@ def rune_add(request, profile_name):
 
     if request.method == 'POST':
         if form.is_valid():
-            # Create the monster instance
+            # Create the rune instance
             new_rune = form.save(commit=False)
             new_rune.owner = request.user.summoner
             new_rune.save()

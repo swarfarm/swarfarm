@@ -1560,7 +1560,6 @@ class RuneInstance(models.Model):
     TYPE_ACCURACY = 20
     TYPE_TOLERANCE = 21
 
-
     TYPE_CHOICES = (
         (TYPE_ENERGY, 'Energy'),
         (TYPE_FATAL, 'Fatal'),
@@ -2195,7 +2194,12 @@ class RuneInstance(models.Model):
             self.substat_4_value = None
 
         # Cap stat values based on defined max values or substat increment rates and rune level
-        self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+        # Old runes can have different main stat values, so just make sure it's less than the cap.
+        # If main stat value isn't defined we'll automatically supply the default.
+        if self.main_stat_value:
+            self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15], self.main_stat_value)
+        else:
+            self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
         if self.innate_stat and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]:
             self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
@@ -2303,7 +2307,10 @@ class RuneInstance(models.Model):
 
         # Check if stat type was specified that it has value > 0
         if self.stars is not None and self.level is not None:
-            self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+            if self.main_stat_value:
+                self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15], self.main_stat_value)
+            else:
+                self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
             if self.innate_stat is not None:
                 if self.innate_stat_value is None or self.innate_stat_value <= 0:

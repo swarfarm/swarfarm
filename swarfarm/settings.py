@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     'colorfield',
     'corsheaders',
     'crispy_forms',
+    'django_celery_results',
     'markdown_deux',
     'rest_framework',
     'timezone_field',
@@ -164,6 +165,14 @@ CACHES = {
         'LOCATION': env('CACHE_LOCATION'),
     }
 }
+
+# Celery
+CELERY_BROKER_URL = env('CELERY_BROKER')
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['json']
+
+if DEBUG:
+    CELERY_TASK_ALWAYS_EAGER = True
 
 # Session config
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'

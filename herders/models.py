@@ -428,10 +428,13 @@ class Monster(models.Model):
 def _test_resource_url(url):
     # Checks that a given URL gives HTTP code 200 when requested
     from urllib2 import Request, urlopen
-    request = Request(url)
-    request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
-    code = urlopen(request).code
-    return code == 200
+    try:
+        request = Request(url)
+        request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
+        code = urlopen(request).code
+        return code == 200
+    except:
+        return False
 
 
 class MonsterSkill(models.Model):

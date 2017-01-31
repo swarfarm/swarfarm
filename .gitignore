@@ -1,3 +1,4 @@
 *.pyc
 .idea/
 .env
+log_data/

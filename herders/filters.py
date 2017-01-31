@@ -80,13 +80,14 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             return queryset.filter(monster__skills__in=skills).distinct()
 
     def filter_effects_logic(self, queryset, value):
-        # This field is just used to alter the logic of skill effect filter
+        # This field is just used to alter the logic of skill effect filter and is used in filter_monster__skills__skill_effect__pk()
         return queryset
 
 
 class RuneInstanceFilter(django_filters.FilterSet):
     type = django_filters.MultipleChoiceFilter(choices=RuneInstance.TYPE_CHOICES)
     slot = django_filters.MultipleChoiceFilter(choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)))
+    quality = django_filters.MultipleChoiceFilter(choices=RuneInstance.QUALITY_CHOICES)
     main_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     innate_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     substats = django_filters.MethodFilter()
@@ -100,6 +101,7 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'level': ['gte', 'lte'],
             'stars': ['gte', 'lte'],
             'slot': ['exact'],
+            'quality': ['exact'],
             'assigned_to': ['exact'],
             'main_stat': ['exact'],
             'innate_stat': ['exact'],

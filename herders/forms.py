@@ -938,6 +938,10 @@ class AssignRuneForm(forms.Form):
         choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)),
         required=False,
     )
+    quality = forms.MultipleChoiceField(
+        choices=RuneInstance.QUALITY_CHOICES,
+        required=False,
+    )
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -948,6 +952,7 @@ class AssignRuneForm(forms.Form):
             Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger btn-block'),
         ),
         Field('type', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('quality', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Div(
             Field(
                 'level',
@@ -1043,6 +1048,10 @@ class FilterRuneForm(forms.Form):
         choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)),
         required=False,
     )
+    quality = forms.MultipleChoiceField(
+        choices=RuneInstance.QUALITY_CHOICES,
+        required=False,
+    )
     assigned_to = forms.NullBooleanField(
         label='Is Assigned',
         required=False,
@@ -1090,6 +1099,7 @@ class FilterRuneForm(forms.Form):
                 Field('substat_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ALL', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-sm-4'),
                 css_class='row col-md-4 col-sm-4'
             ),
+            Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
             Field('assigned_to', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
             Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
             css_class='row',

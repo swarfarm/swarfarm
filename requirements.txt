@@ -24,4 +24,5 @@ django_compressor
 djangorestframework==3.3.2
 django-filter==0.13.0
 Django-Select2
+drf_ujson
 sympy>=1.0.0

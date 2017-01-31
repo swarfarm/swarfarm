@@ -121,6 +121,7 @@ class Monster(models.Model):
     bestiary_slug = models.SlugField(max_length=255, editable=False, null=True)
     summonerswar_co_url = models.URLField(null=True, blank=True)
     wikia_url = models.URLField(null=True, blank=True)
+    summonerswarmonsters_url = models.URLField(null=True, blank=True)
 
     def image_url(self):
         if self.image_filename:
@@ -250,6 +251,59 @@ class Monster(models.Model):
 
         return mats
 
+    def set_resource_urls(self):
+        # Creates URLs patterns for resource websites
+        if self.is_awakened:
+            normal_name = self.awakens_from.name if self.awakens_from is not None else ''
+            awakened_name = self.name
+        elif self.can_awaken:
+            normal_name = self.name
+            awakened_name = self.awakens_to.name if self.awakens_to is not None else ''
+        else:
+            # Silver star monsters
+            normal_name = self.name
+            awakened_name = None
+
+        # Summonerswar.co
+        if self.can_awaken and self.base_stars > 1 and self.archetype is not self.TYPE_MATERIAL:
+            if self.summonerswar_co_url is None or self.summonerswar_co_url == '':
+                base = 'http://summonerswar.co/'
+                url = base + slugify(self.element + '-' + normal_name + '-' + awakened_name)
+                if _test_resource_url(url):
+                    self.summonerswar_co_url = url
+                else:
+                    self.summonerswar_co_url = None
+                    print 'summonerswar.co url failed to verify: {}'.format(url)
+        else:
+            # Summonerswar.co doesn't do silver star or material monsters
+            self.summonerswar_co_url = None
+
+        # Wikia
+        if self.wikia_url is None or self.wikia_url == '':
+            base = 'http://summonerswar.wikia.com/wiki/'
+            url = base + normal_name.replace(' ', '_') + '_(' + self.get_element_display() + ')'
+
+            if _test_resource_url(url):
+                self.wikia_url = url
+            else:
+                self.wikia_url = None
+                print 'Wikia url failed to verify: {}'.format(url)
+
+        # Summonerswarmonsters
+        if self.summonerswarmonsters_url is None or self.summonerswarmonsters_url == '':
+            if awakened_name:
+                url = 'http://www.summonerswarmonsters.com/{}/{}'.format(self.get_element_display().lower(), slugify(awakened_name.lower()))
+            else:
+                url = 'http://www.summonerswarmonsters.com/{}/{}'.format(self.get_element_display().lower(), slugify(normal_name.lower()))
+
+            if _test_resource_url(url):
+                self.summonerswarmonsters_url = url
+            else:
+                self.summonerswarmonsters_url = None
+                print 'Summonerswarmonsters.com url failed to verify: {}'.format(url)
+
+        self.save()
+
     def clean(self):
         # Update null values
         if self.awaken_mats_fire_high is None:
@@ -369,6 +423,15 @@ class Monster(models.Model):
             return self.name
         else:
             return self.name + ' (' + self.element.capitalize() + ')'
+
+
+def _test_resource_url(url):
+    # Checks that a given URL gives HTTP code 200 when requested
+    from urllib2 import Request, urlopen
+    request = Request(url)
+    request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
+    code = urlopen(request).code
+    return code == 200
 
 
 class MonsterSkill(models.Model):
@@ -852,24 +915,6 @@ class Summoner(models.Model):
     public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
-    storage_magic_low = models.IntegerField(default=0)
-    storage_magic_mid = models.IntegerField(default=0)
-    storage_magic_high = models.IntegerField(default=0)
-    storage_fire_low = models.IntegerField(default=0)
-    storage_fire_mid = models.IntegerField(default=0)
-    storage_fire_high = models.IntegerField(default=0)
-    storage_water_low = models.IntegerField(default=0)
-    storage_water_mid = models.IntegerField(default=0)
-    storage_water_high = models.IntegerField(default=0)
-    storage_wind_low = models.IntegerField(default=0)
-    storage_wind_mid = models.IntegerField(default=0)
-    storage_wind_high = models.IntegerField(default=0)
-    storage_light_low = models.IntegerField(default=0)
-    storage_light_mid = models.IntegerField(default=0)
-    storage_light_high = models.IntegerField(default=0)
-    storage_dark_low = models.IntegerField(default=0)
-    storage_dark_mid = models.IntegerField(default=0)
-    storage_dark_high = models.IntegerField(default=0)
 
     def get_rune_counts(self):
         counts = {}

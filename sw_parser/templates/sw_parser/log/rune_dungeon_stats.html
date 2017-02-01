@@ -1,0 +1,123 @@
+{% extends 'sw_parser/log/base.html' %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load humanize %}
+
+{% block stats_content %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<h1>
+    {{ dungeon.name }}
+    <div class="btn-group" style="display: inline-block">
+        <button class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        B{{ floor }} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            {% for floor_num, count in floors %}
+            <li><a {% if mine %}
+                        href="{% url 'sw_parser:view_dungeon_detail_floor_mine' dungeon_slug=dungeon.slug floor=floor_num %}"
+                    {% else %}
+                        href="{% url 'sw_parser:view_dungeon_detail_floor' dungeon_slug=dungeon.slug floor=floor_num %}"
+                    {% endif %}
+                >B{{ floor_num }} <span class="badge">{{ count }}</span></a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <small> {{ total_runs|intcomma }} log{{ total_runs|pluralize }}{% if success_rate %} ({{ success_rate|floatformat:"-1" }}% success rate){% endif %}</small>
+</h1>
+
+{# General stats #}
+<div class="panel panel-default">
+    <div class="panel-body row">
+        <div class="col-lg-7 chart" style="height: 400px" data-chart-data-source="/data/log/charts/dungeon/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=drop_types"></div>
+        <div class="col-lg-5">
+            {% include 'sw_parser/log/snippets/general_drops.html' %}
+            {% include 'sw_parser/log/snippets/item_drops.html' with item_drops=item_drops only %}
+            {% include 'sw_parser/log/snippets/monster_drops.html' with monster_drops=monster_drops only %}
+        </div>
+    </div>
+</div>
+
+{# Rune stats #}
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#overall_tab" aria-controls="overall_tab" role="tab" data-toggle="tab">Overall</a></li>
+    {% for rune_id, rune_name in rune_types %}
+    <li role="presentation"><a href="#{{ rune_name }}_tab" aria-controls="{{ rune_name }}_tab" role="tab" data-toggle="tab">{{ rune_name }}</a></li>
+    {% endfor %}
+</ul>
+<div class="tab-content bordered">
+    <div role="tabpanel" class="tab-pane in active" id="overall_tab">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">General</p>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=star_summary" ></div>
+                    <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=quality_summary" ></div>
+                    <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=by_slot" ></div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=star_detail" ></div>
+                    <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=quality_detail" ></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">Main Stat</p>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=main_stat_summary&slot=2" ></div>
+                <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=main_stat_summary&slot=4" ></div>
+                <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=main_stat_summary&slot=6" ></div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">Substats</p>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=substat_summary" ></div>
+                <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=innate_stat_summary" ></div>
+            </div>
+        </div>
+    </div>
+    {% for rune_id, rune_name in rune_types %}
+    <div role="tabpanel" class="tab-pane" id="{{ rune_name }}_tab">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">General</p>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=star_summary&rune_type={{ rune_id }}" ></div>
+                    <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=quality_summary&rune_type={{ rune_id }}" ></div>
+                    <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=by_slot&rune_type={{ rune_id }}" ></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">Main Stat</p>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=main_stat_summary&slot=2&rune_type={{ rune_id }}" ></div>
+                <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=main_stat_summary&slot=4&rune_type={{ rune_id }}" ></div>
+                <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=main_stat_summary&slot=6&rune_type={{ rune_id }}" ></div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">Substats</p>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=innate_stat_summary&rune_type={{ rune_id }}" ></div>
+                <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=substat_summary&rune_type={{ rune_id }}" ></div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock stats_content %}

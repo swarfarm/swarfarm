@@ -1,0 +1,56 @@
+{% load humanize %}
+{% load staticfiles %}
+
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p class="panel-title">Item Drops</p>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Drop Chance</th>
+            <th>Average / Run</th>
+            <th>Average / Drop</th>
+            <th>Max</th>
+            <th>Min</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for drop, stats in item_drops.iteritems %}
+        <tr>
+            <td>
+                {% if stats.icon %}
+                    <img src="{{ img_url_prefix }}{{ stats.icon }}" height="20px" data-toggle="tooltip" title="{{ stats.description }}"/>
+                {% else %}
+                    {{ stats.description }}
+                {% endif %}
+            </td>
+            <td>{% if stats.drop_chance %}{{ stats.drop_chance|floatformat:"-1" }}%{% endif %}</td>
+            <td>
+                {% if stats.avg_per_run < 1 %}
+                    {{ stats.avg_per_run|floatformat:"-3"|intcomma }}
+                {% else %}
+                    {{ stats.avg_per_run|floatformat:"-2"|intcomma }}
+                {% endif %}
+            </td>
+            <td>
+                {% if stats.avg < 1 %}
+                    {{ stats.avg|floatformat:"-3"|intcomma }}
+                {% else %}
+                    {{ stats.avg|floatformat:"-2"|intcomma }}
+                {% endif %}
+            </td>
+            <td>{% if stats.max %}{{ stats.max|intcomma }}{% endif %}</td>
+            <td>{% if stats.min %}{{ stats.min|intcomma }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+

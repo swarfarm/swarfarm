@@ -1,0 +1,74 @@
+{% extends 'sw_parser/log/base.html' %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load humanize %}
+
+{% block stats_content %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <h1>Magic shop <small>{{ count }} logs</small></h1>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?chart_type=summary"></div>
+            <div class="col-lg-6">
+                {% include 'sw_parser/log/magic_shop/item_table.html' with item_details=item_details only %}
+            </div>
+        </div>
+    </div>
+
+    <h2 id="rune_detail">Rune Details</h2>
+    <div class="alert alert-warning">
+        <p><strong>Note:</strong> Runes that appear in the shop vary depending on the Summoner's account level. The account level is not available in the shop refresh data, so the charts below may not represent what you would see in your own shop refreshes.</p>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">General</p>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=star_summary" ></div>
+                <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=quality_summary" ></div>
+                <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=by_slot" ></div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=star_detail" ></div>
+                <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=quality_detail" ></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">Main Stat</p>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=main_stat_summary&slot=2"></div>
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=main_stat_summary&slot=4"></div>
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=main_stat_summary&slot=6"></div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">Substats</p>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=substat_summary"></div>
+            <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=rune&chart_type=innate_stat_summary"></div>
+        </div>
+    </div>
+
+    <h2 id="monster_detail">Monster Details</h2>
+    <div class="panel panel-default">
+        <div class="panel-body row">
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=monster&chart_type=grade"></div>
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=monster&chart_type=element"></div>
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=monster&chart_type=awakened"></div>
+        </div>
+        <div class="panel-body row">
+            {% for grade in grade_range %}
+                <div class="col-lg-12 chart" style="height: 500px" data-chart-data-source="/data/log/charts/magic-shop/{% if mine %}mine/{% endif %}?section=monster&chart_type=family&grade={{ grade }}"></div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

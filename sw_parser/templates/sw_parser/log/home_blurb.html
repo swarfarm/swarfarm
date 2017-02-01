@@ -1,0 +1,79 @@
+{% load humanize %}
+
+<h1>Summoner's War Data Logs</h1>
+<p>Here you will find a centralized statistical resource for Summoner's War's random drops and summons. The goal is to get definitive answers to common questions like:</p>
+<ul>
+    <li>How often does X drop from Y dungeon?</li>
+    <li>Why do I always seem to summon golems?</li>
+    <li>Which scenario or dungeon is best for farming XP/Mana/whatever?</li>
+    <li>Is <a href="https://www.google.com/#q=summoners+war+timegate" target="_blank">timegate</a> real?</li>
+    <li>Is Com2US changing drop/summon rates?</li>
+</ul>
+<p>
+    The reports are always a work in progress. If you have any suggestions, feel free to communicate it via the <a href="{% url 'feedback:index' %}">feedback</a> section or as an issue on the <a href="https://github.com/porksmash/swarfarm_io">Github project page</a>.
+    Reports are cached for 60 minutes at a time, so aggregate logs are not immediately added.
+</p>
+<p>Upcoming features:</p>
+<ul>
+    <li>Individualized reports. Logs and statistics associated with your SWARFARM account. These will update in real-time, unlike the public aggregate reports.</li>
+    <li>Timegate charts - aka frequency of natural 4<span class="glyphicon glyphicon-star"></span> and 5<span class="glyphicon glyphicon-star"></span> summons throughout the day.</li>
+    <li>Detailed rune drop statistics for Giant's Keep, Dragon's Lair, and Necropolis.</li>
+    <li>Raid drops</li>
+    <li>Wish results</li>
+</ul>
+<h2>Contributions</h2>
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <table class="table">
+            <thead>
+            <tr>
+                <th></th>
+                <th>Summons</th>
+                <th>Dungeons</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>In Timespan</td>
+                <td>{{ stats.timespan_summons|intcomma }}</td>
+                <td>{{ stats.timespan_runs|intcomma }}</td>
+            </tr>
+            <tr>
+                <td>Lifetime</td>
+                <td>{{ stats.total_summons|intcomma }}</td>
+                <td>{{ stats.total_runs|intcomma }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 chart" data-chart-data-source="{% url 'sw_parser:contribution_chart_data' %}?chart_type=logs_per_day" style="height:400px"></div>
+</div>
+
+<h2>How to contribute</h2>
+
+<ol>
+    <li>Download the latest package from the <a href="https://github.com/lstern/SWProxy-plugins/releases/latest" target="_blank">SWProxy-plugins</a> project on Github.</li>
+    <li>Make sure you have a SwarfarmLogger.py plugin in the SWProxy plugins directory.</li>
+    <li>Play the game while connected to the proxy.</li>
+</ol>
+<h3>What is collected?</h3>
+<h4>Summons</h4>
+<ul>
+    <li>Summoning Method (which scroll you used)</li>
+    <li>Monster Summoned (level, grade, awakened/unawakened)</li>
+</ul>
+<h4>Dungeon Runs</h4>
+<ul>
+    <li>Dungeon</li>
+    <li>Stage or Floor</li>
+    <li>Difficulty (for scenarios)</li>
+    <li>Mana, Crystal, and Energy drops</li>
+    <li>Reward chest contents</li>
+</ul>
+<p>
+    In addition, for every log we record a unique ID assigned by Com2US, which allows me to associate the data with your SWARFARM profile if you have one. All publicly accessible data is anonymized and aggregated, so this will never be exposed to other users.
+    Other data logged is the game server you're playing on and a timestamp. If you have any other concerns, feel free to browse the code in <a href="https://github.com/lstern/SWProxy-plugins/blob/master/plugins/SwarfarmLogger.py" target="_blank">the plugin</a> or in the <a href="https://github.com/porksmash/swarfarm_io" target="_blank">swarfarm_io github project</a> to see what exactly is done with the game data.
+</p>

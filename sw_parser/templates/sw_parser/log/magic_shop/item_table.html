@@ -1,0 +1,63 @@
+{% load humanize %}
+{% load staticfiles %}
+
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p class="panel-title">Item Details</p>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Appearance Chance</th>
+            <th>
+                Avg Qty
+                <span class="glyphicon glyphicon-info-sign" data-toggle="popover" data-container="body" data-placement="top" data-trigger="hover" title="Average Quantity" data-content="How many items you can buy at once, if it has appeared in the shop."></span>
+            </th>
+            <th>
+                Avg Mana Cost
+                <span class="glyphicon glyphicon-info-sign" data-toggle="popover" data-container="body" data-placement="top" data-trigger="hover" title="Average Cost" data-content="The mana cost to buy 1 of the item."></span>
+            </th>
+            <th>
+                Avg Crystal Cost
+                <span class="glyphicon glyphicon-info-sign" data-toggle="popover" data-container="body" data-placement="top" data-trigger="hover" title="Average Crystal Cost" data-content="Average of how many crystals it would cost you refreshing the shop to buy 1 of the item."></span>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for drop, stats in item_details.iteritems %}
+        <tr>
+            <td>
+                {% if stats.icon %}
+                    <img src="{{ img_url_prefix }}{{ stats.icon }}" height="20px" data-toggle="tooltip" title="{{ stats.description }}"/>
+                {% else %}
+                    {{ stats.description }}
+                {% endif %}
+            </td>
+            <td>{% if stats.appearance_chance %}{{ stats.appearance_chance|floatformat:"-2" }}%{% endif %}</td>
+            <td>
+                {% if stats.avg_qty < 1 %}
+                    {{ stats.avg_qty|floatformat:"-3"|intcomma }}
+                {% else %}
+                    {{ stats.avg_qty|floatformat:"-2"|intcomma }}
+                {% endif %}
+            </td>
+            <td>{{ stats.avg_cost|floatformat:"0"|intcomma }}</td>
+            <td>
+                {% if stats.avg_crystal_per_item < 1 %}
+                    {{ stats.avg_crystal_per_item|floatformat:"-3"|intcomma }}
+                {% else %}
+                    {{ stats.avg_crystal_per_item|floatformat:"-2"|intcomma }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+

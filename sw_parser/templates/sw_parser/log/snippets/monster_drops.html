@@ -1,0 +1,43 @@
+{% load humanize %}
+{% load utils %}
+{% load staticfiles %}
+
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p class="panel-title">Monster Drops</p>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Drop Chance</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for monster in monster_drops %}
+        <tr>
+            <td class="monster-image">
+                <div>
+                    <img src="{{ img_url_prefix }}monsters/{{ monster.drop_monster__monster__image_filename }}" class="monster-thumb"/>
+                    <span>
+                        {% for x in monster.drop_monster__grade|get_range %}
+                            {% if monster.drop_monster__monster__is_awakened %}
+                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% elif monster.drop_monster__monster__can_awaken %}
+                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% else %}
+                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    <span class="image-plus image-plus-right">{{ monster.level|floatformat:"0" }}</span>
+                </div>
+            </td>
+            <td>{% if monster.drop_chance %}{{ monster.drop_chance|floatformat:"-1" }}%{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

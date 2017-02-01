@@ -1,0 +1,71 @@
+{% extends 'sw_parser/log/base.html' %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load humanize %}
+
+{% block stats_content %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<h1>
+    {{ dungeon.name }}
+    <div class="btn-group">
+        <div class="btn-group" style="display: inline-block">
+            <button class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            B{{ floor }} <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                {% for floor_num, count in floors %}
+                <li><a {% if mine %}
+                            href="{% url 'sw_parser:view_dungeon_detail_floor_difficulty_mine' dungeon_slug=dungeon.slug floor=floor_num difficulty=difficulty.0 %}"
+                        {% else %}
+                            href="{% url 'sw_parser:view_dungeon_detail_floor_difficulty' dungeon_slug=dungeon.slug floor=floor_num difficulty=difficulty.0 %}"
+                        {% endif %}
+                    >B{{ floor_num }} <span class="badge">{{ count }}</span></a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="btn-group" style="display: inline-block">
+            <button class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ difficulty.1 }} <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                {% for diff in difficulties %}
+                <li><a {% if mine %}
+                            href="{% url 'sw_parser:view_dungeon_detail_floor_difficulty_mine' dungeon_slug=dungeon.slug floor=floor difficulty=diff.id %}"
+                        {% else %}
+                            href="{% url 'sw_parser:view_dungeon_detail_floor_difficulty' dungeon_slug=dungeon.slug floor=floor difficulty=diff.id %}"
+                        {% endif %}
+                    >{{ diff.name }} <span class="badge">{{ diff.count }}</span></a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <small> {{ total_runs|intcomma }} log{{ total_runs|pluralize }}{% if success_rate %} ({{ success_rate|floatformat:"-1" }}% success rate){% endif %}</small>
+</h1>
+{# General stats #}
+<div class="panel panel-default">
+    <div class="panel-body row">
+        <div class="col-lg-7 chart" style="height: 400px" data-chart-data-source="/data/log/charts/dungeon/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&difficulty={{ difficulty.0 }}&chart_type=drop_types"></div>
+        <div class="col-lg-5">
+            {% include 'sw_parser/log/snippets/general_drops.html' %}
+            {% include 'sw_parser/log/snippets/item_drops.html' with item_drops=item_drops only %}
+            {% include 'sw_parser/log/snippets/monster_drops.html' with monster_drops=monster_drops only %}
+        </div>
+    </div>
+</div>
+
+{# Rune stats #}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p class="panel-title">Runes</p>
+    </div>
+    <div class="panel-body" id="overall_tab">
+        <div class="row">
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&difficulty={{ difficulty.0 }}&chart_type=star_summary" ></div>
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&difficulty={{ difficulty.0 }}&chart_type=quality_summary" ></div>
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&difficulty={{ difficulty.0 }}&chart_type=by_slot" ></div>
+        </div>
+    </div>
+</div>
+{% endblock stats_content %}

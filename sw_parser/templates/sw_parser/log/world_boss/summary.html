@@ -12,57 +12,6 @@
     <h1>
         {{ dungeon_name }}
     </h1>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <p class="panel-title">
-                Average Drops per Run <span class="glyphicon glyphicon-info-sign" data-toggle="popover" data-trigger="hover" title="Average Drops/Run Calculation" data-content="Average drops per run is calculated by taking the average quantity per drop and multiplying it by the drop chance in the table below."></span>
-            </p>
-        </div>
-        {% for drop_name, drop_data in item_lists.iteritems %}
-            <table class="table">
-                <caption><h4>{{ drop_name }}</h4></caption>
-                <thead>
-                <tr>
-                    <th>Grade</th>
-                    <th>Logs</th>
-                    {% for item in drop_data.item_list.values %}
-                    <th><img src="{{ img_url_prefix }}{{ item.icon }}" class="monster-inline"/> {{ item.name }}</th>
-                    {% endfor %}
-                </tr>
-                </thead>
-                <tbody>
-                {% for grade in drop_data.stats.values %}
-                <tr>
-                    <td>{{ grade.grade }}</td>
-                    <td>
-                        {% if grade.total_runs < 100 %}
-                            <span class="glyphicon glyphicon-info-sign text-danger" data-toggle="popover" data-trigger="hover" title="Low Number of Logs" data-content="This grade has a very low number of logs recorded. Average values may not be reliable."></span>
-                        {% endif %}
-                        {{ grade.total_runs }}
-                    </td>
-                    {% for item in grade.items.values %}
-                    <td>
-                        {% if item.avg_drop %}
-                            <span data-toggle="popover" data-trigger="hover" data-title="Quantities per drop" data-container="body" data-placement="auto right"
-                                data-content="<ul class=&quot;list-unstyled&quot;><li>Avg: {{ item.avg_qty|floatformat:"-2" }}</li><li>Min: {{ item.min_qty }}</li><li>Max: {{ item.max_qty }}</li></ul>"
-                            >
-                                {% if item.avg_drop < 1 %}
-                                    {{ item.avg_drop|floatformat:"-3"|intcomma }}
-                                {% else %}
-                                    {{ item.avg_drop|floatformat:"-2"|intcomma }}
-                                {% endif %}
-                            </span>
-                        {% else %}
-                            ---
-                        {% endif %}
-                    </td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endfor %}
-    </div>
 
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -93,11 +42,15 @@
                     {% for item in grade.items.values %}
                     <td>
                         {% if item.chance_drop %}
+                            <span data-toggle="popover" data-trigger="hover" data-title="Quantities per drop" data-container="body" data-placement="auto right"
+                                data-content="<ul class=&quot;list-unstyled&quot;><li>Avg: {{ item.avg_qty|floatformat:"-2" }}</li><li>Min: {{ item.min_qty }}</li><li>Max: {{ item.max_qty }}</li></ul>"
+                            >
                             {% if item.chance_drop < 1 %}
                                 {{ item.chance_drop|floatformat:"-2"|intcomma }}%
                             {% else %}
                                 {{ item.chance_drop|floatformat:"-1"|intcomma }}%
                             {% endif %}
+                            </span>
                         {% else %}
                             ---
                         {% endif %}

@@ -78,10 +78,9 @@ thead {
 
 footer {
     position: relative;
-	margin-top: -40px;
+	margin-top: -20px;
 	height: 40px;
 	clear: both;
-    width: 95%;
     padding-right: 15px;
     padding-left: 15px;
     margin-left: auto;

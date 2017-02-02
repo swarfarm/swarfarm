@@ -4,6 +4,8 @@
 {% load utils %}
 {% load humanize %}
 
+{% block title %}Rune Crafting - {{ block.super }}{% endblock title %}
+
 {% block stats_content %}
     {% static 'herders/images/' as img_url_prefix %}
     <h1>High Rune Crafting <small>{{ count }} crafts</small></h1>

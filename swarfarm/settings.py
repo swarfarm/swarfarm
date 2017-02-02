@@ -15,6 +15,9 @@ env = environ.Env(
     EMAIL_HOST_USER=(str, ''),
     EMAIL_HOST_PASSWORD=(str, ''),
     CACHE_LOCATION=(str, None),
+    GOOGLE_API_KEY=(str, None),
+    RECAPTCHA_PUBLIC_KEY=(str, None),
+    RECAPTCHA_PRIVATE_KEY=(str, None),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 

@@ -1,7 +1,0 @@
-Django==1.8.5
-django-crispy-forms==1.5.2
-django-bulk-update
-celery
-dpkt
-drf_ujson
-pycrypto

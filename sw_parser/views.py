@@ -1614,7 +1614,7 @@ def rune_craft_chart_data(request, mine=False):
 
 # Magic Shop
 def view_magic_shop_log(request, mine=False):
-    date_filter = date_filter = _get_log_filter_timestamp(request, mine)
+    date_filter = _get_log_filter_timestamp(request, mine)
     context = None
     cache_key = 'magic-shop-{}'.format(slugify(date_filter['description']))
 
@@ -1638,23 +1638,17 @@ def view_magic_shop_log(request, mine=False):
         item_drops = OrderedDict()
 
         for item in ShopRefreshItem.objects.filter(log__in=shop_logs).values('item').annotate(
-                count=Count('pk'),
-                sum=Sum('quantity'), min_qty=Min('quantity'), max_qty=Max('quantity'), avg_qty=Avg('quantity'),
-                min_cost=Min('cost'), max_cost=Max('cost'), avg_cost=Avg('cost'),
+                count=Count('pk'), avg_qty=Avg('quantity'), avg_cost=Avg('cost'),
         ).order_by('-count'):
             appearance_chance = float(item['count']) / total_logs
-            refreshes_per_item = 1 / (appearance_chance * item['avg_qty'])
+            refreshes_per_item = 1 / appearance_chance if appearance_chance > 0 else None
 
             item_drops[item['item']] = {
-                'min_qty': item['min_qty'],
-                'max_qty': item['max_qty'],
                 'avg_qty': item['avg_qty'],
-                'min_cost': item['min_cost'],
-                'max_cost': item['max_cost'],
                 'avg_cost': item['avg_cost'],
                 'appearance_chance': appearance_chance * 100,
                 'avg_cost_per_item': item['avg_qty'] / item['avg_cost'],
-                'avg_crystal_per_item': refreshes_per_item * 3,
+                'avg_crystal_per_item': refreshes_per_item * 3 if refreshes_per_item else None,
                 'icon': ItemDrop.DROP_ICONS.get(item['item']),
                 'description': ItemDrop.DROP_CHOICES_DICT.get(item['item']),
             }
@@ -1715,35 +1709,62 @@ def magic_shop_chart_data(request, mine=False):
                 pass
         else:
             if chart_type == 'summary':
-                chart = deepcopy(chart_templates.pie)
-                chart['title']['text'] = 'Overall'
+                chart = deepcopy(chart_templates.column)
+                chart['title']['text'] = 'Frequency of appearance'
+                chart['xAxis']['labels'] = {
+                    'rotation': -90,
+                    'useHTML': True,
+                }
+                chart['yAxis']['title']['text'] = 'Chance to Appear'
+                chart['yAxis']['labels'] = {
+                    'format': '{value}%',
+                }
+                chart['plotOptions']['column']['dataLabels'] = {
+                    'enabled': True,
+                    'color': 'white',
+                    'format': '{point.y:.1f}%',
+                    'style': {
+                        'textShadow': '0 0 3px black'
+                    }
+                }
                 chart['series'].append({
-                    'name': 'Overall Magic Shop Slot Items',
+                    'name': 'Type of Drop',
                     'colorByPoint': True,
                     'data': [],
                 })
 
-                # Monsters by grade
-                for drop in ShopRefreshMonster.objects.filter(log__in=shop_logs).values('grade').annotate(count=Count('pk')).order_by('grade'):
-                    chart['series'][0]['data'].append({
-                        'name': '{}<span class="glyphicon glyphicon-star"></span> Monster'.format(drop['grade']),
-                        'y': drop['count'],
-                    })
-
-                # Runes
-                rune_count = ShopRefreshRune.objects.filter(log__in=shop_logs).count()
-                if rune_count:
-                    chart['series'][0]['data'].append({
-                        'name': 'Rune',
-                        'y': rune_count,
-                    })
+                total_logs = shop_logs.count()
+                appearance_chances = []
+                # appearance_chance = float(item['count']) / total_logs
 
                 # Items
-                for drop in ShopRefreshItem.objects.filter(log__in=shop_logs).values('item').annotate(count=Count('pk')).order_by('-count'):
-                    chart['series'][0]['data'].append({
-                        'name': ShopRefreshItem.DROP_CHOICES_DICT[drop['item']],
-                        'y': drop['count'],
-                    })
+                for drop in ShopRefreshItem.objects.filter(log__in=shop_logs).values('item').annotate(count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        ShopRefreshItem.DROP_CHOICES_DICT[drop['item']]
+                    ))
+
+                # Monsters by grade
+                for drop in ShopRefreshMonster.objects.filter(log__in=shop_logs).values('grade').annotate(count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        '{}<span class="glyphicon glyphicon-star"></span> Monster'.format(drop['grade'])
+                    ))
+
+                # Runes by grade
+                for drop in ShopRefreshRune.objects.filter(log__in=shop_logs).values('stars').annotate(count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        '{}<span class="glyphicon glyphicon-star"></span> Rune'.format(drop['stars'])
+                    ))
+
+                # Sort the list by appearance chance
+                appearance_chances.sort(reverse=True)
+
+                # Fill in the chart data and categories
+                for point in appearance_chances:
+                    chart['xAxis']['categories'].append(point[1])
+                    chart['series'][0]['data'].append(point[0])
 
         if chart is None:
             raise Http404()

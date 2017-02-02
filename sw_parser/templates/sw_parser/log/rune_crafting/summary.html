@@ -1,0 +1,39 @@
+{% extends 'sw_parser/log/base.html' %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load humanize %}
+
+{% block stats_content %}
+    {% static 'herders/images/' as img_url_prefix %}
+    <h1>High Rune Crafting <small>{{ count }} crafts</small></h1>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">General</p>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune-crafting/{% if mine %}mine/{% endif %}?chart_type=star_summary"></div>
+            <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune-crafting/{% if mine %}mine/{% endif %}?chart_type=quality_detail"></div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">Main Stat</p>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune-crafting/{% if mine %}mine/{% endif %}?chart_type=main_stat_summary&slot=2"></div>
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune-crafting/{% if mine %}mine/{% endif %}?chart_type=main_stat_summary&slot=4"></div>
+            <div class="col-lg-4 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune-crafting/{% if mine %}mine/{% endif %}?chart_type=main_stat_summary&slot=6"></div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">Substats</p>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune-crafting/{% if mine %}mine/{% endif %}?chart_type=substat_summary"></div>
+            <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune-crafting/{% if mine %}mine/{% endif %}?chart_type=innate_stat_summary"></div>
+        </div>
+    </div>
+{% endblock %}

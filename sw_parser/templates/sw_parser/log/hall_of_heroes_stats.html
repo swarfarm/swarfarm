@@ -1,0 +1,58 @@
+{% extends 'sw_parser/log/base.html' %}
+
+{% load staticfiles %}
+{% load humanize %}
+
+{% block stats_content %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<h1>{{ dungeon.name }} <small>{{ total_runs|intcomma }} log{{ total_runs|pluralize }}</small></h1>
+<div class="row">
+    {% for stage in stages %}
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">B{{ stage.floor }} - {{ stage.runs }} run{{ stage.runs|pluralize }}{% if stage.success_rate %} ({{ stage.success_rate|floatformat:"-1" }}% success rate){% endif %}</p>
+            </div>
+            <div class="panel-body">
+                <div class="chart" style="height: 400px" data-chart-data-source="/data/log/charts/dungeon/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ stage.floor }}&chart_type=summoning_pieces"></div>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Average</th>
+                        <th>Max</th>
+                        <th>Min</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if mine and clear_times %}
+                    <tr>
+                        <td>Clear time</td>
+                        <td>{{ clear_times.avg }}</td>
+                        <td>{{ clear_times.max }}</td>
+                        <td>{{ clear_times.min }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td>{% if monster %}<img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}" class="monster-inline" />{% endif %} Pieces</td>
+                        <td>{{ stage.piece_drops.avg|floatformat:"-2" }}</td>
+                        <td>{{ stage.piece_drops.max }}</td>
+                        <td>{{ stage.piece_drops.min }}</td>
+                    </tr>
+                    {% for drop, qty in stage.general_drops.iteritems %}
+                    <tr>
+                        <td><img src="{{ img_url_prefix }}icons/{{ drop }}.png" height="25px" /></td>
+                        <td>{{ qty.avg|floatformat:"-2"|intcomma }}</td>
+                        <td>{{ qty.max|intcomma }}</td>
+                        <td>{{ qty.min|intcomma }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock stats_content %}

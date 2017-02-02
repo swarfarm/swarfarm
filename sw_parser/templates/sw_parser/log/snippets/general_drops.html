@@ -1,0 +1,47 @@
+{% load humanize %}
+{% load staticfiles %}
+
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <p class="panel-title">General Drops</p>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Average</th>
+            <th>Max</th>
+            <th>Min</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if mine and clear_times %}
+        <tr>
+            <td>Clear time</td>
+            <td>{{ clear_times.avg }}</td>
+            <td>{{ clear_times.max }}</td>
+            <td>{{ clear_times.min }}</td>
+        </tr>
+        {% endif %}
+        {% for drop, qty in general_drops.iteritems %}
+        <tr>
+            <td><img src="{{ img_url_prefix }}icons/{{ drop }}.png" height="20px" /></td>
+            <td>
+                {% if qty.avg < 1 %}
+                    {{ qty.avg|floatformat:"-3"|intcomma }}
+                {% else %}
+                    {{ qty.avg|floatformat:"-2"|intcomma }}
+                {% endif %}
+            </td>
+            <td>{{ qty.max|intcomma }}</td>
+            <td>{{ qty.min|intcomma }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="panel-body">
+        {{ mana_efficiency|floatformat:"0"|intcomma }} mana per energy <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-html="true" data-trigger="hover" title="Mana Per Energy" data-content="Mana Gained / Energy Spent.<br />Mana gained includes average rune mana value (if any). Energy Spent is reduced by average energy return rate."></span>
+    </div>
+</div>

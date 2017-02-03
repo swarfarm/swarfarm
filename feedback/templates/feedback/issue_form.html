@@ -1,11 +1,11 @@
 {% extends 'feedback/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block content %}
+{% block issues %}
     <div class="row">
-        <div class="col-md-4 col-md-offset-4">
+        <div class="col-md-8 col-md-offset-2">
             {% crispy form %}
             <p>Please review the <a href="https://swarfarm.com/upcoming_features/">upcoming features</a> before submitting a new feature request.</p>
         </div>
     </div>
-{% endblock content %}
+{% endblock issues %}

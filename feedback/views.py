@@ -47,6 +47,8 @@ class IssueList(LoginRequiredMixin, ProfileNameMixin, FormMixin, ListView):
         else:
             issues = Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
 
+        issues = issues.order_by('-pk')
+
         if self.search_term and not mode == 'mine':
             issues = issues.filter(Q(subject__icontains=self.search_term) | Q(description__icontains=self.search_term) | Q(discussion__comment__icontains=self.search_term)).distinct()
 

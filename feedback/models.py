@@ -5,26 +5,33 @@ from django.utils.safestring import mark_safe
 
 
 class Issue(models.Model):
-    TOPIC_SITE_ERROR = 1
-    TOPIC_IMPROVEMENT = 2
-    TOPIC_INCORRECT_DATA = 3
-    TOPIC_OTHER = 99
+    STATUS_UNREVIEWED = 1
+    STATUS_ACCEPTED = 2
+    STATUS_IN_PROGRESS = 3
+    STATUS_FEEDBACK = 4
+    STATUS_RESOLVED = 5
+    STATUS_REJECTED = 6
+    STATUS_DUPLICATE = 7
 
-    TOPIC_CHOICES = (
-        (TOPIC_SITE_ERROR, 'Errors or layout issues on website'),
-        (TOPIC_IMPROVEMENT, 'Idea for new feature or improvement'),
-        (TOPIC_INCORRECT_DATA, 'Incorrect monster data'),
-        (TOPIC_OTHER, 'Other'),
+    STATUS_CHOICES = (
+        (STATUS_UNREVIEWED, 'Unreviewed'),
+        (STATUS_ACCEPTED, 'Accepted'),
+        (STATUS_IN_PROGRESS, 'In Progress'),
+        (STATUS_FEEDBACK, 'Requires Feedback'),
+        (STATUS_RESOLVED, 'Resolved'),
+        (STATUS_REJECTED, 'Rejected'),
+        (STATUS_DUPLICATE, 'Duplicate'),
     )
 
     user = models.ForeignKey(User)
     submitted = models.DateTimeField(auto_now_add=True)
-    topic = models.IntegerField(choices=TOPIC_CHOICES)
+    edited = models.DateTimeField(auto_now=True, blank=True, null=True)
     subject = models.CharField(max_length=40)
     description = models.TextField(help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
     public = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     github_issue_url = models.URLField(null=True, blank=True)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_UNREVIEWED)  # TODO delete once all issues have 'closed' set.
 
     def __unicode__(self):
         return self.subject
@@ -45,7 +52,8 @@ class Issue(models.Model):
 class Discussion(models.Model):
     feedback = models.ForeignKey(Issue)
     user = models.ForeignKey(User)
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    edited = models.DateTimeField(auto_now=True, blank=True, null=True)
     comment = models.TextField(help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
 
     def __unicode__(self):

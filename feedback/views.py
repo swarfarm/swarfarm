@@ -4,7 +4,7 @@ from django.http import HttpResponseForbidden
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
 
-from .forms import IssueForm, CommentForm
+from .forms import IssueForm, CommentForm, SearchForm
 from .models import Issue, Discussion
 
 
@@ -22,24 +22,35 @@ class ProfileNameMixin(object):
         return context
 
 
-class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
+class IssueSearchFormMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super(IssueSearchFormMixin, self).get_context_data(**kwargs)
+        context['search_form'] = SearchForm(self.request.GET or None)
+        return context
+
+
+class IssueList(LoginRequiredMixin, ProfileNameMixin, IssueSearchFormMixin, ListView):
     model = Issue
     paginate_by = 25
 
     def get_queryset(self):
         mode = self.kwargs.get('mode', None)
-        if mode == 'mine':
-            return Issue.objects.filter(user=self.request.user)
-        elif mode == 'all':
-            if self.request.user.is_superuser:
-                return Issue.objects.all()
-            else:
-                return Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
+        search_term = self.request.GET.get('search', None)
+
+        if self.request.user.is_superuser:
+            issues = Issue.objects.all()
         else:
-            if self.request.user.is_superuser:
-                return Issue.objects.filter(closed=False)
-            else:
-                return Issue.objects.filter(closed=False).filter(Q(user=self.request.user) | Q(public=True))
+            issues = Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
+
+        if search_term and not mode == 'mine':
+            issues = issues.filter(Q(subject__icontains=search_term) | Q(description__icontains=search_term) | Q(discussion__comment__icontains=search_term)).distinct()
+
+        if mode == 'mine':
+            return issues.filter(user=self.request.user)
+        elif mode == 'closed':
+            return issues.filter(closed=True)
+        else:
+            return issues.filter(closed=False)
 
     def get_context_data(self, **kwargs):
         context = super(IssueList, self).get_context_data(**kwargs)
@@ -47,21 +58,7 @@ class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
         return context
 
 
-def issue_search(request):
-    from django.db.models import Q
-    from django.shortcuts import render, redirect
-
-    query = request.GET.get('query', None)
-
-    if query:
-        results = Issue.objects.filter(Q(subject__icontains=query) | Q(description__icontains=query))
-
-        return render(request, 'feedback/issue_list.html', {'issue_list': results, 'query': query})
-    else:
-        return redirect('feedback:index')
-
-
-class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
+class IssueCreate(LoginRequiredMixin, ProfileNameMixin, IssueSearchFormMixin, CreateView):
     model = Issue
     form_class = IssueForm
 
@@ -76,7 +73,7 @@ class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
         return context
 
 
-class IssueDetail(LoginRequiredMixin, ProfileNameMixin, DetailView):
+class IssueDetail(LoginRequiredMixin, ProfileNameMixin, IssueSearchFormMixin, DetailView):
     model = Issue
 
     def get(self, request, *args, **kwargs):
@@ -95,7 +92,7 @@ class IssueDetail(LoginRequiredMixin, ProfileNameMixin, DetailView):
         return context
 
 
-class CommentCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
+class CommentCreate(LoginRequiredMixin, ProfileNameMixin, IssueSearchFormMixin, CreateView):
     model = Discussion
     form_class = CommentForm
 

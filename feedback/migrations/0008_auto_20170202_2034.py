@@ -21,7 +21,12 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='issue',
-            name='status',
+            name='topic',
+        ),
+        migrations.AddField(
+            model_name='discussion',
+            name='edited',
+            field=models.DateTimeField(auto_now=True, null=True),
         ),
         migrations.AddField(
             model_name='issue',
@@ -30,7 +35,17 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='issue',
+            name='edited',
+            field=models.DateTimeField(auto_now=True, null=True),
+        ),
+        migrations.AddField(
+            model_name='issue',
             name='github_issue_url',
             field=models.URLField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='discussion',
+            name='timestamp',
+            field=models.DateTimeField(auto_now_add=True),
         ),
     ]

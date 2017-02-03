@@ -1,15 +1,15 @@
-from django.forms import ModelForm
+from django import forms
 
 from .models import Issue, Discussion
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field
-from crispy_forms.bootstrap import FormActions, InlineField
+from crispy_forms.bootstrap import FormActions, FieldWithButtons
 
 from captcha.fields import ReCaptchaField
 
 
-class IssueForm(ModelForm):
+class IssueForm(forms.ModelForm):
     captcha = ReCaptchaField()
 
     def __init__(self, *args, **kwargs):
@@ -20,7 +20,6 @@ class IssueForm(ModelForm):
         self.helper.form_action = 'feedback:issue_add'
         self.helper.layout = Layout(
             Div(
-                Field('topic'),
                 Field('subject'),
                 Field('description', data_provide='markdown'),
                 Field('public'),
@@ -35,13 +34,13 @@ class IssueForm(ModelForm):
 
     class Meta:
         model = Issue
-        fields = ('topic', 'subject', 'description', 'public')
+        fields = ('subject', 'description', 'public')
         labels = {
             'public': 'Allow other users to view and comment.',
         }
 
 
-class CommentForm(ModelForm):
+class CommentForm(forms.ModelForm):
     captcha = ReCaptchaField()
 
     def __init__(self, *args, **kwargs):
@@ -60,3 +59,21 @@ class CommentForm(ModelForm):
     class Meta:
         model = Discussion
         fields = ('comment',)
+
+
+class SearchForm(forms.Form):
+    search = forms.CharField(
+        label='Search',
+        required=True
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'get'
+    helper.form_show_labels = False
+    helper.form_class = 'pull-right col-sm-3 col-md-4'
+    helper.layout = Layout(
+        FieldWithButtons(
+            Field('search', placeholder='Search...'),
+            Submit('', 'Search')
+        ),
+    )

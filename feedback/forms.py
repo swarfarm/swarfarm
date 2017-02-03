@@ -4,7 +4,7 @@ from .models import Issue, Discussion
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field
-from crispy_forms.bootstrap import FormActions, FieldWithButtons
+from crispy_forms.bootstrap import FormActions, FieldWithButtons, StrictButton
 
 from captcha.fields import ReCaptchaField
 
@@ -64,16 +64,16 @@ class CommentForm(forms.ModelForm):
 class SearchForm(forms.Form):
     search = forms.CharField(
         label='Search',
-        required=True
+        required=False,
     )
 
     helper = FormHelper()
-    helper.form_method = 'get'
+    helper.form_method = 'post'
     helper.form_show_labels = False
     helper.form_class = 'pull-right col-sm-3 col-md-4'
     helper.layout = Layout(
         FieldWithButtons(
             Field('search', placeholder='Search...'),
-            Submit('', 'Search')
+            StrictButton('<span class="glyphicon glyphicon-search"></span>', type='submit', css_class='btn btn-primary')
         ),
     )

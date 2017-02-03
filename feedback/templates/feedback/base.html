@@ -13,8 +13,9 @@
         </button>
     </div>
     <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
+        <a href="{% url 'feedback:index' %}" class="navmenu-brand"><span class="glyphicon glyphicon-comment"></span> Feedback</a>
         <ul class="nav navmenu-nav">
-            <li {% if not mode %}class="active"{% endif %}><a href="{% url 'feedback:index' %}">Open</a></li>
+            <li {% if mode == 'open' %}class="active"{% endif %}><a href="{% url 'feedback:index' %}">Open</a></li>
             <li {% if mode == 'closed' %}class="active"{% endif %}><a href="{% url 'feedback:closedissue_list' %}">Closed</a></li>
             <li {% if mode == 'add' %}class="active"{% endif %}><a href="{% url 'feedback:issue_add' %}"><span class="glyphicon glyphicon-plus"></span> New Feedback</a></li>
             <li {% if mode == 'mine' %}class="active"{% endif %}><a href="{% url "feedback:myissue_list" %}">My Feedback</a></li>

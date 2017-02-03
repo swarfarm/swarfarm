@@ -10,64 +10,71 @@
             <div class="clearfix"></div>
         </div>
 
-        <table class="table table-condensed" id="bestiary_table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th data-sorter="false">Topic</th>
-                    <th>Status</th>
-                    <th>Comments</th>
-                    <th>Latest Comment</th>
-                    {% if request.user.is_superuser %}
-                        <th>Public</th>
+        {% if issue_list.count %}
+            <table class="table table-condensed" id="bestiary_table">
+                <thead>
+                    <tr>
                         <th></th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for issue in issue_list %}
-                <tr>
-                    <td><a href="{{ issue.get_absolute_url }}">#{{ issue.pk }}</a></td>
-                    <td>
-                        <h4>{{ issue.subject }}</h4>
-                        <p class="text-muted">Submitted by {{ issue.user }} {{ issue.submitted|naturaltime }}</p>
-                    </td>
-                    <td>
-                        {% if issue.github_issue_url and issue.closed %}
-                            <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-success"><span class="glyphicon glyphicon-check"></span> Implemented</a>
-                        {% elif issue.github_issue_url %}
-                            <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-info">Accepted - Tracked on <span class="fa fa-github"></span> GitHub</a>
-                        {% elif issue.closed %}
-                            <span class="label label-default">Closed</span>
-                        {% else %}
-                            <span class="label label-default">Under Discussion</span>
+                        <th data-sorter="false">Topic</th>
+                        <th>Status</th>
+                        <th>Comments</th>
+                        <th>Latest Comment</th>
+                        {% if request.user.is_superuser %}
+                            <th>Public</th>
+                            <th data-sorter="false"></th>
                         {% endif %}
-                    </td>
-                    <td>{{ issue.comment_count }}</td>
-                    <td>
-                        {% if issue.comment_count > 0 %}
-                        <span class="hidden">{{ issue.latest_comment.timestamp|date:"U" }}</span>
-                        {{ issue.latest_comment.timestamp|naturaltime }} ({{ issue.latest_comment.user }})
-                        {% else %}
-                        <span class="hidden">{{ issue.submitted|date:"U" }}</span>
-                        {{ issue.submitted|naturaltime }} ({{ issue.user }})
-                        {% endif %}
-                    </td>
-                    {% if request.user.is_superuser %}
-                        <td>{% if issue.public %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in issue_list %}
+                    <tr>
+                        <td><a href="{{ issue.get_absolute_url }}">#{{ issue.pk }}</a></td>
                         <td>
-                            <a href="{% url 'admin:feedback_issue_change' issue.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+                            <h4>{% if not issue.public %}<span class="glyphicon glyphicon-lock text-danger" data-toggle="tooltip" data-placement="top" data-container="body" title="Private Feedback"></span> {% endif %}{{ issue.subject }}</h4>
+                            <p class="text-muted">Submitted by {{ issue.user }} {{ issue.submitted|naturaltime }}</p>
                         </td>
-                    {% endif %}
-                </tr>
-                {% empty %}
-                <tr><td colspan="5">None yet!</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        <td>
+                            {% if issue.github_issue_url and issue.closed %}
+                                <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-success"><span class="glyphicon glyphicon-check"></span> Implemented</a>
+                            {% elif issue.github_issue_url %}
+                                <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-info">Accepted - Tracked on <span class="fa fa-github"></span> GitHub</a>
+                            {% elif issue.closed %}
+                                <span class="label label-default">Closed</span>
+                            {% else %}
+                                <span class="label label-default">Under Discussion</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ issue.comment_count }}</td>
+                        <td>
+                            {% if issue.comment_count > 0 %}
+                            <span class="hidden">{{ issue.latest_comment.timestamp|date:"U" }}</span>
+                            {{ issue.latest_comment.timestamp|naturaltime }} ({{ issue.latest_comment.user }})
+                            {% else %}
+                            <span class="hidden">{{ issue.submitted|date:"U" }}</span>
+                            {{ issue.submitted|naturaltime }} ({{ issue.user }})
+                            {% endif %}
+                        </td>
+                        {% if request.user.is_superuser %}
+                            <td>{% if issue.public %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>
+                            <td>
+                                <a href="{% url 'admin:feedback_issue_change' issue.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="panel-body">
+                <div class="alert alert-info" role="alert">No Results!</div>
+            </div>
+        {% endif %}
+
+        {% if is_paginated %}
         <div class="panel-footer">
             {% include "pagination.html" %}
         </div>
+        {% endif %}
     </div>
 
 {% endblock issues %}

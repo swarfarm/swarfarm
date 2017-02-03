@@ -9,6 +9,10 @@
 
             <h1>{{ issue.subject }} <small>{{ issue.get_topic_display }}</small></h1>
             <p> Status:
+                {% if not issue.public %}
+                    <span class="label label-danger"><span class="glyphicon glyphicon-lock"></span> Private</span>
+                {% endif %}
+
                 {% if issue.github_issue_url and issue.closed %}
                     <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-success"><span class="glyphicon glyphicon-check"></span> Implemented</a>
                 {% elif issue.github_issue_url %}

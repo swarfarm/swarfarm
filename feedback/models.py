@@ -28,7 +28,7 @@ class Issue(models.Model):
     edited = models.DateTimeField(auto_now=True, blank=True, null=True)
     subject = models.CharField(max_length=40)
     description = models.TextField(help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
-    public = models.BooleanField(default=False)
+    public = models.BooleanField(default=True)
     closed = models.BooleanField(default=False)
     github_issue_url = models.URLField(null=True, blank=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_UNREVIEWED)  # TODO delete once all issues have 'closed' set.

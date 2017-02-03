@@ -3,38 +3,41 @@
 {% load markdown_deux_tags %}
 {% load humanize %}
 
-{% block content %}
+{% block issues %}
     <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title"><strong>{{ issue.get_topic_display }} - {{ issue.subject }}</strong></h4>
-                    <p class="panel-title">Status: {{ issue.get_status_display }}</p>
-                    <p class="panel-title">Priority: {% if issue.priority %}{{ issue.get_priority_display }}{% else %}Not Set{% endif %}</p>
-                    <p class="panel-title">Public: {% if issue.public %}Yes{% else %}No{% endif %}</p>
-                </div>
-                {% if status_form %}
-                <div class="panel-body">
-                    {% crispy status_form %}
-                </div>
+        <div class="col-md-8 col-md-offset-2">
+
+            <h1>{{ issue.subject }} <small>{{ issue.get_topic_display }}</small></h1>
+            <p> Status:
+                {% if issue.github_issue_url and issue.closed %}
+                    <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-success"><span class="glyphicon glyphicon-check"></span> Implemented</a>
+                {% elif issue.github_issue_url %}
+                    <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-info">Accepted - Tracked on <span class="fa fa-github"></span> GitHub</a>
+                {% elif issue.closed %}
+                    <span class="label label-default">Closed</span>
+                {% else %}
+                    <span class="label label-default">Under Discussion</span>
                 {% endif %}
-                <div class="list-group">
-                    <div class="list-group-item">
-                        <h4 class="list-group-item-heading">{{ issue.user }} <small>{{ issue.submitted|naturaltime }}</small></h4>
-                        {{ issue.description|markdown }}
-                    </div>
-                    {% for comment in issue.discussion_set.all %}
-                    <div class="list-group-item">
-                        <h4 class="list-group-item-heading">{{ comment.user }} <small>{{ comment.timestamp|naturaltime }}</small></h4>
-                        <p class="list-group-item-text">{{ comment.comment|markdown }}</p>
-                    </div>
-                    {% endfor %}
+                {% if request.user.is_superuser %}
+                    <a class="btn btn-link pull-right" href="{% url 'admin:feedback_issue_change' issue.pk %}"><span class="glyphicon glyphicon-edit"></span> Edit Issue</a>
+                {% endif %}
+            </p>
+
+            <div class="list-group">
+                <div class="list-group-item">
+                    <h4 class="list-group-item-heading">{{ issue.user }} <small>{{ issue.submitted|naturaltime }}</small></h4>
+                    <p class="list-group-item-text">{{ issue.description|markdown }}</p>
                 </div>
-                <div class="panel-body">
-                    {% crispy comment_form %}
+
+                {% for comment in issue.discussion_set.all %}
+                <div class="list-group-item">
+                    <h4 class="list-group-item-heading">{{ comment.user }} <small>{{ comment.timestamp|naturaltime }}</small></h4>
+                    <p class="list-group-item-text">{{ comment.comment|markdown }}</p>
                 </div>
+                {% endfor %}
             </div>
+
+            {% crispy comment_form %}
         </div>
     </div>
-
-{% endblock content %}
+{% endblock issues %}

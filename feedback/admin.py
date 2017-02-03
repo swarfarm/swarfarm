@@ -5,8 +5,9 @@ from .models import *
 
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'submitted', 'user', 'status', 'priority', 'public',)
-    list_filter = ['status', 'priority', 'user']
+    list_display = ('topic', 'subject', 'submitted', 'user', 'public',)
+    list_filter = ['subject', 'description']
+    readonly_fields = ['user',]
 
 
 @admin.register(Discussion)

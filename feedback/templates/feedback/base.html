@@ -4,6 +4,30 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-markdown/2.10.0/css/bootstrap-markdown.min.css">
 {% endblock css %}
 
+{% block subnav %}
+    <div class="navbar navbar-default navmenu-collapsed">
+        <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
+        <a class="navmenu-brand" href="{% url "feedback:index" %}">Feedback</a>
+        <ul class="nav navmenu-nav">
+            <li {% if mode == 'add' %}class="active"{% endif %}><a href="{% url 'feedback:issue_add' %}"><span class="glyphicon glyphicon-plus"></span> New Feedback</a></li>
+            <li {% if mode == 'mine' %}class="active"{% endif %}><a href="{% url "feedback:myissue_list" %}">My Feedback</a></li>
+        </ul>
+    </div>
+{% endblock subnav %}
+
+{% block content %}
+    <div class="navmenu-content">
+        {% block issues %}
+        {% endblock issues %}
+    </div>
+{% endblock content %}
+
 {% block javascript %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown.js/0.5.0/markdown.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-markdown/2.10.0/js/bootstrap-markdown.min.js"></script>

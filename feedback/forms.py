@@ -41,27 +41,6 @@ class IssueForm(ModelForm):
         }
 
 
-class IssueUpdateStatusForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(IssueUpdateStatusForm, self).__init__(*args, **kwargs)
-
-        self.helper = FormHelper(self)
-        self.helper.form_method = 'post'
-        self.helper.form_action = 'feedback:issue_update'
-        self.helper.form_class = 'form-inline'
-        self.helper.layout = Layout(
-            InlineField('status'),
-            InlineField('priority'),
-            FormActions(
-                Submit('save', 'Save', css_class='btn btn-primary'),
-            ),
-        )
-
-    class Meta:
-        model = Issue
-        fields = ('status', 'priority',)
-
-
 class CommentForm(ModelForm):
     captcha = ReCaptchaField()
 

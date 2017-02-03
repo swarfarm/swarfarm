@@ -4,7 +4,7 @@ from django.http import HttpResponseForbidden
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
 
-from .forms import IssueForm, IssueUpdateStatusForm, CommentForm
+from .forms import IssueForm, CommentForm
 from .models import Issue, Discussion
 
 
@@ -24,6 +24,7 @@ class ProfileNameMixin(object):
 
 class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
     model = Issue
+    paginate_by = 25
 
     def get_queryset(self):
         mode = self.kwargs.get('mode', None)
@@ -36,9 +37,9 @@ class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
                 return Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
         else:
             if self.request.user.is_superuser:
-                return Issue.objects.filter(status__lt=Issue.STATUS_RESOLVED)
+                return Issue.objects.filter(closed=False)
             else:
-                return Issue.objects.filter(status__lt=Issue.STATUS_RESOLVED).filter(Q(user=self.request.user) | Q(public=True))
+                return Issue.objects.filter(closed=False).filter(Q(user=self.request.user) | Q(public=True))
 
     def get_context_data(self, **kwargs):
         context = super(IssueList, self).get_context_data(**kwargs)
@@ -69,6 +70,11 @@ class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
         form.instance.status = Issue.STATUS_UNREVIEWED
         return super(IssueCreate, self).form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super(IssueCreate, self).get_context_data(**kwargs)
+        context['mode'] = self.kwargs.get('mode', None)
+        return context
+
 
 class IssueDetail(LoginRequiredMixin, ProfileNameMixin, DetailView):
     model = Issue
@@ -86,20 +92,7 @@ class IssueDetail(LoginRequiredMixin, ProfileNameMixin, DetailView):
         comment_form.helper.form_action = reverse('feedback:comment_add', kwargs={'issue_pk': self.kwargs['pk']})
         context['comment_form'] = comment_form
 
-        if self.request.user.is_superuser:
-            status_form = IssueUpdateStatusForm(instance=self.object)
-            status_form.helper.form_action = reverse('feedback:issue_status_update', kwargs={'pk': self.kwargs['pk']})
-            context['status_form'] = status_form
-
         return context
-
-
-class IssueUpdateStatus(LoginRequiredMixin, ProfileNameMixin, UpdateView):
-    model = Issue
-    form_class = IssueUpdateStatusForm
-
-    def get_success_url(self):
-        return reverse('feedback:issue_detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class CommentCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):

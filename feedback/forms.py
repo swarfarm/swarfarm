@@ -1,15 +1,15 @@
-from django.forms import ModelForm
+from django import forms
 
 from .models import Issue, Discussion
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field
-from crispy_forms.bootstrap import FormActions, InlineField
+from crispy_forms.bootstrap import FormActions, FieldWithButtons, StrictButton
 
 from captcha.fields import ReCaptchaField
 
 
-class IssueForm(ModelForm):
+class IssueForm(forms.ModelForm):
     captcha = ReCaptchaField()
 
     def __init__(self, *args, **kwargs):
@@ -20,7 +20,6 @@ class IssueForm(ModelForm):
         self.helper.form_action = 'feedback:issue_add'
         self.helper.layout = Layout(
             Div(
-                Field('topic'),
                 Field('subject'),
                 Field('description', data_provide='markdown'),
                 Field('public'),
@@ -35,34 +34,13 @@ class IssueForm(ModelForm):
 
     class Meta:
         model = Issue
-        fields = ('topic', 'subject', 'description', 'public')
+        fields = ('subject', 'description', 'public')
         labels = {
             'public': 'Allow other users to view and comment.',
         }
 
 
-class IssueUpdateStatusForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(IssueUpdateStatusForm, self).__init__(*args, **kwargs)
-
-        self.helper = FormHelper(self)
-        self.helper.form_method = 'post'
-        self.helper.form_action = 'feedback:issue_update'
-        self.helper.form_class = 'form-inline'
-        self.helper.layout = Layout(
-            InlineField('status'),
-            InlineField('priority'),
-            FormActions(
-                Submit('save', 'Save', css_class='btn btn-primary'),
-            ),
-        )
-
-    class Meta:
-        model = Issue
-        fields = ('status', 'priority',)
-
-
-class CommentForm(ModelForm):
+class CommentForm(forms.ModelForm):
     captcha = ReCaptchaField()
 
     def __init__(self, *args, **kwargs):
@@ -81,3 +59,21 @@ class CommentForm(ModelForm):
     class Meta:
         model = Discussion
         fields = ('comment',)
+
+
+class SearchForm(forms.Form):
+    search = forms.CharField(
+        label='Search',
+        required=False,
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_show_labels = False
+    helper.form_class = 'pull-right col-sm-3 col-md-4'
+    helper.layout = Layout(
+        FieldWithButtons(
+            Field('search', placeholder='Search...'),
+            StrictButton('<span class="glyphicon glyphicon-search"></span>', type='submit', css_class='btn btn-primary')
+        ),
+    )

@@ -2,9 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic.edit import FormMixin
 from django.db.models import Q
 
-from .forms import IssueForm, IssueUpdateStatusForm, CommentForm
+from .forms import IssueForm, CommentForm, SearchForm
 from .models import Issue, Discussion
 
 
@@ -22,42 +23,48 @@ class ProfileNameMixin(object):
         return context
 
 
-class IssueList(LoginRequiredMixin, ProfileNameMixin, ListView):
+class IssueList(LoginRequiredMixin, ProfileNameMixin, FormMixin, ListView):
     model = Issue
+    paginate_by = 25
+    form_class = SearchForm
+    search_term = None
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            self.search_term = form.cleaned_data['search']
+        else:
+            self.search_term = None
+
+        return self.get(request, *args, **kwargs)
 
     def get_queryset(self):
         mode = self.kwargs.get('mode', None)
-        if mode == 'mine':
-            return Issue.objects.filter(user=self.request.user)
-        elif mode == 'all':
-            if self.request.user.is_superuser:
-                return Issue.objects.all()
-            else:
-                return Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
+
+        if self.request.user.is_superuser:
+            issues = Issue.objects.all()
         else:
-            if self.request.user.is_superuser:
-                return Issue.objects.filter(status__lt=Issue.STATUS_RESOLVED)
-            else:
-                return Issue.objects.filter(status__lt=Issue.STATUS_RESOLVED).filter(Q(user=self.request.user) | Q(public=True))
+            issues = Issue.objects.filter(Q(user=self.request.user) | Q(public=True))
+
+        if self.search_term and not mode == 'mine':
+            issues = issues.filter(Q(subject__icontains=self.search_term) | Q(description__icontains=self.search_term) | Q(discussion__comment__icontains=self.search_term)).distinct()
+
+        if mode == 'mine':
+            return issues.filter(user=self.request.user)
+        elif mode == 'closed':
+            return issues.filter(closed=True)
+        else:
+            return issues.filter(closed=False)
 
     def get_context_data(self, **kwargs):
         context = super(IssueList, self).get_context_data(**kwargs)
         context['mode'] = self.kwargs.get('mode', None)
+        context['search_form'] = self.get_form()
         return context
 
-
-def issue_search(request):
-    from django.db.models import Q
-    from django.shortcuts import render, redirect
-
-    query = request.GET.get('query', None)
-
-    if query:
-        results = Issue.objects.filter(Q(subject__icontains=query) | Q(description__icontains=query))
-
-        return render(request, 'feedback/issue_list.html', {'issue_list': results, 'query': query})
-    else:
-        return redirect('feedback:index')
+    def get_success_url(self):
+        return reverse('feedback:index')
 
 
 class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
@@ -68,6 +75,11 @@ class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
         form.instance.user = self.request.user
         form.instance.status = Issue.STATUS_UNREVIEWED
         return super(IssueCreate, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(IssueCreate, self).get_context_data(**kwargs)
+        context['mode'] = self.kwargs.get('mode', None)
+        return context
 
 
 class IssueDetail(LoginRequiredMixin, ProfileNameMixin, DetailView):
@@ -86,20 +98,7 @@ class IssueDetail(LoginRequiredMixin, ProfileNameMixin, DetailView):
         comment_form.helper.form_action = reverse('feedback:comment_add', kwargs={'issue_pk': self.kwargs['pk']})
         context['comment_form'] = comment_form
 
-        if self.request.user.is_superuser:
-            status_form = IssueUpdateStatusForm(instance=self.object)
-            status_form.helper.form_action = reverse('feedback:issue_status_update', kwargs={'pk': self.kwargs['pk']})
-            context['status_form'] = status_form
-
         return context
-
-
-class IssueUpdateStatus(LoginRequiredMixin, ProfileNameMixin, UpdateView):
-    model = Issue
-    form_class = IssueUpdateStatusForm
-
-    def get_success_url(self):
-        return reverse('feedback:issue_detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class CommentCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):

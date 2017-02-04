@@ -39,9 +39,9 @@ Additional prerequisites for production:
 1. Get your postgres set up with a user role and a database.
 2. Install all the python packages, preferably in a virtual environment
 
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 3. Copy `.env.example` to `.env` and edit the variables to fit your environment.
     * The minimum settings required to work in a development environment are `SECRET_KEY` and `DATABASE_URL`.
@@ -52,20 +52,20 @@ pip install -r requirements.txt
 
 4. Run all database migrations
 
-```bash
-python manage.py migrate
-```
+    ```bash
+    python manage.py migrate
+    ```
 
 5. Create a superuser
-```commandline
-python manage.py createsuperuser
-```
+    ```commandline
+    python manage.py createsuperuser
+    ```
 
 6. Load the bestiary data from the fixtures **COMING SOON**
 7. Run the server
-```commandline
-python manage.py runserver
-```
+    ```commandline
+    python manage.py runserver
+    ```
 
 ## Running the tests
 

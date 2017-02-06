@@ -73,7 +73,6 @@ class IssueCreate(LoginRequiredMixin, ProfileNameMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.status = Issue.STATUS_UNREVIEWED
         return super(IssueCreate, self).form_valid(form)
 
     def get_context_data(self, **kwargs):

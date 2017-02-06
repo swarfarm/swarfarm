@@ -18,7 +18,6 @@
                         <th>Topic</th>
                         <th>Status</th>
                         <th>Comments</th>
-                        <th>Latest Comment</th>
                         {% if request.user.is_superuser %}
                             <th>Public</th>
                             <th></th>
@@ -34,25 +33,10 @@
                             <p class="text-muted">Submitted by {{ issue.user }} {{ issue.submitted|naturaltime }}</p>
                         </td>
                         <td>
-                            {% if issue.github_issue_url and issue.closed %}
-                                <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-success"><span class="glyphicon glyphicon-check"></span> Implemented</a>
-                            {% elif issue.github_issue_url %}
-                                <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-info">Accepted - Tracked on <span class="fa fa-github"></span> GitHub</a>
-                            {% elif issue.closed %}
-                                <span class="label label-default">Closed</span>
-                            {% else %}
-                                <span class="label label-default">Under Discussion</span>
-                            {% endif %}
+                            {{ issue.get_status_html }}
                         </td>
-                        <td>{{ issue.comment_count }}</td>
                         <td>
-                            {% if issue.comment_count > 0 %}
-                            <span class="hidden">{{ issue.latest_comment.timestamp|date:"U" }}</span>
-                            {{ issue.latest_comment.timestamp|naturaltime }} ({{ issue.latest_comment.user }})
-                            {% else %}
-                            <span class="hidden">{{ issue.submitted|date:"U" }}</span>
-                            {{ issue.submitted|naturaltime }} ({{ issue.user }})
-                            {% endif %}
+                            <span class="glyphicon glyphicon-comment"></span> {{ issue.comment_count }}
                         </td>
                         {% if request.user.is_superuser %}
                             <td>{% if issue.public %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>

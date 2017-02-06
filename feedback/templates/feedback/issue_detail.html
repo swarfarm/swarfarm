@@ -13,15 +13,8 @@
                     <span class="label label-danger"><span class="glyphicon glyphicon-lock"></span> Private</span>
                 {% endif %}
 
-                {% if issue.github_issue_url and issue.closed %}
-                    <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-success"><span class="glyphicon glyphicon-check"></span> Implemented</a>
-                {% elif issue.github_issue_url %}
-                    <a href="{{ issue.github_issue_url }}" target="_blank" class="label label-info">Accepted - Tracked on <span class="fa fa-github"></span> GitHub</a>
-                {% elif issue.closed %}
-                    <span class="label label-default">Closed</span>
-                {% else %}
-                    <span class="label label-default">Under Discussion</span>
-                {% endif %}
+                {{ issue.get_status_html }}
+
                 {% if request.user.is_superuser %}
                     <a class="btn btn-link pull-right" href="{% url 'admin:feedback_issue_change' issue.pk %}"><span class="glyphicon glyphicon-edit"></span> Edit Issue</a>
                 {% endif %}

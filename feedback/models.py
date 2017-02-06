@@ -28,7 +28,7 @@ class Issue(models.Model):
     def get_status_html(self):
         if self.closed:
             if self.github_issue_url:
-                return mark_safe('<a href="{{ issue.github_issue_url }}" target="_blank" class="label label-success"><span class="glyphicon glyphicon-check"></span> Implemented</a>'.format(
+                return mark_safe('<a href="{}" target="_blank" class="label label-success"><span class="glyphicon glyphicon-check"></span> Implemented</a>'.format(
                     self.github_issue_url,
                 ))
             else:

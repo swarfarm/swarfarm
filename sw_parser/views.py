@@ -95,7 +95,7 @@ def _import_pcap(request):
             import_options = {
                 'clear_profile': form.cleaned_data.get('clear_profile'),
                 'default_priority': form.cleaned_data.get('default_priority'),
-                'ignore_fusion': form.cleaned_data.get('ignore_fusion'),
+                'lock_monsters': form.cleaned_data.get('lock_monsters'),
                 'minimum_stars': int(form.cleaned_data.get('minimum_stars', 1)),
                 'ignore_silver': form.cleaned_data.get('ignore_silver'),
                 'ignore_material': form.cleaned_data.get('ignore_material'),
@@ -150,7 +150,7 @@ def import_sw_json(request):
             import_options = {
                 'clear_profile': form.cleaned_data.get('clear_profile'),
                 'default_priority': form.cleaned_data.get('default_priority'),
-                'ignore_fusion': form.cleaned_data.get('ignore_fusion'),
+                'lock_monsters': form.cleaned_data.get('lock_monsters'),
                 'minimum_stars': int(form.cleaned_data.get('minimum_stars', 1)),
                 'ignore_silver': form.cleaned_data.get('ignore_silver'),
                 'ignore_material': form.cleaned_data.get('ignore_material'),

@@ -46,6 +46,12 @@ class MonsterImportOptionsMixin(forms.Form):
         label='Import anyway if monster is Light or Dark',
         initial=True,
     )
+    lock_monsters = forms.BooleanField(
+        required=False,
+        label=mark_safe('<span class="glyphicon glyphicon-lock"></span> Copy locked status of monsters from in-game'),
+        help_text='Locking on SWARFARM means a monster will not be used as fusion ingredients or skill-ups.',
+        initial=True,
+    )
 
 
 class MonsterImportOptionsLayout(Layout):
@@ -62,9 +68,13 @@ class MonsterImportOptionsLayout(Layout):
                 css_class='list-group-item',
             ),
             Div(
-                HTML("""<h4 class="list-group-item-heading">Options</h4>"""),
+                HTML("""<h4 class="list-group-item-heading">Import Options</h4>"""),
                 Field('default_priority'),
-                Field('clear_profile'),
+                Field('lock_monsters'),
+                Div(
+                    Field('clear_profile'),
+                    css_class='alert alert-danger'
+                ),
                 css_class='list-group-item',
             ),
         )

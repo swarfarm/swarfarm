@@ -104,7 +104,7 @@ class WorldBossItemDropInline(admin.TabularInline):
     extra = 0
 
 
-class WorldBossRuneDropInline(admin.TabularInline):
+class WorldBossRuneDropInline(admin.StackedInline):
     model = WorldBossRuneDrop
     extra = 0
 
@@ -125,6 +125,61 @@ class WorldBossLogAdmin(admin.ModelAdmin):
     ]
 
 
+# Rift Raid
+class RiftRaidItemDropInline(admin.TabularInline):
+    model = RiftRaidItemDrop
+    extra = 0
+
+
+class RiftRaidMonsterDropInline(admin.TabularInline):
+    model = RiftRaidMonsterDrop
+    extra = 0
+
+
+class RiftRaidRuneCraftDropInline(admin.StackedInline):
+    model = RiftRaidRuneCraftDrop
+    extra = 0
+
+
+@admin.register(RiftRaidLog)
+class RiftRaidLogAdmin(admin.ModelAdmin):
+    list_display = ['timestamp', 'wizard_id', 'summoner', 'difficulty']
+    readonly_fields = ['summoner']
+    inlines = [
+        RiftRaidItemDropInline,
+        RiftRaidMonsterDropInline,
+        RiftRaidRuneCraftDropInline,
+    ]
+
+
+# Wishes
+class WishItemDropInline(admin.TabularInline):
+    model = WishItemDrop
+    extra = 0
+
+
+class WishMonsterDropInline(admin.TabularInline):
+    model = WishMonsterDrop
+    extra = 0
+
+
+class WishRuneDropInline(admin.StackedInline):
+    model = WishRuneDrop
+    extra = 0
+
+
+@admin.register(WishLog)
+class WishLogAdmin(admin.ModelAdmin):
+    list_display = ['timestamp', 'wizard_id', 'summoner']
+    readonly_fields = ['summoner']
+    inlines = [
+        WishItemDropInline,
+        WishMonsterDropInline,
+        WishRuneDropInline,
+    ]
+
+
+# Export manager
 @admin.register(ExportManager)
 class ExportManagerAdmin(admin.ModelAdmin):
     list_display = ['export_category', 'last_row']

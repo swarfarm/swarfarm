@@ -28,7 +28,7 @@
                             <p>Upload parsed JSON data produced by using the <a href="https://github.com/kakaroto/SWProxy/">SWProxy</a> program.</p>
                         </div>
                         <div class="col-md-4">
-                            <h2>Rune Optimizer</h2>
+                            <h2>Legacy Optimizer</h2>
                             <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_optimizer' %}" role="button">Import Optimizer JSON</a></p>
                             <p>Paste data directly from the <a href="https://github.com/nikilauda1983/sw_optimize/releases" target="_blank">Java</a> or <a href="http://swrunes.all.my" target="_blank">legacy</a> rune optimizer.</p>
                         </div>
@@ -48,7 +48,14 @@
                         </div>
                         {% endcomment %}
                         <div class="col-md-4 col-md-offset-2">
-                            <h2>Rune Optimizer</h2>
+                            <h2>SWOP Optimizer</h2>
+                            <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                                <a class="btn btn-primary btn-lg" href="{% url 'sw_parser:export_win10_optimizer' %}" role="button">Download File</a>
+                            </div>
+                            <p>Windows 10 app or <a href="http://tool.swop.one" target="_blank">online version.</a></p>
+                        </div>
+                        <div class="col-md-4">
+                            <h2>Legacy Optimizer</h2>
                             <div class="btn-group btn-group-justified" role="group" aria-label="...">
                                 <a class="btn btn-primary btn-lg" href="{% url 'sw_parser:export_optimizer' %}" role="button">Copy Text</a>
                                 <a class="btn btn-primary btn-lg" href="{% url 'sw_parser:export_optimizer_file' %}" role="button">Download File</a>
@@ -59,13 +66,6 @@
                                 <li><a href="http://arybin2013.wixsite.com/anton-rybin-site/windows" target="_blank">Windows Optimizer (Windows Vista SP2/7 (SP1)/8/10)</a></li>
                                 <li><a href="http://swrunes.all.my" target="_blank">Original optimizer</a></li>
                             </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h2>Win10 Optimizer</h2>
-                            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                                <a class="btn btn-primary btn-lg" href="{% url 'sw_parser:export_win10_optimizer' %}" role="button">Download File</a>
-                            </div>
-                            <p>Windows 10 app or <a href="http://tool.swop.one" target="_blank">online version.</a></p>
                         </div>
                     </div>
                 </div>

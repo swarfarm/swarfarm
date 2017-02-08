@@ -116,7 +116,7 @@ class MonsterAdmin(admin.ModelAdmin):
     filter_horizontal = ('source',)
     inlines = (MonsterCraftCostInline,)
     readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack', 'skill_ups_to_max',)
-    search_fields = ['name']
+    search_fields = ['name', 'com2us_id']
     save_as = True
     actions = ['resave']
 

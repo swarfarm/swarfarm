@@ -184,7 +184,8 @@ def parse_sw_json(data, owner, options):
             mon.priority = MonsterInstance.PRIORITY_DONE
 
         # Lock a monster if it's locked in game
-        mon.ignore_for_fusion = locked_mons and mon.com2us_id in locked_mons
+        if options['lock_monsters']:
+            mon.ignore_for_fusion = locked_mons and mon.com2us_id in locked_mons
 
         # Equipped runes
         equipped_runes = unit_info.get('runes')

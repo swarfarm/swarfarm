@@ -51,7 +51,50 @@ def parse_summon_unit(log_data):
 
 
 def parse_do_random_wish_item(log_data):
-    raise NotImplementedError
+    log_entry = WishLog()
+
+    log_entry.wizard_id = log_data['request']['wizard_id']
+    log_entry.summoner = _get_summoner(log_entry.wizard_id)
+    log_entry.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
+    log_entry.server = timezone_server_map.get(log_data['response']['tzone'])
+
+    wish_info = log_data['response']['wish_info']
+    log_entry.wish_id = wish_info['wish_id']
+    log_entry.wish_sequence = wish_info['wish_sequence']
+    log_entry.crystal_used = wish_info['cash_used']
+    log_entry.save()
+
+    drop_type = wish_info['item_master_type']
+    drop_master_id = wish_info['item_master_id']
+
+    wish_drop = None
+    if drop_type == inventory_type_map['monster']:
+        unit_info = log_data['response']['unit_info']
+        wish_drop = WishMonsterDrop()
+        wish_drop.monster = get_monster_from_id(unit_info['unit_master_id'])
+        wish_drop.grade = unit_info['class']
+        wish_drop.level = unit_info['unit_level']
+    elif drop_type == inventory_type_map['currency']:
+        wish_drop = WishItemDrop()
+        wish_drop.item = drop_currency_map[drop_master_id]
+        wish_drop.quantity = wish_info['amount']
+    elif drop_type == inventory_type_map['rune']:
+        # Don't know what rune data looks like. Mail the source data so it can be investigated.
+        mail_admins(
+            subject='Wish log rune found!',
+            message=json.dumps(log_data),
+            fail_silently=True,
+        )
+    else:
+        mail_admins(
+            subject='Unknown wish drop item type {}'.format(drop_type),
+            message=json.dumps(log_data),
+            fail_silently=True,
+        )
+
+    if wish_drop is not None:
+        wish_drop.log = log_entry
+        wish_drop.save()
 
 
 def parse_battle_dungeon_result(log_data):
@@ -586,17 +629,18 @@ accepted_api_params = {
             'item_info',
         ],
     },
-    # 'DoRandomWishItem': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'wish_info',
-    #     ]
-    # },
+    'DoRandomWishItem': {
+        'request': [
+            'wizard_id',
+            'command',
+        ],
+        'response': [
+            'tzone',
+            'tvalue',
+            'wish_info',
+            'unit_info',
+        ]
+    },
     'BattleDungeonResult': {
         'request': [
             'wizard_id',

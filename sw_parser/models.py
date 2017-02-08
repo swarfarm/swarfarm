@@ -999,6 +999,7 @@ class ItemDrop(models.Model):
     DROP_CURRENCY_GLORY_POINT = 148
     DROP_CURRENCY_GUILD_POINT = 149
     DROP_CURRENCY_REAL_MONEY = 150
+    DROP_CURRENCY_ENERGY = 151
 
     DROP_CHOICES = SummonLog.SUMMON_CHOICES + [
         (DROP_COSTUME_POINT, 'Shapeshifting Stone'),
@@ -1046,6 +1047,7 @@ class ItemDrop(models.Model):
         (DROP_CURRENCY_GLORY_POINT, 'Glory Points'),
         (DROP_CURRENCY_GUILD_POINT, 'Guild Points'),
         (DROP_CURRENCY_REAL_MONEY, 'Real Money'),
+        (DROP_CURRENCY_ENERGY, 'Energy'),
     ]
 
     DROP_CHOICES_DICT = dict(DROP_CHOICES)
@@ -1125,6 +1127,7 @@ class ItemDrop(models.Model):
 
     DROP_CURRENCY = [
         DROP_CURRENCY_MANA,
+        DROP_CURRENCY_ENERGY,
         DROP_CURRENCY_CRYSTALS,
         DROP_CURRENCY_GLORY_POINT,
         DROP_CURRENCY_GUILD_POINT,
@@ -1185,6 +1188,7 @@ class ItemDrop(models.Model):
         DROP_CURRENCY_CRYSTALS: 'icons/crystal.png',
         DROP_CURRENCY_GUILD_POINT: 'icons/guild_points.png',
         DROP_CURRENCY_GLORY_POINT: 'icons/glory_points.png',
+        DROP_CURRENCY_ENERGY: 'icons/energy.png',
     }
 
     item = models.IntegerField(choices=DROP_CHOICES)
@@ -1404,6 +1408,25 @@ class RiftRaidLog(LogEntry):
     success = models.NullBooleanField()  # Null value here is an incomplete record from a log that needs the start and result commands to fill in completely
     difficulty = models.IntegerField(choices=DIFFICULTY_CHOICES)
     contribution = models.IntegerField(blank=True, null=True)
+
+
+# Wishes
+class WishItemDrop(ItemDrop):
+    log = models.ForeignKey('WishLog')
+
+
+class WishMonsterDrop(MonsterDrop):
+    log = models.ForeignKey('WishLog')
+
+
+class WishRuneDrop(RuneDrop):
+    log = models.ForeignKey('WishLog')
+
+
+class WishLog(LogEntry):
+    wish_id = models.IntegerField()
+    wish_sequence = models.IntegerField()
+    crystal_used = models.BooleanField()
 
 
 # Export management

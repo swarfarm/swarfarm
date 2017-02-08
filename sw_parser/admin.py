@@ -125,6 +125,34 @@ class WorldBossLogAdmin(admin.ModelAdmin):
     ]
 
 
+# Rift Raid
+class RiftRaidItemDropInline(admin.TabularInline):
+    model = RiftRaidItemDrop
+    extra = 0
+
+
+class RiftRaidMonsterDropInline(admin.TabularInline):
+    model = RiftRaidMonsterDrop
+    extra = 0
+
+
+class RiftRaidRuneCraftDropInline(admin.StackedInline):
+    model = RiftRaidRuneCraftDrop
+    extra = 0
+
+
+@admin.register(RiftRaidLog)
+class RiftRaidLogAdmin(admin.ModelAdmin):
+    list_display = ['timestamp', 'wizard_id', 'summoner', 'difficulty']
+    readonly_fields = ['summoner']
+    inlines = [
+        RiftRaidItemDropInline,
+        RiftRaidMonsterDropInline,
+        RiftRaidRuneCraftDropInline,
+    ]
+
+
+# Export manager
 @admin.register(ExportManager)
 class ExportManagerAdmin(admin.ModelAdmin):
     list_display = ['export_category', 'last_row']

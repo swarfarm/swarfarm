@@ -9,7 +9,7 @@ from herders.models import Summoner
 
 from .models import *
 from .com2us_parser import get_monster_from_id
-from .com2us_mapping import inventory_type_map, timezone_server_map, summon_source_map, scenario_difficulty_map, rune_stat_type_map, rune_set_map, drop_essence_map, drop_craft_map, drop_currency_map
+from .com2us_mapping import inventory_type_map, timezone_server_map, summon_source_map, scenario_difficulty_map, rune_stat_type_map, rune_set_map, drop_essence_map, drop_craft_map, drop_currency_map, craft_type_map, craft_quality_map
 
 
 def _get_summoner(wizard_id):
@@ -269,11 +269,118 @@ def parse_battle_rift_dungeon_result(log_data):
 
 
 def parse_battle_rift_of_worlds_raid_start(log_data):
-    raise NotImplementedError
+    # Check if battle key already exists. If so, skip it.
+    battle_key = log_data['request'].get('battle_key')
+
+    if battle_key and RiftRaidLog.objects.filter(battle_key=battle_key).exists():
+        return
+
+    log_entry = RiftRaidLog()
+
+    # Common log info
+    log_entry.wizard_id = log_data['request']['wizard_id']
+    log_entry.battle_key = battle_key
+    log_entry.summoner = _get_summoner(log_entry.wizard_id)
+
+    # Raid info
+    log_entry.raid = log_data['response']['battle_info']['raid_id']
+    log_entry.action_item = log_data['response']['battle_info']['action_item_id']
+    log_entry.difficulty = log_data['response']['battle_info']['stage_id']
+
+    log_entry.save()
 
 
 def parse_battle_rift_of_worlds_raid_end(log_data):
-    raise NotImplementedError
+    wizard_id = log_data['request']['wizard_id']
+    battle_key = log_data['request']['battle_key']
+
+    try:
+        log_entry = RiftRaidLog.objects.get(wizard_id=wizard_id, battle_key=log_data['request']['battle_key'])
+    except (RunLog.DoesNotExist, RunLog.MultipleObjectsReturned):
+        return
+
+    log_entry.server = timezone_server_map.get(log_data['response']['tzone'])
+    log_entry.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
+
+    user_status = None
+
+    # Raid results contains the data for all 3 participants. Find the one for this user.
+    for status in log_data['request']['user_status_list']:
+        if status['wizard_id'] == wizard_id:
+            user_status = status
+            break
+
+    log_entry.battle_key = None
+    log_entry.success = log_data['request']['win_lose'] == 1
+    log_entry.contribution = user_status['damage']
+    log_entry.save()
+
+    # Parse rewards
+    # We parse all 3 drops for all participants, but double-check that it hasn't been logged already by another user.
+    # If it has, we reassign it to this log instead.
+    for drop_info in log_data['response']['battle_reward_list']:
+        drop_wizard_id = drop_info['wizard_id']
+
+        for drop_item_info in drop_info['reward_list']:
+            raid_drop = None
+            created = None
+
+            if drop_item_info['item_master_type'] == inventory_type_map['monster']:
+                raid_drop, created = RiftRaidMonsterDrop.objects.get_or_create(
+                    battle_key=battle_key, wizard_id=drop_wizard_id,
+                    defaults={
+                        'log': log_entry,
+                        'monster': get_monster_from_id(drop_item_info['item_master_id']),
+                        'grade': drop_item_info['unit_class'],
+                        'level': drop_item_info['unit_level'],
+                    }
+                )
+            elif drop_item_info['item_master_type'] == inventory_type_map['currency']:
+                raid_drop, created = RiftRaidItemDrop.objects.get_or_create(
+                    battle_key=battle_key, wizard_id=drop_wizard_id,
+                    defaults={
+                        'log': log_entry,
+                        'item': drop_currency_map[drop_item_info['item_master_id']],
+                        'quantity': drop_item_info['item_quantity']
+                    }
+                )
+            elif drop_item_info['item_master_type'] == inventory_type_map['scroll']:
+                raid_drop = RiftRaidItemDrop.objects.get_or_create(
+                    battle_key=battle_key, wizard_id=drop_wizard_id,
+                    defaults={
+                        'log': log_entry,
+                        'item': summon_source_map[drop_item_info['item_master_id']],
+                        'quantity': drop_item_info['item_quantity']
+                    }
+                )
+            elif drop_item_info['item_master_type'] == inventory_type_map['rune_craft']:
+                craft_type_id = str(drop_item_info['runecraft_item_id'])
+                quality = int(craft_type_id[-1:])
+                stat = int(craft_type_id[-4:-2])
+                rune_set = int(craft_type_id[:-4])
+
+                raid_drop = RiftRaidRuneCraftDrop.objects.get_or_create(
+                    battle_key=battle_key, wizard_id=drop_wizard_id,
+                    defaults={
+                        'log': log_entry,
+                        'type': craft_type_map[drop_item_info['runecraft_type']],
+                        'quality': craft_quality_map[quality],
+                        'rune': rune_set_map[rune_set],
+                        'stat': rune_stat_type_map[stat],
+                    }
+                )
+            else:
+                mail_admins(
+                    subject='Unknown raid drop item type {}'.format(drop_item_info['item_master_type']),
+                    message=json.dumps(log_data),
+                    fail_silently=True,
+                )
+
+            # Check if the reported of this log owns the item
+            if created is False and log_entry.wizard_id == drop_wizard_id:
+                # Reassign ownership to this log
+                raid_drop.log = log_entry
+                raid_drop.save()
 
 
 def parse_buy_shop_item(log_data):
@@ -571,34 +678,34 @@ accepted_api_params = {
             'total_damage',
         ]
     },
-    # 'BattleRiftOfWorldsRaidStart': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #         'battle_key',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'stage_id',
-    #         'raid_id',
-    #         'action_item_id',
-    #     ]
-    # },
-    # 'BattleRiftOfWorldsRaidResult': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #         'battle_key',
-    #         'clear_time',
-    #         'win_lose',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'reward',
-    #     ]
-    # },
+    'BattleRiftOfWorldsRaidStart': {
+        'request': [
+            'wizard_id',
+            'command',
+            'battle_key',
+        ],
+        'response': [
+            'tzone',
+            'tvalue',
+            'battle_info',
+        ]
+    },
+    'BattleRiftOfWorldsRaidResult': {
+        'request': [
+            'wizard_id',
+            'command',
+            'battle_key',
+            'clear_time',
+            'win_lose',
+            'user_status_list',
+        ],
+        'response': [
+            'tzone',
+            'tvalue',
+            'battle_reward_list',
+            'reward',
+        ]
+    },
     'BuyShopItem': {
         'request': [
             'wizard_id',

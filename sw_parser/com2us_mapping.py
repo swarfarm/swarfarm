@@ -64,6 +64,7 @@ inventory_type_map = {
     'monster_piece': 12,
     # '': 15, Unknown. Appears in inventory_info with qty 0
     'guild_monster_piece': 19,
+    'rune_craft': 27,
     'craft_stuff': 29,
 }
 
@@ -228,6 +229,7 @@ drop_currency_map = {
     3: ItemDrop.DROP_CURRENCY_REAL_MONEY,
     4: ItemDrop.DROP_CURRENCY_GLORY_POINT,
     5: ItemDrop.DROP_CURRENCY_GUILD_POINT,
+    6: ItemDrop.DROP_COSTUME_POINT,
 }
 
 timezone_server_map = {

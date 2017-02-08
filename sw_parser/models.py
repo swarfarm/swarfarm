@@ -728,6 +728,222 @@ class RuneDrop(models.Model):
         super(RuneDrop, self).save(*args, **kwargs)
 
 
+class RuneCraftDrop(models.Model):
+    CRAFT_GRINDSTONE = 0
+    CRAFT_ENCHANT_GEM = 1
+
+    CRAFT_CHOICES = (
+        (CRAFT_GRINDSTONE, 'Grindstone'),
+        (CRAFT_ENCHANT_GEM, 'Enchant Gem'),
+    )
+
+    QUALITY_NORMAL = 0
+    QUALITY_MAGIC = 1
+    QUALITY_RARE = 2
+    QUALITY_HERO = 3
+    QUALITY_LEGEND = 4
+
+    QUALITY_CHOICES = (
+        (QUALITY_NORMAL, 'Normal'),
+        (QUALITY_MAGIC, 'Magic'),
+        (QUALITY_RARE, 'Rare'),
+        (QUALITY_HERO, 'Hero'),
+        (QUALITY_LEGEND, 'Legend'),
+    )
+
+    # Valid value ranges
+    # Type > Stat > Quality > Min/Max
+    CRAFT_VALUE_RANGES = {
+        CRAFT_GRINDSTONE: {
+            RuneDrop.STAT_HP: {
+                RuneDrop.QUALITY_NORMAL: {'min': 80, 'max': 120},
+                RuneDrop.QUALITY_MAGIC: {'min': 100, 'max': 200},
+                RuneDrop.QUALITY_RARE: {'min': 180, 'max': 250},
+                RuneDrop.QUALITY_HERO: {'min': 230, 'max': 450},
+                RuneDrop.QUALITY_LEGEND: {'min': 430, 'max': 550},
+            },
+            RuneDrop.STAT_HP_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneDrop.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneDrop.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneDrop.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneDrop.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneDrop.STAT_ATK: {
+                RuneDrop.QUALITY_NORMAL: {'min': 4, 'max': 8},
+                RuneDrop.QUALITY_MAGIC: {'min': 6, 'max': 12},
+                RuneDrop.QUALITY_RARE: {'min': 10, 'max': 18},
+                RuneDrop.QUALITY_HERO: {'min': 12, 'max': 22},
+                RuneDrop.QUALITY_LEGEND: {'min': 18, 'max': 30},
+            },
+            RuneDrop.STAT_ATK_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneDrop.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneDrop.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneDrop.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneDrop.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneDrop.STAT_DEF: {
+                RuneDrop.QUALITY_NORMAL: {'min': 4, 'max': 8},
+                RuneDrop.QUALITY_MAGIC: {'min': 6, 'max': 12},
+                RuneDrop.QUALITY_RARE: {'min': 10, 'max': 18},
+                RuneDrop.QUALITY_HERO: {'min': 12, 'max': 22},
+                RuneDrop.QUALITY_LEGEND: {'min': 18, 'max': 30},
+            },
+            RuneDrop.STAT_DEF_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneDrop.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneDrop.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneDrop.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneDrop.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneDrop.STAT_SPD: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 2},
+                RuneDrop.QUALITY_MAGIC: {'min': 1, 'max': 2},
+                RuneDrop.QUALITY_RARE: {'min': 2, 'max': 3},
+                RuneDrop.QUALITY_HERO: {'min': 3, 'max': 4},
+                RuneDrop.QUALITY_LEGEND: {'min': 4, 'max': 5},
+            },
+            RuneDrop.STAT_CRIT_RATE_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 2},
+                RuneDrop.QUALITY_MAGIC: {'min': 1, 'max': 3},
+                RuneDrop.QUALITY_RARE: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneDrop.QUALITY_LEGEND: {'min': 4, 'max': 6},
+            },
+            RuneDrop.STAT_CRIT_DMG_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneDrop.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneDrop.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneDrop.QUALITY_LEGEND: {'min': 4, 'max': 7},
+            },
+            RuneDrop.STAT_RESIST_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneDrop.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneDrop.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneDrop.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
+            RuneDrop.STAT_ACCURACY_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneDrop.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneDrop.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneDrop.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
+        },
+        CRAFT_ENCHANT_GEM: {
+            RuneDrop.STAT_HP: {
+                RuneDrop.QUALITY_NORMAL: {'min': 100, 'max': 150},
+                RuneDrop.QUALITY_MAGIC: {'min': 130, 'max': 220},
+                RuneDrop.QUALITY_RARE: {'min': 200, 'max': 310},
+                RuneDrop.QUALITY_HERO: {'min': 290, 'max': 420},
+                RuneDrop.QUALITY_LEGEND: {'min': 400, 'max': 580},
+            },
+            RuneDrop.STAT_HP_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneDrop.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneDrop.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneDrop.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneDrop.STAT_ATK: {
+                RuneDrop.QUALITY_NORMAL: {'min': 8, 'max': 12},
+                RuneDrop.QUALITY_MAGIC: {'min': 10, 'max': 16},
+                RuneDrop.QUALITY_RARE: {'min': 15, 'max': 23},
+                RuneDrop.QUALITY_HERO: {'min': 20, 'max': 30},
+                RuneDrop.QUALITY_LEGEND: {'min': 28, 'max': 40},
+            },
+            RuneDrop.STAT_ATK_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneDrop.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneDrop.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneDrop.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneDrop.STAT_DEF: {
+                RuneDrop.QUALITY_NORMAL: {'min': 8, 'max': 12},
+                RuneDrop.QUALITY_MAGIC: {'min': 10, 'max': 16},
+                RuneDrop.QUALITY_RARE: {'min': 15, 'max': 23},
+                RuneDrop.QUALITY_HERO: {'min': 20, 'max': 30},
+                RuneDrop.QUALITY_LEGEND: {'min': 28, 'max': 40},
+            },
+            RuneDrop.STAT_DEF_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneDrop.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneDrop.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneDrop.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneDrop.STAT_SPD: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneDrop.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneDrop.QUALITY_HERO: {'min': 5, 'max': 8},
+                RuneDrop.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
+            RuneDrop.STAT_CRIT_RATE_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneDrop.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_RARE: {'min': 3, 'max': 5},
+                RuneDrop.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneDrop.QUALITY_LEGEND: {'min': 6, 'max': 9},
+            },
+            RuneDrop.STAT_CRIT_DMG_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_MAGIC: {'min': 3, 'max': 5},
+                RuneDrop.QUALITY_RARE: {'min': 4, 'max': 6},
+                RuneDrop.QUALITY_HERO: {'min': 5, 'max': 8},
+                RuneDrop.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
+            RuneDrop.STAT_RESIST_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_MAGIC: {'min': 3, 'max': 6},
+                RuneDrop.QUALITY_RARE: {'min': 5, 'max': 8},
+                RuneDrop.QUALITY_HERO: {'min': 6, 'max': 9},
+                RuneDrop.QUALITY_LEGEND: {'min': 8, 'max': 11},
+            },
+            RuneDrop.STAT_ACCURACY_PCT: {
+                RuneDrop.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneDrop.QUALITY_MAGIC: {'min': 3, 'max': 6},
+                RuneDrop.QUALITY_RARE: {'min': 5, 'max': 8},
+                RuneDrop.QUALITY_HERO: {'min': 6, 'max': 9},
+                RuneDrop.QUALITY_LEGEND: {'min': 8, 'max': 11},
+            },
+        }
+    }
+
+    type = models.IntegerField(choices=CRAFT_CHOICES)
+    rune = models.IntegerField(choices=RuneDrop.TYPE_CHOICES)
+    stat = models.IntegerField(choices=RuneDrop.STAT_CHOICES)
+    quality = models.IntegerField(choices=QUALITY_CHOICES)
+    value = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        if self.stat in RuneDrop.PERCENT_STATS:
+            percent = '%'
+        else:
+            percent = ''
+
+        return RuneDrop.RUNE_STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + ' - ' + str(self.get_max_value()) + percent
+
+    def get_min_value(self):
+        try:
+            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['min']
+        except KeyError:
+            return None
+
+    def get_max_value(self):
+        try:
+            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['max']
+        except KeyError:
+            return None
+
+
 class MonsterDrop(models.Model):
     monster = models.ForeignKey(Monster)
     grade = models.IntegerField()
@@ -1146,6 +1362,48 @@ class WorldBossLog(LogEntry):
     bonus_battle_points = models.IntegerField()
     avg_monster_level = models.FloatField()
     monster_count = models.IntegerField()
+
+
+# Rift of Worlds
+class RiftRaidItemDrop(ItemDrop):
+    log = models.ForeignKey('RiftRaidLog')
+    wizard_id = models.BigIntegerField()
+    battle_key = models.BigIntegerField(db_index=True)
+
+
+class RiftRaidMonsterDrop(MonsterDrop):
+    log = models.ForeignKey('RiftRaidLog')
+    wizard_id = models.BigIntegerField()
+    battle_key = models.BigIntegerField(db_index=True)
+
+
+class RiftRaidRuneCraftDrop(RuneCraftDrop):
+    log = models.ForeignKey('RiftRaidLog')
+    wizard_id = models.BigIntegerField()
+    battle_key = models.BigIntegerField(db_index=True)
+
+
+class RiftRaidLog(LogEntry):
+    DIFFICULTY_R1 = 1
+    DIFFICULTY_R2 = 2
+    DIFFICULTY_R3 = 3
+    DIFFICULTY_R4 = 4
+    DIFFICULTY_R5 = 5
+
+    DIFFICULTY_CHOICES = [
+        (DIFFICULTY_R1, 'R1'),
+        (DIFFICULTY_R2, 'R2'),
+        (DIFFICULTY_R3, 'R3'),
+        (DIFFICULTY_R4, 'R4'),
+        (DIFFICULTY_R5, 'R5'),
+    ]
+
+    battle_key = models.BigIntegerField(db_index=True, null=True, blank=True)
+    raid = models.IntegerField()
+    action_item = models.IntegerField()  # Not sure what this is yet. Recording just in case.
+    success = models.NullBooleanField()  # Null value here is an incomplete record from a log that needs the start and result commands to fill in completely
+    difficulty = models.IntegerField(choices=DIFFICULTY_CHOICES)
+    contribution = models.IntegerField(blank=True, null=True)
 
 
 # Export management

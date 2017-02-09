@@ -643,6 +643,8 @@ accepted_api_params = {
             'tvalue',
             'wish_info',
             'unit_info',
+            'crate',    # TODO: Trying to catch rune data, clean this up when the right value is found
+            'reward',   # TODO: Trying to catch rune data, clean this up when the right value is found
         ]
     },
     'BattleDungeonResult': {

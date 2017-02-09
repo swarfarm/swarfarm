@@ -1001,6 +1001,7 @@ class ItemDrop(models.Model):
     DROP_CURRENCY_REAL_MONEY = 150
     DROP_CURRENCY_ENERGY = 151
     DROP_CURRENCY_ARENA_WING = 152
+    DROP_CURRENCY_SOCIAL = 153
 
     DROP_CHOICES = SummonLog.SUMMON_CHOICES + [
         (DROP_COSTUME_POINT, 'Shapeshifting Stone'),
@@ -1050,6 +1051,7 @@ class ItemDrop(models.Model):
         (DROP_CURRENCY_REAL_MONEY, 'Real Money'),
         (DROP_CURRENCY_ENERGY, 'Energy'),
         (DROP_CURRENCY_ARENA_WING, 'Arena Wing'),
+        (DROP_CURRENCY_SOCIAL, 'Social Point'),
     ]
 
     DROP_CHOICES_DICT = dict(DROP_CHOICES)
@@ -1135,6 +1137,7 @@ class ItemDrop(models.Model):
         DROP_CURRENCY_GUILD_POINT,
         DROP_CURRENCY_REAL_MONEY,
         DROP_CURRENCY_ARENA_WING,
+        DROP_CURRENCY_SOCIAL,
     ]
 
     DROP_ICONS = {
@@ -1193,6 +1196,7 @@ class ItemDrop(models.Model):
         DROP_CURRENCY_GLORY_POINT: 'icons/glory_points.png',
         DROP_CURRENCY_ENERGY: 'icons/energy.png',
         DROP_CURRENCY_ARENA_WING: 'icons/arena_wings.png',
+        DROP_CURRENCY_SOCIAL: 'icons/summon_social_points.png',
     }
 
     item = models.IntegerField(choices=DROP_CHOICES)

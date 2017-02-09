@@ -64,6 +64,7 @@ inventory_type_map = {
     'monster_piece': 12,
     # '': 15, Unknown. Appears in inventory_info with qty 0
     'guild_monster_piece': 19,
+    'rainbowmon': 25,   # Possibly material monsters in general. Appears when wish returns a rainbowmon.
     'rune_craft': 27,
     'craft_stuff': 29,
 }

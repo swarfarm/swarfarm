@@ -68,7 +68,7 @@ def parse_do_random_wish_item(log_data):
     drop_master_id = wish_info['item_master_id']
 
     wish_drop = None
-    if drop_type == inventory_type_map['monster']:
+    if drop_type == inventory_type_map['monster'] or drop_type == inventory_type_map['rainbowmon']:
         unit_info = log_data['response']['unit_info']
         wish_drop = WishMonsterDrop()
         wish_drop.monster = get_monster_from_id(unit_info['unit_master_id'])

@@ -78,6 +78,10 @@ def parse_do_random_wish_item(log_data):
         wish_drop = WishItemDrop()
         wish_drop.item = drop_currency_map[drop_master_id]
         wish_drop.quantity = wish_info['amount']
+    elif drop_type == inventory_type_map['scroll']:
+        wish_drop = WishItemDrop()
+        wish_drop.item = summon_source_map[drop_master_id]
+        wish_drop.quantity = wish_info['amount']
     elif drop_type == inventory_type_map['rune']:
         # Don't know what rune data looks like. Mail the source data so it can be investigated.
         mail_admins(

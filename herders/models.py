@@ -1066,32 +1066,6 @@ class MonsterInstance(models.Model):
     skill_2_level = models.IntegerField(blank=True, default=1)
     skill_3_level = models.IntegerField(blank=True, default=1)
     skill_4_level = models.IntegerField(blank=True, default=1)
-
-    base_hp = models.IntegerField(blank=True, default=0)
-    rune_hp = models.IntegerField(blank=True, default=0)
-
-    base_attack = models.IntegerField(blank=True, default=0)
-    rune_attack = models.IntegerField(blank=True, default=0)
-
-    base_defense = models.IntegerField(blank=True, default=0)
-    rune_defense = models.IntegerField(blank=True, default=0)
-
-    base_speed = models.IntegerField(blank=True, default=0)
-    rune_speed = models.IntegerField(blank=True, default=0)
-
-    base_crit_rate = models.IntegerField(blank=True, default=0)
-    rune_crit_rate = models.IntegerField(blank=True, default=0)
-
-    base_crit_damage = models.IntegerField(blank=True, default=0)
-    rune_crit_damage = models.IntegerField(blank=True, default=0)
-
-    base_resistance = models.IntegerField(blank=True, default=0)
-    rune_resistance = models.IntegerField(blank=True, default=0)
-
-    base_accuracy = models.IntegerField(blank=True, default=0)
-    rune_accuracy = models.IntegerField(blank=True, default=0)
-
-    avg_rune_efficiency = models.FloatField(blank=True, null=True)
     fodder = models.BooleanField(default=False)
     in_storage = models.BooleanField(default=False)
     ignore_for_fusion = models.BooleanField(default=False)
@@ -1099,6 +1073,25 @@ class MonsterInstance(models.Model):
     tags = models.ManyToManyField(MonsterTag, blank=True)
     notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
     uncommitted = models.BooleanField(default=False)  # Used for importing
+
+    # Calculated fields (on save)
+    base_hp = models.IntegerField(blank=True, default=0)
+    rune_hp = models.IntegerField(blank=True, default=0)
+    base_attack = models.IntegerField(blank=True, default=0)
+    rune_attack = models.IntegerField(blank=True, default=0)
+    base_defense = models.IntegerField(blank=True, default=0)
+    rune_defense = models.IntegerField(blank=True, default=0)
+    base_speed = models.IntegerField(blank=True, default=0)
+    rune_speed = models.IntegerField(blank=True, default=0)
+    base_crit_rate = models.IntegerField(blank=True, default=0)
+    rune_crit_rate = models.IntegerField(blank=True, default=0)
+    base_crit_damage = models.IntegerField(blank=True, default=0)
+    rune_crit_damage = models.IntegerField(blank=True, default=0)
+    base_resistance = models.IntegerField(blank=True, default=0)
+    rune_resistance = models.IntegerField(blank=True, default=0)
+    base_accuracy = models.IntegerField(blank=True, default=0)
+    rune_accuracy = models.IntegerField(blank=True, default=0)
+    avg_rune_efficiency = models.FloatField(blank=True, null=True)
 
     def is_max_level(self):
         return self.level == self.monster.max_level_from_stars(self.stars)

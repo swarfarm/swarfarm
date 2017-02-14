@@ -422,56 +422,6 @@ def _import_objects(request, data, import_options, summoner):
 
 
 @login_required
-def import_rune_optimizer(request):
-    from django.forms import ValidationError
-
-    summoner = get_object_or_404(Summoner, user=request.user)
-    form = ImportOptimizerForm(request.POST or None)
-    form.helper.form_action = reverse('sw_parser:import_optimizer')
-    import_error = None
-    err_rune = None
-
-    if request.method == 'POST' and form.is_valid():
-        data = form.cleaned_data['json_data']
-
-        if 'runes' in data:
-            import_count = 0
-            valid_runes = []
-
-            # Validate all imported runes
-            for rune_data in data['runes']:
-                try:
-                    rune = import_rune(rune_data)
-                    rune.owner = summoner
-                    rune.full_clean()
-                    import_count += 1
-                except ValidationError as e:
-                    import_error = e.message_dict
-                    err_rune = rune_data.get('id', 'unknown')
-                    break
-                else:
-                    valid_runes.append(rune)
-            else:
-                # No exceptions! Save the valid runes.
-                for rune in valid_runes:
-                    rune.save()
-                messages.success(request, 'Successfully imported ' + str(import_count) + ' runes.')
-
-                return redirect('herders:runes', profile_name=request.user.username)
-        else:
-            import_error = 'No runes found in submitted data'
-
-    context = {
-        'import_rune_form': form,
-        'import_error': import_error,
-        'errored_rune': err_rune,
-        'view': 'importexport',
-    }
-
-    return render(request, 'sw_parser/import_rune_optimizer.html', context)
-
-
-@login_required
 def export_rune_optimizer(request, download_file=False):
     summoner = get_object_or_404(Summoner, user=request.user)
 

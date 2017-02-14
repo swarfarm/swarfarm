@@ -11,13 +11,13 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         {% comment %}
-                        <div class="col-md-3 col-md-offset-2">
+                        <div class="col-md-3">
                             <h2>SWARFARM Profile</h2>
                             <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_swarfarm' %}" role="button">Import SWARFARM Backup</a></p>
                             <p>Import a previously downloaded SWARFARM profile backup.</p>
                         </div>
                         {% endcomment %}
-                        <div class="col-md-4">
+                        <div class="col-md-4 col-md-offset-2">
                             <h2>Network Capture</h2>
                             <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_pcap' %}" role="button">Import PCAP capture</a></p>
                             <p>Use a packet capture tool to record network traffic directly from your phone.</p>
@@ -26,11 +26,6 @@
                             <h2>SWProxy</h2>
                             <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_swparser' %}" role="button">Import SWProxy JSON</a></p>
                             <p>Upload parsed JSON data produced by using the <a href="https://github.com/kakaroto/SWProxy/">SWProxy</a> program.</p>
-                        </div>
-                        <div class="col-md-4">
-                            <h2>Legacy Optimizer</h2>
-                            <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_optimizer' %}" role="button">Import Optimizer JSON</a></p>
-                            <p>Paste data directly from the <a href="https://github.com/nikilauda1983/sw_optimize/releases" target="_blank">Java</a> or <a href="http://swrunes.all.my" target="_blank">legacy</a> rune optimizer.</p>
                         </div>
                     </div>
                 </div>

@@ -610,6 +610,10 @@ def _parse_battle_reward(log_entry, reward):
             if 'craft_stuff' in crate:
                 log_entry.drop_type = drop_craft_map[crate['craft_stuff']['item_master_id']]
                 log_entry.drop_quantity = crate['craft_stuff']['item_quantity']
+
+            if 'event_item' in crate:
+                log_entry.drop_type = RunLog.DROP_EVENT_ITEM
+                log_entry.drop_quantity = crate['event_item']['item_quantity']
     else:
         # Failed runs with 0 enemy kills have no reward crate
         log_entry.mana = 0

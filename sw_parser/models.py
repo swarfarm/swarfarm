@@ -168,6 +168,8 @@ class RunLog(LogEntry):
     DROP_CRAFT_CRYSTAL_DARK = 143
     DROP_CRAFT_CRYSTAL_MAGIC = 144
     DROP_CRAFT_CRYSTAL_PURE = 145
+    # 146-153 taken in ItemDrop model
+    DROP_EVENT_ITEM = 154
 
     DROP_CHOICES = SummonLog.SUMMON_CHOICES + [
         (DROP_MONSTER, 'Monster'),
@@ -212,6 +214,7 @@ class RunLog(LogEntry):
         (DROP_CRAFT_CRYSTAL_DARK, 'Pitch-black Dark Crystal',),
         (DROP_CRAFT_CRYSTAL_MAGIC, 'Condensed Magic Crystal',),
         (DROP_CRAFT_CRYSTAL_PURE, 'Pure Magic Crystal',),
+        (DROP_EVENT_ITEM, 'Event Item'),
     ]
 
     DROP_GENERAL_CRAFTS = [
@@ -281,6 +284,7 @@ class RunLog(LogEntry):
         DROP_CRAFT_CRYSTAL_DARK,
         DROP_CRAFT_CRYSTAL_MAGIC,
         DROP_CRAFT_CRYSTAL_PURE,
+        DROP_EVENT_ITEM,
     ]
 
     DROP_ICONS = {
@@ -1002,6 +1006,7 @@ class ItemDrop(models.Model):
     DROP_CURRENCY_ENERGY = 151
     DROP_CURRENCY_ARENA_WING = 152
     DROP_CURRENCY_SOCIAL = 153
+    DROP_EVENT_ITEM = 154
 
     DROP_CHOICES = SummonLog.SUMMON_CHOICES + [
         (DROP_COSTUME_POINT, 'Shapeshifting Stone'),
@@ -1052,6 +1057,7 @@ class ItemDrop(models.Model):
         (DROP_CURRENCY_ENERGY, 'Energy'),
         (DROP_CURRENCY_ARENA_WING, 'Arena Wing'),
         (DROP_CURRENCY_SOCIAL, 'Social Point'),
+        (DROP_EVENT_ITEM, 'Event Item'),
     ]
 
     DROP_CHOICES_DICT = dict(DROP_CHOICES)
@@ -1110,6 +1116,7 @@ class ItemDrop(models.Model):
         DROP_CRAFT_CRYSTAL_DARK,
         DROP_CRAFT_CRYSTAL_MAGIC,
         DROP_CRAFT_CRYSTAL_PURE,
+        DROP_EVENT_ITEM,
     ]
 
     DROP_GENERAL_CRAFTS = [

@@ -4,6 +4,7 @@ bcrypt
 bitstring
 dpkt
 celery
+jsonschema
 pytz
 python-dateutil
 pycrypto

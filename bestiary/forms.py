@@ -14,16 +14,16 @@ STATIC_URL_PREFIX = static('herders/images/')
 
 # Bestiary forms
 class BestiaryQuickSearchForm(forms.Form):
-    monster_name = autocomplete_light.ModelChoiceField('BestiaryLinkAutocomplete')
+    name = autocomplete_light.ModelChoiceField('BestiaryLinkAutocomplete')
 
     helper = FormHelper()
     helper.form_action = 'bestiary:home'
-    helper.form_method = 'get'
+    helper.form_method = 'post'
     helper.form_class = 'navbar-form navbar-left hidden-sm'
     helper.form_show_labels = False
     helper.layout = Layout(
         FieldWithButtons(
-            'monster_name',
+            Field('name', id='name'),
             Submit('Go', 'Go'),
         ),
     )

@@ -12,8 +12,12 @@ from .filters import MonsterFilter
 
 
 def bestiary(request):
-    monster_name_search = request.GET.get('monster_name-autocomplete', '').strip()
-    bestiary_filter_form = FilterMonsterForm(initial={'name': monster_name_search})
+    name_search = request.POST.get('name-autocomplete')
+    post_data = request.POST.copy()
+    if name_search:
+        post_data.update({'name': name_search})
+
+    bestiary_filter_form = FilterMonsterForm(post_data or None)
     bestiary_filter_form.helper.form_action = reverse('bestiary:inventory')
 
     context = {
@@ -34,8 +38,14 @@ def bestiary_inventory(request):
 
 
 def _bestiary_inventory(request):
-    monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to', 'leader_skill').prefetch_related('skills', 'skills__skill_effect')
-    form = FilterMonsterForm(request.POST or None)
+    name_search = request.POST.get('name-autocomplete')
+    post_data = request.POST.copy()
+
+    if name_search:
+        post_data.update({'name': name_search})
+
+    monster_queryset = Monster.objects.filter(obtainable=True).select_related('awakens_from', 'awakens_to', 'leader_skill').prefetch_related('skills')
+    form = FilterMonsterForm(post_data or None)
 
     # Get queryset sort options
     sort_options = request.POST.get('sort')

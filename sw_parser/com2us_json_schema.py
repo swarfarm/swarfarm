@@ -1,3 +1,5 @@
+import json
+from jsonschema import Draft4Validator
 
 HubUserLoginSchema = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
@@ -8,12 +10,23 @@ HubUserLoginSchema = {
         'rune': {
             'type': 'object',
             'properties': {
-                # Required for importing
                 'set_id': {'type': 'number'},
-                'class': {'type': 'number'},
+                'class': {
+                    'type': 'number',
+                    'minimum': 1,
+                    'maximum': 6,
+                },
                 'rank': {'type': 'number'},
-                'slot_no': {'type': 'number'},
-                'upgrade_curr': {'type': 'number'},
+                'slot_no': {
+                    'type': 'number',
+                    'minimum': 1,
+                    'maximum': 6,
+                },
+                'upgrade_curr': {
+                    'type': 'number',
+                    'minimum': 0,
+                    'maximum': 15,
+                },
                 'pri_eff': {
                     'type': 'array',
                     'items': {'type': 'number'},
@@ -44,21 +57,33 @@ HubUserLoginSchema = {
         'monster': {
             'type': 'object',
             'properties': {
-                # Required for importing
                 'unit_id': {'type': 'number'},
                 'unit_master_id': {'type': 'number'},
                 'create_time': {'type': 'string'},
-                'unit_level': {'type': 'number'},
-                'class': {'type': 'number'},
+                'unit_level': {
+                    'type': 'number',
+                    'minimum': 1,
+                    'maximum': 40,
+                },
+                'class': {
+                    'type': 'number',
+                    'minimum': 1,
+                    'maximum': 6,
+                },
                 'skills': {
                     'type': 'array',
-                    'items': {'type': 'number'},
+                    'items': {
+                        'type': 'array',
+                        'items': {'type': 'number'},
+                        'minItems': 2,
+                        'maxItems': 2,
+                    },
                     'minItems': 1,
                     'maxItems': 4,
                 },
                 'runes': {
                     'type': 'array',
-                    'items': {'type': {'$ref': '#/definitions/rune'}},
+                    'items': {'$ref': '#/definitions/rune'},
                     'maxItems': 6,
                 },
                 'building_id': {'type': 'number'},
@@ -97,7 +122,7 @@ HubUserLoginSchema = {
                     'craft_item_id': {'type': 'number'},
                     'craft_type': {'type': 'number'},
                 },
-                'required': ['craft_type', 'craft_type_id', 'craft_item_id', 'craft_type'],
+                'required': ['craft_type', 'craft_type_id', 'craft_item_id'],
             }
         },
         'deco_list': {
@@ -124,7 +149,7 @@ HubUserLoginSchema = {
         },
         'runes': {
             'type': 'array',
-            'items': {'type': {'$ref': '#/definitions/rune'}},
+            'items': {'$ref': '#/definitions/rune'},
         },
         'wizard_info': {
             'type': 'object',
@@ -135,10 +160,12 @@ HubUserLoginSchema = {
         },
         'unit_list': {
             'type': 'array',
-            'items': {'type': {'$ref': '#/definitions/monster'}},
+            'items': {'$ref': '#/definitions/monster'},
         },
         'wizard_id': {'type': 'number'},
         'command': {'type': 'string'},
     },
-    'required': ['unit_lock_list', 'building_list', 'rune_craft_item_list', 'deco_list', 'inventory_info', 'runes', 'wizard_info', 'unit_list', 'wizard_id', 'command'],
+    'required': ['unit_lock_list', 'building_list', 'rune_craft_item_list', 'deco_list', 'inventory_info', 'runes', 'wizard_info', 'unit_list'],
 }
+
+HubUserLoginValidator = Draft4Validator(HubUserLoginSchema)

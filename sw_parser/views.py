@@ -108,16 +108,18 @@ def _import_pcap(request):
             except Exception as e:
                 errors.append('Exception ' + str(type(e)) + ': ' + str(e))
             else:
+                validation_error = validate_sw_json(data)
+
                 # Import the new objects
-                if data:
+                if validation_error:
+                    errors.append(validation_error)
+                else:
                     errors += _import_objects(request, data, import_options, summoner)
 
                     if len(errors):
                         messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
 
                     return redirect('sw_parser:import_confirm')
-                else:
-                    errors.append("Unable to find Summoner's War data in the capture.")
     else:
         form = ImportPCAPForm()
 
@@ -165,13 +167,18 @@ def import_sw_json(request):
             except AttributeError:
                 errors.append('Issue opening uploaded file. Please try again.')
             else:
-                # Import the new objects
-                errors += _import_objects(request, data, import_options, summoner)
+                validation_error = validate_sw_json(data)
 
-                if len(errors):
-                    messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
+                if validation_error:
+                    errors.append(validation_error)
+                else:
+                    # Import the new objects
+                    errors += _import_objects(request, data, import_options, summoner)
 
-                return redirect('sw_parser:import_confirm')
+                    if len(errors):
+                        messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
+
+                    return redirect('sw_parser:import_confirm')
     else:
         form = ImportSWParserJSONForm()
 

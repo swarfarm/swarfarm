@@ -1,5 +1,7 @@
 import dpkt
 import json
+from jsonschema import ErrorTree
+from jsonschema.exceptions import best_match
 from dateutil.parser import *
 import pytz
 import datetime
@@ -11,6 +13,7 @@ from herders.models import MonsterPiece, MonsterInstance, RuneInstance
 
 from .models import *
 from .com2us_mapping import *
+from com2us_json_schema import HubUserLoginValidator
 from .smon_decryptor import decrypt_response
 
 
@@ -46,7 +49,16 @@ def parse_pcap(pcap_file):
 
 
 def validate_sw_json(data):
-    pass
+    # Check the submitted data against a schema and return any errors in human readable format
+    error = best_match(HubUserLoginValidator.iter_errors(data))
+
+    if error:
+        return 'Error in field {}:\n{}'.format(
+            '[%s]' % ']['.join(repr(index) for index in error.path),
+            error.message
+        )
+    else:
+        return None
 
 
 def parse_sw_json(data, owner, options):

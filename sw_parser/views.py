@@ -64,16 +64,6 @@ def home(request):
     return render(request, 'sw_parser/base.html', context={'view': 'importexport'})
 
 
-@login_required
-def import_swarfarm_backup(request):
-    return render(request, 'sw_parser/coming_soon.html')
-
-
-@login_required
-def export_swarfarm_backup(request):
-    return render(request, 'sw_parser/coming_soon.html')
-
-
 @transaction.atomic
 @login_required
 @csrf_exempt

@@ -34,7 +34,7 @@ class MonsterInstanceAutocomplete(autocomplete_light.AutocompleteModelTemplate):
     }
 
     def choices_for_request(self):
-        self.choices = self.choices.filter(owner=self.request.user.summoner, uncommitted=False)
+        self.choices = self.choices.filter(owner=self.request.user.summoner)
         monster_filter = self.request.GET.get('monster', None)
 
         # set .data of input autocomplete to {monster: <<id>>} in javascript to add query parameter

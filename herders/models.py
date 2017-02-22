@@ -956,7 +956,6 @@ class Storage(models.Model):
     CRAFT_FIELDS = ['wood', 'leather', 'rock', 'ore', 'mithril', 'cloth', 'rune_piece', 'dust', 'symbol_harmony', 'symbol_transcendance', 'symbol_chaos', 'crystal_water', 'crystal_fire', 'crystal_wind', 'crystal_light', 'crystal_dark', 'crystal_magic', 'crystal_pure']
 
     owner = models.OneToOneField(Summoner)
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     # Elemental Essences
     magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Magic Essence")
@@ -1027,17 +1026,6 @@ class MonsterTag(models.Model):
         return mark_safe(self.name)
 
 
-class MonsterInstanceImportedManager(models.Manager):
-    def get_queryset(self):
-        return super(MonsterInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
-
-
-class MonsterInstanceManager(models.Manager):
-    # Default manager which only returns finalized instances
-    def get_queryset(self):
-        return super(MonsterInstanceManager, self).get_queryset().filter(uncommitted=False)
-
-
 class MonsterInstance(models.Model):
     PRIORITY_DONE = 0
     PRIORITY_LOW = 1
@@ -1049,11 +1037,6 @@ class MonsterInstance(models.Model):
         (PRIORITY_MED, 'Medium'),
         (PRIORITY_HIGH, 'High'),
     ]
-
-    # Multiple managers to split out imported and finalized objects
-    objects = models.Manager()
-    committed = MonsterInstanceManager()
-    imported = MonsterInstanceImportedManager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
@@ -1072,7 +1055,6 @@ class MonsterInstance(models.Model):
     priority = models.IntegerField(choices=PRIORITY_CHOICES, blank=True, null=True)
     tags = models.ManyToManyField(MonsterTag, blank=True)
     notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     # Calculated fields (on save)
     base_hp = models.IntegerField(blank=True, default=0)
@@ -1159,8 +1141,11 @@ class MonsterInstance(models.Model):
         return efficiencies / 6
 
     # Rune bonus calculations
-    def rune_bonus_energy(self):
-        set_bonus_count = floor(self.runeinstance_set.filter(type=RuneInstance.TYPE_ENERGY).count() / 2)
+    def rune_bonus_energy(self, rune_set=None):
+        if rune_set is None:
+            rune_set = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENERGY)
+
+        set_bonus_count = floor(rune_set.count() / 2)
         return ceil(self.base_hp * 0.15) * set_bonus_count
 
     def rune_bonus_fatal(self):
@@ -1421,8 +1406,8 @@ class MonsterInstance(models.Model):
         return self.get_building_stats(Building.AREA_GUILD)
 
     def get_possible_skillups(self):
-        devilmon = MonsterInstance.committed.filter(owner=self.owner, monster__name='Devilmon').count()
-        family = MonsterInstance.committed.filter(owner=self.owner, monster__family_id=self.monster.family_id).exclude(pk=self.pk).order_by('ignore_for_fusion')
+        devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count()
+        family = MonsterInstance.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id).exclude(pk=self.pk).order_by('ignore_for_fusion')
 
         return {
             'devilmon': devilmon,
@@ -1431,7 +1416,7 @@ class MonsterInstance(models.Model):
         }
 
     def update_fields(self):
-        # Update stats
+        # Update base stats based on level
         self.base_hp = self.calc_base_hp()
         self.base_attack = self.calc_base_attack()
         self.base_defense = self.calc_base_defense()
@@ -1441,6 +1426,7 @@ class MonsterInstance(models.Model):
         self.base_resistance = self.calc_base_resistance()
         self.base_accuracy = self.calc_base_accuracy()
 
+        # Update stats based on runes
         self.rune_hp = self.calc_rune_hp()
         self.rune_attack = self.calc_rune_attack()
         self.rune_defense = self.calc_rune_defense()
@@ -1521,17 +1507,6 @@ class MonsterInstance(models.Model):
         ordering = ['-stars', '-level', 'monster__name']
 
 
-class MonsterPieceImportedManager(models.Manager):
-    def get_queryset(self):
-        return super(MonsterPieceImportedManager, self).get_queryset().filter(uncommitted=True)
-
-
-class MonsterPieceManager(models.Manager):
-    # Default manager which only returns finalized instances
-    def get_queryset(self):
-        return super(MonsterPieceManager, self).get_queryset().filter(uncommitted=False)
-
-
 class MonsterPiece(models.Model):
     PIECE_REQUIREMENTS = {
         1: 10,
@@ -1541,16 +1516,10 @@ class MonsterPiece(models.Model):
         5: 100,
     }
 
-    # Multiple managers to split out imported and finalized objects
-    objects = models.Manager()
-    committed = MonsterPieceManager()
-    imported = MonsterPieceImportedManager()
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
     monster = models.ForeignKey('Monster')
     pieces = models.IntegerField(default=0)
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     class Meta:
         ordering = ['monster__name']
@@ -1565,17 +1534,6 @@ class MonsterPiece(models.Model):
             base_stars -= 1
 
         return int(floor(self.pieces / self.PIECE_REQUIREMENTS[base_stars]))
-
-
-class RuneInstanceImportedManager(models.Manager):
-    def get_queryset(self):
-        return super(RuneInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
-
-
-class RuneInstanceManager(models.Manager):
-    # Default manager which only returns finalized instances
-    def get_queryset(self):
-        return super(RuneInstanceManager, self).get_queryset().filter(uncommitted=False)
 
 
 class RuneInstance(models.Model):
@@ -1973,11 +1931,6 @@ class RuneInstance(models.Model):
         6: [750, 1475, 2200, 3050, 3900, 4875, 5850, 6975, 8100, 9350, 10600, 11975, 13350, 14850, 16350],
     }
 
-    # Multiple managers to split out imported and finalized objects
-    objects = models.Manager()
-    committed = RuneInstanceManager()
-    imported = RuneInstanceImportedManager()
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
@@ -1985,7 +1938,6 @@ class RuneInstance(models.Model):
     assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     stars = models.IntegerField()
     level = models.IntegerField()
@@ -2489,17 +2441,6 @@ class RuneInstance(models.Model):
         ordering = ['slot', 'type', 'level', 'quality']
 
 
-class RuneCraftInstanceImportedManager(models.Manager):
-    def get_queryset(self):
-        return super(RuneCraftInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
-
-
-class RuneCraftInstanceManager(models.Manager):
-    # Default manager which only returns finalized instances
-    def get_queryset(self):
-        return super(RuneCraftInstanceManager, self).get_queryset().filter(uncommitted=False)
-
-
 class RuneCraftInstance(models.Model):
     QUALITY_NORMAL = 0
     QUALITY_MAGIC = 1
@@ -2678,11 +2619,6 @@ class RuneCraftInstance(models.Model):
         }
     }
 
-    # Multiple managers to split out imported and finalized objects
-    objects = models.Manager()
-    committed = RuneCraftInstanceManager()
-    imported = RuneCraftInstanceImportedManager()
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner)
     com2us_id = models.BigIntegerField(blank=True, null=True)
@@ -2691,7 +2627,6 @@ class RuneCraftInstance(models.Model):
     stat = models.IntegerField(choices=RuneInstance.STAT_CHOICES)
     quality = models.IntegerField(choices=QUALITY_CHOICES)
     value = models.IntegerField(blank=True, null=True)
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     def __str__(self):
         if self.stat in RuneInstance.PERCENT_STATS:
@@ -2778,10 +2713,12 @@ class BuildingInstance(models.Model):
                     )
                 })
 
-    def save(self, *args, **kwargs):
+    def update_fields(self):
         self.level = min(max(0, self.level), self.building.max_level)
-        super(BuildingInstance, self).save(*args, **kwargs)
 
+    def save(self, *args, **kwargs):
+        self.update_fields()
+        super(BuildingInstance, self).save(*args, **kwargs)
 
 # Game event calendar stuff
 class GameEvent(models.Model):

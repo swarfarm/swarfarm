@@ -83,12 +83,8 @@ def parse_do_random_wish_item(log_data):
         wish_drop.item = summon_source_map[drop_master_id]
         wish_drop.quantity = wish_info['amount']
     elif drop_type == inventory_type_map['rune']:
-        # Don't know what rune data looks like. Mail the source data so it can be investigated.
-        mail_admins(
-            subject='Wish log rune found!',
-            message=json.dumps(log_data),
-            fail_silently=True,
-        )
+        rune_data = log_data['response']['rune']
+        wish_drop = _parse_rune_log(rune_data, WishRuneDrop())
     else:
         mail_admins(
             subject='Unknown wish drop item type {}'.format(drop_type),
@@ -647,8 +643,7 @@ accepted_api_params = {
             'tvalue',
             'wish_info',
             'unit_info',
-            'crate',    # TODO: Trying to catch rune data, clean this up when the right value is found
-            'reward',   # TODO: Trying to catch rune data, clean this up when the right value is found
+            'rune',
         ]
     },
     'BattleDungeonResult': {

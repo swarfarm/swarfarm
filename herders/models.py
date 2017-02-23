@@ -1221,9 +1221,9 @@ class MonsterInstance(models.Model):
                 'defense': max_base_def,
             },
             'rune': {
-                'hp': self.calc_rune_hp(base=max_base_hp),
-                'attack': self.calc_rune_attack(base=max_base_atk),
-                'defense': self.calc_rune_defense(base=max_base_def),
+                'hp': self.rune_hp,
+                'attack': self.rune_attack,
+                'defense': self.rune_defense,
             },
         }
 

@@ -64,7 +64,6 @@ def home(request):
     return render(request, 'sw_parser/base.html', context={'view': 'importexport'})
 
 
-@transaction.atomic
 @login_required
 @csrf_exempt
 def import_pcap(request):
@@ -91,6 +90,8 @@ def _import_pcap(request):
                 'ignore_material': form.cleaned_data.get('ignore_material'),
                 'except_with_runes': form.cleaned_data.get('except_with_runes'),
                 'except_light_and_dark': form.cleaned_data.get('except_light_and_dark'),
+                'delete_missing_monsters': form.cleaned_data.get('missing_monster_action'),
+                'delete_missing_runes': form.cleaned_data.get('missing_rune_action'),
             }
 
             try:
@@ -100,16 +101,27 @@ def _import_pcap(request):
             else:
                 validation_error = validate_sw_json(data)
 
-                # Import the new objects
                 if validation_error:
                     errors.append(validation_error)
                 else:
-                    errors += _import_objects(request, data, import_options, summoner)
+                    # Import the new objects
+                    try:
+                        with transaction.atomic():
+                            errors += _import_objects(request, data, import_options, summoner)
+                    except Exception as e:
+                        errors.append('Error importing objects. Changes have been rolled back.')
+                        mail_admins(
+                            subject='Error importing',
+                            message='{} - {}'.format(e, e.message),
+                            fail_silently=True
+                        )
 
                     if len(errors):
-                        messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
+                        messages.warning(request, mark_safe('Errors during import. See issues below:<br />' + '<br />'.join(errors)))
+                    else:
+                        messages.success(request, 'Import successfully applied!')
 
-                    return redirect('sw_parser:import_confirm')
+                    return redirect('herders:profile_default', profile_name=request.user.username)
     else:
         form = ImportPCAPForm()
 
@@ -122,7 +134,6 @@ def _import_pcap(request):
     return render(request, 'sw_parser/import_pcap.html', context)
 
 
-@transaction.atomic
 @login_required
 def import_sw_json(request):
     errors = []
@@ -148,6 +159,8 @@ def import_sw_json(request):
                 'ignore_material': form.cleaned_data.get('ignore_material'),
                 'except_with_runes': form.cleaned_data.get('except_with_runes'),
                 'except_light_and_dark': form.cleaned_data.get('except_light_and_dark'),
+                'delete_missing_monsters': form.cleaned_data.get('missing_monster_action'),
+                'delete_missing_runes': form.cleaned_data.get('missing_rune_action'),
             }
 
             try:
@@ -163,12 +176,23 @@ def import_sw_json(request):
                     errors.append(validation_error)
                 else:
                     # Import the new objects
-                    errors += _import_objects(request, data, import_options, summoner)
+                    try:
+                        with transaction.atomic():
+                            errors += _import_objects(request, data, import_options, summoner)
+                    except Exception as e:
+                        errors.append('Error importing objects. Changes have been rolled back.')
+                        mail_admins(
+                            subject='Error importing',
+                            message='{} - {}'.format(e, e.message),
+                            fail_silently=True
+                        )
 
                     if len(errors):
                         messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
+                    else:
+                        messages.success(request, 'Import successfully applied!')
 
-                    return redirect('sw_parser:import_confirm')
+                    return redirect('herders:profile_default', profile_name=request.user.username)
     else:
         form = ImportSWParserJSONForm()
 
@@ -179,109 +203,6 @@ def import_sw_json(request):
     }
 
     return render(request, 'sw_parser/import_sw_json.html', context)
-
-
-@transaction.atomic
-@login_required
-def commit_import(request):
-    summoner = get_object_or_404(Summoner, user__username=request.user.username)
-
-    # List existing com2us IDs and newly imported com2us IDs
-    imported_mon_com2us_ids = MonsterInstance.imported.values_list('com2us_id', flat=True).filter(owner=summoner)
-    existing_mon_com2us_ids = MonsterInstance.committed.values_list('com2us_id', flat=True).filter(owner=summoner, com2us_id__isnull=False)
-
-    imported_rune_com2us_ids = RuneInstance.imported.values_list('com2us_id', flat=True).filter(owner=summoner)
-    existing_rune_com2us_ids = RuneInstance.committed.values_list('com2us_id', flat=True).filter(owner=summoner, com2us_id__isnull=False)
-
-    # Split import into brand new, updated, and existing monsters that were not imported.
-    new_mons = MonsterInstance.imported.filter(owner=summoner).exclude(com2us_id__in=existing_mon_com2us_ids)
-    updated_mons = MonsterInstance.imported.filter(owner=summoner, com2us_id__in=existing_mon_com2us_ids)
-    missing_mons = MonsterInstance.committed.filter(owner=summoner).exclude(com2us_id__in=imported_mon_com2us_ids)
-
-    context = {
-        'view': 'importexport',
-        'form': ApplyImportForm(),
-    }
-
-    if request.POST:
-        form = ApplyImportForm(request.POST or None)
-        new_runes = RuneInstance.imported.filter(owner=summoner).exclude(com2us_id__in=existing_rune_com2us_ids)
-        updated_runes = RuneInstance.imported.filter(owner=summoner, com2us_id__in=existing_rune_com2us_ids)
-        missing_runes = RuneInstance.committed.filter(owner=summoner).exclude(com2us_id__in=imported_rune_com2us_ids)
-
-        if form.is_valid():
-            # Delete missing if option was chosen
-            if form.cleaned_data['missing_monster_action']:
-                missing_mons.delete()
-
-            if form.cleaned_data['missing_rune_action']:
-                missing_runes.delete()
-
-            # Delete old runes and set new ones as committed
-            RuneInstance.committed.filter(owner=summoner, com2us_id__in=imported_rune_com2us_ids).delete()
-            updated_runes.update(uncommitted=False)
-
-            # Update mons - need to copy relations before scrapping the old mons
-            for mon in updated_mons:
-                # Get the preexisting instance
-                old_mon = MonsterInstance.committed.filter(owner=summoner, com2us_id=mon.com2us_id).first()
-
-                # Copy team assignments
-                mon.team_leader = old_mon.team_leader.all()
-                mon.team_set = old_mon.team_set.all()
-                mon.tags = old_mon.tags.all()
-                mon.save()
-
-            # Delete the old mons and set new mons as committed
-            MonsterInstance.committed.filter(owner=summoner, com2us_id__in=imported_mon_com2us_ids).delete()
-            updated_mons.update(uncommitted=False)
-
-            # Add new monsters and runes
-            new_mons.update(uncommitted=False)
-            new_runes.update(uncommitted=False)
-
-            # Delete old monster pieces and commit new ones
-            MonsterPiece.committed.filter(owner=summoner).delete()
-            MonsterPiece.imported.filter(owner=summoner).update(uncommitted=False)
-
-            # Delete old rune crafts and commit new ones
-            RuneCraftInstance.committed.filter(owner=summoner).delete()
-            RuneCraftInstance.imported.filter(owner=summoner).update(uncommitted=False)
-
-            messages.success(request, 'Import successfully applied!')
-            return redirect('herders:profile_default', profile_name=summoner.user.username)
-    else:
-        new_runes = OrderedDict()
-        updated_runes = OrderedDict()
-        missing_runes = OrderedDict()
-        new_rune_count = 0
-        updated_rune_count = 0
-        missing_rune_count = 0
-
-        for type_idx, type_name in RuneInstance.TYPE_CHOICES:
-            new_runes[type_name] = RuneInstance.imported.filter(owner=summoner, type=type_idx).exclude(com2us_id__in=existing_rune_com2us_ids)
-            updated_runes[type_name] = RuneInstance.imported.filter(owner=summoner, type=type_idx, com2us_id__in=existing_rune_com2us_ids)
-            missing_runes[type_name] = RuneInstance.committed.filter(owner=summoner, type=type_idx).exclude(com2us_id__in=imported_rune_com2us_ids)
-
-            new_rune_count += new_runes[type_name].count()
-            updated_rune_count += updated_runes[type_name].count()
-            missing_rune_count += missing_runes[type_name].count()
-
-        context['monsters'] = {
-            'new': new_mons,
-            'updated': updated_mons,
-            'missing': missing_mons,
-        }
-        context['runes'] = {
-            'new': new_runes,
-            'updated': updated_runes,
-            'missing': missing_runes,
-        }
-        context['new_runes'] = new_rune_count
-        context['updated_runes'] = updated_rune_count
-        context['missing_runes'] = missing_rune_count
-
-    return render(request, 'sw_parser/import_confirm.html', context)
 
 
 @login_required()
@@ -300,10 +221,20 @@ def import_status_data(request):
 
 def _import_objects(request, data, import_options, summoner):
     errors = []
+    imported_monsters = []
+    imported_runes = []
+    imported_crafts = []
+    imported_pieces = []
+
     request.session['import_stage'] = 'parse'
     request.session.save()
 
-    # Parsed JSON successfully! Do the import.
+    if import_options['clear_profile']:
+        RuneInstance.objects.filter(owner=summoner).delete()
+        RuneCraftInstance.objects.filter(owner=summoner).delete()
+        MonsterInstance.objects.filter(owner=summoner).delete()
+        MonsterPiece.objects.filter(owner=summoner).delete()
+
     try:
         results = parse_sw_json(data, summoner, import_options)
     except KeyError as e:
@@ -311,19 +242,6 @@ def _import_objects(request, data, import_options, summoner):
     except TypeError:
         errors.append('Uploaded data is not valid.')
     else:
-        # Everything parsed successfully up to this point, so it's safe to clear the profile now.
-        if import_options['clear_profile']:
-            RuneInstance.objects.filter(owner=summoner).delete()
-            RuneCraftInstance.objects.filter(owner=summoner).delete()
-            MonsterInstance.objects.filter(owner=summoner).delete()
-            MonsterPiece.objects.filter(owner=summoner).delete()
-        else:
-            # Delete anything that might have been previously imported
-            RuneInstance.imported.filter(owner=summoner).delete()
-            RuneCraftInstance.imported.filter(owner=summoner).delete()
-            MonsterInstance.imported.filter(owner=summoner).delete()
-            MonsterPiece.imported.filter(owner=summoner).delete()
-
         errors += results['errors']
 
         # Update summoner and inventory
@@ -376,6 +294,7 @@ def _import_objects(request, data, import_options, summoner):
         request.session['import_current'] = 0
         for idx, mon in enumerate(results['monsters']):
             mon.save()
+            imported_monsters.append(mon.pk)
 
             request.session['import_current'] = idx
             request.session.save()
@@ -383,6 +302,7 @@ def _import_objects(request, data, import_options, summoner):
         # Update saved monster pieces
         for piece in results['monster_pieces']:
             piece.save()
+            imported_pieces.append(piece.pk)
 
         # Save imported runes
         request.session['import_stage'] = 'runes'
@@ -392,11 +312,8 @@ def _import_objects(request, data, import_options, summoner):
             # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
             # relationship was previously set.
             rune.assigned_to = rune.assigned_to
-            try:
-                rune.save()
-            except IntegrityError:
-                errors.append(
-                    'Error saving rune with ID ' + str(rune.com2us_id) + ' - assigned to monster that does not exist.')
+            rune.save()
+            imported_runes.append(rune.pk)
 
             request.session['import_current'] = idx
             request.session.save()
@@ -406,15 +323,23 @@ def _import_objects(request, data, import_options, summoner):
         request.session['import_total'] = len(results['crafts'])
         request.session['import_current'] = 0
         for idx, craft in enumerate(results['crafts']):
-            try:
-                craft.save()
-            except IntegrityError:
-                errors.append('Error saving Gem/Grindstone with ID ' + str(craft.com2us_id))
+            craft.save()
+            imported_crafts.append(craft.pk)
 
             request.session['import_current'] = idx
             request.session.save()
 
+        # Delete objects missing from import
+        if import_options['delete_missing_monsters']:
+            MonsterInstance.objects.filter(owner=summoner).exclude(pk__in=imported_monsters).delete()
+            MonsterPiece.objects.filter(owner=summoner).exclude(pk__in=imported_pieces).delete()
+
+        if import_options['delete_missing_runes']:
+            RuneInstance.objects.filter(owner=summoner).exclude(pk__in=imported_runes).delete()
+            RuneCraftInstance.objects.filter(owner=summoner).exclude(pk__in=imported_crafts).delete()
+
         request.session['import_stage'] = 'done'
+
     return errors
 
 
@@ -423,8 +348,8 @@ def export_rune_optimizer(request, download_file=False):
     summoner = get_object_or_404(Summoner, user=request.user)
 
     export_data = export_runes(
-        MonsterInstance.committed.filter(owner=summoner),
-        RuneInstance.committed.filter(owner=summoner, assigned_to=None),
+        MonsterInstance.objects.filter(owner=summoner),
+        RuneInstance.objects.filter(owner=summoner, assigned_to=None),
     )
     if download_file:
         response = HttpResponse(export_data)

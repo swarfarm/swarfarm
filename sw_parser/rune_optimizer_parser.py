@@ -202,17 +202,17 @@ def export_win10(summoner):
 
     # Build the unit list
     unit_list = []
-    for m in MonsterInstance.committed.filter(owner=summoner):
+    for m in MonsterInstance.objects.filter(owner=summoner):
         unit_list.append(_convert_monster_to_win10_json(m))
 
     # Build the rune list
     runes = []
-    for r in RuneInstance.committed.filter(owner=summoner, assigned_to=None):
+    for r in RuneInstance.objects.filter(owner=summoner, assigned_to=None):
         runes.append(_convert_rune_to_win10_json(r))
 
     # Build the rune craft list
     rune_craft_item_list = []
-    for c in RuneCraftInstance.committed.filter(owner=summoner):
+    for c in RuneCraftInstance.objects.filter(owner=summoner):
         rune_craft_item_list.append(_convert_rune_craft_to_win10_json(c))
 
     # Build the decoration list

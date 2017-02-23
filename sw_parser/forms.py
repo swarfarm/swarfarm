@@ -11,6 +11,27 @@ from herders.models import MonsterInstance
 
 
 class MonsterImportOptionsMixin(forms.Form):
+    missing_choices = (
+        (1, 'Delete missing'),
+        (0, 'Do not delete')
+    )
+
+    missing_monster_action = forms.TypedChoiceField(
+        label='Action for monsters not in import data',
+        initial=1,
+        required=True,
+        choices=missing_choices,
+        widget=forms.RadioSelect,
+        coerce=int,
+    )
+    missing_rune_action = forms.TypedChoiceField(
+        label='Action for runes not in import data',
+        initial=1,
+        required=True,
+        choices=missing_choices,
+        widget=forms.RadioSelect,
+        coerce=int,
+    )
     clear_profile = forms.BooleanField(
         required=False,
         label='Clear entire profile on import. This is recommended for the first Com2US data import. All your notes, priorities, and teams will be lost!',
@@ -71,6 +92,8 @@ class MonsterImportOptionsLayout(Layout):
                 HTML("""<h4 class="list-group-item-heading">Import Options</h4>"""),
                 Field('default_priority'),
                 Field('lock_monsters'),
+                Field('missing_monster_action'),
+                Field('missing_rune_action'),
                 Div(
                     Field('clear_profile'),
                     css_class='alert alert-danger'
@@ -175,42 +198,6 @@ class ExportOptimizerForm(forms.Form):
     helper.form_show_labels = False
     helper.layout = Layout(
         Field('json_data'),
-    )
-
-
-class ApplyImportForm(forms.Form):
-    missing_choices = (
-        (1, 'Delete missing'),
-        (0, 'Do not delete')
-    )
-
-    missing_monster_action = forms.TypedChoiceField(
-        label='Action for missing monsters: ',
-        initial=1,
-        required=True,
-        choices=missing_choices,
-        widget=forms.RadioSelect,
-        coerce=int,
-    )
-    missing_rune_action = forms.TypedChoiceField(
-        label='Action for missing runes: ',
-        initial=1,
-        required=True,
-        choices=missing_choices,
-        widget=forms.RadioSelect,
-        coerce=int,
-    )
-
-    helper = FormHelper()
-    helper.form_class = 'form-horizontal finalize-form'
-    helper.label_class = 'col-md-2'
-    helper.field_class = 'col-md-8'
-    helper.layout = Layout(
-        Field('missing_monster_action'),
-        Field('missing_rune_action'),
-        FormActions(
-            Submit('finalize', 'Finalize Import', css_class='btn-success'),
-        ),
     )
 
 

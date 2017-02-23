@@ -267,7 +267,7 @@ def summoner_monster_view_list(request, profile_name):
         raise Http404()
     else:
         url_list = []
-        monsters = MonsterInstance.committed.filter(owner=summoner)
+        monsters = MonsterInstance.objects.filter(owner=summoner)
 
         for m in monsters:
             url_list.append({
@@ -289,7 +289,7 @@ def nightbot_monsters(request, profile_name, monster_name):
         # Filter options
         min_stars = int(request.GET.get('min_stars', 0))
         min_level = int(request.GET.get('min_level', 0))
-        mons = MonsterInstance.committed.filter(
+        mons = MonsterInstance.objects.filter(
             monster__name__istartswith=monster_name,
             owner=summoner,
             runeinstance__isnull=False,
@@ -298,7 +298,7 @@ def nightbot_monsters(request, profile_name, monster_name):
         ).distinct()
 
         if mons.count() == 0:
-            if MonsterInstance.committed.filter(monster__name__istartswith=monster_name, owner=summoner, stars__gte=min_stars, level__gte=min_level).count():
+            if MonsterInstance.objects.filter(monster__name__istartswith=monster_name, owner=summoner, stars__gte=min_stars, level__gte=min_level).count():
                 # See if there were any without runes
                 return HttpResponse("Currently not runed.")
             else:

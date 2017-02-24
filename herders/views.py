@@ -2,6 +2,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
@@ -24,30 +25,47 @@ def register(request):
 
     if request.method == 'POST':
         if form.is_valid():
-            try:
-                # Create the user
-                new_user = User.objects.create_user(
-                    username=form.cleaned_data['username'],
-                    password=form.cleaned_data['password'],
-                    email=form.cleaned_data['email'],
-                )
-                new_user.save()
-                new_user.groups.add(Group.objects.get(name='Summoners'))
-                new_summoner = Summoner.objects.create(
-                    user=new_user,
-                    summoner_name=form.cleaned_data['summoner_name'],
-                    public=form.cleaned_data['is_public'],
-                )
-                new_summoner.save()
-
-                # Automatically log them in
-                user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-                if user is not None:
-                    if user.is_active:
-                        login(request, user)
-                        return redirect('herders:profile_default', profile_name=user.username)
-            except IntegrityError:
+            if User.objects.filter(username=form.cleaned_data['username']).exists():
                 form.add_error('username', 'Username already taken')
+            else:
+                new_user = None
+                new_summoner = None
+
+                try:
+                    # Create the user
+                    new_user = User.objects.create_user(
+                        username=form.cleaned_data['username'],
+                        password=form.cleaned_data['password'],
+                        email=form.cleaned_data['email'],
+                    )
+                    new_user.save()
+                    new_user.groups.add(Group.objects.get(name='Summoners'))
+                    new_summoner = Summoner.objects.create(
+                        user=new_user,
+                        summoner_name=form.cleaned_data['summoner_name'],
+                        public=form.cleaned_data['is_public'],
+                    )
+                    new_summoner.save()
+
+                    # Automatically log them in
+                    user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+                    if user is not None:
+                        if user.is_active:
+                            login(request, user)
+                            return redirect('herders:profile_default', profile_name=user.username)
+                except IntegrityError as e:
+                    if new_user is not None:
+                        new_user.delete()
+                    if new_summoner is not None:
+                        new_summoner.delete()
+
+                    form.add_error(None, 'There was an issue completing your registration. Please try again.')
+                    mail_admins(
+                        subject='Error during user registration',
+                        message='{} - {}'.format(e, e.message),
+                        fail_silently=True,
+                    )
+
 
     context = {'form': form}
 

@@ -82,9 +82,24 @@ HubUserLoginSchema = {
                     'maxItems': 4,
                 },
                 'runes': {
-                    'type': 'array',
-                    'items': {'$ref': '#/definitions/rune'},
-                    'maxItems': 6,
+                    'oneOf': [
+                        {
+                            'type': 'array',
+                            'items': {'$ref': '#/definitions/rune'},
+                            'maxItems': 6,
+                        },
+                        {
+                            'type': 'object',
+                            'properties': {
+                                '1': {'$ref': '#/definitions/rune'},
+                                '2': {'$ref': '#/definitions/rune'},
+                                '3': {'$ref': '#/definitions/rune'},
+                                '4': {'$ref': '#/definitions/rune'},
+                                '5': {'$ref': '#/definitions/rune'},
+                                '6': {'$ref': '#/definitions/rune'},
+                            }
+                        }
+                    ]
                 },
                 'building_id': {'type': 'number'},
                 'wizard_id': {'type': 'number'},

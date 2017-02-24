@@ -168,4 +168,51 @@ HubUserLoginSchema = {
     'required': ['unit_lock_list', 'building_list', 'rune_craft_item_list', 'deco_list', 'inventory_info', 'runes', 'wizard_info', 'unit_list'],
 }
 
+VisitFriendSchema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/hubuserlogin.json',
+    "title": 'HubUserLogin',
+    'description': 'Schema for entire VisitFriend json data',
+    'definitions': HubUserLoginSchema['definitions'],
+    'type': 'object',
+    'properties': {
+        'friend': {
+            'type': 'object',
+            'properties': {
+                'unit_list': {
+                    'type': 'array',
+                    'items': {'$ref': '#/definitions/monster'},
+                },
+                'building_list': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'building_id': {'type': 'number'},
+                            'building_master_id': {'type': 'number'},
+                        },
+                        'required': ['building_id', 'building_master_id'],
+                    }
+                },
+                'deco_list': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'deco_id': {'type': 'number'},
+                            'level': {'type': 'number'},
+                            'master_id': {'type': 'number'},
+                        },
+                        'required': ['master_id', 'level', 'deco_id']
+                    }
+                },
+            },
+            'required': ['unit_list', 'building_list', 'deco_list'],
+        },
+        'command': {'type': 'string'},
+    },
+    'required': ['friend', 'command'],
+}
+
 HubUserLoginValidator = Draft4Validator(HubUserLoginSchema)
+VisitFriendValidator = Draft4Validator(VisitFriendSchema)

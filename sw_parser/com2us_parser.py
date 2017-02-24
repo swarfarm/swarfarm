@@ -13,7 +13,7 @@ from herders.models import MonsterPiece, MonsterInstance, RuneInstance
 
 from .models import *
 from .com2us_mapping import *
-from com2us_json_schema import HubUserLoginValidator
+from com2us_json_schema import HubUserLoginValidator, VisitFriendValidator
 from .smon_decryptor import decrypt_response
 
 
@@ -49,8 +49,14 @@ def parse_pcap(pcap_file):
 
 
 def validate_sw_json(data):
+    # Determine if it's a friend visit or a personal data file
+    if 'friend' in data:
+        validator = VisitFriendValidator
+    else:
+        validator = HubUserLoginValidator
+
     # Check the submitted data against a schema and return any errors in human readable format
-    error = best_match(HubUserLoginValidator.iter_errors(data))
+    error = best_match(validator.iter_errors(data))
 
     if error:
         return 'Error in field {}:\n{}'.format(

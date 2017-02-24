@@ -1,5 +1,7 @@
 import dpkt
 import json
+from jsonschema import ErrorTree
+from jsonschema.exceptions import best_match
 from dateutil.parser import *
 import pytz
 import datetime
@@ -11,6 +13,7 @@ from herders.models import MonsterPiece, MonsterInstance, RuneInstance
 
 from .models import *
 from .com2us_mapping import *
+from com2us_json_schema import HubUserLoginValidator, VisitFriendValidator
 from .smon_decryptor import decrypt_response
 
 
@@ -46,7 +49,22 @@ def parse_pcap(pcap_file):
 
 
 def validate_sw_json(data):
-    pass
+    # Determine if it's a friend visit or a personal data file
+    if 'friend' in data:
+        validator = VisitFriendValidator
+    else:
+        validator = HubUserLoginValidator
+
+    # Check the submitted data against a schema and return any errors in human readable format
+    error = best_match(validator.iter_errors(data))
+
+    if error:
+        return 'Error in field {}:\n{}'.format(
+            '[%s]' % ']['.join(repr(index) for index in error.path),
+            error.message
+        )
+    else:
+        return None
 
 
 def parse_sw_json(data, owner, options):
@@ -110,7 +128,6 @@ def parse_sw_json(data, owner, options):
                                 monster=mon,
                                 pieces=quantity,
                                 owner=owner,
-                                uncommitted=True,
                             ))
 
     # Extract Rune Inventory (unequipped runes)
@@ -139,10 +156,6 @@ def parse_sw_json(data, owner, options):
             is_new = True
         else:
             is_new = False
-
-        # Make sure it's saved as a new instance and marked as an import
-        mon.pk = None
-        mon.uncommitted = True
 
         mon.com2us_id = com2us_id
 
@@ -255,10 +268,6 @@ def parse_rune_data(rune_data, owner):
     if not rune:
         rune = RuneInstance()
 
-    # Make sure it's saved as a new instance and marked as an import
-    rune.pk = None
-    rune.uncommitted = True
-
     # Basic rune info
     rune.type = rune_set_map.get(rune_data.get('set_id'))
 
@@ -323,13 +332,11 @@ def parse_rune_craft_data(craft_data, owner):
     # [:-4] = rune set
 
     com2us_id = craft_data['craft_item_id']
-    craft = RuneCraftInstance.committed.filter(com2us_id=com2us_id, owner=owner).first()
+    craft = RuneCraftInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
 
     if not craft:
         craft = RuneCraftInstance()
 
-    craft.pk = None
-    craft.uncommitted = True
     craft_type_id = str(craft_data['craft_type_id'])
 
     quality = int(craft_type_id[-1:])

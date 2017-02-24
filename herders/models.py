@@ -956,7 +956,6 @@ class Storage(models.Model):
     CRAFT_FIELDS = ['wood', 'leather', 'rock', 'ore', 'mithril', 'cloth', 'rune_piece', 'dust', 'symbol_harmony', 'symbol_transcendance', 'symbol_chaos', 'crystal_water', 'crystal_fire', 'crystal_wind', 'crystal_light', 'crystal_dark', 'crystal_magic', 'crystal_pure']
 
     owner = models.OneToOneField(Summoner)
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     # Elemental Essences
     magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Magic Essence")
@@ -1027,17 +1026,6 @@ class MonsterTag(models.Model):
         return mark_safe(self.name)
 
 
-class MonsterInstanceImportedManager(models.Manager):
-    def get_queryset(self):
-        return super(MonsterInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
-
-
-class MonsterInstanceManager(models.Manager):
-    # Default manager which only returns finalized instances
-    def get_queryset(self):
-        return super(MonsterInstanceManager, self).get_queryset().filter(uncommitted=False)
-
-
 class MonsterInstance(models.Model):
     PRIORITY_DONE = 0
     PRIORITY_LOW = 1
@@ -1049,11 +1037,6 @@ class MonsterInstance(models.Model):
         (PRIORITY_MED, 'Medium'),
         (PRIORITY_HIGH, 'High'),
     ]
-
-    # Multiple managers to split out imported and finalized objects
-    objects = models.Manager()
-    committed = MonsterInstanceManager()
-    imported = MonsterInstanceImportedManager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
@@ -1072,7 +1055,6 @@ class MonsterInstance(models.Model):
     priority = models.IntegerField(choices=PRIORITY_CHOICES, blank=True, null=True)
     tags = models.ManyToManyField(MonsterTag, blank=True)
     notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     # Calculated fields (on save)
     base_hp = models.IntegerField(blank=True, default=0)
@@ -1147,7 +1129,7 @@ class MonsterInstance(models.Model):
             type_name = RuneInstance.TYPE_CHOICES[rune_count['type'] - 1][1]
             required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[rune_count['type']]
             present = rune_count['count']
-            bonus_text = RuneInstance.RUNE_SET_BONUSES[rune_count['type']]
+            bonus_text = RuneInstance.RUNE_SET_BONUSES[rune_count['type']]['description']
 
             if present >= required:
                 rune_bonuses.extend([type_name + ' ' + bonus_text] * (present // required))
@@ -1158,83 +1140,9 @@ class MonsterInstance(models.Model):
         efficiencies = sum(self.runeinstance_set.filter(efficiency__isnull=False).values_list('efficiency', flat=True))
         return efficiencies / 6
 
-    # Rune bonus calculations
-    def rune_bonus_energy(self):
-        set_bonus_count = floor(self.runeinstance_set.filter(type=RuneInstance.TYPE_ENERGY).count() / 2)
-        return ceil(self.base_hp * 0.15) * set_bonus_count
-
-    def rune_bonus_fatal(self):
-        if self.runeinstance_set.filter(type=RuneInstance.TYPE_FATAL).count() >= 4:
-            return ceil(self.base_attack * 0.35)
-        else:
-            return 0
-
-    def rune_bonus_blade(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_BLADE).count()
-        return 12 * floor(rune_count / 2)
-
-    def rune_bonus_rage(self):
-        if self.runeinstance_set.filter(type=RuneInstance.TYPE_RAGE).count() >= 4:
-            return 40
-        else:
-            return 0
-
-    def rune_bonus_swift(self):
-        if self.runeinstance_set.filter(type=RuneInstance.TYPE_SWIFT).count() >= 4:
-            return 25
-        else:
-            return 0
-
-    def rune_bonus_focus(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_FOCUS).count()
-        return 20 * floor(rune_count / 2)
-
-    def rune_bonus_guard(self):
-        set_bonus_count = floor(self.runeinstance_set.filter(type=RuneInstance.TYPE_GUARD).count() / 2)
-        return ceil(self.base_defense * 0.15) * set_bonus_count
-
-    def rune_bonus_endure(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENDURE).count()
-        return 20 * floor(rune_count / 2)
-
-    def rune_bonus_fight(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_FIGHT).count()
-        return ceil(self.base_attack * 0.07) * floor(rune_count / 2)
-
-    def rune_bonus_determination(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_DETERMINATION).count()
-        return ceil(self.base_defense * 0.07) * floor(rune_count / 2)
-
-    def rune_bonus_enhance(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ENHANCE).count()
-        return ceil(self.base_hp * 0.07) * floor(rune_count / 2)
-
-    def rune_bonus_accuracy(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_ACCURACY).count()
-        return ceil(self.base_accuracy * 0.07) * floor(rune_count / 2)
-
-    def rune_bonus_tolerance(self):
-        rune_count = self.runeinstance_set.filter(type=RuneInstance.TYPE_TOLERANCE).count()
-        return ceil(self.base_resistance * 0.07) * floor(rune_count / 2)
-
     # Stat callables. Base = monster's own stat. Rune = amount gained from runes. Stat by itself is combined total
     def calc_base_hp(self):
         return self.monster.actual_hp(self.stars, self.level)
-
-    def calc_rune_hp(self, base=None):
-        runes = self.runeinstance_set.filter(has_hp=True)
-        if base is None:
-            base = self.base_hp
-        hp_percent = 0
-        hp_flat = 0
-
-        for rune in runes:
-            hp_flat += rune.get_stat(RuneInstance.STAT_HP)
-            hp_percent += rune.get_stat(RuneInstance.STAT_HP_PCT)
-
-        rune_set_bonus = self.rune_bonus_energy() + self.rune_bonus_enhance()
-
-        return int(ceil(round(base * (hp_percent / 100.0), 3)) + rune_set_bonus + hp_flat)
 
     def hp(self):
         return self.base_hp + self.rune_hp
@@ -1242,41 +1150,11 @@ class MonsterInstance(models.Model):
     def calc_base_attack(self):
         return self.monster.actual_attack(self.stars, self.level)
 
-    def calc_rune_attack(self, base=None):
-        runes = self.runeinstance_set.filter(has_atk=True)
-        if base is None:
-            base = self.base_attack
-        atk_percent = 0
-        atk_flat = 0
-
-        for rune in runes:
-            atk_flat += rune.get_stat(RuneInstance.STAT_ATK)
-            atk_percent += rune.get_stat(RuneInstance.STAT_ATK_PCT)
-
-        rune_set_bonus = self.rune_bonus_fatal() + self.rune_bonus_fight()
-
-        return int(ceil(round(base * (atk_percent / 100.0), 3)) + rune_set_bonus + atk_flat)
-
     def attack(self):
         return self.base_attack + self.rune_attack
 
     def calc_base_defense(self):
         return self.monster.actual_defense(self.stars, self.level)
-
-    def calc_rune_defense(self, base=None):
-        runes = self.runeinstance_set.filter(has_def=True)
-        if base is None:
-            base = self.base_defense
-        def_percent = 0
-        def_flat = 0
-
-        for rune in runes:
-            def_flat += rune.get_stat(RuneInstance.STAT_DEF)
-            def_percent += rune.get_stat(RuneInstance.STAT_DEF_PCT)
-
-        rune_set_bonus = self.rune_bonus_guard() + self.rune_bonus_determination()
-
-        return int(ceil(round(base * (def_percent / 100.0), 3)) + rune_set_bonus + def_flat)
 
     def defense(self):
         return self.base_defense + self.rune_defense
@@ -1284,31 +1162,11 @@ class MonsterInstance(models.Model):
     def calc_base_speed(self):
         return self.monster.speed
 
-    def calc_rune_speed(self):
-        base = self.base_speed
-        runes = self.runeinstance_set.filter(has_speed=True)
-        spd_percent = self.rune_bonus_swift()
-        spd_flat = 0
-
-        for rune in runes:
-            spd_flat += rune.get_stat(RuneInstance.STAT_SPD)
-
-        return int(ceil(round(base * (spd_percent / 100.0), 3)) + spd_flat)
-
     def speed(self):
         return self.base_speed + self.rune_speed
 
     def calc_base_crit_rate(self):
         return self.monster.crit_rate
-
-    def calc_rune_crit_rate(self):
-        runes = self.runeinstance_set.filter(has_crit_rate=True)
-        crit_rate = self.rune_bonus_blade()
-
-        for rune in runes:
-            crit_rate += rune.get_stat(RuneInstance.STAT_CRIT_RATE_PCT)
-
-        return int(crit_rate)
 
     def crit_rate(self):
         return self.base_crit_rate + self.rune_crit_rate
@@ -1316,29 +1174,11 @@ class MonsterInstance(models.Model):
     def calc_base_crit_damage(self):
         return self.monster.crit_damage
 
-    def calc_rune_crit_damage(self):
-        runes = self.runeinstance_set.filter(has_crit_dmg=True)
-        crit_damage = self.rune_bonus_rage()
-
-        for rune in runes:
-            crit_damage += rune.get_stat(RuneInstance.STAT_CRIT_DMG_PCT)
-
-        return int(crit_damage)
-
     def crit_damage(self):
         return self.base_crit_damage + self.rune_crit_damage
 
     def calc_base_resistance(self):
         return self.monster.resistance
-
-    def calc_rune_resistance(self):
-        runes = self.runeinstance_set.filter(has_resist=True)
-        resist = self.rune_bonus_endure() + self.rune_bonus_tolerance()
-
-        for rune in runes:
-            resist += rune.get_stat(RuneInstance.STAT_RESIST_PCT)
-
-        return int(resist)
 
     def resistance(self):
         return self.base_resistance + self.rune_resistance
@@ -1346,17 +1186,28 @@ class MonsterInstance(models.Model):
     def calc_base_accuracy(self):
         return self.monster.accuracy
 
-    def calc_rune_accuracy(self):
-        runes = self.runeinstance_set.filter(has_accuracy=True)
-        accuracy = self.rune_bonus_focus() + self.rune_bonus_accuracy()
-
-        for rune in runes:
-            accuracy += rune.get_stat(RuneInstance.STAT_ACCURACY_PCT)
-
-        return int(accuracy)
-
     def accuracy(self):
         return self.base_accuracy + self.rune_accuracy
+
+    def get_base_stat(self, stat):
+        if stat == RuneInstance.STAT_HP or stat == RuneInstance.STAT_HP_PCT:
+            return self.base_hp
+        elif stat == RuneInstance.STAT_ATK or stat == RuneInstance.STAT_ATK_PCT:
+            return self.base_attack
+        elif stat == RuneInstance.STAT_DEF or stat == RuneInstance.STAT_DEF_PCT:
+            return self.base_defense
+        elif stat == RuneInstance.STAT_SPD:
+            return self.base_speed
+        elif stat == RuneInstance.STAT_CRIT_RATE_PCT:
+            return self.base_crit_rate
+        elif stat == RuneInstance.STAT_CRIT_DMG_PCT:
+            return self.base_crit_damage
+        elif stat == RuneInstance.STAT_RESIST_PCT:
+            return self.base_resistance
+        elif stat == RuneInstance.STAT_ACCURACY_PCT:
+            return self.base_accuracy
+
+        return None
 
     def get_max_level_stats(self):
         max_base_hp = self.monster.actual_hp(6, 40)
@@ -1370,9 +1221,9 @@ class MonsterInstance(models.Model):
                 'defense': max_base_def,
             },
             'rune': {
-                'hp': self.calc_rune_hp(base=max_base_hp),
-                'attack': self.calc_rune_attack(base=max_base_atk),
-                'defense': self.calc_rune_defense(base=max_base_def),
+                'hp': self.rune_hp,
+                'attack': self.rune_attack,
+                'defense': self.rune_defense,
             },
         }
 
@@ -1421,8 +1272,8 @@ class MonsterInstance(models.Model):
         return self.get_building_stats(Building.AREA_GUILD)
 
     def get_possible_skillups(self):
-        devilmon = MonsterInstance.committed.filter(owner=self.owner, monster__name='Devilmon').count()
-        family = MonsterInstance.committed.filter(owner=self.owner, monster__family_id=self.monster.family_id).exclude(pk=self.pk).order_by('ignore_for_fusion')
+        devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count()
+        family = MonsterInstance.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id).exclude(pk=self.pk).order_by('ignore_for_fusion')
 
         return {
             'devilmon': devilmon,
@@ -1431,7 +1282,7 @@ class MonsterInstance(models.Model):
         }
 
     def update_fields(self):
-        # Update stats
+        # Update base stats based on level
         self.base_hp = self.calc_base_hp()
         self.base_attack = self.calc_base_attack()
         self.base_defense = self.calc_base_defense()
@@ -1441,14 +1292,53 @@ class MonsterInstance(models.Model):
         self.base_resistance = self.calc_base_resistance()
         self.base_accuracy = self.calc_base_accuracy()
 
-        self.rune_hp = self.calc_rune_hp()
-        self.rune_attack = self.calc_rune_attack()
-        self.rune_defense = self.calc_rune_defense()
-        self.rune_speed = self.calc_rune_speed()
-        self.rune_crit_rate = self.calc_rune_crit_rate()
-        self.rune_crit_damage = self.calc_rune_crit_damage()
-        self.rune_resistance = self.calc_rune_resistance()
-        self.rune_accuracy = self.calc_rune_accuracy()
+        # Update stats based on runes
+        rune_set = self.runeinstance_set.all()
+        stat_bonuses = {stat_id: 0 for stat_id, _ in RuneInstance.STAT_CHOICES}
+        rune_set_counts = {type_id: 0 for type_id, _ in RuneInstance.TYPE_CHOICES}
+
+        # Sum up all stat bonuses
+        for rune in rune_set:
+            rune_set_counts[rune.type] += 1
+            stat_bonuses[RuneInstance.STAT_HP] += rune.get_stat(RuneInstance.STAT_HP)
+            stat_bonuses[RuneInstance.STAT_HP_PCT] += rune.get_stat(RuneInstance.STAT_HP_PCT)
+            stat_bonuses[RuneInstance.STAT_ATK] += rune.get_stat(RuneInstance.STAT_ATK)
+            stat_bonuses[RuneInstance.STAT_ATK_PCT] += rune.get_stat(RuneInstance.STAT_ATK_PCT)
+            stat_bonuses[RuneInstance.STAT_DEF] += rune.get_stat(RuneInstance.STAT_DEF)
+            stat_bonuses[RuneInstance.STAT_DEF_PCT] += rune.get_stat(RuneInstance.STAT_DEF_PCT)
+            stat_bonuses[RuneInstance.STAT_SPD] += rune.get_stat(RuneInstance.STAT_SPD)
+            stat_bonuses[RuneInstance.STAT_CRIT_RATE_PCT] += rune.get_stat(RuneInstance.STAT_CRIT_RATE_PCT)
+            stat_bonuses[RuneInstance.STAT_CRIT_DMG_PCT] += rune.get_stat(RuneInstance.STAT_CRIT_DMG_PCT)
+            stat_bonuses[RuneInstance.STAT_RESIST_PCT] += rune.get_stat(RuneInstance.STAT_RESIST_PCT)
+            stat_bonuses[RuneInstance.STAT_ACCURACY_PCT] += rune.get_stat(RuneInstance.STAT_ACCURACY_PCT)
+
+        # Add in the set bonuses
+        for set, count in rune_set_counts.iteritems():
+            required_count = RuneInstance.RUNE_SET_BONUSES[set]['count']
+            bonus_value = RuneInstance.RUNE_SET_BONUSES[set]['value']
+            if bonus_value is not None and count >= required_count:
+                num_sets_equipped = floor(count / required_count)
+                stat = RuneInstance.RUNE_SET_BONUSES[set]['stat']
+
+                if set == RuneInstance.TYPE_SWIFT:
+                    # Swift set is special because it adds a percentage to a normally flat stat
+                    bonus_value = int(ceil(round(self.get_base_stat(RuneInstance.STAT_SPD) * (bonus_value / 100.0), 3)))
+
+                stat_bonuses[stat] += bonus_value * num_sets_equipped
+
+        # Convert HP/ATK/DEF percentage bonuses to flat bonuses based on the base stats
+        for stat in [RuneInstance.STAT_HP_PCT, RuneInstance.STAT_ATK_PCT, RuneInstance.STAT_DEF_PCT]:
+            stat_bonuses[stat] = int(ceil(round(self.get_base_stat(stat) * (stat_bonuses[stat] / 100.0), 3)))
+
+        # Add all the bonuses together to get final values.
+        self.rune_hp = stat_bonuses[RuneInstance.STAT_HP] + stat_bonuses[RuneInstance.STAT_HP_PCT]
+        self.rune_attack = stat_bonuses[RuneInstance.STAT_ATK] + stat_bonuses[RuneInstance.STAT_ATK_PCT]
+        self.rune_defense = stat_bonuses[RuneInstance.STAT_DEF] + stat_bonuses[RuneInstance.STAT_DEF_PCT]
+        self.rune_speed = stat_bonuses[RuneInstance.STAT_SPD]
+        self.rune_crit_rate = stat_bonuses[RuneInstance.STAT_CRIT_RATE_PCT]
+        self.rune_crit_damage = stat_bonuses[RuneInstance.STAT_CRIT_DMG_PCT]
+        self.rune_resistance = stat_bonuses[RuneInstance.STAT_RESIST_PCT]
+        self.rune_accuracy = stat_bonuses[RuneInstance.STAT_ACCURACY_PCT]
 
         self.avg_rune_efficiency = self.get_avg_rune_efficiency()
 
@@ -1521,17 +1411,6 @@ class MonsterInstance(models.Model):
         ordering = ['-stars', '-level', 'monster__name']
 
 
-class MonsterPieceImportedManager(models.Manager):
-    def get_queryset(self):
-        return super(MonsterPieceImportedManager, self).get_queryset().filter(uncommitted=True)
-
-
-class MonsterPieceManager(models.Manager):
-    # Default manager which only returns finalized instances
-    def get_queryset(self):
-        return super(MonsterPieceManager, self).get_queryset().filter(uncommitted=False)
-
-
 class MonsterPiece(models.Model):
     PIECE_REQUIREMENTS = {
         1: 10,
@@ -1541,16 +1420,10 @@ class MonsterPiece(models.Model):
         5: 100,
     }
 
-    # Multiple managers to split out imported and finalized objects
-    objects = models.Manager()
-    committed = MonsterPieceManager()
-    imported = MonsterPieceImportedManager()
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey('Summoner')
     monster = models.ForeignKey('Monster')
     pieces = models.IntegerField(default=0)
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     class Meta:
         ordering = ['monster__name']
@@ -1565,17 +1438,6 @@ class MonsterPiece(models.Model):
             base_stars -= 1
 
         return int(floor(self.pieces / self.PIECE_REQUIREMENTS[base_stars]))
-
-
-class RuneInstanceImportedManager(models.Manager):
-    def get_queryset(self):
-        return super(RuneInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
-
-
-class RuneInstanceManager(models.Manager):
-    # Default manager which only returns finalized instances
-    def get_queryset(self):
-        return super(RuneInstanceManager, self).get_queryset().filter(uncommitted=False)
 
 
 class RuneInstance(models.Model):
@@ -1930,27 +1792,154 @@ class RuneInstance(models.Model):
     }
 
     RUNE_SET_BONUSES = {
-        TYPE_ENERGY: '2 Set: HP +15%',
-        TYPE_FATAL: '4 Set: Attack Power +35%',
-        TYPE_BLADE: '2 Set: Critical Rate +12%',
-        TYPE_RAGE: '4 Set: Critical Damage +40%',
-        TYPE_SWIFT: '4 Set: Attack Speed +25%',
-        TYPE_FOCUS: '2 Set: Accuracy +20%',
-        TYPE_GUARD: '2 Set: Defense +15%',
-        TYPE_ENDURE: '2 Set: Resistance +20%',
-        TYPE_VIOLENT: '4 Set: Get Extra Turn +22%',
-        TYPE_WILL: '2 Set: Immunity +1 turn',
-        TYPE_NEMESIS: '2 Set: ATK Gauge +4% (for every 7% HP lost)',
-        TYPE_SHIELD: '2 Set: Ally Shield 3 turns (15% of HP)',
-        TYPE_REVENGE: '2 Set: Counterattack +15%',
-        TYPE_DESPAIR: '4 Set: Stun Rate +25%',
-        TYPE_VAMPIRE: '4 Set: Life Drain +35%',
-        TYPE_DESTROY: "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP",
-        TYPE_FIGHT: '2 Set: Increase the Attack Power of all allies by 7%',
-        TYPE_DETERMINATION: '2 Set: Increase the Defense of all allies by 7%',
-        TYPE_ENHANCE: '2 Set: Increase the HP of all allies by 7%',
-        TYPE_ACCURACY: '2 Set: Increase the Accuracy of all allies by 10%',
-        TYPE_TOLERANCE: '2 Set: Increase the Resistance of all allies by 10%',
+        TYPE_ENERGY: {
+            'count': 2,
+            'stat': STAT_HP_PCT,
+            'value': 15.0,
+            'team': False,
+            'description': '2 Set: HP +15%',
+        },
+        TYPE_FATAL: {
+            'count': 4,
+            'stat': STAT_ATK_PCT,
+            'value': 35.0,
+            'team': False,
+            'description': '4 Set: Attack Power +35%',
+        },
+        TYPE_BLADE: {
+            'count': 2,
+            'stat': STAT_CRIT_RATE_PCT,
+            'value': 12.0,
+            'team': False,
+            'description': '2 Set: Critical Rate +12%',
+        },
+        TYPE_RAGE: {
+            'count': 4,
+            'stat': STAT_CRIT_DMG_PCT,
+            'value': 40.0,
+            'team': False,
+            'description': '4 Set: Critical Damage +40%',
+        },
+        TYPE_SWIFT: {
+            'count': 4,
+            'stat': STAT_SPD,
+            'value': 25.0,
+            'team': False,
+            'description': '4 Set: Attack Speed +25%',
+        },
+        TYPE_FOCUS: {
+            'count': 2,
+            'stat': STAT_ACCURACY_PCT,
+            'value': 20.0,
+            'team': False,
+            'description': '2 Set: Accuracy +20%',
+        },
+        TYPE_GUARD: {
+            'count': 2,
+            'stat': STAT_DEF_PCT,
+            'value': 15.0,
+            'team': False,
+            'description': '2 Set: Defense +15%',
+        },
+        TYPE_ENDURE: {
+            'count': 2,
+            'stat': STAT_RESIST_PCT,
+            'value': 20.0,
+            'team': False,
+            'description': '2 Set: Resistance +20%',
+        },
+        TYPE_VIOLENT: {
+            'count': 4,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '4 Set: Get Extra Turn +22%',
+        },
+        TYPE_WILL: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '2 Set: Immunity +1 turn',
+        },
+        TYPE_NEMESIS: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '2 Set: ATK Gauge +4% (for every 7% HP lost)',
+        },
+        TYPE_SHIELD: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': True,
+            'description': '2 Set: Ally Shield 3 turns (15% of HP)',
+        },
+        TYPE_REVENGE: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '2 Set: Counterattack +15%',
+        },
+        TYPE_DESPAIR: {
+            'count': 4,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '4 Set: Stun Rate +25%',
+        },
+        TYPE_VAMPIRE: {
+            'count': 4,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '4 Set: Life Drain +35%',
+        },
+        TYPE_DESTROY: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP",
+        },
+        TYPE_FIGHT: {
+            'count': 2,
+            'stat': STAT_ATK,
+            'value': 7.0,
+            'team': True,
+            'description': '2 Set: Increase the Attack Power of all allies by 7%',
+        },
+        TYPE_DETERMINATION: {
+            'count': 2,
+            'stat': STAT_DEF,
+            'value': 7.0,
+            'team': True,
+            'description': '2 Set: Increase the Defense of all allies by 7%',
+        },
+        TYPE_ENHANCE: {
+            'count': 2,
+            'stat': STAT_HP,
+            'value': 7.0,
+            'team': True,
+            'description': '2 Set: Increase the HP of all allies by 7%',
+        },
+        TYPE_ACCURACY: {
+            'count': 2,
+            'stat': STAT_ACCURACY_PCT,
+            'value': 10.0,
+            'team': True,
+            'description': '2 Set: Increase the Accuracy of all allies by 10%',
+        },
+        TYPE_TOLERANCE: {
+            'count': 2,
+            'stat': STAT_RESIST_PCT,
+            'value': 10.0,
+            'team': True,
+            'description': '2 Set: Increase the Resistance of all allies by 10%',
+        },
+
     }
 
     CRAFT_GRINDSTONE = 0
@@ -1973,11 +1962,6 @@ class RuneInstance(models.Model):
         6: [750, 1475, 2200, 3050, 3900, 4875, 5850, 6975, 8100, 9350, 10600, 11975, 13350, 14850, 16350],
     }
 
-    # Multiple managers to split out imported and finalized objects
-    objects = models.Manager()
-    committed = RuneInstanceManager()
-    imported = RuneInstanceImportedManager()
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
     owner = models.ForeignKey(Summoner)
@@ -1985,7 +1969,6 @@ class RuneInstance(models.Model):
     assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     stars = models.IntegerField()
     level = models.IntegerField()
@@ -2044,9 +2027,6 @@ class RuneInstance(models.Model):
 
     def get_substat_4_rune_display(self):
         return self.RUNE_STAT_DISPLAY.get(self.substat_4, '')
-
-    def get_rune_set_bonus(self):
-        return self.RUNE_SET_BONUSES[self.type]
 
     @staticmethod
     def get_valid_stats_for_slot(slot):
@@ -2489,17 +2469,6 @@ class RuneInstance(models.Model):
         ordering = ['slot', 'type', 'level', 'quality']
 
 
-class RuneCraftInstanceImportedManager(models.Manager):
-    def get_queryset(self):
-        return super(RuneCraftInstanceImportedManager, self).get_queryset().filter(uncommitted=True)
-
-
-class RuneCraftInstanceManager(models.Manager):
-    # Default manager which only returns finalized instances
-    def get_queryset(self):
-        return super(RuneCraftInstanceManager, self).get_queryset().filter(uncommitted=False)
-
-
 class RuneCraftInstance(models.Model):
     QUALITY_NORMAL = 0
     QUALITY_MAGIC = 1
@@ -2678,11 +2647,6 @@ class RuneCraftInstance(models.Model):
         }
     }
 
-    # Multiple managers to split out imported and finalized objects
-    objects = models.Manager()
-    committed = RuneCraftInstanceManager()
-    imported = RuneCraftInstanceImportedManager()
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner)
     com2us_id = models.BigIntegerField(blank=True, null=True)
@@ -2691,7 +2655,6 @@ class RuneCraftInstance(models.Model):
     stat = models.IntegerField(choices=RuneInstance.STAT_CHOICES)
     quality = models.IntegerField(choices=QUALITY_CHOICES)
     value = models.IntegerField(blank=True, null=True)
-    uncommitted = models.BooleanField(default=False)  # Used for importing
 
     def __str__(self):
         if self.stat in RuneInstance.PERCENT_STATS:
@@ -2778,10 +2741,12 @@ class BuildingInstance(models.Model):
                     )
                 })
 
-    def save(self, *args, **kwargs):
+    def update_fields(self):
         self.level = min(max(0, self.level), self.building.max_level)
-        super(BuildingInstance, self).save(*args, **kwargs)
 
+    def save(self, *args, **kwargs):
+        self.update_fields()
+        super(BuildingInstance, self).save(*args, **kwargs)
 
 # Game event calendar stuff
 class GameEvent(models.Model):

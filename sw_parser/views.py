@@ -99,29 +99,32 @@ def _import_pcap(request):
             except Exception as e:
                 errors.append('Exception ' + str(type(e)) + ': ' + str(e))
             else:
-                validation_error = validate_sw_json(data)
+                if data:
+                    validation_error = validate_sw_json(data)
 
-                if validation_error:
-                    errors.append(validation_error)
-                else:
-                    # Import the new objects
-                    try:
-                        with transaction.atomic():
-                            errors += _import_objects(request, data, import_options, summoner)
-                    except Exception as e:
-                        errors.append('Error importing objects. Changes have been rolled back.')
-                        mail_admins(
-                            subject='Error importing',
-                            message='{} - {}'.format(e, e.message),
-                            fail_silently=True
-                        )
-
-                    if len(errors):
-                        messages.warning(request, mark_safe('Errors during import. See issues below:<br />' + '<br />'.join(errors)))
+                    if validation_error:
+                        errors.append(validation_error)
                     else:
-                        messages.success(request, 'Import successfully applied!')
+                        # Import the new objects
+                        try:
+                            with transaction.atomic():
+                                errors += _import_objects(request, data, import_options, summoner)
+                        except Exception as e:
+                            errors.append('Error importing objects. Changes have been rolled back.')
+                            mail_admins(
+                                subject='Error importing',
+                                message='{} - {}'.format(e, e.message),
+                                fail_silently=True
+                            )
 
-                    return redirect('herders:profile_default', profile_name=request.user.username)
+                        if len(errors):
+                            messages.warning(request, mark_safe('Errors during import. See issues below:<br />' + '<br />'.join(errors)))
+                        else:
+                            messages.success(request, 'Import successfully applied!')
+
+                        return redirect('herders:profile_default', profile_name=request.user.username)
+                else:
+                    errors.append("Unable to find Summoner's War data in the uploaded file")
     else:
         form = ImportPCAPForm()
 

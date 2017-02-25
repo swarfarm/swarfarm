@@ -24,6 +24,7 @@ from .forms import *
 from .com2us_parser import *
 from .com2us_mapping import valid_rune_drop_map
 from .log_parser import *
+from .tasks import com2us_data_import
 from .rune_optimizer_parser import *
 from .db_utils import Percentile
 import chart_templates
@@ -178,22 +179,26 @@ def import_sw_json(request):
                 if validation_error:
                     errors.append(validation_error)
                 else:
-                    # Import the new objects
-                    try:
-                        with transaction.atomic():
-                            errors += _import_objects(request, data, import_options, summoner)
-                    except Exception as e:
-                        errors.append('Error importing objects. Changes have been rolled back.')
-                        mail_admins(
-                            subject='Error importing',
-                            message='{} - {}'.format(e, e.message),
-                            fail_silently=True
-                        )
+                    # Queue the import
+                    task = com2us_data_import.delay(data, summoner.pk, import_options)
+                    request.session['import_task_id'] = task.task_id
 
-                    if len(errors):
-                        messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
-                    else:
-                        messages.success(request, 'Import successfully applied!')
+                    # # Import the new objects
+                    # try:
+                    #     with transaction.atomic():
+                    #         errors += _import_objects(request, data, import_options, summoner)
+                    # except Exception as e:
+                    #     errors.append('Error importing objects. Changes have been rolled back.')
+                    #     mail_admins(
+                    #         subject='Error importing',
+                    #         message='{} - {}'.format(e, e.message),
+                    #         fail_silently=True
+                    #     )
+                    #
+                    # if len(errors):
+                    #     messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
+                    # else:
+                    #     messages.success(request, 'Import successfully applied!')
 
                     return redirect('herders:profile_default', profile_name=request.user.username)
     else:

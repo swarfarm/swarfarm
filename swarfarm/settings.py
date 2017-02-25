@@ -176,6 +176,7 @@ CELERY_ACCEPT_CONTENT = ['json']
 
 if DEBUG:
     CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 
 # Session config
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'

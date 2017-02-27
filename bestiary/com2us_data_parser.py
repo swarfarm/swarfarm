@@ -472,6 +472,7 @@ MONSTER_NAME_TABLE = 1
 SKILL_NAME_TABLE = 19
 SKILL_DESCRIPTION_TABLE = 20
 
+
 def get_monster_names_by_id():
     return _get_translation_tables()[MONSTER_NAME_TABLE]
 

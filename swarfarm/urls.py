@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.staticfiles import views
 
 from herders import views as herder_views
 from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, CrispyPasswordResetForm, CrispySetPasswordForm
@@ -47,3 +49,8 @@ urlpatterns = [
     url(r'^username_change/$', herder_views.change_username, name="username_change"),
     url(r'^username_change/done/$', herder_views.change_username_complete, name="username_change_complete"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        url(r'^static/(?P<path>.*)$', views.serve),
+    ]

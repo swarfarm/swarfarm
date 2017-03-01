@@ -1,0 +1,9 @@
+server {
+    listen 80 default_server;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/vagrant/swarfarm.sock;
+        proxy_read_timeout 300s;
+    }
+}

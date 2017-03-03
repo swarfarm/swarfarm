@@ -1,15 +1,18 @@
 Django==1.8.13
+gunicorn
+eventlet
 psycopg2
 bcrypt
 bitstring
-dpkt
 celery
+dpkt
 jsonschema
 pytz
 python-dateutil
 pycrypto
 redis
 pillow==3.1.1
+sympy>=1.0.0
 django-environ
 django-celery-results
 django-suit
@@ -26,4 +29,3 @@ djangorestframework==3.3.2
 django-filter==0.13.0
 Django-Select2
 drf_ujson
-sympy>=1.0.0

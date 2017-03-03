@@ -19,53 +19,23 @@ The exceptions to that rule are bug fixes, data logging/report generation, and a
 Any ideas should be raised as an issue first.
 If you want to contribute code for an idea, fork the repository and create a pull request.
 Any changes in data models that affects the database structure will be highly scrutinized and may be delayed in deployment if accepted.
-## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+### Setting up for Development
 
-### Prerequisites
+1. Copy `.env.example` to `.env`. No modifications are necessary to work with the default Vagrant config.
+Vagrant provisioning will **fail** if you do not have a .env file present.
+2. Install [Vagrant](https://www.vagrantup.com/downloads.html) and run `vagrant up` in the root directory of this project.
+`.env.example` will automatically be copied to `.env` and will work without modification for development.
 
-* Python 2.7
-* PostgreSQL 9.4
+This will get you:
+ * Fully operational production stack compressed into one VM (nginx, postgres, gunicorn, redis, rabbitmq, celery)
+ * Debug mode enabled
+ * Hot reloading code based this local source directory. No hot reload for celery daemon, though.
+ * Server accessible at http://10.243.243.10
+ * Monster bestiary data already filled in
 
-Additional prerequisites for production:
-
-* nginx
-* Redis
-* RabbitMQ
-
-### Installing a development environment
-
-1. Get your postgres set up with a user role and a database.
-2. Install all the python packages, preferably in a virtual environment
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3. Copy `.env.example` to `.env` and edit the variables to fit your environment.
-    * The minimum settings required to work in a development environment are `SECRET_KEY` and `DATABASE_URL`.
-    * See the [Django documentation](https://docs.djangoproject.com/en/1.10/ref/settings/#std:setting-SECRET_KEY) for `SECRET_KEY` before continuing.
-    * `CACHE_BACKEND` and `CACHE_LOCATION` can be left unchanged and will utilize Django's dummy cache, which doesn't actually do anything.
-    * `RECAPTCHA_PUBLIC_KEY` and `RECAPTCHA_PRIVATE_KEY` must be set to be able to submit forms in certain sections of the site. Create your own keys [here](https://www.google.com/recaptcha/admin).
-    * `GOOGLE_API_KEY` is used for Google's URL shortener API and is not required unless you are testing the Twitch.tv Nightbot API.
-
-4. Run all database migrations
-
-    ```bash
-    python manage.py migrate
-    ```
-
-5. Create a superuser
-    ```commandline
-    python manage.py createsuperuser
-    ```
-
-6. Load the bestiary data from the fixtures **COMING SOON**
-7. Run the server
-    ```commandline
-    python manage.py runserver
-    ```
+You can use the python virtualenv on the Vagrant VM (located at `/home/vagrant/swarfarm_env`) as a remote interpreter if your development environment supports it.
+The ports for postgres, redis, and RabbitMQ are forwarded to your host machine so they are accessible from localhost. 
 
 ## Running the tests
 
@@ -78,8 +48,6 @@ There are no tests yet. I am a horrible person.
 * [Django REST Framework](http://www.django-rest-framework.org/) - REST API for Django
 * [Celery](http://www.celeryproject.org/) - Asynchronous task runner
 * Many other packages. See requirements.txt
-
-
 
 ## Authors
 

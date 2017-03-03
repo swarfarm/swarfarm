@@ -68,7 +68,6 @@ def validate_sw_json(data):
 
 
 def parse_sw_json(data, owner, options):
-    errors = []
     wizard_id = None
     parsed_runes = []
     parsed_rune_crafts = []
@@ -118,17 +117,14 @@ def parse_sw_json(data, owner, options):
             elif item['item_master_type'] == inventory_type_map['monster_piece']:
                 quantity = item.get('item_quantity')
                 if quantity > 0:
-                    try:
-                        mon = get_monster_from_id(item['item_master_id'])
-                    except ValueError as e:
-                        errors.append(e.message)
-                    else:
-                        if mon:
-                            parsed_monster_pieces.append(MonsterPiece(
-                                monster=mon,
-                                pieces=quantity,
-                                owner=owner,
-                            ))
+                    mon = get_monster_from_id(item['item_master_id'])
+
+                    if mon:
+                        parsed_monster_pieces.append(MonsterPiece(
+                            monster=mon,
+                            pieces=quantity,
+                            owner=owner,
+                        ))
 
     # Extract Rune Inventory (unequipped runes)
     if runes_info:
@@ -138,8 +134,6 @@ def parse_sw_json(data, owner, options):
                 rune.owner = owner
                 rune.assigned_to = None
                 parsed_runes.append(rune)
-            else:
-                errors.append('Unable to parse rune in inventory with this data: ' + str(rune_data))
 
     # Extract monsters
     for unit_info in unit_list:
@@ -163,7 +157,7 @@ def parse_sw_json(data, owner, options):
         try:
             mon.monster = Monster.objects.get(com2us_id=monster_type_id)
         except Monster.DoesNotExist:
-            errors.append('Unable to parse monster data. Monster type: ' + str(unit_info.get('unit_master_id')) + '. Monster ID: ' + str(unit_info.get('unit_id')))
+            # Unable to find a matching monster in the database - either crap data or brand new monster. Don't parse it.
             continue
 
         mon.stars = unit_info.get('class')
@@ -225,8 +219,6 @@ def parse_sw_json(data, owner, options):
                 rune.owner = owner
                 rune.assigned_to = mon
                 parsed_runes.append(rune)
-            else:
-                errors.append('Unable to parse rune assigned to ' + str(mon))
 
     # Extract grindstones/enchant gems
     if craft_info:
@@ -235,11 +227,8 @@ def parse_sw_json(data, owner, options):
             if craft:
                 craft.owner = owner
                 parsed_rune_crafts.append(craft)
-            else:
-                errors.append('Unable to parse gem/grindstone in inventory with this data: ' + str(craft_data))
 
     import_results = {
-        'errors': errors,
         'wizard_id': wizard_id,
         'monsters': parsed_mons,
         'monster_pieces': parsed_monster_pieces,

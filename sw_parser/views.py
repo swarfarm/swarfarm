@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from copy import deepcopy
 import csv
+from celery.result import AsyncResult
 
 from django.conf import settings
 from django.contrib import messages
@@ -24,6 +25,7 @@ from .forms import *
 from .com2us_parser import *
 from .com2us_mapping import valid_rune_drop_map
 from .log_parser import *
+from .tasks import com2us_data_import
 from .rune_optimizer_parser import *
 from .db_utils import Percentile
 import chart_templates
@@ -105,24 +107,12 @@ def _import_pcap(request):
                     if validation_error:
                         errors.append(validation_error)
                     else:
-                        # Import the new objects
-                        try:
-                            with transaction.atomic():
-                                errors += _import_objects(request, data, import_options, summoner)
-                        except Exception as e:
-                            errors.append('Error importing objects. Changes have been rolled back.')
-                            mail_admins(
-                                subject='Error importing',
-                                message='{} - {}'.format(e, e.message),
-                                fail_silently=True
-                            )
+                        # Queue the import
+                        task = com2us_data_import.delay(data, summoner.pk, import_options)
+                        request.session['import_task_id'] = task.task_id
 
-                        if len(errors):
-                            messages.warning(request, mark_safe('Errors during import. See issues below:<br />' + '<br />'.join(errors)))
-                        else:
-                            messages.success(request, 'Import successfully applied!')
+                        return render(request, 'sw_parser/import_progress.html')
 
-                        return redirect('herders:profile_default', profile_name=request.user.username)
                 else:
                     errors.append("Unable to find Summoner's War data in the uploaded file")
     else:
@@ -178,24 +168,11 @@ def import_sw_json(request):
                 if validation_error:
                     errors.append(validation_error)
                 else:
-                    # Import the new objects
-                    try:
-                        with transaction.atomic():
-                            errors += _import_objects(request, data, import_options, summoner)
-                    except Exception as e:
-                        errors.append('Error importing objects. Changes have been rolled back.')
-                        mail_admins(
-                            subject='Error importing',
-                            message='{} - {}'.format(e, e.message),
-                            fail_silently=True
-                        )
+                    # Queue the import
+                    task = com2us_data_import.delay(data, summoner.pk, import_options)
+                    request.session['import_task_id'] = task.task_id
 
-                    if len(errors):
-                        messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
-                    else:
-                        messages.success(request, 'Import successfully applied!')
-
-                    return redirect('herders:profile_default', profile_name=request.user.username)
+                    return render(request, 'sw_parser/import_progress.html')
     else:
         form = ImportSWParserJSONForm()
 
@@ -208,18 +185,17 @@ def import_sw_json(request):
     return render(request, 'sw_parser/import_sw_json.html', context)
 
 
-@login_required()
-def import_status(request):
-    return render(request, 'sw_parser/import_progress.html')
-
-
 @login_required
-def import_status_data(request):
-    return JsonResponse({
-        'stage': request.session.get('import_stage'),
-        'total': request.session.get('import_total'),
-        'current': request.session.get('import_current'),
-    })
+def import_status(request):
+    task = AsyncResult(request.session.get('import_task_id'))
+
+    if task:
+        return JsonResponse({
+            'status': task.status,
+            'result': task.result,
+        })
+    else:
+        raise Http404('Task ID not provided')
 
 
 def _import_objects(request, data, import_options, summoner):

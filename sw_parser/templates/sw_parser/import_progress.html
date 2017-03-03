@@ -1,43 +1,94 @@
 {% extends 'sw_parser/base.html' %}
 
+{% load staticfiles %}
+
 {% block content %}
-<p>{{ task_id }}</p>
-<div class="progress">
-    <div class="progress-bar progress-bar-striped active" role="progressbar" id="progress-parse" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-</div>
-
-<p>Parsing Monsters and pieces...</p>
-<div class="progress">
-    <div class="progress-bar" role="progressbar" id="progress-monsters" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0;"></div>
-</div>
-
-<p>Parsing Runes...</p>
-<div class="progress">
-    <div class="progress-bar" role="progressbar" id="progress-runes" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0;"></div>
-</div>
-
-<p>Parsing Grindstones and Enchant Gems...</p>
-<div class="progress">
-    <div class="progress-bar" role="progressbar" id="progress-crafts" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0;"></div>
-</div>
+    {% static 'herders/images/' as img_url_prefix %}
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h1>Import in progress</h1>
+            <p>Your import has been queued. Typical wait time is TODO seconds</p>
+            <div class="list-group">
+                <div class="list-group-item list-group-item-success">
+                    <div class="row">
+                        <div class="col-sm-2 text-center">
+                            <h4><span class="glyphicon glyphicon-check text-success"></span></h4>
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Import data validated</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item list-group-item-info">
+                    <div class="row">
+                        <div class="col-sm-2 text-center">
+                            <h4>...</h4>
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Waiting in queue...</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-2 text-center">
+                            <h4>...</h4>
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Parsing storage, buildings, etc...</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-2 text-center">
+                            <h4>...</h4>
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Parsing monsters</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-2 text-center">
+                            <h4>...</h4>
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Parsing runes</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-2 text-center">
+                            <h4>...</h4>
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Parsing Grindstones and Enchant Gems</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
 
+
 {% block javascript %}
-<script type="application/javascript">
+<script>
 function updateImportProgress() {
     $.ajax({
         type: 'get',
-        url: '/data/import/progress/data/',
+        url: '/data/import/progress/',
         global: false
     }).done(function(response) {
-        console.log(response);
+        console.log(response.info);
     });
 }
 
 $(document).ready(function() {
-    updateInterval = setInterval(updateImportProgress, 2000);
+    updateInterval = setInterval(updateImportProgress, 2000)
 });
-
-
 </script>
 {% endblock javascript %}

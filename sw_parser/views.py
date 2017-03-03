@@ -185,13 +185,7 @@ def import_sw_json(request):
                     request.session['import_task_id'] = task.task_id
                     print task.task_id
 
-                    return render(request, 'sw_parser/import_progress.html', {'task_id': task.task_id})
-
-                    # return JsonResponse({
-                    #     'status': 'PENDING',
-                    #     'info': None,
-                    #     'task_id': task.task_id,
-                    # })
+                    return render(request, 'sw_parser/import_progress.html')
     else:
         form = ImportSWParserJSONForm()
 
@@ -205,17 +199,16 @@ def import_sw_json(request):
 
 
 @login_required
-def import_status_data(request):
-    task = AsyncResult(request.session['import_task_id'])
+def import_status(request):
+    task = AsyncResult(request.session.get('import_task_id'))
 
     if task:
         return JsonResponse({
             'status': task.status,
-            'info': task.info,
             'task_id': task.task_id,
         })
     else:
-        raise Http404('Task ID provided')
+        raise Http404('Task ID not provided')
 
 
 def _import_objects(request, data, import_options, summoner):

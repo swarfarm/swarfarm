@@ -18,8 +18,6 @@ def export_log_data():
 
 @shared_task
 def com2us_data_import(data, user_id, import_options):
-    current_task.update_state(state=states.STARTED, meta={'test': '123'})
-    time.sleep(10)  # Slow this shit down
 
     summoner = Summoner.objects.get(pk=user_id)
     errors = []
@@ -27,9 +25,6 @@ def com2us_data_import(data, user_id, import_options):
     imported_runes = []
     imported_crafts = []
     imported_pieces = []
-
-
-    time.sleep(30)
 
     # Import the new objects
     with transaction.atomic():
@@ -41,6 +36,8 @@ def com2us_data_import(data, user_id, import_options):
 
         results = parse_sw_json(data, summoner, import_options)
         errors += results['errors']
+
+        current_task.update_state(state=states.STARTED, meta={'step': 'summoner'})
 
         # Update summoner and inventory
         if results['wizard_id']:

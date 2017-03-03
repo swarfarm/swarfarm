@@ -7,7 +7,7 @@ urlpatterns = [
     url(r'^import/', include([
         url(r'^pcap/$', views.import_pcap, name='import_pcap'),
         url(r'^swparser/$', views.import_sw_json, name='import_swparser'),
-        url(r'^progress/data/$', views.import_status_data, name='import_status_data'),
+        url(r'^progress/$', views.import_status, name='import_status_data'),
     ])),
     url(r'^export/', include([
         url(r'^optimizer/$', views.export_rune_optimizer, name='export_optimizer'),

@@ -5,8 +5,6 @@ $(document).ready(function() {
     UpdateCharts();
 });
 
-
-
 function UpdateCharts(in_tab_only) {
     var $charts;
     if (in_tab_only) {
@@ -29,9 +27,6 @@ function UpdateCharts(in_tab_only) {
 }
 
 $('body')
-    .on('submit', '.import-form', function() {
-        $('#submit-id-import').toggleClass('disabled', true);
-    })
     .on('submit', '.ajax-form', function() {
         //Handle add ajax form submit
         var $form = $(this);

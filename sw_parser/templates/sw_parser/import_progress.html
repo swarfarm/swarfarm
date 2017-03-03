@@ -4,10 +4,16 @@
 
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
+
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <h1>Import in progress</h1>
-            <p>Your import has been queued. Typical wait time is TODO seconds</p>
+            <p>Your import has been queued and will be processed in the order it was received. You can leave this page and your import will still be processed. Starting multiple imports will not make it happen faster.</p>
+            <div class="alert alert-warning">
+                <p>At this time, I am not able to provide a status of how many people are in front of you or how long the wait is. It is being worked on and improvements to this system are coming soon.</p>
+                <p>If it is FRR day, expect to wait for a little bit. Please don't try to import multiple times as each time you submit your data, you just get appended to the end of the queue.</p>
+            </div>
+
             <div class="list-group">
                 <div class="list-group-item list-group-item-success">
                     <div class="row">
@@ -19,53 +25,63 @@
                         </div>
                     </div>
                 </div>
-                <div class="list-group-item list-group-item-info">
+                <div id="queue" class="list-group-item list-group-item-info">
                     <div class="row">
                         <div class="col-sm-2 text-center">
-                            <h4>...</h4>
+                            <h4 id="queue_indicator">...</h4>
                         </div>
                         <div class="col-sm-10">
                             <h4>Waiting in queue...</h4>
                         </div>
                     </div>
                 </div>
-                <div class="list-group-item">
+                <div id="storage" class="list-group-item">
                     <div class="row">
                         <div class="col-sm-2 text-center">
-                            <h4>...</h4>
+                            <h4 id="storage_indicator">...</h4>
                         </div>
                         <div class="col-sm-10">
                             <h4>Parsing storage, buildings, etc...</h4>
                         </div>
                     </div>
                 </div>
-                <div class="list-group-item">
+                <div id="monsters" class="list-group-item">
                     <div class="row">
                         <div class="col-sm-2 text-center">
-                            <h4>...</h4>
+                            <h4 id="monsters_indicator">...</h4>
                         </div>
                         <div class="col-sm-10">
                             <h4>Parsing monsters</h4>
                         </div>
                     </div>
                 </div>
-                <div class="list-group-item">
+                <div id="runes" class="list-group-item">
                     <div class="row">
                         <div class="col-sm-2 text-center">
-                            <h4>...</h4>
+                            <h4 id="runes_indicator">...</h4>
                         </div>
                         <div class="col-sm-10">
                             <h4>Parsing runes</h4>
                         </div>
                     </div>
                 </div>
-                <div class="list-group-item">
+                <div id="crafts" class="list-group-item">
                     <div class="row">
                         <div class="col-sm-2 text-center">
-                            <h4>...</h4>
+                            <h4 id="crafts_indicator">...</h4>
                         </div>
                         <div class="col-sm-10">
                             <h4>Parsing Grindstones and Enchant Gems</h4>
+                        </div>
+                    </div>
+                </div>
+                <div id="success" class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-2 text-center">
+                            <h4 id="success_indicator">...</h4>
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Done!</h4>
                         </div>
                     </div>
                 </div>
@@ -78,12 +94,104 @@
 {% block javascript %}
 <script>
 function updateImportProgress() {
+    // so so quick and dirty.
+    var $queue_box = $('#queue');
+    var $queue_indicator = $('#queue_indicator');
+    var $storage_box = $('#storage');
+    var $storage_indicator = $('#storage_indicator');
+    var $monsters_box = $('#monsters');
+    var $monsters_indicator = $('#monsters_indicator');
+    var $runes_box = $('#runes');
+    var $runes_indicator = $('#runes_indicator');
+    var $crafts_box = $('#crafts');
+    var $crafts_indicator = $('#crafts_indicator');
+    var $success_box = $('#success');
+    var $success_indicator = $('#success_indicator');
+
+    var complete_status = '<span class="glyphicon glyphicon-check"></span>';
+
     $.ajax({
         type: 'get',
         url: '/data/import/progress/',
         global: false
     }).done(function(response) {
-        console.log(response.info);
+        console.log(response.status, response.result);
+        const status = response.status;
+        const info = response.result;
+
+        switch (status) {
+            case 'PENDING':
+                $queue_box.toggleClass('list-group-item-info', true);
+                console.log('IN QUEUE STEP');
+                break;
+            case 'STARTED':
+                $queue_box.toggleClass('list-group-item-info', false);
+                $queue_box.toggleClass('list-group-item-success', true);
+                $queue_indicator.html(complete_status);
+                console.log('STARTED STATE');
+
+                switch (info.step) {
+                    case 'summoner':
+                        $storage_box.toggleClass('list-group-item-info', true);
+                        console.log('SUMMONER STEP');
+                        break;
+                    case 'monsters':
+                        $storage_box.toggleClass('list-group-item-info', false);
+                        $storage_box.toggleClass('list-group-item-success', true);
+                        $storage_indicator.html(complete_status);
+
+                        $monsters_box.toggleClass('list-group-item-info', true);
+                        console.log('MONSTERS STEP');
+                        break;
+                    case 'runes':
+                        $storage_box.toggleClass('list-group-item-info', false);
+                        $storage_box.toggleClass('list-group-item-success', true);
+                        $storage_indicator.html(complete_status);
+                        $monsters_box.toggleClass('list-group-item-info', false);
+                        $monsters_box.toggleClass('list-group-item-success', true);
+                        $monsters_indicator.html(complete_status);
+
+                        $runes_box.toggleClass('list-group-item-info', true);
+                        console.log('RUNES STEP');
+                        break;
+                    case 'crafts':
+                        $storage_box.toggleClass('list-group-item-info', false);
+                        $storage_box.toggleClass('list-group-item-success', true);
+                        $storage_indicator.html(complete_status);
+                        $monsters_box.toggleClass('list-group-item-info', false);
+                        $monsters_box.toggleClass('list-group-item-success', true);
+                        $runes_box.toggleClass('list-group-item-info', false);
+                        $runes_box.toggleClass('list-group-item-success', true);
+                        $runes_indicator.html(complete_status);
+
+                        $crafts_box.toggleClass('list-group-item-info', true);
+                        console.log('CRAFTS STEP');
+                        break;
+                }
+                break;
+            case 'SUCCESS':
+                $storage_box.toggleClass('list-group-item-info', false);
+                $storage_box.toggleClass('list-group-item-success', true);
+                $storage_indicator.html(complete_status);
+                $monsters_box.toggleClass('list-group-item-info', false);
+                $monsters_box.toggleClass('list-group-item-success', true);
+                $runes_box.toggleClass('list-group-item-info', false);
+                $runes_box.toggleClass('list-group-item-success', true);
+                $runes_indicator.html(complete_status);
+                $crafts_box.toggleClass('list-group-item-info', false);
+                $crafts_box.toggleClass('list-group-item-success', true);
+                $crafts_indicator.html(complete_status);
+                $success_indicator.html(complete_status);
+
+                $success_box.toggleClass('list-group-item-success', true);
+                console.log('SUCCESS STEP');
+                window.setTimeout(function() {
+                    window.location = '/profile/{{ user.username }}';
+                }, 1000);
+                break;
+            case 'FAILED':
+                break;
+        }
     });
 }
 

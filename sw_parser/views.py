@@ -107,24 +107,12 @@ def _import_pcap(request):
                     if validation_error:
                         errors.append(validation_error)
                     else:
-                        # Import the new objects
-                        try:
-                            with transaction.atomic():
-                                errors += _import_objects(request, data, import_options, summoner)
-                        except Exception as e:
-                            errors.append('Error importing objects. Changes have been rolled back.')
-                            mail_admins(
-                                subject='Error importing',
-                                message='{} - {}'.format(e, e.message),
-                                fail_silently=True
-                            )
+                        # Queue the import
+                        task = com2us_data_import.delay(data, summoner.pk, import_options)
+                        request.session['import_task_id'] = task.task_id
 
-                        if len(errors):
-                            messages.warning(request, mark_safe('Errors during import. See issues below:<br />' + '<br />'.join(errors)))
-                        else:
-                            messages.success(request, 'Import successfully applied!')
+                        return render(request, 'sw_parser/import_progress.html')
 
-                        return redirect('herders:profile_default', profile_name=request.user.username)
                 else:
                     errors.append("Unable to find Summoner's War data in the uploaded file")
     else:
@@ -183,7 +171,6 @@ def import_sw_json(request):
                     # Queue the import
                     task = com2us_data_import.delay(data, summoner.pk, import_options)
                     request.session['import_task_id'] = task.task_id
-                    print task.task_id
 
                     return render(request, 'sw_parser/import_progress.html')
     else:
@@ -205,7 +192,7 @@ def import_status(request):
     if task:
         return JsonResponse({
             'status': task.status,
-            'task_id': task.task_id,
+            'result': task.result,
         })
     else:
         raise Http404('Task ID not provided')

@@ -8,8 +8,6 @@ from herders.models import Summoner, Storage, MonsterInstance, MonsterPiece, Run
 from .com2us_parser import *
 from .log_exporter import export_all
 
-import time
-
 
 @shared_task
 def export_log_data():
@@ -18,9 +16,7 @@ def export_log_data():
 
 @shared_task
 def com2us_data_import(data, user_id, import_options):
-
     summoner = Summoner.objects.get(pk=user_id)
-    errors = []
     imported_monsters = []
     imported_runes = []
     imported_crafts = []
@@ -34,11 +30,11 @@ def com2us_data_import(data, user_id, import_options):
             MonsterInstance.objects.filter(owner=summoner).delete()
             MonsterPiece.objects.filter(owner=summoner).delete()
 
-        results = parse_sw_json(data, summoner, import_options)
-        errors += results['errors']
+    results = parse_sw_json(data, summoner, import_options)
 
-        current_task.update_state(state=states.STARTED, meta={'step': 'summoner'})
+    current_task.update_state(state=states.STARTED, meta={'step': 'summoner'})
 
+    with transaction.atomic():
         # Update summoner and inventory
         if results['wizard_id']:
             summoner.com2us_id = results['wizard_id']
@@ -83,6 +79,9 @@ def com2us_data_import(data, user_id, import_options):
         summoner.storage.crystal_pure = results['inventory'].get('crystal_pure', 0)
         summoner.storage.save()
 
+    current_task.update_state(state=states.STARTED, meta={'step': 'monsters'})
+
+    with transaction.atomic():
         # Save the imported monsters
         for idx, mon in enumerate(results['monsters']):
             mon.save()
@@ -93,6 +92,9 @@ def com2us_data_import(data, user_id, import_options):
             piece.save()
             imported_pieces.append(piece.pk)
 
+    current_task.update_state(state=states.STARTED, meta={'step': 'runes'})
+
+    with transaction.atomic():
         # Save imported runes
         for idx, rune in enumerate(results['runes']):
             # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
@@ -101,11 +103,15 @@ def com2us_data_import(data, user_id, import_options):
             rune.save()
             imported_runes.append(rune.pk)
 
+    current_task.update_state(state=states.STARTED, meta={'step': 'crafts'})
+
+    with transaction.atomic():
         # Save imported rune crafts
         for idx, craft in enumerate(results['crafts']):
             craft.save()
             imported_crafts.append(craft.pk)
 
+    with transaction.atomic():
         # Delete objects missing from import
         if import_options['delete_missing_monsters']:
             MonsterInstance.objects.filter(owner=summoner).exclude(pk__in=imported_monsters).delete()

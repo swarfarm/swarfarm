@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from copy import deepcopy
 import csv
+from celery.result import AsyncResult
 
 from django.conf import settings
 from django.contrib import messages
@@ -182,25 +183,15 @@ def import_sw_json(request):
                     # Queue the import
                     task = com2us_data_import.delay(data, summoner.pk, import_options)
                     request.session['import_task_id'] = task.task_id
+                    print task.task_id
 
-                    # # Import the new objects
-                    # try:
-                    #     with transaction.atomic():
-                    #         errors += _import_objects(request, data, import_options, summoner)
-                    # except Exception as e:
-                    #     errors.append('Error importing objects. Changes have been rolled back.')
-                    #     mail_admins(
-                    #         subject='Error importing',
-                    #         message='{} - {}'.format(e, e.message),
-                    #         fail_silently=True
-                    #     )
-                    #
-                    # if len(errors):
-                    #     messages.warning(request, mark_safe('Import partially successful. See issues below:<br />' + '<br />'.join(errors)))
-                    # else:
-                    #     messages.success(request, 'Import successfully applied!')
+                    return render(request, 'sw_parser/import_progress.html', {'task_id': task.task_id})
 
-                    return redirect('herders:profile_default', profile_name=request.user.username)
+                    # return JsonResponse({
+                    #     'status': 'PENDING',
+                    #     'info': None,
+                    #     'task_id': task.task_id,
+                    # })
     else:
         form = ImportSWParserJSONForm()
 
@@ -213,18 +204,18 @@ def import_sw_json(request):
     return render(request, 'sw_parser/import_sw_json.html', context)
 
 
-@login_required()
-def import_status(request):
-    return render(request, 'sw_parser/import_progress.html')
-
-
 @login_required
 def import_status_data(request):
-    return JsonResponse({
-        'stage': request.session.get('import_stage'),
-        'total': request.session.get('import_total'),
-        'current': request.session.get('import_current'),
-    })
+    task = AsyncResult(request.session['import_task_id'])
+
+    if task:
+        return JsonResponse({
+            'status': task.status,
+            'info': task.info,
+            'task_id': task.task_id,
+        })
+    else:
+        raise Http404('Task ID provided')
 
 
 def _import_objects(request, data, import_options, summoner):

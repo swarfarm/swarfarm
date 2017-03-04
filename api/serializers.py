@@ -1,10 +1,16 @@
 from rest_framework import serializers
 
 from bestiary.models import Monster, Skill, LeaderSkill, Effect, ScalingStat, Source
-from herders.models import Summoner, MonsterInstance, MonsterTag, RuneInstance, TeamGroup, Team
+from herders.models import *
 
 
 # Read-only monster database stuff.
+class CraftMaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CraftMaterial
+        fields = ['name', 'icon_filename']
+
+
 class MonsterSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source
@@ -54,6 +60,24 @@ class MonsterLeaderSkillSerializer(serializers.ModelSerializer):
         return instance.get_element_display()
 
 
+class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
+    name = serializers.ReadOnlyField(source='craft.name')
+    icon_filename = serializers.ReadOnlyField(source='craft.icon_filename')
+
+    class Meta:
+        model = HomunculusSkillCraftCost
+        fields = ['name', 'quantity', 'icon_filename']
+
+
+class HomunculusSkillSerializer(serializers.ModelSerializer):
+    skill = MonsterSkillSerializer(read_only=True)
+    craft_materials = HomunculusSkillCraftCostSerializer(source='homunculusskillcraftcost_set', many=True)
+
+    class Meta:
+        model = HomunculusSkill
+        fields = ['skill', 'craft_materials', 'mana_cost', 'prerequisites',]
+
+
 # Small serializer for necessary info for awakens_from/to on main MonsterSerializer
 class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
     element = serializers.SerializerMethodField()
@@ -74,13 +98,14 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
     awakens_to = AwakensMonsterSerializer(read_only=True)
     source = MonsterSourceSerializer(many=True, read_only=True)
     skills = MonsterSkillSerializer(many=True, read_only=True)
+    homunculus_skills = HomunculusSkillSerializer(many=True, source='homunculusskill_set')
 
     class Meta:
         model = Monster
         fields = (
             'url', 'pk', 'com2us_id', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
             'obtainable', 'can_awaken', 'is_awakened', 'awaken_bonus',
-            'skills', 'leader_skill',
+            'skills', 'leader_skill', 'homunculus_skills',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
             'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',
             'awakens_from', 'awakens_to',

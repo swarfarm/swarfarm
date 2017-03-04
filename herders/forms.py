@@ -906,7 +906,7 @@ class AddRuneInstanceForm(ModelForm):
 
 class AssignRuneForm(forms.Form):
     type = forms.MultipleChoiceField(
-        choices=RuneInstance.TYPE_CHOICES,
+        choices=(('2-slot', '2-Slot Sets'), ('4-slot', '4-Slot Sets')) + RuneInstance.TYPE_CHOICES,
         required=False,
     )
     main_stat = forms.MultipleChoiceField(
@@ -994,6 +994,19 @@ class AssignRuneForm(forms.Form):
     def clean(self):
         super(AssignRuneForm, self).clean()
 
+        # Process x-slot shortcuts for rune set
+        if '2-slot' in self.cleaned_data['type']:
+            self.cleaned_data['type'].remove('2-slot')
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.iteritems():
+                if count == 2:
+                    self.cleaned_data['type'].append(rune_set)
+
+        if '4-slot' in self.cleaned_data['type']:
+            self.cleaned_data['type'].remove('4-slot')
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.iteritems():
+                if count == 4:
+                    self.cleaned_data['type'].append(rune_set)
+
         # Split the slider ranges into two min/max fields for the filters
         try:
             [min_lv, max_lv] = self.cleaned_data['level'].split(',')
@@ -1016,7 +1029,7 @@ class AssignRuneForm(forms.Form):
 
 class FilterRuneForm(forms.Form):
     type = forms.MultipleChoiceField(
-        choices=RuneInstance.TYPE_CHOICES,
+        choices=(('2-slot', '2-Slot Sets'), ('4-slot', '4-Slot Sets')) + RuneInstance.TYPE_CHOICES,
         required=False,
     )
     main_stat = forms.MultipleChoiceField(
@@ -1045,7 +1058,7 @@ class FilterRuneForm(forms.Form):
         required=False
     )
     slot = forms.MultipleChoiceField(
-        choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)),
+        choices=(('even', 'Even'), ('odd', 'Odd'), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)),
         required=False,
     )
     quality = forms.MultipleChoiceField(
@@ -1120,6 +1133,19 @@ class FilterRuneForm(forms.Form):
     def clean(self):
         super(FilterRuneForm, self).clean()
 
+        # Process x-slot shortcuts for rune set
+        if '2-slot' in self.cleaned_data['type']:
+            self.cleaned_data['type'].remove('2-slot')
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.iteritems():
+                if count == 2:
+                    self.cleaned_data['type'].append(rune_set)
+
+        if '4-slot' in self.cleaned_data['type']:
+            self.cleaned_data['type'].remove('4-slot')
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.iteritems():
+                if count == 4:
+                    self.cleaned_data['type'].append(rune_set)
+
         # Split the slider ranges into two min/max fields for the filters
         try:
             [min_lv, max_lv] = self.cleaned_data['level'].split(',')
@@ -1138,6 +1164,15 @@ class FilterRuneForm(forms.Form):
 
         self.cleaned_data['stars__gte'] = int(min_stars)
         self.cleaned_data['stars__lte'] = int(max_stars)
+
+        # Process even/odd slot shortcuts for rune slot
+        if 'even' in self.cleaned_data['slot']:
+            self.cleaned_data['slot'].remove('even')
+            self.cleaned_data['slot'] += [2, 4, 6]
+
+        if 'odd' in self.cleaned_data['slot']:
+            self.cleaned_data['slot'].remove('odd')
+            self.cleaned_data['slot'] += [1, 3, 5]
 
 
 class ImportRuneForm(forms.Form):

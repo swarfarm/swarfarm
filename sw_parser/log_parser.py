@@ -9,7 +9,9 @@ from herders.models import Summoner
 
 from .models import *
 from .com2us_parser import get_monster_from_id
-from .com2us_mapping import inventory_type_map, timezone_server_map, summon_source_map, scenario_difficulty_map, rune_stat_type_map, rune_set_map, drop_essence_map, drop_craft_map, drop_currency_map, craft_type_map, craft_quality_map
+from .com2us_mapping import inventory_type_map, timezone_server_map, summon_source_map, scenario_difficulty_map, \
+    rune_stat_type_map, rune_set_map, drop_essence_map, drop_craft_map, drop_currency_map, \
+    craft_type_map, craft_quality_map, secret_dungeon_map
 
 
 def _get_summoner(wizard_id):
@@ -125,7 +127,7 @@ def parse_battle_dungeon_result(log_data):
         log_entry.dungeon = Dungeon.objects.create(pk=dungeon_id, name='UNKNOWN DUNGEON')
 
     log_entry.stage = log_data['request']['stage_id']
-    log_entry = _parse_battle_reward(log_entry, log_data['response'].get('reward'))
+    log_entry = _parse_battle_reward(log_entry, log_data['response'].get('reward'), log_data['response'].get('instance_info'))
     log_entry.save()
 
 
@@ -537,7 +539,7 @@ def _parse_rune_log(rune_data, rune_drop):
     return rune_drop
 
 
-def _parse_battle_reward(log_entry, reward):
+def _parse_battle_reward(log_entry, reward, instance_info=None):
     # Rewards
     if reward:
         log_entry.mana = reward.get('mana', 0)
@@ -616,6 +618,17 @@ def _parse_battle_reward(log_entry, reward):
         log_entry.energy = 0
         log_entry.crystal = 0
 
+    # Secret Dungeons
+    if instance_info:
+        log_entry.drop_type = RunLog.DROP_SECRET_DUNGEON
+        if instance_info['instance_id'] in secret_dungeon_map:
+            drop_mon = MonsterDrop()
+            drop_mon.monster = get_monster_from_id(secret_dungeon_map[instance_info['instance_id']])
+            drop_mon.grade = drop_mon.monster.base_stars
+            drop_mon.level = 1
+            drop_mon.save()
+            log_entry.drop_monster = drop_mon
+
     return log_entry
 
 
@@ -660,6 +673,7 @@ accepted_api_params = {
             'tvalue',
             'unit_list',
             'reward',
+            'instance_info',
         ]
     },
     'BattleScenarioStart': {

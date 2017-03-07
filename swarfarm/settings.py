@@ -28,6 +28,10 @@ WSGI_APPLICATION = 'swarfarm.wsgi.application'
 
 # Security settings
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+INTERNAL_IPS = ['127.0.0.1']
+
+if DEBUG:
+    INTERNAL_IPS += ['10.0.2.2']
 
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
@@ -103,7 +107,7 @@ if DEBUG:
         'debug_toolbar',
     ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -114,10 +118,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-)
+]
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware', )
+    MIDDLEWARE_CLASSES = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE_CLASSES
 
 # URL stuff
 ROOT_URLCONF = 'swarfarm.urls'

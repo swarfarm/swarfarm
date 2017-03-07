@@ -20,10 +20,15 @@
             </div>
 
             <div class="btn-group">
-                <button class="btn btn-default box-group-mode {% if box_grouping == 'type' %}active{% endif %}" data-mode="type">Type</button>
-                <button class="btn btn-default box-group-mode {% if box_grouping == 'slot' %}active{% endif %}" data-mode="slot">Slot</button>
-                <button class="btn btn-default box-group-mode {% if box_grouping == 'grade' %}active{% endif %}" data-mode="grade">Grade</button>
-                <button class="btn btn-default box-group-mode {% if box_grouping == 'equipped' %}active{% endif %}" data-mode="equipped">Equipped</button>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Grouped By {{ box_grouping|title }} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    {% if not box_grouping == 'type' %}<li><a class="box-group-mode" data-mode="type">Type</a></li>{% endif %}
+                    {% if not box_grouping == 'slot' %}<li><a class="box-group-mode" data-mode="slot">Slot</a></li>{% endif %}
+                    {% if not box_grouping == 'grade' %}<li><a class="box-group-mode" data-mode="grade">Grade</a></li>{% endif %}
+                    {% if not box_grouping == 'equipped' %}<li><a class="box-group-mode" data-mode="equipped">Equipped</a></li>{% endif %}
+                </ul>
             </div>
 
             <span class="pull-right">{{ filtered_count }} of {{ total_count }} rune{{ total_count|pluralize }}</span>

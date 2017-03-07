@@ -427,7 +427,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 monster_stable['30-21'] = monster_filter.qs.filter(level__gt=20).filter(level__lte=30).order_by( '-level', '-stars', 'monster__element', 'monster__name')
                 monster_stable['20-11'] = monster_filter.qs.filter(level__gt=10).filter(level__lte=20).order_by( '-level', '-stars', 'monster__element', 'monster__name')
                 monster_stable['10-1'] = monster_filter.qs.filter(level__lte=10).order_by('-level', '-stars', 'monster__element', 'monster__name')
-            elif box_grouping == 'attribute':
+            elif box_grouping == 'element' or box_grouping == 'attribute':
                 monster_stable['water'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_WATER).order_by('-stars', '-level', 'monster__name')
                 monster_stable['fire'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_FIRE).order_by('-stars', '-level', 'monster__name')
                 monster_stable['wind'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_WIND).order_by('-stars', '-level', 'monster__name')
@@ -438,6 +438,20 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 monster_stable['Medium'] = monster_filter.qs.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['Low'] = monster_filter.qs.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['None'] = monster_filter.qs.select_related('monster').filter(owner=summoner).filter(Q(priority=None) | Q(priority=0)).order_by('-level', 'monster__element', 'monster__name')
+            elif box_grouping == 'family':
+                for mon in monster_filter.qs.select_related('monster', 'monster__awakens_from'):
+                    if mon.monster.is_awakened and mon.monster.awakens_from is not None:
+                        family_name = mon.monster.awakens_from.name
+                    else:
+                        family_name = mon.monster.name
+
+                    if family_name not in monster_stable:
+                        monster_stable[family_name] = []
+
+                    monster_stable[family_name].append(mon)
+
+                # Sort ordered dict alphabetically by family name
+                monster_stable = OrderedDict(sorted(monster_stable.items(), key=lambda family:family[0]))
             else:
                 raise Http404('Invalid sort method')
 

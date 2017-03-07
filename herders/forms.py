@@ -507,9 +507,9 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label='',
-        help_text='Filter on one or any skill',
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></span>'),
         required=False,
+        initial=True,
     )
 
     helper = FormHelper()
@@ -571,7 +571,7 @@ class FilterMonsterInstanceForm(forms.Form):
                         Field('buff_debuff_effects', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('monster__skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
-                        Field('effects_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ONE', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-lg-6'),
+                        Field('effects_logic', data_toggle='toggle', data_on='Any Skill', data_onstyle='primary', data_off='One Skill', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12'),
                         css_class='row'
                     ),
                 ),
@@ -918,12 +918,12 @@ class AssignRuneForm(forms.Form):
         required=False,
     )
     substats = forms.MultipleChoiceField(
-        label="""Substats <span class="glyphicon glyphicon-info-sign" data-toggle="popover" data-trigger="hover" title="Important" data-container="body" data-content="If this filter is not working properly, your runes need to be resaved to update a few new data fields. If you don't see the resave link in the menu, you're good to go."></span>""",
+        label='Substats',
         choices=RuneInstance.STAT_CHOICES,
         required=False,
     )
     substat_logic = forms.BooleanField(
-        label='',
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
         required=False,
     )
     level = forms.CharField(
@@ -983,11 +983,8 @@ class AssignRuneForm(forms.Form):
         Field('main_stat', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
 
         Field('innate_stat', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Div(
-            Field('substats', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed  col-sm-8'),
-            Field('substat_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ALL', data_off_color='primary', data_size='small', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-sm-4'),
-            css_class='row'
-        ),
+        Field('substats', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Field('slot', type='hidden'),
     )
 
@@ -1041,12 +1038,12 @@ class FilterRuneForm(forms.Form):
         required=False,
     )
     substats = forms.MultipleChoiceField(
-        label="""Substats <span class="glyphicon glyphicon-info-sign" data-toggle="popover" data-trigger="hover" title="Important" data-container="body" data-content="If this filter is not working properly, your runes need to be resaved to update a few new data fields. If you don't see the resave link in the menu, you're good to go."></span>""",
+        label='Substats',
         choices=RuneInstance.STAT_CHOICES,
         required=False,
     )
     substat_logic = forms.BooleanField(
-        label='',
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
         required=False,
     )
     level = forms.CharField(
@@ -1108,8 +1105,8 @@ class FilterRuneForm(forms.Form):
             ),
             Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
             Div(
-                Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-8'),
-                Field('substat_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ALL', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-sm-4'),
+                Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-12'),
+                Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12',),
                 css_class='row col-md-4 col-sm-4'
             ),
             Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),

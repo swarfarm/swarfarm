@@ -15,7 +15,6 @@ $(function () {
     $('.inline-editable').editable();
 
     $('.rating').rating();
-    $('[data-toggle="toggle"]').bootstrapSwitch();
 
     DisplayMessages();
     initSelect();
@@ -212,7 +211,7 @@ $('body')
     .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
     .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
-    .on('change switchChange.bootstrapSwitch', '.auto-submit', function() {
+    .on('change switchChange.bootstrapToggle', '.auto-submit', function() {
         clearTimeout(autosubmitDelay);
         var $form = $(this).parents("form");
         autosubmitDelay = setTimeout(function() {

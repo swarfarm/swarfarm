@@ -13,9 +13,16 @@ function AssignRune(slot) {
         });
 
         //Init form elements
-        $("[data-toggle='toggle']").bootstrapSwitch();
+        $("[data-toggle='toggle']").bootstrapToggle();
         $("[data-provide='slider']").slider();
         initSelect();
+        $('[data-toggle="tooltip"]').tooltip({
+            container: 'body'
+        });
+        $('[data-toggle="popover"]').popover({
+            html:true,
+            viewport: {selector: 'body', padding: 2}
+        });
     });
 }
 

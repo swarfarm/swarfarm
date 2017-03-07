@@ -1,5 +1,6 @@
 from django import forms
 from django.templatetags.static import static
+from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, Fieldset
@@ -92,8 +93,9 @@ class FilterMonsterForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label='',
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></span>'),
         required=False,
+        initial=True,
     )
     page = forms.IntegerField(required=False)
     sort = forms.CharField(required=False)
@@ -133,7 +135,7 @@ class FilterMonsterForm(forms.Form):
                     Field('debuffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                     Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                     Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
-                    Field('effects_logic', data_toggle='toggle', data_on_text='ANY', data_on_color='primary', data_off_text='ONE', data_off_color='primary', data_size='small', wrapper_class='form-group-sm form-group-condensed no-left-gutter col-lg-6'),
+                    Field('effects_logic', data_toggle='toggle', data_on='Any Skill', data_onstyle='primary', data_off='One Skill', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12'),
                     css_class='row'
                 ),
                 css_class='col-md-4'

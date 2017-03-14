@@ -54,6 +54,10 @@ urlpatterns = [
             url('^$', views.view_world_boss_log, name='view_world_boss_log'),
             url('^mine/$', views.view_world_boss_log, {'mine': True}, name='view_world_boss_log_mine'),
         ])),
+        url(r'^wishes/', include([
+            url('^$', views.view_wish_log, name='view_wish_log'),
+            url('^mine/$', views.view_wish_log, {'mine': True}, name='view_wish_log_mine'),
+        ])),
         url(r'^charts/', include([
             url(r'^contrib/$', views.log_contribution_chart_data, name='contribution_chart_data'),
             url(r'^contrib/mine/$', views.log_contribution_chart_data, {'mine': True}, name='contribution_chart_data_mine'),

@@ -1778,6 +1778,39 @@ def view_world_boss_log(request, mine=False):
     return render(request, 'sw_parser/log/world_boss/summary.html', context)
 
 
+# Wishes
+def view_wish_log(request, mine=False):
+    date_filter = _get_log_filter_timestamp(request, mine)
+    context = None
+    cache_key = 'wish-{}'.format(slugify(date_filter['description']))
+
+    if mine:
+        if not request.user.is_authenticated():
+            return redirect('%s?next=%s' % (reverse('login'), request.path))
+        summoner = get_object_or_404(Summoner, user__username=request.user.username)
+    else:
+        summoner = None
+        context = cache.get(cache_key)
+
+    if context is None:
+        wish_logs = WishLog.objects.filter(**date_filter['filters'])
+
+        if mine:
+            wish_logs = wish_logs.filter(summoner=summoner)
+
+        total_logs = wish_logs.count()
+
+        context = {
+            'mine': mine,
+            'stats': _log_stats(request, mine=mine, date_filter=date_filter),
+            'log_view': 'wish',
+            'count': total_logs,
+            'timespan': date_filter,
+        }
+
+    return render(request, 'sw_parser/log/wish/summary.html', context)
+
+
 # Utility functions to provide some common data across multiple log reports
 def _rune_drop_charts(runes, chart_type, slot=None):
     # Produces various charts from a queryset from any model subclassing RuneDrop.

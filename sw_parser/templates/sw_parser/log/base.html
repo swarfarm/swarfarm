@@ -147,6 +147,16 @@
                     {% endif %}
                 </a>
             </li>
+
+            {# Wishes #}
+            <li {% if log_view == 'wish' %}class="active"{% endif %}><a
+                    {% if mine %}
+                        href="{% url 'sw_parser:view_wish_log_mine' %}">Wishes
+                    {% else %}
+                        href="{% url 'sw_parser:view_wish_log' %}">Wishes
+                    {% endif %}
+                </a>
+            </li>
         </ul>
     </div>
 {% endblock subnav %}

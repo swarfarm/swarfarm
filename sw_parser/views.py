@@ -1799,17 +1799,167 @@ def view_wish_log(request, mine=False):
             wish_logs = wish_logs.filter(summoner=summoner)
 
         total_logs = wish_logs.count()
+        rune_drop_count = WishRuneDrop.objects.filter(log__in=wish_logs).count()
+        monster_drop_count = WishMonsterDrop.objects.filter(log__in=wish_logs).count()
 
         context = {
             'mine': mine,
             'stats': _log_stats(request, mine=mine, date_filter=date_filter),
             'log_view': 'wish',
             'count': total_logs,
+            'rune_count': rune_drop_count,
+            'monster_count': monster_drop_count,
             'timespan': date_filter,
         }
 
     return render(request, 'sw_parser/log/wish/summary.html', context)
 
+
+def wish_chart_data(request, mine=False):
+    date_filter = deepcopy(_get_log_filter_timestamp(request, mine))
+    chart_type = request.GET.get('chart_type')
+    section = request.GET.get('section')
+    slot = request.GET.get('slot')
+    if slot:
+        slot = int(slot)
+
+    cache_key = 'wish-chart-{}-{}-{}'.format(chart_type, slot, slugify(date_filter['description']))
+    chart = None
+
+    wish_logs = WishLog.objects.filter(**date_filter['filters'])
+
+    if mine:
+        summoner = get_object_or_404(Summoner, user__username=request.user.username)
+        wish_logs = wish_logs.filter(summoner=summoner)
+    else:
+        chart = cache.get(cache_key)
+
+    if chart is None:
+        if section:
+            if section == 'rune':
+                runes = WishRuneDrop.objects.filter(log__in=wish_logs)
+                chart = _rune_drop_charts(runes, chart_type, slot)
+
+            elif section == 'monster':
+                grade = request.GET.get('grade')
+                monsters = WishMonsterDrop.objects.filter(log__in=wish_logs)
+
+                if grade:
+                    monsters = monsters.filter(grade=int(grade))
+
+                chart = _monster_drop_charts(monsters, chart_type, grade)
+
+            elif section == 'scrolls':
+                pass
+        else:
+            if chart_type == 'summary':
+                chart = deepcopy(chart_templates.pie)
+                chart['title']['text'] = 'Frequency of Occurrence'
+                appearance_chances = []
+
+                # Items
+                for drop in WishItemDrop.objects.filter(log__in=wish_logs).values('item').annotate(count=Count('pk')):
+                    appearance_chances.append((
+                        drop['count'],
+                        ShopRefreshItem.DROP_CHOICES_DICT[drop['item']],
+                    ))
+
+                # Monsters by grade
+                monster_count = WishMonsterDrop.objects.filter(log__in=wish_logs).count()
+                appearance_chances.append((
+                    float(monster_count),
+                    'Monster'
+                ))
+
+                # Runes by grade
+                rune_count = WishRuneDrop.objects.filter(log__in=wish_logs).values('stars').count()
+                appearance_chances.append((
+                    float(rune_count),
+                    'Rune'
+                ))
+
+                # Post-process results
+                chart['series'].append({
+                    'name': 'Wish Drop',
+                    'colorByPoint': True,
+                    'data': [],
+                })
+
+                appearance_chances.sort(reverse=True)
+
+                for point in appearance_chances:
+                    chart['series'][0]['data'].append({
+                        'name': str(point[1]),
+                        'y': point[0],
+                    })
+
+            elif chart_type == 'detail_summary':
+                chart = deepcopy(chart_templates.column)
+                chart['title']['text'] = 'Frequency of Occurrence - Detailed'
+                chart['xAxis']['labels'] = {
+                    'rotation': -90,
+                    'useHTML': True,
+                }
+                chart['yAxis']['title']['text'] = 'Chance to Appear'
+                chart['yAxis']['labels'] = {
+                    'format': '{value}%',
+                }
+                chart['plotOptions']['column']['dataLabels'] = {
+                    'enabled': True,
+                    'color': 'white',
+                    'format': '{point.y:.1f}%',
+                    'style': {
+                        'textShadow': '0 0 3px black'
+                    }
+                }
+                chart['series'].append({
+                    'name': 'Type of Drop',
+                    'colorByPoint': True,
+                    'data': [],
+                })
+
+                total_logs = wish_logs.count()
+                appearance_chances = []
+                # appearance_chance = float(item['count']) / total_logs
+
+                # Items
+                for drop in WishItemDrop.objects.filter(log__in=wish_logs).values('item', 'quantity').annotate(
+                        count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        '{} x{}'.format(ShopRefreshItem.DROP_CHOICES_DICT[drop['item']], drop['quantity']),
+                    ))
+
+                # Monsters by grade
+                for drop in WishMonsterDrop.objects.filter(log__in=wish_logs).values('grade').annotate(
+                        count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        '{}<span class="glyphicon glyphicon-star"></span> Monster'.format(drop['grade'])
+                    ))
+
+                # Runes by grade
+                for drop in WishRuneDrop.objects.filter(log__in=wish_logs).values('stars').annotate(
+                        count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        '{}<span class="glyphicon glyphicon-star"></span> Rune'.format(drop['stars'])
+                    ))
+
+                # Sort the list by appearance chance
+                appearance_chances.sort(reverse=True)
+
+                # Fill in the chart data and categories
+                for point in appearance_chances:
+                    chart['xAxis']['categories'].append(point[1])
+                    chart['series'][0]['data'].append(point[0])
+
+        if chart is None:
+            raise Http404()
+        elif not mine:
+            cache.set(cache_key, chart, 3600)
+
+    return JsonResponse(chart)
 
 # Utility functions to provide some common data across multiple log reports
 def _rune_drop_charts(runes, chart_type, slot=None):

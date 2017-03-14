@@ -70,7 +70,9 @@ urlpatterns = [
             url(r'^rune-crafting/$', views.rune_craft_chart_data, name='rune_craft_chart_data'),
             url(r'^rune-crafting/mine/$', views.rune_craft_chart_data, {'mine': True}, name='rune_craft_chart_data_mine'),
             url(r'^magic-shop/$', views.magic_shop_chart_data, name='magic_shop_chart_data'),
-            url(r'^magic-shop/mine/$', views.magic_shop_chart_data, name='magic_shop_chart_data_mine'),
+            url(r'^magic-shop/mine/$', views.magic_shop_chart_data, {'mine': True}, name='magic_shop_chart_data_mine'),
+            url(r'^wish/$', views.wish_chart_data, name='wish_chart_data'),
+            url(r'^wish/mine/$', views.wish_chart_data, {'mine': True}, name='wish_chart_data_mine'),
         ])),
         url(r'^timespan/', include([
             url(r'^(?P<days>[0-9]+)/$', views.log_timespan, name='log_timespan_days'),

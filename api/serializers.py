@@ -153,7 +153,7 @@ class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
         model = RuneInstance
         fields = (
             'pk', 'type', 'get_type_display', 'assigned_to', 'efficiency', 'notes', 'marked_for_sale',
-            'stars', 'level', 'slot', 'quality', 'value', 'get_quality_display',
+            'stars', 'level', 'slot', 'quality', 'original_quality', 'value', 'get_quality_display', 'get_original_quality_display',
             'main_stat', 'get_main_stat_rune_display', 'main_stat_value',
             'innate_stat', 'get_innate_stat_rune_display', 'innate_stat_value',
             'substat_1', 'get_substat_1_rune_display', 'substat_1_value', 'substat_1_craft',

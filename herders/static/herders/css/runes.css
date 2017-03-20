@@ -112,6 +112,31 @@
     color: #ef9f24;
 }
 
+.rune-label-normal {
+    background-color: #514546;
+    color: #FFFFFF;
+}
+
+.rune-label-magic {
+    background-color: #003503;
+    color: #EAFF6A;
+}
+
+.rune-label-rare {
+    background-color: #09424C;
+    color: #ABF2FD;
+}
+
+.rune-label-hero {
+    background-color: #601143;
+    color: #FED8EC;
+}
+
+.rune-label-legend {
+    background-color: #752106;
+    color: #FFCB76;
+}
+
 span.rune-set-bonus {
     position: absolute;
     bottom: 0;

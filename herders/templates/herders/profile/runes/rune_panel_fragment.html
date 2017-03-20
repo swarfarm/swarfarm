@@ -52,13 +52,20 @@
             </div>
         {% endif %}
         <ul class="top-right list-unstyled">
-        {% if rune.value %}
-            <li class="mana-crystals">
-                <img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ rune.value }}
-                {% if rune.marked_for_sale %}<span class="glyphicon glyphicon-piggy-bank" data-toggle="tooltip" data-placement="top" title="Marked for Sale"></span>{% endif %}
-            </li>
-        {% endif %}
-        {% if rune.efficiency %}<li {% if rune.max_efficiency and rune.level < 12 %}data-toggle="tooltip" title="Max Eff: {{ rune.max_efficiency|floatformat:1 }}%"{% endif %}>Eff: {{ rune.efficiency|floatformat:1 }}%</li>{% endif %}
+            {% if rune.original_quality %}
+                <li data-toggle="tooltip" data-container="body" title="Original rune quality when it dropped">Orig. <span class="label rune-label-{{ rune.get_original_quality_display|lower }}">{{ rune.get_original_quality_display }}</span></li>
+            {% endif %}
+            {% if rune.value %}
+                <li class="mana-crystals">
+                    <img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ rune.value }}
+                    {% if rune.marked_for_sale %}<span class="glyphicon glyphicon-piggy-bank" data-toggle="tooltip" data-placement="top" title="Marked for Sale"></span>{% endif %}
+                </li>
+            {% endif %}
+            {% if rune.efficiency %}
+                <li {% if rune.max_efficiency and rune.level < 12 %}data-toggle="tooltip" title="Max Eff: {{ rune.max_efficiency|floatformat:1 }}%"{% endif %}>
+                    Eff: {{ rune.efficiency|floatformat:1 }}%
+                </li>
+            {% endif %}
     </ul>
     </div>
 

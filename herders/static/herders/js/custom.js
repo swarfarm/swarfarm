@@ -482,31 +482,6 @@ function update_craft_stat_options(craft, stat_input) {
     });
 }
 
-function update_rune_counts() {
-    $.ajax({
-        url: '/profile/' + PROFILE_NAME + '/runes/inventory/counts/',
-        type: 'get',
-        global: false
-    }).done(function(result) {
-        $('.rune-button-energy span.badge').text(result.counts.Energy);
-        $('.rune-button-fatal span.badge').text(result.counts.Fatal);
-        $('.rune-button-blade span.badge').text(result.counts.Blade);
-        $('.rune-button-rage span.badge').text(result.counts.Rage);
-        $('.rune-button-swift span.badge').text(result.counts.Swift);
-        $('.rune-button-focus span.badge').text(result.counts.Focus);
-        $('.rune-button-guard span.badge').text(result.counts.Guard);
-        $('.rune-button-endure span.badge').text(result.counts.Endure);
-        $('.rune-button-violent span.badge').text(result.counts.Violent);
-        $('.rune-button-will span.badge').text(result.counts.Will);
-        $('.rune-button-nemesis span.badge').text(result.counts.Nemesis);
-        $('.rune-button-shield span.badge').text(result.counts.Shield);
-        $('.rune-button-revenge span.badge').text(result.counts.Revenge);
-        $('.rune-button-despair span.badge').text(result.counts.Despair);
-        $('.rune-button-vampire span.badge').text(result.counts.Vampire);
-        $('.rune-button-destroy span.badge').text(result.counts.Destroy);
-    });
-}
-
 const RUNE_MAIN_STAT_VALUES = {
   "1": {
     "1": [40, 85, 130, 175, 220, 265, 310, 355, 400, 445, 490, 535, 580, 625, 670, 804],

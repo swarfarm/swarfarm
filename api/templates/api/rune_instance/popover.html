@@ -16,6 +16,9 @@
     </ul>
     {% if rune.notes %}<span><strong>Notes:</strong> {{ rune.notes }}</span>{% endif %}
     <ul class="top-right list-unstyled">
+        {% if rune.original_quality %}
+            <li>Orig. <span class="label rune-label-{{ rune.get_original_quality_display|lower }}">{{ rune.get_original_quality_display }}</span></li>
+        {% endif %}
         {% if rune.value %}
             <li class="mana-crystals">
                 <img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ rune.value }}

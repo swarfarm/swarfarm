@@ -88,6 +88,7 @@ class RuneInstanceFilter(django_filters.FilterSet):
     type = django_filters.MultipleChoiceFilter(choices=RuneInstance.TYPE_CHOICES)
     slot = django_filters.MultipleChoiceFilter(choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)))
     quality = django_filters.MultipleChoiceFilter(choices=RuneInstance.QUALITY_CHOICES)
+    original_quality = django_filters.MultipleChoiceFilter(choices=RuneInstance.QUALITY_CHOICES)
     main_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     innate_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     substats = django_filters.MethodFilter()
@@ -102,6 +103,7 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'stars': ['gte', 'lte'],
             'slot': ['exact'],
             'quality': ['exact'],
+            'original_quality': ['exact'],
             'assigned_to': ['exact'],
             'main_stat': ['exact'],
             'innate_stat': ['exact'],

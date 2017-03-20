@@ -265,6 +265,10 @@ def parse_rune_data(rune_data, owner):
     rune.slot = rune_data.get('slot_no')
     rune.stars = rune_data.get('class')
     rune.level = rune_data.get('upgrade_curr')
+    original_quality = rune_data.get('extra')
+
+    if original_quality:
+        rune.original_quality = rune_quality_map[original_quality]
 
     # Rune stats
     main_stat = rune_data.get('pri_eff')

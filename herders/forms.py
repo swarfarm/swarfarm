@@ -942,6 +942,10 @@ class AssignRuneForm(forms.Form):
         choices=RuneInstance.QUALITY_CHOICES,
         required=False,
     )
+    original_quality = forms.MultipleChoiceField(
+        choices=((None, 'Unknown'),) + RuneInstance.QUALITY_CHOICES,
+        required=False,
+    )
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -953,6 +957,7 @@ class AssignRuneForm(forms.Form):
         ),
         Field('type', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Field('quality', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('original_quality', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Div(
             Field(
                 'level',
@@ -1062,6 +1067,10 @@ class FilterRuneForm(forms.Form):
         choices=RuneInstance.QUALITY_CHOICES,
         required=False,
     )
+    original_quality = forms.MultipleChoiceField(
+        choices=((None, 'Unknown'),) + RuneInstance.QUALITY_CHOICES,
+        required=False,
+    )
     assigned_to = forms.NullBooleanField(
         label='Is Assigned',
         required=False,
@@ -1109,9 +1118,10 @@ class FilterRuneForm(forms.Form):
                 Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12',),
                 css_class='row col-md-4 col-sm-4'
             ),
-            Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
-            Field('assigned_to', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
-            Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
+            Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),
+            Field('original_quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),
+            Field('assigned_to', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),
+            Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),
             css_class='row',
         ),
         Div(

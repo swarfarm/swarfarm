@@ -50,6 +50,7 @@ HubUserLoginSchema = {
                 'sell_value': {'type': 'number'},
                 'occupied_id': {'type': 'number'},
                 'wizard_id': {'type': 'number'},
+                'extra': {'type': 'number'},
             },
             'required': ['set_id', 'class', 'rank', 'slot_no', 'upgrade_curr', 'pri_eff', 'prefix_eff', 'sec_eff', 'sell_value', 'occupied_id', 'base_value', 'upgrade_limit'],
             'additionalProperties': True,

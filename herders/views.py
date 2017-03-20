@@ -1927,24 +1927,6 @@ def rune_inventory_crafts(request, profile_name):
         return render(request, 'herders/profile/not_public.html')
 
 
-def rune_counts(request, profile_name):
-    try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
-    except Summoner.DoesNotExist:
-        raise Http404
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
-
-    if is_owner:
-        response_data = {
-            'code': 'success',
-            'counts': summoner.get_rune_counts()
-        }
-
-        return JsonResponse(response_data)
-    else:
-        return HttpResponseForbidden()
-
-
 @login_required
 def rune_add(request, profile_name):
     form = AddRuneInstanceForm(request.POST or None)

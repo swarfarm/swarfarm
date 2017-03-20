@@ -1,6 +1,5 @@
 $(document).ready(function() {
     update_rune_inventory();
-    update_rune_counts();
 });
 
 function update_rune_inventory() {
@@ -29,7 +28,6 @@ $('body')
             if (result.code === 'success') {
                 $('.modal.in').modal('hide');
                 update_rune_inventory();
-                update_rune_counts();
 
                 if (result.removeElement) {
                     $(result.removeElement).remove();
@@ -125,7 +123,6 @@ $('body')
                         }
                     }).done(function () {
                         update_rune_inventory();
-                        update_rune_counts();
                     }).fail(function () {
                         alert("Something went wrong! Server admin has been notified.");
                     });
@@ -151,7 +148,6 @@ $('body')
                         }
                     }).done(function () {
                         update_rune_inventory();
-                        update_rune_counts();
                     }).fail(function () {
                         alert("Something went wrong! Server admin has been notified.");
                     });
@@ -190,7 +186,6 @@ $('body')
                         global: false
                     }).done(function() {
                         update_rune_inventory();
-                        update_rune_counts();
                     }).fail(function() {
                         alert("Something went wrong! Server admin has been notified.");
                     })

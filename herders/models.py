@@ -1973,6 +1973,7 @@ class RuneInstance(models.Model):
     stars = models.IntegerField()
     level = models.IntegerField()
     slot = models.IntegerField()
+    original_quality = models.IntegerField(choices=QUALITY_CHOICES, blank=True, null=True)
     value = models.IntegerField(blank=True, null=True)
     main_stat = models.IntegerField(choices=STAT_CHOICES)
     main_stat_value = models.IntegerField()
@@ -2747,6 +2748,7 @@ class BuildingInstance(models.Model):
     def save(self, *args, **kwargs):
         self.update_fields()
         super(BuildingInstance, self).save(*args, **kwargs)
+
 
 # Game event calendar stuff
 class GameEvent(models.Model):

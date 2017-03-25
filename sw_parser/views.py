@@ -1537,7 +1537,7 @@ def magic_shop_chart_data(request, mine=False):
 
     if mine:
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
-        shop_logs = shop_logs.filter(owner=summoner)
+        shop_logs = shop_logs.filter(summoner=summoner)
     else:
         chart = cache.get(cache_key)
 

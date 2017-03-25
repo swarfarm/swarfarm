@@ -61,3 +61,4 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 
 * [SWProxy](https://github.com/kakaroto/SWProxy/) for easily extracting game data, which makes SWARFARM orders of magnitude easier to use. 
 * [SWProxy-plugins](https://github.com/lstern/SWProxy-plugins/) for including the SwarfarmLogger.py plugin and making the [data logs](https://swarfarm.com/data/log/) possible.
+* [SW-Exporter](https://github.com/Xzandro/sw-exporter), the new proxy hotness for exporting and logging.

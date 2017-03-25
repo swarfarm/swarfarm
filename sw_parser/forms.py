@@ -133,7 +133,7 @@ class ImportPCAPForm(MonsterImportOptionsMixin, forms.Form):
 class ImportSWParserJSONForm(MonsterImportOptionsMixin, forms.Form):
     json_file = forms.FileField(
         required=True,
-        label='SWParser JSON File',
+        label="Summoner's War JSON File",
     )
 
     helper = FormHelper()

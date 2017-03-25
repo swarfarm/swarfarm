@@ -1,32 +1,30 @@
 {% extends 'sw_parser/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Import SWProxy JSON - {{ block.super }}{% endblock title %}
+{% block title %}Import Summoner's War JSON - {{ block.super }}{% endblock title %}
 
 {% block content %}
     <div class="col-md-8 col-md-offset-2">
-        <h1>Import SWProxy JSON</h1>
+        <h1>Import Summoner's War JSON</h1>
         <h2>Instructions:</h2>
         <ol>
-            <li>Download the latest release of the <a href="https://github.com/lstern/SWProxy-plugins/releases/latest">SWProxy-plugins</a> program.</li>
+            <li>Download the latest release of the <a href="https://github.com/Xzandro/sw-exporter/releases/latest">SW-Exporter</a> program.</li>
             <li>Follow the instructions provided to capture your Summoner's War account data.</li>
-            <li>Find the 1234567-swarfarm.json file and upload it here. The numbers in the filename will be different, but it will end in '-swarfarm.json'</li>
-            <li><strong>Optional:</strong> You can import a friend visit data file, which is named 'visit-123456.json'
+            <li>Find the acctname-1234567.json file and upload it here. The name and numbers in the filename will be different.</li>
+            <li><strong>Optional:</strong> You can import a friend visit data file, which is named 'friendname-1234567-visit.json'
                 <ul>
-                    <li>You might want to do this if you can't run SWProxy yourself, but have a friend who can.</li>
-                    <li>This data will be imported into the current SWARFARM account.</li>
+                    <li>You might want to do this if you can't run SW-Exporter yourself, but have a friend who can.</li>
+                    <li>This data will be imported into the currently logged in SWARFARM account.</li>
                     <li>This will not import unequipped rune inventory! This data is only available to the actual account owner, not friends.</li>
-                    <li>If you already have runes in your SWARFARM profile inventory, you can choose not to delete them at the import confirmation page.</li>
+                    <li>If you already have runes in your SWARFARM profile inventory, you can choose not to delete them.</li>
                 </ul>
             </li>
         </ol>
 
-        <h3>Things to note:</h3>
-        <ul>
-            <li>For your first upload, it is recommended to clear your profile or you will end up with a lot of duplicates. For subsequent uploads your monsters will by synced automatically.</li>
-            <li>The upload and processing can take up to about 60 seconds so be patient.</li>
-            <li>Please report any issues by leaving feedback <a href="{% url 'feedback:issue_add' %}">here</a>. You can also email your .json file to swarfarm@porksmash.com so I can investigate specific issues.</li>
-        </ul>
+        <p>
+            For your first upload, it is recommended to clear your profile or you will end up with a lot of duplicates. For subsequent uploads your account will by synced automatically.
+            Please report any issues by leaving feedback <a href="{% url 'feedback:issue_add' %}">here</a>. You can also email your .json file to swarfarm@porksmash.com so I can investigate specific issues.
+        </p>
 
         {% include 'sw_parser/import_error_snippet.html' with errors=errors only %}
 

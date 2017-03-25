@@ -10,15 +10,15 @@
             <div class="row">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <div class="col-md-4 col-md-offset-2">
+                        <div class="col-md-6">
                             <h2>Network Capture</h2>
                             <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_pcap' %}" role="button">Import PCAP capture</a></p>
                             <p>Use a packet capture tool to record network traffic directly from your phone.</p>
                         </div>
-                        <div class="col-md-4">
-                            <h2>SWProxy</h2>
-                            <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_swparser' %}" role="button">Import SWProxy JSON</a></p>
-                            <p>Upload parsed JSON data produced by using the <a href="https://github.com/kakaroto/SWProxy/">SWProxy</a> program.</p>
+                        <div class="col-md-6">
+                            <h2>JSON Data</h2>
+                            <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_swparser' %}" role="button">Import SW JSON</a></p>
+                            <p>Upload extracted JSON data produced by using the <a href="https://github.com/Xzandro/sw-exporter">Summoner's War Exporter</a> or SWProxy program.</p>
                         </div>
                     </div>
                 </div>
@@ -28,14 +28,14 @@
             <div class="row">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <div class="col-md-4 col-md-offset-2">
+                        <div class="col-md-6">
                             <h2>SWOP Optimizer</h2>
                             <div class="btn-group btn-group-justified" role="group" aria-label="...">
                                 <a class="btn btn-primary btn-lg" href="{% url 'sw_parser:export_win10_optimizer' %}" role="button">Download File</a>
                             </div>
                             <p>Windows 10 app or <a href="http://tool.swop.one" target="_blank">online version.</a></p>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <h2>Legacy Optimizer</h2>
                             <div class="btn-group btn-group-justified" role="group" aria-label="...">
                                 <a class="btn btn-primary btn-lg" href="{% url 'sw_parser:export_optimizer' %}" role="button">Copy Text</a>

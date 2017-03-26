@@ -9,7 +9,7 @@ import datetime
 from django.utils.timezone import get_current_timezone
 
 from bestiary.models import Monster
-from herders.models import MonsterPiece, MonsterInstance, RuneInstance
+from herders.models import Building, MonsterPiece, MonsterInstance, RuneInstance, BuildingInstance
 
 from .models import *
 from .com2us_mapping import *
@@ -74,6 +74,7 @@ def parse_sw_json(data, owner, options):
     parsed_mons = []
     parsed_inventory = {}
     parsed_monster_pieces = []
+    parsed_buildings = []
 
     # Grab the friend
     if data.get('command') == 'VisitFriend':
@@ -83,6 +84,7 @@ def parse_sw_json(data, owner, options):
         wizard_id = data['wizard_info'].get('wizard_id')
 
     building_list = data['building_list']
+    deco_list = data['deco_list']
     inventory_info = data.get('inventory_info')  # Optional
     unit_list = data['unit_list']
     runes_info = data.get('runes')  # Optional
@@ -97,6 +99,22 @@ def parse_sw_json(data, owner, options):
             if building.get('building_master_id') == 25:
                 storage_building_id = building.get('building_id')
                 break
+
+    for deco in deco_list:
+        try:
+            base_building = Building.objects.get(com2us_id=deco['master_id'])
+        except Building.DoesNotExist:
+            continue
+
+        level = deco['level']
+
+        try:
+            building_instance = BuildingInstance.objects.get(owner=owner, building=base_building)
+        except BuildingInstance.DoesNotExist:
+            building_instance = BuildingInstance(owner=owner, building=base_building)
+
+        building_instance.level = level
+        parsed_buildings.append(building_instance)
 
     # Inventory - essences and summoning pieces
     if inventory_info:
@@ -235,6 +253,7 @@ def parse_sw_json(data, owner, options):
         'runes': parsed_runes,
         'crafts': parsed_rune_crafts,
         'inventory': parsed_inventory,
+        'buildings': parsed_buildings,
     }
 
     return import_results

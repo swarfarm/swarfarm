@@ -79,6 +79,13 @@ def com2us_data_import(data, user_id, import_options):
         summoner.storage.crystal_pure = results['inventory'].get('crystal_pure', 0)
         summoner.storage.save()
 
+        # Save imported buildings
+        for bldg in results['buildings']:
+            bldg.save()
+
+        # Set missing buildings to level 0
+        BuildingInstance.objects.filter(owner=summoner).exclude(pk__in=[bldg.pk for bldg in results['buildings']]).update(level=0)
+
     current_task.update_state(state=states.STARTED, meta={'step': 'monsters'})
 
     with transaction.atomic():

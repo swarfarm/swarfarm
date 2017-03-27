@@ -245,6 +245,7 @@ def _convert_rune_to_win10_json(rune):
         'set_id': rune_set_map[rune.type],
         'upgrade_limit': 15,
         'rune_id': rune.com2us_id if rune.com2us_id else random.randint(1, 999999999),
+        'extra': rune_quality_map.get(rune.original_quality, 0),
     }
 
     if rune.substat_1:

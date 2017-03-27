@@ -123,6 +123,14 @@ rune_stat_type_map = {
     RuneInstance.STAT_ACCURACY_PCT: 12,
 }
 
+rune_quality_map = {
+    RuneInstance.QUALITY_NORMAL: 1,
+    RuneInstance.QUALITY_MAGIC: 2,
+    RuneInstance.QUALITY_RARE: 3,
+    RuneInstance.QUALITY_HERO: 4,
+    RuneInstance.QUALITY_LEGEND: 5,
+}
+
 craft_type_map = {
     RuneInstance.CRAFT_ENCHANT_GEM: 1,
     RuneInstance.CRAFT_GRINDSTONE: 2,

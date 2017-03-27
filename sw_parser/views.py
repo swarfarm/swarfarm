@@ -1837,6 +1837,7 @@ def wish_chart_data(request, mine=False):
 
     return JsonResponse(chart)
 
+
 # Utility functions to provide some common data across multiple log reports
 def _rune_drop_charts(runes, chart_type, slot=None):
     # Produces various charts from a queryset from any model subclassing RuneDrop.

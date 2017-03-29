@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'crispy_forms',
     'django_celery_results',
+    'django_celery_beat',
     'markdown_deux',
     'rest_framework',
     'timezone_field',

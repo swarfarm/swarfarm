@@ -56,6 +56,11 @@ def export_shop_refresh():
     _do_export('magic_shop', queryset, ShopRefreshLogSerializer)
 
 
+def export_wishes():
+    queryset = WishLog.objects.all()
+    _do_export('wish', queryset, WishLogSerializer)
+
+
 def export_all():
     exports = [
         export_scenarios,
@@ -67,6 +72,7 @@ def export_all():
         export_world_boss,
         export_rune_crafts,
         export_shop_refresh,
+        export_wishes,
     ]
 
     for export in exports:

@@ -42,8 +42,11 @@ python manage.py loaddata bestiary_data.json
 # Configure upstart and start python processes
 sudo mv ~/gunicorn_upstart.conf /etc/init/swarfarm.conf
 sudo mv ~/celery_upstart.conf /etc/init/celeryd.conf
+sudo mv ~/celery_beat_upstart.conf /etc/init/celerybeat.conf
+
 sudo service swarfarm start
 sudo service celeryd start
+sudo service celerybeat start
 
 deactivate
 echo "Done! Check the console for any errors."

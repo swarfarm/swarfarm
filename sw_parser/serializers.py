@@ -153,3 +153,33 @@ class ShopRefreshLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShopRefreshLog
         fields = ['id', 'slots_available', 'rune_drops', 'item_drops', 'monster_drops']
+
+
+class WishItemSerializer(serializers.ModelSerializer):
+    item = serializers.CharField(source='get_item_display')
+
+    class Meta:
+        model = WishItemDrop
+        exclude = ['id', 'log']
+
+
+class WishRuneSerializer(RuneDropSerializer):
+    class Meta(RuneDropSerializer.Meta):
+        model = WishRuneDrop
+        exclude = ['id', 'log']
+
+
+class WishMonsterSerializer(MonsterDropSerializer):
+    class Meta(MonsterDropSerializer.Meta):
+        model = WishMonsterDrop
+        fields = ['monster', 'element', 'grade', 'level', 'com2us_id', 'family_id']
+
+
+class WishLogSerializer(serializers.ModelSerializer):
+    rune_drop = WishRuneSerializer(many=True, source='wishrunedrop_set')
+    item_drop = WishItemSerializer(many=True, source='wishitemdrop_set')
+    monster_drop = WishMonsterSerializer(many=True, source='wishmonsterdrop_set')
+
+    class Meta:
+        model = WishLog
+        fields = ['id', 'crystal_used', 'wish_sequence', 'rune_drop', 'item_drop', 'monster_drop']

@@ -15,6 +15,7 @@ pillow==3.1.1
 sympy>=1.0.0
 django-environ
 django-celery-results
+django-celery-beat
 django-suit
 django-redis-cache==1.6.4
 django-autocomplete-light==2.3.3

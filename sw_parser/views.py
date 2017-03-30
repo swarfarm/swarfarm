@@ -1179,7 +1179,7 @@ def dungeon_rune_chart_data(request, mine=False):
 def view_elemental_rift_log(request, rift_slug, mine=False):
     date_filter = _get_log_filter_timestamp(request, mine)
     context = None
-    cache_key = 'dungeon-log-{}-{}'.format(rift_slug, slugify(date_filter['description']))
+    cache_key = 'rift-log-{}-{}'.format(rift_slug, slugify(date_filter['description']))
 
     if rift_slug not in RiftDungeonLog.RAID_SLUGS:
         raise Http404()
@@ -1265,7 +1265,41 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
             'drop_stats': grade_item_table,
         }
 
+        if not mine:
+            cache.set(cache_key, context, 3600)
+
     return render(request, 'sw_parser/log/elemental_rift/summary.html', context)
+
+
+# Rift Raids
+def view_rift_raid_log(request, difficulty, mine=False):
+    date_filter = _get_log_filter_timestamp(request, mine)
+    context = None
+    cache_key = 'raid-log-{}-{}'.format(difficulty, slugify(date_filter['description']))
+
+    if mine:
+        if not request.user.is_authenticated():
+            return redirect('%s?next=%s' % (reverse('login'), request.path))
+        summoner = get_object_or_404(Summoner, user__username=request.user.username)
+    else:
+        summoner = None
+        context = cache.get(cache_key)
+
+    if context is None:
+        runs = RiftRaidLog.objects.filter(**date_filter['filters'])
+
+        if mine:
+            runs = runs.filter(summoner=summoner)
+
+
+
+
+        if not mine:
+            cache.set(cache_key, context, 3600)
+
+
+def rift_raid_chart_data(request, mine=False):
+    pass
 
 
 # Rune Crafting

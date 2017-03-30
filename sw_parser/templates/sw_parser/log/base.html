@@ -120,6 +120,15 @@
                     {% endfor %}
                 </ul>
             </li>
+            {# Raid #}
+            <li {% if log_view == 'raid' %}class="active"{% endif %}><a
+                    {% if mine %}
+                        href="{% url 'sw_parser:view_rift_raid_mine' %}">Raid
+                    {% else %}
+                        href="{% url 'sw_parser:view_rift_raid' %}">Raid
+                    {% endif %}
+                </a>
+            </li>
             {# Rune Crafting #}
             <li {% if log_view == 'rune_craft' %}class="active"{% endif %}><a
                     {% if mine %}

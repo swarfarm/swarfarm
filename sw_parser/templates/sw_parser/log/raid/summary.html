@@ -1,0 +1,25 @@
+{% extends 'sw_parser/log/base.html' %}
+
+{% load staticfiles %}
+{% load utils %}
+{% load humanize %}
+
+{% block title %}Rift of Worlds Raid - {{ block.super }}{% endblock title %}
+
+{% block stats_content %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <h1>Rift of Worlds <small>{{ count }} logs</small></h1>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="chart col-lg-5" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?chart_type=summary"></div>
+            <div class="chart col-lg-7" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?chart_type=detail_summary"></div>
+        </div>
+    </div>
+
+    <h2 id="rune_detail">Grindstone Details</h2>
+    <div class="panel panel-default">
+
+    </div>
+{% endblock %}

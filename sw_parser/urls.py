@@ -43,8 +43,10 @@ urlpatterns = [
             url(r'(?P<rift_slug>[\w-]+)/$', views.view_elemental_rift_log, name='view_elemental_rift'),
         ])),
         url(r'^raids/', include([
-            url(r'R(?P<difficulty>[1-5])/$)', views.view_rift_raid_log, name='view_rift_raid'),
-            url(r'R(?P<difficulty>[1-5])/mine/$)', views.view_rift_raid_log, {'mine': True}, name='view_rift_raid_mine'),
+            url(r'^$', views.view_rift_raid_log, name='view_rift_raid'),
+            url(r'^mine/$', views.view_rift_raid_log, {'mine': True}, name='view_rift_raid_mine'),
+            url(r'R(?P<difficulty>[1-5])/$', views.view_rift_raid_log, name='view_rift_raid_difficulty'),
+            url(r'R(?P<difficulty>[1-5])/mine/$', views.view_rift_raid_log, {'mine': True}, name='view_rift_raid_difficulty_mine'),
         ])),
         url(r'^rune-crafting/', include([
             url('^$', views.view_rune_craft_log, name='view_rune_craft_log'),

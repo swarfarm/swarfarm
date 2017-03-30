@@ -1272,7 +1272,7 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
 
 
 # Rift Raids
-def view_rift_raid_log(request, difficulty, mine=False):
+def view_rift_raid_log(request, difficulty=5, mine=False):
     date_filter = _get_log_filter_timestamp(request, mine)
     context = None
     cache_key = 'raid-log-{}-{}'.format(difficulty, slugify(date_filter['description']))
@@ -1291,15 +1291,168 @@ def view_rift_raid_log(request, difficulty, mine=False):
         if mine:
             runs = runs.filter(summoner=summoner)
 
+        item_drops = RiftRaidItemDrop.objects.filter(log__in=runs)
+        monster_drops = RiftRaidMonsterDrop.objects.filter(log__in=runs)
+        runecraft_drops = RiftRaidRuneCraftDrop.objects.filter(log__in=runs)
 
+        total_drops = item_drops.count() + monster_drops.count() + runecraft_drops.count()
 
+        context = {
+            'difficutly': difficulty,
+            'mine': mine,
+            'stats': _log_stats(request, mine=mine, date_filter=date_filter),
+            'log_view': 'raid',
+            'timespan': date_filter,
+            'count': total_drops,
+        }
 
         if not mine:
             cache.set(cache_key, context, 3600)
 
+    return render(request, 'sw_parser/log/raid/summary.html', context)
+
 
 def rift_raid_chart_data(request, mine=False):
-    pass
+    date_filter = deepcopy(_get_log_filter_timestamp(request, mine))
+    chart_type = request.GET.get('chart_type')
+    section = request.GET.get('section')
+
+    cache_key = 'raid-chart-{}-{}'.format(chart_type, slugify(date_filter['description']))
+    chart = None
+
+    logs = RiftRaidLog.objects.filter(**date_filter['filters'])
+
+    if mine:
+        summoner = get_object_or_404(Summoner, user__username=request.user.username)
+        logs = logs.filter(summoner=summoner)
+    else:
+        chart = cache.get(cache_key)
+
+    if chart is None:
+        if section:
+            if section == 'monster':
+                pass
+            if section == 'grindstone':
+                pass
+            if section == 'enchant_gem':
+                pass
+        else:
+            if chart_type == 'summary':
+                chart = deepcopy(chart_templates.pie)
+                chart['title']['text'] = 'Drop Chance'
+                drop_chances = []
+
+                # Items
+                for drop in RiftRaidItemDrop.objects.filter(log__in=logs).values('item').annotate(count=Count('pk')):
+                    drop_chances.append((
+                        drop['count'],
+                        ShopRefreshItem.DROP_CHOICES_DICT[drop['item']],
+                    ))
+
+                # Rainbowmon
+                monster_count = RiftRaidMonsterDrop.objects.filter(log__in=logs).count()
+                if monster_count:
+                    drop_chances.append((
+                        float(monster_count),
+                        'Rainbowmon'
+                    ))
+
+                # Rune crafts by type
+                for craft in RiftRaidRuneCraftDrop.objects.filter(log__in=logs).values('type').annotate(count=Count('pk')):
+                    drop_chances.append((
+                        float(craft['count']),
+                        RuneCraftDrop.CRAFT_CHOICES[craft['type']][1],
+                    ))
+
+                if len(drop_chances):
+                    # Post-process results
+                    chart['series'].append({
+                        'name': 'Rift Drops',
+                        'colorByPoint': True,
+                        'data': [],
+                    })
+
+                    drop_chances.sort(reverse=True)
+
+                    for point in drop_chances:
+                        chart['series'][0]['data'].append({
+                            'name': str(point[1]),
+                            'y': point[0],
+                        })
+                else:
+                    chart = deepcopy(chart_templates.no_data)
+
+            elif chart_type == 'detail_summary':
+                chart = deepcopy(chart_templates.column)
+                chart['title']['text'] = 'Frequency of Occurrence - Detailed'
+                chart['xAxis']['labels'] = {
+                    'rotation': -90,
+                    'useHTML': True,
+                }
+                chart['yAxis']['title']['text'] = 'Chance to Appear'
+                chart['yAxis']['labels'] = {
+                    'format': '{value}%',
+                }
+                chart['plotOptions']['column']['dataLabels'] = {
+                    'enabled': True,
+                    'color': 'white',
+                    'format': '{point.y:.1f}%',
+                    'style': {
+                        'textShadow': '0 0 3px black'
+                    }
+                }
+                chart['series'].append({
+                    'name': 'Type of Drop',
+                    'colorByPoint': True,
+                    'data': [],
+                })
+
+                total_logs = RiftRaidItemDrop.objects.filter(log__in=logs).count()
+                total_logs += RiftRaidMonsterDrop.objects.filter(log__in=logs).count()
+                total_logs += RiftRaidRuneCraftDrop.objects.filter(log__in=logs).count()
+
+                appearance_chances = []
+
+                # Items
+                for drop in RiftRaidItemDrop.objects.filter(log__in=logs).values('item', 'quantity').annotate(
+                        count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        '{} x{}'.format(ShopRefreshItem.DROP_CHOICES_DICT[drop['item']], drop['quantity']),
+                    ))
+
+                # Monsters by grade
+                for drop in RiftRaidMonsterDrop.objects.filter(log__in=logs).values('grade').annotate(
+                        count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        '{}<span class="glyphicon glyphicon-star"></span> Rainbowmon'.format(drop['grade'])
+                    ))
+
+                # Crafts by quality and type
+                for drop in RiftRaidRuneCraftDrop.objects.filter(log__in=logs).values('quality', 'type').annotate(count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        '{} {}'.format(
+                            RiftRaidRuneCraftDrop.QUALITY_CHOICES[drop['quality']][1],
+                            RiftRaidRuneCraftDrop.CRAFT_CHOICES[drop['type']][1],
+                        )
+                    ))
+
+                # Sort the list by appearance chance
+                appearance_chances.sort(reverse=True)
+
+                # Fill in the chart data and categories
+                for point in appearance_chances:
+                    chart['xAxis']['categories'].append(point[1])
+                    chart['series'][0]['data'].append(point[0])
+
+        if chart is None:
+            raise Http404()
+        elif not mine:
+            cache.set(cache_key, chart, 3600)
+
+    return JsonResponse(chart)
 
 
 # Rune Crafting
@@ -1830,27 +1983,23 @@ def wish_chart_data(request, mine=False):
 
                 total_logs = wish_logs.count()
                 appearance_chances = []
-                # appearance_chance = float(item['count']) / total_logs
 
                 # Items
-                for drop in WishItemDrop.objects.filter(log__in=wish_logs).values('item', 'quantity').annotate(
-                        count=Count('pk')):
+                for drop in WishItemDrop.objects.filter(log__in=wish_logs).values('item', 'quantity').annotate(count=Count('pk')):
                     appearance_chances.append((
                         float(drop['count']) / total_logs * 100,
                         '{} x{}'.format(ShopRefreshItem.DROP_CHOICES_DICT[drop['item']], drop['quantity']),
                     ))
 
                 # Monsters by grade
-                for drop in WishMonsterDrop.objects.filter(log__in=wish_logs).values('grade').annotate(
-                        count=Count('pk')):
+                for drop in WishMonsterDrop.objects.filter(log__in=wish_logs).values('grade').annotate(count=Count('pk')):
                     appearance_chances.append((
                         float(drop['count']) / total_logs * 100,
                         '{}<span class="glyphicon glyphicon-star"></span> Monster'.format(drop['grade'])
                     ))
 
                 # Runes by grade
-                for drop in WishRuneDrop.objects.filter(log__in=wish_logs).values('stars').annotate(
-                        count=Count('pk')):
+                for drop in WishRuneDrop.objects.filter(log__in=wish_logs).values('stars').annotate(count=Count('pk')):
                     appearance_chances.append((
                         float(drop['count']) / total_logs * 100,
                         '{}<span class="glyphicon glyphicon-star"></span> Rune'.format(drop['stars'])

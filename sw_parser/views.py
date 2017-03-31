@@ -1342,7 +1342,7 @@ def rift_raid_chart_data(request, mine=False):
     else:
         return Http404()
 
-    cache_key = 'raid-chart-{}-{}'.format(chart_type, slugify(date_filter['description']))
+    cache_key = 'raid-chart-{}-{}-{}-{}'.format(chart_type, section, difficulty, slugify(date_filter['description']))
     chart = None
 
     logs = RiftRaidLog.objects.filter(success=True, difficulty=difficulty, **date_filter['filters'])
@@ -2659,9 +2659,10 @@ def _rune_craft_charts(crafts, chart_type):
 
         rune_types_in_set = crafts.values_list('rune', flat=True).order_by('rune').distinct()
         rune_types = [RuneDrop.TYPE_CHOICES[type_id - 1] for type_id in rune_types_in_set]
+        quality_types_in_set = crafts.values_list('quality', flat=True).order_by('quality').distinct()
 
         data = {rune_type[0]: {
-            quality[0]: 0 for quality in RuneDrop.QUALITY_CHOICES
+            quality: 0 for quality in quality_types_in_set
         } for rune_type in rune_types}
 
         # Post-process data
@@ -2672,15 +2673,15 @@ def _rune_craft_charts(crafts, chart_type):
         categories = [rune_type[1] for rune_type in rune_types]
         series = []
 
-        for quality in RuneDrop.QUALITY_CHOICES:
+        for quality in quality_types_in_set:
             values = []
             for rune_type in rune_types:
-                values.append(float(data[rune_type[0]][quality[0]]) / total_crafts * 100)
+                values.append(float(data[rune_type[0]][quality]) / total_crafts * 100)
 
             series.append({
-                'name': quality[1],
+                'name': RiftRaidRuneCraftDrop.QUALITY_CHOICES[quality][1],
                 'data': values,
-                'color': RuneDrop.QUALITY_COLORS[quality[0]],
+                'color': RuneDrop.QUALITY_COLORS[quality],
             })
 
         chart['series'] = series
@@ -2726,9 +2727,10 @@ def _rune_craft_charts(crafts, chart_type):
 
         stat_types_in_set = crafts.values_list('stat', flat=True).order_by('stat').distinct()
         stat_types = [RuneDrop.STAT_CHOICES[type_id - 1] for type_id in stat_types_in_set]
+        quality_types_in_set = crafts.values_list('quality', flat=True).order_by('quality').distinct()
 
         data = {rune_type[0]: {
-            quality[0]: 0 for quality in RuneDrop.QUALITY_CHOICES
+            quality: 0 for quality in quality_types_in_set
         } for rune_type in stat_types}
 
         # Post-process data
@@ -2739,15 +2741,15 @@ def _rune_craft_charts(crafts, chart_type):
         categories = [stat_type[1] for stat_type in stat_types]
         series = []
 
-        for quality in RuneDrop.QUALITY_CHOICES:
+        for quality in quality_types_in_set:
             values = []
             for stat_type in stat_types:
-                values.append(float(data[stat_type[0]][quality[0]]) / total_crafts * 100)
+                values.append(float(data[stat_type[0]][quality]) / total_crafts * 100)
 
             series.append({
-                'name': quality[1],
+                'name': RiftRaidRuneCraftDrop.QUALITY_CHOICES[quality][1],
                 'data': values,
-                'color': RuneDrop.QUALITY_COLORS[quality[0]],
+                'color': RuneDrop.QUALITY_COLORS[quality],
             })
 
         chart['series'] = series

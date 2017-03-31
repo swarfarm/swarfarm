@@ -1286,10 +1286,27 @@ def view_rift_raid_log(request, difficulty=5, mine=False):
         context = cache.get(cache_key)
 
     if context is None:
-        runs = RiftRaidLog.objects.filter(**date_filter['filters'])
+        # Generate list of floors and the number of runs each
+        difficulties = []
+
+        for x in range(0, 5):
+            logs = RiftRaidLog.objects.filter(difficulty=x + 1, success=True, **date_filter['filters'])
+
+            if mine:
+                logs = logs.filter(summoner=summoner)
+
+            item_drops = RiftRaidItemDrop.objects.filter(log__in=logs)
+            monster_drops = RiftRaidMonsterDrop.objects.filter(log__in=logs)
+            runecraft_drops = RiftRaidRuneCraftDrop.objects.filter(log__in=logs)
+            log_count = item_drops.count() + monster_drops.count() + runecraft_drops.count()
+            difficulties.append((x + 1, log_count))
+
+        runs = RiftRaidLog.objects.filter(success=True, difficulty=difficulty, **date_filter['filters'])
+        successful_runs = None
 
         if mine:
             runs = runs.filter(summoner=summoner)
+            successful_runs = runs.filter(success=True).count()
 
         item_drops = RiftRaidItemDrop.objects.filter(log__in=runs)
         monster_drops = RiftRaidMonsterDrop.objects.filter(log__in=runs)
@@ -1298,12 +1315,14 @@ def view_rift_raid_log(request, difficulty=5, mine=False):
         total_drops = item_drops.count() + monster_drops.count() + runecraft_drops.count()
 
         context = {
-            'difficutly': difficulty,
+            'difficulty': difficulty,
+            'difficulties': difficulties,
             'mine': mine,
             'stats': _log_stats(request, mine=mine, date_filter=date_filter),
             'log_view': 'raid',
             'timespan': date_filter,
             'count': total_drops,
+            'success_rate': float(successful_runs) / runs.count() if successful_runs else None
         }
 
         if not mine:
@@ -1316,11 +1335,17 @@ def rift_raid_chart_data(request, mine=False):
     date_filter = deepcopy(_get_log_filter_timestamp(request, mine))
     chart_type = request.GET.get('chart_type')
     section = request.GET.get('section')
+    difficulty = request.GET.get('difficulty')
+
+    if difficulty is not None:
+        difficulty = int(difficulty)
+    else:
+        return Http404()
 
     cache_key = 'raid-chart-{}-{}'.format(chart_type, slugify(date_filter['description']))
     chart = None
 
-    logs = RiftRaidLog.objects.filter(**date_filter['filters'])
+    logs = RiftRaidLog.objects.filter(success=True, difficulty=difficulty, **date_filter['filters'])
 
     if mine:
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
@@ -1330,15 +1355,19 @@ def rift_raid_chart_data(request, mine=False):
 
     if chart is None:
         if section:
-            if section == 'monster':
-                pass
+            craft_type = None
             if section == 'grindstone':
-                pass
-            if section == 'enchant_gem':
-                pass
+                craft_type = RiftRaidRuneCraftDrop.CRAFT_GRINDSTONE
+            elif section == 'enchant_gem':
+                craft_type = RiftRaidRuneCraftDrop.CRAFT_ENCHANT_GEM
+
+            if craft_type is not None:
+                crafts = RiftRaidRuneCraftDrop.objects.filter(log__in=logs, type=craft_type)
+                chart = _rune_craft_charts(crafts, chart_type)
         else:
             if chart_type == 'summary':
                 chart = deepcopy(chart_templates.pie)
+
                 chart['title']['text'] = 'Drop Chance'
                 drop_chances = []
 
@@ -1370,6 +1399,9 @@ def rift_raid_chart_data(request, mine=False):
                         'name': 'Rift Drops',
                         'colorByPoint': True,
                         'data': [],
+                        'dataLabels': {
+                            'distance': 10,
+                        },
                     })
 
                     drop_chances.sort(reverse=True)
@@ -1439,13 +1471,16 @@ def rift_raid_chart_data(request, mine=False):
                         )
                     ))
 
-                # Sort the list by appearance chance
-                appearance_chances.sort(reverse=True)
+                if len(appearance_chances):
+                    # Sort the list by appearance chance
+                    appearance_chances.sort(reverse=True)
 
-                # Fill in the chart data and categories
-                for point in appearance_chances:
-                    chart['xAxis']['categories'].append(point[1])
-                    chart['series'][0]['data'].append(point[0])
+                    # Fill in the chart data and categories
+                    for point in appearance_chances:
+                        chart['xAxis']['categories'].append(point[1])
+                        chart['series'][0]['data'].append(point[0])
+                else:
+                    chart = deepcopy(chart_templates.no_data)
 
         if chart is None:
             raise Http404()
@@ -2058,70 +2093,70 @@ def _rune_drop_charts(runes, chart_type, slot=None):
 
     elif chart_type == 'star_detail':
         # Multi-series bar chart by grade
-            chart = deepcopy(chart_templates.column)
-            chart['title']['text'] = 'Stars Breakdown By Rune'
-            chart['plotOptions']['column']['stacking'] = 'normal'
-            chart['plotOptions']['column']['groupPadding'] = 0
-            chart['plotOptions']['column']['pointPadding'] = 0.05
-            chart['plotOptions']['column']['dataLabels'] = {
-                'enabled': True,
-                'color': 'white',
-                'format': '{point.y:.1f}%',
-                'style': {
-                    'textShadow': '0 0 3px black'
-                }
+        chart = deepcopy(chart_templates.column)
+        chart['title']['text'] = 'Stars Breakdown By Rune'
+        chart['plotOptions']['column']['stacking'] = 'normal'
+        chart['plotOptions']['column']['groupPadding'] = 0
+        chart['plotOptions']['column']['pointPadding'] = 0.05
+        chart['plotOptions']['column']['dataLabels'] = {
+            'enabled': True,
+            'color': 'white',
+            'format': '{point.y:.1f}%',
+            'style': {
+                'textShadow': '0 0 3px black'
             }
-            chart['yAxis']['title']['text'] = 'Percentage'
-            chart['yAxis']['stackLabels'] = {
-                'enabled': True,
-                'format': '{total:.1f}%',
-                'style': {
-                    'fontWeight': 'bold',
-                    'color': 'gray',
-                }
+        }
+        chart['yAxis']['title']['text'] = 'Percentage'
+        chart['yAxis']['stackLabels'] = {
+            'enabled': True,
+            'format': '{total:.1f}%',
+            'style': {
+                'fontWeight': 'bold',
+                'color': 'gray',
             }
+        }
 
-            chart['legend'] = {
-                'useHTML': True,
-                'align': 'right',
-                'x': 0,
-                'verticalAlign': 'top',
-                'y': 25,
-                'floating': True,
-                'backgroundColor': 'white',
-                'borderColor': '#CCC',
-                'borderWidth': 1,
-                'shadow': False,
-            }
+        chart['legend'] = {
+            'useHTML': True,
+            'align': 'right',
+            'x': 0,
+            'verticalAlign': 'top',
+            'y': 25,
+            'floating': True,
+            'backgroundColor': 'white',
+            'borderColor': '#CCC',
+            'borderWidth': 1,
+            'shadow': False,
+        }
 
-            runes_types_in_set = runes.values_list('type', flat=True).order_by('type').distinct()
-            rune_types = [RuneDrop.TYPE_CHOICES[type_id - 1] for type_id in runes_types_in_set]
-            grade_range = runes.values('stars').aggregate(min=Min('stars'), max=Max('stars'))
+        runes_types_in_set = runes.values_list('type', flat=True).order_by('type').distinct()
+        rune_types = [RuneDrop.TYPE_CHOICES[type_id - 1] for type_id in runes_types_in_set]
+        grade_range = runes.values('stars').aggregate(min=Min('stars'), max=Max('stars'))
 
-            data = {rune_type[0]: {
-                grade: 0 for grade in range(grade_range['min'], grade_range['max'] + 1)
-            } for rune_type in rune_types}
+        data = {rune_type[0]: {
+            grade: 0 for grade in range(grade_range['min'], grade_range['max'] + 1)
+        } for rune_type in rune_types}
 
-            # Post-process data
-            for result in runes.values('stars', 'type').annotate(count=Count('pk')).order_by('type', 'stars'):
-                data[result['type']][result['stars']] = result['count']
+        # Post-process data
+        for result in runes.values('stars', 'type').annotate(count=Count('pk')).order_by('type', 'stars'):
+            data[result['type']][result['stars']] = result['count']
 
-            # Build the chart series
-            categories = [rune_type[1] for rune_type in rune_types]
-            series = []
+        # Build the chart series
+        categories = [rune_type[1] for rune_type in rune_types]
+        series = []
 
-            for grade in range(grade_range['min'], grade_range['max'] + 1):
-                values = []
-                for rune_type in rune_types:
-                    values.append(float(data[rune_type[0]][grade]) / total_runes * 100)
+        for grade in range(grade_range['min'], grade_range['max'] + 1):
+            values = []
+            for rune_type in rune_types:
+                values.append(float(data[rune_type[0]][grade]) / total_runes * 100)
 
-                series.append({
-                    'name': str(grade) + '<span class="glyphicon glyphicon-star"></span>',
-                    'data': values,
-                })
+            series.append({
+                'name': str(grade) + '<span class="glyphicon glyphicon-star"></span>',
+                'data': values,
+            })
 
-            chart['series'] = series
-            chart['xAxis']['categories'] = categories
+        chart['series'] = series
+        chart['xAxis']['categories'] = categories
 
     elif chart_type == 'quality_summary':
         chart = deepcopy(chart_templates.pie)
@@ -2520,6 +2555,197 @@ def _monster_drop_charts(monster_drops, chart_type, grade=None):
                 })
     else:
         chart = deepcopy(chart_templates.no_data)
+
+    return chart
+
+
+def _rune_craft_charts(crafts, chart_type):
+    # Produces various charts from a queryset from any model subclassing RuneDrop.
+    chart = None
+
+    total_crafts = crafts.count()
+
+    # Return empty response if nothing to chart
+    if not total_crafts:
+        return deepcopy(chart_templates.no_data)
+
+    if chart_type == 'quality_summary':
+        chart = deepcopy(chart_templates.pie)
+        chart['title']['text'] = 'Drops Rate By Quality'
+        data = crafts.values('quality').annotate(count=Count('pk')).order_by('quality')
+
+        # Post-process results
+        chart['series'].append({
+            'name': 'Slot',
+            'colorByPoint': True,
+            'data': [],
+            'colors': [],
+            'dataLabels': {
+                'distance': 5,
+            },
+        })
+
+        for point in data:
+            chart['series'][0]['data'].append({
+                'name': RuneCraftDrop.QUALITY_CHOICES[point['quality']][1],
+                'y': point['count'],
+            })
+            chart['series'][0]['colors'].append(RuneCraftDrop.QUALITY_COLORS[point['quality']])
+
+    if chart_type == 'stat_summary':
+        chart = deepcopy(chart_templates.pie)
+        chart['title']['text'] = 'Drops Rate By Stat'
+        data = crafts.values('stat').annotate(count=Count('pk')).order_by('stat')
+
+        # Post-process results
+        chart['series'].append({
+            'name': 'Slot',
+            'colorByPoint': True,
+            'data': [],
+            'dataLabels': {
+                'distance': 5,
+            },
+        })
+
+        for point in data:
+            chart['series'][0]['data'].append({
+                'name': RuneCraft.STAT_CHOICES[point['stat'] - 1][1],
+                'y': point['count'],
+            })
+
+    elif chart_type == 'quality_detail':
+        # Multi-series bar chart by grade
+        chart = deepcopy(chart_templates.column)
+        chart['title']['text'] = 'Quality By Rune Set'
+        chart['plotOptions']['column']['stacking'] = 'normal'
+        chart['plotOptions']['column']['groupPadding'] = 0
+        chart['plotOptions']['column']['pointPadding'] = 0.05
+        chart['plotOptions']['column']['dataLabels'] = {
+            'enabled': True,
+            'color': 'white',
+            'format': '{point.y:.1f}%',
+            'style': {
+                'textShadow': '0 0 3px black'
+            }
+        }
+        chart['yAxis']['title']['text'] = 'Percentage'
+        chart['yAxis']['stackLabels'] = {
+            'enabled': True,
+            'format': '{total:.1f}%',
+            'style': {
+                'fontWeight': 'bold',
+                'color': 'gray',
+            }
+        }
+
+        chart['legend'] = {
+            'useHTML': True,
+            'align': 'right',
+            'x': 0,
+            'verticalAlign': 'top',
+            'y': 25,
+            'floating': True,
+            'backgroundColor': 'white',
+            'borderColor': '#CCC',
+            'borderWidth': 1,
+            'shadow': False,
+        }
+
+        rune_types_in_set = crafts.values_list('rune', flat=True).order_by('rune').distinct()
+        rune_types = [RuneDrop.TYPE_CHOICES[type_id - 1] for type_id in rune_types_in_set]
+
+        data = {rune_type[0]: {
+            quality[0]: 0 for quality in RuneDrop.QUALITY_CHOICES
+        } for rune_type in rune_types}
+
+        # Post-process data
+        for result in crafts.values('quality', 'rune').annotate(count=Count('pk')).order_by('rune', 'quality'):
+            data[result['rune']][result['quality']] = result['count']
+
+        # Build the chart series
+        categories = [rune_type[1] for rune_type in rune_types]
+        series = []
+
+        for quality in RuneDrop.QUALITY_CHOICES:
+            values = []
+            for rune_type in rune_types:
+                values.append(float(data[rune_type[0]][quality[0]]) / total_crafts * 100)
+
+            series.append({
+                'name': quality[1],
+                'data': values,
+                'color': RuneDrop.QUALITY_COLORS[quality[0]],
+            })
+
+        chart['series'] = series
+        chart['xAxis']['categories'] = categories
+
+    elif chart_type == 'stat_detail':
+        # Multi-series bar chart by grade
+        chart = deepcopy(chart_templates.column)
+        chart['title']['text'] = 'Quality By Stat'
+        chart['plotOptions']['column']['stacking'] = 'normal'
+        chart['plotOptions']['column']['groupPadding'] = 0
+        chart['plotOptions']['column']['pointPadding'] = 0.05
+        chart['plotOptions']['column']['dataLabels'] = {
+            'enabled': True,
+            'color': 'white',
+            'format': '{point.y:.1f}%',
+            'style': {
+                'textShadow': '0 0 3px black'
+            }
+        }
+        chart['yAxis']['title']['text'] = 'Percentage'
+        chart['yAxis']['stackLabels'] = {
+            'enabled': True,
+            'format': '{total:.1f}%',
+            'style': {
+                'fontWeight': 'bold',
+                'color': 'gray',
+            }
+        }
+
+        chart['legend'] = {
+            'useHTML': True,
+            'align': 'right',
+            'x': 0,
+            'verticalAlign': 'top',
+            'y': 25,
+            'floating': True,
+            'backgroundColor': 'white',
+            'borderColor': '#CCC',
+            'borderWidth': 1,
+            'shadow': False,
+        }
+
+        stat_types_in_set = crafts.values_list('stat', flat=True).order_by('stat').distinct()
+        stat_types = [RuneDrop.STAT_CHOICES[type_id - 1] for type_id in stat_types_in_set]
+
+        data = {rune_type[0]: {
+            quality[0]: 0 for quality in RuneDrop.QUALITY_CHOICES
+        } for rune_type in stat_types}
+
+        # Post-process data
+        for result in crafts.values('quality', 'stat').annotate(count=Count('pk')).order_by('stat', 'quality'):
+            data[result['stat']][result['quality']] = result['count']
+
+        # Build the chart series
+        categories = [stat_type[1] for stat_type in stat_types]
+        series = []
+
+        for quality in RuneDrop.QUALITY_CHOICES:
+            values = []
+            for stat_type in stat_types:
+                values.append(float(data[stat_type[0]][quality[0]]) / total_crafts * 100)
+
+            series.append({
+                'name': quality[1],
+                'data': values,
+                'color': RuneDrop.QUALITY_COLORS[quality[0]],
+            })
+
+        chart['series'] = series
+        chart['xAxis']['categories'] = categories
 
     return chart
 

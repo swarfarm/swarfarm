@@ -755,6 +755,8 @@ class RuneCraftDrop(models.Model):
         (QUALITY_LEGEND, 'Legend'),
     )
 
+    QUALITY_COLORS = RuneDrop.QUALITY_COLORS
+
     # Valid value ranges
     # Type > Stat > Quality > Min/Max
     CRAFT_VALUE_RANGES = {

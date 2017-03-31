@@ -9,17 +9,61 @@
 {% block stats_content %}
     {% static 'herders/images/' as img_url_prefix %}
 
-    <h1>Rift of Worlds <small>{{ count }} logs</small></h1>
+    <h1>
+        Rift of Worlds
+        <div class="btn-group" style="display: inline-block">
+            <button class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                R{{ difficulty }} <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                {% for diff, count in difficulties %}
+                <li>
+                    <a {% if mine %}
+                            href="{% url 'sw_parser:view_rift_raid_difficulty_mine' difficulty=diff %}"
+                        {% else %}
+                            href="{% url 'sw_parser:view_rift_raid_difficulty' difficulty=diff %}"
+                        {% endif %}
+                    >R{{ diff }} <span class="badge">{{ count }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <small>{{ count }} logs</small>
+    </h1>
+    {% if mine %}
+    <div class="alert alert-warning">
+        <strong>Note:</strong> This report contains data for all party members in your raids, unless they were also logging at the same time.
+    </div>
+    {% endif %}
 
     <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="chart col-lg-5" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?chart_type=summary"></div>
-            <div class="chart col-lg-7" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?chart_type=detail_summary"></div>
+        <div class="panel-body row">
+            <div class="chart col-lg-5" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?chart_type=summary&difficulty={{ difficulty }}"></div>
+            <div class="chart col-lg-7" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?chart_type=detail_summary&difficulty={{ difficulty }}"></div>
         </div>
     </div>
 
-    <h2 id="rune_detail">Grindstone Details</h2>
     <div class="panel panel-default">
-
+        <div class="panel-heading">
+            <p class="panel-title">Grindstone Details</p>
+        </div>
+        <div class="panel-body row">
+            <div class="chart col-lg-6" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?section=grindstone&chart_type=quality_summary&difficulty={{ difficulty }}"></div>
+            <div class="chart col-lg-6" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?section=grindstone&chart_type=stat_summary&difficulty={{ difficulty }}"></div>
+            <div class="chart col-lg-6" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?section=grindstone&chart_type=quality_detail&difficulty={{ difficulty }}"></div>
+            <div class="chart col-lg-6" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?section=grindstone&chart_type=stat_detail&difficulty={{ difficulty }}"></div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">Enchant Gem Details</p>
+        </div>
+        <div class="panel-body row">
+            <div class="chart col-lg-6" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?section=enchant_gem&chart_type=quality_summary&difficulty={{ difficulty }}"></div>
+            <div class="chart col-lg-6" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?section=enchant_gem&chart_type=stat_summary&difficulty={{ difficulty }}"></div>
+            <div class="chart col-lg-6" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?section=enchant_gem&chart_type=quality_detail&difficulty={{ difficulty }}"></div>
+            <div class="chart col-lg-6" style="height: 400px" data-chart-data-source="/data/log/charts/raid/{% if mine %}mine/{% endif %}?section=enchant_gem&chart_type=stat_detail&difficulty={{ difficulty }}"></div>
+        </div>
     </div>
 {% endblock %}

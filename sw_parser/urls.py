@@ -42,6 +42,12 @@ urlpatterns = [
             url(r'(?P<rift_slug>[\w-]+)/mine/$', views.view_elemental_rift_log, {'mine': True}, name='view_elemental_rift_mine'),
             url(r'(?P<rift_slug>[\w-]+)/$', views.view_elemental_rift_log, name='view_elemental_rift'),
         ])),
+        url(r'^raids/', include([
+            url(r'^$', views.view_rift_raid_log, name='view_rift_raid'),
+            url(r'^mine/$', views.view_rift_raid_log, {'mine': True}, name='view_rift_raid_mine'),
+            url(r'r(?P<difficulty>[1-5])/$', views.view_rift_raid_log, name='view_rift_raid_difficulty'),
+            url(r'r(?P<difficulty>[1-5])/mine/$', views.view_rift_raid_log, {'mine': True}, name='view_rift_raid_difficulty_mine'),
+        ])),
         url(r'^rune-crafting/', include([
             url('^$', views.view_rune_craft_log, name='view_rune_craft_log'),
             url('^mine/$', views.view_rune_craft_log, {'mine': True}, name='view_rune_craft_log_mine'),
@@ -65,6 +71,8 @@ urlpatterns = [
             url(r'^rune/mine/$', views.dungeon_rune_chart_data, {'mine': True}, name='dungeon_rune_chart_data_mine'),
             url(r'^dungeon/$', views.dungeon_stats_chart_data, name='dungeon_stats_chart_data'),
             url(r'^dungeon/mine/$', views.dungeon_stats_chart_data, {'mine': True}, name='dungeon_stats_chart_data_mine'),
+            url(r'^raid/$', views.rift_raid_chart_data, name='rift_raid_chart_data'),
+            url(r'^raid/mine/$', views.rift_raid_chart_data, {'mine': True}, name='rift_raid_chart_data_mine'),
             url(r'^summon/$', views.summon_stats_chart_data, name='summon_stats_chart_data'),
             url(r'^summon/mine/$', views.summon_stats_chart_data, {'mine': True}, name='summon_stats_chart_data_mine'),
             url(r'^rune-crafting/$', views.rune_craft_chart_data, name='rune_craft_chart_data'),
@@ -82,3 +90,4 @@ urlpatterns = [
         url(r'^upload/$', views.log_data, name='upload_log'),
     ]))
 ]
+

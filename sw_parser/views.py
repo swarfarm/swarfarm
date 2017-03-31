@@ -1446,11 +1446,17 @@ def rift_raid_chart_data(request, mine=False):
                 appearance_chances = []
 
                 # Items
-                for drop in RiftRaidItemDrop.objects.filter(log__in=logs).values('item', 'quantity').annotate(
-                        count=Count('pk')):
+                # Mana first
+                for mana_drop in RiftRaidItemDrop.objects.filter(log__in=logs, item=RiftRaidItemDrop.DROP_CURRENCY_MANA).values('item').annotate(count=Count('pk')):
+                    appearance_chances.append((
+                        float(mana_drop['count']) / total_logs * 100,
+                        'Mana',
+                    ))
+
+                for drop in RiftRaidItemDrop.objects.filter(log__in=logs).exclude(item=RiftRaidItemDrop.DROP_CURRENCY_MANA).values('item', 'quantity').annotate(count=Count('pk')):
                     appearance_chances.append((
                         float(drop['count']) / total_logs * 100,
-                        '{} x{}'.format(ShopRefreshItem.DROP_CHOICES_DICT[drop['item']], drop['quantity']),
+                        '{} x{}'.format(RiftRaidItemDrop.DROP_CHOICES_DICT[drop['item']], drop['quantity']),
                     ))
 
                 # Monsters by grade

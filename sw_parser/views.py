@@ -1372,7 +1372,7 @@ def rift_raid_chart_data(request, mine=False):
                 drop_chances = []
 
                 # Items
-                for drop in RiftRaidItemDrop.objects.filter(log__in=logs).values('item').annotate(count=Count('pk')):
+                for drop in RiftRaidItemDrop.objects.filter(log__in=logs).exclude(item=RiftRaidItemDrop.DROP_CURRENCY_SOCIAL).values('item').annotate(count=Count('pk')):
                     drop_chances.append((
                         drop['count'],
                         ShopRefreshItem.DROP_CHOICES_DICT[drop['item']],
@@ -1439,7 +1439,7 @@ def rift_raid_chart_data(request, mine=False):
                     'data': [],
                 })
 
-                total_logs = RiftRaidItemDrop.objects.filter(log__in=logs).count()
+                total_logs = RiftRaidItemDrop.objects.filter(log__in=logs).exclude(item=RiftRaidItemDrop.DROP_CURRENCY_SOCIAL).count()
                 total_logs += RiftRaidMonsterDrop.objects.filter(log__in=logs).count()
                 total_logs += RiftRaidRuneCraftDrop.objects.filter(log__in=logs).count()
 
@@ -1453,7 +1453,7 @@ def rift_raid_chart_data(request, mine=False):
                         'Mana',
                     ))
 
-                for drop in RiftRaidItemDrop.objects.filter(log__in=logs).exclude(item=RiftRaidItemDrop.DROP_CURRENCY_MANA).values('item', 'quantity').annotate(count=Count('pk')):
+                for drop in RiftRaidItemDrop.objects.filter(log__in=logs).exclude(item__in=[RiftRaidItemDrop.DROP_CURRENCY_MANA, RiftRaidItemDrop.DROP_CURRENCY_SOCIAL]).values('item', 'quantity').annotate(count=Count('pk')):
                     appearance_chances.append((
                         float(drop['count']) / total_logs * 100,
                         '{} x{}'.format(RiftRaidItemDrop.DROP_CHOICES_DICT[drop['item']], drop['quantity']),

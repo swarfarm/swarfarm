@@ -5,9 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    replaces = [(b'sw_parser', '0001_initial'), (b'sw_parser', '0002_auto_20160420_2039'), (b'sw_parser', '0003_auto_20160420_2042'), (b'sw_parser', '0004_auto_20160420_2220')]
-
     dependencies = [
         ('bestiary', '0001_initial'),
     ]

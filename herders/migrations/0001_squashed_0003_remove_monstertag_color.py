@@ -9,9 +9,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
-    replaces = [(b'herders', '0001_squashed_0109_runeinstance_original_quality'), (b'herders', '0002_auto_20170402_2221'), (b'herders', '0003_remove_monstertag_color')]
-
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -37,9 +34,6 @@ class Migration(migrations.Migration):
                 ('base_stars', models.IntegerField(choices=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)])),
                 ('can_awaken', models.BooleanField(default=True)),
                 ('is_awakened', models.BooleanField(default=False)),
-                ('awaken_ele_mats_low', models.IntegerField(null=True, blank=True)),
-                ('awaken_ele_mats_mid', models.IntegerField(null=True, blank=True)),
-                ('awaken_ele_mats_high', models.IntegerField(null=True, blank=True)),
                 ('awaken_magic_mats_low', models.IntegerField(null=True, blank=True)),
                 ('awaken_magic_mats_mid', models.IntegerField(null=True, blank=True)),
                 ('awaken_magic_mats_high', models.IntegerField(null=True, blank=True)),
@@ -72,24 +66,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='MonsterSkill',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=40)),
-                ('description', models.TextField()),
-                ('dungeon_leader', models.BooleanField(default=False)),
-                ('arena_leader', models.BooleanField(default=False)),
-                ('guild_leader', models.BooleanField(default=False)),
-                ('max_level', models.IntegerField()),
-                ('level_progress_description', models.TextField(null=True, blank=True)),
-                ('icon_filename', models.CharField(max_length=100, null=True, blank=True)),
-                ('skill_effect', models.ManyToManyField(to=b'herders.MonsterSkillEffect', blank=True)),
-                ('general_leader', models.BooleanField(default=False)),
-                ('slot', models.IntegerField(default=1)),
-                ('passive', models.BooleanField(default=False)),
-            ],
-        ),
-        migrations.CreateModel(
             name='MonsterSkillEffect',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -97,6 +73,20 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=40)),
                 ('description', models.TextField()),
                 ('icon_filename', models.CharField(max_length=100, null=True, blank=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='MonsterSkill',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=40)),
+                ('description', models.TextField()),
+                ('max_level', models.IntegerField()),
+                ('level_progress_description', models.TextField(null=True, blank=True)),
+                ('icon_filename', models.CharField(max_length=100, null=True, blank=True)),
+                ('skill_effect', models.ManyToManyField(to=b'herders.MonsterSkillEffect', blank=True)),
+                ('slot', models.IntegerField(default=1)),
+                ('passive', models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
@@ -119,7 +109,6 @@ class Migration(migrations.Migration):
                 ('substat_3_value', models.IntegerField(null=True, blank=True)),
                 ('substat_4', models.IntegerField(blank=True, null=True, choices=[(1, b'HP'), (2, b'HP %'), (3, b'ATK'), (4, b'ATK %'), (5, b'DEF'), (6, b'DEF %'), (7, b'SPD'), (8, b'CRI Rate %'), (9, b'CRI Dmg %'), (10, b'Resistance %'), (11, b'Accuracy %')])),
                 ('substat_4_value', models.IntegerField(null=True, blank=True)),
-                ('monster', models.ForeignKey(blank=True, to='herders.MonsterInstance', null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -127,28 +116,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('summoner_name', models.CharField(max_length=256, null=True, blank=True)),
-                ('global_server', models.NullBooleanField(default=True)),
                 ('public', models.BooleanField(default=False)),
                 ('timezone', timezone_field.fields.TimeZoneField(default=b'America/Los_Angeles')),
                 ('notes', models.TextField(null=True, blank=True)),
-                ('storage_magic_low', models.IntegerField(default=0)),
-                ('storage_magic_mid', models.IntegerField(default=0)),
-                ('storage_magic_high', models.IntegerField(default=0)),
-                ('storage_fire_low', models.IntegerField(default=0)),
-                ('storage_fire_mid', models.IntegerField(default=0)),
-                ('storage_fire_high', models.IntegerField(default=0)),
-                ('storage_water_low', models.IntegerField(default=0)),
-                ('storage_water_mid', models.IntegerField(default=0)),
-                ('storage_water_high', models.IntegerField(default=0)),
-                ('storage_wind_low', models.IntegerField(default=0)),
-                ('storage_wind_mid', models.IntegerField(default=0)),
-                ('storage_wind_high', models.IntegerField(default=0)),
-                ('storage_light_low', models.IntegerField(default=0)),
-                ('storage_light_mid', models.IntegerField(default=0)),
-                ('storage_light_high', models.IntegerField(default=0)),
-                ('storage_dark_low', models.IntegerField(default=0)),
-                ('storage_dark_mid', models.IntegerField(default=0)),
-                ('storage_dark_high', models.IntegerField(default=0)),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -281,28 +251,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('attribute', models.IntegerField(choices=[(1, b'HP'), (2, b'Attack Power'), (3, b'Defense'), (4, b'Attack Speed'), (5, b'Critical Rate'), (6, b'Critical Damage'), (7, b'Resistance'), (8, b'Accuracy')])),
                 ('amount', models.IntegerField()),
-                ('dungeon_skill', models.BooleanField(default=False)),
-                ('element_skill', models.BooleanField(default=False)),
                 ('element', models.CharField(blank=True, max_length=6, null=True, choices=[(b'fire', b'Fire'), (b'wind', b'Wind'), (b'water', b'Water'), (b'light', b'Light'), (b'dark', b'Dark')])),
-                ('arena_skill', models.BooleanField(default=False)),
-                ('guild_skill', models.BooleanField(default=False)),
             ],
-        ),
-        migrations.RemoveField(
-            model_name='monsterskill',
-            name='arena_leader',
-        ),
-        migrations.RemoveField(
-            model_name='monsterskill',
-            name='dungeon_leader',
-        ),
-        migrations.RemoveField(
-            model_name='monsterskill',
-            name='general_leader',
-        ),
-        migrations.RemoveField(
-            model_name='monsterskill',
-            name='guild_leader',
         ),
         migrations.AddField(
             model_name='monster',
@@ -427,10 +377,6 @@ class Migration(migrations.Migration):
             name='wikia_url',
             field=models.URLField(null=True, blank=True),
         ),
-        migrations.RemoveField(
-            model_name='runeinstance',
-            name='monster',
-        ),
         migrations.AddField(
             model_name='runeinstance',
             name='assigned_to',
@@ -514,22 +460,6 @@ class Migration(migrations.Migration):
             model_name='team',
             name='description',
             field=models.TextField(help_text=b'<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled', null=True, blank=True),
-        ),
-        migrations.RemoveField(
-            model_name='monsterleaderskill',
-            name='arena_skill',
-        ),
-        migrations.RemoveField(
-            model_name='monsterleaderskill',
-            name='dungeon_skill',
-        ),
-        migrations.RemoveField(
-            model_name='monsterleaderskill',
-            name='element_skill',
-        ),
-        migrations.RemoveField(
-            model_name='monsterleaderskill',
-            name='guild_skill',
         ),
         migrations.AddField(
             model_name='monsterinstance',
@@ -743,21 +673,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='monster',
-            name='awaken_ele_mats_high',
-            field=models.IntegerField(default=0),
-        ),
-        migrations.AlterField(
-            model_name='monster',
-            name='awaken_ele_mats_low',
-            field=models.IntegerField(default=0),
-        ),
-        migrations.AlterField(
-            model_name='monster',
-            name='awaken_ele_mats_mid',
-            field=models.IntegerField(default=0),
-        ),
-        migrations.AlterField(
-            model_name='monster',
             name='awaken_mats_magic_high',
             field=models.IntegerField(default=0),
         ),
@@ -780,11 +695,6 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(null=True, blank=True)),
             ],
         ),
-        migrations.AddField(
-            model_name='monsterskill',
-            name='atk_multiplier',
-            field=models.IntegerField(null=True, blank=True),
-        ),
         migrations.AlterField(
             model_name='monster',
             name='awaken_mats_magic_high',
@@ -799,11 +709,6 @@ class Migration(migrations.Migration):
             model_name='monster',
             name='awaken_mats_magic_mid',
             field=models.IntegerField(default=0, blank=True),
-        ),
-        migrations.AddField(
-            model_name='monsterskill',
-            name='scales_with',
-            field=models.ManyToManyField(to=b'herders.MonsterSkillScalingStat', through='herders.MonsterSkillScalesWith'),
         ),
         migrations.AddField(
             model_name='monsterskill',
@@ -901,18 +806,6 @@ class Migration(migrations.Migration):
             name='efficiency',
             field=models.FloatField(null=True, blank=True),
         ),
-        migrations.RemoveField(
-            model_name='monster',
-            name='awaken_ele_mats_high',
-        ),
-        migrations.RemoveField(
-            model_name='monster',
-            name='awaken_ele_mats_low',
-        ),
-        migrations.RemoveField(
-            model_name='monster',
-            name='awaken_ele_mats_mid',
-        ),
         migrations.AddField(
             model_name='monsterskill',
             name='hits',
@@ -990,10 +883,6 @@ class Migration(migrations.Migration):
             name='monsterskilleffect',
             options={'ordering': ['name']},
         ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='global_server',
-        ),
         migrations.AddField(
             model_name='summoner',
             name='server',
@@ -1028,14 +917,6 @@ class Migration(migrations.Migration):
             model_name='runeinstance',
             name='notes',
             field=models.TextField(null=True, blank=True),
-        ),
-        migrations.RemoveField(
-            model_name='monsterskill',
-            name='atk_multiplier',
-        ),
-        migrations.RemoveField(
-            model_name='monsterskill',
-            name='scales_with',
         ),
         migrations.AddField(
             model_name='monsterskill',
@@ -1155,7 +1036,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('mana_cost', models.IntegerField(default=0)),
-                ('materials', models.ManyToManyField(to=b'herders.CraftCost', blank=True)),
             ],
         ),
         migrations.AlterModelOptions(
@@ -1216,10 +1096,6 @@ class Migration(migrations.Migration):
                 ('monster', models.ForeignKey(to='herders.Monster')),
             ],
         ),
-        migrations.RemoveField(
-            model_name='homunculusskill',
-            name='materials',
-        ),
         migrations.DeleteModel(
             name='CraftCost',
         ),
@@ -1242,78 +1118,6 @@ class Migration(migrations.Migration):
             model_name='monster',
             name='summonerswarmonsters_url',
             field=models.URLField(null=True, blank=True),
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_dark_high',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_dark_low',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_dark_mid',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_fire_high',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_fire_low',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_fire_mid',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_light_high',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_light_low',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_light_mid',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_magic_high',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_magic_low',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_magic_mid',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_water_high',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_water_low',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_water_mid',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_wind_high',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_wind_low',
-        ),
-        migrations.RemoveField(
-            model_name='summoner',
-            name='storage_wind_mid',
         ),
         migrations.AddField(
             model_name='runeinstance',

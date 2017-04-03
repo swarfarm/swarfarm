@@ -8,7 +8,7 @@ import django.contrib.postgres.fields
 class Migration(migrations.Migration):
     dependencies = [
         ('herders', '0001_squashed_0003_remove_monstertag_color'),
-        ('bestiary', '0001_initial'),
+        ('bestiary', '0001_squashed_0004_patchnotes'),
     ]
 
     operations = [
@@ -42,6 +42,13 @@ class Migration(migrations.Migration):
                 ('substat_3_value', models.IntegerField(null=True, blank=True)),
                 ('substat_4', models.IntegerField(blank=True, null=True, choices=[(1, b'HP'), (2, b'HP %'), (3, b'ATK'), (4, b'ATK %'), (5, b'DEF'), (6, b'DEF %'), (7, b'SPD'), (8, b'CRI Rate %'), (9, b'CRI Dmg %'), (10, b'Resistance %'), (11, b'Accuracy %')])),
                 ('substat_4_value', models.IntegerField(null=True, blank=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Dungeon',
+            fields=[
+                ('id', models.IntegerField(serialize=False, primary_key=True)),
+                ('name', models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
@@ -84,13 +91,6 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-        ),
-        migrations.CreateModel(
-            name='Dungeon',
-            fields=[
-                ('id', models.IntegerField(serialize=False, primary_key=True)),
-                ('name', models.CharField(max_length=100)),
-            ],
         ),
         migrations.AlterModelOptions(
             name='dungeon',

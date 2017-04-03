@@ -13,20 +13,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Discussion',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('comment', models.TextField(help_text=b'<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled')),
-                ('feedback', models.ForeignKey(to='feedback.Issue')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('edited', models.DateTimeField(auto_now=True, null=True)),
-            ],
-            options={
-                'ordering': ('timestamp',),
-            },
-        ),
-        migrations.CreateModel(
             name='Issue',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -41,6 +27,20 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ('status', 'priority', 'submitted'),
+            },
+        ),
+        migrations.CreateModel(
+            name='Discussion',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                ('comment', models.TextField(help_text=b'<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled')),
+                ('feedback', models.ForeignKey(to='feedback.Issue')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('edited', models.DateTimeField(auto_now=True, null=True)),
+            ],
+            options={
+                'ordering': ('timestamp',),
             },
         ),
         migrations.AlterModelOptions(

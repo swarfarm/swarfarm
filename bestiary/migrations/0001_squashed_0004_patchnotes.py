@@ -5,9 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    replaces = [(b'bestiary', '0001_initial'), (b'bestiary', '0002_building'), (b'bestiary', '0003_delete_scaleswith'), (b'bestiary', '0004_patchnotes')]
-
     dependencies = [
         ('herders', '0001_squashed_0003_remove_monstertag_color'),
     ]
@@ -59,15 +56,6 @@ class Migration(migrations.Migration):
             bases=('herders.monster',),
         ),
         migrations.CreateModel(
-            name='ScalesWith',
-            fields=[
-            ],
-            options={
-                'proxy': True,
-            },
-            bases=('herders.monsterskillscaleswith',),
-        ),
-        migrations.CreateModel(
             name='ScalingStat',
             fields=[
             ],
@@ -102,9 +90,6 @@ class Migration(migrations.Migration):
                 'proxy': True,
             },
             bases=('herders.building',),
-        ),
-        migrations.DeleteModel(
-            name='ScalesWith',
         ),
         migrations.CreateModel(
             name='PatchNotes',

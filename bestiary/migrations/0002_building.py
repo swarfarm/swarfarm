@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('herders', '0001_squashed_0109_runeinstance_original_quality'),
+        ('herders', '0001_squashed_0003_remove_monstertag_color'),
         ('bestiary', '0001_initial'),
     ]
 

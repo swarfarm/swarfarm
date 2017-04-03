@@ -85,7 +85,6 @@ INSTALLED_APPS = [
     'autocomplete_light',
     'captcha',
     'compressor',
-    'colorfield',
     'corsheaders',
     'crispy_forms',
     'django_celery_results',

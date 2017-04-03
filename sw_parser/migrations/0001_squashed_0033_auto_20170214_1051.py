@@ -10,10 +10,8 @@ class Migration(migrations.Migration):
     replaces = [(b'sw_parser', '0001_squashed_0004_auto_20160420_2220'), (b'sw_parser', '0002_auto_20160421_0957'), (b'sw_parser', '0003_auto_20160421_2028'), (b'sw_parser', '0004_auto_20160421_2113'), (b'sw_parser', '0005_auto_20160426_1632'), (b'sw_parser', '0003_auto_20160422_0914'), (b'sw_parser', '0006_merge'), (b'sw_parser', '0007_auto_20160502_0911'), (b'sw_parser', '0008_runlog_energy'), (b'sw_parser', '0009_auto_20160508_1133'), (b'sw_parser', '0010_auto_20160517_1459'), (b'sw_parser', '0011_auto_20160602_1304'), (b'sw_parser', '0012_dungeon_slug'), (b'sw_parser', '0013_auto_20160916_1517'), (b'sw_parser', '0014_auto_20161010_2200'), (b'sw_parser', '0015_auto_20161010_2223'), (b'sw_parser', '0016_auto_20161010_2230'), (b'sw_parser', '0017_auto_20161013_2139'), (b'sw_parser', '0018_auto_20161017_2040'), (b'sw_parser', '0019_auto_20161020_1317'), (b'sw_parser', '0020_auto_20161221_1016'), (b'sw_parser', '0021_auto_20161221_2235'), (b'sw_parser', '0022_auto_20170106_1315'), (b'sw_parser', '0023_dungeon_monster_slots'), (b'sw_parser', '0024_shoprefreshlog_slots_available'), (b'sw_parser', '0025_remove_worldbosslog_worldboss'), (b'sw_parser', '0026_exportmanager'), (b'sw_parser', '0027_auto_20170127_1112'), (b'sw_parser', '0028_auto_20170131_1149'), (b'sw_parser', '0029_auto_20170131_1339'), (b'sw_parser', '0030_auto_20170207_1738'), (b'sw_parser', '0031_auto_20170208_1201'), (b'sw_parser', '0032_auto_20170209_0732'), (b'sw_parser', '0033_auto_20170214_1051')]
 
     dependencies = [
-        ('herders', '0081_auto_20160420_1551'),
-        ('herders', '0104_auto_20160920_1111'),
+        ('herders', '0001_squashed_0109_runeinstance_original_quality'),
         ('bestiary', '0001_initial'),
-        ('herders', '0106_auto_20170130_2017'),
     ]
 
     operations = [

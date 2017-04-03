@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('herders', '0063_monsterskilleffectdetail_on_crit'),
+        ('herders', '0001_squashed_0109_runeinstance_original_quality'),
     ]
 
     operations = [

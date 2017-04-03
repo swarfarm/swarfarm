@@ -6,9 +6,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
-    replaces = [(b'news', '0001_initial'), (b'news', '0002_auto_20150715_1235'), (b'news', '0003_auto_20150715_1242'), (b'news', '0004_remove_article_frontpage_until'), (b'news', '0005_auto_20150715_1253')]
-
     dependencies = [
     ]
 

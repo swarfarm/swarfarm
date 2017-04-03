@@ -13,8 +13,6 @@ from django.utils.text import slugify
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.contrib.postgres.fields import ArrayField
 
-from colorfield.fields import ColorField
-
 
 # Bestiary database models
 class Monster(models.Model):
@@ -1017,7 +1015,6 @@ class Storage(models.Model):
 
 class MonsterTag(models.Model):
     name = models.CharField(max_length=100)
-    color = ColorField()
 
     class Meta:
         ordering = ['name']

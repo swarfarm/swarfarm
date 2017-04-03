@@ -172,7 +172,7 @@
                     <td>{{ instance.defense }}</td>
                     <td class="text-success">{% if bldg_stats.defense > 0 %}<span>+{{ bldg_stats.defense }}</span>{% endif %}</td>
                     <td class="text-success">{% if guild_stats.defense > 0 %}<span>+{{ guild_stats.defense }}</span>{% endif %}</td>
-                    <td>{{ instance.defense|add:bldg_stats.defense|add:guild_stats.attack }}</td>
+                    <td>{{ instance.defense|add:bldg_stats.defense|add:guild_stats.defense }}</td>
                 </tr>
                 <tr>
                     <td>SPD</td>

@@ -112,6 +112,10 @@ def parse_sw_json(data, owner, options):
             building_instance = BuildingInstance.objects.get(owner=owner, building=base_building)
         except BuildingInstance.DoesNotExist:
             building_instance = BuildingInstance(owner=owner, building=base_building)
+        except BuildingInstance.MultipleObjectsReturned:
+            # Should only be 1 ever - use the first and delete the others.
+            building_instance = BuildingInstance.objects.filter(owner=owner, building=base_building).first()
+            BuildingInstance.objects.filter(owner=owner, building=base_building).exclude(pk=building_instance.pk).delete()
 
         building_instance.level = level
         parsed_buildings.append(building_instance)

@@ -190,10 +190,15 @@ def import_status(request):
     task = AsyncResult(request.session.get('import_task_id'))
 
     if task:
-        return JsonResponse({
-            'status': task.status,
-            'result': task.result,
-        })
+        try:
+            return JsonResponse({
+                'status': task.status,
+                'result': task.result,
+            })
+        except:
+            return JsonResponse({
+                'status': 'error',
+            })
     else:
         raise Http404('Task ID not provided')
 

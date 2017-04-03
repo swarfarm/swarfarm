@@ -342,6 +342,11 @@ def _building_data(summoner, building):
         instance = None
         stat_bonus = 0
         remaining_upgrade_cost = total_upgrade_cost
+    except BuildingInstance.MultipleObjectsReturned:
+        # Should only be 1 ever - use the first and delete the others.
+        instance = BuildingInstance.objects.filter(owner=summoner, building=building).first()
+        BuildingInstance.objects.filter(owner=summoner, building=building).exclude(pk=instance.pk).delete()
+        return _building_data(summoner, building)
 
     return {
         'base': building,

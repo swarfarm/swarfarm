@@ -16,6 +16,7 @@ Vagrant.configure("2") do |config|
 
     config.vm.provision "file", source: "./vagrant_scripts/gunicorn_upstart.conf", destination: "gunicorn_upstart.conf"
     config.vm.provision "file", source: "./vagrant_scripts/celery_upstart.conf", destination: "celery_upstart.conf"
+    config.vm.provision "file", source: "./vagrant_scripts/celery_beat_upstart.conf", destination: "celery_beat_upstart.conf"
     config.vm.provision "file", source: "./vagrant_scripts/nginx_config", destination: "nginx_config"
     config.vm.provision "shell", privileged: false, path: './vagrant_scripts/provision.sh'
 end

@@ -8,7 +8,7 @@ from crispy_forms.bootstrap import FormActions, FieldWithButtons
 
 from bestiary.models import *
 
-import autocomplete_light
+from autocomplete_light import shortcuts as autocomplete_light
 
 STATIC_URL_PREFIX = static('herders/images/')
 
@@ -34,7 +34,7 @@ def effect_choices(effects):
     choices = []
 
     for buff in effects.order_by('name'):
-        # Select2 template splits the string at ; to get an image and nameoi
+        # Select2 template splits the string at ; to get an image and name
         choices.append((buff.pk, STATIC_URL_PREFIX + 'buffs/' + buff.icon_filename + ';' + buff.name))
 
     return choices

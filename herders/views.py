@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.forms.models import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template import loader, RequestContext
+from django.template import loader, RequestContext, Context
 
 from bestiary.models import Monster, Fusion, Building
 from .forms import *
@@ -401,7 +401,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     filtered_count = monster_filter.qs.count()
 
     context = {
-        'monsters': monster_filter,
+        'monsters': monster_filter.qs,
         'monster_pieces': pieces,
         'total_count': total_monsters,
         'filtered_count': filtered_count,
@@ -927,51 +927,51 @@ def monster_instance_edit(request, profile_name, instance_id):
 
         form = EditMonsterInstanceForm(request.POST or None, instance=instance)
         form.helper.form_action = request.path
-        if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
-            form.helper['skill_1_level'].wrap(
-                FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id),
-            )
-            form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
-            form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
-        else:
-            form.helper['skill_1_level'].wrap(Div, css_class="hidden")
-
-        if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
-            form.helper['skill_2_level'].wrap(
-                FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id),
-                min=1,
-                max=skills[1]['skill'].max_level,
-            )
-            form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
-            form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
-        else:
-            form.helper['skill_2_level'].wrap(Div, css_class="hidden")
-
-        if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
-            form.helper['skill_3_level'].wrap(
-                FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id),
-                min=1,
-                max=skills[2]['skill'].max_level,
-            )
-            form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
-            form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
-        else:
-            form.helper['skill_3_level'].wrap(Div, css_class="hidden")
-
-        if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
-            form.helper['skill_4_level'].wrap(
-                FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id),
-                min=1,
-                max=skills[1]['skill'].max_level,
-            )
-            form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
-            form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
-        else:
-            form.helper['skill_4_level'].wrap(Div, css_class="hidden")
+        # if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
+        #     form.helper['skill_1_level'].wrap(
+        #         FieldWithButtons,
+        #         StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id),
+        #     )
+        #     form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
+        #     form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
+        # else:
+        #     form.helper['skill_1_level'].wrap(Div, css_class="hidden")
+        #
+        # if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
+        #     form.helper['skill_2_level'].wrap(
+        #         FieldWithButtons,
+        #         StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id),
+        #         min=1,
+        #         max=skills[1]['skill'].max_level,
+        #     )
+        #     form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
+        #     form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
+        # else:
+        #     form.helper['skill_2_level'].wrap(Div, css_class="hidden")
+        #
+        # if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
+        #     form.helper['skill_3_level'].wrap(
+        #         FieldWithButtons,
+        #         StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id),
+        #         min=1,
+        #         max=skills[2]['skill'].max_level,
+        #     )
+        #     form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
+        #     form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
+        # else:
+        #     form.helper['skill_3_level'].wrap(Div, css_class="hidden")
+        #
+        # if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
+        #     form.helper['skill_4_level'].wrap(
+        #         FieldWithButtons,
+        #         StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id),
+        #         min=1,
+        #         max=skills[1]['skill'].max_level,
+        #     )
+        #     form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
+        #     form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
+        # else:
+        #     form.helper['skill_4_level'].wrap(Div, css_class="hidden")
 
         if request.method == 'POST' and form.is_valid():
             mon = form.save()

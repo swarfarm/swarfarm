@@ -17,7 +17,7 @@ from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons,
 
 from captcha.fields import ReCaptchaField
 
-import autocomplete_light
+from autocomplete_light import shortcuts as autocomplete_light
 
 
 STATIC_URL_PREFIX = static('herders/images/')

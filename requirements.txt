@@ -1,4 +1,4 @@
-Django==1.8.13
+Django==1.10.7
 gunicorn
 eventlet
 psycopg2
@@ -20,12 +20,12 @@ django-suit
 django-redis-cache==1.6.4
 django-autocomplete-light==2.3.3
 django-cors-headers
-django-crispy-forms==1.6.0
+django-crispy-forms==1.6.1
 django-markdown-deux
 django-recaptcha
 django-timezone-field
 django_compressor
-djangorestframework==3.3.2
-django-filter==0.13.0
+djangorestframework==3.6.2
+django-filter==1.0.2
 Django-Select2
 drf_ujson

@@ -189,7 +189,7 @@ def edit_skill(request, pk):
             form.helper.form_action = reverse('bestiary:edit_skill', kwargs={'pk': pk})
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form})),
+                'html': template.render({'form': form}),
             }
 
         return JsonResponse(response_data)

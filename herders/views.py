@@ -314,7 +314,7 @@ def building_edit(request, profile_name, building_id):
             template = loader.get_template('herders/profile/buildings/edit_form.html')
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, context))
+                'html': template.render(context),
             }
 
         return JsonResponse(response_data)
@@ -645,7 +645,7 @@ def monster_instance_add(request, profile_name):
             response_data = {
                 'code': 'success',
                 'instance_id': new_monster.pk.hex,
-                'html': template.render(RequestContext(request, context)),
+                'html': template.render(context),
             }
         else:
             form.helper.form_action = reverse('herders:monster_instance_add', kwargs={'profile_name': profile_name})
@@ -654,7 +654,7 @@ def monster_instance_add(request, profile_name):
             # Return form filled in and errors shown
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'add_monster_form': form}))
+                'html': template.render({'add_monster_form': form}),
             }
 
         return JsonResponse(response_data)
@@ -927,51 +927,51 @@ def monster_instance_edit(request, profile_name, instance_id):
 
         form = EditMonsterInstanceForm(request.POST or None, instance=instance)
         form.helper.form_action = request.path
-        # if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
-        #     form.helper['skill_1_level'].wrap(
-        #         FieldWithButtons,
-        #         StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id),
-        #     )
-        #     form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
-        #     form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
-        # else:
-        #     form.helper['skill_1_level'].wrap(Div, css_class="hidden")
-        #
-        # if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
-        #     form.helper['skill_2_level'].wrap(
-        #         FieldWithButtons,
-        #         StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id),
-        #         min=1,
-        #         max=skills[1]['skill'].max_level,
-        #     )
-        #     form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
-        #     form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
-        # else:
-        #     form.helper['skill_2_level'].wrap(Div, css_class="hidden")
-        #
-        # if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
-        #     form.helper['skill_3_level'].wrap(
-        #         FieldWithButtons,
-        #         StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id),
-        #         min=1,
-        #         max=skills[2]['skill'].max_level,
-        #     )
-        #     form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
-        #     form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
-        # else:
-        #     form.helper['skill_3_level'].wrap(Div, css_class="hidden")
-        #
-        # if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
-        #     form.helper['skill_4_level'].wrap(
-        #         FieldWithButtons,
-        #         StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id),
-        #         min=1,
-        #         max=skills[1]['skill'].max_level,
-        #     )
-        #     form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
-        #     form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
-        # else:
-        #     form.helper['skill_4_level'].wrap(Div, css_class="hidden")
+        if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
+            form.helper['skill_1_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id),
+            )
+            form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
+            form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
+        else:
+            form.helper['skill_1_level'].wrap(Div, css_class="hidden")
+
+        if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
+            form.helper['skill_2_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id),
+                min=1,
+                max=skills[1]['skill'].max_level,
+            )
+            form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
+            form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
+        else:
+            form.helper['skill_2_level'].wrap(Div, css_class="hidden")
+
+        if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
+            form.helper['skill_3_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id),
+                min=1,
+                max=skills[2]['skill'].max_level,
+            )
+            form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
+            form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
+        else:
+            form.helper['skill_3_level'].wrap(Div, css_class="hidden")
+
+        if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
+            form.helper['skill_4_level'].wrap(
+                FieldWithButtons,
+                StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id),
+                min=1,
+                max=skills[1]['skill'].max_level,
+            )
+            form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
+            form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
+        else:
+            form.helper['skill_4_level'].wrap(Div, css_class="hidden")
 
         if request.method == 'POST' and form.is_valid():
             mon = form.save()
@@ -993,14 +993,14 @@ def monster_instance_edit(request, profile_name, instance_id):
             response_data = {
                 'code': 'success',
                 'instance_id': mon.pk.hex,
-                'html': template.render(RequestContext(request, context)),
+                'html': template.render(context),
             }
         else:
             # Return form filled in and errors shown
             template = loader.get_template('herders/profile/monster_view/edit_form.html')
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'edit_monster_form': form}))
+                'html': template.render({'edit_monster_form': form})
             }
 
         return JsonResponse(response_data)
@@ -1112,7 +1112,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
     template = loader.get_template('herders/profile/monster_view/power_up_form.html')
     # Any errors in the form will fall through to here and be displayed
     context['validation_errors'] = validation_errors
-    response_data['html'] = template.render(RequestContext(request, context))
+    response_data['html'] = template.render(context)
 
     return JsonResponse(response_data)
 
@@ -1183,17 +1183,17 @@ def monster_instance_awaken(request, profile_name, instance_id):
 
                 response_data = {
                     'code': 'error',
-                    'html': template.render(RequestContext(request, {
+                    'html': template.render({
                         'awaken_form': form,
                         'available_essences': available_essences,
                         'instance': monster,
-                    }))
+                    })
                 }
         else:
             error_template = loader.get_template('herders/profile/monster_already_awakened.html')
             response_data = {
                 'code': 'error',
-                'html': error_template.render(RequestContext(request, {}))
+                'html': error_template.render()
             }
 
         return JsonResponse(response_data)
@@ -1228,7 +1228,7 @@ def monster_instance_duplicate(request, profile_name, instance_id):
         response_data = {
             'code': 'success',
             'instance_id': newmonster.pk.hex,
-            'html': template.render(RequestContext(request, context))
+            'html': template.render(context),
         }
 
         return JsonResponse(response_data)
@@ -1269,7 +1269,7 @@ def monster_piece_add(request, profile_name):
             # Return form filled in and errors shown
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render({'form': form}),
             }
 
         return JsonResponse(response_data)
@@ -1303,13 +1303,13 @@ def monster_piece_edit(request, profile_name, instance_id):
             response_data = {
                 'code': 'success',
                 'instance_id': new_piece.pk.hex,
-                'html': template.render(RequestContext(request, context))
+                'html': template.render(context),
             }
         else:
             # Return form filled in and errors shown
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render({'form': form}),
             }
 
         return JsonResponse(response_data)
@@ -1348,7 +1348,7 @@ def monster_piece_summon(request, profile_name, instance_id):
                     'is_owner': is_owner,
                 }
                 response_data['instance_id'] = pieces.pk.hex
-                response_data['html'] = template.render(RequestContext(request, context))
+                response_data['html'] = template.render(context),
 
             return JsonResponse(response_data)
     else:
@@ -1861,7 +1861,7 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
     filtered_count = rune_filter.qs.count()
 
     context = {
-        'runes': rune_filter,
+        'runes': rune_filter.qs,
         'total_count': total_count,
         'filtered_count': filtered_count,
         'profile_name': profile_name,
@@ -1953,12 +1953,12 @@ def rune_add(request, profile_name):
 
             response_data = {
                 'code': 'success',
-                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+                'html': template.render({'add_rune_form': form})
             }
         else:
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+                'html': template.render({'add_rune_form': form})
             }
     else:
         # Check for any pre-filled GET parameters
@@ -1973,7 +1973,7 @@ def rune_add(request, profile_name):
 
         # Return form filled in and errors shown
         response_data = {
-            'html': template.render(RequestContext(request, {'add_rune_form': form}))
+            'html': template.render({'add_rune_form': form})
         }
 
     return JsonResponse(response_data)
@@ -2001,13 +2001,13 @@ def rune_edit(request, profile_name, rune_id):
 
             response_data = {
                 'code': 'success',
-                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+                'html': template.render({'add_rune_form': form})
             }
         else:
             # Return form filled in and errors shown
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+                'html': template.render({'add_rune_form': form})
             }
 
         return JsonResponse(response_data)
@@ -2030,11 +2030,11 @@ def rune_assign(request, profile_name, instance_id, slot=None):
 
         response_data = {
             'code': 'results',
-            'html': template.render(RequestContext(request, {
-                'filter': rune_filter,
+            'html': template.render({
+                'filter': rune_filter.qs,
                 'profile_name': profile_name,
                 'instance_id': instance_id,
-            }))
+            })
         }
     else:
         rune_filter = RuneInstanceFilter(queryset=rune_queryset)
@@ -2042,12 +2042,12 @@ def rune_assign(request, profile_name, instance_id, slot=None):
 
         response_data = {
             'code': 'success',
-            'html': template.render(RequestContext(request, {
-                'filter': rune_filter,
+            'html': template.render({
+                'filter': rune_filter.qs,
                 'form': filter_form,
                 'profile_name': profile_name,
                 'instance_id': instance_id,
-            }))
+            })
         }
 
     return JsonResponse(response_data)
@@ -2241,17 +2241,17 @@ def rune_craft_add(request, profile_name):
 
             response_data = {
                 'code': 'success',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render({'form': form})
             }
         else:
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render({'form': form})
             }
     else:
         # Return form filled in and errors shown
         response_data = {
-            'html': template.render(RequestContext(request, {'form': form}))
+            'html': template.render({'form': form})
         }
 
     return JsonResponse(response_data)
@@ -2279,13 +2279,13 @@ def rune_craft_edit(request, profile_name, craft_id):
 
             response_data = {
                 'code': 'success',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render({'form': form})
             }
         else:
             # Return form filled in and errors shown
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render({'form': form})
             }
 
         return JsonResponse(response_data)

@@ -35,7 +35,9 @@
                         <span class="fa fa-book"></span> Bestiary
                     </a>
                 </li>
-                {% crispy bestiary_quick_search %}
+                <li>
+                    <div style="max-width:300px">{% crispy bestiary_quick_search %}</div>
+                </li>
             </ul>
             {% if user.is_authenticated %}
             <ul class="nav navbar-nav navbar-right">

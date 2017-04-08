@@ -8,23 +8,32 @@ from crispy_forms.bootstrap import FormActions, FieldWithButtons
 
 from bestiary.models import *
 
-from autocomplete_light import shortcuts as autocomplete_light
+from dal import autocomplete
 
 STATIC_URL_PREFIX = static('herders/images/')
 
 
 # Bestiary forms
 class BestiaryQuickSearchForm(forms.Form):
-    name = autocomplete_light.ModelChoiceField('BestiaryLinkAutocomplete')
+    name = forms.ModelChoiceField(
+        queryset=Monster.objects.all(),
+        widget=autocomplete.ModelSelect2Multiple(
+            url='bestiary-monster-autocomplete',
+            attrs={
+                'data-delay': 250,
+            }
+        ),
+    )
 
     helper = FormHelper()
     helper.form_action = 'bestiary:home'
     helper.form_method = 'post'
     helper.form_class = 'navbar-form navbar-left hidden-sm'
     helper.form_show_labels = False
+    helper.include_media = False
     helper.layout = Layout(
         FieldWithButtons(
-            Field('name', id='name'),
+            Field('name'),
             Submit('Go', 'Go'),
         ),
     )

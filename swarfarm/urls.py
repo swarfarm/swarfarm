@@ -4,12 +4,21 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles import views
 
+from bestiary.autocomplete import BestiaryAutocomplete
+from herders.autocomplete import *
+
 from herders import views as herder_views
 from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, CrispyPasswordResetForm, CrispySetPasswordForm
 
+
+
 urlpatterns = [
     # AJAX-y stuff first
-    url(r'^autocomplete/', include('autocomplete_light.urls')),
+    url(r'^autocomplete/', include([
+        url(r'^bestiary/$', BestiaryAutocomplete.as_view(), name='bestiary-monster-autocomplete'),
+        url(r'^monster-tag/$', MonsterTagAutocomplete.as_view(), name='monster-tag-autocomplete'),
+        url(r'^monster-instance/$', MonsterInstanceAutocomplete.as_view(), name='monster-instance-autocomplete'),
+    ])),
     url(r'^api/', include('api.urls')),
 
     # Bestiary

@@ -17,7 +17,7 @@ from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons,
 
 from captcha.fields import ReCaptchaField
 
-from autocomplete_light import shortcuts as autocomplete_light
+from dal import autocomplete
 
 
 STATIC_URL_PREFIX = static('herders/images/')
@@ -226,6 +226,7 @@ class EditBuildingForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'ajax-form'
+        self.helper.include_media = False
         # self.helper.form_action must be set in view
         self.helper.layout = Layout(
             Field('level', autocomplete='off'),
@@ -242,8 +243,11 @@ class EditBuildingForm(ModelForm):
 
 
 # MonsterInstance Forms
-class AddMonsterInstanceForm(autocomplete_light.ModelForm):
-    monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
+class AddMonsterInstanceForm(forms.ModelForm):
+    monster = forms.ModelChoiceField(
+        queryset=Monster.objects.all(),
+        widget=autocomplete.ModelSelect2(url='bestiary-monster-autocomplete')
+    )
 
     def __init__(self, *args, **kwargs):
         super(AddMonsterInstanceForm, self).__init__(*args, **kwargs)
@@ -251,6 +255,7 @@ class AddMonsterInstanceForm(autocomplete_light.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_class = 'ajax-form'
         self.helper.form_id = 'id_AddMonsterInstanceForm'
+        self.helper.include_media = False
         self.helper.layout = Layout(
             Field(
                 'monster',
@@ -294,8 +299,11 @@ class BulkAddMonsterInstanceFormset(BaseModelFormSet):
         self.queryset = MonsterInstance.objects.none()
 
 
-class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
-    monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
+class BulkAddMonsterInstanceForm(forms.ModelForm):
+    monster = forms.ModelChoiceField(
+        queryset=Monster.objects.all(),
+        widget=autocomplete.ModelSelect2(url='bestiary-monster-autocomplete')
+    )
 
     def __init__(self, *args, **kwargs):
         super(BulkAddMonsterInstanceForm, self).__init__(*args, **kwargs)
@@ -305,6 +313,7 @@ class BulkAddMonsterInstanceForm(autocomplete_light.ModelForm):
         self.helper.form_tag = False
         self.helper.form_show_labels = False
         self.helper.disable_csrf = True
+        self.helper.include_media = False
         self.helper.layout = Layout(
             HTML('<td>'),
             InlineField(
@@ -339,6 +348,7 @@ class EditMonsterInstanceForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_class = 'ajax-form'
+        self.helper.include_media = False
 
         self.helper.layout = Layout(
             Div(
@@ -374,12 +384,15 @@ class EditMonsterInstanceForm(ModelForm):
             'ignore_for_fusion': mark_safe('<span class="glyphicon glyphicon-lock"></span>Locked'),
         }
         widgets = {
-            'tags': autocomplete_light.MultipleChoiceWidget('MonsterTagAutocomplete')
+            'tags': autocomplete.ModelSelect2Multiple(url='monster-tag-autocomplete')
         }
 
 
 class PowerUpMonsterInstanceForm(forms.Form):
-    monster = autocomplete_light.ModelMultipleChoiceField('MonsterInstanceAutocomplete')
+    monster = forms.ModelChoiceField(
+        queryset=MonsterInstance.objects.all(),
+        widget=autocomplete.ModelSelect2(url='monster-instance-autocomplete')
+    )
     monster.label = 'Material Monsters'
     monster.required = False
 
@@ -391,6 +404,7 @@ class PowerUpMonsterInstanceForm(forms.Form):
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_class = 'ajax-form'
+    helper.include_media = False
     helper.layout = Layout(
         Field('monster'),
         Field('ignore_evolution'),
@@ -641,14 +655,18 @@ class FilterMonsterInstanceForm(forms.Form):
 
 
 # MonsterPiece forms
-class MonsterPieceForm(autocomplete_light.ModelForm):
-    monster = autocomplete_light.ModelChoiceField('MonsterAutocomplete')
+class MonsterPieceForm(forms.ModelForm):
+    monster = forms.ModelChoiceField(
+        queryset=Monster.objects.all(),
+        widget=autocomplete.ModelSelect2(url='bestiary-monster-autocomplete')
+    )
 
     def __init__(self, *args, **kwargs):
         super(MonsterPieceForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
         self.helper.form_class = 'ajax-form'
+        self.helper.include_media = False
         self.helper.layout = Layout(
             Field(
                 'monster',
@@ -743,6 +761,7 @@ class EditTeamForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_id = 'EditTeamForm'
+        self.helper.include_media = False
         self.helper.layout = Layout(
             Div(
                 Field('group'),
@@ -761,8 +780,8 @@ class EditTeamForm(ModelForm):
         model = Team
         exclude = ('id',)
         widgets = {
-            'roster': autocomplete_light.MultipleChoiceWidget('MonsterInstanceAutocomplete'),
-            'leader': autocomplete_light.ChoiceWidget('MonsterInstanceAutocomplete'),
+            'roster': autocomplete.ModelSelect2Multiple(url='monster-instance-autocomplete'),
+            'leader': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
         }
 
     def clean(self):
@@ -809,6 +828,7 @@ class AddRuneInstanceForm(ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_id = 'addRuneForm'
         self.helper.form_class = 'ajax-form'
+        self.helper.include_media = False
         self.helper.layout = Layout(
             Div(
                 Field('type', template="crispy/rune_button_radio_select.html"),
@@ -900,7 +920,7 @@ class AddRuneInstanceForm(ModelForm):
             'assigned_to', 'notes', 'marked_for_sale',
         )
         widgets = {
-            'assigned_to': autocomplete_light.ChoiceWidget('MonsterInstanceAutocomplete'),
+            'assigned_to': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
         }
 
 

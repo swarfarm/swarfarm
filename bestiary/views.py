@@ -11,6 +11,9 @@ from .forms import *
 from .filters import MonsterFilter
 
 
+
+
+
 def bestiary(request):
     name_search = request.POST.get('name-autocomplete')
     post_data = request.POST.copy()

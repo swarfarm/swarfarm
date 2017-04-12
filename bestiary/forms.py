@@ -17,12 +17,6 @@ STATIC_URL_PREFIX = static('herders/images/')
 class BestiaryQuickSearchForm(forms.Form):
     name = forms.ModelChoiceField(
         queryset=Monster.objects.all(),
-        widget=autocomplete.ModelSelect2Multiple(
-            url='bestiary-monster-autocomplete',
-            attrs={
-                'data-delay': 250,
-            }
-        ),
     )
 
     helper = FormHelper()

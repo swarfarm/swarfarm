@@ -24,6 +24,15 @@ $(function () {
 $.fn.editable.defaults.container = 'body';
 
 // Various select2 templates for the types of autocompletes
+function monsterSelect2Template(option) {
+    if (option.id) {
+        return $('<span><img src="' + option.image_filename + '" class="monster-inline"/> ' + option.text + '</span>');
+    }
+    else {
+        return option.text;
+    }
+}
+
 function starsSelect2Template(option) {
     if (option.id) {
         return $('<span>' + option.text + '<span class="glyphicon glyphicon-star"></span></span>');
@@ -60,10 +69,47 @@ $.fn.select2.defaults.set("theme", "bootstrap");
 $.fn.select2.defaults.set("width", "100%");
 $.fn.select2.defaults.set("allowClear", true);
 $.fn.select2.defaults.set("escapeMarkup", function(m) {return m;});
+$.fn.select2.defaults.set("minimumInputLength", 2);
+$.fn.select2.defaults.set("ajax", {
+    data: function(params) {
+        // Set query parameters for ajax queries
+        return {
+            search: params.term,
+            page: params.page
+        };
+    },
+    processResults: function(data) {
+        return {
+            results: data.results,
+            pagination: {
+                more: data.next !== null
+            }
+        }
+    },
+    delay: 250
+});
 
 function initSelect() {
-    $('.select2').select2();
-    $('.select2-stars').select2({
+    $('.select2').each(function (index) {
+        // Parse out custom select2 configs from data attributes that can't be directly initialized by select2()
+        var config = Object();
+
+        // Templates
+        var selection_template = window[$(this).data('selection-template')];
+        if (typeof selection_template === 'function') {
+            config = Object.assign(config, {templateSelection: selection_template});
+        }
+
+        var result_template = window[$(this).data('result-template')];
+        if (typeof selection_template === 'function') {
+            config = Object.assign(config, {templateResult: result_template});
+        }
+
+        $(this).select2(config);
+    });
+
+    //TODO: Replace these with data attributes on the forms.
+    /*$('.select2-stars').select2({
         templateSelection: starsSelect2Template,
         templateResult: starsSelect2Template
     });
@@ -74,8 +120,16 @@ function initSelect() {
     $('.select2-effect').select2({
         templateSelection: skillEffectSelect2Template,
         templateResult: skillEffectSelect2Template
-    });
+    });*/
 }
+
+// Capture selection on bestiary quick search box
+$('#bestiary_quick_name').on('select2:selecting', function(event) {
+    var url = event.params.args.data['bestiary_url'];
+    if (url !== undefined) {
+        window.location.replace(url);
+    }
+});
 
 $(document).ajaxComplete(function() {
     DisplayMessages();

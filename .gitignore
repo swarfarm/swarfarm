@@ -3,3 +3,4 @@
 .env
 .vagrant/
 log_data/
+celerybeat.pid

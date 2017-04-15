@@ -1,20 +1,66 @@
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db.models import Q
-from django.template import loader
+from django.urls import reverse
 
-from dal import autocomplete
+from rest_framework import serializers, viewsets, renderers, pagination
 
 from bestiary.models import Monster
 
 
-class BestiaryAutocomplete(autocomplete.Select2QuerySetView):
-    paginate_by = 15
+class BestiaryAutocompletePagination(pagination.PageNumberPagination):
+    page_size = 15
+    max_page_size = 15
+
+
+class BestiaryAutocompleteSerializer(serializers.ModelSerializer):
+    text = serializers.SerializerMethodField()
+    image_filename = serializers.SerializerMethodField()
+    element = serializers.SerializerMethodField()
+    archetype = serializers.SerializerMethodField()
+    bestiary_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Monster
+        fields = [
+            'id',
+            'text',
+            'image_filename',
+            'element',
+            'archetype',
+            'base_stars',
+            'can_awaken',
+            'is_awakened',
+            'bestiary_url',
+        ]
+
+    def get_text(self, instance):
+        return str(instance)
+
+    def get_image_filename(self, instance):
+        return static('/herders/images/monsters/{}'.format(instance.image_filename))
+
+    def get_element(self, instance):
+        return instance.get_element_display()
+
+    def get_archetype(self, instance):
+        return instance.get_archetype_display()
+
+    def get_bestiary_url(self, instance):
+        return reverse('bestiary:detail', kwargs={'monster_slug': instance.bestiary_slug})
+
+
+class BestiaryAutocomplete(viewsets.ReadOnlyModelViewSet):
+    renderer_classes = [renderers.JSONRenderer]
+    serializer_class = BestiaryAutocompleteSerializer
+    pagination_class = BestiaryAutocompletePagination
 
     def get_queryset(self):
         qs = Monster.objects.filter(obtainable=True).order_by('element', 'is_awakened')
+        search_terms = self.request.query_params.get('search')
 
-        if self.q:
+        if search_terms:
             # Split the terms into words and build a Q object
-            search_terms = self.q.split(' ')
+            search_terms = search_terms.split(' ')
             query = Q()
 
             for term in search_terms:
@@ -29,24 +75,3 @@ class BestiaryAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(query)
 
         return qs
-
-    def get_result_label(self, item):
-        return loader.get_template('autocomplete/monster_choice.html').render({'choice': item})
-
-# Old DAL implementation
-# class BestiaryLinkAutocomplete(autocomplete_light.AutocompleteModelTemplate):
-#     model = Monster
-#     search_fields = ['name', 'awakens_from__name', 'awakens_to__name', '^element']
-#     split_words = True
-#     choice_template = 'autocomplete/bestiary_link.html'
-#     limit_choices = 15
-#     attrs = {
-#         'placeholder': 'Quick search...',
-#         'data-autocomplete-minimum-characters': 2,
-#     }
-#
-#     def choices_for_request(self):
-#         self.choices = self.choices.filter(obtainable=True).order_by('element', 'is_awakened')
-#         return super(BestiaryLinkAutocomplete, self).choices_for_request()
-#
-# autocomplete_light.register(BestiaryLinkAutocomplete)

@@ -1,23 +1,22 @@
+from itertools import chain
+
 from django import forms
 from django.templatetags.static import static
+from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, Fieldset
-from crispy_forms.bootstrap import FormActions, FieldWithButtons
+from crispy_forms.bootstrap import FormActions
 
 from bestiary.models import *
-
-from dal import autocomplete
 
 STATIC_URL_PREFIX = static('herders/images/')
 
 
 # Bestiary forms
 class BestiaryQuickSearchForm(forms.Form):
-    name = forms.ModelChoiceField(
-        queryset=Monster.objects.all(),
-    )
+    name = forms.MultipleChoiceField()
 
     helper = FormHelper()
     helper.form_action = 'bestiary:home'
@@ -26,21 +25,19 @@ class BestiaryQuickSearchForm(forms.Form):
     helper.form_show_labels = False
     helper.include_media = False
     helper.layout = Layout(
-        FieldWithButtons(
-            Field('name'),
-            Submit('Go', 'Go'),
+        Div(
+            Field(
+                'name',
+                id='bestiary_quick_name',
+                css_class='select2',
+                data_placeholder='Quick Search...',
+                data_ajax__url=reverse_lazy('bestiary-monster-autocomplete'),
+                data_selection_template="monsterSelect2Template",
+                data_result_template="monsterSelect2Template",
+            ),
+            css_class='input-group'
         ),
     )
-
-
-def effect_choices(effects):
-    choices = []
-
-    for buff in effects.order_by('name'):
-        # Select2 template splits the string at ; to get an image and name
-        choices.append((buff.pk, STATIC_URL_PREFIX + 'buffs/' + buff.icon_filename + ';' + buff.name))
-
-    return choices
 
 
 class FilterMonsterForm(forms.Form):
@@ -75,24 +72,24 @@ class FilterMonsterForm(forms.Form):
         choices=LeaderSkill.AREA_CHOICES,
         required=False,
     )
-    skills__scaling_stats__pk = forms.MultipleChoiceField(
+    skills__scaling_stats__pk = forms.ModelMultipleChoiceField(
         label='Scales With',
-        choices=ScalingStat.objects.values_list('pk', 'stat'),
+        queryset=ScalingStat.objects.all(),
         required=False,
     )
-    buffs = forms.MultipleChoiceField(
+    buffs = forms.ModelMultipleChoiceField(
         label='Buffs',
-        choices=effect_choices(Effect.objects.filter(is_buff=True).exclude(icon_filename='')),
+        queryset=Effect.objects.filter(is_buff=True).exclude(icon_filename=''),
         required=False,
     )
-    debuffs = forms.MultipleChoiceField(
+    debuffs = forms.ModelMultipleChoiceField(
         label='Debuffs',
-        choices=effect_choices(Effect.objects.filter(is_buff=False).exclude(icon_filename='')),
+        queryset=Effect.objects.filter(is_buff=False).exclude(icon_filename=''),
         required=False,
     )
-    other_effects = forms.MultipleChoiceField(
+    other_effects = forms.ModelMultipleChoiceField(
         label='Other Effects',
-        choices=Effect.other_effect_choices.all(),
+        queryset=Effect.other_effect_choices.all(),
         required=False,
     )
     effects_logic = forms.BooleanField(
@@ -173,7 +170,7 @@ class FilterMonsterForm(forms.Form):
         selected_buff_effects = self.cleaned_data.get('buffs')
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
-        self.cleaned_data['skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+        self.cleaned_data['skills__skill_effect__pk'] = chain(selected_buff_effects, selected_debuff_effects, selected_other_effects)
 
         # Split the slider ranges into two min/max fields for the filters
         try:

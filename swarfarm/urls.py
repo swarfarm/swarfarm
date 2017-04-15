@@ -15,7 +15,7 @@ from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, Cr
 urlpatterns = [
     # AJAX-y stuff first
     url(r'^autocomplete/', include([
-        url(r'^bestiary/$', BestiaryAutocomplete.as_view(), name='bestiary-monster-autocomplete'),
+        url(r'^bestiary/$', BestiaryAutocomplete.as_view({'get': 'list'}), name='bestiary-monster-autocomplete'),
         url(r'^monster-tag/$', MonsterTagAutocomplete.as_view(), name='monster-tag-autocomplete'),
         url(r'^monster-instance/$', MonsterInstanceAutocomplete.as_view(), name='monster-instance-autocomplete'),
     ])),

@@ -8,7 +8,6 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
-from bestiary.forms import effect_choices
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance, BuildingInstance
 
 from crispy_forms.helper import FormHelper
@@ -443,9 +442,9 @@ class FilterMonsterInstanceForm(forms.Form):
         max_length=100,
         required=False,
     )
-    tags__pk = forms.MultipleChoiceField(
+    tags__pk = forms.ModelMultipleChoiceField(
         label='Tags',
-        choices=MonsterTag.objects.values_list('pk', 'name'),
+        queryset=MonsterTag.objects.all(),
         required=False,
     )
     stars = forms.CharField(
@@ -505,19 +504,19 @@ class FilterMonsterInstanceForm(forms.Form):
         choices=LeaderSkill.AREA_CHOICES,
         required=False,
     )
-    monster__skills__scaling_stats__pk = forms.MultipleChoiceField(
+    monster__skills__scaling_stats__pk = forms.ModelMultipleChoiceField(
         label='Scales With',
-        choices=ScalingStat.objects.values_list('pk', 'stat'),
+        queryset=ScalingStat.objects.all(),
         required=False,
     )
-    buff_debuff_effects = forms.MultipleChoiceField(
+    buff_debuff_effects = forms.ModelMultipleChoiceField(
         label='Buffs/Debuffs',
-        choices=effect_choices(Effect.objects.exclude(icon_filename='')),
+        queryset=Effect.objects.exclude(icon_filename=''),
         required=False,
     )
-    other_effects = forms.MultipleChoiceField(
+    other_effects = forms.ModelMultipleChoiceField(
         label='Other Effects',
-        choices=Effect.other_effect_choices.all(),
+        queryset=Effect.other_effect_choices.all(),
         required=False,
     )
     effects_logic = forms.BooleanField(

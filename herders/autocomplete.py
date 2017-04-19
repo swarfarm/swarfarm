@@ -1,49 +1,120 @@
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db.models import Q
+from django.urls import reverse
 
-from dal import autocomplete
+from rest_framework import serializers, viewsets, renderers, pagination
 
 from .models import MonsterTag, MonsterInstance
 
 
-class MonsterInstanceAutocomplete(autocomplete.Select2QuerySetView):
-    paginate_by = 15
+class MonsterInstanceAutocompletePagination(pagination.PageNumberPagination):
+    page_size = 30
+    max_page_size = 30
+
+
+class MonsterInstanceAutocompleteSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+    text = serializers.SerializerMethodField()
+    image_filename = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MonsterInstance
+        fields = [
+            'id',
+            'url',
+            'text',
+            'image_filename',
+            'stars',
+            'level',
+        ]
+
+    def get_url(self, instance):
+        return reverse('herders:monster_instance_view', kwargs={
+            'profile_name': instance.owner.user.username,
+            'instance_id': instance.pk.hex,
+        })
+
+    def get_text(self, instance):
+        return str(instance)
+
+    def get_image_filename(self, instance):
+        return static('/herders/images/monsters/{}'.format(instance.monster.image_filename))
+
+
+class MonsterInstanceAutocomplete(viewsets.ReadOnlyModelViewSet):
+    renderer_classes = [renderers.JSONRenderer]
+    serializer_class = MonsterInstanceAutocompleteSerializer
+    pagination_class = MonsterInstanceAutocompletePagination
 
     def get_queryset(self):
-        qs = MonsterInstance.objects.filter(owner__user=self.request.user)
+        if self.request.user.is_authenticated:
+            qs = MonsterInstance.objects.filter(owner=self.request.user.summoner).select_related('monster')
+            search_terms = self.request.query_params.get('search')
 
-        if self.q:
-            # Split the terms into words and build a Q object
-            search_terms = self.q.split(' ')
-            query = Q()
+            if search_terms:
+                # Split the terms into words and build a Q object
+                search_terms = search_terms.split(' ')
+                query = Q()
 
-            for term in search_terms:
-                query.add(
-                    Q(name__icontains=term) |
-                    Q(awakens_from__name__icontains=term) |
-                    Q(awakens_to__name__icontains=term) |
-                    Q(element__startswith=term),
-                    Q.AND
-                )
+                for term in search_terms:
+                    query.add(
+                        Q(monster__name__icontains=term) |
+                        Q(monster__awakens_from__name__icontains=term) |
+                        Q(monster__awakens_to__name__icontains=term) |
+                        Q(monster__element__startswith=term),
+                        Q.AND
+                    )
 
-            qs = qs.filter(query)
+                qs = qs.filter(query)
+        else:
+            qs = MonsterInstance.objects.none()
 
         return qs
 
-    def get_result_value(self, result):
-        return result.pk.hex
+
+class MonsterTagAutocomplete(viewsets.ReadOnlyModelViewSet):
+    queryset = MonsterTag.objects.all()
 
 
-class MonsterTagAutocomplete(autocomplete.Select2QuerySetView):
-    paginate_by = 15
-
-    def get_queryset(self):
-        qs = MonsterTag.objects.all()
-
-        if self.q:
-            # Filter the queryset
-            pass  # TODO: Figure out how the hell DAL handles multi word queries
-
-        return qs
+# class MonsterInstanceAutocomplete(autocomplete.Select2QuerySetView):
+#     paginate_by = 15
+#
+#     def get_queryset(self):
+#         qs = MonsterInstance.objects.filter(owner__user=self.request.user)
+#
+#         if self.q:
+#             # Split the terms into words and build a Q object
+#             search_terms = self.q.split(' ')
+#             query = Q()
+#
+#             for term in search_terms:
+#                 query.add(
+#                     Q(name__icontains=term) |
+#                     Q(awakens_from__name__icontains=term) |
+#                     Q(awakens_to__name__icontains=term) |
+#                     Q(element__startswith=term),
+#                     Q.AND
+#                 )
+#
+#             qs = qs.filter(query)
+#
+#         return qs
+#
+#     def get_result_value(self, result):
+#         return result.pk.hex
+#
+#
+# class MonsterTagAutocomplete(autocomplete.Select2QuerySetView):
+#     paginate_by = 15
+#
+#     def get_queryset(self):
+#         qs = MonsterTag.objects.all()
+#
+#         if self.q:
+#             # Filter the queryset
+#             pass  # TODO: Figure out how the hell DAL handles multi word queries
+#
+#         return qs
 
 
 # Old DAL implementation

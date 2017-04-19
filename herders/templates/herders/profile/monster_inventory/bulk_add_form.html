@@ -29,10 +29,19 @@
         <form method="post" action="{{ bulk_add_formset_action }}" class="form-inline" id="bulkAddFormset" data-formset-prefix="{{ bulk_add_formset.prefix }}">
             {% csrf_token %}
             {{ bulk_add_formset.management_form|crispy }}
+            <div class="row">
+                <div class="col-md-3">Monsters</div>
+                <div class="col-md-2">Stars</div>
+                <div class="col-md-2">Level</div>
+                <div class="col-md-2">In Storage</div>
+                <div class="col-md-2">Fodder</div>
+            </div>
+
+
             <table class="table table-condensed">
                 <thead>
                 <tr>
-                    <th>Monster</th>
+                    <th style="min-width:300px">Monster</th>
                     <th>Stars</th>
                     <th>Level</th>
                     <th>In Storage</th>

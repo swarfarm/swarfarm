@@ -13,40 +13,32 @@ class BestiaryAutocompletePagination(pagination.PageNumberPagination):
 
 
 class BestiaryAutocompleteSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
     text = serializers.SerializerMethodField()
     image_filename = serializers.SerializerMethodField()
-    element = serializers.SerializerMethodField()
-    archetype = serializers.SerializerMethodField()
-    bestiary_url = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Monster
         fields = [
             'id',
+            'url',
             'text',
             'image_filename',
-            'element',
-            'archetype',
             'base_stars',
             'can_awaken',
             'is_awakened',
-            'bestiary_url',
+            'archetype',
         ]
+
+    def get_url(self, instance):
+        return reverse('bestiary:detail', kwargs={'monster_slug': instance.bestiary_slug})
 
     def get_text(self, instance):
         return str(instance)
 
     def get_image_filename(self, instance):
         return static('/herders/images/monsters/{}'.format(instance.image_filename))
-
-    def get_element(self, instance):
-        return instance.get_element_display()
-
-    def get_archetype(self, instance):
-        return instance.get_archetype_display()
-
-    def get_bestiary_url(self, instance):
-        return reverse('bestiary:detail', kwargs={'monster_slug': instance.bestiary_slug})
 
 
 class BestiaryAutocomplete(viewsets.ReadOnlyModelViewSet):

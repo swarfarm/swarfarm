@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseModelFormSet
@@ -6,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
+from django.urls import reverse_lazy
 
 from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance, BuildingInstance
@@ -15,8 +18,6 @@ from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden
 from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, InlineRadios, Alert
 
 from captcha.fields import ReCaptchaField
-
-from dal import autocomplete
 
 
 STATIC_URL_PREFIX = static('herders/images/')
@@ -243,10 +244,7 @@ class EditBuildingForm(ModelForm):
 
 # MonsterInstance Forms
 class AddMonsterInstanceForm(forms.ModelForm):
-    monster = forms.ModelChoiceField(
-        queryset=Monster.objects.all(),
-        widget=autocomplete.ModelSelect2(url='bestiary-monster-autocomplete')
-    )
+    monster = forms.ChoiceField()
 
     def __init__(self, *args, **kwargs):
         super(AddMonsterInstanceForm, self).__init__(*args, **kwargs)
@@ -258,11 +256,12 @@ class AddMonsterInstanceForm(forms.ModelForm):
         self.helper.layout = Layout(
             Field(
                 'monster',
-                data_toggle='popover',
-                data_trigger='focus',
-                data_container='body',
-                title='Autocomplete Tips',
-                data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
+                css_class='select2',
+                data_ajax__url=reverse_lazy('bestiary-monster-autocomplete'),
+                data_selection_template="monsterSelect2Template",
+                data_result_template="monsterSelect2Template",
+                data_select2_parent='#addMonsterModal',
+                data_placeholder='Start Typing...',
                 data_stars_field=self['stars'].auto_id,
                 data_fodder_field=self['fodder'].auto_id,
                 data_priority_field=self['priority'].auto_id,
@@ -299,10 +298,7 @@ class BulkAddMonsterInstanceFormset(BaseModelFormSet):
 
 
 class BulkAddMonsterInstanceForm(forms.ModelForm):
-    monster = forms.ModelChoiceField(
-        queryset=Monster.objects.all(),
-        widget=autocomplete.ModelSelect2(url='bestiary-monster-autocomplete')
-    )
+    monster = forms.ChoiceField()
 
     def __init__(self, *args, **kwargs):
         super(BulkAddMonsterInstanceForm, self).__init__(*args, **kwargs)
@@ -314,25 +310,27 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
         self.helper.disable_csrf = True
         self.helper.include_media = False
         self.helper.layout = Layout(
-            HTML('<td>'),
-            InlineField(
-                'monster',
-                data_stars_field=self['stars'].auto_id,
-                data_fodder_field=self['fodder'].auto_id,
-                data_set_stars=''
-            ),
-            HTML('</td><td>'),
-            InlineField('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
-            HTML('</td><td>'),
-            FieldWithButtons(
-                Field('level', value=1, min=1, max=40),
-                StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
-            ),
-            HTML('</td><td>'),
-            Field('in_storage'),
-            HTML('</td><td>'),
-            Field('fodder'),
-            HTML('</td>'),
+            Div(
+                Field(
+                    'monster',
+                    css_class='select2 col-md-3',
+                    data_ajax__url=reverse_lazy('bestiary-monster-autocomplete'),
+                    data_selection_template="monsterSelect2Template",
+                    data_result_template="monsterSelect2Template",
+                    data_stars_field=self['stars'].auto_id,
+                    data_fodder_field=self['fodder'].auto_id,
+                    data_set_stars=''
+                ),
+                Field('stars', css_class='rating hidden col-md-2', value=1, data_start=0, data_stop=6, data_stars=6),
+                FieldWithButtons(
+                    Field('level', value=1, min=1, max=40),
+                    StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
+                    css_class='col-md-2',
+                ),
+                Field('in_storage', css_class='col-md-2'),
+                Field('fodder', css_class='col-md-2'),
+                css_class='row',
+            )
         )
 
     class Meta:
@@ -363,7 +361,7 @@ class EditMonsterInstanceForm(ModelForm):
                 'skill_2_level',
                 'skill_3_level',
                 'skill_4_level',
-                'tags',
+                Field('tags'),  # TODO: Add autocomplete here
                 'priority',
                 Field('notes'),
             ),
@@ -382,16 +380,10 @@ class EditMonsterInstanceForm(ModelForm):
         labels = {
             'ignore_for_fusion': mark_safe('<span class="glyphicon glyphicon-lock"></span>Locked'),
         }
-        widgets = {
-            'tags': autocomplete.ModelSelect2Multiple(url='monster-tag-autocomplete')
-        }
 
 
 class PowerUpMonsterInstanceForm(forms.Form):
-    monster = forms.ModelChoiceField(
-        queryset=MonsterInstance.objects.all(),
-        widget=autocomplete.ModelSelect2(url='monster-instance-autocomplete')
-    )
+    monster = forms.MultipleChoiceField()
     monster.label = 'Material Monsters'
     monster.required = False
 
@@ -405,7 +397,13 @@ class PowerUpMonsterInstanceForm(forms.Form):
     helper.form_class = 'ajax-form'
     helper.include_media = False
     helper.layout = Layout(
-        Field('monster'),
+        Field(
+            'monster',
+            css_class='select2',
+            data_ajax__url=reverse_lazy('monster-instance-autocomplete'),
+            data_selection_template="monsterSelect2Template",
+            data_result_template="monsterSelect2Template",
+        ),
         Field('ignore_evolution'),
         FormActions(
             Submit('power_up', 'Power Up', css_class='btn btn-primary'),
@@ -619,7 +617,7 @@ class FilterMonsterInstanceForm(forms.Form):
         # Coalesce the effect fields into a single one that the filter can understand
         buff_debuff_effects = self.cleaned_data.get('buff_debuff_effects')
         other_effects = self.cleaned_data.get('other_effects')
-        self.cleaned_data['monster__skills__skill_effect__pk'] = buff_debuff_effects + other_effects
+        self.cleaned_data['monster__skills__skill_effect__pk'] = chain(buff_debuff_effects, other_effects)
 
         # Convert the select fields with None/True/False options into actual boolean values
         choices = {
@@ -655,10 +653,7 @@ class FilterMonsterInstanceForm(forms.Form):
 
 # MonsterPiece forms
 class MonsterPieceForm(forms.ModelForm):
-    monster = forms.ModelChoiceField(
-        queryset=Monster.objects.all(),
-        widget=autocomplete.ModelSelect2(url='bestiary-monster-autocomplete')
-    )
+    monster = forms.MultipleChoiceField()
 
     def __init__(self, *args, **kwargs):
         super(MonsterPieceForm, self).__init__(*args, **kwargs)
@@ -669,6 +664,10 @@ class MonsterPieceForm(forms.ModelForm):
         self.helper.layout = Layout(
             Field(
                 'monster',
+                css_class='select2',
+                data_ajax__url=reverse_lazy('bestiary-monster-autocomplete'),
+                data_selection_template="monsterSelect2Template",
+                data_result_template="monsterSelect2Template",
                 data_toggle='popover',
                 data_trigger='focus',
                 data_container='body',
@@ -768,8 +767,20 @@ class EditTeamForm(ModelForm):
                 Field('favorite'),
             ),
             Field('description'),
-            Field('leader'),
-            Field('roster'),
+            Field(
+                'leader',
+                css_class='select2',
+                data_ajax__url=reverse_lazy('monster-instance-autocomplete'),
+                data_selection_template="monsterSelect2Template",
+                data_result_template="monsterSelect2Template",
+            ),
+            Field(
+                'roster',
+                css_class='select2',
+                data_ajax__url=reverse_lazy('monster-instance-autocomplete'),
+                data_selection_template="monsterSelect2Template",
+                data_result_template="monsterSelect2Template",
+            ),
             FormActions(
                 Submit('save', 'Save', css_class='btn btn-primary'),
             ),
@@ -778,10 +789,6 @@ class EditTeamForm(ModelForm):
     class Meta:
         model = Team
         exclude = ('id',)
-        widgets = {
-            'roster': autocomplete.ModelSelect2Multiple(url='monster-instance-autocomplete'),
-            'leader': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
-        }
 
     def clean(self):
         from django.core.exceptions import ValidationError
@@ -884,7 +891,14 @@ class AddRuneInstanceForm(ModelForm):
                     Div(
                         HTML('<label class="col-md-2 control-label">Assign To</label>'),
                         Div(
-                            Field('assigned_to', wrapper_class='col-md-4'),
+                            Field(
+                                'assigned_to',
+                                wrapper_class='col-md-4',
+                                css_class='select2',
+                                data_ajax__url=reverse_lazy('monster-instance-autocomplete'),
+                                data_selection_template="monsterSelect2Template",
+                                data_result_template="monsterSelect2Template",
+                            ),
                         ),
                         css_class='form-group form-group-condensed',
                     ),
@@ -918,9 +932,6 @@ class AddRuneInstanceForm(ModelForm):
             'substat_4', 'substat_4_value', 'substat_4_craft',
             'assigned_to', 'notes', 'marked_for_sale',
         )
-        widgets = {
-            'assigned_to': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
-        }
 
 
 class AssignRuneForm(forms.Form):

@@ -13,11 +13,15 @@ function AddMonster() {
         url: '/profile/' + PROFILE_NAME + '/monster/add/',
         type: 'get'
     }).done( function(result) {
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             title: "Add Monster",
             message: result.html
         });
-        $('.rating').rating();
+        dialog.on('shown.bs.modal', function() {
+            dialog.attr("id", "addMonsterModal");
+            $('.rating').rating();
+            initSelect();
+        });
     })
 }
 
@@ -95,6 +99,7 @@ function AddMonsterPiece() {
             title: "Add Pieces",
             message: result.html
         });
+        initSelect();
     })
 }
 
@@ -107,6 +112,7 @@ function EditMonsterPiece(instance_id) {
             title: 'Edit Pieces',
             message: result.html
         });
+        initSelect();
     });
 }
 

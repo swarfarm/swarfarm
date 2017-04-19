@@ -2,6 +2,7 @@ Django==1.10.7
 gunicorn
 eventlet==0.20.1
 psycopg2
+amqp==2.1.3
 bcrypt
 bitstring
 celery

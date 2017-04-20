@@ -298,11 +298,14 @@ class BulkAddMonsterInstanceFormset(BaseModelFormSet):
 
 
 class BulkAddMonsterInstanceForm(forms.ModelForm):
-    monster = forms.ChoiceField()
+    monster = forms.ModelChoiceField(
+        queryset=Monster.objects.all(),
+        required=False,
+    )
+    monster.choices = []  # Manually override choices so it doesn't render any options inside <select>
 
     def __init__(self, *args, **kwargs):
         super(BulkAddMonsterInstanceForm, self).__init__(*args, **kwargs)
-        self.fields['monster'].required = False
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -315,6 +318,7 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
                     'monster',
                     css_class='select2',
                     wrapper_class='col-md-4',
+                    data_placeholder='Start typing...',
                     data_ajax__url=reverse_lazy('bestiary-monster-autocomplete'),
                     data_selection_template="monsterSelect2Template",
                     data_result_template="monsterSelect2Template",
@@ -328,7 +332,7 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
                     wrapper_class='col-md-2',
                     value=1,
                     data_start=0,
-                    daa_stop=6,
+                    data_stop=6,
                     data_stars=6
                 ),
                 FieldWithButtons(
@@ -344,6 +348,7 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
                     Field('fodder'),
                     css_class='col-md-2',
                 ),
+                data_formset_form='',
                 css_class='row',
             )
         )

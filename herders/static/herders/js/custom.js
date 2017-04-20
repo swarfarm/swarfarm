@@ -89,8 +89,15 @@ $.fn.select2.defaults.set("ajax", {
     delay: 250
 });
 
-function initSelect() {
-    $('.select2').each(function () {
+function initSelect(baseNode) {
+    if (baseNode) {
+        baseNode = baseNode.find('.select2');
+    }
+    else {
+        baseNode = $('.select2');
+    }
+
+    baseNode.each(function () {
         // Parse out custom select2 configs from data attributes that can't be directly initialized by select2()
         var config = Object();
 

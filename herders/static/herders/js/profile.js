@@ -239,6 +239,7 @@ $('body')
 
         return false;  //cancel default on submit action.
     })
+    .on('formAdded', function() { initSelect() })
     .on('click', '.monster-add', function() { AddMonster() })
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-copy', function() { CopyMonster($(this).data('instance-id')) })

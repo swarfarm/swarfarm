@@ -313,7 +313,8 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
             Div(
                 Field(
                     'monster',
-                    css_class='select2 col-md-3',
+                    css_class='select2',
+                    wrapper_class='col-md-4',
                     data_ajax__url=reverse_lazy('bestiary-monster-autocomplete'),
                     data_selection_template="monsterSelect2Template",
                     data_result_template="monsterSelect2Template",
@@ -321,14 +322,28 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
                     data_fodder_field=self['fodder'].auto_id,
                     data_set_stars=''
                 ),
-                Field('stars', css_class='rating hidden col-md-2', value=1, data_start=0, data_stop=6, data_stars=6),
+                Field(
+                    'stars',
+                    css_class='rating hidden',
+                    wrapper_class='col-md-2',
+                    value=1,
+                    data_start=0,
+                    daa_stop=6,
+                    data_stars=6
+                ),
                 FieldWithButtons(
                     Field('level', value=1, min=1, max=40),
                     StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
                     css_class='col-md-2',
                 ),
-                Field('in_storage', css_class='col-md-2'),
-                Field('fodder', css_class='col-md-2'),
+                Div(
+                    Field('in_storage'),
+                    css_class='col-md-2',
+                ),
+                Div(
+                    Field('fodder'),
+                    css_class='col-md-2',
+                ),
                 css_class='row',
             )
         )

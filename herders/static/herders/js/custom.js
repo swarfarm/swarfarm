@@ -117,6 +117,11 @@ function initSelect(baseNode) {
             config = Object.assign(config, {dropdownParent: $(parent_selector)});
         }
 
+        var initial_data = $(this).data('select2-initial-data');
+        if (initial_data) {
+            config = Object.assign(config, {data: initial_data});
+        }
+
         $(this).select2(config);
     });
 

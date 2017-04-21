@@ -15,9 +15,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext, Context
 from django.template.context_processors import csrf
 
+from drf_ujson.renderers import UJSONRenderer
+
 from bestiary.models import Monster, Fusion, Building
-from .forms import *
+from .autocomplete import MonsterInstanceAutocompleteSerializer
 from .filters import *
+from .forms import *
 from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance, Storage
 
 
@@ -1301,7 +1304,7 @@ def monster_piece_edit(request, profile_name, instance_id):
     template = loader.get_template('herders/profile/monster_inventory/monster_piece_form.html')
 
     if is_owner:
-        form = MonsterPieceForm(request.POST or None, instance=pieces)
+        form = MonsterPieceEditForm(request.POST or None, instance=pieces)
         form.helper.form_action = request.path
 
         if request.method == 'POST' and form.is_valid():
@@ -1767,6 +1770,12 @@ def team_edit(request, profile_name, team_id=None):
     if team_id:
         team = Team.objects.get(pk=team_id)
         edit_form = EditTeamForm(request.POST or None, instance=team)
+
+        # Set the initial data for select2 fields
+        leader_serialized = MonsterInstanceAutocompleteSerializer(team.leader)
+        edit_form.helper['leader'].update_attributes(**{'data-select2-initial-data': UJSONRenderer().render(leader_serialized.data)})
+        roster_serialized = MonsterInstanceAutocompleteSerializer(team.roster, many=True)
+        edit_form.helper['roster'].update_attributes(**{'data-select2-initial-data': UJSONRenderer().render(roster_serialized.data)})
     else:
         edit_form = EditTeamForm(request.POST or None)
 
@@ -1781,6 +1790,8 @@ def team_edit(request, profile_name, team_id=None):
     edit_form.fields['leader'].queryset = MonsterInstance.objects.filter(owner=summoner)
     edit_form.fields['roster'].queryset = MonsterInstance.objects.filter(owner=summoner)
     edit_form.helper.form_action = request.path + '?next=' + return_path
+
+
 
     context = {
         'profile_name': request.user.username,

@@ -95,11 +95,15 @@ function AddMonsterPiece() {
         url: '/profile/' + PROFILE_NAME + '/monster/piece/add/',
         type: 'get'
     }).done( function(result) {
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             title: "Add Pieces",
             message: result.html
         });
-        initSelect();
+        dialog.on('shown.bs.modal', function() {
+            dialog.attr("id", "addMonsterPiecesModal");
+            initSelect();
+        })
+
     })
 }
 
@@ -108,11 +112,14 @@ function EditMonsterPiece(instance_id) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/monster/piece/edit/' + instance_id + '/'
     }).done(function(result) {
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             title: 'Edit Pieces',
             message: result.html
         });
-        initSelect();
+        dialog.on('shown.bs.modal', function() {
+            dialog.attr("id", "addMonsterPiecesModal");
+            initSelect();
+        })
     });
 }
 

@@ -680,7 +680,11 @@ class FilterMonsterInstanceForm(forms.Form):
 
 # MonsterPiece forms
 class MonsterPieceForm(forms.ModelForm):
-    monster = forms.MultipleChoiceField()
+    monster = forms.ModelChoiceField(
+        queryset=Monster.objects.all(),
+        label='Material Monsters'
+    )
+    monster.choices = []  # Manually override choices so it doesn't render any options inside <select>
 
     def __init__(self, *args, **kwargs):
         super(MonsterPieceForm, self).__init__(*args, **kwargs)
@@ -692,14 +696,10 @@ class MonsterPieceForm(forms.ModelForm):
             Field(
                 'monster',
                 css_class='select2',
-                data_ajax__url=reverse_lazy('bestiary-monster-autocomplete'),
+                data_ajax__url=reverse_lazy('bestiary-monster-autocomplete') + '?is_awakened=False',
                 data_selection_template="monsterSelect2Template",
                 data_result_template="monsterSelect2Template",
-                data_toggle='popover',
-                data_trigger='focus',
-                data_container='body',
-                title='Autocomplete Tips',
-                data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
+                data_select2_parent="#addMonsterPiecesModal",
             ),
             Field('pieces'),
             FormActions(
@@ -711,6 +711,26 @@ class MonsterPieceForm(forms.ModelForm):
     class Meta:
         model = MonsterPiece
         fields = ('monster', 'pieces',)
+
+
+class MonsterPieceEditForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(MonsterPieceEditForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_class = 'ajax-form'
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Field('pieces'),
+            FormActions(
+                Submit('save', 'Save', css_class='btn btn-primary'),
+                Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+            ),
+        )
+
+    class Meta:
+        model = MonsterPiece
+        fields = ('pieces',)
 
 
 # Team Forms
@@ -780,6 +800,12 @@ class DeleteTeamGroupForm(forms.Form):
 
 
 class EditTeamForm(ModelForm):
+    leader = forms.ModelChoiceField(queryset=MonsterInstance.objects.all())
+    leader.choices = []  # Manually override choices so it doesn't render any options inside <select>
+
+    roster = forms.ModelMultipleChoiceField(queryset=MonsterInstance.objects.all())
+    roster.choices = []
+
     def __init__(self, *args, **kwargs):
         super(EditTeamForm, self).__init__(*args, **kwargs)
 

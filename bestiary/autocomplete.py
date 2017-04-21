@@ -1,3 +1,5 @@
+from distutils.util import strtobool
+
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db.models import Q
 from django.urls import reverse
@@ -16,7 +18,6 @@ class BestiaryAutocompleteSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     text = serializers.SerializerMethodField()
     image_filename = serializers.SerializerMethodField()
-
 
     class Meta:
         model = Monster
@@ -49,6 +50,7 @@ class BestiaryAutocomplete(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         qs = Monster.objects.filter(obtainable=True).order_by('element', 'is_awakened')
         search_terms = self.request.query_params.get('search')
+        is_awakened = self.request.query_params.get('is_awakened')
 
         if search_terms:
             # Split the terms into words and build a Q object
@@ -65,5 +67,11 @@ class BestiaryAutocomplete(viewsets.ReadOnlyModelViewSet):
                 )
 
             qs = qs.filter(query)
+
+        if is_awakened is not None:
+            if strtobool(is_awakened):
+                qs = qs.filter(is_awakened=True)
+            else:
+                qs = qs.filter(is_awakened=False)
 
         return qs

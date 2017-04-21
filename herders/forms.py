@@ -244,7 +244,11 @@ class EditBuildingForm(ModelForm):
 
 # MonsterInstance Forms
 class AddMonsterInstanceForm(forms.ModelForm):
-    monster = forms.ChoiceField()
+    monster = forms.ModelChoiceField(
+        queryset=Monster.objects.all(),
+        required=False,
+    )
+    monster.choices = []  # Manually override choices so it doesn't render any options inside <select>
 
     def __init__(self, *args, **kwargs):
         super(AddMonsterInstanceForm, self).__init__(*args, **kwargs)
@@ -403,9 +407,11 @@ class EditMonsterInstanceForm(ModelForm):
 
 
 class PowerUpMonsterInstanceForm(forms.Form):
-    monster = forms.MultipleChoiceField()
-    monster.label = 'Material Monsters'
-    monster.required = False
+    monster = forms.ModelMultipleChoiceField(
+        queryset=MonsterInstance.objects.all(),
+        label='Material Monsters'
+    )
+    monster.choices = []  # Manually override choices so it doesn't render any options inside <select>
 
     ignore_evolution = forms.BooleanField(
         label='Ignore evolution error checking',
@@ -423,6 +429,7 @@ class PowerUpMonsterInstanceForm(forms.Form):
             data_ajax__url=reverse_lazy('monster-instance-autocomplete'),
             data_selection_template="monsterSelect2Template",
             data_result_template="monsterSelect2Template",
+            data_select2_parent='#powerUpMonsterModal',
         ),
         Field('ignore_evolution'),
         FormActions(

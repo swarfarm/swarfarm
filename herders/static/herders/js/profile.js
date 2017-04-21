@@ -204,7 +204,7 @@ $('body')
         }).done(function(data) {
             if (data.code === 'success') {
                 $('.modal.in').modal('hide');
-                if (data.instance_id != 'undefined') {
+                if (data.instance_id) {
                     // Try to find a matching monster container and replace it
                     var $monster_container = $('.inventory-element[data-instance-id="' + data.instance_id + '"]');
 
@@ -232,8 +232,9 @@ $('body')
                 }
             }
             else {
-                $form.replaceWith(data.html);
+                var $new_elem = $(data.html).replaceAll($form);
                 $('.rating').rating();
+                initSelect($($new_elem));
             }
         });
 

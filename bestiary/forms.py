@@ -17,10 +17,12 @@ STATIC_URL_PREFIX = static('herders/images/')
 class BestiaryQuickSearchForm(forms.Form):
     name = forms.ModelChoiceField(
         queryset=Monster.objects.all(),
-        widget=autocomplete.ModelSelect2Multiple(
-            url='bestiary-monster-autocomplete',
+        widget=autocomplete.ModelSelect2(
+            url='bestiary-quicksearch-autocomplete',
             attrs={
-                'data-delay': 250,
+                'data-ajax-delay': 250,
+                'data-html': True,
+                'data-placeholder': 'Quick search',
             }
         ),
     )
@@ -29,12 +31,15 @@ class BestiaryQuickSearchForm(forms.Form):
     helper.form_action = 'bestiary:home'
     helper.form_method = 'post'
     helper.form_class = 'navbar-form navbar-left hidden-sm'
+    helper.form_id = 'bestiary_quick_search'
     helper.form_show_labels = False
     helper.include_media = False
     helper.layout = Layout(
-        FieldWithButtons(
-            Field('name'),
-            Submit('Go', 'Go'),
+        Div(
+            Field(
+                'name',
+            ),
+            css_class='input-group'
         ),
     )
 

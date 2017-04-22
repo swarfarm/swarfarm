@@ -10,7 +10,7 @@ class BestiaryAutocomplete(autocomplete.Select2QuerySetView):
     paginate_by = 15
 
     def get_queryset(self):
-        qs = Monster.objects.filter(obtainable=True).order_by('element', 'is_awakened')
+        qs = Monster.objects.filter(obtainable=True).order_by('family_id', 'element', 'is_awakened')
 
         if self.q:
             # Split the terms into words and build a Q object
@@ -32,6 +32,11 @@ class BestiaryAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_result_label(self, item):
         return loader.get_template('autocomplete/monster_choice.html').render({'choice': item})
+
+
+class QuickSearchAutocomplete(BestiaryAutocomplete):
+    def get_result_label(self, item):
+        return loader.get_template('autocomplete/bestiary_link.html').render({'choice': item})
 
 # Old DAL implementation
 # class BestiaryLinkAutocomplete(autocomplete_light.AutocompleteModelTemplate):

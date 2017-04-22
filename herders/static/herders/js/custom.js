@@ -77,6 +77,17 @@ function initSelect() {
     });
 }
 
+// Auto-redirect on click of autocomplete results with URLs
+$('#id_name').on('select2:select', function(event) {
+    // Some bullshittery to convert the plain text passed by select2 event into an actual DOM element and extract the data attribute
+    var data = $(event.target).select2('data');
+    var url = $(data[0].element.innerText).data('redirect-url');
+
+    if (url) {
+        window.location.replace(url);
+    }
+});
+
 $(document).ajaxComplete(function() {
     DisplayMessages();
 });

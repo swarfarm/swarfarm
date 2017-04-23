@@ -1,4 +1,4 @@
-var dialog;
+var rune_dialog;
 
 // Rune functions
 function AssignRune(slot) {
@@ -6,22 +6,25 @@ function AssignRune(slot) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/assign/' + INSTANCE_ID + '/' + slot.toString() + '/'
     }).done(function (response) {
-        dialog = bootbox.dialog({
+        rune_dialog = bootbox.dialog({
             title: "Assign Rune",
             size: "large",
             message: response.html
         });
 
-        //Init form elements
-        $("[data-toggle='toggle']").bootstrapToggle();
-        $("[data-provide='slider']").slider();
-        initSelect();
-        $('[data-toggle="tooltip"]').tooltip({
-            container: 'body'
-        });
-        $('[data-toggle="popover"]').popover({
-            html:true,
-            viewport: {selector: 'body', padding: 2}
+        rune_dialog.on('shown.bs.modal', function() {
+            rune_dialog.attr('id', 'assignRuneModal');
+            //Init form elements
+            $("[data-toggle='toggle']").bootstrapToggle();
+            $("[data-provide='slider']").slider();
+            initSelect();
+            $('[data-toggle="tooltip"]').tooltip({
+                container: 'body'
+            });
+            $('[data-toggle="popover"]').popover({
+                html:true,
+                viewport: {selector: 'body', padding: 2}
+            });
         });
     });
 }
@@ -47,20 +50,23 @@ function CreateNewRune(slot) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/add/?slot=' + slot.toString() + '&assigned_to=' + INSTANCE_ID
     }).done(function (response) {
-        if (dialog) {
+        if (rune_dialog) {
             $('.bootbox-body').html(response.html)
         }
         else {
-            dialog = bootbox.dialog({
+            rune_dialog = bootbox.dialog({
                 title: "Add new rune",
                 size: "large",
                 message: response.html
             });
-        }
 
-        update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
-        $('.rating').rating();
-        dialog.modal('handleUpdate');
+            rune_dialog.on('shown.bs.modal', function() {
+                rune_dialog.attr('id', 'createNewRuneModal');
+                update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+                $('.rating').rating();
+                rune_dialog.modal('handleUpdate');
+            })
+        }
     });
 }
 
@@ -143,13 +149,16 @@ function EditRune(rune_id) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/edit/' + rune_id + '/'
     }).done(function(result) {
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             title: "Edit rune",
             size: "large",
             message: result.html
         });
-        update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
-        $('.rating').rating();
+        dialog.on('shown.bs.modal', function() {
+            dialog.attr('id', 'editRuneModal');
+            update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
+            $('.rating').rating();
+        });
     });
 }
 
@@ -159,11 +168,14 @@ function EditMonster(instance_id) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/monster/edit/' + instance_id + '/'
     }).done(function(result) {
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             title: 'Edit Monster',
             message: result.html
         });
-        $('.rating').rating();
+        dialog.on('shown.bs.modal', function() {
+            dialog.attr('id', 'editMonsterModal');
+            $('.rating').rating();
+        });
     });
 }
 
@@ -207,11 +219,14 @@ function AwakenMonster(instance_id) {
             type: 'get',
             url: '/profile/' + PROFILE_NAME + '/monster/awaken/' + instance_id + '/'
         }).done(function(result) {
-            bootbox.dialog({
+            var dialog = bootbox.dialog({
                 title: 'Awaken Monster',
                 message: result.html
             });
-            $('.rating').rating();
+            dialog.on('shown.bs.modal', function() {
+                dialog.attr('id', 'awakenMonsterModal');
+                $('.rating').rating();
+            });
         });
     }
 }
@@ -222,9 +237,12 @@ function PowerUpMonster(instance_id) {
             type: 'get',
             url: '/profile/' + PROFILE_NAME + '/monster/powerup/' + instance_id + '/'
         }).done(function(result) {
-            bootbox.dialog({
-                title: 'Awaken Monster',
+            var dialog = bootbox.dialog({
+                title: 'Power Up Monster',
                 message: result.html
+            });
+            dialog.on('shown.bs.modal', function() {
+                dialog.attr('id', 'powerUpMonsterModal');
             });
         });
     }

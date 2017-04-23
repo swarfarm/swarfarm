@@ -4,6 +4,10 @@ var autosubmitDelay = null;
 
 //Initialize all bootstrap tooltips and popovers
 $(function () {
+    // Cancel default focus stuff for modal windows so select2 works properly.
+    // Can't set dropdownParent via DAL.
+    $.fn.modal.Constructor.prototype.enforceFocus = function () {};
+
     $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
     });
@@ -24,6 +28,15 @@ $(function () {
 $.fn.editable.defaults.container = 'body';
 
 // Various select2 templates for the types of autocompletes
+function monsterSelect2Template(option) {
+    if (option.id) {
+        return $('<span><img src="' + option.image_filename + '" class="monster-inline"/> ' + option.text + '</span>');
+    }
+    else {
+        return option.text;
+    }
+}
+
 function starsSelect2Template(option) {
     if (option.id) {
         return $('<span>' + option.text + '<span class="glyphicon glyphicon-star"></span></span>');
@@ -61,9 +74,39 @@ $.fn.select2.defaults.set("width", "100%");
 $.fn.select2.defaults.set("allowClear", true);
 $.fn.select2.defaults.set("escapeMarkup", function(m) {return m;});
 
-function initSelect() {
-    $('.select2').select2();
-    $('.select2-stars').select2({
+function initSelect(baseNode) {
+    if (baseNode) {
+        baseNode = baseNode.find('.select2');
+    }
+    else {
+        baseNode = $('.select2');
+    }
+
+    baseNode.each(function () {
+        // Parse out custom select2 configs from data attributes that can't be directly initialized by select2()
+        var config = Object();
+
+        // Templates
+        var selection_template = window[$(this).data('selection-template')];
+        if (typeof selection_template === 'function') {
+            config = Object.assign(config, {templateSelection: selection_template});
+        }
+
+        var result_template = window[$(this).data('result-template')];
+        if (typeof selection_template === 'function') {
+            config = Object.assign(config, {templateResult: result_template});
+        }
+
+        var parent_selector = $(this).data('select2-parent');
+        if (parent_selector) {
+            config = Object.assign(config, {dropdownParent: $(parent_selector)});
+        }
+
+        $(this).select2(config);
+    });
+
+    //TODO: Replace these with data attributes on the forms.
+    /*$('.select2-stars').select2({
         templateSelection: starsSelect2Template,
         templateResult: starsSelect2Template
     });
@@ -74,11 +117,11 @@ function initSelect() {
     $('.select2-effect').select2({
         templateSelection: skillEffectSelect2Template,
         templateResult: skillEffectSelect2Template
-    });
+    });*/
 }
 
 // Auto-redirect on click of autocomplete results with URLs
-$('#id_name').on('select2:select', function(event) {
+$('#bestiary_quick_search').find('#id_name').on('select2:select', function(event) {
     // Some bullshittery to convert the plain text passed by select2 event into an actual DOM element and extract the data attribute
     var data = $(event.target).select2('data');
     var url = $(data[0].element.innerText).data('redirect-url');
@@ -157,28 +200,29 @@ function DisplayMessages() {
 }
 
 //Automatically set attributes based on monster info
-function SetStars(e, choice, autocomplete) {
-    var monster_id = choice[0].dataset['value'];
+function SetStars(e) {
+    var monster_id = e.params.args.data.id;
     var stars_field = '#' + $(this).data('stars-field');
     var priority_field = '#' + $(this).data('priority-field');
     var fodder_field = '#' + $(this).data('fodder-field');
-    var url = API_URL + 'bestiary/' + monster_id + '.json';
 
+    // Hit up bestiary API to get monster data
     $.ajax({
-        url: url,
+        url: API_URL + 'bestiary/' + monster_id + '.json',
+        type: 'get',
         global: false
-    }).done(function (result) {
+    }).done(function(monster) {
         //Set stars
-        if (result.is_awakened && result.base_stars > 1) {
+        if (monster.is_awakened && monster.base_stars > 1) {
             //Awakened is -1 star to get actual base
-            $(stars_field).rating('rate', result.base_stars - 1);
+            $(stars_field).rating('rate', monster.base_stars - 1);
         }
         else {
-            $(stars_field).rating('rate', result.base_stars);
+            $(stars_field).rating('rate', monster.base_stars);
         }
 
         //Set fodder
-        if (result.archetype == 'material') {
+        if (monster.archetype === 'Material') {
             $(priority_field).val('0');
             $(fodder_field).prop('checked', true);
         }
@@ -216,9 +260,9 @@ $('body')
     .on('click', '.canvas-slid a', function() {
         $('.navmenu').offcanvas('hide');
     })
-    .on('click', '*[data-set-max-level]', SetMaxLevel)
-    .on('click', '*[data-skill-field]', SetMaxSkillLevel)
-    .on('selectChoice', '*[data-set-stars]', SetStars)
+    .on('click', '[data-set-max-level]', SetMaxLevel)
+    .on('click', '[data-skill-field]', SetMaxSkillLevel)
+    .on('select2:selecting', '[data-set-stars]', SetStars)
     .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
     .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })

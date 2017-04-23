@@ -246,7 +246,9 @@ class EditBuildingForm(ModelForm):
 class AddMonsterInstanceForm(forms.ModelForm):
     monster = forms.ModelChoiceField(
         queryset=Monster.objects.all(),
-        widget=autocomplete.ModelSelect2(url='bestiary-monster-autocomplete')
+        widget=autocomplete.ModelSelect2(
+            url='bestiary-monster-autocomplete',
+        )
     )
 
     def __init__(self, *args, **kwargs):
@@ -259,11 +261,6 @@ class AddMonsterInstanceForm(forms.ModelForm):
         self.helper.layout = Layout(
             Field(
                 'monster',
-                data_toggle='popover',
-                data_trigger='focus',
-                data_container='body',
-                title='Autocomplete Tips',
-                data_content="Enter the monster's awakened or unawakened name (either will work). To further narrow results, type the element too. Example: \"Raksha water\" will list water Rakshasa and Su",
                 data_stars_field=self['stars'].auto_id,
                 data_fodder_field=self['fodder'].auto_id,
                 data_priority_field=self['priority'].auto_id,

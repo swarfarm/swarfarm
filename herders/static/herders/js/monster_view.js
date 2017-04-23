@@ -12,19 +12,16 @@ function AssignRune(slot) {
             message: response.html
         });
 
-        rune_dialog.on('shown.bs.modal', function() {
-            rune_dialog.attr('id', 'assignRuneModal');
-            //Init form elements
-            $("[data-toggle='toggle']").bootstrapToggle();
-            $("[data-provide='slider']").slider();
-            initSelect();
-            $('[data-toggle="tooltip"]').tooltip({
-                container: 'body'
-            });
-            $('[data-toggle="popover"]').popover({
-                html:true,
-                viewport: {selector: 'body', padding: 2}
-            });
+        //Init form elements
+        $("[data-toggle='toggle']").bootstrapToggle();
+        $("[data-provide='slider']").slider();
+        initSelect();
+        $('[data-toggle="tooltip"]').tooltip({
+            container: 'body'
+        });
+        $('[data-toggle="popover"]').popover({
+            html:true,
+            viewport: {selector: 'body', padding: 2}
         });
     });
 }
@@ -60,12 +57,9 @@ function CreateNewRune(slot) {
                 message: response.html
             });
 
-            rune_dialog.on('shown.bs.modal', function() {
-                rune_dialog.attr('id', 'createNewRuneModal');
-                update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
-                $('.rating').rating();
-                rune_dialog.modal('handleUpdate');
-            })
+            update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+            $('.rating').rating();
+            rune_dialog.modal('handleUpdate');
         }
     });
 }
@@ -149,16 +143,13 @@ function EditRune(rune_id) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/edit/' + rune_id + '/'
     }).done(function(result) {
-        var dialog = bootbox.dialog({
+        bootbox.dialog({
             title: "Edit rune",
             size: "large",
             message: result.html
         });
-        dialog.on('shown.bs.modal', function() {
-            dialog.attr('id', 'editRuneModal');
-            update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
-            $('.rating').rating();
-        });
+        update_main_slot_options($('#edit_id_slot').val(), $('#edit_id_main_stat'));
+        $('.rating').rating();
     });
 }
 
@@ -168,14 +159,11 @@ function EditMonster(instance_id) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/monster/edit/' + instance_id + '/'
     }).done(function(result) {
-        var dialog = bootbox.dialog({
+        bootbox.dialog({
             title: 'Edit Monster',
             message: result.html
         });
-        dialog.on('shown.bs.modal', function() {
-            dialog.attr('id', 'editMonsterModal');
-            $('.rating').rating();
-        });
+        $('.rating').rating();
     });
 }
 
@@ -219,14 +207,11 @@ function AwakenMonster(instance_id) {
             type: 'get',
             url: '/profile/' + PROFILE_NAME + '/monster/awaken/' + instance_id + '/'
         }).done(function(result) {
-            var dialog = bootbox.dialog({
+            bootbox.dialog({
                 title: 'Awaken Monster',
                 message: result.html
             });
-            dialog.on('shown.bs.modal', function() {
-                dialog.attr('id', 'awakenMonsterModal');
-                $('.rating').rating();
-            });
+            $('.rating').rating();
         });
     }
 }
@@ -237,12 +222,9 @@ function PowerUpMonster(instance_id) {
             type: 'get',
             url: '/profile/' + PROFILE_NAME + '/monster/powerup/' + instance_id + '/'
         }).done(function(result) {
-            var dialog = bootbox.dialog({
+            bootbox.dialog({
                 title: 'Power Up Monster',
                 message: result.html
-            });
-            dialog.on('shown.bs.modal', function() {
-                dialog.attr('id', 'powerUpMonsterModal');
             });
         });
     }

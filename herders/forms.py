@@ -752,6 +752,18 @@ class DeleteTeamGroupForm(forms.Form):
 
 
 class EditTeamForm(ModelForm):
+    leader = forms.ModelChoiceField(
+        queryset=MonsterInstance.objects.none(),  # Override in view
+        widget=autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
+        required=False,
+    )
+
+    roster = forms.ModelMultipleChoiceField(
+        queryset=MonsterInstance.objects.none(),  # Override in view
+        widget=autocomplete.ModelSelect2Multiple(url='monster-instance-autocomplete'),
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         super(EditTeamForm, self).__init__(*args, **kwargs)
 
@@ -776,13 +788,11 @@ class EditTeamForm(ModelForm):
     class Meta:
         model = Team
         exclude = ('id',)
-        widgets = {
-            'roster': autocomplete.ModelSelect2Multiple(url='monster-instance-autocomplete'),
-            'leader': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
-        }
 
     def clean(self):
         from django.core.exceptions import ValidationError
+
+        super(EditTeamForm, self).clean()
 
         # Check that leader is not also in the roster
         leader = self.cleaned_data.get('leader')
@@ -793,8 +803,6 @@ class EditTeamForm(ModelForm):
                 'Leader cannot be included in the roster as well',
                 code='leader_in_roster'
             )
-
-        super(EditTeamForm, self).clean()
 
 
 # Rune Forms

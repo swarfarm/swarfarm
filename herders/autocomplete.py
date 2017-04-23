@@ -18,10 +18,10 @@ class MonsterInstanceAutocomplete(autocomplete.Select2QuerySetView):
 
             for term in search_terms:
                 query.add(
-                    Q(name__icontains=term) |
-                    Q(awakens_from__name__icontains=term) |
-                    Q(awakens_to__name__icontains=term) |
-                    Q(element__startswith=term),
+                    Q(monster__name__icontains=term) |
+                    Q(monster__awakens_from__name__icontains=term) |
+                    Q(monster__awakens_to__name__icontains=term) |
+                    Q(monster__element__startswith=term),
                     Q.AND
                 )
 

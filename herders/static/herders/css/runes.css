@@ -268,7 +268,7 @@ span.rune-set-bonus {
 .rune-craft.grindstone.rare {
     background-image: url(/static/herders/images/runes/grindstone_rare.png);
 }
-.rune-craft.grindstone.epic {
+.rune-craft.grindstone.hero {
     background-image: url(/static/herders/images/runes/grindstone_epic.png);
 }
 .rune-craft.grindstone.legend {
@@ -286,7 +286,7 @@ span.rune-set-bonus {
 .rune-craft.enchant-gem.rare {
     background-image: url(/static/herders/images/runes/enchant_gem_rare.png);
 }
-.rune-craft.enchant-gem.epic {
+.rune-craft.enchant-gem.hero {
     background-image: url(/static/herders/images/runes/enchant_gem_epic.png);
 }
 .rune-craft.enchant-gem.legend {

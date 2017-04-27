@@ -29,7 +29,6 @@
             <link rel="stylesheet" href="{% static 'main/css/bootstrap-editable.css' %}" />
             <link href="{% static "main/css/custom.css" %}" rel="stylesheet">
             <link href="{% static 'herders/css/runes.css' %}" rel="stylesheet">
-            <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/style.css' %}">
             {% block css_compressed %}{% endblock css_compressed %}
         {% endcompress %}
 
@@ -104,7 +103,7 @@
         <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
         {% endcompress %}
 
-        {% include 'autocomplete_light/static.html' %}
+        {% include 'autocomplete/media.html' %}
     </body>
 </html>
 {% endspaceless %}

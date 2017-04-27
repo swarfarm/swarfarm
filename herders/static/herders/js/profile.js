@@ -13,11 +13,15 @@ function AddMonster() {
         url: '/profile/' + PROFILE_NAME + '/monster/add/',
         type: 'get'
     }).done( function(result) {
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             title: "Add Monster",
             message: result.html
         });
-        $('.rating').rating();
+        dialog.on('shown.bs.modal', function() {
+            dialog.attr("id", "addMonsterModal");
+            $('.rating').rating();
+            initSelect();
+        });
     })
 }
 
@@ -91,10 +95,15 @@ function AddMonsterPiece() {
         url: '/profile/' + PROFILE_NAME + '/monster/piece/add/',
         type: 'get'
     }).done( function(result) {
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             title: "Add Pieces",
             message: result.html
         });
+        dialog.on('shown.bs.modal', function() {
+            dialog.attr("id", "addMonsterPiecesModal");
+            initSelect();
+        })
+
     })
 }
 
@@ -103,10 +112,14 @@ function EditMonsterPiece(instance_id) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/monster/piece/edit/' + instance_id + '/'
     }).done(function(result) {
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             title: 'Edit Pieces',
             message: result.html
         });
+        dialog.on('shown.bs.modal', function() {
+            dialog.attr("id", "addMonsterPiecesModal");
+            initSelect();
+        })
     });
 }
 
@@ -198,7 +211,7 @@ $('body')
         }).done(function(data) {
             if (data.code === 'success') {
                 $('.modal.in').modal('hide');
-                if (data.instance_id != 'undefined') {
+                if (data.instance_id) {
                     // Try to find a matching monster container and replace it
                     var $monster_container = $('.inventory-element[data-instance-id="' + data.instance_id + '"]');
 
@@ -226,12 +239,16 @@ $('body')
                 }
             }
             else {
-                $form.replaceWith(data.html);
+                var $new_elem = $(data.html).replaceAll($form);
                 $('.rating').rating();
+                initSelect($($new_elem));
             }
         });
 
         return false;  //cancel default on submit action.
+    })
+    .on('formAdded', function(event) {
+        initSelect(event.target);
     })
     .on('click', '.monster-add', function() { AddMonster() })
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })

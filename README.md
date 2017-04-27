@@ -35,7 +35,25 @@ This will get you:
  * Monster bestiary data already filled in
 
 You can use the python virtualenv on the Vagrant VM (located at `/home/vagrant/swarfarm_env`) as a remote interpreter if your development environment supports it.
-The ports for postgres, redis, and RabbitMQ are forwarded to your host machine so they are accessible from localhost. 
+The ports for postgres, redis, and RabbitMQ are forwarded to your host machine so they are accessible from localhost.
+
+### Creating the first user
+All user accounts have a one-to-one relationship with the Summoner model to store additional in-game account information.
+You have to manually set up the first user in order to use the entire site properly.
+Users that sign up through the registration page will have this relationship created automatically, but obviously do not have administrative privileges. 
+
+First, create a superuser using Django's [createsuperuser](https://docs.djangoproject.com/en/1.10/ref/django-admin/#createsuperuser) management command.
+This will be the administration account.
+Then open a Django shell with the [shell](https://docs.djangoproject.com/en/1.10/ref/django-admin/#shell) management command. In the shell 
+ 
+```python
+>>> from django.contrib.auth.models import User
+>>> from herders.models import Summoner
+>>> me = User.objects.first()
+>>> Summoner.objects.create(user=me)
+```
+
+
 
 ## Running the tests
 

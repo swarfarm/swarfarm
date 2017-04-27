@@ -26,10 +26,14 @@ page_content.on('click', '.team-link', function() {
 page_content.on('click', '.team-edit', function() {
     var team_id = $(this).data('team-id');
     if (typeof team_id === 'undefined') {
-        team_detail.load('/profile/' + PROFILE_NAME + '/teams/add/');
+        team_detail.load('/profile/' + PROFILE_NAME + '/teams/add/', function() {
+            initSelect();
+        });
     }
     else {
-        team_detail.load('/profile/' + PROFILE_NAME + '/teams/edit/' + team_id + '/');
+        team_detail.load('/profile/' + PROFILE_NAME + '/teams/edit/' + team_id + '/', function() {
+            initSelect();
+        });
     }
 });
 

@@ -24,6 +24,15 @@ $(function () {
 $.fn.editable.defaults.container = 'body';
 
 // Various select2 templates for the types of autocompletes
+function monsterSelect2Template(option) {
+    if (option.id) {
+        return $('<span><img src="' + option.image_filename + '" class="monster-inline"/> ' + option.text + '</span>');
+    }
+    else {
+        return option.text;
+    }
+}
+
 function starsSelect2Template(option) {
     if (option.id) {
         return $('<span>' + option.text + '<span class="glyphicon glyphicon-star"></span></span>');
@@ -60,10 +69,64 @@ $.fn.select2.defaults.set("theme", "bootstrap");
 $.fn.select2.defaults.set("width", "100%");
 $.fn.select2.defaults.set("allowClear", true);
 $.fn.select2.defaults.set("escapeMarkup", function(m) {return m;});
+$.fn.select2.defaults.set("minimumInputLength", 2);
+$.fn.select2.defaults.set("ajax", {
+    data: function(params) {
+        // Set query parameters for ajax queries
+        return {
+            search: params.term,
+            page: params.page
+        };
+    },
+    processResults: function(data) {
+        return {
+            results: data.results,
+            pagination: {
+                more: data.next !== null
+            }
+        }
+    },
+    delay: 250
+});
 
-function initSelect() {
-    $('.select2').select2();
-    $('.select2-stars').select2({
+function initSelect(baseNode) {
+    if (baseNode) {
+        baseNode = baseNode.find('.select2');
+    }
+    else {
+        baseNode = $('.select2');
+    }
+
+    baseNode.each(function () {
+        // Parse out custom select2 configs from data attributes that can't be directly initialized by select2()
+        var config = Object();
+
+        // Templates
+        var selection_template = window[$(this).data('selection-template')];
+        if (typeof selection_template === 'function') {
+            config = Object.assign(config, {templateSelection: selection_template});
+        }
+
+        var result_template = window[$(this).data('result-template')];
+        if (typeof selection_template === 'function') {
+            config = Object.assign(config, {templateResult: result_template});
+        }
+
+        var parent_selector = $(this).data('select2-parent');
+        if (parent_selector) {
+            config = Object.assign(config, {dropdownParent: $(parent_selector)});
+        }
+
+        var initial_data = $(this).data('select2-initial-data');
+        if (initial_data) {
+            config = Object.assign(config, {data: initial_data});
+        }
+
+        $(this).select2(config);
+    });
+
+    //TODO: Replace these with data attributes on the forms.
+    /*$('.select2-stars').select2({
         templateSelection: starsSelect2Template,
         templateResult: starsSelect2Template
     });
@@ -74,8 +137,16 @@ function initSelect() {
     $('.select2-effect').select2({
         templateSelection: skillEffectSelect2Template,
         templateResult: skillEffectSelect2Template
-    });
+    });*/
 }
+
+// Capture selection on bestiary quick search box
+$('#bestiary_quick_name').on('select2:selecting', function(event) {
+    var url = event.params.args.data['url'];
+    if (url !== undefined) {
+        window.location.replace(url);
+    }
+});
 
 $(document).ajaxComplete(function() {
     DisplayMessages();
@@ -146,32 +217,26 @@ function DisplayMessages() {
 }
 
 //Automatically set attributes based on monster info
-function SetStars(e, choice, autocomplete) {
-    var monster_id = choice[0].dataset['value'];
+function SetStars(event) {
+    var monster_data = event.params.args.data;
     var stars_field = '#' + $(this).data('stars-field');
     var priority_field = '#' + $(this).data('priority-field');
     var fodder_field = '#' + $(this).data('fodder-field');
-    var url = API_URL + 'bestiary/' + monster_id + '.json';
 
-    $.ajax({
-        url: url,
-        global: false
-    }).done(function (result) {
-        //Set stars
-        if (result.is_awakened && result.base_stars > 1) {
-            //Awakened is -1 star to get actual base
-            $(stars_field).rating('rate', result.base_stars - 1);
-        }
-        else {
-            $(stars_field).rating('rate', result.base_stars);
-        }
+    //Set stars
+    if (monster_data.is_awakened && monster_data.base_stars > 1) {
+        //Awakened is -1 star to get actual base
+        $(stars_field).rating('rate', monster_data.base_stars - 1);
+    }
+    else {
+        $(stars_field).rating('rate', monster_data.base_stars);
+    }
 
-        //Set fodder
-        if (result.archetype == 'material') {
-            $(priority_field).val('0');
-            $(fodder_field).prop('checked', true);
-        }
-    });
+    //Set fodder
+    if (monster_data.archetype === 'material') {
+        $(priority_field).val('0');
+        $(fodder_field).prop('checked', true);
+    }
 }
 
 //Calculate max level based on stars currently entered
@@ -207,7 +272,7 @@ $('body')
     })
     .on('click', '*[data-set-max-level]', SetMaxLevel)
     .on('click', '*[data-skill-field]', SetMaxSkillLevel)
-    .on('selectChoice', '*[data-set-stars]', SetStars)
+    .on('select2:selecting', '*[data-set-stars]', SetStars)
     .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
     .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })

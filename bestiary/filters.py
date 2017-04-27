@@ -5,14 +5,14 @@ from bestiary.models import Monster, Effect, Skill, LeaderSkill, ScalingStat
 
 
 class MonsterFilter(django_filters.FilterSet):
-    name = django_filters.MethodFilter(action='filter_name')
+    name = django_filters.CharFilter(method='filter_name')
     element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
     leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
     skills__scaling_stats__pk = django_filters.MultipleChoiceFilter(choices=ScalingStat.objects.values_list('pk', 'stat'), conjoined=True)
-    effects_logic = django_filters.MethodFilter()
-    skills__skill_effect__pk = django_filters.MethodFilter(action='filter_skills__skill_effect__pk')
+    effects_logic = django_filters.BooleanFilter(method='filter_effects_logic')
+    skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=Effect.objects.all(), method='filter_skill_effects')
 
     class Meta:
         model = Monster
@@ -30,20 +30,20 @@ class MonsterFilter(django_filters.FilterSet):
             'fusion_food': ['exact'],
         }
 
-    def filter_name(self, queryset, value):
+    def filter_name(self, queryset, name, value):
         if value:
-            return queryset.filter(Q(name__icontains=value) | Q(awakens_from__name__icontains=value))
+            return queryset.filter(Q(name__icontains=value) | Q(awakens_from__name__icontains=value) | Q(awakens_to__name__icontains=value))
         else:
             return queryset
 
-    def filter_skills__skill_effect__pk(self, queryset, value):
+    def filter_skill_effects(self, queryset, name, value):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)
         stat_scaling = self.form.cleaned_data.get('skills__scaling_stats__pk', [])
 
         if old_filtering:
             # Filter if any skill on the monster has the designated fields
-            for pk in value:
-                queryset = queryset.filter(skills__skill_effect=pk)
+            for effect in value:
+                queryset = queryset.filter(skills__skill_effect=effect)
 
             for pk in stat_scaling:
                 queryset = queryset.filter(skills__scaling_stats=pk)
@@ -56,14 +56,14 @@ class MonsterFilter(django_filters.FilterSet):
 
             skills = Skill.objects.all()
 
-            for pk in value:
-                skills = skills.filter(skill_effect=pk)
+            for effect in value:
+                skills = skills.filter(skill_effect=effect)
 
             for pk in stat_scaling:
                 skills = skills.filter(scaling_stats=pk)
 
             return queryset.filter(skills__in=skills).distinct()
 
-    def filter_effects_logic(self, queryset, value):
+    def filter_effects_logic(self, queryset, name, value):
         # This field is just used to alter the logic of skill effect filter
         return queryset

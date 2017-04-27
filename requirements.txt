@@ -18,7 +18,7 @@ django-celery-results
 django-celery-beat
 django-suit
 django-redis-cache==1.6.4
-django-autocomplete-light==3.2.4
+django-autocomplete-light==3.2.7
 django-cors-headers
 django-crispy-forms==1.6.1
 django-markdown-deux

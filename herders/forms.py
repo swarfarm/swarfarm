@@ -384,9 +384,9 @@ class EditMonsterInstanceForm(ModelForm):
 
 
 class PowerUpMonsterInstanceForm(forms.Form):
-    monster = forms.ModelChoiceField(
+    monster = forms.ModelMultipleChoiceField(
         queryset=MonsterInstance.objects.all(),
-        widget=autocomplete.ModelSelect2(url='monster-instance-autocomplete')
+        widget=autocomplete.ModelSelect2Multiple(url='monster-instance-autocomplete')
     )
     monster.label = 'Material Monsters'
     monster.required = False
@@ -557,7 +557,13 @@ class FilterMonsterInstanceForm(forms.Form):
                             Field('tags__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
                             Field('priority', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
                             Field('monster__archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
-                            Field('monster__element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
+                            Field(
+                                'monster__element',
+                                css_class='select2',
+                                data_result_template='elementSelect2Template',
+                                data_selection_template='elementSelect2Template',
+                                wrapper_class='form-group-sm form-group-condensed col-sm-6',
+                            ),
                             css_class='row',
                         ),
                         css_class='col-lg-8 col-md-6'
@@ -577,7 +583,13 @@ class FilterMonsterInstanceForm(forms.Form):
                 Fieldset(
                     'Skills',
                     Div(
-                        Field('buff_debuff_effects', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field(
+                            'buff_debuff_effects',
+                            css_class='select2',
+                            data_result_template='skillEffectSelect2Template',
+                            data_selection_template='skillEffectSelect2Template',
+                            wrapper_class='form-group-sm form-group-condensed col-lg-6'
+                        ),
                         Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('monster__skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('effects_logic', data_toggle='toggle', data_on='Any Skill', data_onstyle='primary', data_off='One Skill', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12'),

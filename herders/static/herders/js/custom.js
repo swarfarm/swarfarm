@@ -37,15 +37,6 @@ function monsterSelect2Template(option) {
     }
 }
 
-function starsSelect2Template(option) {
-    if (option.id) {
-        return $('<span>' + option.text + '<span class="glyphicon glyphicon-star"></span></span>');
-    }
-    else {
-        return option.text;
-    }
-}
-
 function elementSelect2Template(option) {
     if (option.id) {
         return $('<span><img src="/static/herders/images/elements/' + option.text.toLowerCase() + '.png" /> ' + option.text + '</span>');
@@ -104,20 +95,6 @@ function initSelect(baseNode) {
 
         $(this).select2(config);
     });
-
-    //TODO: Replace these with data attributes on the forms.
-    /*$('.select2-stars').select2({
-        templateSelection: starsSelect2Template,
-        templateResult: starsSelect2Template
-    });
-    $('.select2-element').select2({
-        templateSelection: elementSelect2Template,
-        templateResult: elementSelect2Template
-    });
-    $('.select2-effect').select2({
-        templateSelection: skillEffectSelect2Template,
-        templateResult: skillEffectSelect2Template
-    });*/
 }
 
 // Auto-redirect on click of autocomplete results with URLs

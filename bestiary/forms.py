@@ -136,7 +136,13 @@ class FilterMonsterForm(forms.Form):
                     ),
                     Field('is_awakened', wrapper_class='form-group-sm form-group-condensed col-md-6'),
                     Field('fusion_food', wrapper_class='form-group-sm form-group-condensed col-md-6'),
-                    Field('element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field(
+                        'element',
+                        css_class='select2',
+                        data_result_template='elementSelect2Template',
+                        data_selection_template='elementSelect2Template',
+                        wrapper_class='form-group-sm form-group-condensed col-md-6'
+                    ),
                     Field('archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
                     css_class='row',
                 ),
@@ -145,8 +151,20 @@ class FilterMonsterForm(forms.Form):
             Fieldset(
                 'Skills',
                 Div(
-                    Field('buffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
-                    Field('debuffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field(
+                        'buffs',
+                        css_class='select2',
+                        data_result_template='skillEffectSelect2Template',
+                        data_selection_template='skillEffectSelect2Template',
+                        wrapper_class='form-group-sm form-group-condensed col-lg-6'
+                    ),
+                    Field(
+                        'debuffs',
+                        css_class='select2',
+                        data_result_template='skillEffectSelect2Template',
+                        data_selection_template='skillEffectSelect2Template',
+                        wrapper_class='form-group-sm form-group-condensed col-lg-6'
+                    ),
                     Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                     Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                     Field('effects_logic', data_toggle='toggle', data_on='Any Skill', data_onstyle='primary', data_off='One Skill', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12'),

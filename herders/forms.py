@@ -7,17 +7,15 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, Pa
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
-from bestiary.forms import effect_choices
-from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance, BuildingInstance
-
+from captcha.fields import ReCaptchaField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset, Fieldset
 from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, InlineRadios, Alert
-
-from captcha.fields import ReCaptchaField
-
 from dal import autocomplete
+
+from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
+from bestiary.forms import effect_choices
+from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance, BuildingInstance
 
 
 STATIC_URL_PREFIX = static('herders/images/')

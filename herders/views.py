@@ -1767,7 +1767,7 @@ def team_edit(request, profile_name, team_id=None):
     edit_form.helper.form_action = request.path + '?next=' + return_path
 
     context = {
-        'profile_name': request.user.username,
+        'profile_name': profile_name,
         'return_path': return_path,
         'is_owner': is_owner,
         'view': 'teams',

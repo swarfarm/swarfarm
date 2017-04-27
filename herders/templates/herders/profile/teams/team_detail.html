@@ -62,11 +62,9 @@
                 <tr><td colspan="8"><h4>Leader</h4></td></tr>
                 <tr>
                     {% if team.leader %}
-                    <td class="monster-image">
+                    <td class="monster-image monster-popover" data-instance-id="{{ team.leader.pk.hex }}" title="{{ team.leader }}">
                         <div>
-                            {% if is_owner %}
-                                <a href="{% url 'herders:monster_instance_view' profile_name=user.username instance_id=team.leader.pk.hex %}?next={% url 'herders:teams' profile_name=profile_name %}" target="_blank">
-                            {% endif %}
+                            <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=team.leader.pk.hex %}" target="_blank">
                                 <img src="{{ img_url_prefix }}monsters/{{ team.leader.monster.image_filename }}" class="monster-thumb"/>
                                 <span>
                                     {% for x in team.leader.stars|get_range %}
@@ -80,9 +78,7 @@
                                     {% endfor %}
                                 </span>
                                 <span class="image-plus image-plus-right">{% if team.leader.is_max_level %}MAX{% endif %}{{ team.leader.level }}</span>
-                            {% if is_owner %}
-                                </a>
-                            {% endif %}
+                            </a>
                         </div>
                     </td>
                     <td>{{ team.leader.monster.name|title }}</td>
@@ -128,11 +124,9 @@
                 <tr><td colspan="8"><h4>Members</h4></td></tr>
                 {% for instance in team.roster.all %}
                     <tr>
-                        <td class="monster-image">
+                        <td class="monster-image monster-popover" data-instance-id="{{ instance.pk.hex }}" title="{{ instance }}">
                             <div>
-                                {% if is_owner %}
-                                <a href="{% url 'herders:monster_instance_view' profile_name=user.username instance_id=instance.pk.hex %}?next={% url 'herders:teams' profile_name=profile_name %}" target="_blank">
-                                {% endif %}
+                                <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}" target="_blank">
                                 <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb"/>
                                 <span>
                                     {% for x in instance.stars|get_range %}
@@ -146,9 +140,7 @@
                                     {% endfor %}
                                 </span>
                                 <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
-                                {% if is_owner %}
                                 </a>
-                                {% endif %}
                             </div>
                         </td>
                         <td>{{ instance.monster.name|title }}</td>

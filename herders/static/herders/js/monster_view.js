@@ -1,4 +1,4 @@
-var dialog;
+var rune_dialog;
 
 // Rune functions
 function AssignRune(slot) {
@@ -6,7 +6,7 @@ function AssignRune(slot) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/assign/' + INSTANCE_ID + '/' + slot.toString() + '/'
     }).done(function (response) {
-        dialog = bootbox.dialog({
+        rune_dialog = bootbox.dialog({
             title: "Assign Rune",
             size: "large",
             message: response.html
@@ -47,20 +47,20 @@ function CreateNewRune(slot) {
         type: 'get',
         url: '/profile/' + PROFILE_NAME + '/runes/add/?slot=' + slot.toString() + '&assigned_to=' + INSTANCE_ID
     }).done(function (response) {
-        if (dialog) {
+        if (rune_dialog) {
             $('.bootbox-body').html(response.html)
         }
         else {
-            dialog = bootbox.dialog({
+            rune_dialog = bootbox.dialog({
                 title: "Add new rune",
                 size: "large",
                 message: response.html
             });
-        }
 
-        update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
-        $('.rating').rating();
-        dialog.modal('handleUpdate');
+            update_main_slot_options($('#id_slot').val(), $('#id_main_stat'));
+            $('.rating').rating();
+            rune_dialog.modal('handleUpdate');
+        }
     });
 }
 
@@ -223,7 +223,7 @@ function PowerUpMonster(instance_id) {
             url: '/profile/' + PROFILE_NAME + '/monster/powerup/' + instance_id + '/'
         }).done(function(result) {
             bootbox.dialog({
-                title: 'Awaken Monster',
+                title: 'Power Up Monster',
                 message: result.html
             });
         });

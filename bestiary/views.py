@@ -11,6 +11,9 @@ from .forms import *
 from .filters import MonsterFilter
 
 
+
+
+
 def bestiary(request):
     name_search = request.POST.get('name-autocomplete')
     post_data = request.POST.copy()
@@ -189,7 +192,7 @@ def edit_skill(request, pk):
             form.helper.form_action = reverse('bestiary:edit_skill', kwargs={'pk': pk})
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form})),
+                'html': template.render({'form': form}),
             }
 
         return JsonResponse(response_data)

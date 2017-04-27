@@ -8,24 +8,38 @@ from crispy_forms.bootstrap import FormActions, FieldWithButtons
 
 from bestiary.models import *
 
-import autocomplete_light
+from dal import autocomplete
 
 STATIC_URL_PREFIX = static('herders/images/')
 
 
 # Bestiary forms
 class BestiaryQuickSearchForm(forms.Form):
-    name = autocomplete_light.ModelChoiceField('BestiaryLinkAutocomplete')
+    name = forms.ModelChoiceField(
+        queryset=Monster.objects.all(),
+        widget=autocomplete.ModelSelect2(
+            url='bestiary-quicksearch-autocomplete',
+            attrs={
+                'data-ajax-delay': 250,
+                'data-html': True,
+                'data-placeholder': 'Quick search',
+            }
+        ),
+    )
 
     helper = FormHelper()
     helper.form_action = 'bestiary:home'
     helper.form_method = 'post'
     helper.form_class = 'navbar-form navbar-left hidden-sm'
+    helper.form_id = 'bestiary_quick_search'
     helper.form_show_labels = False
+    helper.include_media = False
     helper.layout = Layout(
-        FieldWithButtons(
-            Field('name', id='name'),
-            Submit('Go', 'Go'),
+        Div(
+            Field(
+                'name',
+            ),
+            css_class='input-group'
         ),
     )
 
@@ -34,7 +48,7 @@ def effect_choices(effects):
     choices = []
 
     for buff in effects.order_by('name'):
-        # Select2 template splits the string at ; to get an image and nameoi
+        # Select2 template splits the string at ; to get an image and name
         choices.append((buff.pk, STATIC_URL_PREFIX + 'buffs/' + buff.icon_filename + ';' + buff.name))
 
     return choices
@@ -122,7 +136,13 @@ class FilterMonsterForm(forms.Form):
                     ),
                     Field('is_awakened', wrapper_class='form-group-sm form-group-condensed col-md-6'),
                     Field('fusion_food', wrapper_class='form-group-sm form-group-condensed col-md-6'),
-                    Field('element', css_class='select2-element', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field(
+                        'element',
+                        css_class='select2',
+                        data_result_template='elementSelect2Template',
+                        data_selection_template='elementSelect2Template',
+                        wrapper_class='form-group-sm form-group-condensed col-md-6'
+                    ),
                     Field('archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
                     css_class='row',
                 ),
@@ -131,8 +151,20 @@ class FilterMonsterForm(forms.Form):
             Fieldset(
                 'Skills',
                 Div(
-                    Field('buffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
-                    Field('debuffs', css_class='select2-effect', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field(
+                        'buffs',
+                        css_class='select2',
+                        data_result_template='skillEffectSelect2Template',
+                        data_selection_template='skillEffectSelect2Template',
+                        wrapper_class='form-group-sm form-group-condensed col-lg-6'
+                    ),
+                    Field(
+                        'debuffs',
+                        css_class='select2',
+                        data_result_template='skillEffectSelect2Template',
+                        data_selection_template='skillEffectSelect2Template',
+                        wrapper_class='form-group-sm form-group-condensed col-lg-6'
+                    ),
                     Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                     Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                     Field('effects_logic', data_toggle='toggle', data_on='Any Skill', data_onstyle='primary', data_off='One Skill', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12'),

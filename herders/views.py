@@ -1,7 +1,6 @@
 from collections import OrderedDict
 from copy import deepcopy
 
-from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
@@ -11,8 +10,11 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.forms.models import modelformset_factory
+from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.db.models import FieldDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template import loader, RequestContext
+from django.template import loader, RequestContext, Context
+from django.template.context_processors import csrf
 
 from bestiary.models import Monster, Fusion, Building
 from .forms import *
@@ -301,6 +303,7 @@ def building_edit(request, profile_name, building_id):
     context = {
         'form': form,
     }
+    context.update(csrf(request))
 
     if is_owner:
         if request.method == 'POST' and form.is_valid():
@@ -314,7 +317,7 @@ def building_edit(request, profile_name, building_id):
             template = loader.get_template('herders/profile/buildings/edit_form.html')
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, context))
+                'html': template.render(context),
             }
 
         return JsonResponse(response_data)
@@ -401,7 +404,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     filtered_count = monster_filter.qs.count()
 
     context = {
-        'monsters': monster_filter,
+        'monsters': monster_filter.qs,
         'monster_pieces': pieces,
         'total_count': total_monsters,
         'filtered_count': filtered_count,
@@ -576,7 +579,11 @@ def storage_update(request, profile_name):
             except (ValueError, KeyError):
                 return HttpResponseBadRequest()
 
-        if field_name in Storage._meta.get_all_field_names():
+        try:
+            Storage._meta.get_field(field_name)
+        except FieldDoesNotExist:
+            return HttpResponseBadRequest()
+        else:
             if essence_size is not None:
                 # Get a copy of the size array and set the correct index to new value
                 essence_list = getattr(summoner.storage, field_name)
@@ -586,8 +593,6 @@ def storage_update(request, profile_name):
             setattr(summoner.storage, field_name, new_value)
             summoner.storage.save()
             return HttpResponse()
-        else:
-            return HttpResponseBadRequest()
     else:
         return HttpResponseForbidden()
 
@@ -645,16 +650,19 @@ def monster_instance_add(request, profile_name):
             response_data = {
                 'code': 'success',
                 'instance_id': new_monster.pk.hex,
-                'html': template.render(RequestContext(request, context)),
+                'html': template.render(context),
             }
         else:
             form.helper.form_action = reverse('herders:monster_instance_add', kwargs={'profile_name': profile_name})
             template = loader.get_template('herders/profile/monster_inventory/add_monster_form.html')
 
             # Return form filled in and errors shown
+            context = {'add_monster_form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'add_monster_form': form}))
+                'html': template.render(context),
             }
 
         return JsonResponse(response_data)
@@ -993,14 +1001,17 @@ def monster_instance_edit(request, profile_name, instance_id):
             response_data = {
                 'code': 'success',
                 'instance_id': mon.pk.hex,
-                'html': template.render(RequestContext(request, context)),
+                'html': template.render(context),
             }
         else:
             # Return form filled in and errors shown
             template = loader.get_template('herders/profile/monster_view/edit_form.html')
+            context = {'edit_monster_form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'edit_monster_form': form}))
+                'html': template.render(context)
             }
 
         return JsonResponse(response_data)
@@ -1112,7 +1123,8 @@ def monster_instance_power_up(request, profile_name, instance_id):
     template = loader.get_template('herders/profile/monster_view/power_up_form.html')
     # Any errors in the form will fall through to here and be displayed
     context['validation_errors'] = validation_errors
-    response_data['html'] = template.render(RequestContext(request, context))
+    context.update(csrf(request))
+    response_data['html'] = template.render(context)
 
     return JsonResponse(response_data)
 
@@ -1181,19 +1193,22 @@ def monster_instance_awaken(request, profile_name, instance_id):
                                 'sufficient': storage[element][size] >= cost,
                             }
 
+                context = {
+                    'awaken_form': form,
+                    'available_essences': available_essences,
+                    'instance': monster,
+                }
+                context.update(csrf(request))
+
                 response_data = {
                     'code': 'error',
-                    'html': template.render(RequestContext(request, {
-                        'awaken_form': form,
-                        'available_essences': available_essences,
-                        'instance': monster,
-                    }))
+                    'html': template.render(context)
                 }
         else:
             error_template = loader.get_template('herders/profile/monster_already_awakened.html')
             response_data = {
                 'code': 'error',
-                'html': error_template.render(RequestContext(request, {}))
+                'html': error_template.render()
             }
 
         return JsonResponse(response_data)
@@ -1228,7 +1243,7 @@ def monster_instance_duplicate(request, profile_name, instance_id):
         response_data = {
             'code': 'success',
             'instance_id': newmonster.pk.hex,
-            'html': template.render(RequestContext(request, context))
+            'html': template.render(context),
         }
 
         return JsonResponse(response_data)
@@ -1267,9 +1282,12 @@ def monster_piece_add(request, profile_name):
             }
         else:
             # Return form filled in and errors shown
+            context = {'form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render(context),
             }
 
         return JsonResponse(response_data)
@@ -1303,13 +1321,16 @@ def monster_piece_edit(request, profile_name, instance_id):
             response_data = {
                 'code': 'success',
                 'instance_id': new_piece.pk.hex,
-                'html': template.render(RequestContext(request, context))
+                'html': template.render(context),
             }
         else:
             # Return form filled in and errors shown
+            context = {'form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render(context),
             }
 
         return JsonResponse(response_data)
@@ -1348,7 +1369,7 @@ def monster_piece_summon(request, profile_name, instance_id):
                     'is_owner': is_owner,
                 }
                 response_data['instance_id'] = pieces.pk.hex
-                response_data['html'] = template.render(RequestContext(request, context))
+                response_data['html'] = template.render(context),
 
             return JsonResponse(response_data)
     else:
@@ -1861,7 +1882,7 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
     filtered_count = rune_filter.qs.count()
 
     context = {
-        'runes': rune_filter,
+        'runes': rune_filter.qs,
         'total_count': total_count,
         'filtered_count': filtered_count,
         'profile_name': profile_name,
@@ -1951,14 +1972,20 @@ def rune_add(request, profile_name):
             form = AddRuneInstanceForm()
             form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
 
+            context = {'add_rune_form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'success',
-                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+                'html': template.render(context)
             }
         else:
+            context = {'add_rune_form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+                'html': template.render(context)
             }
     else:
         # Check for any pre-filled GET parameters
@@ -1966,14 +1993,17 @@ def rune_add(request, profile_name):
         assigned_to = request.GET.get('assigned_to', None)
 
         form = AddRuneInstanceForm(initial={
-            'assigned_to': assigned_to,
+            'assigned_to': MonsterInstance.objects.get(owner=request.user.summoner, pk=assigned_to),
             'slot': slot if slot is not None else 1,
         })
         form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})
 
         # Return form filled in and errors shown
+        context = {'add_rune_form': form}
+        context.update(csrf(request))
+
         response_data = {
-            'html': template.render(RequestContext(request, {'add_rune_form': form}))
+            'html': template.render(context)
         }
 
     return JsonResponse(response_data)
@@ -1993,21 +2023,30 @@ def rune_edit(request, profile_name, rune_id):
     template = loader.get_template('herders/profile/runes/add_form.html')
 
     if is_owner:
+        context = {'add_rune_form': form}
+        context.update(csrf(request))
+
         if request.method == 'POST' and form.is_valid():
             rune = form.save()
             messages.success(request, 'Saved changes to ' + str(rune))
             form = AddRuneInstanceForm(auto_id='edit_id_%s')
             form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
 
+            context = {'add_rune_form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'success',
-                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+                'html': template.render(context)
             }
         else:
+            context = {'add_rune_form': form}
+            context.update(csrf(request))
+
             # Return form filled in and errors shown
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'add_rune_form': form}))
+                'html': template.render(context)
             }
 
         return JsonResponse(response_data)
@@ -2028,26 +2067,32 @@ def rune_assign(request, profile_name, instance_id, slot=None):
         rune_filter = RuneInstanceFilter(filter_form.cleaned_data, queryset=rune_queryset)
         template = loader.get_template('herders/profile/runes/assign_results.html')
 
+        context = {
+            'filter': rune_filter.qs,
+            'profile_name': profile_name,
+            'instance_id': instance_id,
+        }
+        context.update(csrf(request))
+
         response_data = {
             'code': 'results',
-            'html': template.render(RequestContext(request, {
-                'filter': rune_filter,
-                'profile_name': profile_name,
-                'instance_id': instance_id,
-            }))
+            'html': template.render(context)
         }
     else:
         rune_filter = RuneInstanceFilter(queryset=rune_queryset)
         template = loader.get_template('herders/profile/runes/assign_form.html')
 
+        context = {
+            'filter': rune_filter.qs,
+            'form': filter_form,
+            'profile_name': profile_name,
+            'instance_id': instance_id,
+        }
+        context.update(csrf(request))
+
         response_data = {
             'code': 'success',
-            'html': template.render(RequestContext(request, {
-                'filter': rune_filter,
-                'form': filter_form,
-                'profile_name': profile_name,
-                'instance_id': instance_id,
-            }))
+            'html': template.render(context)
         }
 
     return JsonResponse(response_data)
@@ -2239,19 +2284,28 @@ def rune_craft_add(request, profile_name):
             form = AddRuneCraftInstanceForm()
             form.helper.form_action = reverse('herders:rune_craft_add', kwargs={'profile_name': profile_name})
 
+            context = {'form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'success',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render(context)
             }
         else:
+            context = {'form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render(context)
             }
     else:
         # Return form filled in and errors shown
+        context = {'form': form}
+        context.update(csrf(request))
+
         response_data = {
-            'html': template.render(RequestContext(request, {'form': form}))
+            'html': template.render(context)
         }
 
     return JsonResponse(response_data)
@@ -2277,15 +2331,21 @@ def rune_craft_edit(request, profile_name, craft_id):
             form = AddRuneInstanceForm()
             form.helper.form_action = reverse('herders:rune_craft_edit', kwargs={'profile_name': profile_name, 'craft_id': craft_id})
 
+            context = {'form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'success',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render(context)
             }
         else:
             # Return form filled in and errors shown
+            context = {'form': form}
+            context.update(csrf(request))
+
             response_data = {
                 'code': 'error',
-                'html': template.render(RequestContext(request, {'form': form}))
+                'html': template.render(context)
             }
 
         return JsonResponse(response_data)

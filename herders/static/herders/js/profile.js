@@ -16,6 +16,8 @@ function AddMonster() {
         bootbox.dialog({
             title: "Add Monster",
             message: result.html
+        }).on('shown.bs.modal', function() {
+            $(this).attr('id', 'addMonsterModal');
         });
         $('.rating').rating();
     })

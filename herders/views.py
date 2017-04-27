@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.forms.models import modelformset_factory
 from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.db.models import FieldDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext, Context
 from django.template.context_processors import csrf
@@ -578,7 +579,11 @@ def storage_update(request, profile_name):
             except (ValueError, KeyError):
                 return HttpResponseBadRequest()
 
-        if field_name in Storage._meta.get_all_field_names():
+        try:
+            Storage._meta.get_field(field_name)
+        except FieldDoesNotExist:
+            return HttpResponseBadRequest()
+        else:
             if essence_size is not None:
                 # Get a copy of the size array and set the correct index to new value
                 essence_list = getattr(summoner.storage, field_name)
@@ -588,8 +593,6 @@ def storage_update(request, profile_name):
             setattr(summoner.storage, field_name, new_value)
             summoner.storage.save()
             return HttpResponse()
-        else:
-            return HttpResponseBadRequest()
     else:
         return HttpResponseForbidden()
 

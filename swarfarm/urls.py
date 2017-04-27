@@ -16,9 +16,9 @@ urlpatterns = [
     # AJAX-y stuff first
     url(r'^autocomplete/', include([
         url(r'^bestiary/$', BestiaryAutocomplete.as_view(), name='bestiary-monster-autocomplete'),
-        url(r'^quick_search/$', QuickSearchAutocomplete.as_view(), name='bestiary-quicksearch-autocomplete'),
-        url(r'^monster_tag/$', MonsterTagAutocomplete.as_view(), name='monster-tag-autocomplete'),
-        url(r'^monster_instance/$', MonsterInstanceAutocomplete.as_view(), name='monster-instance-autocomplete'),
+        url(r'^quick-search/$', QuickSearchAutocomplete.as_view(), name='bestiary-quicksearch-autocomplete'),
+        url(r'^monster-tag/$', MonsterTagAutocomplete.as_view(), name='monster-tag-autocomplete'),
+        url(r'^monster-instance/$', MonsterInstanceAutocomplete.as_view(), name='monster-instance-autocomplete'),
     ])),
     url(r'^api/', include('api.urls')),
 

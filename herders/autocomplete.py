@@ -29,9 +29,6 @@ class MonsterInstanceAutocomplete(autocomplete.Select2QuerySetView):
 
         return qs
 
-    def get_result_value(self, result):
-        return result.pk.hex
-
 
 class MonsterTagAutocomplete(autocomplete.Select2QuerySetView):
     paginate_by = 15

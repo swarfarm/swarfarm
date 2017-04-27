@@ -33,6 +33,7 @@ class MonsterInstanceAutocomplete(autocomplete.Select2QuerySetView):
     def get_result_label(self, item):
         return loader.get_template('autocomplete/monster_instance_choice.html').render({'choice': item})
 
+
 class MonsterTagAutocomplete(autocomplete.Select2QuerySetView):
     paginate_by = 15
 
@@ -41,6 +42,6 @@ class MonsterTagAutocomplete(autocomplete.Select2QuerySetView):
 
         if self.q:
             # Filter the queryset
-            pass  # TODO: Figure out how the hell DAL handles multi word queries
+            qs = qs.filter(name__icontains=self.q)
 
         return qs

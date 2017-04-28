@@ -28,7 +28,7 @@ from .log_parser import *
 from .tasks import com2us_data_import
 from .rune_optimizer_parser import *
 from .db_utils import Percentile
-import chart_templates
+from sw_parser import chart_templates
 
 _named_timestamps = {
     'post-3.2.1': {

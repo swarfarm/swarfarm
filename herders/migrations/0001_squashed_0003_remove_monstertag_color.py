@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
                 ('max_level', models.IntegerField()),
                 ('level_progress_description', models.TextField(null=True, blank=True)),
                 ('icon_filename', models.CharField(max_length=100, null=True, blank=True)),
-                ('skill_effect', models.ManyToManyField(to=b'herders.MonsterSkillEffect', blank=True)),
+                ('skill_effect', models.ManyToManyField(to='herders.MonsterSkillEffect', blank=True)),
                 ('slot', models.IntegerField(default=1)),
                 ('passive', models.BooleanField(default=False)),
             ],
@@ -147,7 +147,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='team',
             name='roster',
-            field=models.ManyToManyField(to=b'herders.MonsterInstance'),
+            field=models.ManyToManyField(to='herders.MonsterInstance'),
         ),
         migrations.AddField(
             model_name='runeinstance',
@@ -162,12 +162,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='monster',
             name='skills',
-            field=models.ManyToManyField(to=b'herders.MonsterSkill', blank=True),
+            field=models.ManyToManyField(to='herders.MonsterSkill', blank=True),
         ),
         migrations.AddField(
             model_name='fusion',
             name='ingredients',
-            field=models.ManyToManyField(to=b'herders.Monster'),
+            field=models.ManyToManyField(to='herders.Monster'),
         ),
         migrations.AddField(
             model_name='fusion',
@@ -190,7 +190,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='team',
             name='roster',
-            field=models.ManyToManyField(to=b'herders.MonsterInstance', blank=True),
+            field=models.ManyToManyField(to='herders.MonsterInstance', blank=True),
         ),
         migrations.AddField(
             model_name='monster',
@@ -309,7 +309,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='monster',
             name='source',
-            field=models.ManyToManyField(to=b'herders.MonsterSource', blank=True),
+            field=models.ManyToManyField(to='herders.MonsterSource', blank=True),
         ),
         migrations.AlterModelOptions(
             name='monstersource',
@@ -365,7 +365,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='summoner',
             name='following',
-            field=models.ManyToManyField(related_name='followed_by', to=b'herders.Summoner'),
+            field=models.ManyToManyField(related_name='followed_by', to='herders.Summoner'),
         ),
         migrations.AddField(
             model_name='monster',
@@ -784,7 +784,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='monsterskill',
             name='effect',
-            field=models.ManyToManyField(related_name='effect', through='herders.MonsterSkillEffectDetail', to=b'herders.MonsterSkillEffect', blank=True),
+            field=models.ManyToManyField(related_name='effect', through='herders.MonsterSkillEffectDetail', to='herders.MonsterSkillEffect', blank=True),
         ),
         migrations.AddField(
             model_name='runeinstance',
@@ -826,7 +826,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='monsterinstance',
             name='tags',
-            field=models.ManyToManyField(to=b'herders.MonsterTag', blank=True),
+            field=models.ManyToManyField(to='herders.MonsterTag', blank=True),
         ),
         migrations.AlterField(
             model_name='monsterinstance',
@@ -926,7 +926,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='monsterskill',
             name='scaling_stats',
-            field=models.ManyToManyField(to=b'herders.MonsterSkillScalingStat', blank=True),
+            field=models.ManyToManyField(to='herders.MonsterSkillScalingStat', blank=True),
         ),
         migrations.AddField(
             model_name='monster',
@@ -1028,7 +1028,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=40)),
                 ('icon_filename', models.CharField(max_length=100, null=True, blank=True)),
                 ('sell_value', models.IntegerField(null=True, blank=True)),
-                ('source', models.ManyToManyField(to=b'herders.MonsterSource', blank=True)),
+                ('source', models.ManyToManyField(to='herders.MonsterSource', blank=True)),
             ],
         ),
         migrations.CreateModel(
@@ -1067,12 +1067,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='homunculusskill',
             name='monsters',
-            field=models.ManyToManyField(to=b'herders.Monster'),
+            field=models.ManyToManyField(to='herders.Monster'),
         ),
         migrations.AddField(
             model_name='homunculusskill',
             name='prerequisites',
-            field=models.ManyToManyField(related_name='homunculus_prereq', to=b'herders.MonsterSkill', blank=True),
+            field=models.ManyToManyField(related_name='homunculus_prereq', to='herders.MonsterSkill', blank=True),
         ),
         migrations.AddField(
             model_name='homunculusskill',
@@ -1107,12 +1107,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='homunculusskill',
             name='craft_materials',
-            field=models.ManyToManyField(to=b'herders.CraftMaterial', through='herders.HomunculusSkillCraftCost'),
+            field=models.ManyToManyField(to='herders.CraftMaterial', through='herders.HomunculusSkillCraftCost'),
         ),
         migrations.AddField(
             model_name='monster',
             name='craft_materials',
-            field=models.ManyToManyField(to=b'herders.CraftMaterial', through='herders.MonsterCraftCost'),
+            field=models.ManyToManyField(to='herders.CraftMaterial', through='herders.MonsterCraftCost'),
         ),
         migrations.AddField(
             model_name='monster',

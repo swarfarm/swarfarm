@@ -271,7 +271,7 @@ class Monster(models.Model):
                     self.summonerswar_co_url = url
                 else:
                     self.summonerswar_co_url = None
-                    print 'summonerswar.co url failed to verify: {}'.format(url)
+                    print('summonerswar.co url failed to verify: {}'.format(url))
         else:
             # Summonerswar.co doesn't do silver star or material monsters
             self.summonerswar_co_url = None
@@ -285,7 +285,7 @@ class Monster(models.Model):
                 self.wikia_url = url
             else:
                 self.wikia_url = None
-                print 'Wikia url failed to verify: {}'.format(url)
+                print('Wikia url failed to verify: {}'.format(url))
 
         # Summonerswarmonsters
         if self.summonerswarmonsters_url is None or self.summonerswarmonsters_url == '':
@@ -298,7 +298,7 @@ class Monster(models.Model):
                 self.summonerswarmonsters_url = url
             else:
                 self.summonerswarmonsters_url = None
-                print 'Summonerswarmonsters.com url failed to verify: {}'.format(url)
+                print('Summonerswarmonsters.com url failed to verify: {}'.format(url))
 
         self.save()
 

@@ -23,7 +23,7 @@ django-cors-headers
 django-crispy-forms==1.6.1
 django-markdown-deux
 django-recaptcha
-django-timezone-field
+django-timezone-field==2.0.0
 django_compressor
 djangorestframework==3.6.2
 django-filter==1.0.2

@@ -1103,7 +1103,7 @@ class FilterRuneForm(forms.Form):
         required=False,
     )
     original_quality = forms.MultipleChoiceField(
-        choices=((None, 'Unknown'),) + RuneInstance.QUALITY_CHOICES,
+        choices=RuneInstance.QUALITY_CHOICES,
         required=False,
     )
     assigned_to = forms.NullBooleanField(

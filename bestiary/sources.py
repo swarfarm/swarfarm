@@ -12,7 +12,7 @@ def set_sources():
     unsummonable_monsters = ['Ifrit', 'Cow Girl', 'Magical Archer (Fami)', 'Fairy Queen']
 
     for monster in Monster.objects.filter(obtainable=True, is_awakened=False):
-        print monster.name
+        print(monster.name)
 
         # Unknown Scroll/Social Summon
         if monster.base_stars <= 3 and monster.element in [Monster.ELEMENT_FIRE, monster.ELEMENT_WIND, monster.ELEMENT_WATER] and monster.name not in unsummonable_monsters:
@@ -42,7 +42,7 @@ def set_sources():
 
     # Now re-save all awakened monsters so they pull the sources from the unawakened versions
     for monster in Monster.objects.filter(obtainable=True, is_awakened=True):
-        print monster
+        print(monster)
         monster.save()
 
-    print 'Done!'
+    print('Done!')

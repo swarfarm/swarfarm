@@ -7,8 +7,8 @@ from rest_framework import viewsets, filters, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
-from urllib2 import Request, urlopen, HTTPError
 import json
+import requests
 
 from bestiary.models import Monster, Skill, LeaderSkill
 from herders.models import Summoner, MonsterInstance, RuneInstance, RuneCraftInstance, Team, TeamGroup
@@ -117,7 +117,6 @@ class RuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         response = super(RuneInstanceViewSet, self).retrieve(request, *args, **kwargs)
 
         if request.accepted_renderer.format == 'html':
-            # print response.data
             return Response({'rune': response.data}, template_name='api/rune_instance/popover.html')
         return response
 
@@ -314,20 +313,12 @@ def nightbot_monsters(request, profile_name, monster_name):
                 # get short URL
                 long_url = request.build_absolute_uri(reverse('herders:monster_instance_view', kwargs={'profile_name': summoner.user.username, 'instance_id': mon.pk.hex}))
                 google_api = 'https://www.googleapis.com/urlshortener/v1/url?key=' + settings.GOOGLE_API_KEY
-                data = json.dumps({
-                    'longUrl': long_url
-                })
-                try:
-                    req = Request(google_api, data, {'Content-Type': 'application/json'})
-                    f = urlopen(req)
-                    response = f.read()
-                    f.close()
-                    response = json.loads(response)
-                    short_url = response['id']
-                except HTTPError:
+                req = requests.post(google_api, json={'longUrl': long_url})
+                response = json.loads(req.text)
+                if 'error' in response:
                     desc += ' - ' + long_url
                 else:
-                    desc += ' - ' + short_url
+                    desc += ' - ' + response['id']
 
                 nightbot_responses.append(desc)
 

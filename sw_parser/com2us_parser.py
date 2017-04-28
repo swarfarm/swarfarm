@@ -1,5 +1,8 @@
+import base64
 import dpkt
 import json
+import zlib
+from Crypto.Cipher import AES
 from jsonschema import ErrorTree
 from jsonschema.exceptions import best_match
 from dateutil.parser import *
@@ -7,14 +10,32 @@ import pytz
 import datetime
 
 from django.utils.timezone import get_current_timezone
+from django.conf import settings
 
 from bestiary.models import Monster
 from herders.models import Building, MonsterPiece, MonsterInstance, RuneInstance, BuildingInstance
 
 from .models import *
 from .com2us_mapping import *
-from com2us_json_schema import HubUserLoginValidator, VisitFriendValidator
-from .smon_decryptor import decrypt_response
+from .com2us_json_schema import HubUserLoginValidator, VisitFriendValidator
+
+
+def _decrypt(msg):
+    obj = AES.new(settings.SUMMONERS_WAR_SECRET_KEY, AES.MODE_CBC, '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    decrypted = obj.decrypt(msg)
+    padding = ord(decrypted[-1])
+    return decrypted[0:-padding]
+
+
+def decrypt_request(msg):
+    return _decrypt(base64.b64decode(msg))
+
+
+def decrypt_response(msg):
+    decoded = base64.b64decode(msg)
+    decrypted = _decrypt(decoded)
+    decompressed = zlib.decompress(decrypted)
+    return decompressed
 
 
 def parse_pcap(pcap_file):
@@ -24,23 +45,23 @@ def parse_pcap(pcap_file):
     # Assemble the TCP streams
     for ts, buf in pcap:
         eth = dpkt.ethernet.Ethernet(buf)
-        try:
-            ip = eth.data
-            tcp = ip.data
+        # try:
+        ip = eth.data
+        tcp = ip.data
 
-            if type(tcp) == dpkt.tcp.TCP and tcp.sport == 80 and len(tcp.data) > 0:
-                if tcp.ack in streams:
-                    streams[tcp.ack] += tcp.data
-                else:
-                    streams[tcp.ack] = tcp.data
-        except:
-            continue
+        if type(tcp) == dpkt.tcp.TCP and tcp.sport == 80 and len(tcp.data) > 0:
+            if tcp.ack in streams:
+                streams[tcp.ack] += tcp.data
+            else:
+                streams[tcp.ack] = tcp.data
+        # except:
+        #     continue
 
     # Find the summoner's war command somewhere in there
     for stream in streams.values():
         try:
             resp = dpkt.http.Response(stream)
-            resp_data = json.loads(decrypt_response(resp.body, 2))
+            resp_data = json.loads(decrypt_response(resp.body))
         except:
             continue
         else:

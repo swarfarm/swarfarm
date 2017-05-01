@@ -1992,8 +1992,13 @@ def rune_add(request, profile_name):
         slot = request.GET.get('slot', None)
         assigned_to = request.GET.get('assigned_to', None)
 
+        try:
+            assigned_monster = MonsterInstance.objects.get(owner=request.user.summoner, pk=assigned_to)
+        except MonsterInstance.DoesNotExist:
+            assigned_monster = None
+
         form = AddRuneInstanceForm(initial={
-            'assigned_to': MonsterInstance.objects.get(owner=request.user.summoner, pk=assigned_to),
+            'assigned_to': assigned_monster,
             'slot': slot if slot is not None else 1,
         })
         form.helper.form_action = reverse('herders:rune_add', kwargs={'profile_name': profile_name})

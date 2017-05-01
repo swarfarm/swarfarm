@@ -900,7 +900,7 @@ class AddRuneInstanceForm(ModelForm):
                     Div(
                         HTML('<label class="col-md-2 control-label">Assign To</label>'),
                         Div(
-                            Field('assigned_to', wrapper_class='col-md-4'),
+                            Field('assigned_to', wrapper_class='col-md-4', data_placeholder='Start typing...'),
                         ),
                         css_class='form-group form-group-condensed',
                     ),

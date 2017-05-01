@@ -91,9 +91,9 @@ class RuneInstanceFilter(django_filters.FilterSet):
     original_quality = django_filters.MultipleChoiceFilter(choices=RuneInstance.QUALITY_CHOICES)
     main_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     innate_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
-    substats = django_filters.NumberFilter(method='filter_substats')
+    substats = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES, method='filter_substats')
     substat_logic = django_filters.BooleanFilter(method='filter_substat_logic')
-    assigned_to = django_filters.NumberFilter(method='filter_assigned_to')
+    assigned_to = django_filters.BooleanFilter(method='filter_assigned_to')
 
     class Meta:
         model = RuneInstance

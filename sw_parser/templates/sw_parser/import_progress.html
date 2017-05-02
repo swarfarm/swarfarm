@@ -93,6 +93,8 @@
 
 {% block javascript %}
 <script>
+var updateInterval;
+
 function updateImportProgress() {
     // so so quick and dirty.
     var $queue_box = $('#queue');
@@ -185,6 +187,7 @@ function updateImportProgress() {
 
                 $success_box.toggleClass('list-group-item-success', true);
                 console.log('SUCCESS STEP');
+                clearInterval(updateInterval);
                 window.setTimeout(function() {
                     window.location = '/profile/{{ user.username }}';
                 }, 1000);

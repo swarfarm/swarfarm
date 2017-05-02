@@ -1,4 +1,3 @@
-var updateInterval;
 var dialog;
 
 $(document).ready(function() {

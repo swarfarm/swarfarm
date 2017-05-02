@@ -425,7 +425,7 @@ class Monster(models.Model):
 
 def _test_resource_url(url):
     # Checks that a given URL gives HTTP code 200 when requested
-    from urllib2 import Request, urlopen
+    from urllib.request import Request, urlopen
     try:
         request = Request(url)
         request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
@@ -767,8 +767,8 @@ class Fusion(models.Model):
 
         # Check if there are any missing
         sufficient_qty = True
-        for sizes in missing_essences.itervalues():
-            for qty in sizes.itervalues():
+        for sizes in missing_essences.values():
+            for qty in sizes.values():
                 if qty > 0:
                     sufficient_qty = False
 
@@ -1307,7 +1307,7 @@ class MonsterInstance(models.Model):
             stat_bonuses[RuneInstance.STAT_ACCURACY_PCT] += rune.get_stat(RuneInstance.STAT_ACCURACY_PCT)
 
         # Add in the set bonuses
-        for set, count in rune_set_counts.iteritems():
+        for set, count in rune_set_counts.items():
             required_count = RuneInstance.RUNE_SET_BONUSES[set]['count']
             bonus_value = RuneInstance.RUNE_SET_BONUSES[set]['value']
             if bonus_value is not None and count >= required_count:
@@ -2192,7 +2192,7 @@ class RuneInstance(models.Model):
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
         substat_types = [self.substat_1, self.substat_2, self.substat_3, self.substat_4]
-        self.quality = len(filter(None, substat_types))
+        self.quality = len([_f for _f in substat_types if _f])
         self.substat_upgrades_remaining = max(floor((self.quality * 3 - self.level) / 3), 0)
         self.efficiency = self.get_efficiency()
         self.max_efficiency = self.efficiency + max(ceil((12 - self.level) / 3.0), 0) * 0.2 / 2.8 * 100
@@ -2314,7 +2314,7 @@ class RuneInstance(models.Model):
         # Check that the same stat type was not used multiple times
         from operator import is_not
         from functools import partial
-        stat_list = filter(partial(is_not, None), [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4])
+        stat_list = list(filter(partial(is_not, None), [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
         if len(stat_list) != len(set(stat_list)):
             raise ValidationError(
                 'All stats and substats must be unique.',

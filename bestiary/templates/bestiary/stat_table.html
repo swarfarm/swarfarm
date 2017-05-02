@@ -9,7 +9,7 @@
             <thead>
                 <tr>
                     <th>Grade</th>
-                    {% for key,value in mon_data.stats.iteritems %}
+                    {% for key,value in mon_data.stats.items %}
                         <th>
                             {{ key }}<span class="glyphicon glyphicon-star"></span>
                         </th>
@@ -28,7 +28,7 @@
                             {% endif %}
                         {% endif %}
                     </td>
-                    {% for grade,stats in mon_data.stats.iteritems %}
+                    {% for grade,stats in mon_data.stats.items %}
                         <td>{{ stats.HP }}</td>
                     {% endfor %}
                 </tr>
@@ -43,7 +43,7 @@
                             {% endif %}
                         {% endif %}
                     </td>
-                    {% for grade,stats in mon_data.stats.iteritems %}
+                    {% for grade,stats in mon_data.stats.items %}
                         <td>{{ stats.ATK }}</td>
                     {% endfor %}
                 </tr>
@@ -58,7 +58,7 @@
                             {% endif %}
                         {% endif %}
                     </td>
-                    {% for grade,stats in mon_data.stats.iteritems %}
+                    {% for grade,stats in mon_data.stats.items %}
                         <td>{{ stats.DEF }}</td>
                     {% endfor %}
                 </tr>

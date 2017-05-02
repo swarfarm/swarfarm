@@ -45,20 +45,20 @@ def parse_pcap(pcap_file):
     # Assemble the TCP streams
     for ts, buf in pcap:
         eth = dpkt.ethernet.Ethernet(buf)
-        # try:
-        ip = eth.data
-        tcp = ip.data
+        try:
+            ip = eth.data
+            tcp = ip.data
 
-        if type(tcp) == dpkt.tcp.TCP and tcp.sport == 80 and len(tcp.data) > 0:
-            if tcp.ack in streams:
-                streams[tcp.ack] += tcp.data
-            else:
-                streams[tcp.ack] = tcp.data
-        # except:
-        #     continue
+            if type(tcp) == dpkt.tcp.TCP and tcp.sport == 80 and len(tcp.data) > 0:
+                if tcp.ack in streams:
+                    streams[tcp.ack] += tcp.data
+                else:
+                    streams[tcp.ack] = tcp.data
+        except:
+            continue
 
     # Find the summoner's war command somewhere in there
-    for stream in streams.values():
+    for stream in list(streams.values()):
         try:
             resp = dpkt.http.Response(stream)
             resp_data = json.loads(decrypt_response(resp.body))

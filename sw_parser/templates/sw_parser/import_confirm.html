@@ -78,7 +78,7 @@
         <div class="tab-content bordered">
             <div role="tabpanel" class="tab-pane {% if updated_runes > 0 %}active{% endif %}" id="updated_runes">
                 <p>These runes were imported once before and will be updated.</p>
-                {% for type, type_runes in runes.updated.iteritems %}
+                {% for type, type_runes in runes.updated.items %}
                     {% if type_runes|length > 0 %}
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -95,7 +95,7 @@
             </div>
             <div role="tabpanel" class="tab-pane{% if updated_runes == 0 and new_runes > 0 %} active{% endif %}" id="new_runes">
                 <p>These runes do not yet exist in your SWARFARM profile.</p>
-                {% for type, type_runes in runes.new.iteritems %}
+                {% for type, type_runes in runes.new.items %}
                     {% if type_runes|length > 0 %}
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -112,7 +112,7 @@
             </div>
             <div role="tabpanel" class="tab-pane{% if updated_runes == 0 and new_runes == 0 and missing_runes > 0 %} active{% endif %}" id="missing_runes">
                 <p>These runes exist in your SWARFARM profile but do not exist in the imported data. These will be deleted by default.</p>
-                {% for type, type_runes in runes.missing.iteritems %}
+                {% for type, type_runes in runes.missing.items %}
                     {% if type_runes|length > 0 %}
                         <div class="panel panel-default">
                             <div class="panel-heading">

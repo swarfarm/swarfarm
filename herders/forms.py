@@ -1039,13 +1039,13 @@ class AssignRuneForm(forms.Form):
         # Process x-slot shortcuts for rune set
         if '2-slot' in self.cleaned_data['type']:
             self.cleaned_data['type'].remove('2-slot')
-            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.iteritems():
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
                 if count == 2:
                     self.cleaned_data['type'].append(rune_set)
 
         if '4-slot' in self.cleaned_data['type']:
             self.cleaned_data['type'].remove('4-slot')
-            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.iteritems():
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
                 if count == 4:
                     self.cleaned_data['type'].append(rune_set)
 
@@ -1183,13 +1183,13 @@ class FilterRuneForm(forms.Form):
         # Process x-slot shortcuts for rune set
         if '2-slot' in self.cleaned_data['type']:
             self.cleaned_data['type'].remove('2-slot')
-            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.iteritems():
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
                 if count == 2:
                     self.cleaned_data['type'].append(rune_set)
 
         if '4-slot' in self.cleaned_data['type']:
             self.cleaned_data['type'].remove('4-slot')
-            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.iteritems():
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
                 if count == 4:
                     self.cleaned_data['type'].append(rune_set)
 

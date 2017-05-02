@@ -151,7 +151,7 @@ def bestiary_detail(request, monster_slug):
         if base_stats['6']['HP'] is not None and awakened_stats['6']['HP'] is not None:
             awakened_stats_deltas = dict()
 
-            for stat, value in base_stats['6'].iteritems():
+            for stat, value in base_stats['6'].items():
                 if awakened_stats['6'][stat] != value:
                     awakened_stats_deltas[stat] = int(round((awakened_stats['6'][stat] / float(value)) * 100 - 100))
 

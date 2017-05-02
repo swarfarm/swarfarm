@@ -247,7 +247,7 @@ def parse_battle_worldboss_result(log_data):
     log_entry.save()
 
     # Process runes and/or monsters
-    for reward_type, contents in log_data['response']['reward']['crate'].iteritems():
+    for reward_type, contents in log_data['response']['reward']['crate'].items():
         if reward_type == 'runes':
             for rune_data in contents:
                 rune_drop = WorldBossRuneDrop()

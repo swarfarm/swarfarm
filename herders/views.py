@@ -1184,9 +1184,9 @@ def monster_instance_awaken(request, profile_name, instance_id):
                 storage = summoner.storage.get_storage()
                 available_essences = OrderedDict()
 
-                for element, essences in monster.monster.get_awakening_materials().iteritems():
+                for element, essences in monster.monster.get_awakening_materials().items():
                     available_essences[element] = OrderedDict()
-                    for size, cost in essences.iteritems():
+                    for size, cost in essences.items():
                         if cost > 0:
                             available_essences[element][size] = {
                                 'qty': storage[element][size],
@@ -1521,8 +1521,8 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                 total_sub_fusion_cost = deepcopy(total_cost)
                 for ingredient in ingredients:
                     if ingredient['sub_fusion_cost']:
-                        for element, sizes in total_sub_fusion_cost.iteritems():
-                            for size, qty in sizes.iteritems():
+                        for element, sizes in total_sub_fusion_cost.items():
+                            for size, qty in sizes.items():
                                 total_sub_fusion_cost[element][size] += ingredient['sub_fusion_cost'][element][size]
 
                 # Now determine what's missing based on owner's storage
@@ -1537,8 +1537,8 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                     }
 
                 sub_fusion_mats_satisfied = True
-                for sizes in total_sub_fusion_cost.itervalues():
-                    for qty in sizes.itervalues():
+                for sizes in total_sub_fusion_cost.values():
+                    for qty in sizes.values():
                         if qty > 0:
                             sub_fusion_mats_satisfied = False
             else:

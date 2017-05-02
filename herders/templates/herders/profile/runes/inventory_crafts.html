@@ -29,9 +29,9 @@
             </ul>
 
             <div class="tab-content bordered">
-                {% for craft_type, craft_group in crafts.iteritems %}
+                {% for craft_type, craft_group in crafts.items %}
                 <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="{{ craft_type|slugify }}_tab">
-                    {% for rune_type, rune_crafts in craft_group.iteritems %}
+                    {% for rune_type, rune_crafts in craft_group.items %}
                         {% if rune_crafts|length %}
                             <div class="panel panel-default">
                                 <div class="panel-heading">

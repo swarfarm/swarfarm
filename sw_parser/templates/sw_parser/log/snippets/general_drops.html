@@ -25,7 +25,7 @@
             <td>{{ clear_times.min }}</td>
         </tr>
         {% endif %}
-        {% for drop, qty in general_drops.iteritems %}
+        {% for drop, qty in general_drops.items %}
         <tr>
             <td><img src="{{ img_url_prefix }}icons/{{ drop }}.png" height="20px" /></td>
             <td>

@@ -321,7 +321,7 @@ def _log_stats(request, mine=False, date_filter=None):
                 }
 
         # Count rifts
-        slug_lookup = {v: k for k, v in RiftDungeonLog.RAID_SLUGS.iteritems()}
+        slug_lookup = {v: k for k, v in RiftDungeonLog.RAID_SLUGS.items()}
         rift_counts = RiftDungeonLog.objects.filter(success=True, **date_filter['filters'])
         if mine:
             rift_counts = rift_counts.filter(summoner=summoner)
@@ -1124,7 +1124,7 @@ def dungeon_stats_chart_data(request, mine=False):
 def dungeon_rune_chart_data(request, mine=False):
     date_filter = deepcopy(_get_log_filter_timestamp(request, mine))
     # Convert date filters to reference the run log since we are querying from the RuneDrop model
-    for k, v in date_filter['filters'].iteritems():
+    for k, v in date_filter['filters'].items():
         del date_filter['filters'][k]
         date_filter['filters']['runlog__{}'.format(k)] = v
 
@@ -1538,7 +1538,7 @@ def view_rune_craft_log(request, mine=False):
 def rune_craft_chart_data(request, mine=False):
     date_filter = deepcopy(_get_log_filter_timestamp(request, mine))
     # Convert date filters to reference the craft log since we are querying from the RuneDrop model
-    for k, v in date_filter['filters'].iteritems():
+    for k, v in date_filter['filters'].items():
         del date_filter['filters'][k]
         date_filter['filters']['log__{}'.format(k)] = v
 
@@ -2409,7 +2409,7 @@ def _rune_drop_charts(runes, chart_type, slot=None):
             stat_counts[data['substat_4']] += data['count']
 
         total_substat_count = 0
-        for stat, count in stat_counts.iteritems():
+        for stat, count in stat_counts.items():
             total_substat_count += count
 
         for stat in sorted(stat_counts, key=stat_counts.get, reverse=True):

@@ -59,7 +59,7 @@
             <li class="dropdown {% if log_view == 'summon' %}open{% endif %}">
                 <a class="dropdown-toggle">Summons <b class="caret pull-right"></b></a>
                 <ul class="dropdown-menu navmenu-nav" role="menu">
-                    {% for summon_name, summon_stats in stats.summons.iteritems %}
+                    {% for summon_name, summon_stats in stats.summons.items %}
                     <li>
                         <a {% if mine %}
                                 href="{% url 'sw_parser:view_summon_detail_mine' summon_slug=summon_stats.slug %}"
@@ -83,11 +83,11 @@
                 </a>
             </li>
             {# Dungeons #}
-            {% for group_name, group_stats in stats.dungeons.iteritems %}
+            {% for group_name, group_stats in stats.dungeons.items %}
             <li class="dropdown {% if log_view == group_name %}open{% endif %}">
                 <a class="dropdown-toggle">{{ group_name }} <b class="caret pull-right"></b></a>
                 <ul class="dropdown-menu navmenu-nav" role="menu">
-                    {% for name, data in group_stats.iteritems %}
+                    {% for name, data in group_stats.items %}
                     <li>
                         <a {% if mine %}
                                 href="{% url 'sw_parser:view_dungeon_detail_mine' dungeon_slug=data.slug %}"
@@ -106,7 +106,7 @@
             <li class="dropdown {% if log_view == 'rift' %}open{% endif %}">
                 <a class="dropdown-toggle">Rifts <b class="caret pull-right"></b></a>
                 <ul class="dropdown-menu navmenu-nav" role="menu">
-                    {% for rift_name, rift_stats in stats.rifts.iteritems %}
+                    {% for rift_name, rift_stats in stats.rifts.items %}
                     <li>
                         <a {% if mine %}
                                 href="{% url 'sw_parser:view_elemental_rift_mine' rift_slug=rift_stats.slug %}"

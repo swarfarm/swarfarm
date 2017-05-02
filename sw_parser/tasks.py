@@ -1,4 +1,3 @@
-from __future__ import absolute_import, unicode_literals
 from celery import shared_task, current_task, states
 
 from django.db import transaction
@@ -127,4 +126,3 @@ def com2us_data_import(data, user_id, import_options):
         if import_options['delete_missing_runes']:
             RuneInstance.objects.filter(owner=summoner).exclude(pk__in=imported_runes).delete()
             RuneCraftInstance.objects.filter(owner=summoner).exclude(pk__in=imported_crafts).delete()
-

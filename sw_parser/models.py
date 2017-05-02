@@ -98,7 +98,7 @@ class SummonLog(LogEntry):
 
     @staticmethod
     def get_summon_method_id(method_slug):
-        reverse_dict = dict((v, k) for k, v in SummonLog.SUMMON_CHOICES_DICT.iteritems())
+        reverse_dict = dict((v, k) for k, v in SummonLog.SUMMON_CHOICES_DICT.items())
         return reverse_dict.get(method_slug)
 
 
@@ -727,7 +727,7 @@ class RuneDrop(models.Model):
         return running_sum / 2.8 * 100
 
     def save(self, *args, **kwargs):
-        self.quality = len(filter(None, [self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
+        self.quality = len([_f for _f in [self.substat_1, self.substat_2, self.substat_3, self.substat_4] if _f])
         self.max_efficiency = self.get_max_efficiency()
         super(RuneDrop, self).save(*args, **kwargs)
 

@@ -63,8 +63,8 @@
         </tr>
         </thead>
         <tbody>
-        {% for scenario_name, difficulties in scenario_stats.iteritems %}
-            {% for difficulty, stages in difficulties.iteritems %}
+        {% for scenario_name, difficulties in scenario_stats.items %}
+            {% for difficulty, stages in difficulties.items %}
                 {% for stats in stages %}
                     {% if stats.runs > 100 or mine and stats.runs %}
                     <tr>

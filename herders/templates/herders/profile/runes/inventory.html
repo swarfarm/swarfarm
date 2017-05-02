@@ -39,7 +39,7 @@
             {% elif not filtered_count %}
                 <div class="alert alert-warning">All runes were filtered out.</div>
             {% else %}
-                {% for groupname, runes_grouped in runes.iteritems %}
+                {% for groupname, runes_grouped in runes.items %}
                     {% if runes_grouped|length %}
                         <div class="panel panel-default">
                             <div class="panel-heading">

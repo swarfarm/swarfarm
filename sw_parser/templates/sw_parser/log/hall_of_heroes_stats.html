@@ -40,7 +40,7 @@
                         <td>{{ stage.piece_drops.max }}</td>
                         <td>{{ stage.piece_drops.min }}</td>
                     </tr>
-                    {% for drop, qty in stage.general_drops.iteritems %}
+                    {% for drop, qty in stage.general_drops.items %}
                     <tr>
                         <td><img src="{{ img_url_prefix }}icons/{{ drop }}.png" height="25px" /></td>
                         <td>{{ qty.avg|floatformat:"-2"|intcomma }}</td>

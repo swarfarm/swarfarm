@@ -7,7 +7,7 @@ from .models import MonsterInstance, MonsterTag, RuneInstance
 
 class MonsterInstanceFilter(django_filters.FilterSet):
     monster__name = django_filters.CharFilter(method='filter_monster__name')
-    tags__pk = django_filters.MultipleChoiceFilter(choices=MonsterTag.objects.values_list('pk', 'name'), conjoined=True)
+    tags__pk = django_filters.ModelMultipleChoiceFilter(queryset=MonsterTag.objects.all(), to_field_name='pk', conjoined=True)
     monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)

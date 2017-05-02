@@ -894,7 +894,7 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
                 context['floors'].append((x + 1, floor_count))
 
             # Monster drops
-            context['monster_drops'] = runs.filter(drop_monster__isnull=False)\
+            context['monster_drops'] = runs.filter(drop_monster__isnull=False, drop_type=RunLog.DROP_MONSTER)\
                 .values('drop_monster__monster__image_filename', 'drop_monster__grade', 'drop_monster__monster__is_awakened', 'drop_monster__monster__can_awaken')\
                 .annotate(count=Count('pk'), level=Avg('drop_monster__level')).order_by('drop_monster__monster__can_awaken', 'drop_monster__grade', 'drop_monster__monster__name')
 

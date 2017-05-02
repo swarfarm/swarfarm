@@ -583,7 +583,7 @@ class MonsterSkillEffectDebuffsManager(models.Manager):
 
 class MonsterSkillEffectOtherManager(models.Manager):
     def get_queryset(self):
-        return super(MonsterSkillEffectOtherManager, self).get_queryset().values_list('pk', 'name').filter(icon_filename='')
+        return super(MonsterSkillEffectOtherManager, self).get_queryset().filter(icon_filename='')
 
 
 class MonsterSkillEffect(models.Model):
@@ -593,9 +593,6 @@ class MonsterSkillEffect(models.Model):
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
 
     objects = models.Manager()
-    buff_effect_choices = MonsterSkillEffectBuffsManager()
-    debuff_effect_choices = MonsterSkillEffectDebuffsManager()
-    other_effect_choices = MonsterSkillEffectOtherManager()
 
     class Meta:
         ordering = ['name']

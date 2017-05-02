@@ -1,0 +1,4 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<option value="{{ widget.value }}" data-image="{{ img_url_prefix }}elements/{{ widget.value }}.png"{% include "django/forms/widgets/attrs.html" %}>{{ widget.label }}</option>

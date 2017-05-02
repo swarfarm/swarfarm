@@ -28,31 +28,10 @@ $(function () {
 $.fn.editable.defaults.container = 'body';
 
 // Various select2 templates for the types of autocompletes
-function monsterSelect2Template(option) {
+function iconSelect2Template(option) {
     if (option.id) {
-        return $('<span><img src="' + option.image_filename + '" class="monster-inline"/> ' + option.text + '</span>');
-    }
-    else {
-        return option.text;
-    }
-}
-
-function elementSelect2Template(option) {
-    if (option.id) {
-        return $('<span><img src="/static/herders/images/elements/' + option.text.toLowerCase() + '.png" /> ' + option.text + '</span>');
-    }
-    else {
-        return option.text;
-    }
-}
-
-function skillEffectSelect2Template(option) {
-    if (option.id) {
-        var vals = option.text.split(';'),
-            img = vals[0],
-            name = vals[1];
-
-        return $('<span><img src="' + img + '" /> ' + name + '</span>');
+        var resource_url = $(option.element).data('image');
+        return $('<span><img src="' + resource_url + '" /> ' + option.text + '</span>');
     }
     else {
         return option.text;

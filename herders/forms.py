@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseModelFormSet
@@ -14,7 +16,8 @@ from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons,
 from dal import autocomplete
 
 from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
-from bestiary.forms import effect_choices
+from bestiary.fields import AdvancedSelectMultiple
+from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance, BuildingInstance
 
 
@@ -438,9 +441,9 @@ class FilterMonsterInstanceForm(forms.Form):
         max_length=100,
         required=False,
     )
-    tags__pk = forms.MultipleChoiceField(
+    tags__pk = forms.ModelMultipleChoiceField(
         label='Tags',
-        choices=MonsterTag.objects.values_list('pk', 'name'),
+        queryset=MonsterTag.objects.all(),
         required=False,
     )
     stars = forms.CharField(
@@ -455,6 +458,7 @@ class FilterMonsterInstanceForm(forms.Form):
         label='Element',
         choices=Monster.ELEMENT_CHOICES,
         required=False,
+        widget=ElementSelectMultipleWidget,
     )
     monster__archetype = forms.MultipleChoiceField(
         label='Archetype',
@@ -500,19 +504,20 @@ class FilterMonsterInstanceForm(forms.Form):
         choices=LeaderSkill.AREA_CHOICES,
         required=False,
     )
-    monster__skills__scaling_stats__pk = forms.MultipleChoiceField(
+    monster__skills__scaling_stats__pk = forms.ModelMultipleChoiceField(
         label='Scales With',
-        choices=ScalingStat.objects.values_list('pk', 'stat'),
+        queryset=ScalingStat.objects.all(),
         required=False,
     )
-    buff_debuff_effects = forms.MultipleChoiceField(
+    buff_debuff_effects = AdvancedSelectMultiple(
         label='Buffs/Debuffs',
-        choices=effect_choices(Effect.objects.exclude(icon_filename='')),
+        queryset=Effect.objects.exclude(icon_filename=''),
         required=False,
+        widget=EffectSelectMultipleWidget,
     )
-    other_effects = forms.MultipleChoiceField(
+    other_effects = forms.ModelMultipleChoiceField(
         label='Other Effects',
-        choices=Effect.other_effect_choices.all(),
+        queryset=Effect.objects.filter(icon_filename=''),
         required=False,
     )
     effects_logic = forms.BooleanField(
@@ -560,8 +565,8 @@ class FilterMonsterInstanceForm(forms.Form):
                             Field(
                                 'monster__element',
                                 css_class='select2',
-                                data_result_template='elementSelect2Template',
-                                data_selection_template='elementSelect2Template',
+                                data_result_template='iconSelect2Template',
+                                data_selection_template='iconSelect2Template',
                                 wrapper_class='form-group-sm form-group-condensed col-sm-6',
                             ),
                             css_class='row',
@@ -586,8 +591,8 @@ class FilterMonsterInstanceForm(forms.Form):
                         Field(
                             'buff_debuff_effects',
                             css_class='select2',
-                            data_result_template='skillEffectSelect2Template',
-                            data_selection_template='skillEffectSelect2Template',
+                            data_result_template='iconSelect2Template',
+                            data_selection_template='iconSelect2Template',
                             wrapper_class='form-group-sm form-group-condensed col-lg-6'
                         ),
                         Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
@@ -627,7 +632,7 @@ class FilterMonsterInstanceForm(forms.Form):
         # Coalesce the effect fields into a single one that the filter can understand
         buff_debuff_effects = self.cleaned_data.get('buff_debuff_effects')
         other_effects = self.cleaned_data.get('other_effects')
-        self.cleaned_data['monster__skills__skill_effect__pk'] = buff_debuff_effects + other_effects
+        self.cleaned_data['monster__skills__skill_effect__pk'] = chain(buff_debuff_effects, other_effects)
 
         # Convert the select fields with None/True/False options into actual boolean values
         choices = {

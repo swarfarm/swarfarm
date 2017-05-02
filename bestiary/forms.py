@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django import forms
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
@@ -7,6 +9,8 @@ from crispy_forms.layout import Submit, Div, Layout, Field, Button, Fieldset
 from crispy_forms.bootstrap import FormActions, FieldWithButtons
 
 from bestiary.models import *
+from .widgets import EffectSelectMultipleWidget, ElementSelectMultipleWidget
+from .fields import AdvancedSelectMultiple
 
 from dal import autocomplete
 
@@ -68,6 +72,7 @@ class FilterMonsterForm(forms.Form):
         label='Element',
         choices=Monster.ELEMENT_CHOICES,
         required=False,
+        widget=ElementSelectMultipleWidget,
     )
     archetype = forms.MultipleChoiceField(
         label='Archetype',
@@ -86,24 +91,26 @@ class FilterMonsterForm(forms.Form):
         choices=LeaderSkill.AREA_CHOICES,
         required=False,
     )
-    skills__scaling_stats__pk = forms.MultipleChoiceField(
+    skills__scaling_stats__pk = forms.ModelMultipleChoiceField(
         label='Scales With',
-        choices=ScalingStat.objects.values_list('pk', 'stat'),
+        queryset=ScalingStat.objects.all(),
         required=False,
     )
-    buffs = forms.MultipleChoiceField(
+    buffs = AdvancedSelectMultiple(
         label='Buffs',
-        choices=effect_choices(Effect.objects.filter(is_buff=True).exclude(icon_filename='')),
+        queryset=Effect.objects.filter(is_buff=True).exclude(icon_filename=''),
         required=False,
+        widget=EffectSelectMultipleWidget
     )
-    debuffs = forms.MultipleChoiceField(
+    debuffs = AdvancedSelectMultiple(
         label='Debuffs',
-        choices=effect_choices(Effect.objects.filter(is_buff=False).exclude(icon_filename='')),
+        queryset=Effect.objects.filter(is_buff=False).exclude(icon_filename=''),
         required=False,
+        widget=EffectSelectMultipleWidget,
     )
-    other_effects = forms.MultipleChoiceField(
+    other_effects = forms.ModelMultipleChoiceField(
         label='Other Effects',
-        choices=Effect.other_effect_choices.all(),
+        queryset=Effect.objects.filter(icon_filename=''),
         required=False,
     )
     effects_logic = forms.BooleanField(
@@ -139,8 +146,8 @@ class FilterMonsterForm(forms.Form):
                     Field(
                         'element',
                         css_class='select2',
-                        data_result_template='elementSelect2Template',
-                        data_selection_template='elementSelect2Template',
+                        data_result_template='iconSelect2Template',
+                        data_selection_template='iconSelect2Template',
                         wrapper_class='form-group-sm form-group-condensed col-md-6'
                     ),
                     Field('archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
@@ -154,20 +161,29 @@ class FilterMonsterForm(forms.Form):
                     Field(
                         'buffs',
                         css_class='select2',
-                        data_result_template='skillEffectSelect2Template',
-                        data_selection_template='skillEffectSelect2Template',
+                        data_result_template='iconSelect2Template',
+                        data_selection_template='iconSelect2Template',
                         wrapper_class='form-group-sm form-group-condensed col-lg-6'
                     ),
                     Field(
                         'debuffs',
                         css_class='select2',
-                        data_result_template='skillEffectSelect2Template',
-                        data_selection_template='skillEffectSelect2Template',
+                        data_result_template='iconSelect2Template',
+                        data_selection_template='iconSelect2Template',
                         wrapper_class='form-group-sm form-group-condensed col-lg-6'
                     ),
                     Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                     Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
-                    Field('effects_logic', data_toggle='toggle', data_on='Any Skill', data_onstyle='primary', data_off='One Skill', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12'),
+                    Field(
+                        'effects_logic',
+                        data_toggle='toggle',
+                        data_on='Any Skill',
+                        data_onstyle='primary',
+                        data_off='One Skill',
+                        data_offstyle='primary',
+                        data_width='125px',
+                        wrapper_class='form-group-sm form-group-condensed col-lg-12'
+                    ),
                     css_class='row'
                 ),
                 css_class='col-md-4'
@@ -202,7 +218,7 @@ class FilterMonsterForm(forms.Form):
         selected_buff_effects = self.cleaned_data.get('buffs')
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
-        self.cleaned_data['skills__skill_effect__pk'] = selected_buff_effects + selected_debuff_effects + selected_other_effects
+        self.cleaned_data['skills__skill_effect__pk'] = chain(selected_buff_effects, selected_debuff_effects, selected_other_effects)
 
         # Split the slider ranges into two min/max fields for the filters
         try:

@@ -4,7 +4,7 @@
 echo "Installing software packages..."
 sudo apt-get -qq update
 sudo apt-get -qq upgrade -y
-sudo apt-get -qq install -y nginx python2.7 python-virtualenv python-dev libjpeg-dev libffi-dev postgresql postgresql-contrib libpq-dev rabbitmq-server redis-server
+sudo apt-get -qq install -y nginx postgresql postgresql-contrib libpq-dev rabbitmq-server redis-server git make build-essential libjpeg-dev libffi-dev libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev
 
 # Postgresql setup
 # Allow listening on all interfaces
@@ -26,10 +26,24 @@ sudo ln -s /etc/nginx/sites-available/swarfarm /etc/nginx/sites-enabled/swarfarm
 sudo rm /etc/nginx/sites-available/default
 sudo service nginx reload
 
-# Set up python env
+
+# Install pyenv + friends
+curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+echo 'export PATH="/home/vagrant/.pyenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+
+# Repeat above commands because 'source ~/.bashrc' doesn't work here
+export PATH="/home/vagrant/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+# Install python + init virtualenv
+pyenv install 3.6.1
+pyenv virtualenv 3.6.1 swarfarm-3.6.1
+pyenv activate swarfarm-3.6.1
+
 echo "Setting up python environment..."
-virtualenv -q swarfarm_env
-source swarfarm_env/bin/activate
 pip install -qq -r /vagrant/requirements_dev.txt
 
 # Set up Django project
@@ -48,5 +62,5 @@ sudo service swarfarm start
 sudo service celeryd start
 sudo service celerybeat start
 
-deactivate
+pyenv deactivate
 echo "Done! Check the console for any errors."

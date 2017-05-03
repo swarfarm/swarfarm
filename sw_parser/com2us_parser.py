@@ -23,8 +23,7 @@ from .com2us_json_schema import HubUserLoginValidator, VisitFriendValidator
 def _decrypt(msg):
     obj = AES.new(settings.SUMMONERS_WAR_SECRET_KEY, AES.MODE_CBC, '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
     decrypted = obj.decrypt(msg)
-    padding = ord(decrypted[-1])
-    return decrypted[0:-padding]
+    return decrypted[:-decrypted[-1]]
 
 
 def decrypt_request(msg):

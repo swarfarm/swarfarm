@@ -16,7 +16,7 @@ class Issue(models.Model):
     latest_comment = models.DateTimeField(default=timezone.now)
     github_issue_url = models.URLField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.subject
 
     def get_absolute_url(self):
@@ -52,7 +52,7 @@ class Discussion(models.Model):
     edited = models.DateTimeField(auto_now=True, blank=True, null=True)
     comment = models.TextField(help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.feedback) + ' ' + str(self.timestamp)
 
     def save(self, *args, **kwargs):

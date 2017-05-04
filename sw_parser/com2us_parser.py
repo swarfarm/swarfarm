@@ -1,5 +1,8 @@
+import base64
 import dpkt
 import json
+import zlib
+from Crypto.Cipher import AES
 from jsonschema import ErrorTree
 from jsonschema.exceptions import best_match
 from dateutil.parser import *
@@ -7,14 +10,31 @@ import pytz
 import datetime
 
 from django.utils.timezone import get_current_timezone
+from django.conf import settings
 
 from bestiary.models import Monster
 from herders.models import Building, MonsterPiece, MonsterInstance, RuneInstance, BuildingInstance
 
 from .models import *
 from .com2us_mapping import *
-from com2us_json_schema import HubUserLoginValidator, VisitFriendValidator
-from .smon_decryptor import decrypt_response
+from .com2us_json_schema import HubUserLoginValidator, VisitFriendValidator
+
+
+def _decrypt(msg):
+    obj = AES.new(settings.SUMMONERS_WAR_SECRET_KEY, AES.MODE_CBC, '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    decrypted = obj.decrypt(msg)
+    return decrypted[:-decrypted[-1]]
+
+
+def decrypt_request(msg):
+    return _decrypt(base64.b64decode(msg))
+
+
+def decrypt_response(msg):
+    decoded = base64.b64decode(msg)
+    decrypted = _decrypt(decoded)
+    decompressed = zlib.decompress(decrypted)
+    return decompressed
 
 
 def parse_pcap(pcap_file):
@@ -37,10 +57,10 @@ def parse_pcap(pcap_file):
             continue
 
     # Find the summoner's war command somewhere in there
-    for stream in streams.values():
+    for stream in list(streams.values()):
         try:
             resp = dpkt.http.Response(stream)
-            resp_data = json.loads(decrypt_response(resp.body, 2))
+            resp_data = json.loads(decrypt_response(resp.body))
         except:
             continue
         else:

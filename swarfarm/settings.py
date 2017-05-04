@@ -16,11 +16,13 @@ env = environ.Env(
     GOOGLE_API_KEY=(str, None),
     RECAPTCHA_PUBLIC_KEY=(str, None),
     RECAPTCHA_PRIVATE_KEY=(str, None),
+    SUMMONERS_WAR_SECRET_KEY=(str, ''),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SITE_ID = 1
 SECRET_KEY = env('SECRET_KEY')
+SUMMONERS_WAR_SECRET_KEY = env('SUMMONERS_WAR_SECRET_KEY')
 DEBUG = env('DEBUG')
 WSGI_APPLICATION = 'swarfarm.wsgi.application'
 

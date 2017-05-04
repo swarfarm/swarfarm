@@ -35,7 +35,7 @@
         </div>
         <div class="panel-body">
             {% if monsters %}
-                {% for groupname, monsters in monster_stable.iteritems %}
+                {% for groupname, monsters in monster_stable.items %}
                     {% if monsters|length > 0 %}
                         <div class="panel panel-default">
                             <div class="panel-heading">

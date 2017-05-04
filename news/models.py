@@ -8,7 +8,7 @@ class Article(models.Model):
     created = models.DateTimeField(default=timezone.now)
     sticky = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:

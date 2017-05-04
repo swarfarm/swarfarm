@@ -224,7 +224,7 @@ class SourceAdmin(admin.ModelAdmin):
 
 @admin.register(Fusion)
 class FusionAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'stars', 'cost', 'meta_order')
+    list_display = ('__str__', 'stars', 'cost', 'meta_order')
     filter_horizontal = ('ingredients',)
 
 
@@ -236,7 +236,7 @@ class BuildingAdmin(admin.ModelAdmin):
 
 @admin.register(CraftMaterial)
 class CraftMaterialAdmin(admin.ModelAdmin):
-    list_display = ('image_url', '__unicode__')
+    list_display = ('image_url', '__str__')
     filter_horizontal = ['source',]
     save_as = True
 
@@ -259,7 +259,7 @@ admin.site.register(User, UserAdmin)
 
 @admin.register(MonsterInstance)
 class MonsterInstanceAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'owner')
+    list_display = ('__str__', 'owner')
     filter_vertical = ('tags',)
     exclude = ('owner',)
     search_fields = ['id',]
@@ -270,13 +270,13 @@ admin.site.register(MonsterTag)
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'group', 'owner')
+    list_display = ('__str__', 'group', 'owner')
     filter_horizontal = ('roster',)
 
 
 @admin.register(TeamGroup)
 class TeamGroupAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'owner')
+    list_display = ('__str__', 'owner')
 
 
 @admin.register(RuneInstance)

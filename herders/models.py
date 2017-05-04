@@ -271,7 +271,7 @@ class Monster(models.Model):
                     self.summonerswar_co_url = url
                 else:
                     self.summonerswar_co_url = None
-                    print 'summonerswar.co url failed to verify: {}'.format(url)
+                    print('summonerswar.co url failed to verify: {}'.format(url))
         else:
             # Summonerswar.co doesn't do silver star or material monsters
             self.summonerswar_co_url = None
@@ -285,7 +285,7 @@ class Monster(models.Model):
                 self.wikia_url = url
             else:
                 self.wikia_url = None
-                print 'Wikia url failed to verify: {}'.format(url)
+                print('Wikia url failed to verify: {}'.format(url))
 
         # Summonerswarmonsters
         if self.summonerswarmonsters_url is None or self.summonerswarmonsters_url == '':
@@ -298,7 +298,7 @@ class Monster(models.Model):
                 self.summonerswarmonsters_url = url
             else:
                 self.summonerswarmonsters_url = None
-                print 'Summonerswarmonsters.com url failed to verify: {}'.format(url)
+                print('Summonerswarmonsters.com url failed to verify: {}'.format(url))
 
         self.save()
 
@@ -416,7 +416,7 @@ class Monster(models.Model):
     class Meta:
         ordering = ['name', 'element']
 
-    def __unicode__(self):
+    def __str__(self):
         if self.is_awakened:
             return self.name
         else:
@@ -425,7 +425,7 @@ class Monster(models.Model):
 
 def _test_resource_url(url):
     # Checks that a given URL gives HTTP code 200 when requested
-    from urllib2 import Request, urlopen
+    from urllib.request import Request, urlopen
     try:
         request = Request(url)
         request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
@@ -462,7 +462,7 @@ class MonsterSkill(models.Model):
     def level_progress_description_list(self):
         return self.level_progress_description.splitlines()
 
-    def __unicode__(self):
+    def __str__(self):
         if self.name:
             name = self.name
         else:
@@ -555,7 +555,7 @@ class MonsterLeaderSkill(models.Model):
             static('herders/images/skills/leader/' + self.icon_filename())
         ))
 
-    def __unicode__(self):
+    def __str__(self):
         if self.area == self.AREA_ELEMENT:
             condition = ' {}'.format(self.get_element_display())
         elif self.area == self.AREA_GENERAL:
@@ -605,7 +605,7 @@ class MonsterSkillEffect(models.Model):
         else:
             return 'No Image'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -632,7 +632,7 @@ class MonsterSkillScalingStat(models.Model):
     com2us_desc = models.CharField(max_length=30, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.stat
 
     class Meta:
@@ -662,7 +662,7 @@ class MonsterSource(models.Model):
         else:
             return 'No Image'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -676,7 +676,7 @@ class Fusion(models.Model):
     ingredients = models.ManyToManyField('Monster')
     meta_order = models.IntegerField(db_index=True, default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.product) + ' Fusion'
 
     class Meta:
@@ -767,8 +767,8 @@ class Fusion(models.Model):
 
         # Check if there are any missing
         sufficient_qty = True
-        for sizes in missing_essences.itervalues():
-            for qty in sizes.itervalues():
+        for sizes in missing_essences.values():
+            for qty in sizes.values():
                 if qty > 0:
                     sufficient_qty = False
 
@@ -865,7 +865,7 @@ class CraftMaterial(models.Model):
         else:
             return 'No Image'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -874,7 +874,7 @@ class MonsterCraftCost(models.Model):
     craft = models.ForeignKey(CraftMaterial, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} - qty. {}'.format(self.craft.name, self.quantity)
 
 
@@ -883,7 +883,7 @@ class HomunculusSkillCraftCost(models.Model):
     craft = models.ForeignKey(CraftMaterial, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} - qty. {}'.format(self.craft.name, self.quantity)
 
 
@@ -932,7 +932,7 @@ class Summoner(models.Model):
             )
             new_storage.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.user.username
 
 
@@ -1016,7 +1016,7 @@ class MonsterTag(models.Model):
     class Meta:
         ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return mark_safe(self.name)
 
 
@@ -1307,7 +1307,7 @@ class MonsterInstance(models.Model):
             stat_bonuses[RuneInstance.STAT_ACCURACY_PCT] += rune.get_stat(RuneInstance.STAT_ACCURACY_PCT)
 
         # Add in the set bonuses
-        for set, count in rune_set_counts.iteritems():
+        for set, count in rune_set_counts.items():
             required_count = RuneInstance.RUNE_SET_BONUSES[set]['count']
             bonus_value = RuneInstance.RUNE_SET_BONUSES[set]['value']
             if bonus_value is not None and count >= required_count:
@@ -1398,7 +1398,7 @@ class MonsterInstance(models.Model):
         self.update_fields()
         super(MonsterInstance, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.monster) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level)
 
     class Meta:
@@ -2192,7 +2192,7 @@ class RuneInstance(models.Model):
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
         substat_types = [self.substat_1, self.substat_2, self.substat_3, self.substat_4]
-        self.quality = len(filter(None, substat_types))
+        self.quality = len([_f for _f in substat_types if _f])
         self.substat_upgrades_remaining = max(floor((self.quality * 3 - self.level) / 3), 0)
         self.efficiency = self.get_efficiency()
         self.max_efficiency = self.efficiency + max(ceil((12 - self.level) / 3.0), 0) * 0.2 / 2.8 * 100
@@ -2314,7 +2314,7 @@ class RuneInstance(models.Model):
         # Check that the same stat type was not used multiple times
         from operator import is_not
         from functools import partial
-        stat_list = filter(partial(is_not, None), [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4])
+        stat_list = list(filter(partial(is_not, None), [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
         if len(stat_list) != len(set(stat_list)):
             raise ValidationError(
                 'All stats and substats must be unique.',
@@ -2457,7 +2457,7 @@ class RuneInstance(models.Model):
         if self.assigned_to:
             self.assigned_to.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
 
     class Meta:
@@ -2691,7 +2691,7 @@ class TeamGroup(models.Model):
     class Meta:
         ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -2710,7 +2710,7 @@ class Team(models.Model):
     def owner(self):
         return self.group.owner
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -2791,5 +2791,5 @@ class GameEvent(models.Model):
         if self.day_of_week:
             return datetime.datetime.today().weekday() == self.day_of_week
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

@@ -1291,7 +1291,7 @@ class RiftDungeonLog(LogEntry):
     success = models.BooleanField()
     mana = models.IntegerField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return ' '.join([self.get_dungeon_display(), self.get_grade_display(), str(self.summoner)])
 
 

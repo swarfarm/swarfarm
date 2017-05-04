@@ -416,7 +416,7 @@ class Monster(models.Model):
     class Meta:
         ordering = ['name', 'element']
 
-    def __unicode__(self):
+    def __str__(self):
         if self.is_awakened:
             return self.name
         else:
@@ -462,7 +462,7 @@ class MonsterSkill(models.Model):
     def level_progress_description_list(self):
         return self.level_progress_description.splitlines()
 
-    def __unicode__(self):
+    def __str__(self):
         if self.name:
             name = self.name
         else:
@@ -555,7 +555,7 @@ class MonsterLeaderSkill(models.Model):
             static('herders/images/skills/leader/' + self.icon_filename())
         ))
 
-    def __unicode__(self):
+    def __str__(self):
         if self.area == self.AREA_ELEMENT:
             condition = ' {}'.format(self.get_element_display())
         elif self.area == self.AREA_GENERAL:
@@ -605,7 +605,7 @@ class MonsterSkillEffect(models.Model):
         else:
             return 'No Image'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -632,7 +632,7 @@ class MonsterSkillScalingStat(models.Model):
     com2us_desc = models.CharField(max_length=30, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.stat
 
     class Meta:
@@ -662,7 +662,7 @@ class MonsterSource(models.Model):
         else:
             return 'No Image'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -676,7 +676,7 @@ class Fusion(models.Model):
     ingredients = models.ManyToManyField('Monster')
     meta_order = models.IntegerField(db_index=True, default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.product) + ' Fusion'
 
     class Meta:
@@ -865,7 +865,7 @@ class CraftMaterial(models.Model):
         else:
             return 'No Image'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -874,7 +874,7 @@ class MonsterCraftCost(models.Model):
     craft = models.ForeignKey(CraftMaterial, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} - qty. {}'.format(self.craft.name, self.quantity)
 
 
@@ -883,7 +883,7 @@ class HomunculusSkillCraftCost(models.Model):
     craft = models.ForeignKey(CraftMaterial, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} - qty. {}'.format(self.craft.name, self.quantity)
 
 
@@ -932,7 +932,7 @@ class Summoner(models.Model):
             )
             new_storage.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.user.username
 
 
@@ -1016,7 +1016,7 @@ class MonsterTag(models.Model):
     class Meta:
         ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return mark_safe(self.name)
 
 
@@ -1398,7 +1398,7 @@ class MonsterInstance(models.Model):
         self.update_fields()
         super(MonsterInstance, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.monster) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level)
 
     class Meta:
@@ -2457,7 +2457,7 @@ class RuneInstance(models.Model):
         if self.assigned_to:
             self.assigned_to.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
 
     class Meta:
@@ -2691,7 +2691,7 @@ class TeamGroup(models.Model):
     class Meta:
         ordering = ['name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -2710,7 +2710,7 @@ class Team(models.Model):
     def owner(self):
         return self.group.owner
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -2791,5 +2791,5 @@ class GameEvent(models.Model):
         if self.day_of_week:
             return datetime.datetime.today().weekday() == self.day_of_week
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

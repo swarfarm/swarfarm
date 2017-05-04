@@ -16,6 +16,7 @@ env = environ.Env(
     GOOGLE_API_KEY=(str, None),
     RECAPTCHA_PUBLIC_KEY=(str, None),
     RECAPTCHA_PRIVATE_KEY=(str, None),
+    SUMMONERS_WAR_SECRET_KEY=(str, ''),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 

@@ -1183,30 +1183,25 @@ class MonsterInstance(models.Model):
     def accuracy(self):
         return self.base_accuracy + self.rune_accuracy
 
-    def get_base_stat(self, stat):
-        if stat == RuneInstance.STAT_HP or stat == RuneInstance.STAT_HP_PCT:
-            return self.base_hp
-        elif stat == RuneInstance.STAT_ATK or stat == RuneInstance.STAT_ATK_PCT:
-            return self.base_attack
-        elif stat == RuneInstance.STAT_DEF or stat == RuneInstance.STAT_DEF_PCT:
-            return self.base_defense
-        elif stat == RuneInstance.STAT_SPD:
-            return self.base_speed
-        elif stat == RuneInstance.STAT_CRIT_RATE_PCT:
-            return self.base_crit_rate
-        elif stat == RuneInstance.STAT_CRIT_DMG_PCT:
-            return self.base_crit_damage
-        elif stat == RuneInstance.STAT_RESIST_PCT:
-            return self.base_resistance
-        elif stat == RuneInstance.STAT_ACCURACY_PCT:
-            return self.base_accuracy
-
-        return None
+    def get_base_stats(self):
+        return {
+            RuneInstance.STAT_HP: self.base_hp,
+            RuneInstance.STAT_HP_PCT: self.base_hp,
+            RuneInstance.STAT_DEF: self.base_defense,
+            RuneInstance.STAT_DEF_PCT: self.base_defense,
+            RuneInstance.STAT_SPD: self.base_speed,
+            RuneInstance.STAT_CRIT_RATE_PCT: self.base_crit_rate,
+            RuneInstance.STAT_CRIT_DMG_PCT: self.base_crit_damage,
+            RuneInstance.STAT_RESIST_PCT: self.base_resistance,
+            RuneInstance.STAT_ACCURACY_PCT: self.base_accuracy,
+        }
 
     def get_max_level_stats(self):
         max_base_hp = self.monster.actual_hp(6, 40)
         max_base_atk = self.monster.actual_attack(6, 40)
         max_base_def = self.monster.actual_defense(6, 40)
+
+        max_rune_stats = self.get_rune_stats(at_max_level=True)
 
         stats = {
             'base': {
@@ -1215,9 +1210,9 @@ class MonsterInstance(models.Model):
                 'defense': max_base_def,
             },
             'rune': {
-                'hp': self.rune_hp,
-                'attack': self.rune_attack,
-                'defense': self.rune_defense,
+                'hp': max_rune_stats[RuneInstance.STAT_HP] + max_rune_stats[RuneInstance.STAT_HP_PCT],
+                'attack': max_rune_stats[RuneInstance.STAT_ATK] + max_rune_stats[RuneInstance.STAT_ATK_PCT],
+                'defense': max_rune_stats[RuneInstance.STAT_DEF] + max_rune_stats[RuneInstance.STAT_DEF_PCT],
             },
         }
 
@@ -1275,16 +1270,35 @@ class MonsterInstance(models.Model):
             'none': devilmon + family.count() == 0,
         }
 
-    def update_fields(self):
-        # Update base stats based on level
-        self.base_hp = self.calc_base_hp()
-        self.base_attack = self.calc_base_attack()
-        self.base_defense = self.calc_base_defense()
-        self.base_speed = self.calc_base_speed()
-        self.base_crit_rate = self.calc_base_crit_rate()
-        self.base_crit_damage = self.calc_base_crit_damage()
-        self.base_resistance = self.calc_base_resistance()
-        self.base_accuracy = self.calc_base_accuracy()
+    def get_rune_stats(self, at_max_level=False):
+        if at_max_level:
+            base_stats = {
+                RuneInstance.STAT_HP: self.monster.actual_hp(6, 40),
+                RuneInstance.STAT_HP_PCT: self.monster.actual_hp(6, 40),
+                RuneInstance.STAT_ATK: self.monster.actual_attack(6, 40),
+                RuneInstance.STAT_ATK_PCT: self.monster.actual_attack(6, 40),
+                RuneInstance.STAT_DEF: self.monster.actual_defense(6, 40),
+                RuneInstance.STAT_DEF_PCT: self.monster.actual_defense(6, 40),
+                RuneInstance.STAT_SPD: self.base_speed,
+                RuneInstance.STAT_CRIT_RATE_PCT: self.base_crit_rate,
+                RuneInstance.STAT_CRIT_DMG_PCT: self.base_crit_damage,
+                RuneInstance.STAT_RESIST_PCT: self.base_resistance,
+                RuneInstance.STAT_ACCURACY_PCT: self.base_accuracy,
+            }
+        else:
+            base_stats = {
+                RuneInstance.STAT_HP: self.base_hp,
+                RuneInstance.STAT_HP_PCT: self.base_hp,
+                RuneInstance.STAT_ATK: self.base_attack,
+                RuneInstance.STAT_ATK_PCT: self.base_attack,
+                RuneInstance.STAT_DEF: self.base_defense,
+                RuneInstance.STAT_DEF_PCT: self.base_defense,
+                RuneInstance.STAT_SPD: self.base_speed,
+                RuneInstance.STAT_CRIT_RATE_PCT: self.base_crit_rate,
+                RuneInstance.STAT_CRIT_DMG_PCT: self.base_crit_damage,
+                RuneInstance.STAT_RESIST_PCT: self.base_resistance,
+                RuneInstance.STAT_ACCURACY_PCT: self.base_accuracy,
+            }
 
         # Update stats based on runes
         rune_set = self.runeinstance_set.all()
@@ -1316,13 +1330,28 @@ class MonsterInstance(models.Model):
 
                 if set == RuneInstance.TYPE_SWIFT:
                     # Swift set is special because it adds a percentage to a normally flat stat
-                    bonus_value = int(ceil(round(self.get_base_stat(RuneInstance.STAT_SPD) * (bonus_value / 100.0), 3)))
+                    bonus_value = int(ceil(round(base_stats[RuneInstance.STAT_SPD] * (bonus_value / 100.0), 3)))
 
                 stat_bonuses[stat] += bonus_value * num_sets_equipped
 
         # Convert HP/ATK/DEF percentage bonuses to flat bonuses based on the base stats
         for stat in [RuneInstance.STAT_HP_PCT, RuneInstance.STAT_ATK_PCT, RuneInstance.STAT_DEF_PCT]:
-            stat_bonuses[stat] = int(ceil(round(self.get_base_stat(stat) * (stat_bonuses[stat] / 100.0), 3)))
+            stat_bonuses[stat] = int(ceil(round(base_stats[stat] * (stat_bonuses[stat] / 100.0), 3)))
+
+        return stat_bonuses
+
+    def update_fields(self):
+        # Update base stats based on level
+        self.base_hp = self.calc_base_hp()
+        self.base_attack = self.calc_base_attack()
+        self.base_defense = self.calc_base_defense()
+        self.base_speed = self.calc_base_speed()
+        self.base_crit_rate = self.calc_base_crit_rate()
+        self.base_crit_damage = self.calc_base_crit_damage()
+        self.base_resistance = self.calc_base_resistance()
+        self.base_accuracy = self.calc_base_accuracy()
+
+        stat_bonuses = self.get_rune_stats()
 
         # Add all the bonuses together to get final values.
         self.rune_hp = stat_bonuses[RuneInstance.STAT_HP] + stat_bonuses[RuneInstance.STAT_HP_PCT]

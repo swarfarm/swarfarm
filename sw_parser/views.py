@@ -1124,7 +1124,7 @@ def dungeon_stats_chart_data(request, mine=False):
 def dungeon_rune_chart_data(request, mine=False):
     date_filter = deepcopy(_get_log_filter_timestamp(request, mine))
     # Convert date filters to reference the run log since we are querying from the RuneDrop model
-    for k, v in date_filter['filters'].items():
+    for k, v in list(date_filter['filters'].items()):
         del date_filter['filters'][k]
         date_filter['filters']['runlog__{}'.format(k)] = v
 
@@ -1538,7 +1538,7 @@ def view_rune_craft_log(request, mine=False):
 def rune_craft_chart_data(request, mine=False):
     date_filter = deepcopy(_get_log_filter_timestamp(request, mine))
     # Convert date filters to reference the craft log since we are querying from the RuneDrop model
-    for k, v in date_filter['filters'].items():
+    for k, v in list(date_filter['filters'].items()):
         del date_filter['filters'][k]
         date_filter['filters']['log__{}'.format(k)] = v
 

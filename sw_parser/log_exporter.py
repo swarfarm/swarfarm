@@ -77,10 +77,10 @@ def export_all():
 
     for export in exports:
         try:
-            print('Exporting {}'.format(export.func_name))
+            print('Exporting {}'.format(export.__name__))
             export()
         except Exception as e:
-            print('Error exporting {}: {}'.format(export.func_name, e.message))
+            print('Error exporting {}: {}'.format(export.__name__, e))
 
 
 def _do_export(category_name, queryset, serializer):

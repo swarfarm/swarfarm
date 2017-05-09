@@ -2917,17 +2917,8 @@ def log_data(request):
     if request.POST:
         result_json = json.loads(request.POST.get('data'))
         if 'command' in result_json:
-            # Parse using old methods
-            result_type = result_json.get('command')
-            try:
-                if result_type in ['BattleDungeonResult', 'BattleScenarioResult']:
-                    raise Exception('Your SwarfarmLogger pluggin is out of date and nothing is being logged. See https://goo.gl/yF7o7s for details.')
-                elif result_type == 'SummonUnit':
-                    raise Exception('Your SwarfarmLogger pluggin is out of date and nothing is being logged. See https://goo.gl/yF7o7s for details.')
-            except Exception as e:
-                return HttpResponseBadRequest(e.message)
-            else:
-                return HttpResponse('')
+            # Someone still using the old plugin, reject the request.
+            return HttpResponseBadRequest('Your SwarfarmLogger plugin is out of date and nothing is being logged. See https://goo.gl/yF7o7s for details.')
 
         elif 'request' in result_json or 'response' in result_json:
             # New plugin, parse with new methods
@@ -2945,10 +2936,10 @@ def log_data(request):
                         {}
                         --------------
                         Error message: {}
-                        """.format(api_command, result_json, e.message),
+                        """.format(api_command, result_json, str(e)),
                         fail_silently=True,
                     )
-                    return HttpResponseBadRequest(e.message)
+                    return HttpResponseBadRequest(str(e))
                 else:
                     return HttpResponse('Log OK')
     else:

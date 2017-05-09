@@ -64,10 +64,9 @@ def register(request):
                     form.add_error(None, 'There was an issue completing your registration. Please try again.')
                     mail_admins(
                         subject='Error during user registration',
-                        message='{} - {}'.format(e, e.message),
+                        message='{}'.format(e),
                         fail_silently=True,
                     )
-
 
     context = {'form': form}
 

@@ -18,7 +18,6 @@ router.register(r'team', views.TeamViewSet)
 urlpatterns = [
     # REST framework stuff
     url(r'^', include(router.urls)),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     # Custom API stuff
     url(r'^summoner/(?P<profile_name>[a-zA-Z0-9_@.]+)/monster_urls/$', views.summoner_monster_view_list, name='summoner_monster_view_list'),

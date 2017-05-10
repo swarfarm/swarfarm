@@ -1,5 +1,6 @@
 from glob import iglob
 from PIL import Image
+import binascii
 import csv
 import json
 from sympy import simplify
@@ -485,6 +486,16 @@ def get_skill_descs_by_id():
     return _get_translation_tables()[SKILL_DESCRIPTION_TABLE]
 
 
+def save_translation_tables():
+    tables = _get_translation_tables()
+    with open('text_eng.csv', 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(['table_num', 'id', 'text'])
+        for table_idx, table in enumerate(tables):
+            for key, text in table.items():
+                writer.writerow([table_idx, key, text])
+
+
 def _get_translation_tables():
     raw = ConstBitStream(filename='text_eng.dat', offset=0x8 * 8)
     tables = []
@@ -496,11 +507,8 @@ def _get_translation_tables():
 
             for _ in range(table_len):
                 parsed_id, str_len = raw.readlist('intle:32, intle:32')
-                parsed_str = raw.read('hex:{}'.format(str_len * 8))[:-4].decode('hex')
-
-                # Replace random unicode shit with closest ASCII equivalent
-                parsed_str = parsed_str.replace('\xe2\x80\x93', '-')  # U-2013 EN-DASH to ASCII dash
-                table[parsed_id] = parsed_str.decode('ascii', 'ignore')
+                parsed_str = binascii.a2b_hex(raw.read('hex:{}'.format(str_len * 8))[:-4])
+                table[parsed_id] = parsed_str
 
             tables.append(table)
     except ReadError:

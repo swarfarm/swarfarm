@@ -209,7 +209,7 @@ COMPRESS_ENABLED = env('COMPRESS_ENABLED')
 COMPRESS_CSS_FILTERS = ['compressor.filters.cssmin.rCSSMinFilter']
 
 # crispyforms
-# CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # django_cors
 CORS_ORIGIN_ALLOW_ALL = DEBUG

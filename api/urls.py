@@ -10,17 +10,11 @@ router.register(r'skill_effect', views.MonsterSkillEffectViewSet)
 router.register(r'leader_skill', views.MonsterLeaderSkillViewSet)
 router.register(r'source', views.MonsterSourceViewSet)
 
-router.register(r'instance', views.MonsterInstanceViewSet)
-router.register(r'runes', views.RuneInstanceViewSet)
-router.register(r'group', views.TeamGroupViewSet)
-router.register(r'team', views.TeamViewSet)
-
 urlpatterns = [
     # REST framework stuff
     url(r'^', include(router.urls)),
 
     # Custom API stuff
-    url(r'^summoner/(?P<profile_name>[a-zA-Z0-9_@.]+)/monster_urls/$', views.summoner_monster_view_list, name='summoner_monster_view_list'),
     url(r'^nightbot/', include([
         url('^(?P<profile_name>[a-zA-Z0-9_@.]+)/monster/(?P<monster_name>[a-zA-Z0-9_@.]+)/$', views.nightbot_monsters, name='nightbot_monsters'),
     ])),

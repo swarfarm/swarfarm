@@ -254,3 +254,5 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(weeks=1),
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(weeks=52),
 }
+
+# TODO: Set up long-refresh-token https://lock8.github.io/django-rest-framework-jwt-refresh-token/

@@ -9,7 +9,27 @@ class Building(herder_models.Building):
         proxy = True
 
 
+class CraftMaterial(herder_models.CraftMaterial):
+    class Meta:
+        proxy = True
+
+
+class MonsterCraftCost(herder_models.MonsterCraftCost):
+    class Meta:
+        proxy = True
+
+
+class HomunculusSkillCraftCost(herder_models.HomunculusSkillCraftCost):
+    class Meta:
+        proxy = True
+
+
 class Monster(herder_models.Monster):
+    class Meta:
+        proxy = True
+
+
+class Source(herder_models.MonsterSource):
     class Meta:
         proxy = True
 
@@ -20,6 +40,11 @@ class Skill(herder_models.MonsterSkill):
 
 
 class LeaderSkill(herder_models.MonsterLeaderSkill):
+    class Meta:
+        proxy = True
+
+
+class HomunculusSkill(herder_models.HomunculusSkill):
     class Meta:
         proxy = True
 
@@ -35,11 +60,6 @@ class EffectDetail(herder_models.MonsterSkillEffectDetail):
 
 
 class ScalingStat(herder_models.MonsterSkillScalingStat):
-    class Meta:
-        proxy = True
-
-
-class Source(herder_models.MonsterSource):
     class Meta:
         proxy = True
 

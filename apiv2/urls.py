@@ -11,11 +11,8 @@ router.register(r'news', views.ArticleViewSet)
 
 router.registry.extend(bestiary_router.registry)
 
-documented_routes = [
+urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^bestiary/', include(bestiary_router.urls)),
+    url(r'^docs/', include_docs_urls(title='SWARFARM API v2')),
 ]
-
-urlpatterns = [
-    url(r'^docs/', include_docs_urls(title='SWARFARM API v2', patterns=documented_routes)),
-] + documented_routes

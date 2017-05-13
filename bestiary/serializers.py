@@ -9,27 +9,27 @@ class CraftMaterialSerializer(serializers.ModelSerializer):
         fields = ['name', 'icon_filename']
 
 
-class MonsterSourceSerializer(serializers.ModelSerializer):
+class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source
         exclude = ['meta_order', 'icon_filename']
 
 
-class MonsterSkillEffectSerializer(serializers.ModelSerializer):
+class SkillEffectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Effect
         fields = ('name', 'is_buff', 'description', 'icon_filename')
 
 
-class MonsterSkillScalingStatSerializer(serializers.ModelSerializer):
+class SkillScalingStatSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScalingStat
         fields = ('stat',)
 
 
-class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
-    skill_effect = MonsterSkillEffectSerializer(many=True, read_only=True)
-    scales_with = MonsterSkillScalingStatSerializer(many=True, read_only=True)
+class SkillSerializer(serializers.HyperlinkedModelSerializer):
+    skill_effect = SkillEffectSerializer(many=True, read_only=True)
+    scales_with = SkillScalingStatSerializer(many=True, read_only=True)
 
     class Meta:
         model = Skill
@@ -39,7 +39,7 @@ class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class MonsterLeaderSkillSerializer(serializers.ModelSerializer):
+class LeaderSkillSerializer(serializers.ModelSerializer):
     attribute = serializers.SerializerMethodField('get_stat')
     area = serializers.SerializerMethodField()
     element = serializers.SerializerMethodField()
@@ -59,6 +59,7 @@ class MonsterLeaderSkillSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
+    material = serializers.HyperlinkedIdentityField(view_name='bestiary/craft-material-detail')
     name = serializers.ReadOnlyField(source='craft.name')
     icon_filename = serializers.ReadOnlyField(source='craft.icon_filename')
 
@@ -68,8 +69,9 @@ class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillSerializer(serializers.ModelSerializer):
-    skill = MonsterSkillSerializer(read_only=True)
+    skill = SkillSerializer(read_only=True)
     craft_materials = HomunculusSkillCraftCostSerializer(source='homunculusskillcraftcost_set', many=True)
+    prerequisites = serializers.HyperlinkedIdentityField(view_name='bestiary/homunculus-skill-detail', many=True)
 
     class Meta:
         model = HomunculusSkill
@@ -91,8 +93,9 @@ class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
 class MonsterSerializer(serializers.ModelSerializer):
     element = serializers.SerializerMethodField()
     archetype = serializers.SerializerMethodField()
-    source = MonsterSourceSerializer(many=True, read_only=True)
-    homunculus_skills = HomunculusSkillSerializer(many=True, source='homunculusskill_set')
+    source = SourceSerializer(many=True)
+    skills = serializers.HyperlinkedIdentityField(view_name='bestiary/skills-detail', many=True)
+    homunculus_skills = serializers.HyperlinkedIdentityField(view_name='bestiary/homunculus-skill-detail', source='homunculusskill_set', many=True)
 
     class Meta:
         model = Monster
@@ -111,22 +114,6 @@ class MonsterSerializer(serializers.ModelSerializer):
             'awaken_mats_magic_low', 'awaken_mats_magic_mid', 'awaken_mats_magic_high',
             'source', 'fusion_food'
         )
-
-    def get_element(self, instance):
-        return instance.get_element_display()
-
-    def get_archetype(self, instance):
-        return instance.get_archetype_display()
-
-
-# Limited fields for displaying list view sort of display.
-class MonsterSummarySerializer(serializers.HyperlinkedModelSerializer):
-    element = serializers.SerializerMethodField()
-    archetype = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Monster
-        fields = ('url', 'pk', 'com2us_id', 'name', 'image_filename', 'element', 'archetype', 'base_stars', 'fusion_food',)
 
     def get_element(self, instance):
         return instance.get_element_display()

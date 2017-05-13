@@ -11,8 +11,11 @@ router.register(r'news', views.ArticleViewSet)
 
 router.registry.extend(bestiary_router.registry)
 
-# TODO: Add a custom API root instead of this auto one with DefaultRouter.
-urlpatterns = [
+documented_routes = [
     url(r'^', include(router.urls)),
-    url(r'^docs/', include_docs_urls('SWARFARM API Documentation')),  # TODO: Upgrade to next DRF release to fix docs
+    url(r'^bestiary/', include(bestiary_router.urls)),
 ]
+
+urlpatterns = [
+    url(r'^docs/', include_docs_urls(title='SWARFARM API v2', patterns=documented_routes)),
+] + documented_routes

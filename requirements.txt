@@ -30,7 +30,7 @@ django-redis-cache==1.6.4
 Django-Select2
 django-suit
 django-timezone-field==2.0.0
-djangorestframework==3.6.2
+djangorestframework<3.7
 djangorestframework-jwt
 djangorestframework-jwt-refresh-token
 drf-extensions

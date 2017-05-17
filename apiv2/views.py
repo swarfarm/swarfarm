@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from rest_framework.decorators import api_view
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import BasePermission, AllowAny, DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
@@ -57,21 +56,10 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     pagination_class = UserPagination
     filter_class = UserFilter
+    lookup_field = 'username'
 
     def get_permissions(self):
         if self.request.method == 'POST':
             return (AllowAny(), )
         else:
             return (ViewUserList(), )
-
-
-# News
-class ArticlePagination(LimitOffsetPagination):
-    default_limit = 10
-
-
-class ArticleViewSet(viewsets.ModelViewSet):
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly, )
-    queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
-    pagination_class = ArticlePagination

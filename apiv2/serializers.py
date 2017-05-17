@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from herders.models import Summoner
-from news.models import *
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -17,6 +16,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
             'is_staff': {'read_only': True},
+            'url': {'lookup_field': 'username'},
         }
 
     def create(self, validated_data):
@@ -41,9 +41,3 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
         if not created and summoner_data is not None:
             super(UserSerializer, self).update(summoner, summoner_data)
-
-
-class ArticleSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Article
-        fields = ('url', 'pk', 'title', 'body', 'created', 'sticky')

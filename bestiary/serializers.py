@@ -21,6 +21,20 @@ class SkillEffectSerializer(serializers.ModelSerializer):
         fields = ('name', 'is_buff', 'description', 'icon_filename')
 
 
+class SkillEffectDetailSerializer(serializers.ModelSerializer):
+    effect = serializers.HyperlinkedIdentityField(view_name='bestiary/skill-effect-detail')
+
+    class Meta:
+        model = EffectDetail
+        fields = [
+            'effect',
+            'aoe', 'single_target', 'self_effect',
+            'chance', 'on_crit', 'on_death', 'random',
+            'quantity', 'all', 'self_hp', 'target_hp', 'damage',
+            'note',
+        ]
+
+
 class SkillScalingStatSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScalingStat
@@ -28,14 +42,15 @@ class SkillScalingStatSerializer(serializers.ModelSerializer):
 
 
 class SkillSerializer(serializers.HyperlinkedModelSerializer):
-    skill_effect = SkillEffectSerializer(many=True, read_only=True)
+    effects = serializers.HyperlinkedIdentityField(view_name='bestiary/skill-effect-detail', many=True, read_only=True, source='skill_effect')
+    effects_detail = SkillEffectDetailSerializer(many=True, read_only=True, source='monsterskilleffectdetail_set')
     scales_with = SkillScalingStatSerializer(many=True, read_only=True)
 
     class Meta:
         model = Skill
         fields = (
             'pk', 'com2us_id', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
-            'skill_effect', 'multiplier_formula', 'multiplier_formula_raw', 'scales_with', 'icon_filename',
+            'effects', 'effects_detail', 'multiplier_formula', 'multiplier_formula_raw', 'scales_with', 'icon_filename',
         )
 
 

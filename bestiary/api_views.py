@@ -7,10 +7,7 @@ from bestiary.pagination import *
 
 # Django REST framework views
 class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    """
-    Return a list of all the existing users.
-    """
-    queryset = Monster.objects.all()
+    queryset = Monster.objects.all().prefetch_related('skills', 'homunculusskill_set', 'source')
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     serializer_class = MonsterSerializer
     pagination_class = BestiarySetPagination
@@ -47,7 +44,14 @@ class MonsterSourceViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class HomunculusSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = HomunculusSkill.objects.all()
+    queryset = HomunculusSkill.objects.all().order_by('pk')
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     serializer_class = HomunculusSkillSerializer
+    pagination_class = BestiarySetPagination
+
+
+class CraftMaterialViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = CraftMaterial.objects.all()
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
+    serializer_class = CraftMaterialSerializer
     pagination_class = BestiarySetPagination

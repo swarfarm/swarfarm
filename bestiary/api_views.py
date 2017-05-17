@@ -1,12 +1,12 @@
 from rest_framework import viewsets, filters, renderers
-from rest_framework_extensions.mixins import NestedViewSetMixin
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from bestiary.serializers import *
 from bestiary.pagination import *
 
 
 # Django REST framework views
-class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     """
     Return a list of all the existing users.
     """
@@ -18,35 +18,35 @@ class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
     filter_fields = ('name', 'element', 'archetype', 'base_stars', 'obtainable', 'is_awakened', 'com2us_id', 'family_id')
 
 
-class MonsterSkillViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Skill.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     serializer_class = SkillSerializer
     pagination_class = BestiarySetPagination
 
 
-class MonsterLeaderSkillViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterLeaderSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = LeaderSkill.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     serializer_class = LeaderSkillSerializer
     pagination_class = BestiarySetPagination
 
 
-class MonsterSkillEffectViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterSkillEffectViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Effect.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     serializer_class = SkillEffectSerializer
     pagination_class = BestiarySetPagination
 
 
-class MonsterSourceViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterSourceViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Source.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     serializer_class = SourceSerializer
     pagination_class = BestiarySetPagination
 
 
-class HomunculusSkillViewSet(viewsets.ReadOnlyModelViewSet):
+class HomunculusSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = HomunculusSkill.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     serializer_class = HomunculusSkillSerializer

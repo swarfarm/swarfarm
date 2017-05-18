@@ -1,4 +1,5 @@
 import os
+import datetime
 import environ
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +29,7 @@ WSGI_APPLICATION = 'swarfarm.wsgi.application'
 
 # Security settings
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
-INTERNAL_IPS = ['127.0.0.1']
+INTERNAL_IPS = ['127.0.0.1', '10.0.2.2']
 
 if DEBUG:
     ALLOWED_HOSTS += ['10.0.2.2', '10.243.243.10']
@@ -85,6 +86,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dal',
     'dal_select2',
+    'django_filters',
     'captcha',
     'compressor',
     'corsheaders',
@@ -93,14 +95,16 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'markdown_deux',
     'rest_framework',
+    'refreshtoken',
     'timezone_field',
 
     # Custom apps
+    'api',
+    'apiv2',
     'herders',
     'bestiary',
     'news',
     'feedback',
-    'api',
     'sw_parser',
 ]
 
@@ -213,10 +217,7 @@ CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_ORIGIN_WHITELIST = (
     'tool.swop.one',
 )
-CORS_URLS_REGEX = r'^/api/.*$'
-CORS_ALLOW_METHODS = (
-    'GET',
-)
+CORS_URLS_REGEX = r'^/api(v\d+)?/.*$'
 
 # Google APIs
 GOOGLE_API_KEY = env('GOOGLE_API_KEY')
@@ -228,13 +229,32 @@ NOCAPTCHA = True
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',),
-    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle'
     ),
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/min',
-        'user': '500/min',
-    }
+        'anon': '500/min',
+        'user': '2000/min',
+    },
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+}
+
+REST_FRAMEWORK_EXTENSIONS = {
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 60,
+    'DEFAULT_CACHE_ERRORS': False,
+}
+
+JWT_AUTH = {
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'apiv2.views.jwt_response_payload_handler',
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }

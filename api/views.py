@@ -6,6 +6,7 @@ from django.views.decorators.cache import cache_page
 from rest_framework import viewsets, filters, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 import json
 import requests
@@ -27,7 +28,7 @@ class BestiarySetPagination(PageNumberPagination):
 
 
 # Django REST framework views
-class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     filter_backends = (filters.DjangoFilterBackend,)
@@ -257,24 +258,6 @@ def get_user_messages(request):
         })
 
     return JsonResponse({'messages': data})
-
-
-def summoner_monster_view_list(request, profile_name):
-    try:
-        summoner = Summoner.objects.get(user__username=profile_name, public=True)
-    except Summoner.DoesNotExist:
-        raise Http404()
-    else:
-        url_list = []
-        monsters = MonsterInstance.objects.filter(owner=summoner)
-
-        for m in monsters:
-            url_list.append({
-                'monster': str(m),
-                'url': request.build_absolute_uri(reverse('herders:monster_instance_view', kwargs={'profile_name': summoner.user.username, 'instance_id': m.pk.hex}))
-            })
-
-        return JsonResponse(url_list, safe=False)
 
 
 def nightbot_monsters(request, profile_name, monster_name):

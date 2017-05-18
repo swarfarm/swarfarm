@@ -34,7 +34,7 @@ def jwt_response_payload_handler(token, user=None, request=None):
 class ViewUserList(BasePermission):
     def has_permission(self, request, view):
         # Only allow if retrieving single instance or is admin
-        return request.user.is_superuser or view.action == 'retrieve'
+        return request.user.is_superuser or (view.action in ['retrieve', 'list'] and request.user.is_authenticated)
 
     def has_object_permission(self, request, view, obj):
         return request.user.is_staff or obj == request.user
@@ -59,7 +59,7 @@ class UserViewSet(viewsets.ModelViewSet):
     Return the given user.
 
     list:
-    Return a list of all the existing users. Requires admin permissions
+    Return a list of all the existing users. Requires admin permissions, otherwise only returns yourself.
 
     create:
     Create a new user instance.
@@ -75,3 +75,12 @@ class UserViewSet(viewsets.ModelViewSet):
             return (AllowAny(), )
         else:
             return (ViewUserList(), )
+
+    def get_queryset(self):
+        queryset = super(UserViewSet, self).get_queryset()
+        if self.request.user.is_superuser:
+            return queryset
+        elif self.request.user.is_authenticated:
+            return queryset.filter(pk=self.request.user.pk)
+        else:
+            return queryset.none()

@@ -22,7 +22,7 @@ class SkillEffectSerializer(serializers.ModelSerializer):
 
 
 class SkillEffectDetailSerializer(serializers.ModelSerializer):
-    effect = serializers.HyperlinkedIdentityField(view_name='bestiary/skill-effect-detail')
+    effect = serializers.HyperlinkedIdentityField(view_name='bestiary/skill-effects-detail')
 
     class Meta:
         model = EffectDetail
@@ -42,7 +42,8 @@ class SkillScalingStatSerializer(serializers.ModelSerializer):
 
 
 class SkillSerializer(serializers.HyperlinkedModelSerializer):
-    effects = serializers.HyperlinkedIdentityField(view_name='bestiary/skill-effect-detail', many=True, read_only=True, source='skill_effect')
+    level_progress_description = serializers.SerializerMethodField()
+    effects = serializers.HyperlinkedIdentityField(view_name='bestiary/skill-effects-detail', many=True, read_only=True, source='skill_effect')
     effects_detail = SkillEffectDetailSerializer(many=True, read_only=True, source='monsterskilleffectdetail_set')
     scales_with = SkillScalingStatSerializer(many=True, read_only=True)
 
@@ -52,6 +53,9 @@ class SkillSerializer(serializers.HyperlinkedModelSerializer):
             'pk', 'com2us_id', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
             'effects', 'effects_detail', 'multiplier_formula', 'multiplier_formula_raw', 'scales_with', 'icon_filename',
         )
+
+    def get_level_progress_description(self, instance):
+        return instance.level_progress_description.rstrip().split('\n')
 
 
 class LeaderSkillSerializer(serializers.ModelSerializer):
@@ -74,7 +78,7 @@ class LeaderSkillSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
-    material = serializers.HyperlinkedIdentityField(view_name='bestiary/craft-material-detail')
+    material = serializers.HyperlinkedIdentityField(view_name='bestiary/craft-materials-detail')
 
     class Meta:
         model = HomunculusSkillCraftCost
@@ -84,7 +88,7 @@ class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
 class HomunculusSkillSerializer(serializers.ModelSerializer):
     skill = SkillSerializer(read_only=True)
     craft_materials = HomunculusSkillCraftCostSerializer(source='homunculusskillcraftcost_set', many=True)
-    prerequisites = serializers.HyperlinkedIdentityField(view_name='bestiary/homunculus-skill-detail', many=True)
+    prerequisites = serializers.HyperlinkedIdentityField(view_name='bestiary/homunculus-skills-detail', many=True)
 
     class Meta:
         model = HomunculusSkill
@@ -104,15 +108,15 @@ class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MonsterSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='bestiary/monster-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='bestiary/monsters-detail')
     element = serializers.SerializerMethodField()
     archetype = serializers.SerializerMethodField()
-    source = serializers.HyperlinkedIdentityField(view_name='bestiary/monster-source-detail', many=True)
-    skills = serializers.HyperlinkedIdentityField(view_name='bestiary/skill-detail', many=True)
-    leader_skill = serializers.HyperlinkedIdentityField(view_name='bestiary/leader-skill-detail')
-    homunculus_skills = serializers.HyperlinkedIdentityField(view_name='bestiary/homunculus-skill-detail', source='homunculusskill_set', many=True)
-    awakens_from = serializers.HyperlinkedIdentityField(view_name='bestiary/monster-detail')
-    awakens_to = serializers.HyperlinkedIdentityField(view_name='bestiary/monster-detail')
+    source = serializers.HyperlinkedRelatedField(view_name='bestiary/monster-sources-detail', read_only=True, many=True)
+    skills = serializers.HyperlinkedRelatedField(view_name='bestiary/skills-detail', read_only=True, many=True)
+    leader_skill = serializers.HyperlinkedRelatedField(view_name='bestiary/leader-skills-detail', read_only=True)
+    homunculus_skills = serializers.HyperlinkedRelatedField(view_name='bestiary/homunculus-skills-detail', source='homunculusskill_set', read_only=True, many=True)
+    awakens_from = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True)
+    awakens_to = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True)
 
     class Meta:
         model = Monster

@@ -3,6 +3,7 @@ from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from bestiary.serializers import *
 from bestiary.pagination import *
+from bestiary.filters import MonsterFilter
 
 
 # Django REST framework views
@@ -12,7 +13,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = MonsterSerializer
     pagination_class = BestiarySetPagination
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('name', 'element', 'archetype', 'base_stars', 'obtainable', 'is_awakened', 'com2us_id', 'family_id')
+    filter_class = MonsterFilter
 
 
 class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):

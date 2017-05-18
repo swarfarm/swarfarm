@@ -22,7 +22,7 @@ class SkillEffectSerializer(serializers.ModelSerializer):
 
 
 class SkillEffectDetailSerializer(serializers.ModelSerializer):
-    effect = serializers.HyperlinkedIdentityField(view_name='bestiary/skill-effects-detail')
+    effect = serializers.HyperlinkedRelatedField(view_name='bestiary/skill-effects-detail', read_only=True)
 
     class Meta:
         model = EffectDetail
@@ -43,7 +43,7 @@ class SkillScalingStatSerializer(serializers.ModelSerializer):
 
 class SkillSerializer(serializers.HyperlinkedModelSerializer):
     level_progress_description = serializers.SerializerMethodField()
-    effects = serializers.HyperlinkedIdentityField(view_name='bestiary/skill-effects-detail', many=True, read_only=True, source='skill_effect')
+    effects = serializers.HyperlinkedRelatedField(view_name='bestiary/skill-effects-detail', many=True, read_only=True, source='skill_effect')
     effects_detail = SkillEffectDetailSerializer(many=True, read_only=True, source='monsterskilleffectdetail_set')
     scales_with = SkillScalingStatSerializer(many=True, read_only=True)
 
@@ -78,7 +78,7 @@ class LeaderSkillSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
-    material = serializers.HyperlinkedIdentityField(view_name='bestiary/craft-materials-detail')
+    material = serializers.HyperlinkedRelatedField(view_name='bestiary/craft-materials-detail', read_only=True)
 
     class Meta:
         model = HomunculusSkillCraftCost
@@ -86,25 +86,21 @@ class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillSerializer(serializers.ModelSerializer):
-    skill = SkillSerializer(read_only=True)
+    skill = serializers.HyperlinkedRelatedField(view_name='bestiary/skills-detail', read_only=True)
     craft_materials = HomunculusSkillCraftCostSerializer(source='homunculusskillcraftcost_set', many=True)
-    prerequisites = serializers.HyperlinkedIdentityField(view_name='bestiary/homunculus-skills-detail', many=True)
+    prerequisites = serializers.HyperlinkedRelatedField(view_name='bestiary/homunculus-skills-detail', many=True, read_only=True)
 
     class Meta:
         model = HomunculusSkill
         fields = ['skill', 'craft_materials', 'mana_cost', 'prerequisites']
 
 
-# Small serializer for necessary info for awakens_from/to on main MonsterSerializer
-class AwakensMonsterSerializer(serializers.HyperlinkedModelSerializer):
-    element = serializers.SerializerMethodField()
+class MonsterCraftCostSerializer(serializers.ModelSerializer):
+    material = serializers.HyperlinkedRelatedField(view_name='bestiary/craft-materials-detail', source='craft', read_only=True)
 
     class Meta:
-        model = Monster
-        fields = ['url', 'pk', 'name', 'element']
-
-    def get_element(self, instance):
-        return instance.get_element_display()
+        model = MonsterCraftCost
+        fields = ['material', 'quantity']
 
 
 class MonsterSerializer(serializers.ModelSerializer):
@@ -113,17 +109,19 @@ class MonsterSerializer(serializers.ModelSerializer):
     archetype = serializers.SerializerMethodField()
     source = serializers.HyperlinkedRelatedField(view_name='bestiary/monster-sources-detail', read_only=True, many=True)
     skills = serializers.HyperlinkedRelatedField(view_name='bestiary/skills-detail', read_only=True, many=True)
-    leader_skill = serializers.HyperlinkedRelatedField(view_name='bestiary/leader-skills-detail', read_only=True)
+    leader_skill = LeaderSkillSerializer(read_only=True)
     homunculus_skills = serializers.HyperlinkedRelatedField(view_name='bestiary/homunculus-skills-detail', source='homunculusskill_set', read_only=True, many=True)
     awakens_from = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True)
     awakens_to = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True)
+    craft_materials = MonsterCraftCostSerializer(many=True, source='monstercraftcost_set', read_only=True)
+    resources = serializers.SerializerMethodField()
 
     class Meta:
         model = Monster
         fields = (
             'pk', 'url', 'com2us_id', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
             'obtainable', 'can_awaken', 'is_awakened', 'awaken_bonus',
-            'skills', 'leader_skill', 'homunculus_skills',
+            'skills', 'leader_skill', 'homunculus_skills', 'skill_ups_to_max',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
             'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',
             'awakens_from', 'awakens_to',
@@ -133,7 +131,8 @@ class MonsterSerializer(serializers.ModelSerializer):
             'awaken_mats_light_low', 'awaken_mats_light_mid', 'awaken_mats_light_high',
             'awaken_mats_dark_low', 'awaken_mats_dark_mid', 'awaken_mats_dark_high',
             'awaken_mats_magic_low', 'awaken_mats_magic_mid', 'awaken_mats_magic_high',
-            'source', 'fusion_food'
+            'source', 'fusion_food', 'resources',
+            'homunculus', 'craft_materials', 'craft_cost',
         )
 
     def get_element(self, instance):
@@ -141,3 +140,38 @@ class MonsterSerializer(serializers.ModelSerializer):
 
     def get_archetype(self, instance):
         return instance.get_archetype_display()
+
+    def get_resources(self, instance):
+        return {
+            'Wikia': instance.wikia_url,
+            'summonerswar.co': instance.summonerswar_co_url,
+            'SummonersWarMonsters.com': instance.summonerswarmonsters_url,
+        }
+
+
+class FusionSerializer(serializers.ModelSerializer):
+    product = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True)
+    ingredients = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True, many=True)
+
+    class Meta:
+        model = Fusion
+        fields = '__all__'
+
+
+class BuildingSerializer(serializers.ModelSerializer):
+    area = serializers.SerializerMethodField()
+    affected_stat = serializers.SerializerMethodField()
+    element = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Building
+        fields = '__all__'
+
+    def get_area(self, instance):
+        return instance.get_area_display()
+
+    def get_affected_stat(self, instance):
+        return instance.get_affected_stat_display()
+
+    def get_element(self, instance):
+        return instance.get_element_display()

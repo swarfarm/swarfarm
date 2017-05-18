@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'markdown_deux',
     'rest_framework',
+    'refreshtoken',
     'timezone_field',
 
     # Custom apps
@@ -255,9 +256,5 @@ REST_FRAMEWORK_EXTENSIONS = {
 
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'apiv2.views.jwt_response_payload_handler',
-    'JWT_ALLOW_REFRESH': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(weeks=1),
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(weeks=52),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }
-
-# TODO: Set up long-refresh-token https://lock8.github.io/django-rest-framework-jwt-refresh-token/

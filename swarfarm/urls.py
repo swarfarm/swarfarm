@@ -3,7 +3,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles import views
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
+from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
+from refreshtoken.views import delegate_jwt_token
 
 from bestiary.autocomplete import *
 from herders.autocomplete import *
@@ -23,7 +24,7 @@ urlpatterns = [
     url(r'^apiv2/', include('apiv2.urls')),
     url(r'^api(v\d+)?/auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api(v\d+)?/auth/get-token/', obtain_jwt_token),
-    url(r'^api(v\d+)?/auth/refresh-token/', refresh_jwt_token),
+    url(r'^api(v\d+)?/auth/delegate-token', delegate_jwt_token),
     url(r'^api(v\d+)?/auth/verify-token/', verify_jwt_token),
 
     # Bestiary

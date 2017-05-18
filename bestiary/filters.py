@@ -18,9 +18,12 @@ class MonsterFilter(django_filters.FilterSet):
         model = Monster
         fields = {
             'name': ['exact'],
+            'com2us_id': ['exact'],
+            'family_id': ['exact'],
             'element': ['exact'],
             'archetype': ['exact'],
             'base_stars': ['lte', 'gte'],
+            'obtainable': ['exact'],
             'is_awakened': ['exact'],
             'leader_skill__attribute': ['exact'],
             'leader_skill__area': ['exact'],

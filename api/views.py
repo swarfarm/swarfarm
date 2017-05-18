@@ -6,6 +6,7 @@ from django.views.decorators.cache import cache_page
 from rest_framework import viewsets, filters, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 import json
 import requests
@@ -27,7 +28,7 @@ class BestiarySetPagination(PageNumberPagination):
 
 
 # Django REST framework views
-class MonsterViewSet(viewsets.ReadOnlyModelViewSet):
+class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     filter_backends = (filters.DjangoFilterBackend,)

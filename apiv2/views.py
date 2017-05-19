@@ -41,7 +41,7 @@ class UserViewSet(viewsets.ModelViewSet):
     create:
     Create a new user instance.
     """
-    queryset = User.objects.all()
+    queryset = User.objects.all().select_related('summoner')
     serializer_class = UserSerializer
     pagination_class = UserPagination
     filter_class = UserFilter

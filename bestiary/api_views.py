@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters, renderers
+from rest_framework import viewsets, filters
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from bestiary.serializers import *

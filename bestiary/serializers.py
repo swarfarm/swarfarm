@@ -22,7 +22,7 @@ class SkillEffectSerializer(serializers.ModelSerializer):
 
 
 class SkillEffectDetailSerializer(serializers.ModelSerializer):
-    effect = serializers.HyperlinkedRelatedField(view_name='bestiary/skill-effects-detail', read_only=True)
+    effect = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/skill-effects-detail', read_only=True)
 
     class Meta:
         model = EffectDetail
@@ -43,7 +43,7 @@ class SkillScalingStatSerializer(serializers.ModelSerializer):
 
 class SkillSerializer(serializers.HyperlinkedModelSerializer):
     level_progress_description = serializers.SerializerMethodField()
-    effects = serializers.HyperlinkedRelatedField(view_name='bestiary/skill-effects-detail', many=True, read_only=True, source='skill_effect')
+    effects = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/skill-effects-detail', many=True, read_only=True, source='skill_effect')
     effects_detail = SkillEffectDetailSerializer(many=True, read_only=True, source='monsterskilleffectdetail_set')
     scales_with = SkillScalingStatSerializer(many=True, read_only=True)
 
@@ -78,7 +78,7 @@ class LeaderSkillSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
-    material = serializers.HyperlinkedRelatedField(view_name='bestiary/craft-materials-detail', read_only=True)
+    material = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/craft-materials-detail', read_only=True)
 
     class Meta:
         model = HomunculusSkillCraftCost
@@ -86,9 +86,9 @@ class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillSerializer(serializers.ModelSerializer):
-    skill = serializers.HyperlinkedRelatedField(view_name='bestiary/skills-detail', read_only=True)
+    skill = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/skills-detail', read_only=True)
     craft_materials = HomunculusSkillCraftCostSerializer(source='homunculusskillcraftcost_set', many=True)
-    prerequisites = serializers.HyperlinkedRelatedField(view_name='bestiary/homunculus-skills-detail', many=True, read_only=True)
+    prerequisites = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/homunculus-skills-detail', many=True, read_only=True)
 
     class Meta:
         model = HomunculusSkill
@@ -96,7 +96,7 @@ class HomunculusSkillSerializer(serializers.ModelSerializer):
 
 
 class MonsterCraftCostSerializer(serializers.ModelSerializer):
-    material = serializers.HyperlinkedRelatedField(view_name='bestiary/craft-materials-detail', source='craft', read_only=True)
+    material = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/craft-materials-detail', source='craft', read_only=True)
 
     class Meta:
         model = MonsterCraftCost
@@ -104,15 +104,15 @@ class MonsterCraftCostSerializer(serializers.ModelSerializer):
 
 
 class MonsterSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='bestiary/monsters-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='apiv2:bestiary/monsters-detail')
     element = serializers.SerializerMethodField()
     archetype = serializers.SerializerMethodField()
-    source = serializers.HyperlinkedRelatedField(view_name='bestiary/monster-sources-detail', read_only=True, many=True)
-    skills = serializers.HyperlinkedRelatedField(view_name='bestiary/skills-detail', read_only=True, many=True)
+    source = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monster-sources-detail', read_only=True, many=True)
+    skills = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/skills-detail', read_only=True, many=True)
     leader_skill = LeaderSkillSerializer(read_only=True)
-    homunculus_skills = serializers.HyperlinkedRelatedField(view_name='bestiary/homunculus-skills-detail', source='homunculusskill_set', read_only=True, many=True)
-    awakens_from = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True)
-    awakens_to = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True)
+    homunculus_skills = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/homunculus-skills-detail', source='homunculusskill_set', read_only=True, many=True)
+    awakens_from = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monsters-detail', read_only=True)
+    awakens_to = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monsters-detail', read_only=True)
     craft_materials = MonsterCraftCostSerializer(many=True, source='monstercraftcost_set', read_only=True)
     resources = serializers.SerializerMethodField()
 
@@ -150,8 +150,8 @@ class MonsterSerializer(serializers.ModelSerializer):
 
 
 class FusionSerializer(serializers.ModelSerializer):
-    product = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True)
-    ingredients = serializers.HyperlinkedRelatedField(view_name='bestiary/monsters-detail', read_only=True, many=True)
+    product = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monsters-detail', read_only=True)
+    ingredients = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monsters-detail', read_only=True, many=True)
 
     class Meta:
         model = Fusion

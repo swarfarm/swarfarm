@@ -16,8 +16,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
             'is_staff': {'read_only': True},
-            'url': {'lookup_field': 'username'},
+            'url': {
+                'lookup_field': 'username',
+                'view_name': 'apiv2:user-detail',
+            },
         }
+
 
     def create(self, validated_data):
         summoner_data = validated_data.pop('summoner', None)

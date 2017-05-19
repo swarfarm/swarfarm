@@ -1,7 +1,16 @@
-from rest_framework import routers
+from rest_framework_extensions.routers import ExtendedSimpleRouter
 
 from herders.api_views import *
 
-router = routers.DefaultRouter()
+router = ExtendedSimpleRouter()
 
-router.register(r'profiles', SummonerViewSet, base_name='profiles')
+(
+    router
+    .register(r'profiles', SummonerViewSet, base_name='profile')
+    .register(
+        r'monsters',
+        MonsterInstanceViewSet,
+        base_name='monsterinstance',
+        parents_query_lookups=['owner__user__username']
+    )
+)

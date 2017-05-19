@@ -1,11 +1,13 @@
 from rest_framework import viewsets, filters
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
+from herders.models import Storage, MonsterInstance, RuneInstance, RuneCraftInstance
 from herders.serializers import *
 from herders.pagination import *
 from herders.permissions import *
 
 
-class SummonerViewSet(viewsets.ModelViewSet):
+class SummonerViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = User.objects.all().select_related('summoner')
     serializer_class = SummonerSerializer
     pagination_class = SummonerPagination
@@ -18,3 +20,10 @@ class SummonerViewSet(viewsets.ModelViewSet):
             return queryset
         else:
             return queryset.filter(summoner__public=True)
+
+
+class MonsterInstanceViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    queryset = MonsterInstance.objects.all()
+    serializer_class = MonsterInstanceSerializer
+    pagination_class = ProfileItemPagination
+    permission_classes = [IsStaffOrOwner]

@@ -21,7 +21,7 @@ urlpatterns = [
         url(r'^monster-instance/$', MonsterInstanceAutocomplete.as_view(), name='monster-instance-autocomplete'),
     ])),
     url(r'^api/', include('api.urls')),
-    url(r'^apiv2/', include('apiv2.urls')),
+    url(r'^apiv2/', include('apiv2.urls', namespace='apiv2')),
     url(r'^api(v\d+)?/auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api(v\d+)?/auth/get-token/', obtain_jwt_token),
     url(r'^api(v\d+)?/auth/delegate-token', delegate_jwt_token),

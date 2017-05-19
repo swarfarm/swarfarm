@@ -1,14 +1,13 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import BasePermission, AllowAny, DjangoModelPermissionsOrAnonReadOnly
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
+from rest_framework.permissions import AllowAny
 from refreshtoken.models import RefreshToken
 
 from news.models import *
-from .serializers import *
-from .filters import *
+from apiv2.serializers import *
+from apiv2.filters import *
+from apiv2.permissions import *
+from apiv2.pagination import *
 
 
 # JWT response to include user data
@@ -30,29 +29,7 @@ def jwt_response_payload_handler(token, user=None, request=None):
     return payload
 
 
-# DRF permissions
-class ViewUserList(BasePermission):
-    def has_permission(self, request, view):
-        # Only allow if retrieving single instance or is admin
-        return request.user.is_superuser or (view.action in ['retrieve', 'list'] and request.user.is_authenticated)
-
-    def has_object_permission(self, request, view, obj):
-        return request.user.is_superuser or obj == request.user
-
-
-class IsStaffOrOwner(BasePermission):
-    def has_permission(self, request, view):
-        return True
-
-    def has_object_permission(self, request, view, obj):
-        return request.user.is_superuser or obj.owner == request.user
-
-
 # User / Auth
-class UserPagination(LimitOffsetPagination):
-    default_limit = 25
-
-
 class UserViewSet(viewsets.ModelViewSet):
     """
     retrieve:
@@ -74,7 +51,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.request.method == 'POST':
             return (AllowAny(), )
         else:
-            return (ViewUserList(), )
+            return (ViewUserListPermission(),)
 
     def get_queryset(self):
         queryset = super(UserViewSet, self).get_queryset()

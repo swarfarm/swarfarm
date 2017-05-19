@@ -22,7 +22,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             },
         }
 
-
     def create(self, validated_data):
         summoner_data = validated_data.pop('summoner', None)
         user = User.objects.create(

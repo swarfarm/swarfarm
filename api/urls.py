@@ -10,6 +10,11 @@ router.register(r'skill_effect', views.MonsterSkillEffectViewSet)
 router.register(r'leader_skill', views.MonsterLeaderSkillViewSet)
 router.register(r'source', views.MonsterSourceViewSet)
 
+router.register(r'instance', views.MonsterInstanceViewSet)
+router.register(r'runes', views.RuneInstanceViewSet)
+router.register(r'group', views.TeamGroupViewSet)
+router.register(r'team', views.TeamViewSet)
+
 urlpatterns = [
     # REST framework stuff
     url(r'^', include(router.urls)),

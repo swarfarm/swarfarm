@@ -3,17 +3,18 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from herders.models import Summoner, MonsterInstance
+from herders.models import Summoner, Storage, MonsterInstance, RuneInstance
 
 
 class SummonerSerializer(serializers.ModelSerializer):
     profile_name = serializers.CharField(source='summoner.summoner_name', allow_blank=True)
     server = serializers.ChoiceField(source='summoner.server', choices=Summoner.SERVER_CHOICES)
     public = serializers.BooleanField(source='summoner.public')
+    # TODO: Add URLs to monsters, runes, other owned resources.
 
     class Meta:
         model = User
-        fields = ('url', 'username', 'profile_name', 'server', 'public')
+        fields = ('url', 'username', 'profile_name', 'server', 'public',)
         extra_kwargs = {
             'url': {
                 'lookup_field': 'username',
@@ -35,4 +36,4 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
         ]
 
     def get_url(self, instance):
-        return reverse('apiv2:monsterinstance-detail', args=['porksmash', str(instance.pk)], request=self.context['request'])
+        return reverse('apiv2:monsterinstance-detail', args=[instance.owner.user.username, str(instance.pk)], request=self.context['request'])

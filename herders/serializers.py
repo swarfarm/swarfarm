@@ -6,26 +6,10 @@ from rest_framework.reverse import reverse
 from herders.models import Summoner, Storage, MonsterInstance, RuneInstance
 
 
-class SummonerSerializer(serializers.ModelSerializer):
-    profile_name = serializers.CharField(source='summoner.summoner_name', allow_blank=True)
-    server = serializers.ChoiceField(source='summoner.server', choices=Summoner.SERVER_CHOICES)
-    public = serializers.BooleanField(source='summoner.public')
-    # TODO: Add URLs to monsters, runes, other owned resources.
-
-    class Meta:
-        model = User
-        fields = ('url', 'username', 'profile_name', 'server', 'public',)
-        extra_kwargs = {
-            'url': {
-                'lookup_field': 'username',
-                'view_name': 'apiv2:profile-detail',
-            },
-        }
-
-
 class MonsterInstanceSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(view_name='apiv2:monster-instance-detail')
     monster = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monsters-detail', read_only=True)
+    # TODO: Add owner field
 
     class Meta:
         model = MonsterInstance
@@ -35,5 +19,57 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
             'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes',
         ]
 
-    def get_url(self, instance):
-        return reverse('apiv2:monsterinstance-detail', args=[instance.owner.user.username, str(instance.pk)], request=self.context['request'])
+
+class RuneInstanceSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='apiv2:rune-instance-detail')
+
+    class Meta:
+        model = RuneInstance
+        fields = [
+            'url', 'pk', 'com2us_id', 'assigned_to',
+            'type', 'slot', 'stars', 'level', 'quality', 'original_quality', 'value',
+            'substat_upgrades_remaining', 'efficiency', 'max_efficiency',
+            'main_stat', 'main_stat_value',
+            'innate_stat', 'innate_stat_value',
+            'substat_1', 'substat_1_value', 'substat_1_craft',
+            'substat_2', 'substat_2_value', 'substat_2_craft',
+            'substat_3', 'substat_3_value', 'substat_3_craft',
+            'substat_4', 'substat_4_value', 'substat_4_craft',
+        ]
+
+
+class SummonerSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    profile_name = serializers.CharField(source='summoner_name', allow_blank=True)
+
+    class Meta:
+        model = Summoner
+        fields = ('url', 'username', 'profile_name', 'server', 'public',)
+        extra_kwargs = {
+            'url': {
+                'lookup_field': 'username',
+                'lookup_url_kwarg': 'pk',
+                'view_name': 'apiv2:profile-detail',
+            },
+        }
+
+
+class SummonerDetailSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    profile_name = serializers.CharField(source='summoner_name', allow_blank=True)
+    monsters = MonsterInstanceSerializer(many=True, read_only=True, source='monsterinstance_set')
+    runes = RuneInstanceSerializer(many=True, read_only=True, source='runeinstance_set')
+
+    # TODO: Add URLs to other owned resources.
+
+    class Meta:
+        model = Summoner
+        fields = ['url', 'username', 'profile_name', 'server', 'public', 'monsters', 'runes']
+        extra_kwargs = {
+            'url': {
+                'lookup_field': 'username',
+                'lookup_url_kwarg': 'pk',
+                'view_name': 'apiv2:profile-detail',
+            },
+        }
+

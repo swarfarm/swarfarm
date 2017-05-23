@@ -1,6 +1,5 @@
 from django.conf.urls import url, include
 from rest_framework import routers
-from rest_framework.documentation import include_docs_urls
 from apiv2 import views
 
 from news.api_urls import router as news_router
@@ -16,5 +15,4 @@ router.registry.extend(herders_router.registry)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^docs/', include_docs_urls(title='SWARFARM API v2')),
 ]

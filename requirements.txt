@@ -23,7 +23,7 @@ django_compressor
 django-cors-headers
 django-crispy-forms==1.6.1
 django-environ
-django-filter==1.0.2
+django-filter==1.0.4
 django-markdown-deux
 django-recaptcha
 django-redis-cache==1.6.4

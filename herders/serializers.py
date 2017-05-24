@@ -7,7 +7,6 @@ class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
     # owner = serializers.HyperlinkedRelatedField(view_name='apiv2:profiles-detail', source='owner.user.username', read_only=True)
     # TODO: Fix owner field so as not to cause a query explosion
 
-
     class Meta:
         model = RuneInstance
         fields = [
@@ -46,6 +45,8 @@ class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SummonerSerializer(serializers.ModelSerializer):
+    in_game_name = serializers.CharField(source='summoner_name', read_only=True)
+
     class Meta:
         model = Summoner
         fields = ('url', 'username', 'in_game_name', 'server', 'public',)
@@ -54,9 +55,5 @@ class SummonerSerializer(serializers.ModelSerializer):
                 'lookup_field': 'username',
                 'lookup_url_kwarg': 'pk',
                 'view_name': 'apiv2:profiles-detail',
-            },
-            'in_game_name': {
-                'source': 'summoner_name',
-                'allow_blank': True,
             },
         }

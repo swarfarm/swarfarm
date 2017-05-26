@@ -35,13 +35,25 @@ profile_routes = router.register(r'profiles', SummonerViewSet, base_name='profil
 profile_routes.register(
     r'monsters',
     MonsterInstanceViewSet,
-    base_name='profile-monsters',
+    base_name='profile/monsters',
     parents_query_lookups=['owner__user__username'],
 )
 profile_routes.register(
     r'runes',
     RuneInstanceViewSet,
-    base_name='profile-runes',
+    base_name='profile/runes',
+    parents_query_lookups=['owner__user__username'],
+)
+profile_routes.register(
+    r'storage',
+    StorageViewSet,
+    base_name='profile/storage',
+    parents_query_lookups=['owner__user__username'],
+)
+profile_routes.register(
+    r'buildings',
+    BuildingViewSet,
+    base_name='profile/buildings',
     parents_query_lookups=['owner__user__username'],
 )
 

@@ -1,14 +1,15 @@
 from django.db.models import Q
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
+from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from herders.models import Storage, MonsterInstance, RuneInstance, RuneCraftInstance
+from herders.models import BuildingInstance, Storage, MonsterInstance, RuneInstance, RuneCraftInstance
 from herders.serializers import *
 from herders.pagination import *
 from herders.permissions import *
 
 
-class SummonerViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class SummonerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Summoner.objects.all().select_related('user')
     serializer_class = SummonerSerializer
     pagination_class = SummonerPagination
@@ -67,3 +68,32 @@ class RuneInstanceViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 queryset = queryset.filter(owner__public=True)
 
         return queryset
+
+
+class StorageViewSet(NestedViewSetMixin,
+                     viewsets.GenericViewSet):
+    # TODO: Raise permission denied if viewing private profile and not owner
+    queryset = Storage.objects.all().select_related('owner')
+    pagination_class = ProfileItemPagination
+    permission_classes = [IsOwner]
+
+    # TODO: Set this up to work like an endpoint that only has 1 object
+    def list(self, request, *args, **kwargs):
+        queryset = super(StorageViewSet, self).get_queryset()
+        serialized = StorageSerializer(queryset.first())
+
+        return Response(serialized.data)
+
+    def create(self, request):
+        pass
+
+
+
+
+
+
+class BuildingViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    queryset = BuildingInstance.objects.all()
+    serializer_class = BuildingInstanceSerializer
+    pagination_class = ProfileItemPagination
+    permission_classes = [IsOwner]

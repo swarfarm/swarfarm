@@ -6,7 +6,10 @@ class IsSelfOrPublic(permissions.BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj):
-        is_self = request.user == obj or request.user.is_superuser
+        if request.user.is_authenticated:
+            is_self = request.user.summoner == obj or request.user.is_superuser
+        else:
+            is_self = False
 
         return is_self or (request.method in permissions.SAFE_METHODS and obj.public)
 

@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-from herders.models import Summoner, Storage, MonsterInstance, RuneInstance
+from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, RuneInstance
 
 
 class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
@@ -44,12 +43,34 @@ class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
+class StorageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Storage
+        fields = [
+            'magic_essence', 'fire_essence', 'water_essence', 'wind_essence', 'light_essence', 'dark_essence',
+            'wood', 'leather', 'rock', 'ore', 'mithril', 'cloth', 'rune_piece', 'dust',
+            'symbol_harmony',  'symbol_transcendance', 'symbol_chaos',
+            'crystal_water', 'crystal_fire', 'crystal_wind', 'crystal_light', 'crystal_dark', 'crystal_magic', 'crystal_pure',
+        ]
+
+
+class BuildingInstanceSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = BuildingInstance
+        fields = ['building', 'level',]
+        extra_kwargs = {
+            'building': {
+                'view_name': 'apiv2:bestiary/buildings-detail',
+            }
+        }
+
+
 class SummonerSerializer(serializers.ModelSerializer):
     in_game_name = serializers.CharField(source='summoner_name', read_only=True)
 
     class Meta:
         model = Summoner
-        fields = ('url', 'username', 'in_game_name', 'server', 'public',)
+        fields = ['url', 'username', 'in_game_name', 'server', 'public']
         extra_kwargs = {
             'url': {
                 'lookup_field': 'username',
@@ -57,3 +78,4 @@ class SummonerSerializer(serializers.ModelSerializer):
                 'view_name': 'apiv2:profiles-detail',
             },
         }
+

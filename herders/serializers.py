@@ -1,15 +1,21 @@
 from rest_framework import serializers
-from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, RuneInstance
+from rest_framework_nested.relations import NestedHyperlinkedIdentityField, NestedHyperlinkedRelatedField
+
+from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, TeamGroup, Team
 
 
-class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
+class RuneInstanceSerializer(serializers.ModelSerializer):
+    url = NestedHyperlinkedIdentityField(
+        view_name='apiv2:profile/runes-detail',
+        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+    )
     # owner = serializers.HyperlinkedRelatedField(view_name='apiv2:profiles-detail', source='owner.user.username', read_only=True)
     # TODO: Fix owner field so as not to cause a query explosion
 
     class Meta:
         model = RuneInstance
         fields = [
-            'url', 'pk', 'com2us_id', 'assigned_to',
+            'pk', 'url', 'com2us_id', 'assigned_to',
             'type', 'slot', 'stars', 'level', 'quality', 'original_quality', 'value',
             'substat_upgrades_remaining', 'efficiency', 'max_efficiency',
             'main_stat', 'main_stat_value',
@@ -19,13 +25,24 @@ class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
             'substat_3', 'substat_3_value', 'substat_3_craft',
             'substat_4', 'substat_4_value', 'substat_4_craft',
         ]
-        extra_kwargs = {
-            'url': {'view_name': 'apiv2:rune-instances-detail'},
-            'assigned_to': {'view_name': 'apiv2:monster-instances-detail'},
-        }
 
 
-class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
+class RuneCraftInstanceSerializer(serializers.ModelSerializer):
+    url = NestedHyperlinkedIdentityField(
+        view_name='apiv2:profile/rune-crafts-detail',
+        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+    )
+
+    class Meta:
+        model = RuneCraftInstance
+        fields = ['pk', 'url', 'com2us_id', 'type', 'rune', 'stat', 'quality', 'value']
+
+
+class MonsterInstanceSerializer(serializers.ModelSerializer):
+    url = NestedHyperlinkedIdentityField(
+        view_name='apiv2:profile/monsters-detail',
+        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+    )
     # owner = serializers.HyperlinkedRelatedField(view_name='apiv2:profiles-detail', source='owner.user.username', read_only=True)
     # TODO: Fix owner field so as not to cause a query explosion
     runes = RuneInstanceSerializer(many=True, read_only=True, source='runeinstance_set')
@@ -33,14 +50,21 @@ class MonsterInstanceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MonsterInstance
         fields = [
-            'url', 'pk', 'com2us_id', 'created', 'monster',
+            'pk', 'url', 'com2us_id', 'created', 'monster',
             'stars', 'level', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
             'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes', 'runes',
         ]
-        extra_kwargs = {
-            'url': {'view_name': 'apiv2:monster-instances-detail'},
-            'monster': {'view_name': 'apiv2:bestiary/monsters-detail'},
-        }
+
+
+class MonsterPieceSerializer(serializers.ModelSerializer):
+    url = NestedHyperlinkedIdentityField(
+        view_name='apiv2:profile/monster-pieces-detail',
+        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+    )
+
+    class Meta:
+        model = MonsterPiece
+        fields = ['url', 'pk', 'monster', 'pieces']
 
 
 class StorageSerializer(serializers.ModelSerializer):
@@ -54,28 +78,59 @@ class StorageSerializer(serializers.ModelSerializer):
         ]
 
 
-class BuildingInstanceSerializer(serializers.HyperlinkedModelSerializer):
+class BuildingInstanceSerializer(serializers.ModelSerializer):
+    url = NestedHyperlinkedIdentityField(
+        view_name='apiv2:profile/buildings-detail',
+        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+    )
+
     class Meta:
         model = BuildingInstance
-        fields = ['building', 'level',]
-        extra_kwargs = {
-            'building': {
-                'view_name': 'apiv2:bestiary/buildings-detail',
-            }
-        }
+        fields = ['pk', 'url', 'building', 'level']
 
 
 class SummonerSerializer(serializers.ModelSerializer):
     in_game_name = serializers.CharField(source='summoner_name', read_only=True)
+    storage = StorageSerializer()
 
     class Meta:
         model = Summoner
-        fields = ['url', 'username', 'in_game_name', 'server', 'public']
+        fields = ['url', 'username', 'in_game_name', 'server', 'public', 'storage']
         extra_kwargs = {
             'url': {
                 'lookup_field': 'username',
                 'lookup_url_kwarg': 'pk',
                 'view_name': 'apiv2:profiles-detail',
-            },
+            }
         }
 
+
+class TeamGroupSerializer(serializers.ModelSerializer):
+    url = NestedHyperlinkedIdentityField(
+        view_name='apiv2:profile/team-groups-detail',
+        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+    )
+
+    teams = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+        many=True,
+        source='team_set',
+    )
+
+    class Meta:
+        model = TeamGroup
+        fields = ['pk', 'url', 'name', 'teams']
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    url = NestedHyperlinkedIdentityField(
+        view_name='apiv2:profile/teams-detail',
+        parent_lookup_kwargs={
+            'summoner_pk': 'group__owner__user__username',
+            'group_pk': 'group__pk',
+        },
+    )
+
+    class Meta:
+        model = Team
+        fields = ['pk', 'url', 'favorite', 'name', 'description', 'leader', 'roster']

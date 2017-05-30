@@ -34,4 +34,5 @@ djangorestframework<3.7
 djangorestframework-jwt
 djangorestframework-jwt-refresh-token
 drf-extensions
+drf-nested-routers
 drf_ujson

@@ -1,6 +1,6 @@
 from django.db.models import Q
-from rest_framework import viewsets, mixins
-from rest_framework.response import Response
+from rest_framework import viewsets
+from rest_framework.renderers import JSONRenderer
 
 from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance
 from herders.serializers import *
@@ -10,7 +10,6 @@ from herders.permissions import *
 
 class SummonerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Summoner.objects.all().select_related('user')
-    serializer_class = SummonerSerializer
     pagination_class = SummonerPagination
     permission_classes = [IsSelfOrPublic]
     lookup_field = 'user__username'
@@ -28,10 +27,20 @@ class SummonerViewSet(viewsets.ReadOnlyModelViewSet):
 
         return queryset
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return SummonerSummarySerializer
+
+        return SummonerSerializer
+
 
 class MonsterInstanceViewSet(viewsets.ModelViewSet):
     # TODO: Raise permission denied if viewing private profile and not owner
-    queryset = MonsterInstance.objects.all().select_related('owner', 'owner__user').prefetch_related('runeinstance_set')
+    queryset = MonsterInstance.objects.all().select_related('owner', 'owner__user').prefetch_related(
+        'runeinstance_set',
+        'runeinstance_set__owner',
+        'runeinstance_set__owner__user',
+    )
     serializer_class = MonsterInstanceSerializer
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
@@ -55,10 +64,17 @@ class MonsterInstanceViewSet(viewsets.ModelViewSet):
 
 class RuneInstanceViewSet(viewsets.ModelViewSet):
     # TODO: Raise permission denied if viewing private profile and not owner
-    queryset = RuneInstance.objects.all().select_related('owner', 'owner__user').prefetch_related('assigned_to__monster')
+    queryset = RuneInstance.objects.all().select_related(
+        'owner',
+        'owner__user',
+        'assigned_to',
+        'assigned_to__monster',
+    )
+
     serializer_class = RuneInstanceSerializer
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
+    renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
 
     def get_queryset(self):
         queryset = super(RuneInstanceViewSet, self).get_queryset()
@@ -79,7 +95,10 @@ class RuneInstanceViewSet(viewsets.ModelViewSet):
 
 
 class RuneCraftInstanceViewSet(viewsets.ModelViewSet):
-    queryset = RuneCraftInstance.objects.all()
+    queryset = RuneCraftInstance.objects.all().select_related(
+        'owner',
+        'owner__user',
+    )
     serializer_class = RuneCraftInstanceSerializer
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
@@ -103,7 +122,11 @@ class RuneCraftInstanceViewSet(viewsets.ModelViewSet):
 
 
 class BuildingViewSet(viewsets.ModelViewSet):
-    queryset = BuildingInstance.objects.all()
+    queryset = BuildingInstance.objects.all().select_related(
+        'building',
+        'owner',
+        'owner__user',
+    )
     serializer_class = BuildingInstanceSerializer
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
@@ -127,7 +150,10 @@ class BuildingViewSet(viewsets.ModelViewSet):
 
 
 class MonsterPieceViewSet(viewsets.ModelViewSet):
-    queryset = MonsterPiece.objects.all()
+    queryset = MonsterPiece.objects.all().select_related(
+        'owner',
+        'owner__user',
+    )
     serializer_class = MonsterPieceSerializer
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
@@ -151,7 +177,12 @@ class MonsterPieceViewSet(viewsets.ModelViewSet):
 
 
 class TeamGroupViewSet(viewsets.ModelViewSet):
-    queryset = TeamGroup.objects.all()
+    queryset = TeamGroup.objects.all().select_related(
+        'owner',
+        'owner__user',
+    ).prefetch_related(
+        'team_set',
+    )
     serializer_class = TeamGroupSerializer
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
@@ -175,25 +206,25 @@ class TeamGroupViewSet(viewsets.ModelViewSet):
 
 
 class TeamViewSet(viewsets.ModelViewSet):
-    queryset = Team.objects.all()
+    queryset = Team.objects.all().select_related('group').prefetch_related('leader', 'roster')
     serializer_class = TeamSerializer
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
+    renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
 
     def get_queryset(self):
         queryset = super(TeamViewSet, self).get_queryset()
 
         summoner_name = self.kwargs.get('summoner_pk', None)
-        group = self.kwargs.get('group_pk', None)
 
-        if group is not None and summoner_name is not None:
-            queryset = queryset.filter(group__owner__user__username=summoner_name, group=group)
+        if summoner_name is not None:
+            queryset = queryset.filter(group__owner__user__username=summoner_name)
 
         if not self.request.user.is_superuser:
             if self.request.user.is_authenticated:
                 # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
+                queryset = queryset.filter(Q(group__owner__public=True) | Q(group__owner=self.request.user.summoner))
             else:
-                queryset = queryset.filter(owner__public=True)
+                queryset = queryset.filter(group__owner__public=True)
 
         return queryset

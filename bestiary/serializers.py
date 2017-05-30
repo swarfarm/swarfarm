@@ -6,23 +6,38 @@ from .models import *
 class CraftMaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = CraftMaterial
-        fields = ['name', 'icon_filename']
+        fields = ['id', 'url', 'name', 'icon_filename']
+        extra_kwargs = {
+            'url': {
+                'view_name': 'bestiary/craft-materials-detail',
+            },
+        }
 
 
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source
-        exclude = ['meta_order', 'icon_filename']
+        fields = ['id', 'url', 'name', 'description', 'farmable_source']
+        extra_kwargs = {
+            'url': {
+                'view_name': 'bestiary/monster-sources-detail',
+            },
+        }
 
 
 class SkillEffectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Effect
-        fields = ('name', 'is_buff', 'description', 'icon_filename')
+        fields = ('id', 'url', 'name', 'is_buff', 'description', 'icon_filename')
+        extra_kwargs = {
+            'url': {
+                'view_name': 'bestiary/skill-effects-detail',
+            },
+        }
 
 
 class SkillEffectDetailSerializer(serializers.ModelSerializer):
-    effect = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/skill-effects-detail', read_only=True)
+    effect = SkillEffectSerializer()
 
     class Meta:
         model = EffectDetail
@@ -45,12 +60,13 @@ class SkillSerializer(serializers.HyperlinkedModelSerializer):
     level_progress_description = serializers.SerializerMethodField()
     effects = SkillEffectDetailSerializer(many=True, read_only=True, source='monsterskilleffectdetail_set')
     scales_with = SkillScalingStatSerializer(many=True, read_only=True)
+    used_on = serializers.PrimaryKeyRelatedField(source='monster_set', many=True, read_only=True)
 
     class Meta:
         model = Skill
         fields = (
-            'pk', 'com2us_id', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
-            'effects', 'multiplier_formula', 'multiplier_formula_raw', 'scales_with', 'icon_filename',
+            'id', 'com2us_id', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
+            'effects', 'multiplier_formula', 'multiplier_formula_raw', 'scales_with', 'icon_filename', 'used_on',
         )
 
     def get_level_progress_description(self, instance):
@@ -64,7 +80,12 @@ class LeaderSkillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LeaderSkill
-        fields = ('attribute', 'amount', 'area', 'element')
+        fields = ('id', 'url', 'attribute', 'amount', 'area', 'element')
+        extra_kwargs = {
+            'url': {
+                'view_name': 'bestiary/leader-skills-detail',
+            },
+        }
 
     def get_stat(self, instance):
         return instance.get_attribute_display()
@@ -77,7 +98,7 @@ class LeaderSkillSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
-    material = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/craft-materials-detail', read_only=True)
+    material = CraftMaterialSerializer(read_only=True)
 
     class Meta:
         model = HomunculusSkillCraftCost
@@ -85,17 +106,22 @@ class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillSerializer(serializers.ModelSerializer):
-    skill = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/skills-detail', read_only=True)
     craft_materials = HomunculusSkillCraftCostSerializer(source='homunculusskillcraftcost_set', many=True)
-    prerequisites = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/homunculus-skills-detail', many=True, read_only=True)
+    # prerequisites = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    used_on = serializers.PrimaryKeyRelatedField(source='monsters', many=True, read_only=True)
 
     class Meta:
         model = HomunculusSkill
-        fields = ['skill', 'craft_materials', 'mana_cost', 'prerequisites']
+        fields = ['id', 'url', 'skill', 'craft_materials', 'mana_cost', 'prerequisites', 'used_on']
+        extra_kwargs = {
+            'url': {
+                'view_name': 'bestiary/homunculus-skills-detail',
+            },
+        }
 
 
 class MonsterCraftCostSerializer(serializers.ModelSerializer):
-    material = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/craft-materials-detail', source='craft', read_only=True)
+    material = CraftMaterialSerializer(source='craft', read_only=True)
 
     class Meta:
         model = MonsterCraftCost
@@ -103,24 +129,21 @@ class MonsterCraftCostSerializer(serializers.ModelSerializer):
 
 
 class MonsterSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='apiv2:bestiary/monsters-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='bestiary/monsters-detail')
     element = serializers.SerializerMethodField()
     archetype = serializers.SerializerMethodField()
-    source = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monster-sources-detail', read_only=True, many=True)
-    skills = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/skills-detail', read_only=True, many=True)
+    source = SourceSerializer(many=True, read_only=True)
     leader_skill = LeaderSkillSerializer(read_only=True)
-    homunculus_skills = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/homunculus-skills-detail', source='homunculusskill_set', read_only=True, many=True)
-    awakens_from = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monsters-detail', read_only=True)
-    awakens_to = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monsters-detail', read_only=True)
+    homunculus_skills = serializers.PrimaryKeyRelatedField(source='homunculusskill_set', read_only=True, many=True)
     craft_materials = MonsterCraftCostSerializer(many=True, source='monstercraftcost_set', read_only=True)
     resources = serializers.SerializerMethodField()
 
     class Meta:
         model = Monster
         fields = (
-            'pk', 'url', 'com2us_id', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
+            'id', 'url', 'com2us_id', 'family_id', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
             'obtainable', 'can_awaken', 'is_awakened', 'awaken_bonus',
-            'skills', 'leader_skill', 'homunculus_skills', 'skill_ups_to_max',
+            'skills', 'skill_ups_to_max', 'leader_skill', 'homunculus_skills',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
             'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',
             'awakens_from', 'awakens_to',
@@ -131,7 +154,7 @@ class MonsterSerializer(serializers.ModelSerializer):
             'awaken_mats_dark_low', 'awaken_mats_dark_mid', 'awaken_mats_dark_high',
             'awaken_mats_magic_low', 'awaken_mats_magic_mid', 'awaken_mats_magic_high',
             'source', 'fusion_food', 'resources',
-            'homunculus', 'craft_materials', 'craft_cost',
+            'homunculus', 'craft_cost', 'craft_materials',
         )
 
     def get_element(self, instance):
@@ -149,12 +172,14 @@ class MonsterSerializer(serializers.ModelSerializer):
 
 
 class FusionSerializer(serializers.ModelSerializer):
-    product = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monsters-detail', read_only=True)
-    ingredients = serializers.HyperlinkedRelatedField(view_name='apiv2:bestiary/monsters-detail', read_only=True, many=True)
-
     class Meta:
         model = Fusion
-        fields = '__all__'
+        fields = ['id', 'url', 'product', 'stars', 'cost', 'ingredients']
+        extra_kwargs = {
+            'url': {
+                'view_name': 'bestiary/fusions-detail',
+            },
+        }
 
 
 class BuildingSerializer(serializers.ModelSerializer):
@@ -164,7 +189,12 @@ class BuildingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Building
-        fields = '__all__'
+        fields = ['id', 'url', 'area', 'affected_stat', 'element', 'com2us_id', 'name', 'max_level', 'stat_bonus', 'upgrade_cost', 'description', 'icon_filename']
+        extra_kwargs = {
+            'url': {
+                'view_name': 'bestiary/buildings-detail',
+            },
+        }
 
     def get_area(self, instance):
         return instance.get_area_display()

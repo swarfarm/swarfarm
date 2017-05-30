@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from rest_framework_nested.routers import NestedSimpleRouter
+from rest_framework_nested.routers import NestedDefaultRouter
 
 from herders.api_views import *
 
@@ -34,13 +34,11 @@ router.register(r'profiles', SummonerViewSet, base_name='profiles')
 router.register(r'monster-instances', MonsterInstanceViewSet, base_name='monster-instances')
 router.register(r'rune-instances', RuneInstanceViewSet, base_name='rune-instances')
 
-profile_router = NestedSimpleRouter(router, r'profiles', lookup='summoner')
+profile_router = NestedDefaultRouter(router, r'profiles', lookup='summoner')
 profile_router.register(r'monsters', MonsterInstanceViewSet, base_name='profile/monsters')
 profile_router.register(r'monster-pieces', MonsterPieceViewSet, base_name='profile/monster-pieces')
 profile_router.register(r'runes', RuneInstanceViewSet, base_name='profile/runes')
 profile_router.register(r'rune-crafts', RuneCraftInstanceViewSet, base_name='profile/rune-crafts')
 profile_router.register(r'buildings', BuildingViewSet, base_name='profile/buildings')
 profile_router.register(r'team-groups', TeamGroupViewSet, base_name='profile/team-groups')
-
-team_router = NestedSimpleRouter(profile_router, r'team-groups', lookup='group')
-team_router.register(r'teams', TeamViewSet, base_name='profile/teams')
+profile_router.register(r'teams', TeamViewSet, base_name='profile/teams')

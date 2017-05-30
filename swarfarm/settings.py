@@ -247,6 +247,9 @@ REST_FRAMEWORK = {
         'user': '2000/min',
     },
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
+    'DEFAULT_VERSION': 'v2',
+    'ALLOWED_VERSIONS': ['v1', 'v2'],
 }
 
 REST_FRAMEWORK_EXTENSIONS = {

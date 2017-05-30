@@ -18,7 +18,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'is_staff': {'read_only': True},
             'url': {
                 'lookup_field': 'username',
-                'view_name': 'apiv2:user-detail',
+                'view_name': 'user-detail',
             },
         }
 

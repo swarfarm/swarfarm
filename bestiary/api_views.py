@@ -1,3 +1,4 @@
+from django.db.models import Prefetch
 from rest_framework import viewsets, filters
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
@@ -8,7 +9,14 @@ from bestiary.filters import MonsterFilter
 
 # Django REST framework views
 class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = Monster.objects.all().select_related('leader_skill').prefetch_related('skills','homunculusskill_set', 'source')
+    queryset = Monster.objects.all().select_related('leader_skill').prefetch_related(
+        'skills',
+        'skills__effect',
+        'homunculusskill_set',
+        'source',
+        'monstercraftcost_set',
+        'monstercraftcost_set__craft',
+    )
     serializer_class = MonsterSerializer
     pagination_class = BestiarySetPagination
     filter_backends = (filters.DjangoFilterBackend,)
@@ -16,7 +24,11 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = Skill.objects.all()
+    queryset = Skill.objects.all().prefetch_related(
+        'monster_set',
+        'monsterskilleffectdetail_set',
+        'monsterskilleffectdetail_set__effect',
+    )
     serializer_class = SkillSerializer
     pagination_class = BestiarySetPagination
 
@@ -40,7 +52,14 @@ class MonsterSourceViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class HomunculusSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = HomunculusSkill.objects.all().order_by('pk')
+    queryset = HomunculusSkill.objects.all().order_by('pk').prefetch_related(
+        'skill',
+        'skill__monster_set',
+        'skill__monsterskilleffectdetail_set',
+        'skill__monsterskilleffectdetail_set__effect',
+        'homunculusskillcraftcost_set',
+        'prerequisites',
+    )
     serializer_class = HomunculusSkillSerializer
     pagination_class = BestiarySetPagination
 
@@ -52,7 +71,9 @@ class CraftMaterialViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class FusionViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = Fusion.objects.all()
+    queryset = Fusion.objects.all().prefetch_related(
+        'ingredients',
+    )
     serializer_class = FusionSerializer
     pagination_class = BestiarySetPagination
 

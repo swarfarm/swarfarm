@@ -23,11 +23,11 @@ urlpatterns = [
     ])),
     url(r'^api/v2/', include('apiv2.urls', namespace='v2')),
     url(r'^api/', include('api.urls')),
-    url(r'^api(v\d+)?/auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api(v\d+)?/auth/get-token/', obtain_jwt_token),
-    url(r'^api(v\d+)?/auth/delegate-token', delegate_jwt_token),
-    url(r'^api(v\d+)?/auth/verify-token/', verify_jwt_token),
-    url(r'^api(v\d+)?/docs/', include_docs_urls(title='SWARFARM API')),
+    url(r'^api/(v\d+/)?auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api/(v\d+/)?auth/get-token/', obtain_jwt_token),
+    url(r'^api/(v\d+/)?auth/delegate-token', delegate_jwt_token),
+    url(r'^api/(v\d+/)?auth/verify-token/', verify_jwt_token),
+    url(r'^api/(v\d+/)?docs/', include_docs_urls(title='SWARFARM API')),
 
     # Bestiary
     url(r'^bestiary/', include('bestiary.urls', namespace='bestiary')),

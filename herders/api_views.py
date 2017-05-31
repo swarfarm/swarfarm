@@ -1,4 +1,6 @@
+from django.contrib.auth.models import User
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
 
@@ -8,11 +10,12 @@ from herders.pagination import *
 from herders.permissions import *
 
 
-class SummonerViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Summoner.objects.all().select_related('user')
-    pagination_class = SummonerPagination
+class SummonerViewSet(viewsets.ModelViewSet):
+    # queryset = Summoner.objects.all().select_related('user')
+    queryset = User.objects.all().select_related('summoner')
+    pagination_class = PublicListPagination
     permission_classes = [IsSelfOrPublic]
-    lookup_field = 'user__username'
+    lookup_field = 'username'
     lookup_url_kwarg = 'pk'
 
     def get_queryset(self):
@@ -20,18 +23,21 @@ class SummonerViewSet(viewsets.ReadOnlyModelViewSet):
 
         if not self.request.user.is_superuser:
             if self.request.user.is_authenticated:
-                # Include user into results whether or not they are public
-                queryset = queryset.filter(Q(public=True) | Q(pk=self.request.user.summoner.pk))
+                # Include current user into results whether or not they are public
+                queryset = queryset.filter(Q(summoner__public=True) | Q(pk=self.request.user.pk))
             else:
-                queryset = queryset.filter(public=True)
+                queryset = queryset.filter(summoner__public=True)
 
         return queryset
 
     def get_serializer_class(self):
-        if self.action == 'list':
-            return SummonerSummarySerializer
+        profile_name = self.kwargs.get('pk')
+        is_authorized = self.request.user.username == profile_name or self.request.user.is_superuser
 
-        return SummonerSerializer
+        if self.action == 'create' or is_authorized:
+            return SummonerSerializer
+        else:
+            return SummonerSummarySerializer
 
 
 class MonsterInstanceViewSet(viewsets.ModelViewSet):
@@ -48,9 +54,10 @@ class MonsterInstanceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super(MonsterInstanceViewSet, self).get_queryset()
         summoner_name = self.kwargs.get('summoner_pk', None)
+        summoner = get_object_or_404(Summoner, user__username=summoner_name)
 
         if summoner_name is not None:
-            queryset = queryset.filter(owner__user__username=summoner_name)
+            queryset = queryset.filter(owner=summoner)
 
         if not self.request.user.is_superuser:
             if self.request.user.is_authenticated:
@@ -78,11 +85,11 @@ class RuneInstanceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super(RuneInstanceViewSet, self).get_queryset()
-
         summoner_name = self.kwargs.get('summoner_pk', None)
+        summoner = get_object_or_404(Summoner, user__username=summoner_name)
 
         if summoner_name is not None:
-            queryset = queryset.filter(owner__user__username=summoner_name)
+            queryset = queryset.filter(owner=summoner)
 
         if not self.request.user.is_superuser:
             if self.request.user.is_authenticated:

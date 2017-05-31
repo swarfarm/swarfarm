@@ -11,7 +11,7 @@ class IsSelfOrPublic(permissions.BasePermission):
         else:
             is_self = False
 
-        return is_self or (request.method in permissions.SAFE_METHODS and obj.public)
+        return is_self or (request.method in permissions.SAFE_METHODS and obj.summoner.public)
 
 
 class IsOwner(permissions.BasePermission):

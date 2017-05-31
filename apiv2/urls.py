@@ -7,8 +7,6 @@ from bestiary.api_urls import router as bestiary_router
 from herders.api_urls import router as herders_router, profile_router
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-
 router.registry.extend(news_router.registry)
 router.registry.extend(bestiary_router.registry)
 router.registry.extend(herders_router.registry)

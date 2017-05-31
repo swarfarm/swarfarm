@@ -119,7 +119,7 @@ def _do_export(category_name, queryset, serializer):
         serialized = serializer(logs_to_export, many=True)
         rendered = UJSONRenderer().render(serialized.data)
 
-        with open(filename, 'w') as outfile:
+        with open(filename, 'wb') as outfile:
             outfile.write(rendered)
 
         export_info.last_row = last_record.pk

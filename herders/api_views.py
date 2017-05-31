@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
+from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.renderers import JSONRenderer
 
 from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance
@@ -20,6 +20,18 @@ class SummonerViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super(SummonerViewSet, self).get_queryset()
+        summoner_name = self.kwargs.get('pk', None)
+
+        if summoner_name:
+            try:
+                summoner = Summoner.objects.select_related('user').get(user__username=summoner_name)
+            except Summoner.DoesNotExist:
+                raise NotFound()
+
+            is_owner = summoner.user == self.request.user
+
+            if not (is_owner or summoner.public or self.request.user.is_superuser):
+                raise PermissionDenied(detail='Profile is not public.')
 
         if not self.request.user.is_superuser:
             if self.request.user.is_authenticated:
@@ -41,7 +53,6 @@ class SummonerViewSet(viewsets.ModelViewSet):
 
 
 class MonsterInstanceViewSet(viewsets.ModelViewSet):
-    # TODO: Raise permission denied if viewing private profile and not owner
     queryset = MonsterInstance.objects.all().select_related('owner', 'owner__user').prefetch_related(
         'runeinstance_set',
         'runeinstance_set__owner',
@@ -54,23 +65,30 @@ class MonsterInstanceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super(MonsterInstanceViewSet, self).get_queryset()
         summoner_name = self.kwargs.get('summoner_pk', None)
-        summoner = get_object_or_404(Summoner, user__username=summoner_name)
+        try:
+            summoner = Summoner.objects.select_related('user').get(user__username=summoner_name)
+        except Summoner.DoesNotExist:
+            raise NotFound()
 
-        if summoner_name is not None:
-            queryset = queryset.filter(owner=summoner)
+        is_owner = summoner.user == self.request.user
 
-        if not self.request.user.is_superuser:
-            if self.request.user.is_authenticated:
-                # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
-            else:
-                queryset = queryset.filter(owner__public=True)
+        if is_owner or summoner.public or self.request.user.is_superuser:
+            if summoner_name is not None:
+                queryset = queryset.filter(owner=summoner)
 
-        return queryset
+            if not self.request.user.is_superuser:
+                if self.request.user.is_authenticated:
+                    # Include active user into results whether or not they are public so they can view themselves
+                    queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
+                else:
+                    queryset = queryset.filter(owner__public=True)
+
+            return queryset
+        else:
+            raise PermissionDenied(detail='Profile is not public.')
 
 
 class RuneInstanceViewSet(viewsets.ModelViewSet):
-    # TODO: Raise permission denied if viewing private profile and not owner
     queryset = RuneInstance.objects.all().select_related(
         'owner',
         'owner__user',
@@ -86,19 +104,27 @@ class RuneInstanceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super(RuneInstanceViewSet, self).get_queryset()
         summoner_name = self.kwargs.get('summoner_pk', None)
-        summoner = get_object_or_404(Summoner, user__username=summoner_name)
+        try:
+            summoner = Summoner.objects.select_related('user').get(user__username=summoner_name)
+        except Summoner.DoesNotExist:
+            raise NotFound()
 
-        if summoner_name is not None:
-            queryset = queryset.filter(owner=summoner)
+        is_owner = summoner.user == self.request.user
 
-        if not self.request.user.is_superuser:
-            if self.request.user.is_authenticated:
-                # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
-            else:
-                queryset = queryset.filter(owner__public=True)
+        if is_owner or summoner.public or self.request.user.is_superuser:
+            if summoner_name is not None:
+                queryset = queryset.filter(owner=summoner)
 
-        return queryset
+            if not self.request.user.is_superuser:
+                if self.request.user.is_authenticated:
+                    # Include active user into results whether or not they are public so they can view themselves
+                    queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
+                else:
+                    queryset = queryset.filter(owner__public=True)
+
+            return queryset
+        else:
+            raise PermissionDenied(detail='Profile is not public.')
 
 
 class RuneCraftInstanceViewSet(viewsets.ModelViewSet):
@@ -112,20 +138,28 @@ class RuneCraftInstanceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super(RuneCraftInstanceViewSet, self).get_queryset()
-
         summoner_name = self.kwargs.get('summoner_pk', None)
+        try:
+            summoner = Summoner.objects.select_related('user').get(user__username=summoner_name)
+        except Summoner.DoesNotExist:
+            raise NotFound()
 
-        if summoner_name is not None:
-            queryset = queryset.filter(owner__user__username=summoner_name)
+        is_owner = summoner.user == self.request.user
 
-        if not self.request.user.is_superuser:
-            if self.request.user.is_authenticated:
-                # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
-            else:
-                queryset = queryset.filter(owner__public=True)
+        if is_owner or summoner.public or self.request.user.is_superuser:
+            if summoner_name is not None:
+                queryset = queryset.filter(owner__user__username=summoner_name)
 
-        return queryset
+            if not self.request.user.is_superuser:
+                if self.request.user.is_authenticated:
+                    # Include active user into results whether or not they are public so they can view themselves
+                    queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
+                else:
+                    queryset = queryset.filter(owner__public=True)
+
+            return queryset
+        else:
+            raise PermissionDenied(detail='User profile is not public.')
 
 
 class BuildingViewSet(viewsets.ModelViewSet):
@@ -140,20 +174,28 @@ class BuildingViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super(BuildingViewSet, self).get_queryset()
-
         summoner_name = self.kwargs.get('summoner_pk', None)
+        try:
+            summoner = Summoner.objects.select_related('user').get(user__username=summoner_name)
+        except Summoner.DoesNotExist:
+            raise NotFound()
 
-        if summoner_name is not None:
-            queryset = queryset.filter(owner__user__username=summoner_name)
+        is_owner = summoner.user == self.request.user
 
-        if not self.request.user.is_superuser:
-            if self.request.user.is_authenticated:
-                # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
-            else:
-                queryset = queryset.filter(owner__public=True)
+        if is_owner or summoner.public or self.request.user.is_superuser:
+            if summoner_name is not None:
+                queryset = queryset.filter(owner__user__username=summoner_name)
 
-        return queryset
+            if not self.request.user.is_superuser:
+                if self.request.user.is_authenticated:
+                    # Include active user into results whether or not they are public so they can view themselves
+                    queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
+                else:
+                    queryset = queryset.filter(owner__public=True)
+
+            return queryset
+        else:
+            raise PermissionDenied(detail='User profile is not public.')
 
 
 class MonsterPieceViewSet(viewsets.ModelViewSet):
@@ -167,20 +209,28 @@ class MonsterPieceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super(MonsterPieceViewSet, self).get_queryset()
-
         summoner_name = self.kwargs.get('summoner_pk', None)
+        try:
+            summoner = Summoner.objects.select_related('user').get(user__username=summoner_name)
+        except Summoner.DoesNotExist:
+            raise NotFound()
 
-        if summoner_name is not None:
-            queryset = queryset.filter(owner__user__username=summoner_name)
+        is_owner = summoner.user == self.request.user
 
-        if not self.request.user.is_superuser:
-            if self.request.user.is_authenticated:
-                # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
-            else:
-                queryset = queryset.filter(owner__public=True)
+        if is_owner or summoner.public or self.request.user.is_superuser:
+            if summoner_name is not None:
+                queryset = queryset.filter(owner__user__username=summoner_name)
 
-        return queryset
+            if not self.request.user.is_superuser:
+                if self.request.user.is_authenticated:
+                    # Include active user into results whether or not they are public so they can view themselves
+                    queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
+                else:
+                    queryset = queryset.filter(owner__public=True)
+
+            return queryset
+        else:
+            raise PermissionDenied(detail='User profile is not public.')
 
 
 class TeamGroupViewSet(viewsets.ModelViewSet):
@@ -196,20 +246,28 @@ class TeamGroupViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super(TeamGroupViewSet, self).get_queryset()
-
         summoner_name = self.kwargs.get('summoner_pk', None)
+        try:
+            summoner = Summoner.objects.select_related('user').get(user__username=summoner_name)
+        except Summoner.DoesNotExist:
+            raise NotFound()
 
-        if summoner_name is not None:
-            queryset = queryset.filter(owner__user__username=summoner_name)
+        is_owner = summoner.user == self.request.user
 
-        if not self.request.user.is_superuser:
-            if self.request.user.is_authenticated:
-                # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
-            else:
-                queryset = queryset.filter(owner__public=True)
+        if is_owner or summoner.public or self.request.user.is_superuser:
+            if summoner_name is not None:
+                queryset = queryset.filter(owner__user__username=summoner_name)
 
-        return queryset
+            if not self.request.user.is_superuser:
+                if self.request.user.is_authenticated:
+                    # Include active user into results whether or not they are public so they can view themselves
+                    queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
+                else:
+                    queryset = queryset.filter(owner__public=True)
+
+            return queryset
+        else:
+            raise PermissionDenied(detail='User profile is not public.')
 
 
 class TeamViewSet(viewsets.ModelViewSet):
@@ -221,17 +279,25 @@ class TeamViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super(TeamViewSet, self).get_queryset()
-
         summoner_name = self.kwargs.get('summoner_pk', None)
+        try:
+            summoner = Summoner.objects.select_related('user').get(user__username=summoner_name)
+        except Summoner.DoesNotExist:
+            raise NotFound()
 
-        if summoner_name is not None:
-            queryset = queryset.filter(group__owner__user__username=summoner_name)
+        is_owner = summoner.user == self.request.user
 
-        if not self.request.user.is_superuser:
-            if self.request.user.is_authenticated:
-                # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(group__owner__public=True) | Q(group__owner=self.request.user.summoner))
-            else:
-                queryset = queryset.filter(group__owner__public=True)
+        if is_owner or summoner.public or self.request.user.is_superuser:
+            if summoner_name is not None:
+                queryset = queryset.filter(group__owner__user__username=summoner_name)
 
-        return queryset
+            if not self.request.user.is_superuser:
+                if self.request.user.is_authenticated:
+                    # Include active user into results whether or not they are public so they can view themselves
+                    queryset = queryset.filter(Q(group__owner__public=True) | Q(group__owner=self.request.user.summoner))
+                else:
+                    queryset = queryset.filter(group__owner__public=True)
+
+            return queryset
+        else:
+            raise PermissionDenied(detail='User profile is not public.')

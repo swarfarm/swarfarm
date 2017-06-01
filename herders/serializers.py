@@ -27,6 +27,10 @@ class RuneInstanceSerializer(serializers.ModelSerializer):
             'substat_4', 'substat_4_value', 'substat_4_craft',
         ]
 
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user.summoner
+        return super(RuneInstanceSerializer, self).create(validated_data)
+
 
 class RuneCraftInstanceSerializer(serializers.ModelSerializer):
     url = NestedHyperlinkedIdentityField(
@@ -38,6 +42,10 @@ class RuneCraftInstanceSerializer(serializers.ModelSerializer):
         model = RuneCraftInstance
         fields = ['id', 'url', 'com2us_id', 'type', 'rune', 'stat', 'quality', 'value']
 
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user.summoner
+        return super(RuneCraftInstanceSerializer, self).create(validated_data)
+
 
 class MonsterInstanceSerializer(serializers.ModelSerializer):
     url = NestedHyperlinkedIdentityField(
@@ -46,15 +54,21 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
     )
     # owner = serializers.HyperlinkedRelatedField(view_name='profiles-detail', source='owner.user.username', read_only=True)
     # TODO: Fix owner field so as not to cause a query explosion
-    runes = RuneInstanceSerializer(many=True, read_only=True, source='runeinstance_set')
+    runes = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source='runeinstance_set')
 
     class Meta:
         model = MonsterInstance
         fields = [
             'id', 'url', 'com2us_id', 'created', 'monster',
             'stars', 'level', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
-            'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes', 'runes',
+            'base_hp', 'base_attack', 'base_defense', 'base_speed', 'base_crit_rate', 'base_crit_damage', 'base_resistance', 'base_accuracy',
+            'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
+            'avg_rune_efficiency', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes', 'runes',
         ]
+
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user.summoner
+        return super(MonsterInstanceSerializer, self).create(validated_data)
 
 
 class MonsterPieceSerializer(serializers.ModelSerializer):
@@ -66,6 +80,10 @@ class MonsterPieceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonsterPiece
         fields = ['id', 'url', 'monster', 'pieces']
+
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user.summoner
+        return super(MonsterPieceSerializer, self).create(validated_data)
 
 
 class StorageSerializer(serializers.ModelSerializer):
@@ -88,6 +106,10 @@ class BuildingInstanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuildingInstance
         fields = ['id', 'url', 'building', 'level']
+
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user.summoner
+        return super(BuildingInstanceSerializer, self).create(validated_data)
 
 
 class SummonerSummarySerializer(serializers.ModelSerializer):
@@ -171,6 +193,10 @@ class TeamGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamGroup
         fields = ['id', 'url', 'name', 'teams']
+
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user.summoner
+        return super(TeamGroupSerializer, self).create(validated_data)
 
 
 class TeamSerializer(serializers.ModelSerializer):

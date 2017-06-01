@@ -5,7 +5,6 @@ from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles import views
 
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
-from rest_framework.documentation import include_docs_urls
 from refreshtoken.views import delegate_jwt_token
 
 from bestiary.autocomplete import *
@@ -27,7 +26,6 @@ urlpatterns = [
     url(r'^api(v\d+)?/auth/get-token/', obtain_jwt_token),
     url(r'^api(v\d+)?/auth/delegate-token', delegate_jwt_token),
     url(r'^api(v\d+)?/auth/verify-token/', verify_jwt_token),
-    url(r'^api(v\d+)?/docs/', include_docs_urls(title='SWARFARM API')),
 
     # Bestiary
     url(r'^bestiary/', include('bestiary.urls', namespace='bestiary')),

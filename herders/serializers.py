@@ -120,7 +120,10 @@ class SummonerSerializer(serializers.ModelSerializer):
         model = User
         fields = ['url', 'username', 'password', 'email', 'is_staff', 'in_game_name', 'server', 'public', 'timezone']
         extra_kwargs = {
-            'password': {'write_only': True},
+            'password': {
+                'write_only': True,
+                'style': {'input_type': 'password'},
+            },
             'is_staff': {'read_only': True},
             'url': {
                 'lookup_field': 'username',

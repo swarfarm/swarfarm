@@ -11,4 +11,10 @@ class ArticleSerializer(serializers.HyperlinkedModelSerializer):
             'url': {
                 'view_name': 'article-detail',
             },
+            'timestamp': {
+                'help_text': 'ISO 8601 format date string',
+            },
+            'sticky': {
+                'help_text': 'Will pin to top of results with default sorting',
+            },
         }

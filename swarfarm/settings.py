@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     'markdown_deux',
     'rest_framework',
     'refreshtoken',
+    'rest_framework_swagger',
     'timezone_field',
 
     # Custom apps
@@ -260,4 +261,8 @@ REST_FRAMEWORK_EXTENSIONS = {
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'apiv2.views.jwt_response_payload_handler',
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+}
+
+WAGGER_SETTINGS = {
+    'OPERATIONS_SORTER': 'method',
 }

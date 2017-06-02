@@ -30,12 +30,15 @@ class SummonerViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         profile_name = self.kwargs.get('pk')
-        is_authorized = self.request.user.username == profile_name or self.request.user.is_superuser
+        is_authorized = self.request.user.username == profile_name
 
-        if self.action == 'create' or is_authorized:
-            return SummonerSerializer
-        else:
+        if self.action == 'list':
             return SummonerSummarySerializer
+        else:
+            if self.action == 'create' or is_authorized:
+                return FullUserSerializer
+            else:
+                return SummonerSerializer
 
 
 class ProfileItemViewSet(viewsets.ModelViewSet):

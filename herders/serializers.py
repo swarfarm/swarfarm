@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from rest_framework_nested.relations import NestedHyperlinkedIdentityField
+from rest_framework_nested.relations import NestedHyperlinkedIdentityField, NestedHyperlinkedRelatedField
 
 from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, TeamGroup, Team
 
@@ -135,12 +135,28 @@ class SummonerSerializer(serializers.ModelSerializer):
     in_game_name = serializers.CharField(source='summoner.summoner_name', allow_blank=True)
     server = serializers.ChoiceField(source='summoner.server', choices=Summoner.SERVER_CHOICES)
     public = serializers.BooleanField(source='summoner.public')
-    timezone = serializers.CharField(source='summoner.timezone', allow_blank=True)
-    # storage = StorageSerializer(source='summoner.storage')
+    storage = StorageSerializer(source='summoner.storage')
 
     class Meta:
         model = User
-        fields = ['url', 'username', 'password', 'email', 'is_staff', 'in_game_name', 'server', 'public', 'timezone']
+        fields = ['url', 'username', 'in_game_name', 'server', 'public', 'storage']
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'is_staff': {'read_only': True},
+            'url': {
+                'lookup_field': 'username',
+                'lookup_url_kwarg': 'pk',
+                'view_name': 'profiles-detail',
+            },
+        }
+
+
+class FullUserSerializer(SummonerSerializer):
+    timezone = serializers.CharField(source='summoner.timezone', allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = ['url', 'username', 'password', 'email', 'is_staff', 'in_game_name', 'server', 'public', 'timezone', 'storage']
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -169,13 +185,13 @@ class SummonerSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         summoner_data = validated_data.pop('summoner', None)
         self.create_or_update_summoner(instance, summoner_data)
-        return super(SummonerSerializer, self).update(instance, validated_data)
+        return super(FullUserSerializer, self).update(instance, validated_data)
 
     def create_or_update_summoner(self, user, summoner_data):
         summoner, created = Summoner.objects.get_or_create(user=user, defaults=summoner_data)
 
         if not created and summoner_data is not None:
-            super(SummonerSerializer, self).update(summoner, summoner_data)
+            super(FullUserSerializer, self).update(summoner, summoner_data)
 
 
 class TeamGroupSerializer(serializers.ModelSerializer):

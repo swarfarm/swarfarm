@@ -18,6 +18,19 @@ class IsSelfOrPublic(permissions.BasePermission):
         return is_self or (request.method in permissions.SAFE_METHODS and obj.summoner.public)
 
 
+class StorageIsSelfOrPublic(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_authenticated:
+            is_self = request.user == obj.summoner.user or request.user.is_superuser
+        else:
+            is_self = False
+
+        if not is_self and not obj.summoner.public and not request.user.is_superuser:
+            raise PermissionDenied(detail='Profile is not public.')
+
+        return is_self or (request.method in permissions.SAFE_METHODS and obj.summoner.public)
+
+
 class IsOwner(permissions.BasePermission):
     def has_permission(self, request, view):
         summoner_name = view.kwargs.get('summoner_pk', None)

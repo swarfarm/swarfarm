@@ -8,7 +8,7 @@ from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance,
 class RuneInstanceSerializer(serializers.ModelSerializer):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/runes-detail',
-        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
     # owner = serializers.HyperlinkedRelatedField(view_name='profiles-detail', source='owner.user.username', read_only=True)
     # TODO: Fix owner field so as not to cause a query explosion
@@ -35,7 +35,7 @@ class RuneInstanceSerializer(serializers.ModelSerializer):
 class RuneCraftInstanceSerializer(serializers.ModelSerializer):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/rune-crafts-detail',
-        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
 
     class Meta:
@@ -50,7 +50,7 @@ class RuneCraftInstanceSerializer(serializers.ModelSerializer):
 class MonsterInstanceSerializer(serializers.ModelSerializer):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/monsters-detail',
-        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
     # owner = serializers.HyperlinkedRelatedField(view_name='profiles-detail', source='owner.user.username', read_only=True)
     # TODO: Fix owner field so as not to cause a query explosion
@@ -74,7 +74,7 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
 class MonsterPieceSerializer(serializers.ModelSerializer):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/monster-pieces-detail',
-        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
 
     class Meta:
@@ -100,7 +100,7 @@ class StorageSerializer(serializers.ModelSerializer):
 class BuildingInstanceSerializer(serializers.ModelSerializer):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/buildings-detail',
-        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
 
     class Meta:
@@ -177,7 +177,7 @@ class FullUserSerializer(SummonerSerializer):
 class TeamGroupSerializer(serializers.ModelSerializer):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/team-groups-detail',
-        parent_lookup_kwargs={'summoner_pk': 'owner__user__username'},
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
 
     teams = serializers.PrimaryKeyRelatedField(
@@ -199,7 +199,7 @@ class TeamSerializer(serializers.ModelSerializer):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/teams-detail',
         parent_lookup_kwargs={
-            'summoner_pk': 'group__owner__user__username',
+            'user_pk': 'group__owner__user__username',
         },
     )
 

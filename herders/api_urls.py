@@ -35,7 +35,7 @@ router.register(r'profiles', SummonerViewSet, base_name='profiles')
 router.register(r'monster-instances', MonsterInstanceViewSet, base_name='monster-instances')
 router.register(r'rune-instances', RuneInstanceViewSet, base_name='rune-instances')
 
-profile_router = NestedDefaultRouter(router, r'profiles', lookup='summoner')
+profile_router = NestedDefaultRouter(router, r'profiles', lookup='user')
 profile_router.register(r'monsters', MonsterInstanceViewSet, base_name='profile/monsters')
 profile_router.register(r'monster-pieces', MonsterPieceViewSet, base_name='profile/monster-pieces')
 profile_router.register(r'runes', RuneInstanceViewSet, base_name='profile/runes')
@@ -44,5 +44,5 @@ profile_router.register(r'buildings', BuildingViewSet, base_name='profile/buildi
 profile_router.register(r'team-groups', TeamGroupViewSet, base_name='profile/team-groups')
 profile_router.register(r'teams', TeamViewSet, base_name='profile/teams')
 
-storage_router = NestedStorageRouter(router, r'profiles', lookup='summoner')
+storage_router = NestedStorageRouter(router, r'profiles', lookup='user')
 storage_router.register(r'storage', StorageViewSet, base_name='profile/storage')

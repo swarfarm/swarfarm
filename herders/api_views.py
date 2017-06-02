@@ -45,10 +45,10 @@ class ProfileItemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super(ProfileItemViewSet, self).get_queryset()
-        summoner_name = self.kwargs.get('summoner_pk')
+        username = self.kwargs.get('user_pk')
 
-        if summoner_name is not None:
-            queryset = queryset.filter(owner__user__username=summoner_name)
+        if username is not None:
+            queryset = queryset.filter(owner__user__username=username)
 
         if not self.request.user.is_superuser and self.action == 'list':
             if self.request.user.is_authenticated:
@@ -65,8 +65,8 @@ class StorageViewSet(ProfileItemViewSet):
     serializer_class = StorageSerializer
 
     def get_object(self):
-        summoner_name = self.kwargs.get('summoner_pk')
-        filter_kwargs = {'owner__user__username': summoner_name}
+        username = self.kwargs.get('user_pk')
+        filter_kwargs = {'owner__user__username': username}
         queryset = self.filter_queryset(self.get_queryset())
         obj = get_object_or_404(queryset, **filter_kwargs)
 

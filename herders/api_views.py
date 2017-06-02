@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework import viewsets
+from rest_framework.generics import get_object_or_404
 from rest_framework.renderers import JSONRenderer
 
 from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance
@@ -32,13 +33,10 @@ class SummonerViewSet(viewsets.ModelViewSet):
         profile_name = self.kwargs.get('pk')
         is_authorized = self.request.user.username == profile_name
 
-        if self.action == 'list':
-            return SummonerSummarySerializer
+        if (is_authorized or self.request.user.is_superuser) or self.action == 'create':
+            return FullUserSerializer
         else:
-            if self.action == 'create' or is_authorized:
-                return FullUserSerializer
-            else:
-                return SummonerSerializer
+            return SummonerSerializer
 
 
 class ProfileItemViewSet(viewsets.ModelViewSet):
@@ -60,6 +58,19 @@ class ProfileItemViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(owner__public=True)
 
         return queryset
+
+
+class StorageViewSet(ProfileItemViewSet):
+    queryset = Storage.objects.all().select_related('owner', 'owner__user')
+    serializer_class = StorageSerializer
+
+    def get_object(self):
+        summoner_name = self.kwargs.get('summoner_pk')
+        filter_kwargs = {'owner__user__username': summoner_name}
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        return obj
 
 
 class MonsterInstanceViewSet(ProfileItemViewSet):

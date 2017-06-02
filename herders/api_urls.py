@@ -1,6 +1,7 @@
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedDefaultRouter
 
+from herders.routers import NestedStorageRouter
 from herders.api_views import *
 
 """
@@ -42,3 +43,6 @@ profile_router.register(r'rune-crafts', RuneCraftInstanceViewSet, base_name='pro
 profile_router.register(r'buildings', BuildingViewSet, base_name='profile/buildings')
 profile_router.register(r'team-groups', TeamGroupViewSet, base_name='profile/team-groups')
 profile_router.register(r'teams', TeamViewSet, base_name='profile/teams')
+
+storage_router = NestedStorageRouter(router, r'profiles', lookup='summoner')
+storage_router.register(r'storage', StorageViewSet, base_name='profile/storage')

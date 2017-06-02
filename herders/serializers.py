@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from rest_framework_nested.relations import NestedHyperlinkedIdentityField, NestedHyperlinkedRelatedField
+from rest_framework_nested.relations import NestedHyperlinkedIdentityField
 
 from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, TeamGroup, Team
 
@@ -112,7 +112,7 @@ class BuildingInstanceSerializer(serializers.ModelSerializer):
         return super(BuildingInstanceSerializer, self).create(validated_data)
 
 
-class SummonerSummarySerializer(serializers.ModelSerializer):
+class SummonerSerializer(serializers.ModelSerializer):
     in_game_name = serializers.CharField(source='summoner.summoner_name', allow_blank=True)
     server = serializers.ChoiceField(source='summoner.server', choices=Summoner.SERVER_CHOICES)
     public = serializers.BooleanField(source='summoner.public')
@@ -131,32 +131,12 @@ class SummonerSummarySerializer(serializers.ModelSerializer):
         }
 
 
-class SummonerSerializer(serializers.ModelSerializer):
-    in_game_name = serializers.CharField(source='summoner.summoner_name', allow_blank=True)
-    server = serializers.ChoiceField(source='summoner.server', choices=Summoner.SERVER_CHOICES)
-    public = serializers.BooleanField(source='summoner.public')
-    storage = StorageSerializer(source='summoner.storage')
-
-    class Meta:
-        model = User
-        fields = ['url', 'username', 'in_game_name', 'server', 'public', 'storage']
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'is_staff': {'read_only': True},
-            'url': {
-                'lookup_field': 'username',
-                'lookup_url_kwarg': 'pk',
-                'view_name': 'profiles-detail',
-            },
-        }
-
-
 class FullUserSerializer(SummonerSerializer):
     timezone = serializers.CharField(source='summoner.timezone', allow_blank=True)
 
     class Meta:
         model = User
-        fields = ['url', 'username', 'password', 'email', 'is_staff', 'in_game_name', 'server', 'public', 'timezone', 'storage']
+        fields = ['url', 'username', 'password', 'email', 'is_staff', 'in_game_name', 'server', 'public', 'timezone']
         extra_kwargs = {
             'password': {
                 'write_only': True,

@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import Http404
 from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
 
 from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance
@@ -39,16 +41,41 @@ class SummonerViewSet(viewsets.ModelViewSet):
             return SummonerSerializer
 
 
-class ProfileItemViewSet(viewsets.ModelViewSet):
+class GlobalMonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = MonsterInstance.objects.filter(owner__public=True).select_related(
+        'owner__user'
+    ).prefetch_related(
+        'runeinstance_set',
+        'runeinstance_set__owner__user',
+    )
+    serializer_class = MonsterInstanceSerializer
+    permission_classes = [AllowAny]
+    pagination_class = PublicListPagination
+
+
+class GlobalRuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = RuneInstance.objects.filter(owner__public=True).select_related(
+        'owner',
+        'owner__user',
+        'assigned_to',
+    )
+    serializer_class = RuneInstanceSerializer
+    permission_classes = [AllowAny]
+    pagination_class = PublicListPagination
+
+
+class ProfileItemMixin(viewsets.GenericViewSet):
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
 
     def get_queryset(self):
-        queryset = super(ProfileItemViewSet, self).get_queryset()
+        queryset = super(ProfileItemMixin, self).get_queryset()
         username = self.kwargs.get('user_pk')
 
-        if username is not None:
-            queryset = queryset.filter(owner__user__username=username)
+        if username is None:
+            raise Http404()
+
+        queryset = queryset.filter(owner__user__username=username)
 
         if not self.request.user.is_superuser and self.action == 'list':
             if self.request.user.is_authenticated:
@@ -60,7 +87,7 @@ class ProfileItemViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class StorageViewSet(ProfileItemViewSet):
+class StorageViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = Storage.objects.all().select_related('owner', 'owner__user')
     serializer_class = StorageSerializer
 
@@ -73,27 +100,24 @@ class StorageViewSet(ProfileItemViewSet):
         return obj
 
 
-class MonsterInstanceViewSet(ProfileItemViewSet):
+class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = MonsterInstance.objects.all().select_related('owner', 'owner__user').prefetch_related(
         'runeinstance_set',
-        'runeinstance_set__owner',
         'runeinstance_set__owner__user',
     )
     serializer_class = MonsterInstanceSerializer
 
 
-class RuneInstanceViewSet(ProfileItemViewSet):
+class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = RuneInstance.objects.all().select_related(
-        'owner',
         'owner__user',
         'assigned_to',
-        'assigned_to__monster',
     )
     serializer_class = RuneInstanceSerializer
-    renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
+    # renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
 
 
-class RuneCraftInstanceViewSet(ProfileItemViewSet):
+class RuneCraftInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = RuneCraftInstance.objects.all().select_related(
         'owner',
         'owner__user',
@@ -101,7 +125,7 @@ class RuneCraftInstanceViewSet(ProfileItemViewSet):
     serializer_class = RuneCraftInstanceSerializer
 
 
-class BuildingViewSet(ProfileItemViewSet):
+class BuildingViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = BuildingInstance.objects.all().select_related(
         'building',
         'owner',
@@ -110,7 +134,7 @@ class BuildingViewSet(ProfileItemViewSet):
     serializer_class = BuildingInstanceSerializer
 
 
-class MonsterPieceViewSet(ProfileItemViewSet):
+class MonsterPieceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = MonsterPiece.objects.all().select_related(
         'owner',
         'owner__user',
@@ -118,7 +142,7 @@ class MonsterPieceViewSet(ProfileItemViewSet):
     serializer_class = MonsterPieceSerializer
 
 
-class TeamGroupViewSet(ProfileItemViewSet):
+class TeamGroupViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = TeamGroup.objects.all().select_related(
         'owner',
         'owner__user',
@@ -128,15 +152,15 @@ class TeamGroupViewSet(ProfileItemViewSet):
     serializer_class = TeamGroupSerializer
 
 
-class TeamViewSet(ProfileItemViewSet):
+class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = Team.objects.all().select_related('group').prefetch_related('leader', 'roster')
     serializer_class = TeamSerializer
     renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
 
     def get_queryset(self):
         # Team objects do not have an owner field, so we must go through the group owner for filtering
-        queryset = super(ProfileItemViewSet, self).get_queryset()
-        summoner_name = self.kwargs.get('summoner_pk')
+        queryset = super(ProfileItemMixin, self).get_queryset()
+        summoner_name = self.kwargs.get('user_pk')
 
         if summoner_name is not None:
             queryset = queryset.filter(group__owner__user__username=summoner_name)

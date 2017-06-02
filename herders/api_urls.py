@@ -32,8 +32,8 @@ Global, for searching and filtering:
 
 router = DefaultRouter()
 router.register(r'profiles', SummonerViewSet, base_name='profiles')
-router.register(r'monster-instances', MonsterInstanceViewSet, base_name='monster-instances')
-router.register(r'rune-instances', RuneInstanceViewSet, base_name='rune-instances')
+router.register(r'monster-instances', GlobalMonsterInstanceViewSet, base_name='monster-instances')
+router.register(r'rune-instances', GlobalRuneInstanceViewSet, base_name='rune-instances')
 
 profile_router = NestedDefaultRouter(router, r'profiles', lookup='user')
 profile_router.register(r'monsters', MonsterInstanceViewSet, base_name='profile/monsters')

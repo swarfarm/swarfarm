@@ -10,7 +10,7 @@ from herders.permissions import *
 
 
 class SummonerViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().select_related('summoner')
+    queryset = User.objects.all().select_related('summoner').order_by('pk')
     pagination_class = PublicListPagination
     permission_classes = [IsSelfOrPublic]
     lookup_field = 'username'

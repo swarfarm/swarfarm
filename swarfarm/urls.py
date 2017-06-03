@@ -3,12 +3,12 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles import views
+
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from refreshtoken.views import delegate_jwt_token
 
 from bestiary.autocomplete import *
 from herders.autocomplete import *
-
 from herders import views as herder_views
 from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, CrispyPasswordResetForm, CrispySetPasswordForm
 
@@ -20,12 +20,12 @@ urlpatterns = [
         url(r'^monster-tag/$', MonsterTagAutocomplete.as_view(), name='monster-tag-autocomplete'),
         url(r'^monster-instance/$', MonsterInstanceAutocomplete.as_view(), name='monster-instance-autocomplete'),
     ])),
+    url(r'^api/v2/', include('apiv2.urls', namespace='v2')),
     url(r'^api/', include('api.urls')),
-    url(r'^apiv2/', include('apiv2.urls', namespace='apiv2')),
-    url(r'^api(v\d+)?/auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api(v\d+)?/auth/get-token/', obtain_jwt_token),
-    url(r'^api(v\d+)?/auth/delegate-token', delegate_jwt_token),
-    url(r'^api(v\d+)?/auth/verify-token/', verify_jwt_token),
+    url(r'^api(/v\d+)?/auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api(/v\d+)?/auth/get-token/', obtain_jwt_token),
+    url(r'^api(/v\d+)?/auth/delegate-token', delegate_jwt_token),
+    url(r'^api(/v\d+)?/auth/verify-token/', verify_jwt_token),
 
     # Bestiary
     url(r'^bestiary/', include('bestiary.urls', namespace='bestiary')),

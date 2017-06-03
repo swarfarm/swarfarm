@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     'markdown_deux',
     'rest_framework',
     'refreshtoken',
+    'rest_framework_swagger',
     'timezone_field',
 
     # Custom apps
@@ -240,13 +241,18 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'rest_framework.throttling.UserRateThrottle',
+        'apiv2.throttling.ScopedPostRequestThrottle',
     ),
     'DEFAULT_THROTTLE_RATES': {
         'anon': '500/min',
         'user': '2000/min',
+        'registration': '5/min',
     },
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
+    'DEFAULT_VERSION': 'v2',
+    'ALLOWED_VERSIONS': ['v2'],
 }
 
 REST_FRAMEWORK_EXTENSIONS = {

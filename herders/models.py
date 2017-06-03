@@ -1069,6 +1069,9 @@ class MonsterInstance(models.Model):
     rune_accuracy = models.IntegerField(blank=True, default=0)
     avg_rune_efficiency = models.FloatField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['-stars', '-level', 'monster__name']
+
     def is_max_level(self):
         return self.level == self.monster.max_level_from_stars(self.stars)
 
@@ -1429,9 +1432,6 @@ class MonsterInstance(models.Model):
 
     def __str__(self):
         return str(self.monster) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level)
-
-    class Meta:
-        ordering = ['-stars', '-level', 'monster__name']
 
 
 class MonsterPiece(models.Model):
@@ -2034,6 +2034,9 @@ class RuneInstance(models.Model):
     efficiency = models.FloatField(blank=True, null=True)
     max_efficiency = models.FloatField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['slot', 'type', 'level']
+
     def get_main_stat_rune_display(self):
         return self.RUNE_STAT_DISPLAY.get(self.main_stat, '')
 
@@ -2489,9 +2492,6 @@ class RuneInstance(models.Model):
     def __str__(self):
         return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
 
-    class Meta:
-        ordering = ['slot', 'type', 'level', 'quality']
-
 
 class RuneCraftInstance(models.Model):
     QUALITY_NORMAL = 0
@@ -2680,6 +2680,9 @@ class RuneCraftInstance(models.Model):
     quality = models.IntegerField(choices=QUALITY_CHOICES)
     value = models.IntegerField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['type', 'rune']
+
     def __str__(self):
         if self.stat in RuneInstance.PERCENT_STATS:
             percent = '%'
@@ -2748,6 +2751,9 @@ class BuildingInstance(models.Model):
     owner = models.ForeignKey(Summoner)
     building = models.ForeignKey(Building)
     level = models.IntegerField()
+
+    class Meta:
+        ordering = ['building']
 
     def remaining_upgrade_cost(self):
         return sum(self.building.upgrade_cost[self.level:])

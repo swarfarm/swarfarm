@@ -241,16 +241,18 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'rest_framework.throttling.UserRateThrottle',
+        'apiv2.throttling.ScopedPostRequestThrottle',
     ),
     'DEFAULT_THROTTLE_RATES': {
         'anon': '500/min',
         'user': '2000/min',
+        'registration': '5/min',
     },
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
     'DEFAULT_VERSION': 'v2',
-    'ALLOWED_VERSIONS': ['v1', 'v2'],
+    'ALLOWED_VERSIONS': ['v2'],
 }
 
 REST_FRAMEWORK_EXTENSIONS = {
@@ -261,8 +263,4 @@ REST_FRAMEWORK_EXTENSIONS = {
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'apiv2.views.jwt_response_payload_handler',
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
-}
-
-WAGGER_SETTINGS = {
-    'OPERATIONS_SORTER': 'method',
 }

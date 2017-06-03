@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import Http404
 from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
@@ -16,6 +15,7 @@ class SummonerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().select_related('summoner').order_by('pk')
     pagination_class = PublicListPagination
     permission_classes = [IsSelfOrPublic]
+    throttle_scope = 'registration'
     lookup_field = 'username'
     lookup_url_kwarg = 'pk'
 

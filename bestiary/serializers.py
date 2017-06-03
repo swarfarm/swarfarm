@@ -107,7 +107,6 @@ class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
 
 class HomunculusSkillSerializer(serializers.ModelSerializer):
     craft_materials = HomunculusSkillCraftCostSerializer(source='homunculusskillcraftcost_set', many=True)
-    # prerequisites = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     used_on = serializers.PrimaryKeyRelatedField(source='monsters', many=True, read_only=True)
 
     class Meta:

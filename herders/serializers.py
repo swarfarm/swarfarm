@@ -113,13 +113,12 @@ class BuildingInstanceSerializer(serializers.ModelSerializer):
 
 
 class SummonerSerializer(serializers.ModelSerializer):
-    in_game_name = serializers.CharField(source='summoner.summoner_name', allow_blank=True)
     server = serializers.ChoiceField(source='summoner.server', choices=Summoner.SERVER_CHOICES)
     public = serializers.BooleanField(source='summoner.public')
 
     class Meta:
         model = User
-        fields = ['url', 'username', 'in_game_name', 'server', 'public']
+        fields = ['url', 'username', 'server', 'public']
         extra_kwargs = {
             'password': {'write_only': True},
             'is_staff': {'read_only': True},
@@ -136,7 +135,7 @@ class FullUserSerializer(SummonerSerializer):
 
     class Meta:
         model = User
-        fields = ['url', 'username', 'password', 'email', 'is_staff', 'in_game_name', 'server', 'public', 'timezone']
+        fields = ['url', 'username', 'password', 'email', 'is_staff', 'server', 'public', 'timezone']
         extra_kwargs = {
             'password': {
                 'write_only': True,

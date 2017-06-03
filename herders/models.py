@@ -914,10 +914,6 @@ class Summoner(models.Model):
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
 
-    @property
-    def username(self):
-        return self.user.username
-
     def get_rune_counts(self):
         counts = {}
 

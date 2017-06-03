@@ -1,4 +1,3 @@
-from django.db.models import Prefetch
 from rest_framework import viewsets, filters
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 

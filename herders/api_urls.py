@@ -24,10 +24,10 @@ Personal:
 /profile/<username>/teams/<id>
 
 Global, for searching and filtering:
-/monster-instance/
-/monster-instance/<id>
-/teams/
-/teams/<id>
+/monster-instances/
+/monster-instances/<id>
+/rune-instances/
+/rune-instances/<id>
 """
 
 router = DefaultRouter()

@@ -26,14 +26,16 @@ class IsSelfOrPublic(permissions.BasePermission):
 class IsOwner(permissions.BasePermission):
     def has_permission(self, request, view):
         username = view.kwargs.get('user_pk', None)
+
+        if username is None:
+            # Doc generation doesn't supply a username, but permissions need to be true to generate all actions correctly
+            # All URL endpoints that use this permission will supply a username
+            return True
+
         try:
             summoner = Summoner.objects.select_related('user').get(user__username=username)
         except Summoner.DoesNotExist:
-            if username is not None:
-                raise NotFound()
-            else:
-                # Doc generation doesn't supply a username, but permissions need to be true to generate all actions correctly
-                return True
+            raise NotFound()
         else:
             is_owner = summoner.user == request.user
 

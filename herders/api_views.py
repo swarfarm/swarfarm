@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
@@ -9,6 +9,7 @@ from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPi
 from herders.serializers import *
 from herders.pagination import *
 from herders.permissions import *
+from herders.api_filters import MonsterInstanceFilter, RuneInstanceFilter
 
 
 class SummonerViewSet(viewsets.ModelViewSet):
@@ -43,14 +44,17 @@ class SummonerViewSet(viewsets.ModelViewSet):
 
 class GlobalMonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MonsterInstance.objects.filter(owner__public=True).select_related(
-        'owner__user'
+        'monster',
+        'owner__user',
     ).prefetch_related(
         'runeinstance_set',
         'runeinstance_set__owner__user',
-    )
+    ).order_by()
     serializer_class = MonsterInstanceSerializer
     permission_classes = [AllowAny]
     pagination_class = PublicListPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = MonsterInstanceFilter
 
 
 class GlobalRuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -58,10 +62,12 @@ class GlobalRuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         'owner',
         'owner__user',
         'assigned_to',
-    )
+    ).order_by()
     serializer_class = RuneInstanceSerializer
     permission_classes = [AllowAny]
     pagination_class = PublicListPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = RuneInstanceFilter
 
 
 class ProfileItemMixin(viewsets.GenericViewSet):

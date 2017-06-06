@@ -47,7 +47,7 @@ def parse_skill_data(preview=False):
     parsed_skill_names = get_skill_names_by_id()
     parsed_skill_descs = get_skill_descs_by_id()
 
-    with open('skills.csv', 'rb') as csvfile:
+    with open('bestiary/com2us_data/skills.csv', 'rt', encoding='utf8') as csvfile:
         skill_data = csv.DictReader(csvfile)
 
         scaling_stats = ScalingStat.objects.all()
@@ -103,9 +103,11 @@ def parse_skill_data(preview=False):
                 level_up_desc = {
                     'DR': 'Effect Rate +{0}%',
                     'AT': 'Damage +{0}%',
+                    'AT1': 'Damage +{0}%',
                     'HE': 'Recovery +{0}%',
                     'TN': 'Cooltime Turn -{0}',
                     'SD': 'Shield +{0}%',
+                    'SD1': 'Shield +{0}%',
                 }
 
                 level_up_text = ''
@@ -170,7 +172,7 @@ def parse_skill_data(preview=False):
 
                 # Finally save it if required
                 if updated:
-                    print('Updated skill ' + str(skill))
+                    print('Updated skill {}\n'.format(str(skill)))
                     if not preview:
                         skill.save()
 
@@ -181,8 +183,7 @@ def parse_skill_data(preview=False):
 def parse_monster_data(preview=False):
     parsed_monster_names = get_monster_names_by_id()
 
-
-    with open('monsters.csv', 'rb') as csvfile:
+    with open('bestiary/com2us_data/monsters.csv', 'rt', encoding='utf8') as csvfile:
         monster_data = csv.DictReader(csvfile)
 
         for row in monster_data:
@@ -444,9 +445,10 @@ def parse_monster_data(preview=False):
                         print("Updated {}'s icon filename".format(monster))
                         updated = True
 
-                    if updated and not preview:
-                        monster.save()
-                        print('Saved updates to {}'.format(monster))
+                    if updated:
+                        print('Updated {}\n'.format(monster))
+                        if not preview:
+                            monster.save()
         if preview:
             print('No changes were saved.')
 
@@ -463,9 +465,9 @@ def crop_monster_images():
 
 
 def decrypt_localvalue_dat():
-    with open('localvalue.dat') as f:
+    with open('bestiary/com2us_data/localvalue.dat') as f:
         data = decrypt_response(f.read().strip('\0'))
-        with open('localvalue.txt', 'w') as decrypted_file:
+        with open('bestiary/com2us_data/localvalue.txt', 'wb') as decrypted_file:
             decrypted_file.write(data)
 
 
@@ -488,7 +490,7 @@ def get_skill_descs_by_id():
 
 def save_translation_tables():
     tables = _get_translation_tables()
-    with open('text_eng.csv', 'w') as f:
+    with open('bestiary/com2us_data/text_eng.csv', 'w') as f:
         writer = csv.writer(f)
         writer.writerow(['table_num', 'id', 'text'])
         for table_idx, table in enumerate(tables):
@@ -497,7 +499,7 @@ def save_translation_tables():
 
 
 def _get_translation_tables():
-    raw = ConstBitStream(filename='text_eng.dat', offset=0x8 * 8)
+    raw = ConstBitStream(filename='bestiary/com2us_data/text_eng.dat', offset=0x8 * 8)
     tables = []
 
     try:
@@ -508,7 +510,7 @@ def _get_translation_tables():
             for _ in range(table_len):
                 parsed_id, str_len = raw.readlist('intle:32, intle:32')
                 parsed_str = binascii.a2b_hex(raw.read('hex:{}'.format(str_len * 8))[:-4])
-                table[parsed_id] = parsed_str
+                table[parsed_id] = parsed_str.decode("utf-8")
 
             tables.append(table)
     except ReadError:

@@ -1,12 +1,12 @@
 from refreshtoken.models import RefreshToken
-from herders.serializers import SummonerSerializer
+from herders.serializers import FullUserSerializer
 
 
 # JWT response to include user data
 def jwt_response_payload_handler(token, user=None, request=None):
     payload = {
         'token': token,
-        'user': SummonerSerializer(user, context={'request': request}).data
+        'user': FullUserSerializer(user, context={'request': request}).data
     }
 
     app = 'swarfarm'

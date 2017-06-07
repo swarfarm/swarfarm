@@ -1,9 +1,11 @@
 from celery import shared_task, current_task, states
+from datetime import datetime, timezone, timedelta
 
 from django.db import transaction
 
 from herders.models import Summoner, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance
 
+from .models import SummonLog, RunLog, RiftDungeonLog, RuneCraftLog, ShopRefreshLog, WorldBossLog, RiftRaidLog, WishLog
 from .com2us_parser import *
 from .log_exporter import export_all
 
@@ -11,6 +13,23 @@ from .log_exporter import export_all
 @shared_task
 def export_log_data():
     export_all()
+
+
+@shared_task
+def prune_old_data():
+    six_months_ago = datetime.now(timezone.utc) - timedelta(weeks=4 * 6)
+
+    log_models = [
+        SummonLog, RunLog, RiftDungeonLog, RuneCraftLog, ShopRefreshLog, WorldBossLog, RiftRaidLog, WishLog
+    ]
+
+    num_deleted = 0
+    for log in log_models:
+        count, _ = log.objects.filter(timestamp__lte=six_months_ago).delete()
+        print('Deleted {} entries from {}'.format(count, log.__name__))
+        num_deleted += count
+
+    print('Deleted {} objects total'.format(num_deleted))
 
 
 @shared_task

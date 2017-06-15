@@ -89,7 +89,7 @@ def validate_sw_json(data, summoner):
         # Do some supplementary checking
 
         # Check that the com2us ID matches previously imported value
-        if summoner.com2us_id is not None and summoner.com2us_id != data['wizard_id']:
+        if summoner.com2us_id is not None and summoner.com2us_id != data['wizard_info'].get('wizard_id'):
             validation_errors.append('Uploaded data does not match account from previous import. Are you sure you want to upload this file?')
 
     return schema_error, validation_errors

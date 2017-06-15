@@ -73,6 +73,11 @@ class MonsterImportOptionsMixin(forms.Form):
         help_text='Locking on SWARFARM means a monster will not be used as fusion ingredients or skill-ups.',
         initial=True,
     )
+    ignore_validation = forms.BooleanField(
+        required=False,
+        label='Ignore validation checks',
+        initial=False,
+    )
 
 
 class MonsterImportOptionsLayout(Layout):
@@ -80,7 +85,7 @@ class MonsterImportOptionsLayout(Layout):
         super(MonsterImportOptionsLayout, self).__init__(
             Div(
                 HTML("""<h4 class="list-group-item-heading">Monster Filters</h4>"""),
-                Alert(content="Note: If a monster is filtered out, it's equipped runes will not be imported either!", css_class='alert-warning'),
+                HTML("""<p class="text-warning">Note: If a monster is filtered out, it's equipped runes will not be imported either!</p>"""),
                 Field('minimum_stars', template='crispy/button_radio_select.html'),
                 Field('ignore_silver'),
                 Field('ignore_material'),
@@ -95,8 +100,12 @@ class MonsterImportOptionsLayout(Layout):
                 Field('missing_monster_action'),
                 Field('missing_rune_action'),
                 Div(
+                    Field('ignore_validation'),
+                    css_class='alert alert-warning condensed',
+                ),
+                Div(
                     Field('clear_profile'),
-                    css_class='alert alert-danger'
+                    css_class='alert alert-danger condensed',
                 ),
                 css_class='list-group-item',
             ),

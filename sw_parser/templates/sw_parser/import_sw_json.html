@@ -27,6 +27,7 @@
         </p>
 
         {% include 'sw_parser/import_error_snippet.html' with errors=errors only %}
+        {% include 'sw_parser/import_validation_snippet.html' with errors=validation_failures only %}
 
         {% crispy form %}
     </div>

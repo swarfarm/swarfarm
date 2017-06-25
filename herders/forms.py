@@ -1155,7 +1155,7 @@ class FilterRuneForm(forms.Form):
             Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
             Div(
                 Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-12'),
-                Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12',),
+                Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-sm-12',),
                 css_class='row col-md-4 col-sm-4'
             ),
             Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),

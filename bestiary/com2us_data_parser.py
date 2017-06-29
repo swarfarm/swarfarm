@@ -140,6 +140,7 @@ def parse_skill_data(preview=False):
                     for operation in formula_array:
                         # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
                         operation = operation.replace('*1.0', '')
+                        operation = operation.replace('ATTACK_DEF', 'DEF')
                         if 'FIXED' in operation:
                             operation = operation.replace('FIXED', '')
                             fixed = True

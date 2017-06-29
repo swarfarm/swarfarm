@@ -189,7 +189,7 @@ def parse_monster_data(preview=False):
         for row in monster_data:
             master_id = int(row['unit master id'])
 
-            if (master_id < 40000 and row['unit master id'][3] != '2') or (1000101 <= master_id <= 1000113):
+            if (master_id < 40000 and row['unit master id'][3] != '2') or (1000101 <= master_id <= 1000300):
                 # Non-summonable monsters appear with IDs above 40000 and a 2 in that position represents the japanese 'incomplete' monsters
                 # Homonculus IDs start at 1000101
 

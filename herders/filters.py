@@ -15,6 +15,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
     monster__skills__scaling_stats__pk = django_filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
     monster__skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=Effect.objects.all(), method='filter_monster__skills__skill_effect__pk')
+    monster__skills__cooltime = django_filters.CharFilter(method='filter_monster_skills_cooltime')
     effects_logic = django_filters.BooleanFilter(method='filter_effects_logic')
     monster__fusion_food = django_filters.BooleanFilter(method='filter_monster__fusion_food')
 
@@ -54,6 +55,15 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     def filter_monster__skills__skill_effect__pk(self, queryset, name, value):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)
         stat_scaling = self.form.cleaned_data.get('monster__skills__scaling_stats__pk', [])
+        cooltimes = self.form.cleaned_data.get('monster__skills__cooltime', [])
+
+        try:
+            cooltimes = cooltimes.split(',')
+            min_cooltime = int(cooltimes[0])
+            max_cooltime = int(cooltimes[1])
+        except:
+            min_cooltime = 0
+            max_cooltime = 999
 
         if old_filtering:
             # Filter if any skill on the monster has the designated fields
@@ -62,6 +72,12 @@ class MonsterInstanceFilter(django_filters.FilterSet):
 
             for pk in stat_scaling:
                 queryset = queryset.filter(monster__skills__scaling_stats=pk)
+
+            cooltime_filter = Q(monster__skills__cooltime__gte=min_cooltime) & Q(monster__skills__cooltime__lte=max_cooltime)
+            if min_cooltime == 0 or max_cooltime == 0:
+                cooltime_filter = Q(monster__skills__cooltime__isnull=True) | cooltime_filter
+
+            queryset = queryset.filter(cooltime_filter)
 
             return queryset.distinct()
 
@@ -77,10 +93,20 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             for pk in stat_scaling:
                 skills = skills.filter(scaling_stats=pk)
 
+            cooltime_filter = Q(cooltime__gte=min_cooltime) & Q(cooltime__lte=max_cooltime)
+            if min_cooltime == 0 or max_cooltime == 0:
+                cooltime_filter = Q(cooltime__isnull=True) | cooltime_filter
+
+            skills = skills.filter(cooltime_filter)
+
             return queryset.filter(monster__skills__in=skills).distinct()
 
     def filter_effects_logic(self, queryset, name, value):
         # This field is just used to alter the logic of skill effect filter and is used in filter_monster__skills__skill_effect__pk()
+        return queryset
+
+    def filter_monster_skills_cooltime(self, queryset, name, value):
+        # This field is handled in filter_monster__skills__skill_effect__pk()
         return queryset
 
 

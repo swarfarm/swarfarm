@@ -509,6 +509,10 @@ class FilterMonsterInstanceForm(forms.Form):
         queryset=ScalingStat.objects.all(),
         required=False,
     )
+    monster__skills__cooltime = forms.CharField(
+        label="Cooldown",
+        required=False,
+    )
     buff_debuff_effects = AdvancedSelectMultiple(
         label='Buffs/Debuffs',
         queryset=Effect.objects.exclude(icon_filename=''),
@@ -597,6 +601,17 @@ class FilterMonsterInstanceForm(forms.Form):
                         ),
                         Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('monster__skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field(
+                            'monster__skills__cooltime',
+                            data_provide='slider',
+                            data_slider_min='0',
+                            data_slider_max='13',
+                            data_slider_value='[0, 13]',
+                            data_slider_step='1',
+                            data_slider_ticks='[0, 13]',
+                            data_slider_ticks_labels='["0", "13"]',
+                            wrapper_class='col-lg-6'
+                        ),
                         Field('effects_logic', data_toggle='toggle', data_on='Any Skill', data_onstyle='primary', data_off='One Skill', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12'),
                         css_class='row'
                     ),
@@ -1155,7 +1170,7 @@ class FilterRuneForm(forms.Form):
             Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
             Div(
                 Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-12'),
-                Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-12',),
+                Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-sm-12',),
                 css_class='row col-md-4 col-sm-4'
             ),
             Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),

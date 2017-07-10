@@ -68,7 +68,9 @@ def parse_pcap(pcap_file):
                 return resp_data
 
 
-def validate_sw_json(data):
+def validate_sw_json(data, summoner):
+    validation_errors = []
+
     # Determine if it's a friend visit or a personal data file
     if 'friend' in data:
         validator = VisitFriendValidator
@@ -76,15 +78,25 @@ def validate_sw_json(data):
         validator = HubUserLoginValidator
 
     # Check the submitted data against a schema and return any errors in human readable format
-    error = best_match(validator.iter_errors(data))
+    schema_error = best_match(validator.iter_errors(data))
 
-    if error:
-        return 'Error in field {}:\n{}'.format(
-            '[%s]' % ']['.join(repr(index) for index in error.path),
-            error.message
+    if schema_error:
+        schema_error = 'Error in field {}:\n{}'.format(
+            '[%s]' % ']['.join(repr(index) for index in schema_error.path),
+            schema_error.message
         )
     else:
-        return None
+        # Do some supplementary checking
+        if 'friend' in data:
+            wizard_id = data['friend']['wizard_id']
+        else:
+            wizard_id = data['wizard_info']['wizard_id']
+
+        # Check that the com2us ID matches previously imported value
+        if summoner.com2us_id is not None and summoner.com2us_id != wizard_id:
+            validation_errors.append('Uploaded data does not match account from previous import. Are you sure you want to upload this file?')
+
+    return schema_error, validation_errors
 
 
 def parse_sw_json(data, owner, options):

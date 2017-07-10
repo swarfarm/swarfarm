@@ -4,7 +4,7 @@
 echo "Installing software packages..."
 sudo apt-get -qq update
 sudo apt-get -qq upgrade -y
-sudo apt-get -qq install -y nginx postgresql postgresql-contrib libpq-dev rabbitmq-server redis-server git make build-essential libjpeg-dev libffi-dev libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev
+sudo apt-get -qq install -y nginx postgresql postgresql-contrib libpq-dev pgbouncer rabbitmq-server redis-server git make build-essential libjpeg-dev libffi-dev libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev
 
 # Postgresql setup
 # Allow listening on all interfaces
@@ -19,6 +19,11 @@ sudo service postgresql restart
 sudo -u postgres psql --command="CREATE DATABASE swarfarm_dev;"
 sudo -u postgres psql --command="CREATE USER swarfarmer_dev WITH PASSWORD 'intentionallyweak';"
 sudo -u postgres psql --command="GRANT ALL PRIVILEGES ON DATABASE swarfarm_dev TO swarfarmer_dev;"
+
+sudo mv ~/pgbouncer.ini /etc/pgbouncer/pgbouncer.ini
+sudo mv ~/pgbouncer_userlist.txt /etc/pgbouncer/userlist.txt
+sudo mv ~/pgbouncer_start /etc/default/pgbouncer
+sudo service pgbouncer restart
 
 # Set up nginx
 sudo mv ~/nginx_config /etc/nginx/sites-available/swarfarm

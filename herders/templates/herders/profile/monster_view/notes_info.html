@@ -23,6 +23,31 @@
                 {% endfor %}
             </span>
             <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
+            <div class="image-plus-icon">
+                {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
+                    <img src="{{ img_url_prefix }}icons/fusion.png" />
+                {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
+                    <img src="{{ img_url_prefix }}icons/fusion_ignored.png" />
+                {% endif %}
+                {% if instance.ignore_for_fusion %}
+                    <span class="fa-stack">
+                        <span class="fa fa-square fa-stack-2x"></span>
+                        <span class="fa fa-lock fa-stack-1x fa-inverse"></span>
+                    </span>
+                {% endif %}
+                {% if instance.fodder %}
+                    <span class="fa-stack">
+                        <span class="fa fa-square fa-stack-2x"></span>
+                        <span class="fa fa-birthday-cake fa-stack-1x fa-inverse"></span>
+                    </span>
+                {% endif %}
+                {% if instance.in_storage %}
+                    <span class="fa-stack">
+                        <span class="fa fa-square fa-stack-2x"></span>
+                        <span class="fa fa-bed fa-stack-1x fa-inverse"></span>
+                    </span>
+                {% endif %}
+            </div>
         </div>
         <div class="bestiary-name">
             <h1>{{ instance.monster.name }} <small></small></h1>

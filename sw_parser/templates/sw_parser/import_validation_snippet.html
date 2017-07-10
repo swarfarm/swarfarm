@@ -1,0 +1,10 @@
+{% if errors|length > 0 %}
+<div class="alert alert-warning">
+    <ul class="list-unstyled">
+    {% for error in errors %}
+    <li><strong>WARNING: </strong>{{ error }}</li>
+    {% endfor %}
+    </ul>
+    <p>If you wish to continue anyway, select the 'Ignore validation checks' option.</p>
+</div>
+{% endif %}

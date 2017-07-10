@@ -140,6 +140,7 @@ def parse_skill_data(preview=False):
                     for operation in formula_array:
                         # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
                         operation = operation.replace('*1.0', '')
+                        operation = operation.replace('ATTACK_DEF', 'DEF')
                         if 'FIXED' in operation:
                             operation = operation.replace('FIXED', '')
                             fixed = True
@@ -189,7 +190,7 @@ def parse_monster_data(preview=False):
         for row in monster_data:
             master_id = int(row['unit master id'])
 
-            if (master_id < 40000 and row['unit master id'][3] != '2') or (1000101 <= master_id <= 1000113):
+            if (master_id < 40000 and row['unit master id'][3] != '2') or (1000101 <= master_id <= 1000300):
                 # Non-summonable monsters appear with IDs above 40000 and a 2 in that position represents the japanese 'incomplete' monsters
                 # Homonculus IDs start at 1000101
 

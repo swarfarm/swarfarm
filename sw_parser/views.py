@@ -76,6 +76,7 @@ def import_pcap(request):
 @csrf_protect
 def _import_pcap(request):
     errors = []
+    validation_failures = []
 
     if request.POST:
         form = ImportPCAPForm(request.POST, request.FILES)
@@ -94,6 +95,7 @@ def _import_pcap(request):
                 'except_light_and_dark': form.cleaned_data.get('except_light_and_dark'),
                 'delete_missing_monsters': form.cleaned_data.get('missing_monster_action'),
                 'delete_missing_runes': form.cleaned_data.get('missing_rune_action'),
+                'ignore_validation_errors': form.cleaned_data.get('ignore_validation'),
             }
 
             try:
@@ -102,11 +104,15 @@ def _import_pcap(request):
                 errors.append('Exception ' + str(type(e)) + ': ' + str(e))
             else:
                 if data:
-                    validation_error = validate_sw_json(data)
+                    schema_errors, validation_errors = validate_sw_json(data, request.user.summoner)
 
-                    if validation_error:
-                        errors.append(validation_error)
-                    else:
+                    if schema_errors:
+                        errors += schema_errors
+
+                    if validation_errors:
+                        validation_failures += validation_errors
+
+                    if not errors and (not validation_failures or import_options['ignore_validation_errors']):
                         # Queue the import
                         task = com2us_data_import.delay(data, summoner.pk, import_options)
                         request.session['import_task_id'] = task.task_id
@@ -121,6 +127,7 @@ def _import_pcap(request):
     context = {
         'form': form,
         'errors': errors,
+        'validation_failures': validation_failures,
         'view': 'importexport'
     }
 
@@ -130,6 +137,7 @@ def _import_pcap(request):
 @login_required
 def import_sw_json(request):
     errors = []
+    validation_failures = []
     request.session['import_stage'] = None
     request.session['import_total'] = 0
     request.session['import_current'] = 0
@@ -154,6 +162,7 @@ def import_sw_json(request):
                 'except_light_and_dark': form.cleaned_data.get('except_light_and_dark'),
                 'delete_missing_monsters': form.cleaned_data.get('missing_monster_action'),
                 'delete_missing_runes': form.cleaned_data.get('missing_rune_action'),
+                'ignore_validation_errors': form.cleaned_data.get('ignore_validation'),
             }
 
             try:
@@ -163,11 +172,15 @@ def import_sw_json(request):
             except AttributeError:
                 errors.append('Issue opening uploaded file. Please try again.')
             else:
-                validation_error = validate_sw_json(data)
+                schema_errors, validation_errors = validate_sw_json(data, request.user.summoner)
 
-                if validation_error:
-                    errors.append(validation_error)
-                else:
+                if schema_errors:
+                    errors += schema_errors
+
+                if validation_errors:
+                    validation_failures += validation_errors
+
+                if not errors and (not validation_failures or import_options['ignore_validation_errors']):
                     # Queue the import
                     task = com2us_data_import.delay(data, summoner.pk, import_options)
                     request.session['import_task_id'] = task.task_id
@@ -179,6 +192,7 @@ def import_sw_json(request):
     context = {
         'form': form,
         'errors': errors,
+        'validation_failures': validation_failures,
         'view': 'importexport',
     }
 

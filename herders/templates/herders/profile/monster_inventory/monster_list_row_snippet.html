@@ -155,6 +155,14 @@
         {% endif %}
     </td>
     <td class="monster-info-icons-column">
+        {% if instance.ignore_for_fusion %}
+            <span class="glyphicon glyphicon-lock"></span>
+            <span class="hidden">0</span>
+        {% else %}
+            <span class="hidden">1</span>
+        {% endif %}
+    </td>
+    <td class="monster-info-icons-column">
         {% if instance.fodder %}
             <span class="fa fa-birthday-cake" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Marked as food"></span>
             <span class="hidden">0</span>

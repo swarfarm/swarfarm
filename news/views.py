@@ -5,7 +5,7 @@ from .models import Article
 
 
 def latest_news(request):
-    news_posts = Article.objects.all().order_by('-sticky', '-created')
+    news_posts = Article.objects.all()
 
     paginator = Paginator(news_posts, 5)
     page = request.GET.get('page')

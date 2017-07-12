@@ -215,9 +215,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # django_cors
 CORS_ORIGIN_ALLOW_ALL = DEBUG
-CORS_ORIGIN_WHITELIST = (
-    'tool.swop.one',
-)
+CORS_ORIGIN_WHITELIST = ['tool.swop.one']
+CORS_ORIGIN_REGEX_WHITELIST = [r'^([^/@]*\.)?swarfarm\.com$']
 CORS_URLS_REGEX = r'^/api(v\d+)?/.*$'
 
 # Google APIs

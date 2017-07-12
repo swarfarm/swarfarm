@@ -98,7 +98,7 @@ class LeaderSkillSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
-    material = CraftMaterialSerializer(read_only=True)
+    material = CraftMaterialSerializer(source='craft', read_only=True)
 
     class Meta:
         model = HomunculusSkillCraftCost
@@ -106,7 +106,7 @@ class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillSerializer(serializers.ModelSerializer):
-    craft_materials = HomunculusSkillCraftCostSerializer(source='homunculusskillcraftcost_set', many=True)
+    craft_materials = HomunculusSkillCraftCostSerializer(source='homunculusskillcraftcost_set', many=True, read_only=True)
     used_on = serializers.PrimaryKeyRelatedField(source='monsters', many=True, read_only=True)
 
     class Meta:

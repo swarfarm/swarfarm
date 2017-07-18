@@ -606,7 +606,7 @@ class LocalvalueTables(IntEnum):
 
 
 def _decrypt_localvalue_dat():
-    with open('bestiary/com2us_data/localvalue_3.2.5.dat') as f:
+    with open('bestiary/com2us_data/localvalue.dat') as f:
         return decrypt_response(f.read().strip('\0'))
 
 
@@ -619,7 +619,8 @@ def _get_localvalue_tables():
     num_tables = raw.read('intle:32') - 1
     raw.read('pad:{}'.format(0xc * 8))
 
-    print('Found {} tables'.format(num_tables))
+    if num_tables > int(max(LocalvalueTables)):
+        print('Found {} tables in localvalue.dat. There are only {} tables defined!'.format(num_tables, int(max(LocalvalueTables))))
 
     # Initialize the table parameters
     for x in range(0, num_tables):
@@ -633,15 +634,15 @@ def _get_localvalue_tables():
 
     # Record where we are now, as that is the offset of where the first table starts
     table_start_offset = int(raw.pos / 8)
-    print('table offset bytes: {}'.format(table_start_offset))
 
     # Load up each table with it's data and headers
+    # Table rows are an array of dicts where the dict keys are the header strings, similar to csv.DictReader
     for table_num, table in tables.items():
         raw = ConstBitStream(decrypted_localvalue)
         raw.read('pad:{}'.format((table_start_offset + table['start']) * 8))
         table_str = raw.read('bytes:{}'.format(table['end'] - table['start'])).decode('utf-8').strip()
         table_rows = table_str.split('\r\n')
         table['header'] = table_rows[0].split('\t')
-        table['rows'] = [row.split('\t') for row in table_rows[1:]]
+        table['rows'] = [{table['header'][col]: value for col, value in enumerate(row.split('\t'))} for row in table_rows[1:]]
 
     return tables

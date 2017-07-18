@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 
+# Add postgresql repo
+echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
 # Install packages
 echo "Installing software packages..."
 sudo apt-get -qq update
 sudo apt-get -qq upgrade -y
-sudo apt-get -qq install -y nginx postgresql postgresql-contrib libpq-dev pgbouncer rabbitmq-server redis-server git make build-essential libjpeg-dev libffi-dev libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev
+sudo apt-get -qq install -y nginx postgresql-9.4 postgresql-contrib-9.4 libpq-dev pgbouncer rabbitmq-server redis-server git make build-essential libjpeg-dev libffi-dev libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev
 
 # Postgresql setup
 # Allow listening on all interfaces
 echo "Setting up postgresql database and roles..."
-sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" "/etc/postgresql/9.3/main/postgresql.conf"
+sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" "/etc/postgresql/9.4/main/postgresql.conf"
 # Append to pg_hba.conf to add password auth:
 echo "host    all             all             all                     md5" | sudo tee --append /etc/postgresql/9.3/main/pg_hba.conf > /dev/null
 

@@ -1,3 +1,4 @@
+from enum import IntEnum
 from glob import iglob
 from PIL import Image
 import binascii
@@ -465,21 +466,22 @@ def crop_monster_images():
             crop.save(im_path)
 
 
-MONSTER_NAME_TABLE = 1
-SKILL_NAME_TABLE = 19
-SKILL_DESCRIPTION_TABLE = 20
+class TranslationTables(IntEnum):
+    MONSTER_NAME_TABLE = 1
+    SKILL_NAME_TABLE = 19
+    SKILL_DESCRIPTION_TABLE = 20
 
 
 def get_monster_names_by_id():
-    return _get_translation_tables()[MONSTER_NAME_TABLE]
+    return _get_translation_tables()[TranslationTables.MONSTER_NAME_TABLE]
 
 
 def get_skill_names_by_id():
-    return _get_translation_tables()[SKILL_NAME_TABLE]
+    return _get_translation_tables()[TranslationTables.SKILL_NAME_TABLE]
 
 
 def get_skill_descs_by_id():
-    return _get_translation_tables()[SKILL_DESCRIPTION_TABLE]
+    return _get_translation_tables()[TranslationTables.SKILL_DESCRIPTION_TABLE]
 
 
 def save_translation_tables():
@@ -514,8 +516,97 @@ def _get_translation_tables():
     return tables
 
 
+class LocalvalueTables(IntEnum):
+    WIZARD_XP_REQUIREMENTS = 1
+    SKY_ISLANDS = 2
+    BUILDINGS = 3
+    DECORATIONS = 4
+    OBSTACLES = 5
+    MONSTERS = 6
+    # Unknown table 7 - wizard level related
+    # Unknown table 8 - some sort of effect mapping
+    SKILL_EFFECTS = 9
+    SKILLS = 10
+    SUMMON_METHODS = 11
+    RUNE_SET_DEFINITIONS = 12
+    NPC_ARENA_RIVALS = 13
+    ACHIEVEMENTS = 14
+    TUTORIALS = 15
+    SCENARIO_BOSSES = 16
+    SCENARIOS = 17
+    CAIROS_BOSSES = 18
+    # Unknown table 19 - more effect mapping
+    WORLD_MAP = 20
+    ARENA_RANKS = 21
+    MONTHLY_REWARDS = 22
+    CAIROS_DUNGEON_LIST = 23
+    INVITE_FRIEND_REWARDS_OLD = 24
+    # Unknown table 25 - probably x/y positions of 3d models in dungeons/scenarios
+    AWAKENING_ESSENCES = 26
+    ACCOUNT_BOOSTS = 27  # XP boost, mana boost, etc
+    ARENA_WIN_STREAK_BONUSES = 28
+    CHAT_BANNED_WORDS = 29
+    IFRIT_SUMMON_ITEM = 30
+    SECRET_DUNGEONS = 31
+    SECRET_DUNGEON_ENEMIES = 32
+    PURCHASEABLE_ITEMS = 33
+    DAILY_MISSIONS = 34
+    VARIOUS_CONSTANTS = 35
+    MONSTER_POWER_UP_COSTS = 36
+    RUNE_UNEQUIP_COSTS = 37
+    RUNE_UPGRADE_COSTS_AND_CHANCES = 38
+    SCENARIOS2 = 39
+    PURCHASEABLE_ITEMS2 = 40
+    # Unknown table 41 - scroll/cost related?
+    MAIL_ITEMS = 42
+    # Unknown table 43 - angelmon reward sequences?
+    MONSTER_FUSION_RECIPES_OLD = 44
+    TOA_REWARDS = 45
+    MONSTER_FUSION_RECIPES = 46
+    TOA_FLOOR_MODELS_AND_EFFECTS = 47
+    ELLIA_COSTUMES = 48
+    GUILD_LEVELS = 49  # Unimplemented in-game
+    GUILD_BONUSES = 50  # Unimplemented in-game
+    RUNE_STAT_VALUES = 51
+    GUILD_RANKS = 52
+    GUILD_UNASPECTED_SUMMON_PIECES = 53  # Ifrit and Cowgirl pieces
+    # Unknown table 54 - possible rune crafting or package
+    MONSTER_TRANSMOGS = 55
+    ELEMENTAL_RIFT_DUNGEONS = 56
+    WORLD_BOSS_SCRIPT = 57
+    WORLD_BOSS_ELEMENTAL_ADVANTAGES = 58
+    WORLD_BOSS_FIGHT_RANKS = 59
+    WORLD_BOSS_PLAYER_RANKS = 60
+    SKILL_TRANSMOGS = 61
+    ENCHANT_GEMS = 62
+    GRINDSTONES = 63
+    RUNE_CRAFT_APPLY_COSTS = 64
+    RIFT_RAIDS = 65
+    # Unknown table 66 - some sort of reward related
+    ELLIA_COSTUME_ITEMS = 67
+    CHAT_BANNED_WORDS2 = 68
+    CHAT_BANNED_WORDS3 = 69
+    CHAT_BANNED_WORDS4 = 70
+    CRAFT_MATERIALS = 71
+    HOMUNCULUS_SKILL_TREES = 72
+    HOMUNCULUS_CRAFT_COSTS = 73
+    ELEMENTAL_DAMAGE_RANKS = 74
+    WORLD_ARENA_RANKS = 75
+    WORLD_ARENA_SHOP_ITEMS = 76
+    CHAT_BANNED_WORDS5 = 77
+    CHAT_BANNED_WORDS6 = 78
+    CHAT_BANNED_WORDS7 = 79
+    CHAT_BANNED_WORDS8 = 80
+    ARENA_CHOICE_UI = 81
+    IFRIT_TRANSMOGS = 82
+    # Unknown table 83 - value lists related to game version
+    CHALLENGES = 84
+    # Unknown table 85 - some sort of rules
+    WORLD_ARENA_SEASON_REWARDS = 86
+
+
 def _decrypt_localvalue_dat():
-    with open('bestiary/com2us_data/localvalue.dat') as f:
+    with open('bestiary/com2us_data/localvalue_3.2.5.dat') as f:
         return decrypt_response(f.read().strip('\0'))
 
 
@@ -525,11 +616,13 @@ def _get_localvalue_tables():
 
     raw = ConstBitStream(decrypted_localvalue)
     raw.read('pad:{}'.format(0x24 * 8))
-    num_tables = raw.read('intle:32')
+    num_tables = raw.read('intle:32') - 1
     raw.read('pad:{}'.format(0xc * 8))
 
+    print('Found {} tables'.format(num_tables))
+
     # Initialize the table parameters
-    for x in range(0, num_tables - 1):
+    for x in range(0, num_tables):
         table_num, start, end = raw.readlist(['intle:32']*3)
         tables[table_num] = {
             'start': start,

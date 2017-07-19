@@ -13,6 +13,7 @@ from sw_parser.com2us_parser import decrypt_response
 
 
 def parse_skill_data(preview=False):
+    monster_table = _get_localvalue_tables(LocalvalueTables.MONSTERS)
     skill_table = _get_localvalue_tables(LocalvalueTables.SKILLS)
     skill_names = get_skill_names_by_id()
     skill_descriptions = get_skill_descs_by_id()
@@ -24,125 +25,137 @@ def parse_skill_data(preview=False):
         # Get matching skill in DB
         master_id = int(skill_data['master id'])
 
+        # Skip it if no translation exists
+        if master_id not in skill_names or master_id not in skill_descriptions:
+            continue
+
+        updated = False
         try:
             skill = Skill.objects.get(com2us_id=master_id)
         except Skill.DoesNotExist:
-            continue
-        else:
-            updated = False
+            # Check if it is used on any monster. If so, create it
+            for monster in monster_table['rows']:
+                skill_array = json.loads(monster['base skill'])
 
-            # Name
-            if skill.name != skill_names[master_id]:
-                skill.name = skill_names[master_id]
-                print('Updated name to {}'.format(skill.name))
-                updated = True
-
-            # Description
-            if skill.description != skill_descriptions[master_id]:
-                skill.description = skill_descriptions[master_id]
-                print('Updated description to {}'.format(skill.description))
-                updated = True
-
-            # Icon
-            icon_nums = json.loads(skill_data['thumbnail'])
-            icon_filename = 'skill_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
-            if skill.icon_filename != icon_filename:
-                skill.icon_filename = icon_filename
-                print('Updated icon to {}'.format(skill.icon_filename))
-                updated = True
-
-            # Cooltime
-            cooltime = int(skill_data['cool time']) + 1 if int(skill_data['cool time']) > 0 else None
-
-            if skill.cooltime != cooltime:
-                skill.cooltime = cooltime
-                print('Updated cooltime to {}'.format(skill.cooltime))
-                updated = True
-
-            # Max Level
-            max_lv = int(skill_data['max level'])
-            if skill.max_level != max_lv:
-                skill.max_level = max_lv
-                print('Updated max level to {}'.format(skill.max_level))
-                updated = True
-
-            # Level up progress
-            level_up_desc = {
-                'DR': 'Effect Rate +{0}%',
-                'AT': 'Damage +{0}%',
-                'AT1': 'Damage +{0}%',
-                'HE': 'Recovery +{0}%',
-                'TN': 'Cooltime Turn -{0}',
-                'SD': 'Shield +{0}%',
-                'SD1': 'Shield +{0}%',
-            }
-
-            level_up_text = ''
-
-            for level in json.loads(skill_data['level']):
-                level_up_text += level_up_desc[level[0]].format(level[1]) + '\n'
-
-            if skill.level_progress_description != level_up_text:
-                skill.level_progress_description = level_up_text
-                print('Updated level-up progress description')
-                updated = True
-
-            # Buffs
-            # maybe this later. Data seems incomplete sometimes.
-
-            # Scaling formula and stats
-            skill.scaling_stats.clear()
-
-            # Skill multiplier formula
-            if skill.multiplier_formula_raw != skill_data['fun data']:
-                skill.multiplier_formula_raw = skill_data['fun data']
-                print('Updated raw multiplier formula to {}'.format(skill.multiplier_formula_raw))
-                updated = True
-
-            formula = ''
-            fixed = False
-            formula_array = [''.join(map(str, scale)) for scale in json.loads(skill_data['fun data'])]
-            plain_operators = '+-*/'
-            if len(formula_array):
-                for operation in formula_array:
-                    # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
-                    operation = operation.replace('*1.0', '')
-                    operation = operation.replace('ATTACK_DEF', 'DEF')
-                    if 'FIXED' in operation:
-                        operation = operation.replace('FIXED', '')
-                        fixed = True
-                        # TODO: Add Ignore Defense effect to skill if not present already
-
-                    if operation not in plain_operators:
-                        formula += '({0})'.format(operation)
-                    else:
-                        formula += '{0}'.format(operation)
-
-                formula = str(simplify(formula))
-
-                # Find the scaling stat used in this section of formula
-                for stat in scaling_stats:
-                    if stat.com2us_desc in formula:
-                        skill.scaling_stats.add(stat)
-                        if stat.description:
-                            human_readable = '<mark data-toggle="tooltip" data-placement="top" title="' + stat.description + '">' + stat.stat + '</mark>'
-                        else:
-                            human_readable = '<mark>' + stat.stat + '</mark>'
-                        formula = formula.replace(stat.com2us_desc, human_readable)
-
-                if fixed:
-                    formula += ' (Fixed)'
-
-                if skill.multiplier_formula != formula:
-                    skill.multiplier_formula = formula
-                    print('Updated multiplier formula to {}'.format(skill.multiplier_formula))
+                if master_id in skill_array:
+                    slot = skill_array.index(master_id) + 1
+                    skill = Skill.objects.create(name='tempname', com2us_id=master_id, description='tempdescription', max_level=1, slot=slot)
+                    print('!!! Creating new skill with com2us ID {}, slot {}, used on monster {}'.format(master_id, slot, monster['unit master id']))
                     updated = True
+                    break
 
-            # Finally save it if required
-            if updated:
-                print('Updated skill {}\n'.format(str(skill)))
-                if not preview:
-                    skill.save()
+        # Name
+        if skill.name != skill_names[master_id]:
+            skill.name = skill_names[master_id]
+            print('Updated name to {}'.format(skill.name))
+            updated = True
+
+        # Description
+        if skill.description != skill_descriptions[master_id]:
+            skill.description = skill_descriptions[master_id]
+            print('Updated description to {}'.format(skill.description))
+            updated = True
+
+        # Icon
+        icon_nums = json.loads(skill_data['thumbnail'])
+        icon_filename = 'skill_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
+        if skill.icon_filename != icon_filename:
+            skill.icon_filename = icon_filename
+            print('Updated icon to {}'.format(skill.icon_filename))
+            updated = True
+
+        # Cooltime
+        cooltime = int(skill_data['cool time']) + 1 if int(skill_data['cool time']) > 0 else None
+
+        if skill.cooltime != cooltime:
+            skill.cooltime = cooltime
+            print('Updated cooltime to {}'.format(skill.cooltime))
+            updated = True
+
+        # Max Level
+        max_lv = int(skill_data['max level'])
+        if skill.max_level != max_lv:
+            skill.max_level = max_lv
+            print('Updated max level to {}'.format(skill.max_level))
+            updated = True
+
+        # Level up progress
+        level_up_desc = {
+            'DR': 'Effect Rate +{0}%',
+            'AT': 'Damage +{0}%',
+            'AT1': 'Damage +{0}%',
+            'HE': 'Recovery +{0}%',
+            'TN': 'Cooltime Turn -{0}',
+            'SD': 'Shield +{0}%',
+            'SD1': 'Shield +{0}%',
+        }
+
+        level_up_text = ''
+
+        for level in json.loads(skill_data['level']):
+            level_up_text += level_up_desc[level[0]].format(level[1]) + '\n'
+
+        if skill.level_progress_description != level_up_text:
+            skill.level_progress_description = level_up_text
+            print('Updated level-up progress description')
+            updated = True
+
+        # Buffs
+        # maybe this later. Data seems incomplete sometimes.
+
+        # Scaling formula and stats
+        skill.scaling_stats.clear()
+
+        # Skill multiplier formula
+        if skill.multiplier_formula_raw != skill_data['fun data']:
+            skill.multiplier_formula_raw = skill_data['fun data']
+            print('Updated raw multiplier formula to {}'.format(skill.multiplier_formula_raw))
+            updated = True
+
+        formula = ''
+        fixed = False
+        formula_array = [''.join(map(str, scale)) for scale in json.loads(skill_data['fun data'])]
+        plain_operators = '+-*/^'
+        if len(formula_array):
+            for operation in formula_array:
+                # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
+                operation = operation.replace('*1.0', '')
+                operation = operation.replace('ATTACK_DEF', 'DEF')
+                if 'FIXED' in operation:
+                    operation = operation.replace('FIXED', '')
+                    fixed = True
+                    # TODO: Add Ignore Defense effect to skill if not present already
+
+                if operation not in plain_operators:
+                    formula += '({0})'.format(operation)
+                else:
+                    formula += '{0}'.format(operation)
+
+            formula = str(simplify(formula))
+
+            # Find the scaling stat used in this section of formula
+            for stat in scaling_stats:
+                if stat.com2us_desc in formula:
+                    skill.scaling_stats.add(stat)
+                    if stat.description:
+                        human_readable = '<mark data-toggle="tooltip" data-placement="top" title="' + stat.description + '">' + stat.stat + '</mark>'
+                    else:
+                        human_readable = '<mark>' + stat.stat + '</mark>'
+                    formula = formula.replace(stat.com2us_desc, human_readable)
+
+            if fixed:
+                formula += ' (Fixed)'
+
+            if skill.multiplier_formula != formula:
+                skill.multiplier_formula = formula
+                print('Updated multiplier formula to {}'.format(skill.multiplier_formula))
+                updated = True
+
+        # Finally save it if required
+        if updated:
+            print('Updated skill {}\n'.format(str(skill)))
+            if not preview:
+                skill.save()
 
     if preview:
         print('No changes were saved.')

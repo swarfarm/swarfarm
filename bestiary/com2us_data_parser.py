@@ -211,14 +211,27 @@ def parse_monster_data(preview=False):
                     print("Updated {} archetype to material".format(monster))
                     updated = True
 
-                # Base stars
+                # Stats
                 if monster.base_stars != int(row['base class']):
                     monster.base_stars = int(row['base class'])
                     print('Updated {} base stars to {}'.format(monster, monster.base_stars))
                     updated = True
 
-                # Base Stats
-                # Need to figure out how to translate base stats from given 1* values to base values.
+                if monster.raw_hp != int(row['base con']):
+                    monster.raw_hp = int(row['base con'])
+                    print('Updated {} raw HP to {}'.format(monster, monster.raw_hp))
+                    updated = True
+
+                if monster.raw_attack != int(row['base atk']):
+                    monster.raw_attack = int(row['base atk'])
+                    print('Updated {} raw attack to {}'.format(monster, monster.raw_attack))
+                    updated = True
+
+                if monster.raw_defense != int(row['base def']):
+                    monster.raw_defense = int(row['base def'])
+                    print('Updated {} raw defense to {}'.format(monster, monster.raw_defense))
+                    updated = True
+
                 if monster.resistance != int(row['resistance']):
                     monster.resistance = int(row['resistance'])
                     print('Updated {} resistance to {}'.format(monster, monster.resistance))

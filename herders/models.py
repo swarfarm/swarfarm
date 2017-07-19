@@ -76,12 +76,22 @@ class Monster(models.Model):
     skills = models.ManyToManyField('MonsterSkill', blank=True)
     skill_ups_to_max = models.IntegerField(null=True, blank=True)
     leader_skill = models.ForeignKey('MonsterLeaderSkill', null=True, blank=True)
+
+    # 1-star lvl 1 values from data source
+    raw_hp = models.IntegerField(null=True, blank=True)
+    raw_attack = models.IntegerField(null=True, blank=True)
+    raw_defense = models.IntegerField(null=True, blank=True)
+
+    # Base-star lvl MAX values as seen in-game
     base_hp = models.IntegerField(null=True, blank=True)
     base_attack = models.IntegerField(null=True, blank=True)
     base_defense = models.IntegerField(null=True, blank=True)
+
+    # 6-star lvl MAX values
     max_lvl_hp = models.IntegerField(null=True, blank=True)
     max_lvl_attack = models.IntegerField(null=True, blank=True)
     max_lvl_defense = models.IntegerField(null=True, blank=True)
+
     speed = models.IntegerField(null=True, blank=True)
     crit_rate = models.IntegerField(null=True, blank=True)
     crit_damage = models.IntegerField(null=True, blank=True)
@@ -156,31 +166,27 @@ class Monster(models.Model):
 
     def actual_hp(self, grade, level):
         # Check that base stat exists first
-        if not self.base_hp:
+        if not self.raw_hp:
             return None
         else:
-            return self._calculate_actual_stat(self.base_hp / 15, grade, level) * 15
+            return self._calculate_actual_stat(self.raw_hp, grade, level) * 15
 
     def actual_attack(self, grade=base_stars, level=1):
         # Check that base stat exists first
-        if not self.base_attack:
+        if not self.raw_attack:
             return None
         else:
-            return self._calculate_actual_stat(self.base_attack, grade, level)
+            return self._calculate_actual_stat(self.raw_attack, grade, level)
 
     def actual_defense(self, grade=base_stars, level=1):
         # Check that base stat exists first
-        if not self.base_defense:
+        if not self.raw_defense:
             return None
         else:
-            return self._calculate_actual_stat(self.base_defense, grade, level)
+            return self._calculate_actual_stat(self.raw_defense, grade, level)
 
-    def _calculate_actual_stat(self, stat, grade, level):
-        max_lvl = 10 + grade * 5
-
-        weight = float(self.base_hp / 15 + self.base_attack + self.base_defense)
-        base_value = round((stat * (105 + 15 * self.base_stars)) / weight, 0)
-
+    @staticmethod
+    def _calculate_actual_stat(stat, grade, level):
         # Magic multipliers taken from summoner's war wikia calculator. Used to calculate stats for lvl 1 and lvl MAX
         magic_multipliers = [
             {'1': 1.0, 'max': 1.9958},
@@ -191,8 +197,9 @@ class Monster(models.Model):
             {'1': 6.4582449, 'max': 10.97901633},
         ]
 
-        stat_lvl_1 = round(base_value * magic_multipliers[grade - 1]['1'], 0)
-        stat_lvl_max = round(base_value * magic_multipliers[grade - 1]['max'], 0)
+        max_lvl = 10 + grade * 5
+        stat_lvl_1 = round(stat * magic_multipliers[grade - 1]['1'], 0)
+        stat_lvl_max = round(stat * magic_multipliers[grade - 1]['max'], 0)
 
         if level == 1:
             return int(stat_lvl_1)
@@ -203,6 +210,7 @@ class Monster(models.Model):
             # a=stat_lvl_1*e^(-b)
             from math import log, exp
             b_coeff = log(stat_lvl_max / stat_lvl_1) / (max_lvl - 1)
+            print(b_coeff)
 
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 
@@ -382,10 +390,29 @@ class Monster(models.Model):
         if self.awaken_mats_magic_low is None:
             self.awaken_mats_magic_low = 0
 
-        # Update the max level stats
-        self.max_lvl_hp = self.actual_hp(6, 40)
-        self.max_lvl_defense = self.actual_defense(6, 40)
-        self.max_lvl_attack = self.actual_attack(6, 40)
+        if self.raw_hp:
+            self.base_hp = self._calculate_actual_stat(
+                self.raw_hp,
+                self.base_stars,
+                self.max_level_from_stars(self.base_stars)
+            ) * 15
+            self.max_lvl_hp = self.actual_hp(6, 40)
+
+        if self.raw_attack:
+            self.base_attack = self._calculate_actual_stat(
+                self.raw_attack,
+                self.base_stars,
+                self.max_level_from_stars(self.base_stars)
+            )
+            self.max_lvl_attack = self.actual_attack(6, 40)
+
+        if self.raw_defense:
+            self.base_defense = self._calculate_actual_stat(
+                self.raw_defense,
+                self.base_stars,
+                self.max_level_from_stars(self.base_stars)
+            )
+            self.max_lvl_defense = self.actual_defense(6, 40)
 
         if self.is_awakened and self.awakens_from:
             self.bestiary_slug = self.awakens_from.bestiary_slug

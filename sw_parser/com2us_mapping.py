@@ -10,6 +10,14 @@ element_map = {
     5: Monster.ELEMENT_DARK,
 }
 
+archetype_map = {
+    1: Monster.TYPE_ATTACK,
+    2: Monster.TYPE_DEFENSE,
+    3: Monster.TYPE_HP,
+    4: Monster.TYPE_SUPPORT,
+    5: Monster.TYPE_MATERIAL
+}
+
 leader_skill_stat_map = {
     1: LeaderSkill.ATTRIBUTE_HP,
     2: LeaderSkill.ATTRIBUTE_ATK,

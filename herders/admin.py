@@ -40,8 +40,6 @@ class MonsterAdmin(admin.ModelAdmin):
                 'can_awaken',
                 'is_awakened',
                 'awaken_bonus',
-                'awaken_bonus_content_type',
-                'awaken_bonus_content_id',
             ),
         }),
         ('Awakening Mats', {

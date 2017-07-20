@@ -64,15 +64,7 @@ class Monster(models.Model):
     can_awaken = models.BooleanField(default=True)
     is_awakened = models.BooleanField(default=False)
     awaken_bonus = models.TextField(blank=True)
-    awaken_bonus_content_type = models.ForeignKey(
-        ContentType,
-        related_name="content_type_awaken_bonus",
-        limit_choices_to=Q(app_label='herders', model='monsterskill') | Q(app_label='herders', model='monsterleaderskill'),
-        null=True,
-        blank=True
-    )
-    awaken_bonus_content_id = models.PositiveIntegerField(null=True, blank=True)
-    awaken_bonus_object = GenericForeignKey('awaken_bonus_content_type', 'awaken_bonus_content_id')
+
     skills = models.ManyToManyField('MonsterSkill', blank=True)
     skill_ups_to_max = models.IntegerField(null=True, blank=True)
     leader_skill = models.ForeignKey('MonsterLeaderSkill', null=True, blank=True)
@@ -427,8 +419,6 @@ class Monster(models.Model):
             # Copy awaken bonus from unawakened version
             if self.is_awakened and self.awakens_from.awaken_bonus:
                 self.awaken_bonus = self.awakens_from.awaken_bonus
-                self.awaken_bonus_content_type = self.awakens_from.awaken_bonus_content_type
-                self.awaken_bonus_content_id = self.awakens_from.awaken_bonus_content_id
 
         super(Monster, self).save(*args, **kwargs)
 

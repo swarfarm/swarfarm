@@ -16,6 +16,7 @@ from django.contrib.postgres.fields import ArrayField
 
 # Bestiary database models
 class Monster(models.Model):
+    ELEMENT_PURE = 'pure'
     ELEMENT_FIRE = 'fire'
     ELEMENT_WIND = 'wind'
     ELEMENT_WATER = 'water'
@@ -27,8 +28,10 @@ class Monster(models.Model):
     TYPE_SUPPORT = 'support'
     TYPE_DEFENSE = 'defense'
     TYPE_MATERIAL = 'material'
+    TYPE_NONE = 'none'
 
     ELEMENT_CHOICES = (
+        (ELEMENT_PURE, 'Pure'),
         (ELEMENT_FIRE, 'Fire'),
         (ELEMENT_WIND, 'Wind'),
         (ELEMENT_WATER, 'Water'),
@@ -37,6 +40,7 @@ class Monster(models.Model):
     )
 
     TYPE_CHOICES = (
+        (TYPE_NONE, 'None'),
         (TYPE_ATTACK, 'Attack'),
         (TYPE_HP, 'HP'),
         (TYPE_SUPPORT, 'Support'),

@@ -111,7 +111,7 @@ class MonsterAdmin(admin.ModelAdmin):
     ]
 
     list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'awakens_from', 'awakens_to')
-    list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken')
+    list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken', 'homunculus', 'obtainable')
     list_per_page = 100
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)

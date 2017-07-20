@@ -8,9 +8,11 @@ element_map = {
     3: Monster.ELEMENT_WIND,
     4: Monster.ELEMENT_LIGHT,
     5: Monster.ELEMENT_DARK,
+    6: Monster.ELEMENT_PURE,
 }
 
 archetype_map = {
+    0: Monster.TYPE_NONE,
     1: Monster.TYPE_ATTACK,
     2: Monster.TYPE_DEFENSE,
     3: Monster.TYPE_HP,

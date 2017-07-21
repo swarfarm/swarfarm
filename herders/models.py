@@ -210,7 +210,6 @@ class Monster(models.Model):
             # a=stat_lvl_1*e^(-b)
             from math import log, exp
             b_coeff = log(stat_lvl_max / stat_lvl_1) / (max_lvl - 1)
-            print(b_coeff)
 
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 

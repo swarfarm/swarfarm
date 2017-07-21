@@ -28,6 +28,10 @@ def parse_skill_data(preview=False):
     scaling_stats = ScalingStat.objects.all()
     ignore_def_effect = Effect.objects.get(name='Ignore DEF')
 
+    # Tracking IDs of skills with known issues
+    golem_def_skills = [2401, 2402, 2403, 2404, 2405, 2406, 2407, 2410]
+    noble_agreement_speed_id = 6519
+
     for skill_data in skill_table['rows']:
         # Get matching skill in DB
         master_id = int(skill_data['master id'])
@@ -35,6 +39,19 @@ def parse_skill_data(preview=False):
         # Skip it if no translation exists
         if master_id not in skill_names or master_id not in skill_descriptions:
             continue
+
+        ###############################################################################################
+        # KNOWN ISSUES W/ SOURCE DATA
+        # skills with known issues are forcefully modified here. May need updating if skills are updated.
+        ###############################################################################################
+        if master_id in golem_def_skills:
+            # Some golem skills use ATTACK_DEF scaling variable, which is the same as DEF that every other monster has
+            skill_data['fun data'] = skill_data['fun data'].replace('ATTACK_DEF', 'DEF')
+
+        if master_id == noble_agreement_speed_id:
+            # Skill has different formula compared to other speed skills, so we're gonna set it here
+            # It makes no difference to Com2US because they evaluate formulas right to left instead of using order of operations
+            skill_data['fun data'] = '[["ATK", "*", 1.0], ["*"], ["ATTACK_SPEED", "+", 240], ["/"], [60]]'
 
         updated = False
         try:
@@ -140,7 +157,7 @@ def parse_skill_data(preview=False):
             for operation in formula_array:
                 # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
                 operation = operation.replace('*1.0', '')
-                operation = operation.replace('ATTACK_DEF', 'DEF')
+
                 if 'FIXED' in operation:
                     operation = operation.replace('FIXED', '')
                     fixed = True

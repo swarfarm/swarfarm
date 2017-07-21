@@ -16,6 +16,7 @@ from django.contrib.postgres.fields import ArrayField
 
 # Bestiary database models
 class Monster(models.Model):
+    ELEMENT_PURE = 'pure'
     ELEMENT_FIRE = 'fire'
     ELEMENT_WIND = 'wind'
     ELEMENT_WATER = 'water'
@@ -27,8 +28,10 @@ class Monster(models.Model):
     TYPE_SUPPORT = 'support'
     TYPE_DEFENSE = 'defense'
     TYPE_MATERIAL = 'material'
+    TYPE_NONE = 'none'
 
     ELEMENT_CHOICES = (
+        (ELEMENT_PURE, 'Pure'),
         (ELEMENT_FIRE, 'Fire'),
         (ELEMENT_WIND, 'Wind'),
         (ELEMENT_WATER, 'Water'),
@@ -37,6 +40,7 @@ class Monster(models.Model):
     )
 
     TYPE_CHOICES = (
+        (TYPE_NONE, 'None'),
         (TYPE_ATTACK, 'Attack'),
         (TYPE_HP, 'HP'),
         (TYPE_SUPPORT, 'Support'),
@@ -64,33 +68,39 @@ class Monster(models.Model):
     can_awaken = models.BooleanField(default=True)
     is_awakened = models.BooleanField(default=False)
     awaken_bonus = models.TextField(blank=True)
-    awaken_bonus_content_type = models.ForeignKey(
-        ContentType,
-        related_name="content_type_awaken_bonus",
-        limit_choices_to=Q(app_label='herders', model='monsterskill') | Q(app_label='herders', model='monsterleaderskill'),
-        null=True,
-        blank=True
-    )
-    awaken_bonus_content_id = models.PositiveIntegerField(null=True, blank=True)
-    awaken_bonus_object = GenericForeignKey('awaken_bonus_content_type', 'awaken_bonus_content_id')
+
     skills = models.ManyToManyField('MonsterSkill', blank=True)
     skill_ups_to_max = models.IntegerField(null=True, blank=True)
     leader_skill = models.ForeignKey('MonsterLeaderSkill', null=True, blank=True)
+
+    # 1-star lvl 1 values from data source
+    raw_hp = models.IntegerField(null=True, blank=True)
+    raw_attack = models.IntegerField(null=True, blank=True)
+    raw_defense = models.IntegerField(null=True, blank=True)
+
+    # Base-star lvl MAX values as seen in-game
     base_hp = models.IntegerField(null=True, blank=True)
     base_attack = models.IntegerField(null=True, blank=True)
     base_defense = models.IntegerField(null=True, blank=True)
+
+    # 6-star lvl MAX values
     max_lvl_hp = models.IntegerField(null=True, blank=True)
     max_lvl_attack = models.IntegerField(null=True, blank=True)
     max_lvl_defense = models.IntegerField(null=True, blank=True)
+
     speed = models.IntegerField(null=True, blank=True)
     crit_rate = models.IntegerField(null=True, blank=True)
     crit_damage = models.IntegerField(null=True, blank=True)
     resistance = models.IntegerField(null=True, blank=True)
     accuracy = models.IntegerField(null=True, blank=True)
 
+    # Homunculus monster fields
     homunculus = models.BooleanField(default=False)
     craft_materials = models.ManyToManyField('CraftMaterial', through='MonsterCraftCost')
     craft_cost = models.IntegerField(null=True, blank=True)
+
+    # Unicorn fields
+    transforms_into = models.ForeignKey('self', null=True, blank=True, related_name='+')
 
     awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')
@@ -156,31 +166,27 @@ class Monster(models.Model):
 
     def actual_hp(self, grade, level):
         # Check that base stat exists first
-        if not self.base_hp:
+        if not self.raw_hp:
             return None
         else:
-            return self._calculate_actual_stat(self.base_hp / 15, grade, level) * 15
+            return self._calculate_actual_stat(self.raw_hp, grade, level) * 15
 
     def actual_attack(self, grade=base_stars, level=1):
         # Check that base stat exists first
-        if not self.base_attack:
+        if not self.raw_attack:
             return None
         else:
-            return self._calculate_actual_stat(self.base_attack, grade, level)
+            return self._calculate_actual_stat(self.raw_attack, grade, level)
 
     def actual_defense(self, grade=base_stars, level=1):
         # Check that base stat exists first
-        if not self.base_defense:
+        if not self.raw_defense:
             return None
         else:
-            return self._calculate_actual_stat(self.base_defense, grade, level)
+            return self._calculate_actual_stat(self.raw_defense, grade, level)
 
-    def _calculate_actual_stat(self, stat, grade, level):
-        max_lvl = 10 + grade * 5
-
-        weight = float(self.base_hp / 15 + self.base_attack + self.base_defense)
-        base_value = round((stat * (105 + 15 * self.base_stars)) / weight, 0)
-
+    @staticmethod
+    def _calculate_actual_stat(stat, grade, level):
         # Magic multipliers taken from summoner's war wikia calculator. Used to calculate stats for lvl 1 and lvl MAX
         magic_multipliers = [
             {'1': 1.0, 'max': 1.9958},
@@ -191,8 +197,9 @@ class Monster(models.Model):
             {'1': 6.4582449, 'max': 10.97901633},
         ]
 
-        stat_lvl_1 = round(base_value * magic_multipliers[grade - 1]['1'], 0)
-        stat_lvl_max = round(base_value * magic_multipliers[grade - 1]['max'], 0)
+        max_lvl = 10 + grade * 5
+        stat_lvl_1 = round(stat * magic_multipliers[grade - 1]['1'], 0)
+        stat_lvl_max = round(stat * magic_multipliers[grade - 1]['max'], 0)
 
         if level == 1:
             return int(stat_lvl_1)
@@ -382,10 +389,29 @@ class Monster(models.Model):
         if self.awaken_mats_magic_low is None:
             self.awaken_mats_magic_low = 0
 
-        # Update the max level stats
-        self.max_lvl_hp = self.actual_hp(6, 40)
-        self.max_lvl_defense = self.actual_defense(6, 40)
-        self.max_lvl_attack = self.actual_attack(6, 40)
+        if self.raw_hp:
+            self.base_hp = self._calculate_actual_stat(
+                self.raw_hp,
+                self.base_stars,
+                self.max_level_from_stars(self.base_stars)
+            ) * 15
+            self.max_lvl_hp = self.actual_hp(6, 40)
+
+        if self.raw_attack:
+            self.base_attack = self._calculate_actual_stat(
+                self.raw_attack,
+                self.base_stars,
+                self.max_level_from_stars(self.base_stars)
+            )
+            self.max_lvl_attack = self.actual_attack(6, 40)
+
+        if self.raw_defense:
+            self.base_defense = self._calculate_actual_stat(
+                self.raw_defense,
+                self.base_stars,
+                self.max_level_from_stars(self.base_stars)
+            )
+            self.max_lvl_defense = self.actual_defense(6, 40)
 
         if self.is_awakened and self.awakens_from:
             self.bestiary_slug = self.awakens_from.bestiary_slug
@@ -400,8 +426,6 @@ class Monster(models.Model):
             # Copy awaken bonus from unawakened version
             if self.is_awakened and self.awakens_from.awaken_bonus:
                 self.awaken_bonus = self.awakens_from.awaken_bonus
-                self.awaken_bonus_content_type = self.awakens_from.awaken_bonus_content_type
-                self.awaken_bonus_content_id = self.awakens_from.awaken_bonus_content_id
 
         super(Monster, self).save(*args, **kwargs)
 
@@ -648,6 +672,8 @@ class HomunculusSkill(models.Model):
     mana_cost = models.IntegerField(default=0)
     prerequisites = models.ManyToManyField(MonsterSkill, blank=True, related_name='homunculus_prereq')
 
+    def __str__(self):
+        return '{} ({})'.format(self.skill, self.skill.com2us_id)
 
 class MonsterSource(models.Model):
     name = models.CharField(max_length=100)

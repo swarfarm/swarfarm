@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.postgres.fields import JSONField
 import herders.models as herder_models
 
 
@@ -76,6 +76,8 @@ class PatchNotes(models.Model):
     description = models.CharField(max_length=60, blank=True, null=True)
     timestamp = models.DateTimeField()
     detailed_notes = models.TextField(blank=True, null=True)
+    data_tables = JSONField(blank=True, null=True)
+    data_table_changes = JSONField(blank=True, null=True)
 
     def __str__(self):
         return '{}.{}.{} - {}'.format(self.major, self.minor, self.dev, self.description)

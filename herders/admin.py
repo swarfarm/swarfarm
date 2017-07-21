@@ -40,8 +40,6 @@ class MonsterAdmin(admin.ModelAdmin):
                 'can_awaken',
                 'is_awakened',
                 'awaken_bonus',
-                'awaken_bonus_content_type',
-                'awaken_bonus_content_id',
             ),
         }),
         ('Awakening Mats', {
@@ -71,17 +69,20 @@ class MonsterAdmin(admin.ModelAdmin):
             'classes': ('suit-tab', 'suit-tab-basic'),
             'fields': (
                 'base_stars',
-                'base_hp',
-                'base_attack',
-                'base_defense',
+                'raw_hp',
+                'raw_attack',
+                'raw_defense',
                 'speed',
                 'crit_rate',
                 'crit_damage',
                 'resistance',
                 'accuracy',
+                'base_hp',
+                'base_attack',
+                'base_defense',
                 'max_lvl_hp',
-                'max_lvl_defense',
                 'max_lvl_attack',
+                'max_lvl_defense',
             ),
         }),
         ('Skills', {
@@ -110,12 +111,12 @@ class MonsterAdmin(admin.ModelAdmin):
     ]
 
     list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'awakens_from', 'awakens_to')
-    list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken')
+    list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken', 'homunculus', 'obtainable')
     list_per_page = 100
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)
     inlines = (MonsterCraftCostInline,)
-    readonly_fields = ('bestiary_slug', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack', 'skill_ups_to_max',)
+    readonly_fields = ('bestiary_slug', 'base_hp', 'base_attack', 'base_defense', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack', 'skill_ups_to_max',)
     search_fields = ['name', 'com2us_id']
     save_as = True
     actions = ['resave']

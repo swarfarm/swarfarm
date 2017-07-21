@@ -1,4 +1,4 @@
-from bestiary.models import Monster
+from bestiary.models import Monster, LeaderSkill
 from herders.models import RuneInstance, RuneCraftInstance, Summoner
 from .models import RunLog, SummonLog, RuneDrop, ItemDrop
 
@@ -8,6 +8,34 @@ element_map = {
     3: Monster.ELEMENT_WIND,
     4: Monster.ELEMENT_LIGHT,
     5: Monster.ELEMENT_DARK,
+    6: Monster.ELEMENT_PURE,
+}
+
+archetype_map = {
+    0: Monster.TYPE_NONE,
+    1: Monster.TYPE_ATTACK,
+    2: Monster.TYPE_DEFENSE,
+    3: Monster.TYPE_HP,
+    4: Monster.TYPE_SUPPORT,
+    5: Monster.TYPE_MATERIAL
+}
+
+leader_skill_stat_map = {
+    1: LeaderSkill.ATTRIBUTE_HP,
+    2: LeaderSkill.ATTRIBUTE_ATK,
+    3: LeaderSkill.ATTRIBUTE_DEF,
+    4: LeaderSkill.ATTRIBUTE_SPD,
+    5: LeaderSkill.ATTRIBUTE_CRIT_RATE,
+    6: LeaderSkill.ATTRIBUTE_CRIT_DMG,
+    7: LeaderSkill.ATTRIBUTE_RESIST,
+    8: LeaderSkill.ATTRIBUTE_ACCURACY,
+}
+
+leader_skill_area_map = {
+    0: LeaderSkill.AREA_GENERAL,
+    1: LeaderSkill.AREA_ARENA,
+    2: LeaderSkill.AREA_DUNGEON,
+    5: LeaderSkill.AREA_GUILD,
 }
 
 building_id_map = {

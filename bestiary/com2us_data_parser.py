@@ -11,448 +11,612 @@ from .models import *
 from sw_parser.com2us_mapping import *
 from sw_parser.com2us_parser import decrypt_response
 
-# This routine expects two CSV files in the root of the project.
-# One is the monster definition table and the other is the skill definition table in localvalue.dat
 
-
-def assign_skill_ids():
-    with open('monsters.csv', 'rb') as csvfile:
-        monster_data = csv.DictReader(csvfile)
-
-        for row in monster_data:
-            monster_family = int(row['unit master id'][:3])
-            awakened = row['unit master id'][3] == '1'
-            element = element_map.get(int(row['unit master id'][-1:]))
-
-            try:
-                monster = Monster.objects.get(com2us_id=monster_family, is_awakened=awakened, element=element)
-            except Monster.DoesNotExist:
-                print('Unable to find monster ' + str(row['unit master id']))
-            else:
-                skills = monster.skills.all().order_by('slot')
-                skill_ids = json.loads(row['base skill'])
-
-                if len(skills) != len(skill_ids):
-                    print('Error! ' + str(monster) + ' skill count in bestiary does not match CSV skill count')
-                else:
-                    for x, skill_id in enumerate(skill_ids):
-                        if skills[x].com2us_id is None:
-                            skills[x].com2us_id = skill_id
-                            skills[x].save()
-                            # print('Updated ID of ' + str(skills[x])
-                        elif skills[x].com2us_id != skill_id:
-                            print('Error! Skill ' + str(skills[x]) + ' already has an ID assigned. Tried to assign ' + str(skill_id))
+def _create_new_skill(com2us_id, slot):
+    print('!!! Creating new skill with com2us ID {}, slot {}'.format(com2us_id, slot))
+    return Skill.objects.create(com2us_id=com2us_id, name='tempname', slot=slot, max_level=1)
 
 
 def parse_skill_data(preview=False):
-    parsed_skill_names = get_skill_names_by_id()
-    parsed_skill_descs = get_skill_descs_by_id()
+    monster_table = _get_localvalue_tables(LocalvalueTables.MONSTERS)
+    skill_table = _get_localvalue_tables(LocalvalueTables.SKILLS)
+    skill_names = get_skill_names_by_id()
+    skill_descriptions = get_skill_descs_by_id()
+    homunculus_skill_table = _get_localvalue_tables(LocalvalueTables.HOMUNCULUS_SKILL_TREES)
+    homunculus_skill_list = [json.loads(row['master id']) for row in homunculus_skill_table['rows']]
 
-    with open('bestiary/com2us_data/skills.csv', 'rt', encoding='utf8') as csvfile:
-        skill_data = csv.DictReader(csvfile)
+    scaling_stats = ScalingStat.objects.all()
+    ignore_def_effect = Effect.objects.get(name='Ignore DEF')
 
-        scaling_stats = ScalingStat.objects.all()
-        ignore_def_effect = Effect.objects.get(name='Ignore DEF')
+    # Tracking IDs of skills with known issues
+    golem_def_skills = [2401, 2402, 2403, 2404, 2405, 2406, 2407, 2410]
+    noble_agreement_speed_id = 6519
 
-        for csv_skill in skill_data:
-            # Get matching skill in DB
-            master_id = int(csv_skill['master id'])
+    for skill_data in skill_table['rows']:
+        # Get matching skill in DB
+        master_id = json.loads(skill_data['master id'])
 
-            try:
-                skill = Skill.objects.get(com2us_id=master_id)
-            except Skill.DoesNotExist:
+        # Skip it if no translation exists
+        if master_id not in skill_names or master_id not in skill_descriptions:
+            continue
+
+        ###############################################################################################
+        # KNOWN ISSUES W/ SOURCE DATA
+        # skills with known issues are forcefully modified here. May need updating if skills are updated.
+        ###############################################################################################
+        if master_id in golem_def_skills:
+            # Some golem skills use ATTACK_DEF scaling variable, which is the same as DEF that every other monster has
+            skill_data['fun data'] = skill_data['fun data'].replace('ATTACK_DEF', 'DEF')
+
+        if master_id == noble_agreement_speed_id:
+            # Skill has different formula compared to other speed skills, so we're gonna set it here
+            # It makes no difference to Com2US because they evaluate formulas right to left instead of using order of operations
+            skill_data['fun data'] = '[["ATK", "*", 1.0], ["*"], ["ATTACK_SPEED", "+", 240], ["/"], [60]]'
+
+        updated = False
+        try:
+            skill = Skill.objects.get(com2us_id=master_id)
+        except Skill.DoesNotExist:
+            # Check if it is used on any monster. If so, create it
+            # Homunculus skills beyond the starting set are not listed in the monster table
+            skill = None
+            if master_id in homunculus_skill_list:
+                for homu_skill in homunculus_skill_table['rows']:
+                    if master_id == json.loads(homu_skill['master id']):
+                        slot = json.loads(homu_skill['slot'])
+                        skill = _create_new_skill(master_id, slot)
+                        break
+            else:
+                for monster in monster_table['rows']:
+                    skill_array = json.loads(monster['base skill'])
+
+                    if master_id in skill_array:
+                        slot = skill_array.index(master_id) + 1
+                        skill = _create_new_skill(master_id, slot)
+                        break
+
+            if skill is None:
+                print('Skill ID {} is not used anywhere, skipping...'.format(master_id))
                 continue
             else:
-                updated = False
+                updated = True
 
-                # Name
-                if skill.name != parsed_skill_names[master_id]:
-                    skill.name = parsed_skill_names[master_id]
-                    print('Updated name to {}'.format(skill.name))
-                    updated = True
+        # Name
+        if skill.name != skill_names[master_id]:
+            skill.name = skill_names[master_id]
+            print('Updated name to {}'.format(skill.name))
+            updated = True
 
-                # Description
-                if skill.description != parsed_skill_descs[master_id]:
-                    skill.description = parsed_skill_descs[master_id]
-                    print('Updated description to {}'.format(skill.description))
-                    updated = True
+        # Description
+        if skill.description != skill_descriptions[master_id]:
+            skill.description = skill_descriptions[master_id]
+            print('Updated description to {}'.format(skill.description))
+            updated = True
 
-                # Icon
-                icon_nums = json.loads(csv_skill['thumbnail'])
-                icon_filename = 'skill_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
-                if skill.icon_filename != icon_filename:
-                    skill.icon_filename = icon_filename
-                    print('Updated icon to {}'.format(skill.icon_filename))
-                    updated = True
+        # Icon
+        icon_nums = json.loads(skill_data['thumbnail'])
+        icon_filename = 'skill_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
+        if skill.icon_filename != icon_filename:
+            skill.icon_filename = icon_filename
+            print('Updated icon to {}'.format(skill.icon_filename))
+            updated = True
 
-                # Cooltime
-                cooltime = int(csv_skill['cool time']) + 1 if int(csv_skill['cool time']) > 0 else None
+        # Cooltime
+        cooltime = json.loads(skill_data['cool time']) + 1 if json.loads(skill_data['cool time']) > 0 else None
 
-                if skill.cooltime != cooltime:
-                    skill.cooltime = cooltime
-                    print('Updated cooltime to {}'.format(skill.cooltime))
-                    updated = True
+        if skill.cooltime != cooltime:
+            skill.cooltime = cooltime
+            print('Updated cooltime to {}'.format(skill.cooltime))
+            updated = True
 
-                # Max Level
-                max_lv = int(csv_skill['max level'])
-                if skill.max_level != max_lv:
-                    skill.max_level = max_lv
-                    print('Updated max level to {}'.format(skill.max_level))
-                    updated = True
+        # Max Level
+        max_lv = json.loads(skill_data['max level'])
+        if skill.max_level != max_lv:
+            skill.max_level = max_lv
+            print('Updated max level to {}'.format(skill.max_level))
+            updated = True
 
-                # Level up progress
-                level_up_desc = {
-                    'DR': 'Effect Rate +{0}%',
-                    'AT': 'Damage +{0}%',
-                    'AT1': 'Damage +{0}%',
-                    'HE': 'Recovery +{0}%',
-                    'TN': 'Cooltime Turn -{0}',
-                    'SD': 'Shield +{0}%',
-                    'SD1': 'Shield +{0}%',
-                }
+        # Level up progress
+        level_up_desc = {
+            'DR': 'Effect Rate +{0}%',
+            'AT': 'Damage +{0}%',
+            'AT1': 'Damage +{0}%',
+            'HE': 'Recovery +{0}%',
+            'TN': 'Cooltime Turn -{0}',
+            'SD': 'Shield +{0}%',
+            'SD1': 'Shield +{0}%',
+        }
 
-                level_up_text = ''
+        level_up_text = ''
 
-                for level in json.loads(csv_skill['level']):
-                    level_up_text += level_up_desc[level[0]].format(level[1]) + '\n'
+        for level in json.loads(skill_data['level']):
+            level_up_text += level_up_desc[level[0]].format(level[1]) + '\n'
 
-                if skill.level_progress_description != level_up_text:
-                    skill.level_progress_description = level_up_text
-                    print('Updated level-up progress description')
-                    updated = True
+        if skill.level_progress_description != level_up_text:
+            skill.level_progress_description = level_up_text
+            print('Updated level-up progress description')
+            updated = True
 
-                # Buffs
-                # maybe this later. Data seems incomplete sometimes.
+        # Buffs
+        # maybe this later. Data seems incomplete sometimes.
 
-                # Scaling formula and stats
-                skill.scaling_stats.clear()
+        # Scaling formula and stats
+        skill.scaling_stats.clear()
 
-                # Skill multiplier formula
-                if skill.multiplier_formula_raw != csv_skill['fun data']:
-                    skill.multiplier_formula_raw = csv_skill['fun data']
-                    print('Updated raw multiplier formula to {}'.format(skill.multiplier_formula_raw))
-                    updated = True
+        # Skill multiplier formula
+        if skill.multiplier_formula_raw != skill_data['fun data']:
+            skill.multiplier_formula_raw = skill_data['fun data']
+            print('Updated raw multiplier formula to {}'.format(skill.multiplier_formula_raw))
+            updated = True
 
-                formula = ''
-                fixed = False
-                formula_array = [''.join(map(str, scale)) for scale in json.loads(csv_skill['fun data'])]
-                plain_operators = '+-*/'
-                if len(formula_array):
-                    for operation in formula_array:
-                        # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
-                        operation = operation.replace('*1.0', '')
-                        operation = operation.replace('ATTACK_DEF', 'DEF')
-                        if 'FIXED' in operation:
-                            operation = operation.replace('FIXED', '')
-                            fixed = True
-                            # TODO: Add Ignore Defense effect to skill if not present already
+        formula = ''
+        fixed = False
+        formula_array = [''.join(map(str, scale)) for scale in json.loads(skill_data['fun data'])]
+        plain_operators = '+-*/^'
+        if len(formula_array):
+            for operation in formula_array:
+                # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
+                operation = operation.replace('*1.0', '')
 
-                        if operation not in plain_operators:
-                            formula += '({0})'.format(operation)
-                        else:
-                            formula += '{0}'.format(operation)
+                if 'FIXED' in operation:
+                    operation = operation.replace('FIXED', '')
+                    fixed = True
+                    # TODO: Add Ignore Defense effect to skill if not present already
 
-                    formula = str(simplify(formula))
+                if operation not in plain_operators:
+                    formula += '({0})'.format(operation)
+                else:
+                    formula += '{0}'.format(operation)
 
-                    # Find the scaling stat used in this section of formula
-                    for stat in scaling_stats:
-                        if stat.com2us_desc in formula:
-                            skill.scaling_stats.add(stat)
-                            if stat.description:
-                                human_readable = '<mark data-toggle="tooltip" data-placement="top" title="' + stat.description + '">' + stat.stat + '</mark>'
-                            else:
-                                human_readable = '<mark>' + stat.stat + '</mark>'
-                            formula = formula.replace(stat.com2us_desc, human_readable)
+            formula = str(simplify(formula))
 
-                    if fixed:
-                        formula += ' (Fixed)'
-                        
-                    if skill.multiplier_formula != formula:
-                        skill.multiplier_formula = formula
-                        print('Updated multiplier formula to {}'.format(skill.multiplier_formula))
-                        updated = True
+            # Find the scaling stat used in this section of formula
+            for stat in scaling_stats:
+                if stat.com2us_desc in formula:
+                    skill.scaling_stats.add(stat)
+                    if stat.description:
+                        human_readable = '<mark data-toggle="tooltip" data-placement="top" title="' + stat.description + '">' + stat.stat + '</mark>'
+                    else:
+                        human_readable = '<mark>' + stat.stat + '</mark>'
+                    formula = formula.replace(stat.com2us_desc, human_readable)
 
-                # Finally save it if required
-                if updated:
-                    print('Updated skill {}\n'.format(str(skill)))
-                    if not preview:
-                        skill.save()
+            if fixed:
+                formula += ' (Fixed)'
 
-        if preview:
-            print('No changes were saved.')
+            if skill.multiplier_formula != formula:
+                skill.multiplier_formula = formula
+                print('Updated multiplier formula to {}'.format(skill.multiplier_formula))
+                updated = True
+
+        # Finally save it if required
+        if updated:
+            print('Updated skill {}\n'.format(str(skill)))
+            if not preview:
+                skill.save()
+
+    if preview:
+        print('No changes were saved.')
 
 
 def parse_monster_data(preview=False):
-    parsed_monster_names = get_monster_names_by_id()
+    monster_table = _get_localvalue_tables(LocalvalueTables.MONSTERS)
+    monster_names = get_monster_names_by_id()
 
-    with open('bestiary/com2us_data/monsters.csv', 'rt', encoding='utf8') as csvfile:
-        monster_data = csv.DictReader(csvfile)
+    # List of monsters that data indicates are not obtainable, but actually are
+    # Dark cow girl
+    definitely_obtainable_monsters = [19305, 19315]
 
-        for row in monster_data:
-            master_id = int(row['unit master id'])
+    for row in monster_table['rows']:
+        master_id = json.loads(row['unit master id'])
 
-            if (master_id < 40000 and row['unit master id'][3] != '2') or (1000101 <= master_id <= 1000300):
-                # Non-summonable monsters appear with IDs above 40000 and a 2 in that position represents the japanese 'incomplete' monsters
-                # Homonculus IDs start at 1000101
+        # Skip it if no name translation exists
+        if master_id not in monster_names:
+            continue
 
-                monster_family = int(row['discussion id'])
-                awakened = row['unit master id'][-2] == '1'
-                element = element_map.get(int(row['attribute']))
+        try:
+            monster = Monster.objects.get(com2us_id=master_id)
+            updated = False
+        except Monster.DoesNotExist:
+            monster = Monster.objects.create(com2us_id=master_id, obtainable=False, name='tempname', base_stars=1)
+            print('!!! Creating new monster {} with com2us ID {}'.format(monster_names[master_id], master_id))
+            updated = True
 
-                try:
-                    monster = Monster.objects.get(family_id=monster_family, is_awakened=awakened, element=element)
-                except Monster.DoesNotExist:
-                    continue
-                else:
-                    updated = False
+        monster_family = json.loads(row['discussion id'])
+        if monster.family_id != monster_family:
+            monster.family_id = monster_family
+            print('Updated {} ({}) family ID to {}'.format(monster, master_id, monster_family))
+            updated = True
 
-                    # Com2us family and ID
-                    if monster.com2us_id != master_id:
-                        monster.com2us_id = master_id
-                        print('Updated {} master ID to {}'.format(monster, master_id))
-                        updated = True
+        # Name
+        if monster.name != monster_names[master_id]:
+            print("Updated {} ({}) name to {}".format(monster, master_id, monster_names[master_id]))
+            monster.name = monster_names[master_id]
+            updated = True
 
-                    if monster.family_id != monster_family:
-                        monster.family_id = monster_family
-                        print('Updated {} family ID to {}'.format(monster, monster_family))
-                        updated = True
+        # Archetype
+        archetype = archetype_map.get(json.loads(row['style type']))
+        if monster.archetype != archetype:
+            monster.archetype = archetype
+            print('Updated {} ({}) archetype to {}'.format(monster, master_id, monster.get_archetype_display()))
+            updated = True
 
-                    # Name
-                    if monster.name != parsed_monster_names[master_id]:
-                        print("Updated {}'s name to {}".format(monster, parsed_monster_names[master_id]))
-                        monster.name = parsed_monster_names[master_id]
-                        updated = True
+        # Element
+        element = element_map[json.loads(row['attribute'])]
+        if monster.element != element:
+            monster.element = element
+            print('Updated {} ({}) element to {}'.format(monster, master_id, element))
+            updated = True
 
-                    # Archetype
-                    archetype = row['style type']
+        # Obtainable
+        obtainable = sum(json.loads(row['collection view'])) > 0 or master_id in definitely_obtainable_monsters
+        if monster.obtainable != obtainable:
+            monster.obtainable = obtainable
+            print('Updated {} ({}) obtainability to {}'.format(monster, master_id, obtainable))
 
-                    if archetype == 1 and monster.archetype != Monster.TYPE_ATTACK:
-                        monster.archetype = Monster.TYPE_ATTACK
-                        print('Updated {} archetype to attack'.format(monster))
-                        updated = True
-                    elif archetype == 2 and monster.archetype != Monster.TYPE_DEFENSE:
-                        monster.archetype = Monster.TYPE_DEFENSE
-                        print("Updated {} archetype to defense".format(monster))
-                        updated = True
-                    elif archetype == 3 and monster.archetype != Monster.TYPE_HP:
-                        monster.archetype = Monster.TYPE_HP
-                        print("Updated {} archetype to hp".format(monster))
-                        updated = True
-                    elif archetype == 4 and monster.archetype != Monster.TYPE_SUPPORT:
-                        monster.archetype = Monster.TYPE_SUPPORT
-                        print("Updated {} archetype to support".format(monster))
-                        updated = True
-                    elif archetype == 5 and monster.archetype != Monster.TYPE_MATERIAL:
-                        monster.archetype = Monster.TYPE_MATERIAL
-                        print("Updated {} archetype to material".format(monster))
-                        updated = True
+        # Homunculus
+        is_homunculus = bool(json.loads(row['homunculus']))
+        if monster.homunculus != is_homunculus:
+            monster.homunculus = is_homunculus
+            print('Updated {} ({}) homunculus status to {}'.format(monster, master_id, is_homunculus))
+            updated = True
 
-                    # Base stars
-                    if monster.base_stars != int(row['base class']):
-                        monster.base_stars = int(row['base class'])
-                        print('Updated {} base stars to {}'.format(monster, monster.base_stars))
-                        updated = True
+        # Unicorn
+        transforms_into_id = json.loads(row['change'])
+        if transforms_into_id != 0:
+            try:
+                transforms_into = Monster.objects.get(com2us_id=transforms_into_id)
+            except Monster.DoesNotExist:
+                print('!!! {} ({}) can transform into {} but could not find transform monster in database'.format(monster, master_id, transforms_into_id))
+            else:
+                if monster.transforms_into != transforms_into:
+                    monster.transforms_into = transforms_into
+                    print('Updated {} ({}) can transform into {} ({})'.format(monster, master_id, transforms_into, transforms_into_id))
+                    updated = True
+        else:
+            if monster.transforms_into is not None:
+                monster.transforms_into = None
+                print('Removed monster transformation from {} ({})'.format(monster, master_id))
+                updated = True
 
-                    # Base Stats
-                    # Need to figure out how to translate base stats from given 1* values to base values.
-                    if monster.resistance != int(row['resistance']):
-                        monster.resistance = int(row['resistance'])
-                        print('Updated {} resistance to {}'.format(monster, monster.resistance))
-                        updated = True
+        # Stats
+        if monster.base_stars != json.loads(row['base class']):
+            monster.base_stars = json.loads(row['base class'])
+            print('Updated {} ({}) base stars to {}'.format(monster, master_id, monster.base_stars))
+            updated = True
 
-                    if monster.accuracy != int(row['accuracy']):
-                        monster.accuracy = int(row['accuracy'])
-                        print('Updated {} accuracy to {}'.format(monster, monster.accuracy))
-                        updated = True
+        if monster.raw_hp != json.loads(row['base con']):
+            monster.raw_hp = json.loads(row['base con'])
+            print('Updated {} ({}) raw HP to {}'.format(monster, master_id, monster.raw_hp))
+            updated = True
 
-                    if monster.speed != int(row['base speed']):
-                        monster.speed = int(row['base speed'])
-                        print('Updated {} speed to {}'.format(monster, monster.speed))
-                        updated = True
+        if monster.raw_attack != json.loads(row['base atk']):
+            monster.raw_attack = json.loads(row['base atk'])
+            print('Updated {} ({}) raw attack to {}'.format(monster, master_id, monster.raw_attack))
+            updated = True
 
-                    if monster.crit_rate != int(row['critical rate']):
-                        monster.crit_rate = int(row['critical rate'])
-                        print('Updated {} critical rate to {}'.format(monster, monster.crit_rate))
-                        updated = True
+        if monster.raw_defense != json.loads(row['base def']):
+            monster.raw_defense = json.loads(row['base def'])
+            print('Updated {} ({}) raw defense to {}'.format(monster, master_id, monster.raw_defense))
+            updated = True
 
-                    if monster.crit_damage != int(row['critical damage']):
-                        monster.crit_damage = int(row['critical damage'])
-                        print('Updated {} critical damage to {}'.format(monster, monster.crit_damage))
-                        updated = True
+        if monster.resistance != json.loads(row['resistance']):
+            monster.resistance = json.loads(row['resistance'])
+            print('Updated {} ({}) resistance to {}'.format(monster, master_id, monster.resistance))
+            updated = True
 
-                    # Awaken materials
-                    awaken_materials = json.loads(row['awaken materials'])
-                    essences = [x[0] for x in awaken_materials]  # Extract the essences actually used.
+        if monster.accuracy != json.loads(row['accuracy']):
+            monster.accuracy = json.loads(row['accuracy'])
+            print('Updated {} ({}) accuracy to {}'.format(monster, master_id, monster.accuracy))
+            updated = True
 
-                    # Set the essences not used to 0
-                    if 11001 not in essences and monster.awaken_mats_water_low != 0:
-                        monster.awaken_mats_water_low = 0
-                        print("Updated {} water low awakening essence to 0.".format(monster))
-                        updated = True
-                    if 12001 not in essences and monster.awaken_mats_water_mid != 0:
-                        monster.awaken_mats_water_mid = 0
-                        print("Updated {} water mid awakening essence to 0.".format(monster))
-                        updated = True
-                    if 13001 not in essences and monster.awaken_mats_water_high != 0:
-                        monster.awaken_mats_water_high = 0
-                        print("Updated {} water high awakening essence to 0.".format(monster))
-                        updated = True
-                    if 11002 not in essences and monster.awaken_mats_fire_low != 0:
-                        monster.awaken_mats_fire_low = 0
-                        print("Updated {} fire low awakening essence to 0.".format(monster))
-                        updated = True
-                    if 12002 not in essences and monster.awaken_mats_fire_mid != 0:
-                        monster.awaken_mats_fire_mid = 0
-                        print("Updated {} fire mid awakening essence to 0.".format(monster))
-                        updated = True
-                    if 13002 not in essences and monster.awaken_mats_fire_high != 0:
-                        monster.awaken_mats_fire_high = 0
-                        print("Updated {} fire high awakening essence to 0.".format(monster))
-                        updated = True
-                    if 11003 not in essences and monster.awaken_mats_wind_low != 0:
-                        monster.awaken_mats_wind_low = 0
-                        print("Updated {} wind low awakening essence to 0.".format(monster))
-                        updated = True
-                    if 12003 not in essences and monster.awaken_mats_wind_mid != 0:
-                        monster.awaken_mats_wind_mid = 0
-                        print("Updated {} wind mid awakening essence to 0.".format(monster))
-                        updated = True
-                    if 13003 not in essences and monster.awaken_mats_wind_high != 0:
-                        monster.awaken_mats_wind_high = 0
-                        print("Updated {} wind high awakening essence to 0.".format(monster))
-                        updated = True
-                    if 11004 not in essences and monster.awaken_mats_light_low != 0:
-                        monster.awaken_mats_light_low = 0
-                        print("Updated {} light low awakening essence to 0.".format(monster))
-                        updated = True
-                    if 12004 not in essences and monster.awaken_mats_light_mid != 0:
-                        monster.awaken_mats_light_mid = 0
-                        print("Updated {} light mid awakening essence to 0.".format(monster))
-                        updated = True
-                    if 13004 not in essences and monster.awaken_mats_light_high != 0:
-                        monster.awaken_mats_light_high = 0
-                        print("Updated {} light high awakening essence to 0.".format(monster))
-                        updated = True
-                    if 11005 not in essences and monster.awaken_mats_dark_low != 0:
-                        monster.awaken_mats_dark_low = 0
-                        print("Updated {} dark low awakening essence to 0.".format(monster))
-                        updated = True
-                    if 12005 not in essences and monster.awaken_mats_dark_mid != 0:
-                        monster.awaken_mats_dark_mid = 0
-                        print("Updated {} dark mid awakening essence to 0.".format(monster))
-                        updated = True
-                    if 13005 not in essences and monster.awaken_mats_dark_high != 0:
-                        monster.awaken_mats_dark_high = 0
-                        print("Updated {} dark high awakening essence to 0.".format(monster))
-                        updated = True
-                    if 11006 not in essences and monster.awaken_mats_magic_low != 0:
-                        monster.awaken_mats_magic_low = 0
-                        print("Updated {} magic low awakening essence to 0.".format(monster))
-                        updated = True
-                    if 12006 not in essences and monster.awaken_mats_magic_mid != 0:
-                        monster.awaken_mats_magic_mid = 0
-                        print("Updated {} magic mid awakening essence to 0.".format(monster))
-                        updated = True
-                    if 13006 not in essences and monster.awaken_mats_magic_high != 0:
-                        monster.awaken_mats_magic_high = 0
-                        print("Updated {} magic high awakening essence to 0.".format(monster))
-                        updated = True
+        if monster.speed != json.loads(row['base speed']):
+            monster.speed = json.loads(row['base speed'])
+            print('Updated {} ({}) speed to {}'.format(monster, master_id, monster.speed))
+            updated = True
 
-                    # Fill in values for the essences specified
-                    for essence in awaken_materials:
-                        if essence[0] == 11001 and monster.awaken_mats_water_low != essence[1]:
-                            monster.awaken_mats_water_low = essence[1]
-                            print("Updated {} water low awakening essence to {}".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 12001 and monster.awaken_mats_water_mid != essence[1]:
-                            monster.awaken_mats_water_mid = essence[1]
-                            print("Updated {} water mid awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 13001 and monster.awaken_mats_water_high != essence[1]:
-                            monster.awaken_mats_water_high = essence[1]
-                            print("Updated {} water high awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 11002 and monster.awaken_mats_fire_low != essence[1]:
-                            monster.awaken_mats_fire_low = essence[1]
-                            print("Updated {} fire low awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 12002 and monster.awaken_mats_fire_mid != essence[1]:
-                            monster.awaken_mats_fire_mid = essence[1]
-                            print("Updated {} fire mid awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 13002 and monster.awaken_mats_fire_high != essence[1]:
-                            monster.awaken_mats_fire_high = essence[1]
-                            print("Updated {} fire high awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 11003 and monster.awaken_mats_wind_low != essence[1]:
-                            monster.awaken_mats_wind_low = essence[1]
-                            print("Updated {} wind low awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 12003 and monster.awaken_mats_wind_mid != essence[1]:
-                            monster.awaken_mats_wind_mid = essence[1]
-                            print("Updated {} wind mid awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 13003 and monster.awaken_mats_wind_high != essence[1]:
-                            monster.awaken_mats_wind_high = essence[1]
-                            print("Updated {} wind high awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 11004 and monster.awaken_mats_light_low != essence[1]:
-                            monster.awaken_mats_light_low = essence[1]
-                            print("Updated {} light low awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 12004 and monster.awaken_mats_light_mid != essence[1]:
-                            monster.awaken_mats_light_mid = essence[1]
-                            print("Updated {} light mid awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 13004 and monster.awaken_mats_light_high != essence[1]:
-                            monster.awaken_mats_light_high = essence[1]
-                            print("Updated {} light high awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 11005 and monster.awaken_mats_dark_low != essence[1]:
-                            monster.awaken_mats_dark_low = essence[1]
-                            print("Updated {} dark low awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 12005 and monster.awaken_mats_dark_mid != essence[1]:
-                            monster.awaken_mats_dark_mid = essence[1]
-                            print("Updated {} dark mid awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 13005 and monster.awaken_mats_dark_high != essence[1]:
-                            monster.awaken_mats_dark_high = essence[1]
-                            print("Updated {} dark high awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 11006 and monster.awaken_mats_magic_low != essence[1]:
-                            monster.awaken_mats_magic_low = essence[1]
-                            print("Updated {} magic low awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 12006 and monster.awaken_mats_magic_mid != essence[1]:
-                            monster.awaken_mats_magic_mid = essence[1]
-                            print("Updated {} magic mid awakening essence to ".format(monster, essence[1]))
-                            updated = True
-                        elif essence[0] == 13006 and monster.awaken_mats_magic_high != essence[1]:
-                            monster.awaken_mats_magic_high = essence[1]
-                            print("Updated {} magic high awakening essence to ".format(monster, essence[1]))
-                            updated = True
+        if monster.crit_rate != json.loads(row['critical rate']):
+            monster.crit_rate = json.loads(row['critical rate'])
+            print('Updated {} ({}) critical rate to {}'.format(monster, master_id, monster.crit_rate))
+            updated = True
 
-                    # Leader skill
-                    # TODO
+        if monster.crit_damage != json.loads(row['critical damage']):
+            monster.crit_damage = json.loads(row['critical damage'])
+            print('Updated {} ({}) critical damage to {}'.format(monster, master_id, monster.crit_damage))
+            updated = True
 
-                    # Skills
-                    # TODO
+        # Awakening
+        awakened = row['unit master id'][-2] == '1'
+        awakens_to_com2us_id = json.loads(row['awaken unit id'])
+        if awakened != monster.is_awakened:
+            monster.is_awakened = awakened
+            print('Updated {} ({}) awakened status to {}'.format(monster, master_id, monster.is_awakened))
+            updated = True
 
-                    # Icon
-                    icon_nums = json.loads(row['thumbnail'])
-                    icon_filename = 'unit_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
-                    if monster.image_filename != icon_filename:
-                        monster.image_filename = icon_filename
-                        print("Updated {}'s icon filename".format(monster))
-                        updated = True
+        if monster.can_awaken != (awakened or awakens_to_com2us_id > 0):
+            monster.can_awaken = (awakened or awakens_to_com2us_id > 0)
+            print('Updated {} ({}) can awaken status to {}'.format(monster, master_id, monster.can_awaken))
 
-                    if updated:
-                        print('Updated {}\n'.format(monster))
-                        if not preview:
-                            monster.save()
-        if preview:
-            print('No changes were saved.')
+        if monster.can_awaken and not monster.is_awakened:
+            # Auto-assign awakens_to if possible (which will auto-update awakens_from on other monster)
+            try:
+                awakens_to_monster = Monster.objects.get(com2us_id=awakens_to_com2us_id)
+            except Monster.DoesNotExist:
+                print('!!! {} ({}) can awaken but could not find awakened monster in database'.format(monster, master_id))
+            else:
+                if monster.awakens_to != awakens_to_monster:
+                    monster.awakens_to = awakens_to_monster
+                    print('Updated {} ({}) awakened version to {}'.format(monster, master_id, awakens_to_monster))
+                    updated = True
+
+        awaken_materials = json.loads(row['awaken materials'])
+        essences = [x[0] for x in awaken_materials]  # Extract the essences actually used.
+
+        # Set the essences not used to 0
+        if 11001 not in essences and monster.awaken_mats_water_low != 0:
+            monster.awaken_mats_water_low = 0
+            print("Updated {} ({}) water low awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 12001 not in essences and monster.awaken_mats_water_mid != 0:
+            monster.awaken_mats_water_mid = 0
+            print("Updated {} ({}) water mid awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 13001 not in essences and monster.awaken_mats_water_high != 0:
+            monster.awaken_mats_water_high = 0
+            print("Updated {} ({}) water high awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 11002 not in essences and monster.awaken_mats_fire_low != 0:
+            monster.awaken_mats_fire_low = 0
+            print("Updated {} ({}) fire low awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 12002 not in essences and monster.awaken_mats_fire_mid != 0:
+            monster.awaken_mats_fire_mid = 0
+            print("Updated {} ({}) fire mid awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 13002 not in essences and monster.awaken_mats_fire_high != 0:
+            monster.awaken_mats_fire_high = 0
+            print("Updated {} ({}) fire high awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 11003 not in essences and monster.awaken_mats_wind_low != 0:
+            monster.awaken_mats_wind_low = 0
+            print("Updated {} ({}) wind low awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 12003 not in essences and monster.awaken_mats_wind_mid != 0:
+            monster.awaken_mats_wind_mid = 0
+            print("Updated {} ({}) wind mid awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 13003 not in essences and monster.awaken_mats_wind_high != 0:
+            monster.awaken_mats_wind_high = 0
+            print("Updated {} ({}) wind high awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 11004 not in essences and monster.awaken_mats_light_low != 0:
+            monster.awaken_mats_light_low = 0
+            print("Updated {} ({}) light low awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 12004 not in essences and monster.awaken_mats_light_mid != 0:
+            monster.awaken_mats_light_mid = 0
+            print("Updated {} ({}) light mid awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 13004 not in essences and monster.awaken_mats_light_high != 0:
+            monster.awaken_mats_light_high = 0
+            print("Updated {} ({}) light high awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 11005 not in essences and monster.awaken_mats_dark_low != 0:
+            monster.awaken_mats_dark_low = 0
+            print("Updated {} ({}) dark low awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 12005 not in essences and monster.awaken_mats_dark_mid != 0:
+            monster.awaken_mats_dark_mid = 0
+            print("Updated {} ({}) dark mid awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 13005 not in essences and monster.awaken_mats_dark_high != 0:
+            monster.awaken_mats_dark_high = 0
+            print("Updated {} ({}) dark high awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 11006 not in essences and monster.awaken_mats_magic_low != 0:
+            monster.awaken_mats_magic_low = 0
+            print("Updated {} ({}) magic low awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 12006 not in essences and monster.awaken_mats_magic_mid != 0:
+            monster.awaken_mats_magic_mid = 0
+            print("Updated {} ({}) magic mid awakening essence to 0.".format(monster, master_id))
+            updated = True
+        if 13006 not in essences and monster.awaken_mats_magic_high != 0:
+            monster.awaken_mats_magic_high = 0
+            print("Updated {} ({}) magic high awakening essence to 0.".format(monster, master_id))
+            updated = True
+
+        # Fill in values for the essences specified
+        for essence in awaken_materials:
+            if essence[0] == 11001 and monster.awaken_mats_water_low != essence[1]:
+                monster.awaken_mats_water_low = essence[1]
+                print("Updated {} ({}) water low awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 12001 and monster.awaken_mats_water_mid != essence[1]:
+                monster.awaken_mats_water_mid = essence[1]
+                print("Updated {} ({}) water mid awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 13001 and monster.awaken_mats_water_high != essence[1]:
+                monster.awaken_mats_water_high = essence[1]
+                print("Updated {} ({}) water high awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 11002 and monster.awaken_mats_fire_low != essence[1]:
+                monster.awaken_mats_fire_low = essence[1]
+                print("Updated {} ({}) fire low awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 12002 and monster.awaken_mats_fire_mid != essence[1]:
+                monster.awaken_mats_fire_mid = essence[1]
+                print("Updated {} ({}) fire mid awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 13002 and monster.awaken_mats_fire_high != essence[1]:
+                monster.awaken_mats_fire_high = essence[1]
+                print("Updated {} ({}) fire high awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 11003 and monster.awaken_mats_wind_low != essence[1]:
+                monster.awaken_mats_wind_low = essence[1]
+                print("Updated {} ({}) wind low awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 12003 and monster.awaken_mats_wind_mid != essence[1]:
+                monster.awaken_mats_wind_mid = essence[1]
+                print("Updated {} ({}) wind mid awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 13003 and monster.awaken_mats_wind_high != essence[1]:
+                monster.awaken_mats_wind_high = essence[1]
+                print("Updated {} ({}) wind high awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 11004 and monster.awaken_mats_light_low != essence[1]:
+                monster.awaken_mats_light_low = essence[1]
+                print("Updated {} ({}) light low awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 12004 and monster.awaken_mats_light_mid != essence[1]:
+                monster.awaken_mats_light_mid = essence[1]
+                print("Updated {} ({}) light mid awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 13004 and monster.awaken_mats_light_high != essence[1]:
+                monster.awaken_mats_light_high = essence[1]
+                print("Updated {} ({}) light high awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 11005 and monster.awaken_mats_dark_low != essence[1]:
+                monster.awaken_mats_dark_low = essence[1]
+                print("Updated {} ({}) dark low awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 12005 and monster.awaken_mats_dark_mid != essence[1]:
+                monster.awaken_mats_dark_mid = essence[1]
+                print("Updated {} ({}) dark mid awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 13005 and monster.awaken_mats_dark_high != essence[1]:
+                monster.awaken_mats_dark_high = essence[1]
+                print("Updated {} ({}) dark high awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 11006 and monster.awaken_mats_magic_low != essence[1]:
+                monster.awaken_mats_magic_low = essence[1]
+                print("Updated {} ({}) magic low awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 12006 and monster.awaken_mats_magic_mid != essence[1]:
+                monster.awaken_mats_magic_mid = essence[1]
+                print("Updated {} ({}) magic mid awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+            elif essence[0] == 13006 and monster.awaken_mats_magic_high != essence[1]:
+                monster.awaken_mats_magic_high = essence[1]
+                print("Updated {} ({}) magic high awakening essence to {}".format(monster, master_id, essence[1]))
+                updated = True
+
+        # Leader skill
+        # Data is a 5 element array
+        # [0] - arbitrary unique ID
+        # [1] - Area of effect: see com2us_mapping.leader_skill_area_map
+        # [2] - Element: see com2us_mapping.element_map
+        # [3] - Stat: see com2us_mapping.leader_skill_stat_map
+        # [4] - Value of skill bonus
+
+        leader_skill_data = json.loads(row['leader skill'])
+        if leader_skill_data:
+            stat = leader_skill_stat_map[leader_skill_data[3]]
+            value = int(leader_skill_data[4] * 100)
+
+            if leader_skill_data[2]:
+                area = LeaderSkill.AREA_ELEMENT
+                element = element_map[leader_skill_data[2]]
+            else:
+                area = leader_skill_area_map[leader_skill_data[1]]
+                element = None
+
+            try:
+                matching_skill = LeaderSkill.objects.get(attribute=stat, amount=value, area=area, element=element)
+            except LeaderSkill.DoesNotExist:
+                # Create the new leader skill
+                matching_skill = LeaderSkill.objects.create(attribute=stat, amount=value, area=area, element=element)
+
+            if monster.leader_skill != matching_skill:
+                monster.leader_skill = matching_skill
+                print('Updated {} ({}) leader skill to {}'.format(monster, master_id, matching_skill))
+                updated = True
+        else:
+            if monster.leader_skill is not None:
+                monster.leader_skill = None
+                print('Removed ({}) leader skill from {}'.format(monster, master_id))
+                updated = True
+
+        # Skills
+        existing_skills = monster.skills.all()
+        skill_set = Skill.objects.filter(com2us_id__in=json.loads(row['base skill']))
+
+        if set(existing_skills) != set(skill_set):
+            if not preview:
+                monster.skills.clear()
+                monster.skills.add(*skill_set)
+            print("Updated {} ({}) skill set".format(monster, master_id))
+            # No need for updated = True because .add() immediately takes effect
+
+        # Icon
+        icon_nums = json.loads(row['thumbnail'])
+        icon_filename = 'unit_icon_{0:04d}_{1}_{2}.png'.format(*icon_nums)
+        if monster.image_filename != icon_filename:
+            monster.image_filename = icon_filename
+            print("Updated {} ({}) icon filename".format(monster, master_id))
+            updated = True
+
+        if updated and not preview:
+            monster.save()
+            print('Saved changes to {} ({})\n'.format(monster, master_id))
+
+    if preview:
+        print('No changes were saved.')
+
+
+def parse_homunculus_data():
+    # Homunculus craft costs
+    craft_cost_table = _get_localvalue_tables(LocalvalueTables.HOMUNCULUS_CRAFT_COSTS)
+
+    for row in craft_cost_table['rows']:
+        mana_cost = json.loads(row['craft cost'])[2]
+
+        for monster_id in json.loads(row['unit master id']):
+            monster = Monster.objects.get(com2us_id=monster_id)
+            monster.craft_cost = mana_cost
+            print('Set craft cost of {} ({}) to {}'.format(monster, monster.com2us_id, mana_cost))
+            monster.save()
+
+            # Material costs - clear and re-init
+            monster.monstercraftcost_set.all().delete()
+            for material_cost in json.loads(row['craft stuff']):
+                qty = material_cost[2]
+                material = CraftMaterial.objects.get(com2us_id=material_cost[1])
+                craft_cost = MonsterCraftCost.objects.create(monster=monster, craft=material, quantity=qty)
+                print('Set craft material {} on {} ({})'.format(craft_cost, monster, monster.com2us_id))
+
+    # Homunculus skill costs/requirements
+    skill_table = _get_localvalue_tables(LocalvalueTables.HOMUNCULUS_SKILL_TREES)
+
+    for row in skill_table['rows']:
+        skill_id = json.loads(row['master id'])
+        print('\nUpdating skill upgrade recipe for {}'.format(skill_id))
+
+        try:
+            skill = HomunculusSkill.objects.get(skill__com2us_id=skill_id)
+        except HomunculusSkill.DoesNotExist:
+            skill = HomunculusSkill.objects.create(skill=Skill.objects.get(com2us_id=skill_id))
+
+        skill.mana_cost = json.loads(row['upgrade cost'])[2]
+        print('Set upgrade cost of {} upgrade recipe to {}'.format(skill, skill.mana_cost))
+        skill.save()
+
+        monsters_used_on_ids = json.loads(row['unit master id'])
+        monsters_used_on = Monster.objects.filter(com2us_id__in=monsters_used_on_ids)
+        skill.monsters.set(monsters_used_on, clear=True)
+        print('Set monster list of {} upgrade recipe to {}'.format(skill, list(skill.monsters.values_list('name', 'com2us_id'))))
+
+        prerequisite_skill_ids = json.loads(row['prerequisite'])
+        prerequisite_skills = Skill.objects.filter(com2us_id__in=prerequisite_skill_ids)
+        skill.prerequisites.set(prerequisite_skills, clear=True)
+        print('Set prerequisite skills of {} upgrade recipe to {}'.format(skill, list(skill.prerequisites.values_list('name', 'com2us_id'))))
+
+        # Material costs - clear and re-init
+        skill.homunculusskillcraftcost_set.all().delete()
+        for material_cost in json.loads(row['upgrade stuff']):
+            qty = material_cost[2]
+            material = CraftMaterial.objects.get(com2us_id=material_cost[1])
+            upgrade_cost = HomunculusSkillCraftCost.objects.create(skill=skill, craft=material, quantity=qty)
+            print('Set upgrade material {} on {} upgrade recipe'.format(upgrade_cost, skill))
 
 
 def crop_monster_images():
@@ -610,7 +774,7 @@ def _decrypt_localvalue_dat():
         return decrypt_response(f.read().strip('\0'))
 
 
-def _get_localvalue_tables():
+def _get_localvalue_tables(table_id):
     tables = {}
     decrypted_localvalue = _decrypt_localvalue_dat()
 
@@ -620,29 +784,30 @@ def _get_localvalue_tables():
     raw.read('pad:{}'.format(0xc * 8))
 
     if num_tables > int(max(LocalvalueTables)):
-        print('Found {} tables in localvalue.dat. There are only {} tables defined!'.format(num_tables, int(max(LocalvalueTables))))
+        print('WARNING! Found {} tables in localvalue.dat. There are only {} tables defined!'.format(num_tables, int(max(LocalvalueTables))))
 
-    # Initialize the table parameters
+    # Read the locations of all defined tables
     for x in range(0, num_tables):
         table_num, start, end = raw.readlist(['intle:32']*3)
         tables[table_num] = {
             'start': start,
-            'end': end,
-            'header': [],
-            'rows': [],
+            'end': end
         }
 
     # Record where we are now, as that is the offset of where the first table starts
     table_start_offset = int(raw.pos / 8)
 
-    # Load up each table with it's data and headers
-    # Table rows are an array of dicts where the dict keys are the header strings, similar to csv.DictReader
-    for table_num, table in tables.items():
-        raw = ConstBitStream(decrypted_localvalue)
-        raw.read('pad:{}'.format((table_start_offset + table['start']) * 8))
-        table_str = raw.read('bytes:{}'.format(table['end'] - table['start'])).decode('utf-8').strip()
-        table_rows = table_str.split('\r\n')
-        table['header'] = table_rows[0].split('\t')
-        table['rows'] = [{table['header'][col]: value for col, value in enumerate(row.split('\t'))} for row in table_rows[1:]]
+    # Load the requested table and return it
+    raw = ConstBitStream(decrypted_localvalue)
+    table_data = {
+        'header': [],
+        'rows': []
+    }
 
-    return tables
+    raw.read('pad:{}'.format((table_start_offset + tables[table_id]['start']) * 8))
+    table_str = raw.read('bytes:{}'.format(tables[table_id]['end'] - tables[table_id]['start'])).decode('utf-8').strip()
+    table_rows = table_str.split('\r\n')
+    table_data['header'] = table_rows[0].split('\t')
+    table_data['rows'] = [{table_data['header'][col]: value for col, value in enumerate(row.split('\t'))} for row in table_rows[1:]]
+
+    return table_data

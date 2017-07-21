@@ -669,6 +669,8 @@ class HomunculusSkill(models.Model):
     mana_cost = models.IntegerField(default=0)
     prerequisites = models.ManyToManyField(MonsterSkill, blank=True, related_name='homunculus_prereq')
 
+    def __str__(self):
+        return '{} ({})'.format(self.skill, self.skill.com2us_id)
 
 class MonsterSource(models.Model):
     name = models.CharField(max_length=100)

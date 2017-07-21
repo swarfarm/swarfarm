@@ -12,11 +12,18 @@ from sw_parser.com2us_mapping import *
 from sw_parser.com2us_parser import decrypt_response
 
 
+def _create_new_skill(com2us_id, slot):
+    print('!!! Creating new skill with com2us ID {}, slot {}'.format(com2us_id, slot))
+    return Skill.objects.create(com2us_id=com2us_id, name='tempname', slot=slot, max_level=1)
+
+
 def parse_skill_data(preview=False):
     monster_table = _get_localvalue_tables(LocalvalueTables.MONSTERS)
     skill_table = _get_localvalue_tables(LocalvalueTables.SKILLS)
     skill_names = get_skill_names_by_id()
     skill_descriptions = get_skill_descs_by_id()
+    homunculus_skill_table = _get_localvalue_tables(LocalvalueTables.HOMUNCULUS_SKILL_TREES)
+    homunculus_skill_list = [json.loads(row['master id']) for row in homunculus_skill_table['rows']]
 
     scaling_stats = ScalingStat.objects.all()
     ignore_def_effect = Effect.objects.get(name='Ignore DEF')
@@ -34,15 +41,28 @@ def parse_skill_data(preview=False):
             skill = Skill.objects.get(com2us_id=master_id)
         except Skill.DoesNotExist:
             # Check if it is used on any monster. If so, create it
-            for monster in monster_table['rows']:
-                skill_array = json.loads(monster['base skill'])
+            # Homunculus skills beyond the starting set are not listed in the monster table
+            skill = None
+            if master_id in homunculus_skill_list:
+                for homu_skill in homunculus_skill_table['rows']:
+                    if master_id == json.loads(homu_skill['master id']):
+                        slot = json.loads(homu_skill['slot'])
+                        skill = _create_new_skill(master_id, slot)
+                        break
+            else:
+                for monster in monster_table['rows']:
+                    skill_array = json.loads(monster['base skill'])
 
-                if master_id in skill_array:
-                    slot = skill_array.index(master_id) + 1
-                    skill = Skill(com2us_id=master_id)
-                    print('!!! Creating new skill with com2us ID {}, slot {}, used on monster {}'.format(master_id, slot, monster['unit master id']))
-                    updated = True
-                    break
+                    if master_id in skill_array:
+                        slot = skill_array.index(master_id) + 1
+                        skill = _create_new_skill(master_id, slot)
+                        break
+
+            if skill is None:
+                print('Skill ID {} is not used anywhere, skipping...'.format(master_id))
+                continue
+            else:
+                updated = True
 
         # Name
         if skill.name != skill_names[master_id]:
@@ -496,6 +516,62 @@ def parse_monster_data(preview=False):
 
     if preview:
         print('No changes were saved.')
+
+
+def parse_homunculus_data():
+    # Homunculus craft costs
+    craft_cost_table = _get_localvalue_tables(LocalvalueTables.HOMUNCULUS_CRAFT_COSTS)
+
+    for row in craft_cost_table['rows']:
+        mana_cost = json.loads(row['craft cost'])[2]
+
+        for monster_id in json.loads(row['unit master id']):
+            monster = Monster.objects.get(com2us_id=monster_id)
+            monster.craft_cost = mana_cost
+            print('Set craft cost of {} ({}) to {}'.format(monster, monster.com2us_id, mana_cost))
+            monster.save()
+
+            # Material costs - clear and re-init
+            monster.monstercraftcost_set.all().delete()
+            for material_cost in json.loads(row['craft stuff']):
+                qty = material_cost[2]
+                material = CraftMaterial.objects.get(com2us_id=material_cost[1])
+                craft_cost = MonsterCraftCost.objects.create(monster=monster, craft=material, quantity=qty)
+                print('Set craft material {} on {} ({})'.format(craft_cost, monster, monster.com2us_id))
+
+    # Homunculus skill costs/requirements
+    skill_table = _get_localvalue_tables(LocalvalueTables.HOMUNCULUS_SKILL_TREES)
+
+    for row in skill_table['rows']:
+        skill_id = json.loads(row['master id'])
+        print('\nUpdating skill upgrade recipe for {}'.format(skill_id))
+
+        try:
+            skill = HomunculusSkill.objects.get(skill__com2us_id=skill_id)
+        except HomunculusSkill.DoesNotExist:
+            skill = HomunculusSkill.objects.create(skill=Skill.objects.get(com2us_id=skill_id))
+
+        skill.mana_cost = json.loads(row['upgrade cost'])[2]
+        print('Set upgrade cost of {} upgrade recipe to {}'.format(skill, skill.mana_cost))
+        skill.save()
+
+        monsters_used_on_ids = json.loads(row['unit master id'])
+        monsters_used_on = Monster.objects.filter(com2us_id__in=monsters_used_on_ids)
+        skill.monsters.set(monsters_used_on, clear=True)
+        print('Set monster list of {} upgrade recipe to {}'.format(skill, list(skill.monsters.values_list('name', 'com2us_id'))))
+
+        prerequisite_skill_ids = json.loads(row['prerequisite'])
+        prerequisite_skills = Skill.objects.filter(com2us_id__in=prerequisite_skill_ids)
+        skill.prerequisites.set(prerequisite_skills, clear=True)
+        print('Set prerequisite skills of {} upgrade recipe to {}'.format(skill, list(skill.prerequisites.values_list('name', 'com2us_id'))))
+
+        # Material costs - clear and re-init
+        skill.homunculusskillcraftcost_set.all().delete()
+        for material_cost in json.loads(row['upgrade stuff']):
+            qty = material_cost[2]
+            material = CraftMaterial.objects.get(com2us_id=material_cost[1])
+            upgrade_cost = HomunculusSkillCraftCost.objects.create(skill=skill, craft=material, quantity=qty)
+            print('Set upgrade material {} on {} upgrade recipe'.format(upgrade_cost, skill))
 
 
 def crop_monster_images():

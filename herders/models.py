@@ -94,9 +94,13 @@ class Monster(models.Model):
     resistance = models.IntegerField(null=True, blank=True)
     accuracy = models.IntegerField(null=True, blank=True)
 
+    # Homunculus monster fields
     homunculus = models.BooleanField(default=False)
     craft_materials = models.ManyToManyField('CraftMaterial', through='MonsterCraftCost')
     craft_cost = models.IntegerField(null=True, blank=True)
+
+    # Unicorn fields
+    transforms_into = models.ForeignKey('self', null=True, blank=True, related_name='+')
 
     awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
     awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')

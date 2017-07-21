@@ -34,7 +34,7 @@ def parse_skill_data(preview=False):
 
     for skill_data in skill_table['rows']:
         # Get matching skill in DB
-        master_id = int(skill_data['master id'])
+        master_id = json.loads(skill_data['master id'])
 
         # Skip it if no translation exists
         if master_id not in skill_names or master_id not in skill_descriptions:
@@ -102,7 +102,7 @@ def parse_skill_data(preview=False):
             updated = True
 
         # Cooltime
-        cooltime = int(skill_data['cool time']) + 1 if int(skill_data['cool time']) > 0 else None
+        cooltime = json.loads(skill_data['cool time']) + 1 if json.loads(skill_data['cool time']) > 0 else None
 
         if skill.cooltime != cooltime:
             skill.cooltime = cooltime
@@ -110,7 +110,7 @@ def parse_skill_data(preview=False):
             updated = True
 
         # Max Level
-        max_lv = int(skill_data['max level'])
+        max_lv = json.loads(skill_data['max level'])
         if skill.max_level != max_lv:
             skill.max_level = max_lv
             print('Updated max level to {}'.format(skill.max_level))
@@ -202,8 +202,12 @@ def parse_monster_data(preview=False):
     monster_table = _get_localvalue_tables(LocalvalueTables.MONSTERS)
     monster_names = get_monster_names_by_id()
 
+    # List of monsters that data indicates are not obtainable, but actually are
+    # Dark cow girl
+    definitely_obtainable_monsters = [19305, 19315]
+
     for row in monster_table['rows']:
-        master_id = int(row['unit master id'])
+        master_id = json.loads(row['unit master id'])
 
         # Skip it if no name translation exists
         if master_id not in monster_names:
@@ -217,7 +221,7 @@ def parse_monster_data(preview=False):
             print('!!! Creating new monster {} with com2us ID {}'.format(monster_names[master_id], master_id))
             updated = True
 
-        monster_family = int(row['discussion id'])
+        monster_family = json.loads(row['discussion id'])
         if monster.family_id != monster_family:
             monster.family_id = monster_family
             print('Updated {} ({}) family ID to {}'.format(monster, master_id, monster_family))
@@ -230,75 +234,99 @@ def parse_monster_data(preview=False):
             updated = True
 
         # Archetype
-        archetype = archetype_map.get(int(row['style type']))
+        archetype = archetype_map.get(json.loads(row['style type']))
         if monster.archetype != archetype:
             monster.archetype = archetype
             print('Updated {} ({}) archetype to {}'.format(monster, master_id, monster.get_archetype_display()))
             updated = True
 
         # Element
-        element = element_map[int(row['attribute'])]
+        element = element_map[json.loads(row['attribute'])]
         if monster.element != element:
             monster.element = element
             print('Updated {} ({}) element to {}'.format(monster, master_id, element))
             updated = True
 
+        # Obtainable
+        obtainable = sum(json.loads(row['collection view'])) > 0 or master_id in definitely_obtainable_monsters
+        if monster.obtainable != obtainable:
+            monster.obtainable = obtainable
+            print('Updated {} ({}) obtainability to {}'.format(monster, master_id, obtainable))
+
         # Homunculus
-        is_homunculus = bool(int(row['homunculus']))
+        is_homunculus = bool(json.loads(row['homunculus']))
         if monster.homunculus != is_homunculus:
             monster.homunculus = is_homunculus
             print('Updated {} ({}) homunculus status to {}'.format(monster, master_id, is_homunculus))
             updated = True
 
+        # Unicorn
+        transforms_into_id = json.loads(row['change'])
+        if transforms_into_id != 0:
+            try:
+                transforms_into = Monster.objects.get(com2us_id=transforms_into_id)
+            except Monster.DoesNotExist:
+                print('!!! {} ({}) can transform into {} but could not find transform monster in database'.format(monster, master_id, transforms_into_id))
+            else:
+                if monster.transforms_into != transforms_into:
+                    monster.transforms_into = transforms_into
+                    print('Updated {} ({}) can transform into {} ({})'.format(monster, master_id, transforms_into, transforms_into_id))
+                    updated = True
+        else:
+            if monster.transforms_into is not None:
+                monster.transforms_into = None
+                print('Removed monster transformation from {} ({})'.format(monster, master_id))
+                updated = True
+
         # Stats
-        if monster.base_stars != int(row['base class']):
-            monster.base_stars = int(row['base class'])
+        if monster.base_stars != json.loads(row['base class']):
+            monster.base_stars = json.loads(row['base class'])
             print('Updated {} ({}) base stars to {}'.format(monster, master_id, monster.base_stars))
             updated = True
 
-        if monster.raw_hp != int(row['base con']):
-            monster.raw_hp = int(row['base con'])
+        if monster.raw_hp != json.loads(row['base con']):
+            monster.raw_hp = json.loads(row['base con'])
             print('Updated {} ({}) raw HP to {}'.format(monster, master_id, monster.raw_hp))
             updated = True
 
-        if monster.raw_attack != int(row['base atk']):
-            monster.raw_attack = int(row['base atk'])
+        if monster.raw_attack != json.loads(row['base atk']):
+            monster.raw_attack = json.loads(row['base atk'])
             print('Updated {} ({}) raw attack to {}'.format(monster, master_id, monster.raw_attack))
             updated = True
 
-        if monster.raw_defense != int(row['base def']):
-            monster.raw_defense = int(row['base def'])
+        if monster.raw_defense != json.loads(row['base def']):
+            monster.raw_defense = json.loads(row['base def'])
             print('Updated {} ({}) raw defense to {}'.format(monster, master_id, monster.raw_defense))
             updated = True
 
-        if monster.resistance != int(row['resistance']):
-            monster.resistance = int(row['resistance'])
+        if monster.resistance != json.loads(row['resistance']):
+            monster.resistance = json.loads(row['resistance'])
             print('Updated {} ({}) resistance to {}'.format(monster, master_id, monster.resistance))
             updated = True
 
-        if monster.accuracy != int(row['accuracy']):
-            monster.accuracy = int(row['accuracy'])
+        if monster.accuracy != json.loads(row['accuracy']):
+            monster.accuracy = json.loads(row['accuracy'])
             print('Updated {} ({}) accuracy to {}'.format(monster, master_id, monster.accuracy))
             updated = True
 
-        if monster.speed != int(row['base speed']):
-            monster.speed = int(row['base speed'])
+        if monster.speed != json.loads(row['base speed']):
+            monster.speed = json.loads(row['base speed'])
             print('Updated {} ({}) speed to {}'.format(monster, master_id, monster.speed))
             updated = True
 
-        if monster.crit_rate != int(row['critical rate']):
-            monster.crit_rate = int(row['critical rate'])
+        if monster.crit_rate != json.loads(row['critical rate']):
+            monster.crit_rate = json.loads(row['critical rate'])
             print('Updated {} ({}) critical rate to {}'.format(monster, master_id, monster.crit_rate))
             updated = True
 
-        if monster.crit_damage != int(row['critical damage']):
-            monster.crit_damage = int(row['critical damage'])
+        if monster.crit_damage != json.loads(row['critical damage']):
+            monster.crit_damage = json.loads(row['critical damage'])
             print('Updated {} ({}) critical damage to {}'.format(monster, master_id, monster.crit_damage))
             updated = True
 
         # Awakening
         awakened = row['unit master id'][-2] == '1'
-        awakens_to_com2us_id = int(row['awaken unit id'])
+        awakens_to_com2us_id = json.loads(row['awaken unit id'])
         if awakened != monster.is_awakened:
             monster.is_awakened = awakened
             print('Updated {} ({}) awakened status to {}'.format(monster, master_id, monster.is_awakened))

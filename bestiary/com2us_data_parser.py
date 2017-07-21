@@ -214,7 +214,7 @@ def parse_monster_data(preview=False):
             updated = False
         except Monster.DoesNotExist:
             monster = Monster.objects.create(com2us_id=master_id, obtainable=False, name='tempname', base_stars=1)
-            print('!!! Creating new monster with com2us ID {}'.format(master_id, monster_names[master_id]))
+            print('!!! Creating new monster {} with com2us ID {}'.format(monster_names[master_id], master_id))
             updated = True
 
         monster_family = int(row['discussion id'])

@@ -103,7 +103,7 @@ def _bestiary_inventory(request):
 
 
 def bestiary_detail(request, monster_slug):
-    monster = Monster.objects.filter(bestiary_slug=monster_slug).first()
+    monster = Monster.objects.filter(bestiary_slug=monster_slug, obtainable=True).first()
 
     if monster is None:
         raise Http404()

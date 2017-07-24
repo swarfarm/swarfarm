@@ -3,86 +3,125 @@
 {% static 'herders/images/' as img_url_prefix %}
 <div class="panel panel-default">
     <div class="panel-heading">
-        <p class="panel-title">General Information</p>
+        <span class="panel-title"><strong><img src="{{ img_url_prefix }}elements/{{ mon_data.mon.element }}.png" style="height:1em"/> {{ mon_data.mon.name }}</strong> - <small>{{ mon_data.mon.get_archetype_display }}</small></span>
     </div>
-    <table class="table table-condensed table-bordered">
-        <tbody>
-        <tr>
-            <td>Awakening Bonus:</td>
-            <td>{{ mon_data.mon.awaken_bonus }}</td>
-        </tr>
-        {% with sources=mon_data.mon.source.all %}
-        {% if sources|length %}
-        <tr>
-            <td>Sources:</td>
-            <td class="monster-sources">
-                {% for source in sources %}
-                    {% if source.icon_filename %}
-                    <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
-                         class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
-                    {% else %}
-                    <span class="monster-source"><span>{{ source }}</span></span>
+    <div class="panel-body">
+        <div class="monster-box">
+            <div class="monster-box-thumb">
+                <img src="{{ img_url_prefix }}monsters/{{ mon_data.mon.image_filename }}"/>
+                <span>
+                    {% for x in mon_data.mon.base_stars|get_range %}
+                        {% if mon_data.mon.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% elif mon_data.mon.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <div class="image-plus-icon">
+                    {% if mon_data.mon.fusion_food %}
+                        <img src="{{ img_url_prefix }}icons/fusion.png" />
                     {% endif %}
-                {% endfor %}
-            </td>
-        </tr>
-        {% endif %}
-        {% endwith %}
-        {% if mon_data.mon.can_awaken and not mon_data.mon.is_awakened %}
-        <tr>
-            <td>Awakening Essences:</td>
-            <td class="monster-awaken-materials">
-                {% include 'bestiary/awakening_essences.html' with monster=mon_data.mon only %}
-            </td>
-        </tr>
-        {% endif %}
-        {% with fusion_set=mon_data.mon.fusion_set.all %}
-            {% if fusion_set|length %}
+                </div>
+            </div>
+            {% if mon_data.mon.obtainable %}
+            <div class="monster-box-actions">
+                <button class="btn btn-link btn-xs monster-add" data-monster="{{ mon_data.mon.pk }}" data-stars="{{ mon_data.mon.mon_data_stars }}">
+                    <span class="glyphicon glyphicon-plus"></span> Collection
+                </button>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="panel panel-default monster-info-panel">
+            <table class="table table-condensed table-bordered">
+                <tbody>
+                {% if mon_data.mon.transforms_into %}
+                    <tr>
+                        <td>Transforms Into</td>
+                        <td><a href="{% url 'bestiary:detail' monster_slug=mon_data.mon.transforms_into.bestiary_slug  %}"><img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ mon_data.mon.transforms_into.image_filename }}" /> {{ mon_data.mon.transforms_into }}</a></td>
+                    </tr>
+                {% endif %}
                 <tr>
-                    <td>Fusion Ingredient For:</td>
-                    <td class="monster-awaken-materials">
-                        {% for fusion in fusion_set %}
-                        <div class="monster-image">
-                            <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb"/>
-                            <span>
-                                {% for x in fusion.product.base_stars|get_range %}
-                                    {% if fusion.product.is_awakened %}
-                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% elif fusion.product.can_awaken %}
-                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% else %}
-                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                    {% endif %}
-                                {% endfor %}
-                            </span>
-                        </div>
+                    <td>Awakening Bonus:</td>
+                    <td>{{ mon_data.mon.awaken_bonus }}</td>
+                </tr>
+                {% with sources=mon_data.mon.source.all %}
+                {% if sources|length %}
+                <tr>
+                    <td>Sources:</td>
+                    <td class="monster-sources">
+                        {% for source in sources %}
+                            {% if source.icon_filename %}
+                            <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
+                                 class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
+                            {% else %}
+                            <span class="monster-source"><span>{{ source }}</span></span>
+                            {% endif %}
                         {% endfor %}
                     </td>
                 </tr>
-            {% endif %}
-        {% endwith %}
+                {% endif %}
+                {% endwith %}
+                {% if mon_data.mon.can_awaken and not mon_data.mon.is_awakened %}
+                <tr>
+                    <td>Awakening Essences:</td>
+                    <td class="monster-awaken-materials">
+                        {% include 'bestiary/awakening_essences.html' with monster=mon_data.mon only %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% with fusion_set=mon_data.mon.fusion_set.all %}
+                    {% if fusion_set|length %}
+                        <tr>
+                            <td>Fusion Ingredient For:</td>
+                            <td class="monster-awaken-materials">
+                                {% for fusion in fusion_set %}
+                                <div class="monster-image">
+                                    <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb"/>
+                                    <span>
+                                        {% for x in fusion.product.base_stars|get_range %}
+                                            {% if fusion.product.is_awakened %}
+                                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                            {% elif fusion.product.can_awaken %}
+                                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                            {% else %}
+                                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endwith %}
 
-        {% if mon_data.mon.skill_ups_to_max %}
-        <tr>
-            <td>Skill-ups to Max</td>
-            <td class="monster-awaken-materials">
-                <div class="monster-image">
-                    <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
-                    <span class="image-plus image-plus-main">{{ mon_data.mon.skill_ups_to_max }}</span>
-                </div>
-            </td>
-        </tr>
-        {% endif %}
-        <tr>
-            <td>Resources:</td>
-            <td>
-                <ul class="list-inline">
-                    {% if mon_data.mon.wikia_url %}<li><a href="{{ mon_data.mon.wikia_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> Wikia</a></li>{% endif %}
-                    {% if mon_data.mon.summonerswar_co_url %}<li><a href="{{ mon_data.mon.summonerswar_co_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> summonerswar.co</a></li>{% endif %}
-                    {% if mon_data.mon.summonerswarmonsters_url %}<li><a href="{{ mon_data.mon.summonerswarmonsters_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span>  summonerswarmonsters.com</a></li>{% endif %}
-                </ul>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                {% if mon_data.mon.skill_ups_to_max %}
+                <tr>
+                    <td>Skill-ups to Max</td>
+                    <td class="monster-awaken-materials">
+                        <div class="monster-image">
+                            <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+                            <span class="image-plus image-plus-main">{{ mon_data.mon.skill_ups_to_max }}</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td>Resources:</td>
+                    <td>
+                        <ul class="list-inline">
+                            {% if mon_data.mon.wikia_url %}<li><a href="{{ mon_data.mon.wikia_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> Wikia</a></li>{% endif %}
+                            {% if mon_data.mon.summonerswar_co_url %}<li><a href="{{ mon_data.mon.summonerswar_co_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span> summonerswar.co</a></li>{% endif %}
+                            {% if mon_data.mon.summonerswarmonsters_url %}<li><a href="{{ mon_data.mon.summonerswarmonsters_url }}" target="_blank"><span class="glyphicon glyphicon-link"></span>  summonerswarmonsters.com</a></li>{% endif %}
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

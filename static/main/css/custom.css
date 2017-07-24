@@ -105,6 +105,17 @@ footer {
     padding: 5px;
 }
 
+.row.condensed {
+    margin-right: -5px;
+    margin-left: -5px;
+    padding: 0;
+}
+
+.row.condensed > div {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
 .panel-body {
     position: relative;
 }
@@ -835,13 +846,8 @@ td>h6 {
     left: 0;
 }
 
-.bestiary-name {
+.monster-info-panel {
     margin-left: 110px;
-    margin-top: 5px;
-}
-
-.bestiary-name span {
-    position: relative;
 }
 
 .skill-table {

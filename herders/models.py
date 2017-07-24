@@ -214,7 +214,8 @@ class Monster(models.Model):
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 
     def monster_family(self):
-        family = Monster.objects.filter(family_id=self.family_id, obtainable=True).order_by('element', 'is_awakened')
+        should_be_shown = Q(obtainable=True) | Q(transforms_into__isnull=False)
+        family = Monster.objects.filter(family_id=self.family_id).filter(should_be_shown).order_by('element', 'is_awakened')
 
         return [
             family.filter(element=Monster.ELEMENT_FIRE).first(),
@@ -417,9 +418,9 @@ class Monster(models.Model):
             self.bestiary_slug = self.awakens_from.bestiary_slug
         else:
             if self.awakens_to is not None:
-                self.bestiary_slug = slugify(" ".join([self.element, self.name, self.awakens_to.name]))
+                self.bestiary_slug = slugify(" ".join([str(self.com2us_id), self.element, self.name, self.awakens_to.name]))
             else:
-                self.bestiary_slug = slugify(" ".join([self.element, self.name]))
+                self.bestiary_slug = slugify(" ".join([str(self.com2us_id), self.element, self.name]))
 
         # Pull info from unawakened version of this monster. This copying of data is one directional only
         if self.awakens_from:

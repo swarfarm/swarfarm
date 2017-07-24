@@ -29,6 +29,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'obtainable',
                 'image_filename',
                 'homunculus',
+                'transforms_into',
                 'craft_cost',
             ),
         }),

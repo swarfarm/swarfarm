@@ -252,6 +252,7 @@ def parse_monster_data(preview=False):
         if monster.obtainable != obtainable:
             monster.obtainable = obtainable
             print('Updated {} ({}) obtainability to {}'.format(monster, master_id, obtainable))
+            updated = True
 
         # Homunculus
         is_homunculus = bool(json.loads(row['homunculus']))

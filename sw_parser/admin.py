@@ -45,13 +45,19 @@ class RiftDungeonMonsterDropInline(admin.TabularInline):
     extra = 0
 
 
+class RiftDungeonRuneDropInline(admin.StackedInline):
+    model = RiftDungeonRuneDrop
+    extra = 0
+
+
 @admin.register(RiftDungeonLog)
 class RiftDungeonAdmin(admin.ModelAdmin):
     list_display = ['timestamp', 'wizard_id', 'summoner', 'dungeon', 'grade', 'total_damage']
     readonly_fields = ['summoner']
     inlines = [
         RiftDungeonItemDropInline,
-        RiftDungeonMonsterDropInline
+        RiftDungeonMonsterDropInline,
+        RiftDungeonRuneDropInline,
     ]
 
 

@@ -1228,6 +1228,10 @@ class RiftDungeonRuneDrop(RuneDrop):
     log = models.ForeignKey('RiftDungeonLog', related_name='rune_drops')
 
 
+class RiftDungeonRuneCraftDrop(RuneCraftDrop):
+    log = models.ForeignKey('RiftDungeonLog', related_name='rune_craft_drops')
+
+
 class RiftDungeonLog(LogEntry):
     GRADE_F = 1
     GRADE_D = 2

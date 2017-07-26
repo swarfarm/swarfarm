@@ -303,9 +303,11 @@ def parse_battle_rift_dungeon_result(log_data):
                     rift_drop.quantity = drop['quantity']
                 elif int(drop['type']) == inventory_type_map['rune']:
                     rift_drop = _parse_rune_log(drop['info'], RiftDungeonRuneDrop())
+                elif int(drop['type']) == inventory_type_map['rune_craft']:
+                    rift_drop = _parse_rune_craft_log(drop['info'], RiftDungeonRuneCraftDrop())
                 else:
                     mail_admins(
-                        subject='Unparsed elemental raid drop item type {}'.format(drop['item_master_type']),
+                        subject='Unparsed elemental raid drop item type {}'.format(drop['type']),
                         message=json.dumps(log_data),
                         fail_silently=True,
                     )
@@ -548,6 +550,21 @@ def _parse_rune_log(rune_data, rune_drop):
         rune_drop.substat_4_value = substats[3][1]
 
     return rune_drop
+
+
+def _parse_rune_craft_log(craft_data, craft_drop):
+    craft_type_id = str(craft_data['craft_type_id'])
+    quality = int(craft_type_id[-1:])
+    stat = int(craft_type_id[-4:-2])
+    rune_set = int(craft_type_id[:-4])
+
+    craft_drop.type = craft_type_map[craft_data['craft_type']]
+    craft_drop.quality = craft_quality_map[quality]
+    craft_drop.rune = rune_set_map[rune_set]
+    craft_drop.stat = rune_stat_type_map[stat]
+    craft_drop.value = int(craft_data['sell_value'])
+
+    return craft_drop
 
 
 def _parse_battle_reward(log_entry, reward, instance_info=None):

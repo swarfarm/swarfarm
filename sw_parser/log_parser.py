@@ -295,11 +295,12 @@ def parse_battle_rift_dungeon_result(log_data):
                 log_entry.mana = drop['quantity']
                 log_entry.save()
             else:
+                rift_drop = None
+
                 if int(drop['type']) == inventory_type_map['craft_stuff']:
                     rift_drop = RiftDungeonItemDrop()
                     rift_drop.item = drop_craft_map[int(drop['id'])]
                     rift_drop.quantity = drop['quantity']
-                    rift_drop.save()
                 elif int(drop['type']) == inventory_type_map['rune']:
                     rift_drop = _parse_rune_log(drop['info'], RiftDungeonRuneDrop())
                 else:
@@ -308,8 +309,9 @@ def parse_battle_rift_dungeon_result(log_data):
                         message=json.dumps(log_data),
                         fail_silently=True,
                     )
-                rift_drop.log = log_entry
-                rift_drop.save()
+                if rift_drop:
+                    rift_drop.log = log_entry
+                    rift_drop.save()
 
     # Monster drops
     if log_data['response']['unit_list']:

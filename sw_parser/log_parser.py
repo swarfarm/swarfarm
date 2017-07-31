@@ -290,40 +290,40 @@ def parse_battle_rift_dungeon_result(log_data):
     # Item drops
     if log_data['response']['item_list']:
         for drop in log_data['response']['item_list']:
-            if int(drop['type']) == 6:
+            drop_type = int(drop['type'])
+
+            if drop_type == inventory_type_map['currency']:
                 # Mana
                 log_entry.mana = drop['quantity']
                 log_entry.save()
             else:
-                rift_drop = None
-
-                if int(drop['type']) == inventory_type_map['craft_stuff']:
+                if drop_type == inventory_type_map['monster']:
+                    rift_drop = RiftDungeonMonsterDrop()
+                    rift_drop.monster = get_monster_from_id(drop['info']['unit_master_id'])
+                    rift_drop.grade = drop['info']['class']
+                    rift_drop.level = drop['info']['unit_level']
+                elif drop_type == inventory_type_map['craft_stuff']:
                     rift_drop = RiftDungeonItemDrop()
                     rift_drop.item = drop_craft_map[int(drop['id'])]
                     rift_drop.quantity = drop['quantity']
-                elif int(drop['type']) == inventory_type_map['rune']:
+                elif drop_type == inventory_type_map['rune']:
                     rift_drop = _parse_rune_log(drop['info'], RiftDungeonRuneDrop())
-                elif int(drop['type']) == inventory_type_map['rune_craft']:
+                elif drop_type == inventory_type_map['rune_craft']:
                     rift_drop = _parse_rune_craft_log(drop['info'], RiftDungeonRuneCraftDrop())
+                elif drop_type == inventory_type_map['scroll']:
+                    rift_drop = RiftDungeonItemDrop()
+                    rift_drop.item = summon_source_map[drop['id']]
+                    rift_drop.quantity = drop['quantity']
                 else:
                     mail_admins(
                         subject='Unparsed elemental raid drop item type {}'.format(drop['type']),
                         message=json.dumps(log_data),
                         fail_silently=True,
                     )
-                if rift_drop:
-                    rift_drop.log = log_entry
-                    rift_drop.save()
+                    continue
 
-    # Monster drops
-    if log_data['response']['unit_list']:
-        for monster_data in log_data['response']['unit_list']:
-            monster_drop = RiftDungeonMonsterDrop()
-            monster_drop.log = log_entry
-            monster_drop.monster = get_monster_from_id(monster_data.get('unit_master_id'))
-            monster_drop.grade = monster_data['class']
-            monster_drop.level = monster_data['unit_level']
-            monster_drop.save()
+                rift_drop.log = log_entry
+                rift_drop.save()
 
 
 def parse_battle_rift_of_worlds_raid_start(log_data):
@@ -764,7 +764,6 @@ accepted_api_params = {
             'tvalue',
             'tzone',
             'item_list',
-            'unit_list',
             'rift_dungeon_box_id',
             'total_damage',
         ]

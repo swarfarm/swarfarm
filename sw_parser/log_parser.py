@@ -422,7 +422,7 @@ def parse_battle_rift_of_worlds_raid_end(log_data):
 def parse_buy_shop_item(log_data):
     purchase_type = log_data['request'].get('item_id')
 
-    if shop_item_map[purchase_type] in [RuneCraftLog.CRAFT_LOW, RuneCraftLog.CRAFT_MID, RuneCraftLog.CRAFT_HIGH]:
+    if shop_item_map.get(purchase_type) in [RuneCraftLog.CRAFT_LOW, RuneCraftLog.CRAFT_MID, RuneCraftLog.CRAFT_HIGH]:
         log_entry = _parse_common_log_data(RuneCraftLog(), log_data)
         log_entry.craft_level = shop_item_map[purchase_type]
         log_entry.save()
@@ -433,7 +433,7 @@ def parse_buy_shop_item(log_data):
             rune = _parse_rune_log(rune_data, rune)
             rune.save()
 
-    elif shop_item_map[purchase_type] in [MagicBoxCraft.BOX_UNKNOWN_MAGIC, MagicBoxCraft.BOX_MYSTICAL_MAGIC]:
+    elif shop_item_map.get(purchase_type) in [MagicBoxCraft.BOX_UNKNOWN_MAGIC, MagicBoxCraft.BOX_MYSTICAL_MAGIC]:
         log_entry = _parse_common_log_data(MagicBoxCraft(), log_data)
         log_entry.box_type = shop_item_map[purchase_type]
         log_entry.save()

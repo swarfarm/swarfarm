@@ -470,17 +470,18 @@ def parse_buy_shop_item(log_data):
                 crate_drop.save()
 
             # Rune craft drops
-            crate = log_data['response']['reward'].get('crate', {})
-            if 'changestones' in crate:
-                for craft_data in crate['changestones']:
-                    crate_drop = _parse_rune_craft_log(craft_data, MagicBoxRuneCraftDrop())
-                    crate_drop.log = log_entry
-                    crate_drop.save()
-            if 'runes' in crate:
-                for rune_data in crate['runes']:
-                    crate_drop = _parse_rune_log(rune_data, MagicBoxRuneDrop())
-                    crate_drop.log = log_entry
-                    crate_drop.save()
+            if log_data['response']['reward']:
+                crate = log_data['response']['reward'].get('crate', {})
+                if 'changestones' in crate:
+                    for craft_data in crate['changestones']:
+                        crate_drop = _parse_rune_craft_log(craft_data, MagicBoxRuneCraftDrop())
+                        crate_drop.log = log_entry
+                        crate_drop.save()
+                if 'runes' in crate:
+                    for rune_data in crate['runes']:
+                        crate_drop = _parse_rune_log(rune_data, MagicBoxRuneDrop())
+                        crate_drop.log = log_entry
+                        crate_drop.save()
 
 
 def parse_get_black_market_list(log_data):

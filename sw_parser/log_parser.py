@@ -11,7 +11,7 @@ from .models import *
 from .com2us_parser import get_monster_from_id
 from .com2us_mapping import inventory_type_map, timezone_server_map, summon_source_map, scenario_difficulty_map, \
     rune_stat_type_map, rune_set_map, drop_essence_map, drop_craft_map, drop_currency_map, \
-    craft_type_map, craft_quality_map, secret_dungeon_map
+    craft_type_map, craft_quality_map, secret_dungeon_map, shop_item_map
 
 
 def _get_summoner(wizard_id):
@@ -23,12 +23,7 @@ def parse_summon_unit(log_data):
         return
 
     for x in range(0, len(log_data['response']['unit_list'])):
-        log_entry = SummonLog()
-
-        log_entry.wizard_id = log_data['request']['wizard_id']
-        log_entry.summoner = _get_summoner(log_entry.wizard_id)
-        log_entry.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
-        log_entry.server = timezone_server_map.get(log_data['response']['tzone'])
+        log_entry = _parse_common_log_data(SummonLog(), log_data)
 
         # Summon method
         if log_data['response']['item_info']:
@@ -53,14 +48,9 @@ def parse_summon_unit(log_data):
 
 
 def parse_do_random_wish_item(log_data):
-    log_entry = WishLog()
-
-    log_entry.wizard_id = log_data['request']['wizard_id']
-    log_entry.summoner = _get_summoner(log_entry.wizard_id)
-    log_entry.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
-    log_entry.server = timezone_server_map.get(log_data['response']['tzone'])
-
     wish_info = log_data['response']['wish_info']
+
+    log_entry = _parse_common_log_data(WishLog(), log_data)
     log_entry.wish_id = wish_info['wish_id']
     log_entry.wish_sequence = wish_info['wish_sequence']
     log_entry.crystal_used = wish_info['cash_used']
@@ -111,15 +101,9 @@ def parse_battle_dungeon_result(log_data):
     if 10000 <= dungeon_id < 11000:
         return
 
-    log_entry = RunLog()
-
-    # Common results
-    log_entry.wizard_id = log_data['request']['wizard_id']
-    log_entry.summoner = _get_summoner(log_entry.wizard_id)
+    log_entry = _parse_common_log_data(RunLog(), log_data)
     log_entry.success = log_data['request']['win_lose'] == 1
     log_entry.clear_time = datetime.timedelta(milliseconds=log_data['request']['clear_time'])
-    log_entry.server = timezone_server_map.get(log_data['response']['tzone'])
-    log_entry.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
 
     try:
         log_entry.dungeon = Dungeon.objects.get(pk=dungeon_id)
@@ -266,13 +250,7 @@ def parse_battle_worldboss_result(log_data):
 
 
 def parse_battle_rift_dungeon_result(log_data):
-    log_entry = RiftDungeonLog()
-
-    # Common results
-    log_entry.wizard_id = log_data['request']['wizard_id']
-    log_entry.summoner = _get_summoner(log_entry.wizard_id)
-    log_entry.server = timezone_server_map.get(log_data['response']['tzone'])
-    log_entry.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
+    log_entry = _parse_common_log_data(RiftDungeonLog(), log_data)
 
     # Raid specific results
     log_entry.dungeon = log_data['request']['dungeon_id']
@@ -442,31 +420,65 @@ def parse_battle_rift_of_worlds_raid_end(log_data):
 
 
 def parse_buy_shop_item(log_data):
-    item_id = str(log_data['request'].get('item_id'))
-    if item_id and item_id[:3] == '140' \
-            and 'reward' in log_data['response'] \
-            and 'crate' in log_data['response']['reward'] \
-            and 'runes' in log_data['response']['reward']['crate']:
-        log_entry = RuneCraftLog()
+    purchase_type = log_data['request'].get('item_id')
 
-        # Common results
-        log_entry.wizard_id = log_data['request']['wizard_id']
-        log_entry.summoner = _get_summoner(log_entry.wizard_id)
-        log_entry.server = timezone_server_map.get(log_data['response']['tzone'])
-        log_entry.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
-
-        # RuneCraft specific
-        log_entry.craft_level = int(item_id[3]) - 1
+    if shop_item_map[purchase_type] in [RuneCraftLog.CRAFT_LOW, RuneCraftLog.CRAFT_MID, RuneCraftLog.CRAFT_HIGH]:
+        log_entry = _parse_common_log_data(RuneCraftLog(), log_data)
+        log_entry.craft_level = shop_item_map[purchase_type]
         log_entry.save()
 
-        # Parse and save each rune
-        # Right now runes is always a 1 element array. Doing it this way in case that changes later.
         for rune_data in log_data['response']['reward']['crate']['runes']:
             rune = RuneCraft()
             rune.log = log_entry
             rune = _parse_rune_log(rune_data, rune)
             rune.save()
 
+    elif shop_item_map[purchase_type] in [MagicBoxCraft.BOX_UNKNOWN_MAGIC, MagicBoxCraft.BOX_MYSTICAL_MAGIC]:
+        log_entry = _parse_common_log_data(MagicBoxCraft(), log_data)
+        log_entry.box_type = shop_item_map[purchase_type]
+        log_entry.save()
+
+        # Currencies/materials in item list
+        for drop in log_data['response']['view_item_list']:
+            drop_type = int(drop['type'])
+            if drop_type == inventory_type_map['currency']:
+                crate_drop = MagicBoxItemDrop()
+                crate_drop.item = drop_currency_map[drop['item_master_id']]
+                crate_drop.quantity = drop['item_quantity']
+            elif drop_type == inventory_type_map['scroll']:
+                crate_drop = MagicBoxItemDrop()
+                crate_drop.item = summon_source_map[drop['item_master_id']]
+                crate_drop.quantity = drop['item_quantity']
+            elif drop_type == inventory_type_map['craft_stuff']:
+                crate_drop = MagicBoxItemDrop()
+                crate_drop.item = drop_craft_map[drop['item_master_id']]
+                crate_drop.quantity = drop['item_quantity']
+            elif drop_type in [inventory_type_map['rune_craft'], inventory_type_map['rune']]:
+                # Parsed via reward crate
+                continue
+            else:
+                mail_admins(
+                    subject='Unknown BuyShopItem drop item type {}'.format(drop['item_master_type']),
+                    message=json.dumps(log_data),
+                    fail_silently=True,
+                )
+                continue
+
+            crate_drop.log = log_entry
+            crate_drop.save()
+
+        # Rune craft drops
+        crate = log_data['response']['reward'].get('crate', {})
+        if 'changestones' in crate:
+            for craft_data in crate['changestones']:
+                crate_drop = _parse_rune_craft_log(craft_data, MagicBoxRuneCraftDrop())
+                crate_drop.log = log_entry
+                crate_drop.save()
+        if 'runes' in crate:
+            for rune_data in crate['runes']:
+                crate_drop = _parse_rune_log(rune_data, MagicBoxRuneDrop())
+                crate_drop.log = log_entry
+                crate_drop.save()
 
 def parse_get_black_market_list(log_data):
     if log_data['response'].get('market_list') is None or log_data['response'].get('market_info') is None:
@@ -474,11 +486,7 @@ def parse_get_black_market_list(log_data):
 
     # Only log real refreshes where the remaining time is 1hr.
     if log_data['response']['market_info']['update_remained'] == 3600:
-        log_entry = ShopRefreshLog()
-        log_entry.wizard_id = log_data['request']['wizard_id']
-        log_entry.summoner = _get_summoner(log_entry.wizard_id)
-        log_entry.server = timezone_server_map.get(log_data['response']['tzone'])
-        log_entry.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
+        log_entry = _parse_common_log_data(ShopRefreshLog(), log_data)
 
         # ShopRefresh specific
         log_entry.slots_available = log_data['response']['market_info']['open_slots']
@@ -514,6 +522,15 @@ def parse_get_black_market_list(log_data):
 
             if sale_entry:
                 sale_entry.save()
+
+
+def _parse_common_log_data(log, log_data):
+    log.wizard_id = log_data['request']['wizard_id']
+    log.summoner = _get_summoner(log.wizard_id)
+    log.server = timezone_server_map.get(log_data['response']['tzone'])
+    log.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
+
+    return log
 
 
 def _parse_rune_log(rune_data, rune_drop):

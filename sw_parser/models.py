@@ -1322,6 +1322,31 @@ class RuneCraftLog(LogEntry):
     craft_level = models.IntegerField(choices=CRAFT_CHOICES)
 
 
+# Magic Box Crafting
+class MagicBoxRuneDrop(RuneDrop):
+    log = models.ForeignKey('MagicBoxCraft')
+
+
+class MagicBoxItemDrop(ItemDrop):
+    log = models.ForeignKey('MagicBoxCraft')
+
+
+class MagicBoxRuneCraftDrop(RuneCraftDrop):
+    log = models.ForeignKey('MagicBoxCraft')
+
+
+class MagicBoxCraft(LogEntry):
+    BOX_UNKNOWN_MAGIC = 0
+    BOX_MYSTICAL_MAGIC = 1
+
+    BOX_CHOICES = [
+        (BOX_UNKNOWN_MAGIC, 'Unknown Magic Box'),
+        (BOX_MYSTICAL_MAGIC, 'Mystical Magic Box'),
+    ]
+
+    box_type = models.IntegerField(choices=BOX_CHOICES)
+
+
 # Shop Refreshing
 class ShopRefreshRune(RuneDrop):
     log = models.ForeignKey('ShopRefreshLog', related_name='rune_drops')

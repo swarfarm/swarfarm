@@ -422,7 +422,7 @@ def parse_battle_rift_of_worlds_raid_end(log_data):
 def parse_buy_shop_item(log_data):
     purchase_type = log_data['request'].get('item_id')
 
-    if shop_item_map.get(purchase_type) in [RuneCraftLog.CRAFT_LOW, RuneCraftLog.CRAFT_MID, RuneCraftLog.CRAFT_HIGH]:
+    if 1401001 <= purchase_type <= 1403021:
         log_entry = _parse_common_log_data(RuneCraftLog(), log_data)
         log_entry.craft_level = shop_item_map[purchase_type]
         log_entry.save()
@@ -433,52 +433,55 @@ def parse_buy_shop_item(log_data):
             rune = _parse_rune_log(rune_data, rune)
             rune.save()
 
-    elif shop_item_map.get(purchase_type) in [MagicBoxCraft.BOX_UNKNOWN_MAGIC, MagicBoxCraft.BOX_MYSTICAL_MAGIC]:
-        log_entry = _parse_common_log_data(MagicBoxCraft(), log_data)
-        log_entry.box_type = shop_item_map[purchase_type]
-        log_entry.save()
+    elif purchase_type in [1300008, 1300009]:
+        # Ignore if user has not restarted their proxy to include the correct data
+        if 'view_item_list' in log_data['response']:
+            log_entry = _parse_common_log_data(MagicBoxCraft(), log_data)
+            log_entry.box_type = shop_item_map[purchase_type]
+            log_entry.save()
 
-        # Currencies/materials in item list
-        for drop in log_data['response']['view_item_list']:
-            drop_type = int(drop['type'])
-            if drop_type == inventory_type_map['currency']:
-                crate_drop = MagicBoxItemDrop()
-                crate_drop.item = drop_currency_map[drop['item_master_id']]
-                crate_drop.quantity = drop['item_quantity']
-            elif drop_type == inventory_type_map['scroll']:
-                crate_drop = MagicBoxItemDrop()
-                crate_drop.item = summon_source_map[drop['item_master_id']]
-                crate_drop.quantity = drop['item_quantity']
-            elif drop_type == inventory_type_map['craft_stuff']:
-                crate_drop = MagicBoxItemDrop()
-                crate_drop.item = drop_craft_map[drop['item_master_id']]
-                crate_drop.quantity = drop['item_quantity']
-            elif drop_type in [inventory_type_map['rune_craft'], inventory_type_map['rune']]:
-                # Parsed via reward crate
-                continue
-            else:
-                mail_admins(
-                    subject='Unknown BuyShopItem drop item type {}'.format(drop['item_master_type']),
-                    message=json.dumps(log_data),
-                    fail_silently=True,
-                )
-                continue
+            # Currencies/materials in item list
+            for drop in log_data['response']['view_item_list']:
+                drop_type = int(drop['item_master_type'])
+                if drop_type == inventory_type_map['currency']:
+                    crate_drop = MagicBoxItemDrop()
+                    crate_drop.item = drop_currency_map[drop['item_master_id']]
+                    crate_drop.quantity = drop['item_quantity']
+                elif drop_type == inventory_type_map['scroll']:
+                    crate_drop = MagicBoxItemDrop()
+                    crate_drop.item = summon_source_map[drop['item_master_id']]
+                    crate_drop.quantity = drop['item_quantity']
+                elif drop_type == inventory_type_map['craft_stuff']:
+                    crate_drop = MagicBoxItemDrop()
+                    crate_drop.item = drop_craft_map[drop['item_master_id']]
+                    crate_drop.quantity = drop['item_quantity']
+                elif drop_type in [inventory_type_map['rune_craft'], inventory_type_map['rune']]:
+                    # Parsed via reward crate
+                    continue
+                else:
+                    mail_admins(
+                        subject='Unknown BuyShopItem drop item type {}'.format(drop['item_master_type']),
+                        message=json.dumps(log_data),
+                        fail_silently=True,
+                    )
+                    continue
 
-            crate_drop.log = log_entry
-            crate_drop.save()
-
-        # Rune craft drops
-        crate = log_data['response']['reward'].get('crate', {})
-        if 'changestones' in crate:
-            for craft_data in crate['changestones']:
-                crate_drop = _parse_rune_craft_log(craft_data, MagicBoxRuneCraftDrop())
                 crate_drop.log = log_entry
                 crate_drop.save()
-        if 'runes' in crate:
-            for rune_data in crate['runes']:
-                crate_drop = _parse_rune_log(rune_data, MagicBoxRuneDrop())
-                crate_drop.log = log_entry
-                crate_drop.save()
+
+            # Rune craft drops
+            crate = log_data['response']['reward'].get('crate', {})
+            if 'changestones' in crate:
+                for craft_data in crate['changestones']:
+                    crate_drop = _parse_rune_craft_log(craft_data, MagicBoxRuneCraftDrop())
+                    crate_drop.log = log_entry
+                    crate_drop.save()
+            if 'runes' in crate:
+                for rune_data in crate['runes']:
+                    crate_drop = _parse_rune_log(rune_data, MagicBoxRuneDrop())
+                    crate_drop.log = log_entry
+                    crate_drop.save()
+
 
 def parse_get_black_market_list(log_data):
     if log_data['response'].get('market_list') is None or log_data['response'].get('market_info') is None:
@@ -822,7 +825,8 @@ accepted_api_params = {
         'response': [
             'tzone',
             'tvalue',
-            'reward'
+            'reward',
+            'view_item_list',
         ]
     },
     'GetBlackMarketList': {

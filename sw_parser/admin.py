@@ -82,6 +82,32 @@ class RuneCraftLogAdmin(admin.ModelAdmin):
     ]
 
 
+class MagicBoxRuneDropInline(admin.StackedInline):
+    model = MagicBoxRuneDrop
+    extra = 0
+
+
+class MagicBoxItemDropInline(admin.TabularInline):
+    model = MagicBoxItemDrop
+    extra = 0
+
+
+class MagicBoxRuneCraftDropInline(admin.TabularInline):
+    model = MagicBoxRuneCraftDrop
+    extra = 0
+
+
+@admin.register(MagicBoxCraft)
+class MagicBoxCraftAdmin(admin.ModelAdmin):
+    list_display = ['timestamp', 'wizard_id', 'summoner', 'box_type']
+    readonly_fields = ['summoner']
+    inlines = [
+        MagicBoxRuneDropInline,
+        MagicBoxItemDropInline,
+        MagicBoxRuneCraftDropInline,
+    ]
+
+
 # Magic shop
 class ShopRefreshRuneInline(admin.TabularInline):
     model = ShopRefreshRune

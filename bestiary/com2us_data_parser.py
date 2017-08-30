@@ -656,7 +656,7 @@ def save_translation_tables():
         writer.writerow(['table_num', 'id', 'text'])
         for table_idx, table in enumerate(tables):
             for key, text in table.items():
-                writer.writerow([table_idx, key, text])
+                writer.writerow([table_idx, key, text.strip()])
 
 
 def _get_translation_tables():

@@ -768,6 +768,8 @@ class LocalvalueTables(IntEnum):
     CHALLENGES = 84
     # Unknown table 85 - some sort of rules
     WORLD_ARENA_SEASON_REWARDS = 86
+    WORLD_ARENA_RANKS2 = 87
+    WORLD_ARENA_REWARD_LIST = 88
 
 
 def _decrypt_localvalue_dat():

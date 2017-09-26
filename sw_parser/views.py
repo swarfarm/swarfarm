@@ -336,7 +336,7 @@ def _log_stats(request, mine=False, date_filter=None):
 
         # Count rifts
         slug_lookup = {v: k for k, v in RiftDungeonLog.RAID_SLUGS.items()}
-        rift_counts = RiftDungeonLog.objects.filter(success=True, **date_filter['filters'])
+        rift_counts = RiftDungeonLog.objects.filter(**date_filter['filters'])
         if mine:
             rift_counts = rift_counts.filter(summoner=summoner)
 

@@ -18,6 +18,7 @@ env = environ.Env(
     RECAPTCHA_PUBLIC_KEY=(str, None),
     RECAPTCHA_PRIVATE_KEY=(str, None),
     SUMMONERS_WAR_SECRET_KEY=(str, ''),
+    BUGSNAG_API_KEY=(str, None),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
@@ -114,7 +115,7 @@ if DEBUG:
         'debug_toolbar',
     ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -128,7 +129,16 @@ MIDDLEWARE_CLASSES = [
 ]
 
 if DEBUG:
-    MIDDLEWARE_CLASSES = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE_CLASSES
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+
+# Bugsnag
+if env('BUGSNAG_API_KEY'):
+    MIDDLEWARE = ['bugsnag.django.middleware.BugsnagMiddleware'] + MIDDLEWARE
+
+    BUGSNAG = {
+      'api_key': env('BUGSNAG_API_KEY'),
+      'project_root': BASE_DIR,
+    }
 
 # URL stuff
 ROOT_URLCONF = 'swarfarm.urls'

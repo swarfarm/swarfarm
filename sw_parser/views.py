@@ -1241,8 +1241,15 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
         for rune_drop in RiftDungeonRuneDrop.objects.all().distinct('type'):
             rune_list[rune_drop.type] = {
                 'name': RuneDrop.TYPE_CHOICES[int(rune_drop.type) - 1][1],
+                'avg_quality': 'Normal',
             }
 
+        grade_rune_table['total'] = {
+            'grade': "All Runs",
+            'total_runs': 0,
+            'runes': deepcopy(rune_list),
+        }
+        
         # Build the grade table so we include all grades
         for grade in reversed(RiftDungeonLog.GRADE_CHOICES):
             grade_item_table[grade[0]] = {
@@ -1260,6 +1267,7 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
         for grade_counts in runs.values('grade').annotate(count=Count('pk')):
             grade_item_table[grade_counts['grade']]['total_runs'] = grade_counts['count']
             grade_rune_table[grade_counts['grade']]['total_runs'] = grade_counts['count']
+            grade_rune_table['total']['total_runs'] += grade_counts['count']
 
         # Calculate avg items dropped per run and chance to drop
         for item_drop in RiftDungeonItemDrop.objects.filter(log__in=runs).values('item', 'log__grade').annotate(
@@ -1309,6 +1317,13 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
             chance_to_drop = float(rune_drop['occurences']) / grade_run_count
             grade_rune_table[rune_drop['log__grade']]['runes'][rune_drop['type']]['chance_drop'] = chance_to_drop * 100
         
+        for rune_drop in RiftDungeonRuneDrop.objects.filter(log__in=runs).values('type').annotate(
+            occurences=Count('pk')
+        ):
+            grade_run_count = grade_rune_table['total']['total_runs']
+            chance_to_drop = float(rune_drop['occurences']) / grade_run_count
+            grade_rune_table['total']['runes'][rune_drop['type']]['chance_drop'] = chance_to_drop * 100
+
         context = {
             'dungeon_name': RiftDungeonLog.RAID_DICT[RiftDungeonLog.RAID_SLUGS[rift_slug]],
             'mine': mine,

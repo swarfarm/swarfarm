@@ -1220,6 +1220,7 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
         runs = runs.filter(dungeon=RiftDungeonLog.RAID_SLUGS[rift_slug])
 
         grade_item_table = OrderedDict()
+        grade_rune_table = OrderedDict()
 
         # Get a list of items and monsters dropped in the rift
         item_list = OrderedDict()
@@ -1234,7 +1235,25 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
                 'name': mark_safe('{}<span class="glyphicon glyphicon-star"></span> {}'.format(monster_drop.grade, monster_drop.monster.name)),
                 'icon': 'monsters/' + monster_drop.monster.image_filename,
             }
+        
+        # Get a list of runes dropped in the rift
+        rune_list = OrderedDict()
+        for rune_drop in RiftDungeonRuneDrop.objects.all().distinct('type'):
+            rune_list[rune_drop.type] = {
+                'name': RuneDrop.TYPE_CHOICES[int(rune_drop.type) - 1][1],
+                'avg_quality': 'Normal',
+                'chance_drop': 0,
+            }
 
+        grade_rune_table['total'] = {
+            'grade': "All Runs",
+            'total_runs': 0,
+            'sum_stars': 0,
+            'sum_quality': 0,
+            'occurences': 0,
+            'runes': deepcopy(rune_list),
+        }
+        
         # Build the grade table so we include all grades
         for grade in reversed(RiftDungeonLog.GRADE_CHOICES):
             grade_item_table[grade[0]] = {
@@ -1242,10 +1261,20 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
                 'total_runs': 0,
                 'items': deepcopy(item_list),
             }
+            grade_rune_table[grade[0]] = {
+                'grade': grade[1],
+                'total_runs': 0,
+                'sum_stars': 0,
+                'sum_quality': 0,
+                'occurences': 0,
+                'runes': deepcopy(rune_list),
+            }
 
         # Add the total runs to each grade
         for grade_counts in runs.values('grade').annotate(count=Count('pk')):
             grade_item_table[grade_counts['grade']]['total_runs'] = grade_counts['count']
+            grade_rune_table[grade_counts['grade']]['total_runs'] = grade_counts['count']
+            grade_rune_table['total']['total_runs'] += grade_counts['count']
 
         # Calculate avg items dropped per run and chance to drop
         for item_drop in RiftDungeonItemDrop.objects.filter(log__in=runs).values('item', 'log__grade').annotate(
@@ -1274,6 +1303,40 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
             grade_item_table[monster_drop['log__grade']]['items'][monster_drop['monster__com2us_id']]['avg_drop'] = chance_to_drop
             grade_item_table[monster_drop['log__grade']]['items'][monster_drop['monster__com2us_id']]['chance_drop'] = chance_to_drop * 100
 
+        # at a glance, what grade/rift you need to start farming quality runes.
+        for rune_drop in RiftDungeonRuneDrop.objects.filter(log__in=runs).values('type', 'log__grade').annotate(
+            sum_stars=Sum('stars'),
+            avg_quality=Avg('quality'),
+            sum_quality=Sum('quality'),
+            occurences=Count('pk'),
+        ):
+            # Just in case the average quality is different per set, show the rune-bg behind the icon.
+            rune_list[rune_drop['type']]['avg_quality'] = RuneDrop.QUALITY_CHOICES[int(rune_drop['avg_quality']+0.4)][1]
+            # This also factors in if the box holds a rune (instead of a scroll/grind/enchant)
+            chance_to_drop = float(rune_drop['occurences']) / grade_rune_table[rune_drop['log__grade']]['total_runs']
+            grade_rune_table[rune_drop['log__grade']]['runes'][rune_drop['type']]['chance_drop'] = chance_to_drop * 100
+
+            # To track the Quality/Stars per Grade, we need to tally them over Type
+            grade_rune_table[rune_drop['log__grade']]['sum_stars'] += rune_drop['sum_stars']
+            grade_rune_table[rune_drop['log__grade']]['sum_quality'] += rune_drop['sum_quality']
+            grade_rune_table[rune_drop['log__grade']]['occurences'] += rune_drop['occurences']
+            grade_rune_table[rune_drop['log__grade']]['avg_stars'] = grade_rune_table[rune_drop['log__grade']]['sum_stars'] / grade_rune_table[rune_drop['log__grade']]['occurences']
+            grade_rune_table[rune_drop['log__grade']]['avg_quality'] = grade_rune_table[rune_drop['log__grade']]['sum_quality'] / grade_rune_table[rune_drop['log__grade']]['occurences']
+            # 2.6 is dropping more Heros than Rares, but at 2.5 the Rares are more noticable
+            grade_rune_table[rune_drop['log__grade']]['avg_rarity'] = RuneDrop.QUALITY_CHOICES[int(grade_rune_table[rune_drop['log__grade']]['avg_quality']+0.4)][1]
+            
+            # Calculate all time averages
+            grade_rune_table['total']['sum_stars'] += rune_drop['sum_stars']
+            grade_rune_table['total']['sum_quality'] += rune_drop['sum_quality']
+            grade_rune_table['total']['occurences'] += rune_drop['occurences']
+            grade_rune_table['total']['avg_stars'] = grade_rune_table['total']['sum_stars'] / grade_rune_table['total']['occurences']
+            grade_rune_table['total']['avg_quality'] = grade_rune_table['total']['sum_quality'] / grade_rune_table['total']['occurences']
+            # 2.6 is dropping more Heros than Rares, but at 2.5 the Rares are more noticable
+            grade_rune_table['total']['avg_rarity'] = RuneDrop.QUALITY_CHOICES[int(grade_rune_table['total']['avg_quality']+0.4)][1]
+            # Sum the chance to drop for the rune type across all grades
+            chance_to_drop = float(rune_drop['occurences']) / grade_rune_table['total']['total_runs']
+            grade_rune_table['total']['runes'][rune_drop['type']]['chance_drop'] += chance_to_drop * 100
+            
         context = {
             'dungeon_name': RiftDungeonLog.RAID_DICT[RiftDungeonLog.RAID_SLUGS[rift_slug]],
             'mine': mine,
@@ -1282,6 +1345,8 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
             'timespan': date_filter,
             'item_list': item_list,
             'drop_stats': grade_item_table,
+            'rune_list': rune_list,
+            'rune_table': grade_rune_table,
         }
 
         if not mine:

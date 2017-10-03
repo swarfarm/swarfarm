@@ -104,4 +104,61 @@
         </table>
     </div>
 
+	<div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">Rune Drops</p>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Grade</th>
+                <th>Logs</th>
+                <th>Avg. Rarity</th>
+                <th>Avg. Stars</th>
+                {% for item in rune_list.values %}
+                <th><img style="background: url({{ img_url_prefix }}runes/bg_{{ item.avg_quality }}.png) no-repeat center; background-size: contain;" src="{{ img_url_prefix }}runes/{{ item.name }}.png" class="monster-inline" />{{ item.name }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for grade in rune_table.values %}
+            <tr>
+                <td>{{ grade.grade }}</td>
+                <td>
+                    {% if grade.total_runs < 100 %}
+                        <span class="glyphicon glyphicon-info-sign text-danger" data-toggle="popover" data-trigger="hover" title="Low Number of Logs" data-content="This grade has a very low number of logs recorded. Average values may not be reliable."></span>
+                    {% endif %}
+                    {{ grade.total_runs }}
+                </td>
+                <td>
+                    {% if grade.avg_quality %}
+                        {{ grade.avg_quality|floatformat:"-1"|intcomma }} {% if grade.avg_quality > 0 %} ({{ grade.avg_rarity }})  {% endif %}
+                    {% else %}
+                        ---
+                    {% endif %}
+                </td>
+                <td>{% if grade.avg_stars %}
+                        {{ grade.avg_stars|floatformat:"-1"|intcomma }}
+                    {% else %}
+                        ---
+                    {% endif %}
+                    </td>
+                {% for rune in grade.runes.values %}
+                <td>
+                    {% if rune.chance_drop %}
+                        {% if rune.chance_drop < 1 %}
+                            {{ rune.chance_drop|floatformat:"-2"|intcomma }}%
+                        {% else %}
+                            {{ rune.chance_drop|floatformat:"-1"|intcomma }}%
+                        {% endif %}
+                    {% else %}
+                        ---
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock stats_content %}

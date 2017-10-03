@@ -116,7 +116,7 @@
                 <th>Avg. Rarity</th>
                 <th>Avg. Stars</th>
                 {% for item in rune_list.values %}
-                <th><img style="background: url({{ img_url_prefix }}runes/bg_{{ item.avg_quality }}.png) no-repeat center; background-size: contain;" src="{{ img_url_prefix }}runes/{{ item.name }}.png" class="monster-inline" />{{ item.name }}</th>
+                <th><img style="background: url({{ img_url_prefix }}runes/bg_{{ item.avg_quality|lower }}.png) no-repeat center; background-size: contain;" src="{{ img_url_prefix }}runes/{{ item.name|lower }}.png" class="monster-inline" />{{ item.name }}</th>
                 {% endfor %}
             </tr>
             </thead>

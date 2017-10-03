@@ -1248,6 +1248,9 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
         grade_rune_table['total'] = {
             'grade': "All Runs",
             'total_runs': 0,
+            'sum_stars': 0,
+            'sum_quality': 0,
+            'occurences': 0,
             'runes': deepcopy(rune_list),
         }
         
@@ -1262,7 +1265,6 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
                 'grade': grade[1],
                 'total_runs': 0,
                 'sum_stars': 0,
-                'sum_grade': 0,
                 'sum_quality': 0,
                 'occurences': 0,
                 'runes': deepcopy(rune_list),
@@ -1323,6 +1325,14 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
             # 2.6 is dropping more Heros than Rares, but at 2.5 the Rares are more noticable
             grade_rune_table[rune_drop['log__grade']]['avg_rarity'] = RuneDrop.QUALITY_CHOICES[int(grade_rune_table[rune_drop['log__grade']]['avg_quality']+0.4)][1]
             
+            # Calculate all time averages
+            grade_rune_table['total']['sum_stars'] += rune_drop['sum_stars']
+            grade_rune_table['total']['sum_quality'] += rune_drop['sum_quality']
+            grade_rune_table['total']['occurences'] += rune_drop['occurences']
+            grade_rune_table['total']['avg_stars'] = grade_rune_table['total']['sum_stars'] / grade_rune_table['total']['occurences']
+            grade_rune_table['total']['avg_quality'] = grade_rune_table['total']['sum_quality'] / grade_rune_table['total']['occurences']
+            # 2.6 is dropping more Heros than Rares, but at 2.5 the Rares are more noticable
+            grade_rune_table['total']['avg_rarity'] = RuneDrop.QUALITY_CHOICES[int(grade_rune_table['total']['avg_quality']+0.4)][1]
             # Sum the chance to drop for the rune type across all grades
             chance_to_drop = float(rune_drop['occurences']) / grade_rune_table['total']['total_runs']
             grade_rune_table['total']['runes'][rune_drop['type']]['chance_drop'] += chance_to_drop * 100

@@ -265,8 +265,10 @@ class AddMonsterInstanceForm(forms.ModelForm):
                 data_stars_field=self['stars'].auto_id,
                 data_fodder_field=self['fodder'].auto_id,
                 data_priority_field=self['priority'].auto_id,
+                data_custom_name_field='div_{}'.format(self['custom_name'].auto_id),
                 data_set_stars='',
             ),
+            Field('custom_name', wrapper_class='hidden'),
             Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
             FieldWithButtons(
                 Field('level', value=1, min=1, max=40),
@@ -285,7 +287,7 @@ class AddMonsterInstanceForm(forms.ModelForm):
 
     class Meta:
         model = MonsterInstance
-        fields = ('monster', 'stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes')
+        fields = ('monster', 'custom_name', 'stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes')
         labels = {
             'ignore_for_fusion': mark_safe('<span class="glyphicon glyphicon-lock"></span>Locked'),
         }
@@ -350,6 +352,7 @@ class EditMonsterInstanceForm(ModelForm):
 
         self.helper.layout = Layout(
             Div(
+                Field('custom_name'),
                 Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
                 FieldWithButtons(
                     Field('level', value=1, min=1, max=40),
@@ -376,7 +379,7 @@ class EditMonsterInstanceForm(ModelForm):
 
     class Meta:
         model = MonsterInstance
-        fields = ('stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority',
+        fields = ('custom_name', 'stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority',
                   'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level', 'notes', 'tags')
         labels = {
             'ignore_for_fusion': mark_safe('<span class="glyphicon glyphicon-lock"></span>Locked'),

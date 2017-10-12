@@ -980,6 +980,9 @@ def monster_instance_edit(request, profile_name, instance_id):
         else:
             form.helper['skill_4_level'].wrap(Div, css_class="hidden")
 
+        if not instance.monster.homunculus:
+            form.helper['custom_name'].wrap(Div, css_class="hidden")
+
         if request.method == 'POST' and form.is_valid():
             mon = form.save()
             messages.success(request, 'Successfully edited ' + str(mon))

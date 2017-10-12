@@ -115,7 +115,7 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
             'awaken_mats_light_low', 'awaken_mats_light_mid', 'awaken_mats_light_high',
             'awaken_mats_dark_low', 'awaken_mats_dark_mid', 'awaken_mats_dark_high',
             'awaken_mats_magic_low', 'awaken_mats_magic_mid', 'awaken_mats_magic_high',
-            'source', 'fusion_food'
+            'source', 'fusion_food', 'homunculus'
         )
 
     def get_element(self, instance):

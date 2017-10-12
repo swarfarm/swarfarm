@@ -24,7 +24,7 @@
             </a>
         </div>
     </td>
-    <td>{{ instance.monster.name|title }}</td>
+    <td>{% if instance.custom_name %}{{ instance.custom_name }}{% else %}{{ instance.monster.name }}{% endif %}</td>
     <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>
     <td class="monster-stars-column">
         {% if instance.monster.is_awakened %}

@@ -32,7 +32,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('name', 'element', 'archetype', 'base_stars', 'obtainable', 'is_awakened', 'com2us_id', 'family_id')
+    filter_fields = ('name', 'element', 'archetype', 'base_stars', 'obtainable', 'is_awakened', 'com2us_id', 'family_id', 'homunculus')
 
     def get_serializer_class(self):
         com2us_id = self.request.GET.get('com2us_id', '')

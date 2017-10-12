@@ -161,6 +161,7 @@ function SetStars(e) {
     var stars_field = '#' + $(this).data('stars-field');
     var priority_field = '#' + $(this).data('priority-field');
     var fodder_field = '#' + $(this).data('fodder-field');
+    var custom_name_field = '#' + $(this).data('custom-name-field');
 
     // Hit up bestiary API to get monster data
     $.ajax({
@@ -182,6 +183,9 @@ function SetStars(e) {
             $(priority_field).val('0');
             $(fodder_field).prop('checked', true);
         }
+
+        //Set custom name visibility
+        $(custom_name_field).toggleClass('hidden', !monster.homunculus);
     });
 }
 

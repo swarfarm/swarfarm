@@ -17,7 +17,7 @@
 
     {% if is_owner%}
         <ul class="dropdown-menu navmenu-nav">
-            <li><a><img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-inline" /> {{ instance.monster.name }}</a></li>
+            <li><a><img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-inline" /> {% if instance.custom_name %}{{ instance.custom_name }}{% else %}{{ instance.monster.name }}{% endif %}</a></li>
             <li><a class="monster-edit" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-edit"></span> Edit</a></li>
             <li><a class="monster-copy" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-copy"></span> Copy</a></li>
             <li><a class="monster-power-up" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-arrow-up"></span> Power Up</a></li>

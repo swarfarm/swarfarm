@@ -1076,6 +1076,7 @@ class MonsterInstance(models.Model):
     priority = models.IntegerField(choices=PRIORITY_CHOICES, blank=True, null=True)
     tags = models.ManyToManyField(MonsterTag, blank=True)
     notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
+    custom_name = models.CharField(default='', max_length=20, blank=True)
 
     # Calculated fields (on save)
     base_hp = models.IntegerField(blank=True, default=0)
@@ -1106,7 +1107,7 @@ class MonsterInstance(models.Model):
         return self.monster.max_level_from_stars(self.stars)
 
     def skill_ups_to_max(self):
-        skill_ups_remaining = self.monster.skill_ups_to_max
+        skill_ups_remaining = self.monster.skill_ups_to_max or 0
         skill_levels = [self.skill_1_level, self.skill_2_level, self.skill_3_level, self.skill_4_level]
 
         for idx in range(0, self.monster.skills.count()):
@@ -1371,6 +1372,10 @@ class MonsterInstance(models.Model):
         return stat_bonuses
 
     def update_fields(self):
+        # Remove custom name if not a homunculus
+        if not self.monster.homunculus:
+            self.custom_name = ''
+
         # Update base stats based on level
         self.base_hp = self.calc_base_hp()
         self.base_attack = self.calc_base_attack()

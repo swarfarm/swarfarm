@@ -261,6 +261,11 @@ def parse_sw_json(data, owner, options):
         if (level_ignored or silver_ignored or material_ignored) and not (allow_due_to_runes or allow_due_to_ld):
             continue
 
+        # Set custom name if homunculus
+        custom_name = unit_info.get('homunculus_name')
+        if unit_info.get('homunculus') and custom_name:
+            mon.custom_name = custom_name
+
         parsed_mons.append(mon)
 
         # Sometimes the runes are a dict or a list in the json. Convert to list.

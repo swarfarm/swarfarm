@@ -50,7 +50,11 @@
             </div>
         </div>
         <div class="bestiary-name">
-            <h1>{{ instance.monster.name }} <small></small></h1>
+            {% if instance.custom_name %}
+                <h1>{{ instance.custom_name }} <small>{{ instance.monster.name }}</small></h1>
+            {% else %}
+                <h1>{{ instance.monster.name }}</h1>
+            {% endif %}
             <p class="lead"><img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" style="height:1em"/> {{ instance.monster.get_archetype_display }}</p>
         </div>
     </div>

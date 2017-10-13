@@ -924,13 +924,16 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
             elif dungeon.type == Dungeon.TYPE_ESSENCE_DUNGEON:
                 # Build a essence drop per energy/run table
                 context['essence_table'] = []
-                essence_data = runs.filter(drop_type__in=RunLog.DROP_ESSENCES).values('drop_type').annotate(drop_qty=Sum('drop_quantity')).order_by('-drop_qty')
+                essence_data = runs.filter(drop_type__in=RunLog.DROP_ESSENCES).values('drop_type')\
+                    .annotate(chance=Count('pk'),drop_qty=Sum('drop_quantity'),drop_avg=Avg('drop_quantity'),).order_by('-drop_qty')
                 drop_dict = dict(RunLog.DROP_CHOICES)
 
                 for essence in essence_data:
                     context['essence_table'].append({
                         'essence': drop_dict[essence['drop_type']],
                         'icon': RunLog.DROP_ICONS[essence['drop_type']],
+                        'drop_chance': float(essence['chance']) / context['total_runs'] * 100,
+                        'drop_avg': float(essence['drop_avg']),
                         'per_run': float(essence['drop_qty']) / context['total_runs'],
                         'per_energy': float(essence['drop_qty']) / context['total_runs'] / energy_spent,
                     })

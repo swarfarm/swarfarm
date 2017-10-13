@@ -51,6 +51,8 @@
                 <thead>
                 <tr>
                     <th>Essence</th>
+                    <th>Drop Chance</th>
+                    <th>Avg. Per Drop</th>
                     <th>Per Run</th>
                     <th>
                         Per Energy
@@ -66,6 +68,8 @@
                             <img src="{{ img_url_prefix }}{{ essence.icon }}" />
                         </div>
                     </td>
+                    <td>{{ essence.drop_chance|floatformat:"-1" }}%</td>
+                    <td>{{ essence.drop_avg|floatformat:"-2" }}</td>
                     <td>{{ essence.per_run|floatformat:"-3" }}</td>
                     <td>{{ essence.per_energy|floatformat:"-3" }}</td>
                 </tr>

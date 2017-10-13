@@ -373,7 +373,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     if request.session.modified:
         return HttpResponse("Profile view mode cookie set")
 
-    view_mode = request.session.get('profile_view_mode', 'list').lower()
+    view_mode = request.session.get('profile_view_mode', 'box').lower()
     box_grouping = request.session.get('profile_group_method', 'grade').lower()
 
     try:
@@ -421,13 +421,25 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             # Group up the filtered monsters
             monster_stable = OrderedDict()
 
-            if box_grouping == 'grade':
+            if box_grouping == 'grade' or box_grouping == 'stars':
                 monster_stable['6*'] = monster_filter.qs.filter(stars=6).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['5*'] = monster_filter.qs.filter(stars=5).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['4*'] = monster_filter.qs.filter(stars=4).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['3*'] = monster_filter.qs.filter(stars=3).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['2*'] = monster_filter.qs.filter(stars=2).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['1*'] = monster_filter.qs.filter(stars=1).order_by('-level', 'monster__element', 'monster__name')
+            elif box_grouping == 'natural_stars':
+                nat5 = (Q(monster__base_stars=6) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=5) & Q(monster__is_awakened=False))
+                nat4 = (Q(monster__base_stars=5) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=4) & Q(monster__is_awakened=False))
+                nat3 = (Q(monster__base_stars=4) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=3) & Q(monster__is_awakened=False))
+                nat2 = (Q(monster__base_stars=3) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=2) & Q(monster__is_awakened=False))
+                nat1 = (Q(monster__base_stars=2) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=1) & Q(monster__is_awakened=False))
+
+                monster_stable['Natural 5*'] = monster_filter.qs.filter(nat5).order_by('-stars', '-level', 'monster__name')
+                monster_stable['Natural 4*'] = monster_filter.qs.filter(nat4).order_by('-stars', '-level', 'monster__name')
+                monster_stable['Natural 3*'] = monster_filter.qs.filter(nat3).order_by('-stars', '-level', 'monster__name')
+                monster_stable['Natural 2*'] = monster_filter.qs.filter(nat2).order_by('-stars', '-level', 'monster__name')
+                monster_stable['Natural 1*'] = monster_filter.qs.filter(nat1).order_by('-stars', '-level', 'monster__name')
             elif box_grouping == 'level':
                 monster_stable['40'] = monster_filter.qs.filter(level=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
                 monster_stable['39-31'] = monster_filter.qs.filter(level__gt=30).filter(level__lt=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
@@ -440,6 +452,13 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 monster_stable['wind'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_WIND).order_by('-stars', '-level', 'monster__name')
                 monster_stable['light'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
                 monster_stable['dark'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
+            elif box_grouping == 'archetype':
+                monster_stable['attack'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_ATTACK).order_by('-stars', '-level', 'monster__name')
+                monster_stable['hp'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_HP).order_by('-stars', '-level', 'monster__name')
+                monster_stable['support'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_SUPPORT).order_by('-stars', '-level', 'monster__name')
+                monster_stable['defense'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_DEFENSE).order_by('-stars', '-level', 'monster__name')
+                monster_stable['material'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_MATERIAL).order_by('-stars', '-level', 'monster__name')
+                monster_stable['other'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_NONE).order_by('-stars', '-level', 'monster__name')
             elif box_grouping == 'priority':
                 monster_stable['High'] = monster_filter.qs.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['Medium'] = monster_filter.qs.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
@@ -463,7 +482,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 raise Http404('Invalid sort method')
 
             context['monster_stable'] = monster_stable
-            context['box_grouping'] = box_grouping
+            context['box_grouping'] = box_grouping.replace('_', ' ')
             template = 'herders/profile/monster_inventory/box.html'
 
         return render(request, template, context)

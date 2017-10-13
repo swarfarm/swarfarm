@@ -24,11 +24,13 @@
                     Grouped By {{ box_grouping|title }} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    {% if not box_grouping == 'grade' %}<li><a class="box-group-mode" data-mode="grade">Grade</a></li>{% endif %}
+                    {% if not box_grouping == 'stars' %}<li><a class="box-group-mode" data-mode="stars">Stars</a></li>{% endif %}
+                    {% if not box_grouping == 'natural_stars' %}<li><a class="box-group-mode" data-mode="natural_stars">Natural Stars</a></li>{% endif %}
                     {% if not box_grouping == 'level' %}<li><a class="box-group-mode" data-mode="level">Level</a></li>{% endif %}
                     {% if not box_grouping == 'element' %}<li><a class="box-group-mode" data-mode="attribute">Element</a></li>{% endif %}
-                    {% if not box_grouping == 'priority' %}<li><a class="box-group-mode" data-mode="priority">Priority</a></li>{% endif %}
+                    {% if not box_grouping == 'archetype' %}<li><a class="box-group-mode" data-mode="archetype">Archetype</a></li>{% endif %}
                     {% if not box_grouping == 'family' %}<li><a class="box-group-mode" data-mode="family">Family</a></li>{% endif %}
+                    {% if not box_grouping == 'priority' %}<li><a class="box-group-mode" data-mode="priority">Priority</a></li>{% endif %}
                 </ul>
             </div>
             <span class="pull-right">{{ filtered_count }} of {{ total_count }} monster{{ total_count|pluralize }}</span>

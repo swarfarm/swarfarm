@@ -380,14 +380,14 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         raise Http404
-    monster_queryset = MonsterInstance.objects.filter(owner=summoner)
+    monster_queryset = MonsterInstance.objects.filter(owner=summoner).select_related('monster', 'monster__awakens_from')
     total_monsters = monster_queryset.count()
 
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if view_mode == 'list':
         monster_queryset = monster_queryset.select_related(
-            'monster', 'monster__leader_skill', 'monster__awakens_from', 'monster__awakens_to'
+            'monster__leader_skill', 'monster__awakens_to'
         ).prefetch_related(
             'monster__skills', 'runeinstance_set', 'team_set', 'team_leader', 'tags'
         )
@@ -446,7 +446,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 monster_stable['Low'] = monster_filter.qs.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_LOW).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['None'] = monster_filter.qs.select_related('monster').filter(owner=summoner).filter(Q(priority=None) | Q(priority=0)).order_by('-level', 'monster__element', 'monster__name')
             elif box_grouping == 'family':
-                for mon in monster_filter.qs.select_related('monster', 'monster__awakens_from'):
+                for mon in monster_filter.qs:
                     if mon.monster.is_awakened and mon.monster.awakens_from is not None:
                         family_name = mon.monster.awakens_from.name
                     else:

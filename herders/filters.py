@@ -8,6 +8,8 @@ from .models import MonsterInstance, MonsterTag, RuneInstance
 class MonsterInstanceFilter(django_filters.FilterSet):
     monster__name = django_filters.CharFilter(method='filter_monster__name')
     tags__pk = django_filters.ModelMultipleChoiceFilter(queryset=MonsterTag.objects.all(), to_field_name='pk', conjoined=True)
+    monster__base_stars__lte = django_filters.NumberFilter(method='filter_monster_base_stars')
+    monster__base_stars__gte = django_filters.NumberFilter(method='filter_monster_base_stars')
     monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)
@@ -29,6 +31,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__element': ['exact'],
             'monster__archetype': ['exact'],
             'priority': ['exact'],
+            'monster__base_stars': ['gte', 'lte'],
             'monster__is_awakened': ['exact'],
             'monster__leader_skill__attribute': ['exact'],
             'monster__leader_skill__area': ['exact'],
@@ -51,6 +54,15 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             return queryset.filter(monster__fusion_food=True).exclude(ignore_for_fusion=True)
         else:
             return queryset.filter(Q(monster__fusion_food=False) | Q(ignore_for_fusion=True))
+
+    def filter_monster_base_stars(self, queryset, name, value):
+        if name.endswith('gte'):
+            star_filter = (Q(monster__base_stars__gte=value) & Q(monster__is_awakened=False)) | (Q(monster__base_stars__gte=value+1) & Q(monster__is_awakened=True))
+        else:
+            star_filter = (Q(monster__base_stars__lte=value) & Q(monster__is_awakened=False)) | (Q(monster__base_stars__lte=value+1) & Q(monster__is_awakened=True))
+
+        return queryset.filter(star_filter)
+
 
     def filter_monster__skills__skill_effect__pk(self, queryset, name, value):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)

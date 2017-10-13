@@ -457,6 +457,10 @@ class FilterMonsterInstanceForm(forms.Form):
         label="Level",
         required=False,
     )
+    monster__base_stars = forms.CharField(
+        label="Natural Stars",
+        required=False,
+    )
     monster__element = forms.MultipleChoiceField(
         label='Element',
         choices=Monster.ELEMENT_CHOICES,
@@ -542,8 +546,8 @@ class FilterMonsterInstanceForm(forms.Form):
                 'General',
                 Div(
                     Div(
-                        Field('monster__name', wrapper_class='form-group-sm form-group-condensed'),
                         Div(
+                            Field('monster__name', wrapper_class='form-group-sm form-group-condensed col-sm-6'),
                             Field(
                                 'stars',
                                 data_provide='slider',
@@ -553,6 +557,20 @@ class FilterMonsterInstanceForm(forms.Form):
                                 data_slider_step='1',
                                 data_slider_ticks='[1, 6]',
                                 data_slider_ticks_labels='["1", "6"]',
+                                wrapper_class='form-group-sm form-group-condensed col-sm-6'
+                            ),
+                            css_class='row'
+                        ),
+                        Div(
+                            Field(
+                                'monster__base_stars',
+                                data_provide='slider',
+                                data_slider_min='1',
+                                data_slider_max='5',
+                                data_slider_value='[1, 5]',
+                                data_slider_step='1',
+                                data_slider_ticks='[1, 5]',
+                                data_slider_ticks_labels='["1", "5"]',
                                 wrapper_class='form-group-sm form-group-condensed col-sm-6'
                             ),
                             Field(
@@ -682,6 +700,15 @@ class FilterMonsterInstanceForm(forms.Form):
 
         self.cleaned_data['stars__gte'] = int(min_stars)
         self.cleaned_data['stars__lte'] = int(max_stars)
+
+        try:
+            [min_nat_stars, max_nat_stars] = self.cleaned_data['monster__base_stars'].split(',')
+        except:
+            min_nat_stars = 1
+            max_nat_stars = 5
+
+        self.cleaned_data['monster__base_stars__gte'] = int(min_nat_stars)
+        self.cleaned_data['monster__base_stars__lte'] = int(max_nat_stars)
 
 
 # MonsterPiece forms

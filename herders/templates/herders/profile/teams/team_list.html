@@ -12,7 +12,7 @@
 
 {% for group in team_groups %}
     <div class="list-group">
-        <div class="team-list-group">
+        <div class="team-list-group collapsible">
             {% if is_owner %}
                 <a href="{% url 'herders:team_group_edit' profile_name=profile_name group_id=group.pk.hex %}">
                     <span class="glyphicon glyphicon-pencil"></span>

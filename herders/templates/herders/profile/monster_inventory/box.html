@@ -40,14 +40,18 @@
                 {% for groupname, monsters in monster_stable.items %}
                     {% if monsters|length > 0 %}
                         <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <strong>{{ groupname|capfirst }}</strong>
+                            <div class="panel-heading collapsible">
+                                <a role="button" data-toggle="collapse" data-target="#monstergroup{{ forloop.counter }}">
+                                    <strong>{{ groupname|capfirst }}</strong>
+                                </a>
                                 <span class="pull-right">{% with num_monsters=monsters|length %}{{ num_monsters }} monster{{ num_monsters|pluralize }}{% endwith %}</span>
                             </div>
-                            <div class="panel-body">
-                                {% for instance in monsters %}
-                                    {% include 'herders/profile/monster_inventory/monster_box_snippet.html' %}
-                                {% endfor %}
+                            <div id="monstergroup{{ forloop.counter }}" class="collapse in">
+                                <div class="panel-body">
+                                    {% for instance in monsters %}
+                                        {% include 'herders/profile/monster_inventory/monster_box_snippet.html' %}
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     {% endif %}

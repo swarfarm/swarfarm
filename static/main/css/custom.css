@@ -786,14 +786,14 @@ div.disabled {
     right: 10px;
 }*/
 
-.team-list-group>button:before {
+.collapsible>button:before, .collapsible>a:before {
     padding-right: 5px;
     float: left;
     font-family: "Glyphicons Halflings";
     content: "\e114";
 }
 
-.team-list-group>button.collapsed:before {
+.collapsible>button.collapsed:before, .collapsible>a.collapsed:before {
     padding-right: 5px;
     float: left;
     font-family: "Glyphicons Halflings";

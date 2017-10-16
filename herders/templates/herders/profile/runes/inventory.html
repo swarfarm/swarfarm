@@ -39,16 +39,16 @@
             {% elif not filtered_count %}
                 <div class="alert alert-warning">All runes were filtered out.</div>
             {% else %}
-                {% for groupname, runes_grouped in runes.items %}
-                    {% if runes_grouped|length %}
+                {% for group in runes %}
+                    {% if group.runes|length %}
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <strong>{{ groupname }}</strong>
-                                <span class="pull-right">{% with num_runes=runes_grouped|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
+                                <strong>{{ group.name }}</strong>
+                                <span class="pull-right">{% with num_runes=group.runes|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
                             </div>
                             <div class="panel-body">
                                 <div class="flex">
-                                {% for rune in runes_grouped %}
+                                {% for rune in group.runes %}
                                     <div data-rune-instance="{{ rune.pk.hex }}">
                                         {% include 'herders/profile/runes/rune_panel_fragment.html' with rune=rune profile_name=profile_name is_owner=is_owner only %}
                                     </div>

@@ -1913,27 +1913,81 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     if is_owner or summoner.public:
         if view_mode == 'box':
-            rune_box = OrderedDict()
+            rune_box = []
             if box_grouping == 'slot':
-                rune_box['Slot 1'] = rune_filter.qs.filter(slot=1)
-                rune_box['Slot 2'] = rune_filter.qs.filter(slot=2)
-                rune_box['Slot 3'] = rune_filter.qs.filter(slot=3)
-                rune_box['Slot 4'] = rune_filter.qs.filter(slot=4)
-                rune_box['Slot 5'] = rune_filter.qs.filter(slot=5)
-                rune_box['Slot 6'] = rune_filter.qs.filter(slot=6)
+                rune_box.append({
+                    'name': 'Slot 1',
+                    'runes': rune_filter.qs.filter(slot=1)
+                })
+                rune_box.append({
+                    'name': 'Slot 2',
+                    'runes': rune_filter.qs.filter(slot=2)
+                })
+                rune_box.append({
+                    'name': 'Slot 3',
+                    'runes': rune_filter.qs.filter(slot=3)
+                })
+                rune_box.append({
+                    'name': 'Slot 4',
+                    'runes': rune_filter.qs.filter(slot=4)
+                })
+                rune_box.append({
+                    'name': 'Slot 5',
+                    'runes': rune_filter.qs.filter(slot=5)
+                })
+                rune_box.append({
+                    'name': 'Slot 6',
+                    'runes': rune_filter.qs.filter(slot=6)
+                })
             elif box_grouping == 'grade':
-                rune_box['6*'] = rune_filter.qs.filter(stars=6)
-                rune_box['5*'] = rune_filter.qs.filter(stars=5)
-                rune_box['4*'] = rune_filter.qs.filter(stars=4)
-                rune_box['3*'] = rune_filter.qs.filter(stars=3)
-                rune_box['2*'] = rune_filter.qs.filter(stars=2)
-                rune_box['1*'] = rune_filter.qs.filter(stars=1)
+                rune_box.append({
+                    'name': '6*',
+                    'runes': rune_filter.qs.filter(stars=6)
+                })
+                rune_box.append({
+                    'name': '5*',
+                    'runes': rune_filter.qs.filter(stars=5)
+                })
+                rune_box.append({
+                    'name': '4*',
+                    'runes': rune_filter.qs.filter(stars=4)
+                })
+                rune_box.append({
+                    'name': '3*',
+                    'runes': rune_filter.qs.filter(stars=3)
+                })
+                rune_box.append({
+                    'name': '2*',
+                    'runes': rune_filter.qs.filter(stars=2)
+                })
+                rune_box.append({
+                    'name': '1*',
+                    'runes': rune_filter.qs.filter(stars=1)
+                })
             elif box_grouping == 'equipped':
-                rune_box['Not Equipped'] = rune_filter.qs.filter(assigned_to__isnull=True)
-                rune_box['Equipped'] = rune_filter.qs.filter(assigned_to__isnull=False)
+                rune_box.append({
+                    'name': 'Not Equipped',
+                    'runes': rune_filter.qs.filter(assigned_to__isnull=True)
+                })
+
+                # Create a dictionary of monster PKs and their equipped runes
+                monsters = OrderedDict()
+                for rune in rune_filter.qs.filter(assigned_to__isnull=False).select_related('assigned_to', 'assigned_to__monster').order_by('assigned_to__monster__name', 'slot'):
+                    if rune.assigned_to.pk not in monsters:
+                        monsters[rune.assigned_to.pk] = {
+                            'name': str(rune.assigned_to),
+                            'runes': []
+                        }
+
+                    monsters[rune.assigned_to.pk]['runes'].append(rune)
+                for monster_runes in monsters.values():
+                    rune_box.append(monster_runes)
             elif box_grouping == 'type':
                 for (type, type_name) in RuneInstance.TYPE_CHOICES:
-                    rune_box[type_name] = rune_filter.qs.filter(type=type)
+                    rune_box.append({
+                        'name': type_name,
+                        'runes': rune_filter.qs.filter(type=type)
+                    })
 
             context['runes'] = rune_box
             context['box_grouping'] = box_grouping

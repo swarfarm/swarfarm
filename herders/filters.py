@@ -56,13 +56,11 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             return queryset.filter(Q(monster__fusion_food=False) | Q(ignore_for_fusion=True))
 
     def filter_monster_base_stars(self, queryset, name, value):
-        if name.endswith('gte'):
-            star_filter = (Q(monster__base_stars__gte=value) & Q(monster__is_awakened=False)) | (Q(monster__base_stars__gte=value+1) & Q(monster__is_awakened=True))
-        else:
-            star_filter = (Q(monster__base_stars__lte=value) & Q(monster__is_awakened=False)) | (Q(monster__base_stars__lte=value+1) & Q(monster__is_awakened=True))
+        unawakened_nat_match = Q(**{name: value}) & Q(monster__is_awakened=False)
+        awakened_nat_match = Q(**{name: value + 1}) & Q(monster__is_awakened=True)
+        awakened_material_nat_match = Q(**{name: value}) & Q(monster__archetype=Monster.TYPE_MATERIAL) & Q(monster__is_awakened=True)
 
-        return queryset.filter(star_filter)
-
+        return queryset.filter(unawakened_nat_match | awakened_nat_match | awakened_material_nat_match)
 
     def filter_monster__skills__skill_effect__pk(self, queryset, name, value):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)

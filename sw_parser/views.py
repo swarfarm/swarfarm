@@ -2524,7 +2524,7 @@ def _rune_drop_charts(runes, chart_type, slot=None):
         # Scatter plot of efficiency by rune quality
         chart = deepcopy(chart_templates.column)
         chart['title']['text'] = 'Maximum Efficiency Distribution'
-        chart['yAxis']['title']['text'] = 'Number of Runes'
+        chart['yAxis']['title']['text'] = '% of Drops'
         chart['series'] = [
             {
                 'name': 'Normal',
@@ -2553,14 +2553,16 @@ def _rune_drop_charts(runes, chart_type, slot=None):
             }
         ]
 
+        total_counts = {k: v for k, v in runes.values_list('quality').annotate(count=Count('pk'))}
+
         hist = histogram(runes, 'max_efficiency', bins=range(0, 100, 5), slice_on='quality')
         for index, row in enumerate(hist):
             chart['xAxis']['categories'].append('{}%'.format(row['bin']))
-            chart['series'][0]['data'].append(row.get('Normal', 0))
-            chart['series'][1]['data'].append(row.get('Magic', 0))
-            chart['series'][2]['data'].append(row.get('Rare', 0))
-            chart['series'][3]['data'].append(row.get('Hero', 0))
-            chart['series'][4]['data'].append(row.get('Legend', 0))
+            chart['series'][0]['data'].append(row.get('Normal', 0) / total_counts.get(RuneDrop.QUALITY_NORMAL, 1) * 100)
+            chart['series'][1]['data'].append(row.get('Magic', 0) / total_counts.get(RuneDrop.QUALITY_MAGIC, 1) * 100)
+            chart['series'][2]['data'].append(row.get('Rare', 0) / total_counts.get(RuneDrop.QUALITY_RARE, 1) * 100)
+            chart['series'][3]['data'].append(row.get('Hero', 0) / total_counts.get(RuneDrop.QUALITY_HERO, 1) * 100)
+            chart['series'][4]['data'].append(row.get('Legend', 0) / total_counts.get(RuneDrop.QUALITY_LEGEND, 1) * 100)
 
     return chart
 

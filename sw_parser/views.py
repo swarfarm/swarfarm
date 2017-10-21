@@ -304,7 +304,6 @@ def _log_stats(request, mine=False, date_filter=None):
         stats['dungeons'] = OrderedDict()
         stats['dungeons']['Rune Dungeons'] = OrderedDict()
         stats['dungeons']['Elemental Dungeons'] = OrderedDict()
-        stats['dungeons']['Hall of Heroes'] = OrderedDict()
         stats['dungeons']['Other Dungeons'] = OrderedDict()
         stats['rifts'] = OrderedDict()
 
@@ -1046,6 +1045,7 @@ def dungeon_stats_chart_data(request, mine=False):
 
         if chart_type == 'drop_types':
             chart = deepcopy(chart_templates.pie)
+            chart['title'] = 'Overall drop distribution'
             data = runs.filter(drop_type__isnull=False).exclude(drop_type__in=RunLog.DROP_ESSENCES).values('drop_type').annotate(drop_count=Count('drop_type')).values_list('drop_type', 'drop_count').order_by('-drop_count')
             total_essences = runs.filter(drop_type__in=RunLog.DROP_ESSENCES).values('drop_type').aggregate(drop_count=Count('drop_type'))
             drop_dict = dict(RunLog.DROP_CHOICES)
@@ -2525,6 +2525,18 @@ def _rune_drop_charts(runes, chart_type, slot=None):
         chart = deepcopy(chart_templates.column)
         chart['title']['text'] = 'Maximum Efficiency Distribution'
         chart['yAxis']['title']['text'] = '% of Drops'
+        chart['legend'] = {
+            'useHTML': True,
+            'align': 'right',
+            'x': 0,
+            'verticalAlign': 'top',
+            'y': 25,
+            'floating': True,
+            'backgroundColor': 'white',
+            'borderColor': '#CCC',
+            'borderWidth': 1,
+            'shadow': False,
+        }
         chart['series'] = [
             {
                 'name': 'Normal',
@@ -2553,9 +2565,12 @@ def _rune_drop_charts(runes, chart_type, slot=None):
             }
         ]
 
+        # Min Efficiency range is minimum efficiency rounded down to the nearest 5 (which is also the bucket size)
+        min_eff = runes.aggregate(min=Min('max_efficiency'))['min']
+        min_eff_range = int(min_eff - (min_eff % 5))
         total_counts = {k: v for k, v in runes.values_list('quality').annotate(count=Count('pk'))}
 
-        hist = histogram(runes, 'max_efficiency', bins=range(0, 100, 5), slice_on='quality')
+        hist = histogram(runes, 'max_efficiency', bins=range(min_eff_range, 100, 5), slice_on='quality')
         for index, row in enumerate(hist):
             chart['xAxis']['categories'].append('{}%'.format(row['bin']))
             chart['series'][0]['data'].append(row.get('Normal', 0) / total_counts.get(RuneDrop.QUALITY_NORMAL, 1) * 100)

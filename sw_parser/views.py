@@ -2,6 +2,7 @@ from collections import OrderedDict
 from copy import deepcopy
 import csv
 from celery.result import AsyncResult
+from django_pivot.histogram import histogram
 
 from django.conf import settings
 from django.contrib import messages
@@ -2519,39 +2520,47 @@ def _rune_drop_charts(runes, chart_type, slot=None):
                     'y': point['count'],
                 })
 
-    # elif chart_type == 'efficiency_distribution':
-    #     # Scatter plot of efficiency by rune quality
-    #     chart = deepcopy(chart_templates.boxplot)
-    #     chart['title']['text'] = 'Efficiency By Quality'
-    #     chart['series'] = [
-    #         {
-    #             'name': 'Normal',
-    #             'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_NORMAL],
-    #             'data': [],
-    #         },
-    #         {
-    #             'name': 'Magic',
-    #             'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_MAGIC],
-    #             'data': [],
-    #         },
-    #         {
-    #             'name': 'Rare',
-    #             'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_RARE],
-    #             'data': [],
-    #         },
-    #         {
-    #             'name': 'Hero',
-    #             'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_HERO],
-    #             'data': [],
-    #         },
-    #         {
-    #             'name': 'Legend',
-    #             'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_LEGEND],
-    #             'data': [],
-    #         }
-    #     ]
-    #
-    #     chart_data = {}
+    elif chart_type == 'efficiency_distribution':
+        # Scatter plot of efficiency by rune quality
+        chart = deepcopy(chart_templates.column)
+        chart['title']['text'] = 'Maximum Efficiency Distribution'
+        chart['yAxis']['title']['text'] = 'Number of Runes'
+        chart['series'] = [
+            {
+                'name': 'Normal',
+                'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_NORMAL],
+                'data': [],
+            },
+            {
+                'name': 'Magic',
+                'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_MAGIC],
+                'data': [],
+            },
+            {
+                'name': 'Rare',
+                'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_RARE],
+                'data': [],
+            },
+            {
+                'name': 'Hero',
+                'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_HERO],
+                'data': [],
+            },
+            {
+                'name': 'Legend',
+                'color': RuneDrop.QUALITY_COLORS[RuneDrop.QUALITY_LEGEND],
+                'data': [],
+            }
+        ]
+
+        hist = histogram(runes, 'max_efficiency', bins=range(0, 100, 5), slice_on='quality')
+        for index, row in enumerate(hist):
+            chart['xAxis']['categories'].append('{}%'.format(row['bin']))
+            chart['series'][0]['data'].append(row.get('Normal', 0))
+            chart['series'][1]['data'].append(row.get('Magic', 0))
+            chart['series'][2]['data'].append(row.get('Rare', 0))
+            chart['series'][3]['data'].append(row.get('Hero', 0))
+            chart['series'][4]['data'].append(row.get('Legend', 0))
 
     return chart
 

@@ -83,6 +83,14 @@
                 <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=innate_stat_summary" ></div>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">Efficiency</p>
+            </div>
+            <div class="panel-body">
+                <div class="chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=efficiency_distribution" ></div>
+            </div>
+        </div>
     </div>
     {% for rune_id, rune_name in rune_types %}
     <div role="tabpanel" class="tab-pane" id="{{ rune_name }}_tab">
@@ -115,6 +123,14 @@
             <div class="panel-body">
                 <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=innate_stat_summary&rune_type={{ rune_id }}" ></div>
                 <div class="col-lg-6 chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=substat_summary&rune_type={{ rune_id }}" ></div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">Efficiency</p>
+            </div>
+            <div class="panel-body">
+                <div class="chart" style="height: 400px" data-chart-data-source="/data/log/charts/rune/{% if mine %}mine/{% endif %}?dungeon_id={{ dungeon.pk }}&floor={{ floor }}&chart_type=efficiency_distribution&rune_type={{ rune_id }}" ></div>
             </div>
         </div>
     </div>

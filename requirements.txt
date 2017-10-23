@@ -26,6 +26,7 @@ django-crispy-forms==1.6.1
 django-environ
 django-filter==1.0.4
 django-markdown-deux
+django-pivot
 django-recaptcha
 django-redis-cache==1.6.4
 Django-Select2

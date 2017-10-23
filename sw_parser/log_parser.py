@@ -332,7 +332,7 @@ def parse_battle_rift_of_worlds_raid_end(log_data):
 
     try:
         log_entry = RiftRaidLog.objects.get(wizard_id=wizard_id, battle_key=log_data['request']['battle_key'])
-    except (RunLog.DoesNotExist, RunLog.MultipleObjectsReturned):
+    except (RiftRaidLog.DoesNotExist, RiftRaidLog.MultipleObjectsReturned):
         return
 
     log_entry.server = timezone_server_map.get(log_data['response']['tzone'])

@@ -10,7 +10,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.forms.models import modelformset_factory
-from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.db.models import FieldDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext, Context
@@ -104,7 +104,8 @@ def profile_delete(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     form = DeleteProfileForm(request.POST or None)
@@ -135,7 +136,8 @@ def following(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     context = {
@@ -159,7 +161,7 @@ def follow_add(request, profile_name, follow_username):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
     new_follower = get_object_or_404(Summoner, user__username=follow_username)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
@@ -181,7 +183,7 @@ def follow_remove(request, profile_name, follow_username):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
     removed_follower = get_object_or_404(Summoner, user__username=follow_username)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
@@ -193,17 +195,11 @@ def follow_remove(request, profile_name, follow_username):
         return HttpResponseForbidden()
 
 
-def profile(request, profile_name=None):
-    if profile_name is None:
-        if request.user.is_authenticated():
-            profile_name = request.user.username
-        else:
-            raise Http404('No user profile specified and not logged in.')
-
+def profile(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return render(request, 'herders/profile/not_found.html')
 
     # Determine if the person logged in is the one requesting the view
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
@@ -228,7 +224,8 @@ def buildings(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return render(request, 'herders/profile/not_found.html')
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     context = {
@@ -244,7 +241,8 @@ def buildings_inventory(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return render(request, 'herders/profile/not_found.html')
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     all_buildings = Building.objects.all().order_by('name')
@@ -287,7 +285,8 @@ def building_edit(request, profile_name, building_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     base_building = get_object_or_404(Building, pk=building_id)
 
@@ -379,7 +378,8 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return render(request, 'herders/profile/not_found.html')
+
     monster_queryset = MonsterInstance.objects.filter(owner=summoner).select_related('monster', 'monster__awakens_from')
     total_monsters = monster_queryset.count()
 
@@ -479,7 +479,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 # Sort ordered dict alphabetically by family name
                 monster_stable = OrderedDict(sorted(monster_stable.items(), key=lambda family:family[0]))
             else:
-                raise Http404('Invalid sort method')
+                return HttpResponseBadRequest('Invalid sort method')
 
             context['monster_stable'] = monster_stable
             context['box_grouping'] = box_grouping.replace('_', ' ')
@@ -499,7 +499,8 @@ def profile_edit(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     user_form = EditUserForm(request.POST or None, instance=request.user)
@@ -532,7 +533,8 @@ def storage(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
@@ -572,7 +574,8 @@ def storage_update(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner and request.POST:
@@ -620,7 +623,8 @@ def quick_fodder_menu(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
@@ -640,7 +644,8 @@ def monster_instance_add(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
@@ -697,7 +702,8 @@ def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     monster_to_add = get_object_or_404(Monster, pk=monster_id)
@@ -716,7 +722,8 @@ def monster_instance_bulk_add(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     BulkAddFormset = modelformset_factory(MonsterInstance, form=BulkAddMonsterInstanceForm, formset=BulkAddMonsterInstanceFormset, extra=5, max_num=50)
@@ -768,22 +775,22 @@ def monster_instance_view(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+        return render(request, 'herders/profile/not_found.html')
 
-    try:
-        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
-    except ObjectDoesNotExist:
-        raise Http404()
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     context = {
         'profile_name': profile_name,
         'summoner': summoner,
         'return_path': return_path,
-        'instance': instance,
         'is_owner': is_owner,
         'view': 'profile',
     }
+
+    try:
+        context['instance'] = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+    except ObjectDoesNotExist:
+        return render(request, 'herders/profile/monster_view/not_found.html', context)
 
     if is_owner or summoner.public:
         return render(request, 'herders/profile/monster_view/base.html', context)
@@ -795,13 +802,14 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     try:
         instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
-        raise Http404()
+        return HttpResponseBadRequest()
 
     instance_runes = [
         instance.runeinstance_set.filter(slot=1).first(),
@@ -826,7 +834,7 @@ def monster_instance_view_stats(request, profile_name, instance_id):
     try:
         instance = MonsterInstance.objects.select_related('monster').get(pk=instance_id)
     except ObjectDoesNotExist:
-        raise Http404()
+        return HttpResponseBadRequest()
 
     context = {
         'instance': instance,
@@ -842,7 +850,7 @@ def monster_instance_view_skills(request, profile_name, instance_id):
     try:
         instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
-        raise Http404()
+        return HttpResponseBadRequest()
 
     # Reconcile skill level with actual skill from base monster
     skills = []
@@ -871,7 +879,7 @@ def monster_instance_view_info(request, profile_name, instance_id):
     try:
         instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
-        raise Http404()
+        return HttpResponseBadRequest()
 
     if instance.monster.is_awakened:
         ingredient_in = instance.monster.fusion_set.all()
@@ -903,14 +911,15 @@ def monster_instance_remove_runes(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
         try:
             instance = MonsterInstance.objects.get(pk=instance_id)
         except ObjectDoesNotExist:
-            raise Http404()
+            return HttpResponseBadRequest()
         else:
             for rune in instance.runeinstance_set.all():
                 rune.assigned_to = None
@@ -931,7 +940,8 @@ def monster_instance_edit(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     instance = get_object_or_404(MonsterInstance, pk=instance_id)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
@@ -1055,7 +1065,7 @@ def monster_instance_delete(request, profile_name, instance_id):
 
         return redirect(return_path)
     else:
-        return HttpResponseForbidden()
+        return HttpResponseBadRequest()
 
 
 @login_required()
@@ -1063,7 +1073,8 @@ def monster_instance_power_up(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
 
@@ -1155,7 +1166,8 @@ def monster_instance_awaken(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
@@ -1277,7 +1289,8 @@ def monster_piece_add(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
@@ -1321,7 +1334,8 @@ def monster_piece_edit(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     pieces = get_object_or_404(MonsterPiece, pk=instance_id)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     template = loader.get_template('herders/profile/monster_inventory/monster_piece_form.html')
@@ -1364,7 +1378,8 @@ def monster_piece_summon(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     pieces = get_object_or_404(MonsterPiece, pk=instance_id)
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
@@ -1419,7 +1434,8 @@ def fusion_progress(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return render(request, 'herders/profile/not_found.html')
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     fusions = Fusion.objects.all()
 
@@ -1438,7 +1454,8 @@ def fusion_progress_detail(request, profile_name, monster_slug):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     context = {
@@ -1452,7 +1469,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
         try:
             fusion = Fusion.objects.get(product__bestiary_slug=monster_slug)
         except Fusion.DoesNotExist:
-            raise Http404()
+            return HttpResponseBadRequest()
         else:
             level = 10 + fusion.stars * 5
             ingredients = []
@@ -1596,9 +1613,9 @@ def teams(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
-    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
+        return render(request, 'herders/profile/not_found.html')
 
+    is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     add_team_group_form = AddTeamGroupForm()
 
     context = {
@@ -1620,7 +1637,8 @@ def team_list(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return render(request, 'herders/profile/not_found.html')
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     # Get team objects for the summoner
@@ -1644,7 +1662,8 @@ def team_group_add(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     form = AddTeamGroupForm(request.POST or None)
@@ -1670,7 +1689,8 @@ def team_group_edit(request, profile_name, group_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     team_group = get_object_or_404(TeamGroup, pk=group_id)
@@ -1705,7 +1725,8 @@ def team_group_delete(request, profile_name, group_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     team_group = get_object_or_404(TeamGroup, pk=group_id)
@@ -1755,7 +1776,8 @@ def team_detail(request, profile_name, team_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     team = get_object_or_404(Team, pk=team_id)
@@ -1799,7 +1821,8 @@ def team_edit(request, profile_name, team_id=None):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     # Limit form choices to objects owned by the current user.
@@ -1849,7 +1872,8 @@ def runes(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return render(request, 'herders/profile/not_found.html')
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     filter_form = FilterRuneForm(auto_id="filter_id_%s")
@@ -1889,7 +1913,8 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
     rune_queryset = RuneInstance.objects.filter(owner=summoner).select_related('assigned_to', 'assigned_to__monster')
     total_count = rune_queryset.count()
@@ -2006,7 +2031,8 @@ def rune_inventory_crafts(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     context = {
@@ -2095,7 +2121,8 @@ def rune_edit(request, profile_name, rune_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     form = AddRuneInstanceForm(request.POST or None, instance=rune, auto_id='edit_id_%s')
@@ -2209,7 +2236,8 @@ def rune_unassign(request, profile_name, rune_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
@@ -2234,7 +2262,8 @@ def rune_unassign_all(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     assigned_mons = []
@@ -2270,7 +2299,8 @@ def rune_delete(request, profile_name, rune_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
@@ -2294,7 +2324,8 @@ def rune_delete_all(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
@@ -2329,7 +2360,8 @@ def rune_resave_all(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:
@@ -2397,7 +2429,8 @@ def rune_craft_edit(request, profile_name, craft_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     form = AddRuneCraftInstanceForm(request.POST or None, instance=craft)
@@ -2439,7 +2472,8 @@ def rune_craft_delete(request, profile_name, craft_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
-        raise Http404
+        return HttpResponseBadRequest()
+
     is_owner = (request.user.is_authenticated() and summoner.user == request.user)
 
     if is_owner:

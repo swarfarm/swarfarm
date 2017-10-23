@@ -41,7 +41,7 @@
     {% if skill.multiplier_formula %}
     <li>
         <p class="list-group-item-heading"><strong>Multiplier Formula:</strong></p>
-        <p>{{ skill.multiplier_formula|safe }}</p>
+        <p>{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
     </li>
     {% endif %}
 </ul>

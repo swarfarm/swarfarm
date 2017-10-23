@@ -100,6 +100,10 @@ class FilterMonsterForm(forms.Form):
         label="Cooldown",
         required=False,
     )
+    skills__hits = forms.CharField(
+        label="Number of Hits",
+        required=False,
+    )
     buffs = AdvancedSelectMultiple(
         label='Buffs',
         queryset=Effect.objects.filter(is_buff=True).exclude(icon_filename=''),
@@ -190,6 +194,17 @@ class FilterMonsterForm(forms.Form):
                         wrapper_class='col-lg-6'
                     ),
                     Field(
+                        'skills__hits',
+                        data_provide='slider',
+                        data_slider_min='0',
+                        data_slider_max='7',
+                        data_slider_value='[0, 7]',
+                        data_slider_step='1',
+                        data_slider_ticks='[0, 7]',
+                        data_slider_ticks_labels='["0", "7"]',
+                        wrapper_class='form-group-sm form-group-condensed col-lg-6'
+                    ),
+                    Field(
                         'effects_logic',
                         data_toggle='toggle',
                         data_on='Any Skill',
@@ -244,6 +259,15 @@ class FilterMonsterForm(forms.Form):
 
         self.cleaned_data['base_stars__gte'] = int(min_stars)
         self.cleaned_data['base_stars__lte'] = int(max_stars)
+
+        try:
+            [min_hits, max_hits] = self.cleaned_data['skills__hits'].split(',')
+        except:
+            min_hits = 0
+            max_hits = 7
+
+        self.cleaned_data['skills__hits__gte'] = int(min_hits)
+        self.cleaned_data['skills__hits__lte'] = int(max_hits)
 
 
 # Superuser edit forms

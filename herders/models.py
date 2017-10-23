@@ -468,7 +468,7 @@ class MonsterSkill(models.Model):
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
     effect = models.ManyToManyField('MonsterSkillEffect', through='MonsterSkillEffectDetail', blank=True, related_name='effect')
     cooltime = models.IntegerField(null=True, blank=True)
-    hits = models.IntegerField(default=1, null=True, blank=True)
+    hits = models.IntegerField(default=1)
     aoe = models.BooleanField(default=False)
     passive = models.BooleanField(default=False)
     max_level = models.IntegerField()

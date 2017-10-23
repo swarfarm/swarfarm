@@ -31,6 +31,7 @@ class MonsterFilter(django_filters.FilterSet):
             'skills__skill_effect__pk': ['exact'],
             'skills__scaling_stats__pk': ['exact'],
             'skills__cooltime': ['lte', 'gte'],
+            'skills__hits': ['lte', 'gte'],
             'effects_logic': ['exact'],
             'fusion_food': ['exact'],
         }

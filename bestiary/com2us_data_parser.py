@@ -678,21 +678,23 @@ def decrypt_com2us_png():
 
 
 class TranslationTables(IntEnum):
-    MONSTER_NAME_TABLE = 1
-    SKILL_NAME_TABLE = 19
-    SKILL_DESCRIPTION_TABLE = 20
+    ISLAND_NAMES = 0
+    MONSTER_NAMES = 1
+    SUMMON_METHODS = 9
+    SKILL_NAMES = 19
+    SKILL_DESCRIPTIONS = 20
 
 
 def get_monster_names_by_id():
-    return _get_translation_tables()[TranslationTables.MONSTER_NAME_TABLE]
+    return _get_translation_tables()[TranslationTables.MONSTER_NAMES]
 
 
 def get_skill_names_by_id():
-    return _get_translation_tables()[TranslationTables.SKILL_NAME_TABLE]
+    return _get_translation_tables()[TranslationTables.SKILL_NAMES]
 
 
 def get_skill_descs_by_id():
-    return _get_translation_tables()[TranslationTables.SKILL_DESCRIPTION_TABLE]
+    return _get_translation_tables()[TranslationTables.SKILL_DESCRIPTIONS]
 
 
 def save_translation_tables():

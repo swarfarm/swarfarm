@@ -74,6 +74,9 @@ class SummonLog(LogEntry):
     SUMMON_LIGHT_AND_DARK_PIECES = 10
     SUMMON_LEGENDARY_PIECES = 11
     SCROLL_TRANSCENDANCE = 12
+    SCROLL_LEGENDARY_WATER = 13
+    SCROLL_LEGENDARY_FIRE = 14
+    SCROLL_LEGENDARY_WIND = 15
 
     SUMMON_CHOICES = [
         (SCROLL_UNKNOWN, 'Unknown Scroll'),
@@ -89,6 +92,9 @@ class SummonLog(LogEntry):
         (SUMMON_LIGHT_AND_DARK_PIECES, 'Light and Dark Pieces'),
         (SUMMON_LEGENDARY_PIECES, 'Legendary Pieces'),
         (SCROLL_TRANSCENDANCE, 'Transcendance Scroll'),
+        (SCROLL_LEGENDARY_WATER, 'Legendary Water Scroll'),
+        (SCROLL_LEGENDARY_FIRE, 'Legendary Fire Scroll'),
+        (SCROLL_LEGENDARY_WIND, 'Legendary Wind Scroll'),
     ]
 
     SUMMON_CHOICES_DICT = dict((k, slugify(v)) for k, v in SUMMON_CHOICES)

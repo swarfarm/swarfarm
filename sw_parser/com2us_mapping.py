@@ -216,6 +216,9 @@ summon_source_map = {
     9: SummonLog.SUMMON_LEGENDARY_PIECES,
     10: SummonLog.SUMMON_LIGHT_AND_DARK_PIECES,
     11: SummonLog.SCROLL_TRANSCENDANCE,
+    12: SummonLog.SCROLL_LEGENDARY_WATER,
+    13: SummonLog.SCROLL_LEGENDARY_FIRE,
+    14: SummonLog.SCROLL_LEGENDARY_WIND,
 }
 
 drop_essence_map = {

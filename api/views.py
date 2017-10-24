@@ -182,6 +182,7 @@ def bestary_stat_charts(request, pk):
                     'text': 'HP'
                 },
                 'id': 'hp',
+                'min': 0,
                 'opposite': True,
                 'endOnTick': False,
             },
@@ -190,6 +191,7 @@ def bestary_stat_charts(request, pk):
                     'text': 'ATK DEF'
                 },
                 'id': 'atkdef',
+                'min': 0,
                 'endOnTick': False,
             }
         ],
@@ -230,11 +232,11 @@ def bestary_stat_charts(request, pk):
 
     if data_series:
         # Determine max values for Y axis
-        max_stat_value = max(
+        max_stat_value = round(max(
             monster.max_lvl_hp / 15,
             monster.max_lvl_attack,
             monster.max_lvl_defense,
-        )
+        ))
 
         chart_template['series'] = data_series
         chart_template['yAxis'][0]['max'] = max_stat_value * 15

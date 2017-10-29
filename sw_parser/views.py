@@ -176,7 +176,7 @@ def import_sw_json(request):
                 schema_errors, validation_errors = validate_sw_json(data, request.user.summoner)
 
                 if schema_errors:
-                    errors += schema_errors
+                    errors.append(schema_errors)
 
                 if validation_errors:
                     validation_failures += validation_errors

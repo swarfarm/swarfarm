@@ -2,12 +2,6 @@ from django.contrib import admin
 from .models import *
 
 
-# Dungeons
-@admin.register(Dungeon)
-class DungeonAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'name', 'type', 'max_floors']
-
-
 # Common drop logs
 @admin.register(RuneDrop)
 class RuneDropAdmin(admin.ModelAdmin):

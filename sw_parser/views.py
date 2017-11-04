@@ -19,7 +19,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import pluralize
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
-from bestiary.models import Monster
+from bestiary.models import Monster, Dungeon
 from herders.models import Summoner, MonsterInstance, RuneInstance, Storage, BuildingInstance
 
 from .forms import *

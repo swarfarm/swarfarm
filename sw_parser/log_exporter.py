@@ -6,6 +6,7 @@ from drf_ujson.renderers import UJSONRenderer
 
 from django.conf import settings
 
+from bestiary.models import Dungeon
 from .serializers import *
 
 EXPORT_FOLDER = 'log_data'

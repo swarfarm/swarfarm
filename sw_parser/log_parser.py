@@ -7,6 +7,7 @@ from django.core.mail import mail_admins
 
 from herders.models import Summoner
 
+from bestiary.models import Dungeon
 from .models import *
 from .com2us_parser import get_monster_from_id
 from .com2us_mapping import inventory_type_map, timezone_server_map, summon_source_map, scenario_difficulty_map, \

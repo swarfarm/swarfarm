@@ -15,7 +15,7 @@ sudo apt-get -qq install -y nginx postgresql-9.4 postgresql-contrib-9.4 libpq-de
 echo "Setting up postgresql database and roles..."
 sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" "/etc/postgresql/9.4/main/postgresql.conf"
 # Append to pg_hba.conf to add password auth:
-echo "host    all             all             all                     md5" | sudo tee --append /etc/postgresql/9.3/main/pg_hba.conf > /dev/null
+echo "host    all             all             all                     md5" | sudo tee --append /etc/postgresql/9.4/main/pg_hba.conf > /dev/null
 
 sudo service postgresql restart
 

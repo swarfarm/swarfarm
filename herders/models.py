@@ -676,6 +676,7 @@ class HomunculusSkill(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.skill, self.skill.com2us_id)
 
+
 class MonsterSource(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)

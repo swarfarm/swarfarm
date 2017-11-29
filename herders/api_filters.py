@@ -1,9 +1,18 @@
+from django.contrib.auth.models import User
 from django.db.models import Q
 import django_filters
 
 from bestiary.models import Monster, Effect, Skill, LeaderSkill, ScalingStat
 from .models import MonsterInstance, MonsterTag, RuneInstance
 
+
+class SummonerFilter(django_filters.FilterSet):
+    class Meta:
+        model = User
+        fields = {
+            'username': ['exact'],
+            'summoner__server': ['exact']
+        }
 
 class MonsterInstanceFilter(django_filters.FilterSet):
     monster = django_filters.NumberFilter()

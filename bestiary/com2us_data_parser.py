@@ -818,6 +818,9 @@ class LocalvalueTables(IntEnum):
     WORLD_ARENA_SEASON_REWARDS = 86
     WORLD_ARENA_RANKS2 = 87
     WORLD_ARENA_REWARD_LIST = 88
+    GUILD_SIEGE_MAP = 89
+    GUILD_SIEGE_REWARD_BOXES = 90
+    GUILD_SIEGE_RANKINGS = 91
 
 
 def _decrypt_localvalue_dat():

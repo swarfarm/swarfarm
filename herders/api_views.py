@@ -9,7 +9,7 @@ from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPi
 from herders.serializers import *
 from herders.pagination import *
 from herders.permissions import *
-from herders.api_filters import MonsterInstanceFilter, RuneInstanceFilter
+from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter
 
 
 class SummonerViewSet(viewsets.ModelViewSet):
@@ -19,6 +19,8 @@ class SummonerViewSet(viewsets.ModelViewSet):
     throttle_scope = 'registration'
     lookup_field = 'username'
     lookup_url_kwarg = 'pk'
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = SummonerFilter
 
     def get_queryset(self):
         queryset = super(SummonerViewSet, self).get_queryset()

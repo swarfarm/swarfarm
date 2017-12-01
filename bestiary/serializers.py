@@ -145,7 +145,7 @@ class MonsterSerializer(serializers.ModelSerializer):
             'obtainable', 'can_awaken', 'is_awakened', 'awaken_bonus',
             'skills', 'skill_ups_to_max', 'leader_skill', 'homunculus_skills',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
-            'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',
+            'raw_hp', 'raw_attack', 'raw_defense', 'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',
             'awakens_from', 'awakens_to',
             'awaken_mats_fire_low', 'awaken_mats_fire_mid', 'awaken_mats_fire_high',
             'awaken_mats_water_low', 'awaken_mats_water_mid', 'awaken_mats_water_high',

@@ -65,8 +65,9 @@ class SkillSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Skill
         fields = (
-            'id', 'com2us_id', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'max_level', 'level_progress_description',
-            'effects', 'multiplier_formula', 'multiplier_formula_raw', 'scales_with', 'icon_filename', 'used_on',
+            'id', 'com2us_id', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'aoe',
+            'max_level', 'level_progress_description', 'effects', 'multiplier_formula', 'multiplier_formula_raw',
+            'scales_with', 'icon_filename', 'used_on',
         )
 
     def get_level_progress_description(self, instance):

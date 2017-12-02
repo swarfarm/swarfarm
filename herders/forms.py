@@ -781,7 +781,7 @@ class FilterMonsterInstanceForm(forms.Form):
 
         self.cleaned_data['monster__skills__hits__gte'] = int(min_hits)
         self.cleaned_data['monster__skills__hits__lte'] = int(max_hits)
-        
+
         try:
             [min_rune_stars, max_rune_stars] = self.cleaned_data['monster__rune_stars'].split(',')
         except:

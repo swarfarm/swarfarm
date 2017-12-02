@@ -67,6 +67,8 @@ class AdvancedSelectMultipleWidget(widgets.SelectMultiple):
 class ElementSelectMultipleWidget(widgets.SelectMultiple):
     option_template_name = 'widgets/select2_element_option.html'
 
+class RuneTypeSelectMultipleWidget(widgets.SelectMultiple):
+    option_template_name = 'widgets/select2_runetype_option.html'
 
 class EffectSelectMultipleWidget(AdvancedSelectMultipleWidget):
     option_template_name = 'widgets/select2_effect_option.html'

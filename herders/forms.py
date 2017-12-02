@@ -17,7 +17,7 @@ from dal import autocomplete
 
 from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
 from bestiary.fields import AdvancedSelectMultiple
-from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
+from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget, RuneTypeSelectMultipleWidget
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance, BuildingInstance
 
 
@@ -543,7 +543,8 @@ class FilterMonsterInstanceForm(forms.Form):
     monster__rune_type = forms.MultipleChoiceField(
         label='Type',
         choices=RuneInstance.TYPE_CHOICES,
-        required=False
+        required=False,
+        widget=RuneTypeSelectMultipleWidget,
     )
     monster__rune_level = forms.CharField(
         label="Level",
@@ -623,6 +624,40 @@ class FilterMonsterInstanceForm(forms.Form):
                         css_class='col-lg-4 col-md-6'
                     ),
                     css_class='row'
+                ),
+                Fieldset(
+                    'Equipped Runes',
+                    Div(
+                        Field('monster__rune_type',
+                            css_class='select2',
+                            data_result_template='iconSelect2Template',
+                            data_selection_template='iconSelect2Template',
+                            wrapper_class='form-group-sm form-group-condensed col-sm-6'
+                        ),
+                        Field(
+                            'monster__rune_level',
+                            data_provide='slider',
+                            data_slider_min='0',
+                            data_slider_max='15',
+                            data_slider_value='[0, 15]',
+                            data_slider_step='1',
+                            data_slider_ticks='[0, 15]',
+                            data_slider_ticks_labels='["0", "15"]',
+                            wrapper_class='col-lg-6'
+                        ),
+                            Field(
+                            'monster__rune_stars',
+                            data_provide='slider',
+                            data_slider_min='1',
+                            data_slider_max='6',
+                            data_slider_value='[1, 6]',
+                            data_slider_step='1',
+                            data_slider_ticks='[1, 6]',
+                            data_slider_ticks_labels='["1", "6"]',
+                            wrapper_class='col-lg-6'
+                        ),
+                        css_class='row'
+                    )
                 ),
                 css_class='col-md-8'
             ),
@@ -780,7 +815,24 @@ class FilterMonsterInstanceForm(forms.Form):
 
         self.cleaned_data['monster__skills__hits__gte'] = int(min_hits)
         self.cleaned_data['monster__skills__hits__lte'] = int(max_hits)
+        
+        try:
+            [min_rune_stars, max_rune_stars] = self.cleaned_data['monster__rune_stars'].split(',')
+        except:
+            min_rune_stars = 1
+            max_rune_stars = 6
 
+        self.cleaned_data['monster__rune_stars__gte'] = int(min_rune_stars)
+        self.cleaned_data['monster__rune_stars__lte'] = int(max_rune_stars)
+
+        try:
+            [min_rune_level, max_rune_level] = self.cleaned_data['monster__rune_level'].split(',')
+        except:
+            min_rune_level = 0
+            max_rune_level = 15
+
+        self.cleaned_data['monster__rune_level__gte'] = int(min_rune_level)
+        self.cleaned_data['monster__rune_level__lte'] = int(max_rune_level)
 
 # MonsterPiece forms
 class MonsterPieceForm(forms.ModelForm):

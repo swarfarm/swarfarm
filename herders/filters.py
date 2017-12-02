@@ -133,15 +133,23 @@ class MonsterInstanceFilter(django_filters.FilterSet):
         return queryset
 
     def filter_monster__rune_level__gte(self, queryset, name, value):
+        if value == 0:
+            return queryset
         return queryset.filter(runeinstance__level__gte=value)
 
     def filter_monster__rune_level__lte(self, queryset, name, value):
+        if value == 15:
+            return queryset
         return queryset.filter(runeinstance__level__lte=value)
 
     def filter_monster__rune_stars__gte(self, queryset, name, value):
+        if value == 1:
+            return queryset
         return queryset.filter(runeinstance__stars__gte=value)
 
     def filter_monster__rune_stars__lte(self, queryset, name, value):
+        if value == 6:
+            return queryset
         return queryset.filter(runeinstance__stars__lte=value)
 
 class RuneInstanceFilter(django_filters.FilterSet):

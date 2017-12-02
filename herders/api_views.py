@@ -9,7 +9,7 @@ from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPi
 from herders.serializers import *
 from herders.pagination import *
 from herders.permissions import *
-from herders.api_filters import MonsterInstanceFilter, RuneInstanceFilter
+from herders.filters import MonsterInstanceFilter, RuneInstanceFilter
 
 
 class SummonerViewSet(viewsets.ModelViewSet):

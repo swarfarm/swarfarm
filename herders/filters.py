@@ -6,6 +6,7 @@ from .models import MonsterInstance, MonsterTag, RuneInstance
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):
+    monster = django_filters.NumberFilter()
     monster__name = django_filters.CharFilter(method='filter_monster__name')
     tags__pk = django_filters.ModelMultipleChoiceFilter(queryset=MonsterTag.objects.all(), to_field_name='pk', conjoined=True)
     monster__base_stars__lte = django_filters.NumberFilter(method='filter_monster_base_stars')
@@ -18,13 +19,18 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__skills__scaling_stats__pk = django_filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
     monster__skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=Effect.objects.all(), method='filter_monster__skills__skill_effect__pk')
     monster__skills__cooltime = django_filters.CharFilter(method='filter_monster_skills_cooltime')
-
     effects_logic = django_filters.BooleanFilter(method='filter_effects_logic')
     monster__fusion_food = django_filters.BooleanFilter(method='filter_monster__fusion_food')
+    monster__rune_type = django_filters.MultipleChoiceFilter(choices=RuneInstance.TYPE_CHOICES,method='filter_monster__rune_type');
+    monster__rune_level__gte = django_filters.NumberFilter(method='filter_monster__rune_level__gte');
+    monster__rune_level__lte = django_filters.NumberFilter(method='filter_monster__rune_level__lte');
+    monster__rune_stars__gte = django_filters.NumberFilter(method='filter_monster__rune_stars__gte');
+    monster__rune_stars__lte = django_filters.NumberFilter(method='filter_monster__rune_stars__lte');
 
     class Meta:
         model = MonsterInstance
         fields = {
+            'monster': ['exact'],
             'monster__name': ['exact'],
             'tags__pk': ['exact'],
             'stars': ['gte', 'lte'],
@@ -121,6 +127,22 @@ class MonsterInstanceFilter(django_filters.FilterSet):
         # This field is handled in filter_monster__skills__skill_effect__pk()
         return queryset
 
+    def filter_monster__rune_type(self, queryset, name, value):
+        for runetype in value:
+            queryset = queryset.filter(runeinstance__type=runetype)
+        return queryset
+
+    def filter_monster__rune_level__gte(self, queryset, name, value):
+        return queryset.filter(runeinstance__level__gte=value)
+
+    def filter_monster__rune_level__lte(self, queryset, name, value):
+        return queryset.filter(runeinstance__level__lte=value)
+
+    def filter_monster__rune_stars__gte(self, queryset, name, value):
+        return queryset.filter(runeinstance__stars__gte=value)
+
+    def filter_monster__rune_stars__lte(self, queryset, name, value):
+        return queryset.filter(runeinstance__stars__lte=value)
 
 class RuneInstanceFilter(django_filters.FilterSet):
     type = django_filters.MultipleChoiceFilter(choices=RuneInstance.TYPE_CHOICES)

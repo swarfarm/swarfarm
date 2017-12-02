@@ -540,6 +540,19 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
         initial=True,
     )
+    monster__rune_type = forms.MultipleChoiceField(
+        label='Type',
+        choices=RuneInstance.TYPE_CHOICES,
+        required=False
+    )
+    monster__rune_level = forms.CharField(
+        label="Level",
+        required=False,
+    )
+    monster__rune_stars = forms.CharField(
+        label="Stars",
+        required=False,
+    )
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -657,6 +670,40 @@ class FilterMonsterInstanceForm(forms.Form):
                     Div(
                         Field('monster__leader_skill__attribute', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('monster__leader_skill__area', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        css_class='row'
+                    )
+                ),
+                Fieldset(
+                    'Equipped Runes',
+                    Div(
+                        Field('monster__rune_type',
+                            css_class='select2',
+                            data_result_template='iconSelect2Template',
+                            data_selection_template='iconSelect2Template',
+                            wrapper_class='form-group-sm form-group-condensed col-sm-6'
+                        ),
+                        Field(
+                            'monster__rune_level',
+                            data_provide='slider',
+                            data_slider_min='0',
+                            data_slider_max='15',
+                            data_slider_value='[0, 15]',
+                            data_slider_step='1',
+                            data_slider_ticks='[0, 15]',
+                            data_slider_ticks_labels='["0", "15"]',
+                            wrapper_class='col-lg-6'
+                        ),
+                            Field(
+                            'monster__rune_stars',
+                            data_provide='slider',
+                            data_slider_min='1',
+                            data_slider_max='6',
+                            data_slider_value='[1, 6]',
+                            data_slider_step='1',
+                            data_slider_ticks='[1, 6]',
+                            data_slider_ticks_labels='["1", "6"]',
+                            wrapper_class='col-lg-6'
+                        ),
                         css_class='row'
                     )
                 ),

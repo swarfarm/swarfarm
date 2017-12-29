@@ -16,7 +16,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'source',
         'monstercraftcost_set',
         'monstercraftcost_set__craft',
-    )
+    ).order_by('pk')
     serializer_class = MonsterSerializer
     pagination_class = BestiarySetPagination
     filter_backends = (filters.DjangoFilterBackend,)
@@ -28,25 +28,25 @@ class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'monster_set',
         'monsterskilleffectdetail_set',
         'monsterskilleffectdetail_set__effect',
-    )
+    ).order_by('pk')
     serializer_class = SkillSerializer
     pagination_class = BestiarySetPagination
 
 
 class MonsterLeaderSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = LeaderSkill.objects.all()
+    queryset = LeaderSkill.objects.all().order_by('pk')
     serializer_class = LeaderSkillSerializer
     pagination_class = BestiarySetPagination
 
 
 class MonsterSkillEffectViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = Effect.objects.all()
+    queryset = Effect.objects.all().order_by('pk')
     serializer_class = SkillEffectSerializer
     pagination_class = BestiarySetPagination
 
 
 class MonsterSourceViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = Source.objects.all()
+    queryset = Source.objects.all().order_by('pk')
     serializer_class = SourceSerializer
     pagination_class = BestiarySetPagination
 
@@ -65,7 +65,7 @@ class HomunculusSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class CraftMaterialViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = CraftMaterial.objects.all()
+    queryset = CraftMaterial.objects.all().order_by('pk')
     serializer_class = CraftMaterialSerializer
     pagination_class = BestiarySetPagination
 
@@ -73,12 +73,12 @@ class CraftMaterialViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 class FusionViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Fusion.objects.all().prefetch_related(
         'ingredients',
-    )
+    ).order_by('pk')
     serializer_class = FusionSerializer
     pagination_class = BestiarySetPagination
 
 
 class BuildingViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = Building.objects.all()
+    queryset = Building.objects.all().order_by('pk')
     serializer_class = BuildingSerializer
     pagination_class = BestiarySetPagination

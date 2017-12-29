@@ -1,6 +1,4 @@
-from django.http import Http404
 from rest_framework import permissions
-from rest_framework.compat import is_authenticated
 from rest_framework.exceptions import NotFound, PermissionDenied
 
 from herders.models import Summoner
@@ -55,7 +53,7 @@ class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         username = view.kwargs.get('user_pk', None)
 
-        if is_authenticated(request.user):
+        if request.user.is_authenticated:
             is_owner = (
                 obj.owner == request.user.summoner and
                 username == request.user.username

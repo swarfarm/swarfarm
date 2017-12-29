@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from rest_framework import viewsets, filters
+from django_filters import rest_framework as filters
+from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer

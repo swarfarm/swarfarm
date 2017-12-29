@@ -2,8 +2,9 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse, Http404
 from django.views.decorators.cache import cache_page
+from django_filters import rest_framework as filters
 
-from rest_framework import viewsets, filters, renderers
+from rest_framework import viewsets, renderers
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_extensions.cache.mixins import CacheResponseMixin

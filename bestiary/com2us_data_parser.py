@@ -4,6 +4,7 @@ from PIL import Image
 import binascii
 import csv
 import json
+import re
 from sympy import simplify
 from bitstring import Bits, BitStream, ConstBitStream, ReadError
 
@@ -154,19 +155,31 @@ def parse_skill_data(preview=False):
         formula_array = [''.join(map(str, scale)) for scale in json.loads(skill_data['fun data'])]
         plain_operators = '+-*/^'
         if len(formula_array):
-            for operation in formula_array:
+            for operation_group in formula_array:
                 # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
-                operation = operation.replace('*1.0', '')
+                operation_group = operation_group.replace('*1.0', '')
 
-                if 'FIXED' in operation:
-                    operation = operation.replace('FIXED', '')
+                if 'FIXED' in operation_group:
+                    operation_group = operation_group.replace('FIXED', '')
                     fixed = True
                     # TODO: Add Ignore Defense effect to skill if not present already
 
-                if operation not in plain_operators:
-                    formula += '({0})'.format(operation)
+                if operation_group not in plain_operators:
+                    # Build an equation with every pair of operations enclosed in parenthesis
+                    # This forces evaluation in a left-to-right manner instead of following usual order of operations
+                    all_operations = filter(None, re.split(r'([+\-*/^])', operation_group))
+                    operands = list(filter(None, re.split(r'[+\-*/^]', operation_group)))
+                    group_formula = '(' * len(operands)
+
+                    for operator in all_operations:
+                        if operator in plain_operators:
+                            group_formula += operator
+                        else:
+                            group_formula += f'{operator})'
+
+                    formula += f'({group_formula})'
                 else:
-                    formula += '{0}'.format(operation)
+                    formula += f'{operation_group}'
 
             formula = str(simplify(formula))
 

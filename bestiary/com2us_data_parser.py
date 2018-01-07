@@ -5,6 +5,7 @@ import binascii
 import csv
 import json
 import re
+from numbers import Number
 from sympy import simplify
 from bitstring import Bits, BitStream, ConstBitStream, ReadError
 
@@ -16,6 +17,49 @@ from sw_parser.com2us_parser import decrypt_response
 def _create_new_skill(com2us_id, slot):
     print('!!! Creating new skill with com2us ID {}, slot {}'.format(com2us_id, slot))
     return Skill.objects.create(com2us_id=com2us_id, name='tempname', slot=slot, max_level=1)
+
+
+PLAIN_OPERATORS = '+-*/^'
+
+
+def _force_eval_ltr(expr):
+    fixed = False
+    if isinstance(expr, list):
+        # Check if elements are strings or another array
+        if expr and all(isinstance(elem, str) or isinstance(elem, Number) for elem in expr):
+            expr_string = ''.join(map(str, expr))
+
+            if 'FIXED' in expr_string:
+                fixed = True
+                expr_string = expr_string.replace('FIXED', '')
+
+            # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
+            expr_string = expr_string.replace('*1.0', '')
+
+            if expr_string not in PLAIN_OPERATORS:
+                all_operations = filter(None, re.split(r'([+\-*/^])', expr_string))
+                operands = list(filter(None, re.split(r'[+\-*/^]', expr_string)))
+                group_formula = '(' * len(operands)
+
+                for operator in all_operations:
+                    if operator in PLAIN_OPERATORS:
+                        group_formula += operator
+                    else:
+                        group_formula += f'{operator})'
+                return f'({group_formula})', fixed
+            else:
+                return f'{expr_string}', fixed
+        else:
+            # Process each sub-expression in LTR manner
+            ltr_expr = ''
+            for partial_expr in expr:
+                partial_expr_ltr, fixed = _force_eval_ltr(partial_expr)
+                if partial_expr_ltr not in PLAIN_OPERATORS:
+                    ltr_expr = f'({ltr_expr}{partial_expr_ltr})'
+                else:
+                    ltr_expr += partial_expr_ltr
+
+            return ltr_expr, fixed
 
 
 def parse_skill_data(preview=False):
@@ -150,56 +194,23 @@ def parse_skill_data(preview=False):
             print('Updated raw multiplier formula to {}'.format(skill.multiplier_formula_raw))
             updated = True
 
-        formula = ''
-        fixed = False
-        formula_array = [''.join(map(str, scale)) for scale in json.loads(skill_data['fun data'])]
-        plain_operators = '+-*/^'
-        if len(formula_array):
-            for operation_group in formula_array:
-                # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
-                operation_group = operation_group.replace('*1.0', '')
-
-                if 'FIXED' in operation_group:
-                    operation_group = operation_group.replace('FIXED', '')
-                    fixed = True
-                    # TODO: Add Ignore Defense effect to skill if not present already
-
-                if operation_group not in plain_operators:
-                    # Build an equation with every pair of operations enclosed in parenthesis
-                    # This forces evaluation in a left-to-right manner instead of following usual order of operations
-                    all_operations = filter(None, re.split(r'([+\-*/^])', operation_group))
-                    operands = list(filter(None, re.split(r'[+\-*/^]', operation_group)))
-                    group_formula = '(' * len(operands)
-
-                    for operator in all_operations:
-                        if operator in plain_operators:
-                            group_formula += operator
-                        else:
-                            group_formula += f'{operator})'
-
-                    formula += f'({group_formula})'
-                else:
-                    formula += f'{operation_group}'
-
+        formula, fixed = _force_eval_ltr(json.loads(skill_data['fun data']))
+        if formula:
             formula = str(simplify(formula))
 
-            # Find the scaling stat used in this section of formula
-            for stat in scaling_stats:
-                if stat.com2us_desc in formula:
-                    skill.scaling_stats.add(stat)
-                    if stat.description:
-                        human_readable = '<mark data-toggle="tooltip" data-placement="top" title="' + stat.description + '">' + stat.stat + '</mark>'
-                    else:
-                        human_readable = '<mark>' + stat.stat + '</mark>'
-                    formula = formula.replace(stat.com2us_desc, human_readable)
+        # Find the scaling stat used in this section of formula
+        for stat in scaling_stats:
+            if stat.com2us_desc in formula:
+                skill.scaling_stats.add(stat)
+                formula = formula.replace(stat.com2us_desc, f'{{{stat.stat}}}')
 
-            if fixed:
-                formula += ' (Fixed)'
+        if fixed:
+            formula += ' (Fixed)'
 
-            if skill.multiplier_formula != formula:
-                skill.multiplier_formula = formula
-                print('Updated multiplier formula to {}'.format(skill.multiplier_formula))
-                updated = True
+        if skill.multiplier_formula != formula:
+            skill.multiplier_formula = formula
+            print('Updated multiplier formula to {}'.format(skill.multiplier_formula))
+            updated = True
 
         # Finally save it if required
         if updated:

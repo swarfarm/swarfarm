@@ -760,7 +760,7 @@ class LocalvalueTables(IntEnum):
     DECORATIONS = 4
     OBSTACLES = 5
     MONSTERS = 6
-    # Unknown table 7 - wizard level related
+    MONSTER_LEVELING = 7
     # Unknown table 8 - some sort of effect mapping
     SKILL_EFFECTS = 9
     SKILLS = 10

@@ -115,6 +115,8 @@ class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'runeinstance_set__owner__user',
     )
     serializer_class = MonsterInstanceSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = MonsterInstanceFilter
 
 
 class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
@@ -124,6 +126,8 @@ class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     )
     serializer_class = RuneInstanceSerializer
     # renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = RuneInstanceFilter
 
 
 class RuneCraftInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):

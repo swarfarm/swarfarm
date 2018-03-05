@@ -76,6 +76,7 @@ def parse_skill_data(preview=False):
     # Tracking IDs of skills with known issues
     golem_def_skills = [2401, 2402, 2403, 2404, 2405, 2406, 2407, 2410]
     noble_agreement_speed_id = 6519
+    holy_light_id = 1080
 
     for skill_data in skill_table['rows']:
         # Get matching skill in DB
@@ -97,6 +98,11 @@ def parse_skill_data(preview=False):
             # Skill has different formula compared to other speed skills, so we're gonna set it here
             # It makes no difference to Com2US because they evaluate formulas right to left instead of using order of operations
             skill_data['fun data'] = '[["ATK", "*", 1.0], ["*"], ["ATTACK_SPEED", "+", 240], ["/"], [60]]'
+
+        if master_id == holy_light_id:
+            # This is a heal skill, but multiplier in game files is for an attack.
+            # Setting multiplier formula based on skill description.
+            skill_data['fun data'] = '[["TARGET_CUR_HP", "*", 0.15]]'
 
         updated = False
         try:

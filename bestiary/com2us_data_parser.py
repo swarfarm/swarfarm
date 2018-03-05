@@ -76,7 +76,7 @@ def parse_skill_data(preview=False):
     # Tracking IDs of skills with known issues
     golem_def_skills = [2401, 2402, 2403, 2404, 2405, 2406, 2407, 2410]
     noble_agreement_speed_id = 6519
-    holy_light_id = 1080
+    holy_light_id = 2909
 
     for skill_data in skill_table['rows']:
         # Get matching skill in DB

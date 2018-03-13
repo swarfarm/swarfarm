@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
@@ -115,8 +116,54 @@ class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'runeinstance_set__owner__user',
     )
     serializer_class = MonsterInstanceSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filter_class = MonsterInstanceFilter
+    ordering_fields = (
+        'stars',
+        'level',
+        'created',
+        'base_attack',
+        'rune_attack',
+        'base_defense',
+        'rune_defense',
+        'base_speed',
+        'rune_speed',
+        'base_crit_rate',
+        'rune_crit_rate',
+        'base_crit_damage',
+        'rune_crit_damage',
+        'base_resistance',
+        'rune_resistance',
+        'base_accuracy',
+        'rune_accuracy',
+        'avg_rune_efficiency',
+        'fodder',
+        'in_storage',
+        'ignore_for_fusion',
+        'priority',
+        'monster__com2us_id',
+        'monster__family_id',
+        'monster__name',
+        'monster__element',
+        'monster__archetype',
+        'monster__base_stars',
+        'monster__can_awaken',
+        'monster__is_awakened',
+        'monster__base_hp',
+        'monster__base_attack',
+        'monster__base_defense',
+        'monster__speed',
+        'monster__crit_rate',
+        'monster__crit_damage',
+        'monster__resistance',
+        'monster__accuracy',
+        'monster__raw_hp',
+        'monster__raw_attack',
+        'monster__raw_defense',
+        'monster__max_lvl_hp',
+        'monster__max_lvl_attack',
+        'monster__max_lvl_defense',
+    )
 
 
 class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
@@ -126,8 +173,20 @@ class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     )
     serializer_class = RuneInstanceSerializer
     # renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filter_class = RuneInstanceFilter
+    ordering_fields = (
+        'type',
+        'level',
+        'stars',
+        'slot',
+        'quality',
+        'original_quality',
+        'assigned_to',
+        'main_stat',
+        'innate_stat',
+        'marked_for_sale',
+    )
 
 
 class RuneCraftInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):

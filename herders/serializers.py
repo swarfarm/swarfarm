@@ -54,7 +54,7 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
     )
     # owner = serializers.HyperlinkedRelatedField(view_name='profiles-detail', source='owner.user.username', read_only=True)
     # TODO: Fix owner field so as not to cause a query explosion
-    runes = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source='runeinstance_set')
+    runes = RuneInstanceSerializer(many=True, read_only=True, source='runeinstance_set')
 
     class Meta:
         model = MonsterInstance

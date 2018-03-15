@@ -5,7 +5,7 @@ from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from bestiary.serializers import *
 from bestiary.pagination import *
-from bestiary.filters import MonsterFilter
+from bestiary.api_filters import MonsterFilter, SkillFilter
 
 
 # Django REST framework views
@@ -56,8 +56,17 @@ class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     ).order_by('pk')
     serializer_class = SkillSerializer
     pagination_class = BestiarySetPagination
-    # TODO: Add filters
-
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
+    filter_class = SkillFilter
+    ordering_fields = (
+        'name',
+        'slot',
+        'cooltime',
+        'hits',
+        'aoe',
+        'passive',
+        'max_level',
+    )
 
 class MonsterLeaderSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = LeaderSkill.objects.all().order_by('pk')

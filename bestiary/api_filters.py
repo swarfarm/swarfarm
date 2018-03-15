@@ -30,6 +30,7 @@ class MonsterFilter(filters.FilterSet):
 
 class SkillFilter(filters.FilterSet):
     name = filters.CharFilter(method='filter_name')
+    description = filters.CharFilter(method='filter_description')
     scaling_stats__pk = filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
     effects_logic = filters.BooleanFilter(method='filter_effects_logic')
     effect__pk = filters.ModelMultipleChoiceFilter(queryset=Effect.objects.all(), method='filter_skill_effects')
@@ -39,13 +40,17 @@ class SkillFilter(filters.FilterSet):
         model = Skill
         fields = {
             'name': ['exact'],
-            'cooltime': ['exact', 'isnull', 'gte', 'lte', 'gt', 'lt'],
             'com2us_id': ['exact'],
+            'slot': ['exact'],
+            'cooltime': ['exact', 'isnull', 'gte', 'lte', 'gt', 'lt'],
             'hits': ['exact', 'isnull', 'gte', 'lte', 'gt', 'lt'],
             'aoe': ['exact'],
             'passive': ['exact'],
             'max_level': ['exact', 'gte', 'lte', 'gt', 'lt'],
         }
+
+    def filter_description(self, queryset, name, value):
+        return queryset.filter(description__icontains=value)
 
     def filter_skill_effects(self, queryset, name, value):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)
@@ -78,12 +83,4 @@ class SkillFilter(filters.FilterSet):
 
     def filter_effects_logic(self, queryset, name, value):
         # This field is just used to alter the logic of skill effect filter
-        return queryset
-
-    def filter_skills_cooltime(self, queryset, name, value):
-        # This field is handled in filter_skill_effects()
-        return queryset
-
-    def filter_skills_slot(self, queryset, name, value):
-        # This field is handled in filter_skill_effects()
         return queryset

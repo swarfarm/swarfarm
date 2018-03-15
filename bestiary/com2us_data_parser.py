@@ -14,6 +14,15 @@ from sw_parser.com2us_mapping import *
 from sw_parser.com2us_parser import decrypt_response
 
 
+def update_all():
+    decrypt_com2us_png()
+    crop_monster_images()
+    parse_skill_data()
+    parse_monster_data()
+    parse_monster_data()  # Runs twice to set awakens to/from relationships which is not possible until after both monsters are created
+    parse_homunculus_data()
+
+
 def _create_new_skill(com2us_id, slot):
     print('!!! Creating new skill with com2us ID {}, slot {}'.format(com2us_id, slot))
     return Skill.objects.create(com2us_id=com2us_id, name='tempname', slot=slot, max_level=1)

@@ -392,8 +392,6 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             'monster__skills', 'runeinstance_set', 'team_set', 'team_leader', 'tags'
         )
 
-    pieces = MonsterPiece.objects.filter(owner=summoner)
-
     form = FilterMonsterInstanceForm(request.POST or None, auto_id='id_filter_%s')
     if form.is_valid():
         monster_filter = MonsterInstanceFilter(form.cleaned_data, queryset=monster_queryset)
@@ -404,7 +402,6 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     context = {
         'monsters': monster_filter.qs,
-        'monster_pieces': pieces,
         'total_count': total_monsters,
         'filtered_count': filtered_count,
         'profile_name': profile_name,
@@ -413,7 +410,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     if is_owner or summoner.public:
         if view_mode == 'pieces':
-            context['monster_pieces'] = MonsterPiece.objects.filter(owner=summoner)
+            context['monster_pieces'] = MonsterPiece.objects.filter(owner=summoner).select_related('monster')
             template = 'herders/profile/monster_inventory/summoning_pieces.html'
         elif view_mode == 'list':
             template = 'herders/profile/monster_inventory/list.html'

@@ -44,7 +44,7 @@
                                 <a role="button" data-toggle="collapse" data-target="#monstergroup{{ forloop.counter }}">
                                     <strong>{{ groupname|capfirst }}</strong>
                                 </a>
-                                <span class="pull-right">{% with num_monsters=monsters|length %}{{ num_monsters }} monster{{ num_monsters|pluralize }}{% endwith %}</span>
+                                <span class="pull-right">{{ monsters|length }} monster{{ monsters|length|pluralize }}</span>
                             </div>
                             <div id="monstergroup{{ forloop.counter }}" class="collapse in">
                                 <div class="panel-body">

@@ -2346,7 +2346,10 @@ def _rune_drop_charts(runes, chart_type, slot=None):
             quality = RuneDrop.QUALITY_CHOICES[x]
             values = []
             for rune_star in rune_stars:
-                values.append(float(data[rune_star][quality[0]]) / star_counts[rune_star] * 100)
+                if rune_star in star_counts:
+                    values.append(float(data[rune_star][quality[0]]) / star_counts[rune_star] * 100)
+                else:
+                    values.append(0.0)
 
             series.append({
                 'name': quality[1],

@@ -138,8 +138,9 @@ if env('BUGSNAG_API_KEY'):
     MIDDLEWARE = ['bugsnag.django.middleware.BugsnagMiddleware'] + MIDDLEWARE
 
     BUGSNAG = {
-      'api_key': env('BUGSNAG_API_KEY'),
-      'project_root': BASE_DIR,
+        'api_key': env('BUGSNAG_API_KEY'),
+        'project_root': BASE_DIR,
+        'ignore_classes': ["django.http.Http404",],
     }
 
 # URL stuff

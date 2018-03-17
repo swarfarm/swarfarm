@@ -1,7 +1,8 @@
 from celery import shared_task, current_task, states
-from datetime import datetime, timezone, timedelta
+from datetime import timedelta
 
 from django.db import transaction
+from django.utils import timezone
 
 from herders.models import Summoner, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance
 
@@ -17,7 +18,7 @@ def export_log_data():
 
 @shared_task
 def prune_old_data():
-    six_months_ago = datetime.now(timezone.utc) - timedelta(weeks=4 * 6)
+    six_months_ago = timezone.now() - timedelta(weeks=4 * 6)
 
     log_models = [
         SummonLog, RunLog, RiftDungeonLog, RuneCraftLog, ShopRefreshLog, WorldBossLog, RiftRaidLog, WishLog

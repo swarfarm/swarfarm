@@ -82,12 +82,12 @@
                     <td>{{ stats.runs }}</td>
                     {% if mine %}<td>{{ stats.clear_time|floatformat:"-1" }} sec</td>{% endif %}
                     <td>{{ stats.energy_cost|floatformat:"-2" }} <img class="image-inline" src="{{ img_url_prefix }}/icons/energy.png" /></td>
-                    <td><span class="hidden">{{ stats.xp_per_run }}</span>{{ stats.xp_per_run|intcomma }} <img class="image-inline" src="{{ img_url_prefix }}/icons/xp.png" /></td>
-                    {% if mine %}<td><span class="hidden">{{ stats.xp_per_hour }}</span>{{ stats.xp_per_hour|floatformat:"0"|intcomma }} <img class="image-inline" src="{{ img_url_prefix }}/icons/xp.png" />/hr</td>{% endif %}
-                    <td><span class="hidden">{{ stats.xp_per_energy }}</span>{{ stats.xp_per_energy|floatformat:"0"|intcomma }} <img class="image-inline" src="{{ img_url_prefix }}/icons/xp.png" />/<img class="image-inline" src="{{ img_url_prefix }}/icons/energy.png" /></td>
-                    <td><span class="hidden">{{ stats.mana_per_run }}</span>{{ stats.mana_per_run|floatformat:"0"|intcomma }} <img class="image-inline" src="{{ img_url_prefix }}/icons/mana.png" />/run</td>
-                    {% if mine %}<td><span class="hidden">{{ stats.mana_per_hour }}</span>{{ stats.mana_per_hour|floatformat:"0"|intcomma }} <img class="image-inline" src="{{ img_url_prefix }}/icons/mana.png" />/hr</td>{% endif %}
-                    <td><span class="hidden">{{ stats.mana_per_energy }}</span>{{ stats.mana_per_energy|floatformat:"0"|intcomma }} <img class="image-inline" src="{{ img_url_prefix }}/icons/mana.png" />/<img class="image-inline" src="{{ img_url_prefix }}/icons/energy.png" /></td>
+                    <td>{{ stats.xp_per_run }} <img class="image-inline" src="{{ img_url_prefix }}/icons/xp.png" /></td>
+                    {% if mine %}<td>{{ stats.xp_per_hour }} <img class="image-inline" src="{{ img_url_prefix }}/icons/xp.png" />/hr</td>{% endif %}
+                    <td>{{ stats.xp_per_energy|floatformat:"0" }} <img class="image-inline" src="{{ img_url_prefix }}/icons/xp.png" />/<img class="image-inline" src="{{ img_url_prefix }}/icons/energy.png" /></td>
+                    <td>{{ stats.mana_per_run|floatformat:"0" }} <img class="image-inline" src="{{ img_url_prefix }}/icons/mana.png" />/run</td>
+                    {% if mine %}<td>{{ stats.mana_per_hour|floatformat:"0" }} <img class="image-inline" src="{{ img_url_prefix }}/icons/mana.png" />/hr</td>{% endif %}
+                    <td>{{ stats.mana_per_energy|floatformat:"0" }} <img class="image-inline" src="{{ img_url_prefix }}/icons/mana.png" />/<img class="image-inline" src="{{ img_url_prefix }}/icons/energy.png" /></td>
                     <td>{{ stats.monster_drops.2|floatformat:"-1" }}%</td>
                     <td>{{ stats.monster_drops.3|floatformat:"-1" }}%</td>
                     <td>{{ stats.craft_drops.128|floatformat:"-3" }}</td>

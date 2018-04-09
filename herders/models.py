@@ -1,17 +1,17 @@
-from math import floor, ceil
 import uuid
-from timezone_field import TimeZoneField
 from collections import OrderedDict
+from functools import partial
+from math import floor, ceil
+from operator import is_not
 
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db import models
 from django.db.models import Q, Count
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
-from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.contrib.postgres.fields import ArrayField
+from timezone_field import TimeZoneField
 
 
 # Bestiary database models
@@ -2360,7 +2360,7 @@ class RuneInstance(models.Model):
                     ),
                 })
 
-        if self.level is not None and self.level < 0 or self.level > 15:
+        if self.level is not None and (self.level < 0 or self.level > 15):
             raise ValidationError({
                 'level': ValidationError(
                     'Level must be 0 through 15.',
@@ -2368,7 +2368,7 @@ class RuneInstance(models.Model):
                 )
             })
 
-        if self.stars is not None and self.stars < 1 or self.stars > 6:
+        if self.stars is not None and (self.stars < 1 or self.stars > 6):
             raise ValidationError({
                 'stars': ValidationError(
                     'Stars must be between 1 and 6.',
@@ -2377,8 +2377,6 @@ class RuneInstance(models.Model):
             })
 
         # Check that the same stat type was not used multiple times
-        from operator import is_not
-        from functools import partial
         stat_list = list(filter(partial(is_not, None), [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
         if len(stat_list) != len(set(stat_list)):
             raise ValidationError(
@@ -2387,7 +2385,7 @@ class RuneInstance(models.Model):
             )
 
         # Check if stat type was specified that it has value > 0
-        if self.stars is not None and self.level is not None:
+        if self.stars is not (None and self.level is not None):
             if self.main_stat_value:
                 self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15], self.main_stat_value)
             else:
@@ -2503,7 +2501,7 @@ class RuneInstance(models.Model):
                     })
 
         # Check that monster rune is assigned to does not already have rune in that slot
-        if self.assigned_to is not None and self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0:
+        if self.assigned_to is not None and (self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0):
             raise ValidationError(
                 'Monster already has rune in slot %(slot)s. Either pick a different slot or do not assign to the monster yet.',
                 params={

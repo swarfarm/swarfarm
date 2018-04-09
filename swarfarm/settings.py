@@ -140,7 +140,7 @@ if env('BUGSNAG_API_KEY'):
     BUGSNAG = {
         'api_key': env('BUGSNAG_API_KEY'),
         'project_root': BASE_DIR,
-        'ignore_classes': ["django.http.Http404",],
+        'ignore_classes': ["django.http.response.Http404",],
     }
 
 # URL stuff

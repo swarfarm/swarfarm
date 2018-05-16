@@ -1,4 +1,3 @@
-import json
 from jsonschema import Draft4Validator
 
 HubUserLoginSchema = {
@@ -222,9 +221,8 @@ VisitFriendSchema = {
                         'required': ['master_id', 'level', 'deco_id']
                     }
                 },
-                'wizard_id': {'type': 'number'},
             },
-            'required': ['unit_list', 'building_list', 'deco_list', 'wizard_id'],
+            'required': ['unit_list', 'building_list', 'deco_list',],
         },
     },
     'required': ['friend'],

@@ -88,7 +88,7 @@ def validate_sw_json(data, summoner):
     else:
         # Do some supplementary checking
         if 'friend' in data:
-            wizard_id = data['friend']['wizard_id']
+            wizard_id = data['friend']['unit_list'][0]['wizard_id']
         else:
             wizard_id = data['wizard_info']['wizard_id']
 

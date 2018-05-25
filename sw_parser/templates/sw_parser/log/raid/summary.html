@@ -29,7 +29,12 @@
                 {% endfor %}
             </ul>
         </div>
-        <small>{{ count }} logs</small>
+        <small>
+        {% if mine %}
+            {{ total_runs|intcomma }} run{{ total_runs|pluralize }}{% if success_rate %} ({{ success_rate|floatformat:"-1" }}% success rate){% endif %} - {% if avg_contribution %} {{ avg_contribution|floatformat:"-1" }}% Avg. Contribution - {% endif %}
+        {% endif %}
+        {{ count }} item logs
+        </small>
     </h1>
     {% if mine %}
     <div class="alert alert-warning">

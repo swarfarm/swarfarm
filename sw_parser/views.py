@@ -1385,7 +1385,7 @@ def view_rift_raid_log(request, difficulty=5, mine=False):
         difficulties = []
 
         for x in range(0, 5):
-            logs = RiftRaidLog.objects.filter(difficulty=x + 1, success=True, **date_filter['filters'])
+            logs = RiftRaidLog.objects.filter(difficulty=x + 1, **date_filter['filters'])
 
             if mine:
                 logs = logs.filter(summoner=summoner)
@@ -1396,18 +1396,21 @@ def view_rift_raid_log(request, difficulty=5, mine=False):
             log_count = item_drops.count() + monster_drops.count() + runecraft_drops.count()
             difficulties.append((x + 1, log_count))
 
-        runs = RiftRaidLog.objects.filter(success=True, difficulty=difficulty, **date_filter['filters'])
+        runs = RiftRaidLog.objects.filter(difficulty=difficulty, **date_filter['filters'])
         successful_runs = None
+        avg_contribution = None
 
         if mine:
             runs = runs.filter(summoner=summoner)
             successful_runs = runs.filter(success=True).count()
+            avg_contribution = runs.aggregate(avg=Avg('contribution'))['avg']
 
         item_drops = RiftRaidItemDrop.objects.filter(log__in=runs)
         monster_drops = RiftRaidMonsterDrop.objects.filter(log__in=runs)
         runecraft_drops = RiftRaidRuneCraftDrop.objects.filter(log__in=runs)
 
         total_drops = item_drops.count() + monster_drops.count() + runecraft_drops.count()
+        total_runs = runs.count()
 
         context = {
             'difficulty': difficulty,
@@ -1417,7 +1420,9 @@ def view_rift_raid_log(request, difficulty=5, mine=False):
             'log_view': 'raid',
             'timespan': date_filter,
             'count': total_drops,
-            'success_rate': float(successful_runs) / runs.count() if successful_runs else None
+            'total_runs': total_runs,
+            'success_rate': float(successful_runs) / total_runs * 100 if successful_runs else None,
+            'avg_contribution': avg_contribution,
         }
 
         if not mine:
@@ -1440,7 +1445,7 @@ def rift_raid_chart_data(request, mine=False):
     cache_key = 'raid-chart-{}-{}-{}-{}'.format(chart_type, section, difficulty, slugify(date_filter['description']))
     chart = None
 
-    logs = RiftRaidLog.objects.filter(success=True, difficulty=difficulty, **date_filter['filters'])
+    logs = RiftRaidLog.objects.filter(difficulty=difficulty, **date_filter['filters'])
 
     if mine:
         summoner = get_object_or_404(Summoner, user__username=request.user.username)

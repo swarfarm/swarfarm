@@ -1,5 +1,4 @@
-{% load humanize %}
-{% load staticfiles %}
+{% load humanize staticfiles log_tags%}
 
 {% static 'herders/images/' as img_url_prefix %}
 
@@ -20,9 +19,9 @@
         {% if mine and clear_times %}
         <tr>
             <td>Clear time</td>
-            <td>{{ clear_times.avg }}</td>
-            <td>{{ clear_times.max }}</td>
-            <td>{{ clear_times.min }}</td>
+            <td>{{ clear_times.avg|timedelta }}</td>
+            <td>{{ clear_times.max|timedelta }}</td>
+            <td>{{ clear_times.min|timedelta }}</td>
         </tr>
         {% endif %}
         {% for drop, qty in general_drops.items %}

@@ -1,7 +1,6 @@
 {% extends 'sw_parser/log/base.html' %}
 
-{% load staticfiles %}
-{% load humanize %}
+{% load staticfiles humanize log_tags %}
 
 {% block stats_content %}
 {% static 'herders/images/' as img_url_prefix %}
@@ -29,9 +28,9 @@
                     {% if mine and clear_times %}
                     <tr>
                         <td>Clear time</td>
-                        <td>{{ clear_times.avg }}</td>
-                        <td>{{ clear_times.max }}</td>
-                        <td>{{ clear_times.min }}</td>
+                        <td>{{ clear_times.avg|timedelta }}</td>
+                        <td>{{ clear_times.max|timedelta }}</td>
+                        <td>{{ clear_times.min|timedelta }}</td>
                     </tr>
                     {% endif %}
                     <tr>

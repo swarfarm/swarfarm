@@ -71,7 +71,10 @@ class SkillSerializer(serializers.HyperlinkedModelSerializer):
         )
 
     def get_level_progress_description(self, instance):
-        return instance.level_progress_description.rstrip().split('\n')
+        if instance.level_progress_description:
+            return instance.level_progress_description.rstrip().split('\n')
+        else:
+            return []
 
 
 class LeaderSkillSerializer(serializers.ModelSerializer):

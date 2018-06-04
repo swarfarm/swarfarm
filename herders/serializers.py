@@ -202,6 +202,9 @@ class TeamSerializer(serializers.ModelSerializer):
         },
     )
 
+    leader = MonsterInstanceSerializer()
+    roster = MonsterInstanceSerializer(many=True)
+
     class Meta:
         model = Team
         fields = ['id', 'url', 'group', 'favorite', 'name', 'description', 'leader', 'roster']

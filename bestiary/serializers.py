@@ -50,16 +50,10 @@ class SkillEffectDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-class SkillScalingStatSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ScalingStat
-        fields = ('stat',)
-
-
 class SkillSerializer(serializers.HyperlinkedModelSerializer):
     level_progress_description = serializers.SerializerMethodField()
     effects = SkillEffectDetailSerializer(many=True, read_only=True, source='monsterskilleffectdetail_set')
-    scales_with = SkillScalingStatSerializer(many=True, read_only=True)
+    scales_with = serializers.SerializerMethodField()
     used_on = serializers.PrimaryKeyRelatedField(source='monster_set', many=True, read_only=True)
 
     class Meta:
@@ -75,6 +69,9 @@ class SkillSerializer(serializers.HyperlinkedModelSerializer):
             return instance.level_progress_description.rstrip().split('\n')
         else:
             return []
+
+    def get_scales_with(self, instance):
+        return instance.scaling_stats.values_list('stat', flat=True)
 
 
 class LeaderSkillSerializer(serializers.ModelSerializer):

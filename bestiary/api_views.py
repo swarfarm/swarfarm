@@ -50,6 +50,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 
 class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Skill.objects.all().prefetch_related(
+        'scaling_stats',
         'monster_set',
         'monsterskilleffectdetail_set',
         'monsterskilleffectdetail_set__effect',

@@ -49,6 +49,9 @@ class SkillFilter(filters.FilterSet):
             'max_level': ['exact', 'gte', 'lte', 'gt', 'lt'],
         }
 
+    def filter_name(self, queryset, name, value):
+        return queryset.filter(name__istartswith=value)
+
     def filter_description(self, queryset, name, value):
         return queryset.filter(description__icontains=value)
 

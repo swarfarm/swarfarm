@@ -3,7 +3,7 @@ from django.db.models import Q
 import django_filters
 
 from bestiary.models import Monster, Effect, Skill, LeaderSkill, ScalingStat
-from .models import MonsterInstance, MonsterTag, RuneInstance
+from .models import MonsterInstance, MonsterTag, RuneInstance, Team
 
 
 class SummonerFilter(django_filters.FilterSet):
@@ -13,6 +13,7 @@ class SummonerFilter(django_filters.FilterSet):
             'username': ['exact'],
             'summoner__server': ['exact']
         }
+
 
 class MonsterInstanceFilter(django_filters.FilterSet):
     monster = django_filters.NumberFilter()
@@ -138,3 +139,12 @@ class RuneInstanceFilter(django_filters.FilterSet):
 
     def filter_assigned_to(self, queryset, name, value):
         return queryset.filter(assigned_to__isnull=not value)
+
+
+class TeamFilter(django_filters.FilterSet):
+    class Meta:
+        model = Team
+        fields = {
+            'name': ['exact', 'istartswith', 'icontains'],
+            'description': ['icontains']
+        }

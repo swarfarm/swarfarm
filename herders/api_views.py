@@ -11,7 +11,7 @@ from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPi
 from herders.serializers import *
 from herders.pagination import *
 from herders.permissions import *
-from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter
+from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
 
 
 class SummonerViewSet(viewsets.ModelViewSet):
@@ -225,9 +225,11 @@ class TeamGroupViewSet(ProfileItemMixin, viewsets.ModelViewSet):
 
 
 class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
-    queryset = Team.objects.all().select_related('group').prefetch_related('leader', 'roster')
+    queryset = Team.objects.all().select_related('group', 'leader').prefetch_related('leader__runeinstance_set', 'roster', 'roster__runeinstance_set')
     serializer_class = TeamSerializer
     renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
+    filter_class = TeamFilter
 
     def get_queryset(self):
         # Team objects do not have an owner field, so we must go through the group owner for filtering

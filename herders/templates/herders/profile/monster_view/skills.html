@@ -41,7 +41,7 @@
                 <p class="list-group-item-heading"><strong>Level-up Progress:</strong></p>
                 <ul class="list-unstyled">
                 {% for line in skill.skill.level_progress_description_list %}
-                    <li>{% if forloop.counter >= skill.level %}<span class="text-muted">{% else %}<span>{% endif %}{{ line }}</span></li>
+                    <li>{% if forloop.counter >= skill.level %}<span class="text-muted">{% else %}<span class="text-success"><i class="glyphicon glyphicon-ok"></i></span> <span>{% endif %}{{ line }}</span></li>
                 {% endfor %}
                 </ul>
             </li>

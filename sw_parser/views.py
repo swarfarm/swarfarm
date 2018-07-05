@@ -32,10 +32,17 @@ from .db_utils import Percentile
 from sw_parser import chart_templates
 
 _named_timestamps = {
-    'post-3.7.8': {
-        'description': 'Patch 3.7.8 to Present',
+    '3.8.8-present': {
+        'description': 'Patch 3.8.8 to Present',
+        'filters': {
+            'timestamp__gte': '2018-06-14T00:00:00+00:00',
+        }
+    },
+    '3.7.8-3.8.9': {
+        'description': 'Patch 3.7.8 to 3.8.9',
         'filters': {
             'timestamp__gte': '2018-02-12T00:00:00+00:00',
+            'timestamp__lt': '2018-07-04T00:00:00+00:00',
         }
     },
     '3.2.1-3.7.8': {
@@ -66,7 +73,7 @@ _named_timestamps = {
     },
 }
 
-DEFAULT_TIMESTAMP_FILTER = _named_timestamps['post-3.7.8']
+DEFAULT_TIMESTAMP_FILTER = _named_timestamps['3.8.8-present']
 
 
 @login_required

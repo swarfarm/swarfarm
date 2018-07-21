@@ -2044,6 +2044,10 @@ def rune_inventory_crafts(request, profile_name):
             for rune, rune_name in RuneInstance.TYPE_CHOICES:
                 craft_box[craft_name][rune_name] = RuneCraftInstance.objects.filter(owner=summoner, type=craft, rune=rune).order_by('stat', 'quality')
 
+            # Immemorial
+            craft_box[craft_name]['Immemorial'] = RuneCraftInstance.objects.filter(owner=summoner, type=craft, rune__isnull=True).order_by('stat', 'quality')
+
+
         context['crafts'] = craft_box
 
         return render(request, 'herders/profile/runes/inventory_crafts.html', context)

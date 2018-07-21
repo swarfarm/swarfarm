@@ -2000,10 +2000,14 @@ class RuneInstance(models.Model):
 
     CRAFT_GRINDSTONE = 0
     CRAFT_ENCHANT_GEM = 1
+    CRAFT_IMMEMORIAL_GRINDSTONE = 2
+    CRAFT_IMMEMORIAL_GEM = 3
 
     CRAFT_CHOICES = (
         (CRAFT_GRINDSTONE, 'Grindstone'),
         (CRAFT_ENCHANT_GEM, 'Enchant Gem'),
+        (CRAFT_IMMEMORIAL_GRINDSTONE, 'Immemorial Grindstone'),
+        (CRAFT_IMMEMORIAL_GEM, 'Immemorial Gem'),
     )
 
     # Upgrade success rate based on rune level
@@ -2701,12 +2705,14 @@ class RuneCraftInstance(models.Model):
             },
         }
     }
+    CRAFT_VALUE_RANGES[RuneInstance.CRAFT_IMMEMORIAL_GEM] = CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM]
+    CRAFT_VALUE_RANGES[RuneInstance.CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     type = models.IntegerField(choices=RuneInstance.CRAFT_CHOICES)
-    rune = models.IntegerField(choices=RuneInstance.TYPE_CHOICES)
+    rune = models.IntegerField(choices=RuneInstance.TYPE_CHOICES, blank=True, null=True)
     stat = models.IntegerField(choices=RuneInstance.STAT_CHOICES)
     quality = models.IntegerField(choices=QUALITY_CHOICES)
     value = models.IntegerField(blank=True, null=True)
@@ -2726,6 +2732,9 @@ class RuneCraftInstance(models.Model):
         try:
             return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['min']
         except KeyError:
+            return None
+        except TypeError as e:
+            print(e)
             return None
 
     def get_max_value(self):

@@ -328,7 +328,7 @@ def _convert_monster_to_win10_json(monster):
 def _convert_rune_craft_to_win10_json(craft):
     quality = craft_quality_map[craft.quality]
     stat = rune_stat_type_map[craft.stat]
-    rune_set = rune_set_map.get(craft.rune)
+    rune_set = rune_set_map.get(craft.rune, 99)
 
     return {
         'craft_type_id': int('{:d}{:02d}{:02d}'.format(rune_set, stat, quality)),

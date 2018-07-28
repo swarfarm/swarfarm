@@ -38,8 +38,8 @@ _named_timestamps = {
             'timestamp__gte': '2018-06-14T00:00:00+00:00',
         }
     },
-    '3.7.8-3.8.9': {
-        'description': 'Patch 3.7.8 to 3.8.9',
+    '3.7.8-3.8.8': {
+        'description': 'Patch 3.7.8 to 3.8.8',
         'filters': {
             'timestamp__gte': '2018-02-12T00:00:00+00:00',
             'timestamp__lt': '2018-07-04T00:00:00+00:00',

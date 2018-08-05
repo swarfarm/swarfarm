@@ -1295,11 +1295,13 @@ class MonsterInstance(models.Model):
     def get_possible_skillups(self):
         devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count()
         family = MonsterInstance.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id).exclude(pk=self.pk).order_by('ignore_for_fusion')
+        pieces = MonsterPiece.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id)
 
         return {
             'devilmon': devilmon,
             'family': family,
-            'none': devilmon + family.count() == 0,
+            'pieces': pieces,
+            'none': devilmon + family.count() + pieces.count() == 0,
         }
 
     def get_rune_stats(self, at_max_level=False):

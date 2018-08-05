@@ -250,6 +250,17 @@
                             </div>
                         {% endfor %}
                     {% endif %}
+                    {% if skillups.pieces %}
+                        {% for piece in skillups.pieces %}
+                            <div class="monster-image pull-left">
+                                <div>
+                                    <img src="{{ img_url_prefix }}monsters/{{ piece.monster.image_filename }}" class="monster-thumb"/>
+                                    <span class="image-plus image-plus-main fa fa-puzzle-piece"></span>
+                                    <span class="image-plus image-plus-right">x{{ piece.pieces }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
             </td>
         </tr>

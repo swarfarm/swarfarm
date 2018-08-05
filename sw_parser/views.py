@@ -175,6 +175,7 @@ def import_sw_json(request):
                 'ignore_material': form.cleaned_data.get('ignore_material'),
                 'except_with_runes': form.cleaned_data.get('except_with_runes'),
                 'except_light_and_dark': form.cleaned_data.get('except_light_and_dark'),
+                'except_fusion_ingredient': form.cleaned_data.get('except_fusion_ingredient'),
                 'delete_missing_monsters': form.cleaned_data.get('missing_monster_action'),
                 'delete_missing_runes': form.cleaned_data.get('missing_rune_action'),
                 'ignore_validation_errors': form.cleaned_data.get('ignore_validation'),

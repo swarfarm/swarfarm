@@ -67,6 +67,11 @@ class MonsterImportOptionsMixin(forms.Form):
         label='Import anyway if monster is Light or Dark',
         initial=True,
     )
+    except_fusion_ingredient = forms.BooleanField(
+        required=False,
+        label='Import anyway if monster is fusion ingredient',
+        initial=True,
+    )
     lock_monsters = forms.BooleanField(
         required=False,
         label=mark_safe('<span class="glyphicon glyphicon-lock"></span> Copy locked status of monsters from in-game'),
@@ -91,6 +96,7 @@ class MonsterImportOptionsLayout(Layout):
                 Field('ignore_material'),
                 Field('except_with_runes'),
                 Field('except_light_and_dark'),
+                Field('except_fusion_ingredient'),
                 css_class='list-group-item',
             ),
             Div(

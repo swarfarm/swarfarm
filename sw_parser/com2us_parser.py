@@ -257,8 +257,12 @@ def parse_sw_json(data, owner, options):
         material_ignored = options['ignore_material'] and mon.monster.archetype == Monster.TYPE_MATERIAL
         allow_due_to_runes = options['except_with_runes'] and len(equipped_runes) > 0
         allow_due_to_ld = options['except_light_and_dark'] and mon.monster.element in [Monster.ELEMENT_DARK, Monster.ELEMENT_LIGHT] and mon.monster.archetype != Monster.TYPE_MATERIAL
+        allow_due_to_fusion = options['except_fusion_ingredient'] and mon.monster.fusion_food
 
-        if (level_ignored or silver_ignored or material_ignored) and not (allow_due_to_runes or allow_due_to_ld):
+        should_be_skipped = any([level_ignored, silver_ignored, material_ignored])
+        import_anyway = any([allow_due_to_runes, allow_due_to_ld, allow_due_to_fusion])
+
+        if should_be_skipped and not import_anyway:
             continue
 
         # Set custom name if homunculus

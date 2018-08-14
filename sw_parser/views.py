@@ -38,8 +38,8 @@ _named_timestamps = {
             'timestamp__gte': '2018-06-14T00:00:00+00:00',
         }
     },
-    '3.7.8-3.8.9': {
-        'description': 'Patch 3.7.8 to 3.8.9',
+    '3.7.8-3.8.8': {
+        'description': 'Patch 3.7.8 to 3.8.8',
         'filters': {
             'timestamp__gte': '2018-02-12T00:00:00+00:00',
             'timestamp__lt': '2018-07-04T00:00:00+00:00',
@@ -88,6 +88,22 @@ def import_pcap(request):
     return _import_pcap(request)
 
 
+def _get_import_options(form_data):
+    return {
+        'clear_profile': form_data.get('clear_profile'),
+        'default_priority': form_data.get('default_priority'),
+        'lock_monsters': form_data.get('lock_monsters'),
+        'minimum_stars': int(form_data.get('minimum_stars', 1)),
+        'ignore_silver': form_data.get('ignore_silver'),
+        'ignore_material': form_data.get('ignore_material'),
+        'except_with_runes': form_data.get('except_with_runes'),
+        'except_light_and_dark': form_data.get('except_light_and_dark'),
+        'except_fusion_ingredient': form_data.get('except_fusion_ingredient'),
+        'delete_missing_monsters': form_data.get('missing_monster_action'),
+        'delete_missing_runes': form_data.get('missing_rune_action'),
+        'ignore_validation_errors': form_data.get('ignore_validation'),
+    }
+
 @csrf_protect
 def _import_pcap(request):
     errors = []
@@ -99,19 +115,7 @@ def _import_pcap(request):
         if form.is_valid():
             summoner = get_object_or_404(Summoner, user__username=request.user.username)
             uploaded_file = form.cleaned_data['pcap']
-            import_options = {
-                'clear_profile': form.cleaned_data.get('clear_profile'),
-                'default_priority': form.cleaned_data.get('default_priority'),
-                'lock_monsters': form.cleaned_data.get('lock_monsters'),
-                'minimum_stars': int(form.cleaned_data.get('minimum_stars', 1)),
-                'ignore_silver': form.cleaned_data.get('ignore_silver'),
-                'ignore_material': form.cleaned_data.get('ignore_material'),
-                'except_with_runes': form.cleaned_data.get('except_with_runes'),
-                'except_light_and_dark': form.cleaned_data.get('except_light_and_dark'),
-                'delete_missing_monsters': form.cleaned_data.get('missing_monster_action'),
-                'delete_missing_runes': form.cleaned_data.get('missing_rune_action'),
-                'ignore_validation_errors': form.cleaned_data.get('ignore_validation'),
-            }
+            import_options = _get_import_options(form.cleaned_data)
 
             try:
                 data = parse_pcap(uploaded_file)
@@ -166,19 +170,7 @@ def import_sw_json(request):
         if form.is_valid():
             summoner = get_object_or_404(Summoner, user__username=request.user.username)
             uploaded_file = form.cleaned_data['json_file']
-            import_options = {
-                'clear_profile': form.cleaned_data.get('clear_profile'),
-                'default_priority': form.cleaned_data.get('default_priority'),
-                'lock_monsters': form.cleaned_data.get('lock_monsters'),
-                'minimum_stars': int(form.cleaned_data.get('minimum_stars', 1)),
-                'ignore_silver': form.cleaned_data.get('ignore_silver'),
-                'ignore_material': form.cleaned_data.get('ignore_material'),
-                'except_with_runes': form.cleaned_data.get('except_with_runes'),
-                'except_light_and_dark': form.cleaned_data.get('except_light_and_dark'),
-                'delete_missing_monsters': form.cleaned_data.get('missing_monster_action'),
-                'delete_missing_runes': form.cleaned_data.get('missing_rune_action'),
-                'ignore_validation_errors': form.cleaned_data.get('ignore_validation'),
-            }
+            import_options = _get_import_options(form.cleaned_data)
 
             try:
                 data = json.load(uploaded_file)

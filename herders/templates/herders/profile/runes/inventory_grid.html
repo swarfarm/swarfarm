@@ -75,8 +75,8 @@
                     <td>{% if rune.get_atk_pct %}<span {% if rune.main_stat == rune.STAT_ATK_PCT %}class="lead"{% endif %}>{{ rune.get_atk_pct }}%</span>{% endif %}</td>
                     <td>{% if rune.get_atk %}<span {% if rune.main_stat == rune.STAT_ATK %}class="lead"{% endif %}>{{ rune.get_atk }}</span>{% endif %}</td>
                     <td>{% if rune.get_spd %}<span {% if rune.main_stat == rune.STAT_SPD %}class="lead"{% endif %}>{{ rune.get_spd }}</span>{% endif %}</td>
-                    <td>{% if rune.get_cri_rate %}<span {% if rune.main_stat == rune.STAT_CRI_RATE_PCT %}class="lead"{% endif %}>{{ rune.get_cri_rate }}%</span>{% endif %}</td>
-                    <td>{% if rune.get_cri_dmg %}<span {% if rune.main_stat == rune.STAT_CRI_DMG_PCT %}class="lead"{% endif %}>{{ rune.get_cri_dmg }}%</span>{% endif %}</td>
+                    <td>{% if rune.get_cri_rate %}<span {% if rune.main_stat == rune.STAT_CRIT_RATE_PCT %}class="lead"{% endif %}>{{ rune.get_cri_rate }}%</span>{% endif %}</td>
+                    <td>{% if rune.get_cri_dmg %}<span {% if rune.main_stat == rune.STAT_CRIT_DMG_PCT %}class="lead"{% endif %}>{{ rune.get_cri_dmg }}%</span>{% endif %}</td>
                     <td>{% if rune.get_res %}<span {% if rune.main_stat == rune.STAT_RESIST_PCT %}class="lead"{% endif %}>{{ rune.get_res }}%</span>{% endif %}</td>
                     <td>{% if rune.get_acc %}<span {% if rune.main_stat == rune.STAT_ACCURACY_PCT %}class="lead"{% endif %}>{{ rune.get_acc }}%</span>{% endif %}</td>
                     <td>

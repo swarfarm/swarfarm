@@ -2045,7 +2045,7 @@ def wish_chart_data(request, mine=False):
 
             elif section == 'monster':
                 grade = request.GET.get('grade')
-                monsters = WishMonsterDrop.objects.filter(log__in=wish_logs)
+                monsters = WishMonsterDrop.objects.filter(log__in=wish_logs).exclude(monster__archetype=Monster.TYPE_MATERIAL)
 
                 if grade:
                     monsters = monsters.filter(grade=int(grade))
@@ -2068,10 +2068,17 @@ def wish_chart_data(request, mine=False):
                     ))
 
                 # Monsters by grade
-                monster_count = WishMonsterDrop.objects.filter(log__in=wish_logs).count()
+                monster_count = WishMonsterDrop.objects.filter(log__in=wish_logs).exclude(monster__archetype=Monster.TYPE_MATERIAL).count()
                 appearance_chances.append((
                     float(monster_count),
                     'Monster'
+                ))
+
+                # Rainbowmon by grade
+                rainbow_count = WishMonsterDrop.objects.filter(log__in=wish_logs, monster__archetype=Monster.TYPE_MATERIAL).count()
+                appearance_chances.append((
+                    float(rainbow_count),
+                    'Rainbowmon'
                 ))
 
                 # Runes by grade
@@ -2132,10 +2139,17 @@ def wish_chart_data(request, mine=False):
                     ))
 
                 # Monsters by grade
-                for drop in WishMonsterDrop.objects.filter(log__in=wish_logs).values('grade').annotate(count=Count('pk')):
+                for drop in WishMonsterDrop.objects.filter(log__in=wish_logs).exclude(monster__archetype=Monster.TYPE_MATERIAL).values('grade').annotate(count=Count('pk')):
                     appearance_chances.append((
                         float(drop['count']) / total_logs * 100,
                         '{}<span class="glyphicon glyphicon-star"></span> Monster'.format(drop['grade'])
+                    ))
+
+                # Rainbowmon by grade
+                for drop in WishMonsterDrop.objects.filter(log__in=wish_logs, monster__archetype=Monster.TYPE_MATERIAL).values('grade').annotate(count=Count('pk')):
+                    appearance_chances.append((
+                        float(drop['count']) / total_logs * 100,
+                        '{}<span class="glyphicon glyphicon-star"></span> Rainbowmon'.format(drop['grade'])
                     ))
 
                 # Runes by grade

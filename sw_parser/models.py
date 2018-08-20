@@ -229,6 +229,7 @@ class RunLog(LogEntry):
         SummonLog.SCROLL_LEGENDARY,
         SummonLog.SCROLL_LIGHT_AND_DARK,
         SummonLog.SCROLL_TRANSCENDANCE,
+        SummonLog.SUMMON_EXCLUSIVE,
         DROP_COSTUME_POINT,
         DROP_UPGRADE_STONE,
         DROP_CRAFT_WOOD,

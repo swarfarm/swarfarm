@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
+from celery.result import AsyncResult
 from django.db.models import Q
 from django_filters import rest_framework as filters
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import get_object_or_404
@@ -85,7 +86,7 @@ class ProfileItemMixin(viewsets.GenericViewSet):
         username = self.kwargs.get('user_pk')
 
         if username is None:
-            raise Http404()
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         queryset = queryset.filter(owner__user__username=username)
 
@@ -277,11 +278,22 @@ class ProfileJsonUpload(viewsets.ViewSet):
             return Response({'job_id': task.task_id})
 
         elif validation_failures:
-            resp = Response({'validation_error': validation_failures})
-            resp.status_code = 409
-            return resp
+            return Response({'validation_error': validation_failures}, status=status.HTTP_409_CONFLICT)
         else:
-            resp = Response({'error': errors})
-            resp.status_code = 400
-            return resp
+            return Response({'error': errors}, status=status.HTTP_400_BAD_REQUEST)
 
+    def retrieve(self, request, user_pk=None, pk=None):
+        task = AsyncResult(pk)
+
+        if task:
+            try:
+                return Response({
+                    'status': task.status,
+                    'result': task.result,
+                })
+            except:
+                return Response({
+                    'status': 'error',
+                }, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)

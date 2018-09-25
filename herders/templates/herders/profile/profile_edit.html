@@ -9,6 +9,17 @@
             {% csrf_token %}
             {% crispy user_form %}
             {% crispy summoner_form %}
+
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">API Key</span>
+                <input id="api_key" type="text" class="form-control" placeholder="Click Regenerate to get API Key" disabled value="{{ request.user.auth_token.key }}">
+                <span class="input-group-btn">
+                    <button id="generate-api-key" class="btn btn-default" type="button">Regenerate</button>
+                </span>
+
+            </div>
+            <p class="help-block">This API key allows other services to authenticate as you on SWARFARM without your username and password.</p>
+
             <div class="form-actions">
                 <input type="submit" name="save" value="Save" class="btn btn-primary btn btn-primary" id="submit-id-save"/>
                 <input type="button" name="cancel" value="Cancel" class="btn btn-default" id="button-id-cancel"/>
@@ -17,5 +28,20 @@
                 <a href="{% url 'herders:profile_delete' profile_name=profile_name %}" class="btn btn-danger pull-right">Delete Account</a>
             </div>
         </form>
+
+
     </div>
 {% endblock content %}
+
+{% block javascript %}
+<script type="application/javascript">
+    $('body').on('click', '#generate-api-key', function() {
+        $.ajax({
+            type: 'GET',
+            url: '/api/v2/auth/generate-basic-token/'
+        }).done(function(data) {
+            $('#api_key').val(data.token);
+        });
+    })
+</script>
+{% endblock javascript %}

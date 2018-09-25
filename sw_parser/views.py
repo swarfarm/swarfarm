@@ -117,6 +117,10 @@ def _import_pcap(request):
             uploaded_file = form.cleaned_data['pcap']
             import_options = _get_import_options(form.cleaned_data)
 
+            if form.cleaned_data.get('save_defaults'):
+                summoner.preferences['import_options'] = import_options
+                summoner.save()
+
             try:
                 data = parse_pcap(uploaded_file)
             except Exception as e:
@@ -141,7 +145,11 @@ def _import_pcap(request):
                 else:
                     errors.append("Unable to find Summoner's War data in the uploaded file")
     else:
-        form = ImportPCAPForm()
+        form = ImportPCAPForm(
+            initial=request.user.summoner.preferences.get('import_options', {
+                'ignore_silver': True
+            })
+        )
 
     context = {
         'form': form,
@@ -172,6 +180,10 @@ def import_sw_json(request):
             uploaded_file = form.cleaned_data['json_file']
             import_options = _get_import_options(form.cleaned_data)
 
+            if form.cleaned_data.get('save_defaults'):
+                summoner.preferences['import_options'] = import_options
+                summoner.save()
+
             try:
                 data = json.load(uploaded_file)
             except ValueError as e:
@@ -194,7 +206,9 @@ def import_sw_json(request):
 
                     return render(request, 'sw_parser/import_progress.html')
     else:
-        form = ImportSWParserJSONForm()
+        form = ImportSWParserJSONForm(
+            initial=request.user.summoner.preferences.get('import_options', {})
+        )
 
     context = {
         'form': form,
@@ -208,7 +222,8 @@ def import_sw_json(request):
 
 @login_required
 def import_status(request):
-    task = AsyncResult(request.session.get('import_task_id'))
+    task_id = request.GET.get('id', request.session.get('import_task_id'))
+    task = AsyncResult(task_id)
 
     if task:
         try:

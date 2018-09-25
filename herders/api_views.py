@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
+from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
@@ -12,7 +13,8 @@ from herders.serializers import *
 from herders.pagination import *
 from herders.permissions import *
 from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
-
+from sw_parser.com2us_parser import validate_sw_json
+from sw_parser.tasks import com2us_data_import
 
 class SummonerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().select_related('summoner').order_by('pk')
@@ -247,3 +249,39 @@ class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
                 queryset = queryset.filter(group__owner__public=True)
 
         return queryset
+
+
+class ProfileJsonUpload(viewsets.ViewSet):
+    permission_classes = [IsOwner]
+
+    def create(self, request, *args, **kwargs):
+        errors = []
+        validation_failures = []
+
+        schema_errors, validation_errors = validate_sw_json(request.data, request.user.summoner)
+
+        if schema_errors:
+            errors.append(schema_errors)
+
+        if validation_errors:
+            validation_failures = "Uploaded data does not match previously imported data. To override, set import preferences to ignore validation errors and import again."
+
+        import_options = request.user.summoner.preferences.get('import_options')
+
+        if import_options is None:
+            errors.append('You have not saved your import options. Import via normal method and be sure to save your preferences.')
+
+        if not errors and (not validation_failures or import_options['ignore_validation_errors']):
+            # Queue the import
+            task = com2us_data_import.delay(request.data, request.user.summoner.pk, import_options)
+            return Response({'job_id': task.task_id})
+
+        elif validation_failures:
+            resp = Response({'validation_error': validation_failures})
+            resp.status_code = 409
+            return resp
+        else:
+            resp = Response({'error': errors})
+            resp.status_code = 400
+            return resp
+

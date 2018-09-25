@@ -7,6 +7,7 @@ from django.contrib.staticfiles import views
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from refreshtoken.views import delegate_jwt_token
 
+from apiv2.views import generate_basic_auth_token
 from bestiary.autocomplete import *
 from herders.autocomplete import *
 from herders import views as herder_views
@@ -23,6 +24,7 @@ urlpatterns = [
     url(r'^api/v2/', include('apiv2.urls', namespace='v2')),
     url(r'^api/', include('api.urls')),
     url(r'^api(/v\d+)?/auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api(/v\d+)?/auth/generate-basic-token/', generate_basic_auth_token),
     url(r'^api(/v\d+)?/auth/get-token/', obtain_jwt_token),
     url(r'^api(/v\d+)?/auth/delegate-token', delegate_jwt_token),
     url(r'^api(/v\d+)?/auth/verify-token/', verify_jwt_token),

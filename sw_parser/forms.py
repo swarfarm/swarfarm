@@ -83,6 +83,11 @@ class MonsterImportOptionsMixin(forms.Form):
         label='Ignore validation checks',
         initial=False,
     )
+    save_defaults = forms.BooleanField(
+        required=False,
+        label='Save options as default',
+        initial=False
+    )
 
 
 class MonsterImportOptionsLayout(Layout):
@@ -113,6 +118,7 @@ class MonsterImportOptionsLayout(Layout):
                     Field('clear_profile'),
                     css_class='alert alert-danger condensed',
                 ),
+                Field('save_defaults'),
                 css_class='list-group-item',
             ),
         )

@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'markdown_deux',
     'rest_framework',
+    'rest_framework.authtoken',
     'refreshtoken',
     'rest_framework_swagger',
     'timezone_field',
@@ -247,6 +248,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_THROTTLE_CLASSES': (

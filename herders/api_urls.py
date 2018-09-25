@@ -43,6 +43,6 @@ profile_router.register(r'rune-crafts', RuneCraftInstanceViewSet, base_name='pro
 profile_router.register(r'buildings', BuildingViewSet, base_name='profile/buildings')
 profile_router.register(r'team-groups', TeamGroupViewSet, base_name='profile/team-groups')
 profile_router.register(r'teams', TeamViewSet, base_name='profile/teams')
-
+profile_router.register(r'upload', ProfileJsonUpload, base_name='profile/upload')
 storage_router = NestedStorageRouter(router, r'profiles', lookup='user')
 storage_router.register(r'storage', StorageViewSet, base_name='profile/storage')

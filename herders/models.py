@@ -5,7 +5,7 @@ from math import floor, ceil
 from operator import is_not
 
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField, JSONField
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db import models
 from django.db.models import Q, Count
@@ -941,6 +941,7 @@ class Summoner(models.Model):
     public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
+    preferences = JSONField(default=dict())
 
     def get_rune_counts(self):
         counts = {}

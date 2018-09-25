@@ -12,7 +12,7 @@
 
             <div class="input-group">
                 <span class="input-group-addon" id="basic-addon1">API Key</span>
-                <input id="api_key" type="text" class="form-control" placeholder="Click Regenerate to get API Key" disabled value="{{ request.user.auth_token.key }}">
+                <input id="api_key" type="text" class="form-control" placeholder="Click Regenerate to get API Key" readonly value="{{ request.user.auth_token.key }}">
                 <span class="input-group-btn">
                     <button id="generate-api-key" class="btn btn-default" type="button">Regenerate</button>
                 </span>

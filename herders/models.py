@@ -557,7 +557,7 @@ class MonsterLeaderSkill(models.Model):
         elif self.area == self.AREA_ARENA:
             condition = 'in the Arena '
         elif self.area == self.AREA_GUILD:
-            condition = 'in the Guild Battles '
+            condition = 'in Guild Content '
         elif self.area == self.AREA_ELEMENT:
             condition = 'with {} attribute '.format(self.get_element_display())
         else:
@@ -809,7 +809,7 @@ class Building(models.Model):
 
     AREA_CHOICES = [
         (AREA_GENERAL, 'Everywhere'),
-        (AREA_GUILD, 'Guild Battle'),
+        (AREA_GUILD, 'Guild Content'),
     ]
 
     STAT_HP = 0

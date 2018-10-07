@@ -1109,3 +1109,9 @@ button.rune-assign-choice {
 .nav-tabs {
     margin-bottom: 0;
 }
+
+.navmenu-text {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+}

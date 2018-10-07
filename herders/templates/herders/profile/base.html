@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
-{% load crispy_forms_tags %}
+{% load staticfiles crispy_forms_tags humanize %}
 
 {% block subnav %}
     {% static 'herders/images/' as img_url_prefix %}
@@ -26,6 +25,7 @@
                     {% endif %}
                 {% endif %}
             </p>
+            <p class="nav navmenu-text">Last updated {{ summoner.last_update|naturalday }}</p>
         {% endif %}
         <ul class="nav navmenu-nav">
             <li {% if view == 'profile' %}class="dropdown open"{% endif %}>

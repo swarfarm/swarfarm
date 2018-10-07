@@ -2,9 +2,11 @@ from celery import shared_task, current_task, states
 from datetime import timedelta
 
 from django.db import transaction
+from django.db.models.signals import post_save
 from django.utils import timezone
 
 from herders.models import Summoner, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance
+from herders.signals import update_profile_date
 
 from .models import SummonLog, RunLog, RiftDungeonLog, RuneCraftLog, ShopRefreshLog, WorldBossLog, RiftRaidLog, WishLog
 from .com2us_parser import *
@@ -52,6 +54,11 @@ def com2us_data_import(data, user_id, import_options):
     results = parse_sw_json(data, summoner, import_options)
 
     current_task.update_state(state=states.STARTED, meta={'step': 'summoner'})
+
+    # Disconnect summoner profile last update post-save signal to avoid mass spamming updates
+    post_save.disconnect(update_profile_date, sender=MonsterInstance)
+    post_save.disconnect(update_profile_date, sender=RuneInstance)
+    post_save.disconnect(update_profile_date, sender=RuneCraftInstance)
 
     with transaction.atomic():
         # Update summoner and inventory

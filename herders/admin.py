@@ -255,6 +255,7 @@ class UserAdmin(UserAdmin):
     list_display = ('username', 'email', 'last_login', 'date_joined')
     inlines = (SummonerInline,)
 
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
@@ -294,5 +295,4 @@ class RuneCraftInstanceAdmin(admin.ModelAdmin):
     exclude = ('owner',)
 
 
-admin.site.register(GameEvent)
 admin.site.register(BuildingInstance)

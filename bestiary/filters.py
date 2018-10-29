@@ -46,6 +46,8 @@ class MonsterFilter(django_filters.FilterSet):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)
         stat_scaling = self.form.cleaned_data.get('skills__scaling_stats__pk', [])
         cooltimes = self.form.cleaned_data.get('skills__cooltime', '')
+        max_num_hits = self.form.cleaned_data.get('skills__hits__lte', 99)
+        min_num_hits = self.form.cleaned_data.get('skills__hits__gte', 0)
 
         try:
             cooltimes = cooltimes.split(',')
@@ -67,7 +69,7 @@ class MonsterFilter(django_filters.FilterSet):
             if min_cooltime == 0 or max_cooltime == 0:
                 cooltime_filter = Q(skills__cooltime__isnull=True) | cooltime_filter
 
-            queryset = queryset.filter(cooltime_filter)
+            queryset = queryset.filter(cooltime_filter, skills__hits__lte=max_num_hits, skills__hits__gte=min_num_hits)
 
             return queryset.distinct()
 
@@ -86,7 +88,7 @@ class MonsterFilter(django_filters.FilterSet):
             if min_cooltime == 0 or max_cooltime == 0:
                 cooltime_filter = Q(cooltime__isnull=True) | cooltime_filter
 
-            skills = skills.filter(cooltime_filter)
+            skills = skills.filter(cooltime_filter, hits__lte=max_num_hits, hits__gte=min_num_hits)
 
             return queryset.filter(skills__in=skills).distinct()
 
@@ -99,5 +101,9 @@ class MonsterFilter(django_filters.FilterSet):
         return queryset
 
     def filter_skills_slot(self, queryset, name, value):
+        # This field is handled in filter_skill_effects()
+        return queryset
+
+    def filter_skills_hits(self, queryset, name, value):
         # This field is handled in filter_skill_effects()
         return queryset

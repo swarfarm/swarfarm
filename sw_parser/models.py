@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.utils.text import slugify
 
 from herders.models import Summoner
-from bestiary.models import Monster, Dungeon
+from bestiary.models import Monster, Dungeon, Level
 
 
 class LogEntry(models.Model):
@@ -306,6 +306,7 @@ class RunLog(LogEntry):
     dungeon = models.ForeignKey(Dungeon)
     stage = models.IntegerField(help_text='Floor for Caiross or stage for scenarios', choices=FLOOR_CHOICES)
     difficulty = models.IntegerField(choices=DIFFICULTY_CHOICES, help_text='For scenarios only', blank=True, null=True)
+    level = models.ForeignKey(Level, on_delete=models.SET_NULL, blank=True, null=True)  # Will replace the dungeon/stage/difficulty fields eventually
     success = models.NullBooleanField()  # Null value here is an incomplete record from a log that needs the start and result commands to fill in completely
     clear_time = models.DurationField(blank=True, null=True)
     energy = models.IntegerField(blank=True, null=True)

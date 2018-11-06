@@ -106,12 +106,15 @@ def parse_battle_dungeon_result(log_data):
     log_entry.success = log_data['request']['win_lose'] == 1
     log_entry.clear_time = datetime.timedelta(milliseconds=log_data['request']['clear_time'])
 
+    # TODO: Remove dungeon/stage settings when everything is updated to use level field
     try:
         log_entry.dungeon = Dungeon.objects.get(pk=dungeon_id)
     except Dungeon.DoesNotExist:
         log_entry.dungeon = Dungeon.objects.create(pk=dungeon_id, name='UNKNOWN DUNGEON')
 
     log_entry.stage = log_data['request']['stage_id']
+    log_entry.level = Level.objects.filter(dungeon__pk=dungeon_id, floor=int(log_data['request']['stage_id'])).first()
+
     log_entry = _parse_battle_reward(log_entry, log_data['response'].get('reward'), log_data['response'].get('instance_info'))
     log_entry.save()
 
@@ -130,6 +133,7 @@ def parse_battle_scenario_start(log_data):
     log_entry.battle_key = battle_key
     log_entry.summoner = _get_summoner(log_entry.wizard_id)
 
+    # TODO: Remove dungeon/stage/difficulty settings when everything is updated to use level field
     try:
         log_entry.dungeon = Dungeon.objects.get(pk=log_data['request']['region_id'])
     except Dungeon.DoesNotExist:
@@ -137,6 +141,11 @@ def parse_battle_scenario_start(log_data):
 
     log_entry.stage = log_data['request']['stage_no']
     log_entry.difficulty = scenario_difficulty_map[log_data['request']['difficulty']]
+    log_entry.level = Level.objects.filter(
+        dungeon__pk=log_data['request']['region_id'],
+        level=int(log_data['request']['stage_no']),
+        difficulty=int(log_data['request']['difficulty']),
+    )
     log_entry.save()
 
     return log_entry

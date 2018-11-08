@@ -6,8 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, HTML
 from crispy_forms.bootstrap import FormActions, Alert
 
-from bestiary.models import Monster
-from herders.models import MonsterInstance
+from herders.models import Monster, MonsterInstance
 
 
 class MonsterImportOptionsMixin(forms.Form):

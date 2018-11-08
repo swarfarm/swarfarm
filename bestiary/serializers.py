@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
-from .models import *
+from herders.models import CraftMaterial, MonsterSource as Source, MonsterSkillEffect as Effect, \
+    MonsterSkillEffectDetail as EffectDetail, MonsterSkill as Skill, MonsterLeaderSkill as LeaderSkill, \
+    HomunculusSkill, HomunculusSkillCraftCost, MonsterCraftCost, Monster, Fusion, Building
 
 
 class CraftMaterialSerializer(serializers.ModelSerializer):

@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('grade', models.IntegerField()),
                 ('level', models.IntegerField()),
-                ('monster', models.ForeignKey(to='bestiary.Monster')),
+                ('monster', models.ForeignKey(to='herders.Monster')),
             ],
         ),
         migrations.CreateModel(

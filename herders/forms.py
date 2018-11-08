@@ -1,25 +1,24 @@
 from itertools import chain
 
+from captcha.fields import ReCaptchaField
+from crispy_forms.bootstrap import FormActions, FieldWithButtons, StrictButton, InlineField, InlineRadios, Alert
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset, Fieldset
+from dal import autocomplete
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 from django.forms import ModelForm
 from django.forms.models import BaseModelFormSet
-from django.core.validators import RegexValidator
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from captcha.fields import ReCaptchaField
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset, Fieldset
-from crispy_forms.bootstrap import FormActions, PrependedText, FieldWithButtons, StrictButton, InlineField, InlineRadios, Alert
-from dal import autocomplete
-
-from bestiary.models import Monster, Effect, LeaderSkill, ScalingStat
 from bestiary.fields import AdvancedSelectMultiple
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
-from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, RuneInstance, RuneCraftInstance, BuildingInstance
-
+from .models import Monster, MonsterSkillEffect as Effect, MonsterLeaderSkill as LeaderSkill, \
+    MonsterSkillScalingStat as ScalingStat, MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
+    RuneInstance, RuneCraftInstance, BuildingInstance
 
 STATIC_URL_PREFIX = static('herders/images/')
 

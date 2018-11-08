@@ -13,6 +13,8 @@ from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from timezone_field import TimeZoneField
 
+from bestiary.models import Level
+
 
 # Bestiary database models
 class Monster(models.Model):
@@ -2773,21 +2775,40 @@ class TeamGroup(models.Model):
 
 class Team(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(Summoner, null=True)
+    level = models.ForeignKey(Level, null=True, blank=True)
     group = models.ForeignKey(TeamGroup)
     name = models.CharField(max_length=30)
     favorite = models.BooleanField(default=False, blank=True)
-    description = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
+    description = models.TextField(
+        null=True,
+        blank=True,
+        help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled')
+    )
+    members = models.ManyToManyField(MonsterInstance, blank=True, through='TeamRoster')
+
+    # TODO: Remove below fields
     leader = models.ForeignKey('MonsterInstance', related_name='team_leader', null=True, blank=True)
-    roster = models.ManyToManyField('MonsterInstance', blank=True)
+    roster = models.ManyToManyField('MonsterInstance', blank=True, related_name='+')  # TODO: Remove related_name once migrated
 
     class Meta:
         ordering = ['name']
 
-    def owner(self):
-        return self.group.owner
-
     def __str__(self):
         return self.name
+
+
+class TeamRoster(models.Model):
+    POSITION_FRONT = 1
+    POSITION_BACK = 2
+    POSITION_CHOICES = (
+        (POSITION_FRONT, 'Frontline'),
+        (POSITION_BACK, 'Backline'),
+    )
+    monster = models.ForeignKey(MonsterInstance, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    leader = models.BooleanField(default=False)
+    position = models.IntegerField(choices=POSITION_CHOICES)
 
 
 class BuildingInstance(models.Model):

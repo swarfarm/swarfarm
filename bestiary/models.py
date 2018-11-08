@@ -2,8 +2,6 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.utils.text import slugify
 
-import herders.models as herder_models
-
 
 class Dungeon(models.Model):
     TYPE_SCENARIO = 0
@@ -79,68 +77,3 @@ class Level(models.Model):
 
     def __str__(self):
         return f'{self.dungeon_id} {self.floor} - {self.get_difficulty_display()}'
-
-# Proxy models solely for admin organization purposes
-class Building(herder_models.Building):
-    class Meta:
-        proxy = True
-
-
-class CraftMaterial(herder_models.CraftMaterial):
-    class Meta:
-        proxy = True
-
-
-class MonsterCraftCost(herder_models.MonsterCraftCost):
-    class Meta:
-        proxy = True
-
-
-class HomunculusSkillCraftCost(herder_models.HomunculusSkillCraftCost):
-    class Meta:
-        proxy = True
-
-
-class Monster(herder_models.Monster):
-    class Meta:
-        proxy = True
-
-
-class Source(herder_models.MonsterSource):
-    class Meta:
-        proxy = True
-
-
-class Skill(herder_models.MonsterSkill):
-    class Meta:
-        proxy = True
-
-
-class LeaderSkill(herder_models.MonsterLeaderSkill):
-    class Meta:
-        proxy = True
-
-
-class HomunculusSkill(herder_models.HomunculusSkill):
-    class Meta:
-        proxy = True
-
-
-class Effect(herder_models.MonsterSkillEffect):
-    class Meta:
-        proxy = True
-
-
-class EffectDetail(herder_models.MonsterSkillEffectDetail):
-    class Meta:
-        proxy = True
-
-
-class ScalingStat(herder_models.MonsterSkillScalingStat):
-    class Meta:
-        proxy = True
-
-
-class Fusion(herder_models.Fusion):
-    class Meta:
-        proxy = True

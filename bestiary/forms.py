@@ -1,18 +1,17 @@
 from itertools import chain
 
+from crispy_forms.bootstrap import FormActions
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Div, Layout, Field, Button, Fieldset
+from dal import autocomplete
 from django import forms
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, Layout, Field, Button, Fieldset
-from crispy_forms.bootstrap import FormActions, FieldWithButtons
-
-from bestiary.models import *
-from .widgets import EffectSelectMultipleWidget, ElementSelectMultipleWidget
+from herders.models import Monster, MonsterLeaderSkill as LeaderSkill, MonsterSkillScalingStat as ScalingStat, \
+    MonsterSkillEffect as Effect, MonsterSkill as Skill
 from .fields import AdvancedSelectMultiple
-
-from dal import autocomplete
+from .widgets import EffectSelectMultipleWidget, ElementSelectMultipleWidget
 
 STATIC_URL_PREFIX = static('herders/images/')
 

@@ -1,4 +1,4 @@
-Django<1.12
+Django==1.11.16
 gunicorn
 eventlet
 psycopg2
@@ -12,7 +12,7 @@ dpkt
 jsonschema
 pytz
 python-dateutil
-pycrypto
+pycryptodome
 redis
 requests
 pillow==4.1.0

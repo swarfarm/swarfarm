@@ -1836,7 +1836,10 @@ def team_edit(request, profile_name, team_id=None):
 
     if is_owner:
         if request.method == 'POST' and edit_form.is_valid():
-            team = edit_form.save()
+            team = edit_form.save(commit=False)
+            team.owner = summoner
+            team.save()
+
             messages.success(request, 'Saved changes to %s - %s.' % (team.group, team))
 
             return team_detail(request, profile_name, team.pk.hex)

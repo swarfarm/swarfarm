@@ -6,7 +6,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
 from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance
@@ -16,6 +16,7 @@ from herders.permissions import *
 from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
 from sw_parser.com2us_parser import validate_sw_json
 from sw_parser.tasks import com2us_data_import
+
 
 class SummonerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().select_related('summoner').order_by('pk')
@@ -253,7 +254,7 @@ class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
 
 
 class ProfileJsonUpload(viewsets.ViewSet):
-    permission_classes = [IsOwner]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         errors = []

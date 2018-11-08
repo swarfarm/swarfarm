@@ -31,6 +31,7 @@ Global, for searching and filtering:
 """
 
 router = DefaultRouter()
+router.register(r'profiles/upload', ProfileJsonUpload, base_name='profile/upload')
 router.register(r'profiles', SummonerViewSet, base_name='profiles')
 router.register(r'monster-instances', GlobalMonsterInstanceViewSet, base_name='monster-instances')
 router.register(r'rune-instances', GlobalRuneInstanceViewSet, base_name='rune-instances')
@@ -43,6 +44,6 @@ profile_router.register(r'rune-crafts', RuneCraftInstanceViewSet, base_name='pro
 profile_router.register(r'buildings', BuildingViewSet, base_name='profile/buildings')
 profile_router.register(r'team-groups', TeamGroupViewSet, base_name='profile/team-groups')
 profile_router.register(r'teams', TeamViewSet, base_name='profile/teams')
-profile_router.register(r'upload', ProfileJsonUpload, base_name='profile/upload')
+profile_router.register(r'upload', ProfileJsonUpload, base_name='profile/upload_legacy')
 storage_router = NestedStorageRouter(router, r'profiles', lookup='user')
 storage_router.register(r'storage', StorageViewSet, base_name='profile/storage')

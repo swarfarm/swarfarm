@@ -5,29 +5,29 @@ from django.utils.text import slugify
 
 
 class Dungeon(models.Model):
-    TYPE_SCENARIO = 0
-    TYPE_RUNE_DUNGEON = 1
-    TYPE_ESSENCE_DUNGEON = 2
-    TYPE_OTHER_DUNGEON = 3
-    TYPE_RAID = 4
-    TYPE_HALL_OF_HEROES = 5
+    CATEGORY_SCENARIO = 0
+    CATEGORY_RUNE_DUNGEON = 1
+    CATEGORY_ESSENCE_DUNGEON = 2
+    CATEGORY_OTHER_DUNGEON = 3
+    CATEGORY_RAID = 4
+    CATEGORY_HALL_OF_HEROES = 5
 
-    TYPE_CHOICES = [
-        (TYPE_SCENARIO, 'Scenarios'),
-        (TYPE_RUNE_DUNGEON, 'Rune Dungeons'),
-        (TYPE_ESSENCE_DUNGEON, 'Elemental Dungeons'),
-        (TYPE_OTHER_DUNGEON, 'Other Dungeons'),
-        (TYPE_RAID, 'Raids'),
-        (TYPE_HALL_OF_HEROES, 'Hall of Heroes'),
+    CATEGORY_CHOICES = [
+        (CATEGORY_SCENARIO, 'Scenarios'),
+        (CATEGORY_RUNE_DUNGEON, 'Rune Dungeons'),
+        (CATEGORY_ESSENCE_DUNGEON, 'Elemental Dungeons'),
+        (CATEGORY_OTHER_DUNGEON, 'Other Dungeons'),
+        (CATEGORY_RAID, 'Raids'),
+        (CATEGORY_HALL_OF_HEROES, 'Hall of Heroes'),
     ]
 
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     max_floors = models.IntegerField(default=10)
     slug = models.SlugField(blank=True, null=True)
+    category = models.IntegerField(choices=CATEGORY_CHOICES, blank=True, null=True)
 
-    # TODO: Remove following fields when Level model is fully utilized everywhere: type, energy_cost, xp, monster_slots
-    type = models.IntegerField(choices=TYPE_CHOICES, blank=True, null=True)
+    # TODO: Remove following fields when Level model is fully utilized everywhere: energy_cost, xp, monster_slots
     # For the following fields:
     # Outer array index is difficulty (normal, hard, hell). Inner array index is the stage/floor
     # Example: Hell B2 is dungeon.energy_cost[RunLog.DIFFICULTY_HELL][1]

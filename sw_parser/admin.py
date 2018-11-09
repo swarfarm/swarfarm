@@ -16,7 +16,7 @@ class MonsterDropAdmin(admin.ModelAdmin):
 # Run logs
 @admin.register(RunLog)
 class RunLogAdmin(admin.ModelAdmin):
-    list_display = ('timestamp', 'wizard_id', 'summoner', 'dungeon', 'stage', 'drop_type', 'drop_quantity', 'drop_monster', 'drop_rune')
+    list_display = ('timestamp', 'wizard_id', 'summoner', 'dungeon', 'stage', 'level', 'drop_type', 'drop_quantity', 'drop_monster', 'drop_rune')
     list_filter = ('dungeon', 'stage', 'drop_type')
     readonly_fields = ['summoner', 'drop_monster', 'drop_rune']
 

@@ -13,6 +13,8 @@ from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from timezone_field import TimeZoneField
 
+from bestiary.models import Level
+
 
 # Bestiary database models
 class Monster(models.Model):
@@ -2773,18 +2775,21 @@ class TeamGroup(models.Model):
 
 class Team(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(Summoner, null=True, blank=True)
+    level = models.ForeignKey(Level, null=True, blank=True)
     group = models.ForeignKey(TeamGroup)
     name = models.CharField(max_length=30)
     favorite = models.BooleanField(default=False, blank=True)
-    description = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
+    description = models.TextField(
+        null=True,
+        blank=True,
+        help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled')
+    )
     leader = models.ForeignKey('MonsterInstance', related_name='team_leader', null=True, blank=True)
     roster = models.ManyToManyField('MonsterInstance', blank=True)
 
     class Meta:
         ordering = ['name']
-
-    def owner(self):
-        return self.group.owner
 
     def __str__(self):
         return self.name

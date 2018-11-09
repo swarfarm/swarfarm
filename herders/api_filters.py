@@ -1,9 +1,9 @@
+import django_filters
 from django.contrib.auth.models import User
 from django.db.models import Q
-import django_filters
 
-from bestiary.models import Monster, Effect, Skill, LeaderSkill, ScalingStat
-from .models import MonsterInstance, MonsterTag, RuneInstance, Team
+from .models import Monster, MonsterSkill as Skill, MonsterSkillEffect as Effect, MonsterLeaderSkill as LeaderSkill, \
+    MonsterSkillScalingStat as ScalingStat, MonsterInstance, MonsterTag, RuneInstance, Team
 
 
 class SummonerFilter(django_filters.FilterSet):

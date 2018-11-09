@@ -16,10 +16,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader, RequestContext, Context
 from django.template.context_processors import csrf
 
-from bestiary.models import Monster, Fusion, Building
 from .forms import *
 from .filters import *
-from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance, Storage
+from .models import Summoner, Monster, Fusion, Building, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance, Storage
 
 
 def register(request):
@@ -1837,7 +1836,10 @@ def team_edit(request, profile_name, team_id=None):
 
     if is_owner:
         if request.method == 'POST' and edit_form.is_valid():
-            team = edit_form.save()
+            team = edit_form.save(commit=False)
+            team.owner = summoner
+            team.save()
+
             messages.success(request, 'Saved changes to %s - %s.' % (team.group, team))
 
             return team_detail(request, profile_name, team.pk.hex)

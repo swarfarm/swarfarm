@@ -12,8 +12,7 @@ import datetime
 from django.utils.timezone import get_current_timezone
 from django.conf import settings
 
-from bestiary.models import Monster
-from herders.models import Building, MonsterPiece, MonsterInstance, RuneInstance, BuildingInstance
+from herders.models import Monster, Building, MonsterPiece, MonsterInstance, RuneInstance, BuildingInstance
 
 from .models import *
 from .com2us_mapping import *

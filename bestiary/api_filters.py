@@ -1,6 +1,7 @@
 import django_filters.rest_framework as filters
 
-from bestiary.models import Monster, Effect, Skill, LeaderSkill, ScalingStat
+from herders.models import Monster, MonsterSkillEffect as Effect, MonsterSkill as Skill, \
+    MonsterLeaderSkill as LeaderSkill, MonsterSkillScalingStat as ScalingStat
 
 
 class MonsterFilter(filters.FilterSet):

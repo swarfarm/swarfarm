@@ -1,35 +1,28 @@
+import csv
 from collections import OrderedDict
 from copy import deepcopy
-import csv
-from celery.result import AsyncResult
-from django_pivot.histogram import histogram
 
-from django.conf import settings
+from celery.result import AsyncResult
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.files.uploadhandler import TemporaryFileUploadHandler
-from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse
-from django.db import IntegrityError, transaction
 from django.db.models import Count, Min, Max, Avg, Sum, Value, F, ExpressionWrapper, DurationField
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import pluralize
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django_pivot.histogram import histogram
 
-from bestiary.models import Monster, Dungeon
-from herders.models import Summoner, MonsterInstance, RuneInstance, Storage, BuildingInstance
-
-from .forms import *
-from .com2us_parser import *
-from .com2us_mapping import valid_rune_drop_map
-from .log_parser import *
-from .tasks import com2us_data_import
-from .rune_optimizer_parser import *
-from .db_utils import Percentile
 from sw_parser import chart_templates
+from .com2us_mapping import valid_rune_drop_map
+from .com2us_parser import *
+from .forms import *
+from .log_parser import *
+from .rune_optimizer_parser import *
+from .tasks import com2us_data_import
 
 _named_timestamps = {
     '4.0.8-present': {

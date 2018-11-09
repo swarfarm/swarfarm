@@ -143,9 +143,9 @@ def parse_battle_scenario_start(log_data):
     log_entry.difficulty = scenario_difficulty_map[log_data['request']['difficulty']]
     log_entry.level = Level.objects.filter(
         dungeon__pk=log_data['request']['region_id'],
-        level=int(log_data['request']['stage_no']),
+        floor=int(log_data['request']['stage_no']),
         difficulty=int(log_data['request']['difficulty']),
-    )
+    ).first()
     log_entry.save()
 
     return log_entry

@@ -1841,6 +1841,7 @@ def team_edit(request, profile_name, team_id=None):
             team = edit_form.save(commit=False)
             team.owner = summoner
             team.save()
+            edit_form.save_m2m()
 
             messages.success(request, 'Saved changes to %s - %s.' % (team.group, team))
 

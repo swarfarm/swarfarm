@@ -1835,6 +1835,8 @@ def team_edit(request, profile_name, team_id=None):
     }
 
     if is_owner:
+        edit_form.full_clean()  # re-clean due to updated querysets after form initialization
+
         if request.method == 'POST' and edit_form.is_valid():
             team = edit_form.save(commit=False)
             team.owner = summoner

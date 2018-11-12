@@ -282,3 +282,6 @@ JWT_AUTH = {
 GRAPHENE = {
     'SCHEMA': 'swarfarm.schema.schema'
 }
+
+if DEBUG:
+    GRAPHENE['MIDDLEWARE'] = ['graphene_django.debug.DjangoDebugMiddleware',]

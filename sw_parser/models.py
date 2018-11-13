@@ -9,7 +9,7 @@ class LogEntry(models.Model):
     # Abstract model with basic fields required for logging anything
 
     wizard_id = models.BigIntegerField()
-    summoner = models.ForeignKey(Summoner, blank=True, null=True)
+    summoner = models.ForeignKey(Summoner, on_delete=models.SET_NULL, blank=True, null=True)
     timestamp = models.DateTimeField(blank=True, null=True)
     server = models.IntegerField(choices=Summoner.SERVER_CHOICES, null=True, blank=True)
 
@@ -57,7 +57,7 @@ class SummonLog(LogEntry):
 
     SUMMON_CHOICES_DICT = dict((k, slugify(v)) for k, v in SUMMON_CHOICES)
 
-    monster = models.ForeignKey('MonsterDrop')
+    monster = models.ForeignKey('MonsterDrop', on_delete=models.CASCADE)
     summon_method = models.IntegerField(choices=SUMMON_CHOICES)
 
     @staticmethod
@@ -302,10 +302,10 @@ class RunLog(LogEntry):
     }
 
     battle_key = models.BigIntegerField(db_index=True, null=True, blank=True)
-    dungeon = models.ForeignKey(Dungeon)
+    dungeon = models.ForeignKey(Dungeon, on_delete=models.CASCADE)
     stage = models.IntegerField(help_text='Floor for Caiross or stage for scenarios', choices=FLOOR_CHOICES)
     difficulty = models.IntegerField(choices=DIFFICULTY_CHOICES, help_text='For scenarios only', blank=True, null=True)
-    level = models.ForeignKey(Level, on_delete=models.SET_NULL, blank=True, null=True)  # Will replace the dungeon/stage/difficulty fields eventually
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, blank=True, null=True)  # Will replace the dungeon/stage/difficulty fields eventually
     success = models.NullBooleanField()  # Null value here is an incomplete record from a log that needs the start and result commands to fill in completely
     clear_time = models.DurationField(blank=True, null=True)
     energy = models.IntegerField(blank=True, null=True)
@@ -313,8 +313,8 @@ class RunLog(LogEntry):
     crystal = models.IntegerField(blank=True, null=True)
     drop_type = models.IntegerField(choices=DROP_CHOICES, blank=True, null=True)
     drop_quantity = models.IntegerField(blank=True, null=True)
-    drop_monster = models.ForeignKey('MonsterDrop', blank=True, null=True)
-    drop_rune = models.ForeignKey('RuneDrop', blank=True, null=True)
+    drop_monster = models.ForeignKey('MonsterDrop', on_delete=models.CASCADE, blank=True, null=True)
+    drop_rune = models.ForeignKey('RuneDrop', on_delete=models.CASCADE, blank=True, null=True)
 
     @staticmethod
     def get_drop_type_string(drop):
@@ -917,7 +917,7 @@ class RuneCraftDrop(models.Model):
 
 
 class MonsterDrop(models.Model):
-    monster = models.ForeignKey(Monster)
+    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
     grade = models.IntegerField()
     level = models.IntegerField()
 
@@ -1183,19 +1183,19 @@ class ItemDrop(models.Model):
 
 # Rift dungeons
 class RiftDungeonItemDrop(ItemDrop):
-    log = models.ForeignKey('RiftDungeonLog', related_name='item_drops')
+    log = models.ForeignKey('RiftDungeonLog', on_delete=models.CASCADE, related_name='item_drops')
 
 
 class RiftDungeonMonsterDrop(MonsterDrop):
-    log = models.ForeignKey('RiftDungeonLog', related_name='monster_drops')
+    log = models.ForeignKey('RiftDungeonLog', on_delete=models.CASCADE, related_name='monster_drops')
 
 
 class RiftDungeonRuneDrop(RuneDrop):
-    log = models.ForeignKey('RiftDungeonLog', related_name='rune_drops')
+    log = models.ForeignKey('RiftDungeonLog', on_delete=models.CASCADE, related_name='rune_drops')
 
 
 class RiftDungeonRuneCraftDrop(RuneCraftDrop):
-    log = models.ForeignKey('RiftDungeonLog', related_name='rune_craft_drops')
+    log = models.ForeignKey('RiftDungeonLog', on_delete=models.CASCADE, related_name='rune_craft_drops')
 
 
 class RiftDungeonLog(LogEntry):
@@ -1271,7 +1271,7 @@ class RiftDungeonLog(LogEntry):
 
 # Rune Crafting
 class RuneCraft(RuneDrop):
-    log = models.ForeignKey('RuneCraftLog', related_name='rune')
+    log = models.ForeignKey('RuneCraftLog', on_delete=models.CASCADE, related_name='rune')
 
 
 class RuneCraftLog(LogEntry):
@@ -1290,15 +1290,15 @@ class RuneCraftLog(LogEntry):
 
 # Magic Box Crafting
 class MagicBoxRuneDrop(RuneDrop):
-    log = models.ForeignKey('MagicBoxCraft')
+    log = models.ForeignKey('MagicBoxCraft', on_delete=models.CASCADE)
 
 
 class MagicBoxItemDrop(ItemDrop):
-    log = models.ForeignKey('MagicBoxCraft')
+    log = models.ForeignKey('MagicBoxCraft', on_delete=models.CASCADE)
 
 
 class MagicBoxRuneCraftDrop(RuneCraftDrop):
-    log = models.ForeignKey('MagicBoxCraft')
+    log = models.ForeignKey('MagicBoxCraft', on_delete=models.CASCADE)
 
 
 class MagicBoxCraft(LogEntry):
@@ -1315,17 +1315,17 @@ class MagicBoxCraft(LogEntry):
 
 # Shop Refreshing
 class ShopRefreshRune(RuneDrop):
-    log = models.ForeignKey('ShopRefreshLog', related_name='rune_drops')
+    log = models.ForeignKey('ShopRefreshLog', on_delete=models.CASCADE, related_name='rune_drops')
     cost = models.IntegerField()
 
 
 class ShopRefreshItem(ItemDrop):
-    log = models.ForeignKey('ShopRefreshLog', related_name='item_drops')
+    log = models.ForeignKey('ShopRefreshLog', on_delete=models.CASCADE, related_name='item_drops')
     cost = models.IntegerField()
 
 
 class ShopRefreshMonster(MonsterDrop):
-    log = models.ForeignKey('ShopRefreshLog', related_name='monster_drops')
+    log = models.ForeignKey('ShopRefreshLog', on_delete=models.CASCADE, related_name='monster_drops')
     cost = models.IntegerField()
 
 
@@ -1335,15 +1335,15 @@ class ShopRefreshLog(LogEntry):
 
 # World Boss
 class WorldBossMonsterDrop(MonsterDrop):
-    log = models.ForeignKey('WorldBossLog', related_name='monster_drops')
+    log = models.ForeignKey('WorldBossLog', on_delete=models.CASCADE, related_name='monster_drops')
 
 
 class WorldBossItemDrop(ItemDrop):
-    log = models.ForeignKey('WorldBossLog', related_name='item_drops')
+    log = models.ForeignKey('WorldBossLog', on_delete=models.CASCADE, related_name='item_drops')
 
 
 class WorldBossRuneDrop(RuneDrop):
-    log = models.ForeignKey('WorldBossLog', related_name='rune_drops')
+    log = models.ForeignKey('WorldBossLog', on_delete=models.CASCADE, related_name='rune_drops')
 
 
 class WorldBossLog(LogEntry):
@@ -1386,19 +1386,19 @@ class WorldBossLog(LogEntry):
 
 # Rift of Worlds
 class RiftRaidItemDrop(ItemDrop):
-    log = models.ForeignKey('RiftRaidLog')
+    log = models.ForeignKey('RiftRaidLog', on_delete=models.CASCADE)
     wizard_id = models.BigIntegerField()
     battle_key = models.BigIntegerField(db_index=True)
 
 
 class RiftRaidMonsterDrop(MonsterDrop):
-    log = models.ForeignKey('RiftRaidLog')
+    log = models.ForeignKey('RiftRaidLog', on_delete=models.CASCADE)
     wizard_id = models.BigIntegerField()
     battle_key = models.BigIntegerField(db_index=True)
 
 
 class RiftRaidRuneCraftDrop(RuneCraftDrop):
-    log = models.ForeignKey('RiftRaidLog')
+    log = models.ForeignKey('RiftRaidLog', on_delete=models.CASCADE)
     wizard_id = models.BigIntegerField()
     battle_key = models.BigIntegerField(db_index=True)
 
@@ -1428,15 +1428,15 @@ class RiftRaidLog(LogEntry):
 
 # Wishes
 class WishItemDrop(ItemDrop):
-    log = models.ForeignKey('WishLog')
+    log = models.ForeignKey('WishLog', on_delete=models.CASCADE)
 
 
 class WishMonsterDrop(MonsterDrop):
-    log = models.ForeignKey('WishLog')
+    log = models.ForeignKey('WishLog', on_delete=models.CASCADE)
 
 
 class WishRuneDrop(RuneDrop):
-    log = models.ForeignKey('WishLog')
+    log = models.ForeignKey('WishLog', on_delete=models.CASCADE)
 
 
 class WishLog(LogEntry):

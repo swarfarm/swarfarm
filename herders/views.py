@@ -2,7 +2,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 from django.core.mail import mail_admins
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout

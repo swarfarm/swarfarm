@@ -22,7 +22,7 @@ django-celery-results
 django-celery-beat
 django_compressor
 django-cors-headers
-django-crispy-forms==1.6.1
+django-crispy-forms==1.7.2
 django-environ
 django-filter==1.0.4
 django-markdown-deux
@@ -30,7 +30,6 @@ django-pivot
 django-recaptcha
 django-redis-cache==1.6.4
 Django-Select2
-django-suit
 django-timezone-field==2.0.0
 djangorestframework==3.7.7
 djangorestframework-jwt

@@ -39,7 +39,7 @@ urlpatterns = [
     url(r'^', include('news.urls', namespace='news')),
 
     # Django auth/admin stuff
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^login/$', auth_views.login, {'authentication_form': CrispyAuthenticationForm}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': 'news:latest_news'}, name='logout'),
     url(r'^password_change/$', auth_views.password_change,

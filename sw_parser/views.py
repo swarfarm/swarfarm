@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.files.uploadhandler import TemporaryFileUploadHandler
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Count, Min, Max, Avg, Sum, Value, F, ExpressionWrapper, DurationField
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, Http404

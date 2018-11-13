@@ -2,6 +2,8 @@ from django.conf.urls import url, include
 
 from . import views
 
+app_name = 'herders'
+
 urlpatterns = [
     # User management stuff
     url(r'^register/$', views.register, name='register'),  # Register new user

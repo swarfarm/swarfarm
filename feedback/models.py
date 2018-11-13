@@ -1,12 +1,12 @@
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 
 class Issue(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     submitted = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True, blank=True, null=True)
     subject = models.CharField(max_length=40)
@@ -46,8 +46,8 @@ class Issue(models.Model):
 
 
 class Discussion(models.Model):
-    feedback = models.ForeignKey(Issue)
-    user = models.ForeignKey(User)
+    feedback = models.ForeignKey(Issue, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True, blank=True, null=True)
     comment = models.TextField(help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))

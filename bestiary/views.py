@@ -26,7 +26,7 @@ def bestiary(request):
     }
     context.update(_bestiary_inventory(request))
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         context['profile_name'] = request.user.username
 
     return render(request, 'bestiary/base.html', context)
@@ -113,7 +113,7 @@ def bestiary_detail(request, monster_slug):
         'active_slug': monster_slug,
     }
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         context['profile_name'] = request.user.username
 
     if monster.is_awakened and monster.awakens_from is not None:

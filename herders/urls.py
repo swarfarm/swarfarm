@@ -20,8 +20,8 @@ urlpatterns = [
         url(r'^buildings/$', views.buildings, name='profile_buildings'),
         url(r'^monster/', include([
             url(r'^inventory/$', views.monster_inventory, name='monster_inventory'),
-            url(r'^inventory/(?i)(?P<view_mode>(list|box|pieces))/$', views.monster_inventory, name='monster_inventory_view_mode'),
-            url(r'^inventory/(?i)(?P<view_mode>(list|box|pieces))/(?i)(?P<box_grouping>[a-zA-Z_]+)/$', views.monster_inventory, name='monster_inventory_view_mode_sorted'),
+            url(r'^inventory/(?P<view_mode>(list|box|pieces))/$', views.monster_inventory, name='monster_inventory_view_mode'),
+            url(r'^inventory/(?P<view_mode>(list|box|pieces))/(?P<box_grouping>[a-zA-Z_]+)/$', views.monster_inventory, name='monster_inventory_view_mode_sorted'),
             url(r'^add/$', views.monster_instance_add, name='monster_instance_add'),
             url(r'^quick_add/(?P<monster_id>[0-9]+)/(?P<stars>[0-9])/(?P<level>[0-9]+)/$', views.monster_instance_quick_add, name='monster_instance_quick_add'),
             url(r'^quick_fodder/$', views.quick_fodder_menu, name='quick_fodder_menu'),
@@ -73,7 +73,7 @@ urlpatterns = [
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<rune_id>[0-9a-f]{32})/$', views.rune_assign_choice, name='rune_assign_choice'),
             url(r'^inventory/$', views.rune_inventory, name='rune_inventory'),
             url(r'^inventory/(?P<view_mode>(list|box|grid|crafts))/$', views.rune_inventory, name='rune_inventory_view_mode'),
-            url(r'^inventory/(?i)(?P<view_mode>(list|box|grid))/(?i)(?P<box_grouping>[a-zA-Z]+)/$', views.rune_inventory, name='rune_inventory_view_mode_sorted'),
+            url(r'^inventory/(?P<view_mode>(list|box|grid))/(?P<box_grouping>[a-zA-Z]+)/$', views.rune_inventory, name='rune_inventory_view_mode_sorted'),
             url(r'^craft/', include([
                 url(r'^add/$', views.rune_craft_add, name='rune_craft_add'),
                 url(r'^edit/(?P<craft_id>[0-9a-f]{32})/$', views.rune_craft_edit, name='rune_craft_edit'),

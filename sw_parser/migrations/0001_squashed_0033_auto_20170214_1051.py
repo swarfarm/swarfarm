@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('grade', models.IntegerField()),
                 ('level', models.IntegerField()),
-                ('monster', models.ForeignKey(to='herders.Monster')),
+                ('monster', models.ForeignKey(to='herders.Monster', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                 ('wizard_id', models.BigIntegerField()),
                 ('timestamp', models.DateTimeField(null=True, blank=True)),
                 ('server', models.IntegerField(blank=True, null=True, choices=[(0, b'Global'), (1, b'Europe'), (2, b'Asia'), (3, b'Korea'), (4, b'Japan'), (5, b'China')])),
-                ('dungeon', models.ForeignKey(to='sw_parser.Dungeon')),
+                ('dungeon', models.ForeignKey(to='sw_parser.Dungeon', on_delete=models.CASCADE)),
                 ('stage', models.IntegerField(help_text=b'Floor for Caiross or stage for scenarios', choices=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)])),
                 ('difficulty', models.IntegerField(blank=True, help_text=b'For scenarios only', null=True, choices=[(0, b'Normal'), (1, b'Hard'), (2, b'Hell')])),
                 ('success', models.NullBooleanField()),
@@ -67,9 +67,9 @@ class Migration(migrations.Migration):
                 ('crystal', models.IntegerField(null=True, blank=True)),
                 ('drop_type', models.IntegerField(blank=True, null=True, choices=[(0, b'Unknown Scroll'), (1, b'Social Summon'), (2, b'Mystical Scroll'), (3, b'Mystical Summon (Crystals)'), (4, b'Fire Scroll'), (5, b'Water Scroll'), (6, b'Wind Scroll'), (7, b'Scroll of Light and Dark'), (8, b'Legendary Scroll'), (9, b'Exclusive Summon (Stones)'), (10, b'Light and Dark Pieces'), (11, b'Legendary Pieces'), (12, b'Transcendance Scroll'), (100, b'Monster'), (101, b'Rune'), (102, b'Shapeshifting Stone'), (103, b'Power Stone'), (104, b'Summoning Pieces'), (105, b'Secret Dungeon'), (110, b'Low Magic Essence'), (111, b'Mid Magic Essence'), (112, b'High Magic Essence'), (113, b'Low Fire Essence'), (114, b'Mid Fire Essence'), (115, b'High Fire Essence'), (116, b'Low Water Essence'), (117, b'Mid Water Essence'), (118, b'High Water Essence'), (119, b'Low Wind Essence'), (120, b'Mid Wind Essence'), (121, b'High Wind Essence'), (122, b'Low Light Essence'), (123, b'Mid Light Essence'), (124, b'High Light Essence'), (125, b'Low Dark Essence'), (126, b'Mid Dark Essence'), (127, b'High Dark Essence'), (128, b'Hard Wood'), (129, b'Tough Leather'), (130, b'Solid Rock'), (131, b'Solid Iron Ore'), (132, b'Shining Mithril'), (133, b'Thick Cloth'), (134, b'Rune Piece'), (135, b'Magic Dust'), (136, b'Symbol of Harmony'), (137, b'Symbol of Transcendance'), (138, b'Symbol of Chaos'), (139, b'Frozen Water Crystal'), (140, b'Flaming Fire Crystal'), (141, b'Whirling Wind Crystal'), (142, b'Shiny Light Crystal'), (143, b'Pitch-black Dark Crystal'), (144, b'Condensed Magic Crystal'), (145, b'Pure Magic Crystal'), (154, b'Event Item')])),
                 ('drop_quantity', models.IntegerField(null=True, blank=True)),
-                ('drop_monster', models.ForeignKey(blank=True, to='sw_parser.MonsterDrop', null=True)),
-                ('drop_rune', models.ForeignKey(blank=True, to='sw_parser.RuneDrop', null=True)),
-                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True)),
+                ('drop_monster', models.ForeignKey(blank=True, on_delete=models.SET_NULL, to='sw_parser.MonsterDrop', null=True)),
+                ('drop_rune', models.ForeignKey(blank=True, on_delete=models.SET_NULL, to='sw_parser.RuneDrop', null=True)),
+                ('summoner', models.ForeignKey(blank=True, on_delete=models.SET_NULL, to='herders.Summoner', null=True)),
                 ('energy', models.IntegerField(null=True, blank=True)),
                 ('battle_key', models.BigIntegerField(db_index=True, null=True, blank=True)),
             ],
@@ -85,8 +85,8 @@ class Migration(migrations.Migration):
                 ('timestamp', models.DateTimeField(null=True, blank=True)),
                 ('server', models.IntegerField(blank=True, null=True, choices=[(0, b'Global'), (1, b'Europe'), (2, b'Asia'), (3, b'Korea'), (4, b'Japan'), (5, b'China')])),
                 ('summon_method', models.IntegerField(choices=[(0, b'Unknown Scroll'), (1, b'Social Summon'), (2, b'Mystical Scroll'), (3, b'Mystical Summon (Crystals)'), (4, b'Fire Scroll'), (5, b'Water Scroll'), (6, b'Wind Scroll'), (7, b'Scroll of Light and Dark'), (8, b'Legendary Scroll'), (9, b'Exclusive Summon (Stones)'), (10, b'Light and Dark Pieces'), (11, b'Legendary Pieces'), (12, b'Transcendance Scroll')])),
-                ('monster', models.ForeignKey(to='sw_parser.MonsterDrop')),
-                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True)),
+                ('monster', models.ForeignKey(to='sw_parser.MonsterDrop', on_delete=models.CASCADE)),
+                ('summoner', models.ForeignKey(blank=True, on_delete=models.SET_NULL, to='herders.Summoner', null=True)),
             ],
             options={
                 'abstract': False,
@@ -153,7 +153,7 @@ class Migration(migrations.Migration):
                 ('total_damage', models.IntegerField()),
                 ('success', models.BooleanField()),
                 ('mana', models.IntegerField(default=0)),
-                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True)),
+                ('summoner', models.ForeignKey(blank=True, on_delete=models.SET_NULL, to='herders.Summoner', null=True)),
             ],
             options={
                 'abstract': False,
@@ -162,8 +162,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RiftDungeonMonsterDrop',
             fields=[
-                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop')),
-                ('log', models.ForeignKey(related_name='monster_drops', to='sw_parser.RiftDungeonLog')),
+                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop', on_delete=models.CASCADE)),
+                ('log', models.ForeignKey(related_name='monster_drops', to='sw_parser.RiftDungeonLog', on_delete=models.CASCADE)),
             ],
             bases=('sw_parser.monsterdrop',),
         ),
@@ -175,12 +175,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='riftdungeonitemdrop',
             name='log',
-            field=models.ForeignKey(related_name='item_drops', to='sw_parser.RiftDungeonLog'),
+            field=models.ForeignKey(related_name='item_drops', to='sw_parser.RiftDungeonLog', on_delete=models.CASCADE),
         ),
         migrations.CreateModel(
             name='RuneCraft',
             fields=[
-                ('runedrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.RuneDrop')),
+                ('runedrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.RuneDrop', on_delete=models.CASCADE)),
             ],
             bases=('sw_parser.runedrop',),
         ),
@@ -192,7 +192,7 @@ class Migration(migrations.Migration):
                 ('timestamp', models.DateTimeField(null=True, blank=True)),
                 ('server', models.IntegerField(blank=True, null=True, choices=[(0, b'Global'), (1, b'Europe'), (2, b'Asia'), (3, b'Korea'), (4, b'Japan'), (5, b'China')])),
                 ('craft_level', models.IntegerField(choices=[(0, b'Low'), (1, b'Mid'), (2, b'High')])),
-                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True)),
+                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True, on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
@@ -201,7 +201,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='runecraft',
             name='log',
-            field=models.ForeignKey(related_name='rune', to='sw_parser.RuneCraftLog'),
+            field=models.ForeignKey(related_name='rune', to='sw_parser.RuneCraftLog', on_delete=models.CASCADE),
         ),
         migrations.CreateModel(
             name='ShopRefreshItem',
@@ -222,7 +222,7 @@ class Migration(migrations.Migration):
                 ('wizard_id', models.BigIntegerField()),
                 ('timestamp', models.DateTimeField(null=True, blank=True)),
                 ('server', models.IntegerField(blank=True, null=True, choices=[(0, b'Global'), (1, b'Europe'), (2, b'Asia'), (3, b'Korea'), (4, b'Japan'), (5, b'China')])),
-                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True)),
+                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True, on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
@@ -231,18 +231,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ShopRefreshMonster',
             fields=[
-                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop')),
+                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop', on_delete=models.CASCADE)),
                 ('cost', models.IntegerField()),
-                ('log', models.ForeignKey(related_name='monster_drops', to='sw_parser.ShopRefreshLog')),
+                ('log', models.ForeignKey(related_name='monster_drops', to='sw_parser.ShopRefreshLog', on_delete=models.CASCADE)),
             ],
             bases=('sw_parser.monsterdrop',),
         ),
         migrations.CreateModel(
             name='ShopRefreshRune',
             fields=[
-                ('runedrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.RuneDrop')),
+                ('runedrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.RuneDrop', on_delete=models.CASCADE)),
                 ('cost', models.IntegerField()),
-                ('log', models.ForeignKey(related_name='rune_drops', to='sw_parser.ShopRefreshLog')),
+                ('log', models.ForeignKey(related_name='rune_drops', to='sw_parser.ShopRefreshLog', on_delete=models.CASCADE)),
             ],
             bases=('sw_parser.runedrop',),
         ),
@@ -254,7 +254,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='shoprefreshitem',
             name='log',
-            field=models.ForeignKey(related_name='item_drops', to='sw_parser.ShopRefreshLog'),
+            field=models.ForeignKey(related_name='item_drops', to='sw_parser.ShopRefreshLog', on_delete=models.CASCADE),
         ),
         migrations.CreateModel(
             name='WorldBossItemDrop',
@@ -281,7 +281,7 @@ class Migration(migrations.Migration):
                 ('bonus_battle_points', models.IntegerField()),
                 ('avg_monster_level', models.FloatField()),
                 ('monster_count', models.IntegerField()),
-                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True)),
+                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True, on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
@@ -290,16 +290,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WorldBossMonsterDrop',
             fields=[
-                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop')),
-                ('log', models.ForeignKey(related_name='monster_drops', to='sw_parser.WorldBossLog')),
+                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop', on_delete=models.CASCADE)),
+                ('log', models.ForeignKey(related_name='monster_drops', to='sw_parser.WorldBossLog', on_delete=models.CASCADE)),
             ],
             bases=('sw_parser.monsterdrop',),
         ),
         migrations.CreateModel(
             name='WorldBossRuneDrop',
             fields=[
-                ('runedrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.RuneDrop')),
-                ('log', models.ForeignKey(related_name='rune_drops', to='sw_parser.WorldBossLog')),
+                ('runedrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.RuneDrop', on_delete=models.CASCADE)),
+                ('log', models.ForeignKey(related_name='rune_drops', to='sw_parser.WorldBossLog', on_delete=models.CASCADE)),
             ],
             bases=('sw_parser.runedrop',),
         ),
@@ -316,7 +316,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='worldbossitemdrop',
             name='log',
-            field=models.ForeignKey(related_name='item_drops', to='sw_parser.WorldBossLog'),
+            field=models.ForeignKey(related_name='item_drops', to='sw_parser.WorldBossLog', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='worldbosslog',
@@ -396,7 +396,7 @@ class Migration(migrations.Migration):
                 ('success', models.NullBooleanField()),
                 ('difficulty', models.IntegerField(choices=[(1, b'R1'), (2, b'R2'), (3, b'R3'), (4, b'R4'), (5, b'R5')])),
                 ('contribution', models.IntegerField(null=True, blank=True)),
-                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True)),
+                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True, on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
@@ -405,10 +405,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RiftRaidMonsterDrop',
             fields=[
-                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop')),
+                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop', on_delete=models.CASCADE)),
                 ('wizard_id', models.BigIntegerField()),
                 ('battle_key', models.BigIntegerField(db_index=True)),
-                ('log', models.ForeignKey(to='sw_parser.RiftRaidLog')),
+                ('log', models.ForeignKey(to='sw_parser.RiftRaidLog', on_delete=models.CASCADE)),
             ],
             bases=('sw_parser.monsterdrop',),
         ),
@@ -423,7 +423,7 @@ class Migration(migrations.Migration):
                 ('value', models.IntegerField(null=True, blank=True)),
                 ('wizard_id', models.BigIntegerField()),
                 ('battle_key', models.BigIntegerField(db_index=True)),
-                ('log', models.ForeignKey(to='sw_parser.RiftRaidLog')),
+                ('log', models.ForeignKey(to='sw_parser.RiftRaidLog', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -432,7 +432,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='riftraiditemdrop',
             name='log',
-            field=models.ForeignKey(to='sw_parser.RiftRaidLog'),
+            field=models.ForeignKey(to='sw_parser.RiftRaidLog', on_delete=models.CASCADE),
         ),
         migrations.CreateModel(
             name='WishItemDrop',
@@ -455,7 +455,7 @@ class Migration(migrations.Migration):
                 ('wish_id', models.IntegerField()),
                 ('wish_sequence', models.IntegerField()),
                 ('crystal_used', models.BooleanField()),
-                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True)),
+                ('summoner', models.ForeignKey(blank=True, to='herders.Summoner', null=True, on_delete=models.SET_NULL)),
             ],
             options={
                 'abstract': False,
@@ -464,16 +464,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WishMonsterDrop',
             fields=[
-                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop')),
-                ('log', models.ForeignKey(to='sw_parser.WishLog')),
+                ('monsterdrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.MonsterDrop', on_delete=models.CASCADE)),
+                ('log', models.ForeignKey(to='sw_parser.WishLog', on_delete=models.CASCADE)),
             ],
             bases=('sw_parser.monsterdrop',),
         ),
         migrations.CreateModel(
             name='WishRuneDrop',
             fields=[
-                ('runedrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.RuneDrop')),
-                ('log', models.ForeignKey(to='sw_parser.WishLog')),
+                ('runedrop_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sw_parser.RuneDrop', on_delete=models.CASCADE)),
+                ('log', models.ForeignKey(to='sw_parser.WishLog', on_delete=models.CASCADE)),
             ],
             bases=('sw_parser.runedrop',),
         ),
@@ -500,7 +500,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='wishitemdrop',
             name='log',
-            field=models.ForeignKey(to='sw_parser.WishLog'),
+            field=models.ForeignKey(to='sw_parser.WishLog', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='riftdungeonitemdrop',

@@ -457,7 +457,7 @@ def view_summon_log(request, summon_slug, mine=False):
     context = None
 
     if mine:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
@@ -534,7 +534,7 @@ def view_scenario_log_summary(request, mine=False):
     cache_key = 'scenario-summary-{}'.format(slugify(date_filter['description']))
 
     if mine:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (reverse('login'), request.path))
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
     else:
@@ -725,7 +725,7 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
     cache_key = 'dungeon-log-{}-{}-{}-{}'.format(dungeon_slug, floor, difficulty, slugify(date_filter['description']))
 
     if mine:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (reverse('login'), request.path))
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
     else:
@@ -1202,7 +1202,7 @@ def view_elemental_rift_log(request, rift_slug, mine=False):
         raise Http404()
 
     if mine:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (reverse('login'), request.path))
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
     else:
@@ -1360,7 +1360,7 @@ def view_rift_raid_log(request, difficulty=5, mine=False):
     cache_key = 'raid-log-{}-{}'.format(difficulty, slugify(date_filter['description']))
 
     if mine:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (reverse('login'), request.path))
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
     else:
@@ -1590,7 +1590,7 @@ def view_rune_craft_log(request, mine=False):
     cache_key = 'rune-craft-log-{}'.format(slugify(date_filter['description']))
 
     if mine:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (reverse('login'), request.path))
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
     else:
@@ -1661,7 +1661,7 @@ def view_magic_shop_log(request, mine=False):
     cache_key = 'magic-shop-{}'.format(slugify(date_filter['description']))
 
     if mine:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (reverse('login'), request.path))
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
     else:
@@ -1823,7 +1823,7 @@ def view_world_boss_log(request, mine=False):
     cache_key = 'world-boss-{}'.format(slugify(date_filter['description']))
 
     if mine:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (reverse('login'), request.path))
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
     else:
@@ -1976,7 +1976,7 @@ def view_wish_log(request, mine=False):
     cache_key = 'wish-{}'.format(slugify(date_filter['description']))
 
     if mine:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (reverse('login'), request.path))
         summoner = get_object_or_404(Summoner, user__username=request.user.username)
     else:

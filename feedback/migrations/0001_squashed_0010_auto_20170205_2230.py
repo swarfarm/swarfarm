@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('subject', models.CharField(max_length=40)),
                 ('description', models.TextField(help_text=b'<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled')),
                 ('public', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('status', 'priority', 'submitted'),
@@ -35,8 +35,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
                 ('comment', models.TextField(help_text=b'<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled')),
-                ('feedback', models.ForeignKey(to='feedback.Issue')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('feedback', models.ForeignKey(to='feedback.Issue', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
                 ('edited', models.DateTimeField(auto_now=True, null=True)),
             ],
             options={

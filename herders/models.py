@@ -943,7 +943,7 @@ class Summoner(models.Model):
     public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
-    preferences = JSONField(default=dict())
+    preferences = JSONField(default=dict)
     last_update = models.DateTimeField(auto_now=True)
 
     def get_rune_counts(self):
@@ -968,6 +968,10 @@ class Summoner(models.Model):
         return self.user.username
 
 
+def _default_storage_data():
+    return [0, 0, 0]
+
+
 class Storage(models.Model):
     ESSENCE_LOW = 0
     ESSENCE_MID = 1
@@ -985,12 +989,12 @@ class Storage(models.Model):
     owner = models.OneToOneField(Summoner, on_delete=models.CASCADE)
 
     # Elemental Essences
-    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Magic Essence")
-    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Fire Essence")
-    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Water Essence")
-    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Wind Essence")
-    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Light Essence")
-    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Dark Essence")
+    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Magic Essence")
+    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Fire Essence")
+    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Water Essence")
+    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Wind Essence")
+    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Light Essence")
+    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Dark Essence")
 
     # Crafting materials
     wood = models.IntegerField(default=0, help_text="Hard Wood")

@@ -38,8 +38,8 @@ class Migration(migrations.Migration):
                 ('awaken_magic_mats_mid', models.IntegerField(null=True, blank=True)),
                 ('awaken_magic_mats_high', models.IntegerField(null=True, blank=True)),
                 ('fusion_food', models.BooleanField(default=False)),
-                ('awakens_from', models.ForeignKey(related_name='+', blank=True, to='herders.Monster', null=True)),
-                ('awakens_to', models.ForeignKey(related_name='+', blank=True, to='herders.Monster', null=True)),
+                ('awakens_from', models.ForeignKey(related_name='+', on_delete=models.SET_NULL, blank=True, to='herders.Monster', null=True)),
+                ('awakens_to', models.ForeignKey(related_name='+', on_delete=models.SET_NULL, blank=True, to='herders.Monster', null=True)),
             ],
             options={
                 'ordering': ['name', 'element'],
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('in_storage', models.BooleanField(default=False)),
                 ('priority', models.IntegerField(default=2, choices=[(0, b'Done'), (1, b'Low'), (2, b'Medium'), (3, b'High')])),
                 ('notes', models.TextField(null=True, blank=True)),
-                ('monster', models.ForeignKey(to='herders.Monster')),
+                ('monster', models.ForeignKey(to='herders.Monster', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['-stars', '-level', '-priority', 'monster__name'],
@@ -119,7 +119,7 @@ class Migration(migrations.Migration):
                 ('public', models.BooleanField(default=False)),
                 ('timezone', timezone_field.fields.TimeZoneField(default='America/Los_Angeles')),
                 ('notes', models.TextField(null=True, blank=True)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -136,13 +136,13 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, serialize=False, editable=False, primary_key=True)),
                 ('name', models.CharField(max_length=30)),
-                ('owner', models.ForeignKey(to='herders.Summoner')),
+                ('owner', models.ForeignKey(to='herders.Summoner', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='team',
             name='group',
-            field=models.ForeignKey(to='herders.TeamGroup'),
+            field=models.ForeignKey(to='herders.TeamGroup', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='team',
@@ -152,12 +152,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='runeinstance',
             name='owner',
-            field=models.ForeignKey(to='herders.Summoner'),
+            field=models.ForeignKey(to='herders.Summoner', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='monsterinstance',
             name='owner',
-            field=models.ForeignKey(to='herders.Summoner'),
+            field=models.ForeignKey(to='herders.Summoner', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='monster',
@@ -172,12 +172,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='fusion',
             name='product',
-            field=models.ForeignKey(related_name='product', to='herders.Monster'),
+            field=models.ForeignKey(related_name='product', to='herders.Monster', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='team',
             name='leader',
-            field=models.ForeignKey(related_name='team_leader', blank=True, to='herders.MonsterInstance', null=True),
+            field=models.ForeignKey(related_name='team_leader', on_delete=models.SET_NULL, blank=True, to='herders.MonsterInstance', null=True),
         ),
         migrations.AlterModelOptions(
             name='team',
@@ -257,7 +257,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='monster',
             name='leader_skill',
-            field=models.ForeignKey(blank=True, to='herders.MonsterLeaderSkill', null=True),
+            field=models.ForeignKey(blank=True, to='herders.MonsterLeaderSkill', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterModelOptions(
             name='monsterleaderskill',
@@ -380,7 +380,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='runeinstance',
             name='assigned_to',
-            field=models.ForeignKey(blank=True, to='herders.MonsterInstance', null=True),
+            field=models.ForeignKey(blank=True, to='herders.MonsterInstance', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='runeinstance',
@@ -569,7 +569,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='monster',
             name='awaken_bonus_content_type',
-            field=models.ForeignKey(related_name='content_type_awaken_bonus', blank=True, to='contenttypes.ContentType', null=True),
+            field=models.ForeignKey(related_name='content_type_awaken_bonus', on_delete=models.SET_NULL, blank=True, to='contenttypes.ContentType', null=True),
         ),
         migrations.RenameField(
             model_name='monster',
@@ -748,8 +748,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, serialize=False, editable=False, primary_key=True)),
                 ('pieces', models.IntegerField(default=0)),
-                ('monster', models.ForeignKey(to='herders.Monster')),
-                ('owner', models.ForeignKey(to='herders.Summoner')),
+                ('monster', models.ForeignKey(to='herders.Monster', on_delete=models.CASCADE)),
+                ('owner', models.ForeignKey(to='herders.Summoner', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['monster__name'],
@@ -769,8 +769,8 @@ class Migration(migrations.Migration):
                 ('self_effect', models.BooleanField(default=False, help_text=b'Effect applies to the monster using the skill')),
                 ('quantity', models.IntegerField(help_text=b'Number of items this effect affects on the target', null=True, blank=True)),
                 ('all', models.BooleanField(default=False, help_text=b'This effect affects all items on the target')),
-                ('effect', models.ForeignKey(to='herders.MonsterSkillEffect')),
-                ('skill', models.ForeignKey(to='herders.MonsterSkill')),
+                ('effect', models.ForeignKey(to='herders.MonsterSkillEffect', on_delete=models.CASCADE)),
+                ('skill', models.ForeignKey(to='herders.MonsterSkill', on_delete=models.CASCADE)),
                 ('random', models.BooleanField(default=False, help_text=b'Skill effect applies randomly to the target')),
                 ('chance', models.IntegerField(help_text=b'Chance of effect occuring per hit', null=True, blank=True)),
                 ('on_crit', models.BooleanField(default=False)),
@@ -852,7 +852,7 @@ class Migration(migrations.Migration):
                 ('stat', models.IntegerField(choices=[(1, b'HP'), (2, b'HP %'), (3, b'ATK'), (4, b'ATK %'), (5, b'DEF'), (6, b'DEF %'), (7, b'SPD'), (8, b'CRI Rate %'), (9, b'CRI Dmg %'), (10, b'Resistance %'), (11, b'Accuracy %')])),
                 ('quality', models.IntegerField(choices=[(0, b'Normal'), (1, b'Magic'), (2, b'Rare'), (3, b'Hero'), (4, b'Legend')])),
                 ('value', models.IntegerField(null=True, blank=True)),
-                ('owner', models.ForeignKey(to='herders.Summoner')),
+                ('owner', models.ForeignKey(to='herders.Summoner', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
@@ -909,8 +909,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, serialize=False, editable=False, primary_key=True)),
                 ('level', models.IntegerField()),
-                ('owner', models.ForeignKey(to='herders.Summoner')),
-                ('building', models.ForeignKey(to='herders.Building')),
+                ('owner', models.ForeignKey(to='herders.Summoner', on_delete=models.CASCADE)),
+                ('building', models.ForeignKey(to='herders.Building', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
@@ -1010,7 +1010,7 @@ class Migration(migrations.Migration):
                 ('crystal_dark', models.IntegerField(default=0, help_text=b'Pitch-black Dark Crystal')),
                 ('crystal_magic', models.IntegerField(default=0, help_text=b'Condensed Magic Crystal')),
                 ('crystal_pure', models.IntegerField(default=0, help_text=b'Pure Magic Crystal')),
-                ('owner', models.OneToOneField(to='herders.Summoner')),
+                ('owner', models.OneToOneField(to='herders.Summoner', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1077,14 +1077,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='homunculusskill',
             name='skill',
-            field=models.ForeignKey(to='herders.MonsterSkill'),
+            field=models.ForeignKey(to='herders.MonsterSkill', on_delete=models.CASCADE),
         ),
         migrations.CreateModel(
             name='HomunculusSkillCraftCost',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField()),
-                ('craft', models.ForeignKey(to='herders.CraftMaterial')),
+                ('craft', models.ForeignKey(to='herders.CraftMaterial', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -1092,8 +1092,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField()),
-                ('craft', models.ForeignKey(to='herders.CraftMaterial')),
-                ('monster', models.ForeignKey(to='herders.Monster')),
+                ('craft', models.ForeignKey(to='herders.CraftMaterial', on_delete=models.CASCADE)),
+                ('monster', models.ForeignKey(to='herders.Monster', on_delete=models.CASCADE)),
             ],
         ),
         migrations.DeleteModel(
@@ -1102,7 +1102,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='homunculusskillcraftcost',
             name='skill',
-            field=models.ForeignKey(to='herders.HomunculusSkill'),
+            field=models.ForeignKey(to='herders.HomunculusSkill', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='homunculusskill',

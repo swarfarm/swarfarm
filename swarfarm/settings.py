@@ -8,6 +8,7 @@ os.environ['LANG'] = 'en_US.UTF-8'
 env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, []),
+    SITE_ID=(int, 1),
     COMPRESS_ENABLED=(bool, False),
     EMAIL_HOST=(str, ''),
     EMAIL_PORT=(int, 587),
@@ -22,7 +23,7 @@ env = environ.Env(
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SITE_ID = 1
+SITE_ID = env('SITE_ID')
 SECRET_KEY = env('SECRET_KEY')
 SUMMONERS_WAR_SECRET_KEY = env('SUMMONERS_WAR_SECRET_KEY')
 DEBUG = env('DEBUG')
@@ -59,7 +60,10 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
@@ -85,9 +89,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django_filters',
     'dal',
     'dal_select2',
-    'django_filters',
     'captcha',
     'compressor',
     'corsheaders',
@@ -145,8 +149,7 @@ if env('BUGSNAG_API_KEY'):
 # URL stuff
 ROOT_URLCONF = 'swarfarm.urls'
 LOGIN_REDIRECT_URL = 'news:latest_news'
-LOGIN_URL = 'login'
-LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'news:latest_news'
 
 TEMPLATES = [
     {

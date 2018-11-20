@@ -39,7 +39,7 @@ _named_timestamps = {
         }
     },
     'all-time': {
-        'description': 'All Time',
+        'description': 'Last 6 Months',
         'filters': {
             'timestamp__gte': '2000-01-01',
         }

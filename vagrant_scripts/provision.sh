@@ -48,9 +48,9 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 # Install python + init virtualenv
-pyenv install 3.6.1
-pyenv virtualenv 3.6.1 swarfarm-3.6.1
-pyenv activate swarfarm-3.6.1
+pyenv install 3.6.7
+pyenv virtualenv 3.6.7 swarfarm-3.6.7
+pyenv activate swarfarm-3.6.7
 
 echo "Setting up python environment..."
 pip install -qq -r /vagrant/requirements_dev.txt

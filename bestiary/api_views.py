@@ -10,14 +10,13 @@ from bestiary.serializers import *
 
 # Django REST framework views
 class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = Monster.objects.all().select_related('leader_skill').prefetch_related(
+    queryset = Monster.objects.all().select_related('leader_skill', 'monsterguide').prefetch_related(
         'skills',
         'skills__effect',
         'homunculusskill_set',
         'source',
         'monstercraftcost_set',
         'monstercraftcost_set__craft',
-        'monsterguide_set',
     ).order_by('pk')
     serializer_class = MonsterSerializer
     pagination_class = BestiarySetPagination

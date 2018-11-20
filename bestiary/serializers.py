@@ -146,7 +146,7 @@ class MonsterSerializer(serializers.ModelSerializer):
     homunculus_skills = serializers.PrimaryKeyRelatedField(source='homunculusskill_set', read_only=True, many=True)
     craft_materials = MonsterCraftCostSerializer(many=True, source='monstercraftcost_set', read_only=True)
     resources = serializers.SerializerMethodField()
-    guides = MonsterGuideSerializer(source='monsterguide', read_only=True)
+    guide = MonsterGuideSerializer(source='monsterguide', read_only=True)
 
     class Meta:
         model = Monster
@@ -163,7 +163,7 @@ class MonsterSerializer(serializers.ModelSerializer):
             'awaken_mats_light_low', 'awaken_mats_light_mid', 'awaken_mats_light_high',
             'awaken_mats_dark_low', 'awaken_mats_dark_mid', 'awaken_mats_dark_high',
             'awaken_mats_magic_low', 'awaken_mats_magic_mid', 'awaken_mats_magic_high',
-            'source', 'fusion_food', 'resources', 'guides',
+            'source', 'fusion_food', 'resources', 'guide',
             'homunculus', 'craft_cost', 'craft_materials',
         )
 

@@ -1,5 +1,6 @@
+from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.contrib.postgres.fields import JSONField, ArrayField
 from django.utils.text import slugify
 
 
@@ -77,3 +78,20 @@ class Level(models.Model):
 
     def __str__(self):
         return f'{self.dungeon_id} {self.floor} - {self.get_difficulty_display()}'
+
+
+class GuideBase(models.Model):
+    short_text = models.TextField(blank=True, default='')
+    long_text = models.TextField(blank=True, default='')
+    last_updated = models.DateTimeField(auto_now=True)
+    edited_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, editable=False)
+
+    class Meta:
+        abstract = True
+
+
+class MonsterGuide(GuideBase):
+    monster = models.ForeignKey('herders.Monster', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Monster Guide - {self.monster}'

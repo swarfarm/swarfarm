@@ -3,9 +3,9 @@ from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
-from bestiary.serializers import *
-from bestiary.pagination import *
 from bestiary.api_filters import MonsterFilter, SkillFilter
+from bestiary.pagination import *
+from bestiary.serializers import *
 
 
 # Django REST framework views
@@ -17,6 +17,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'source',
         'monstercraftcost_set',
         'monstercraftcost_set__craft',
+        'monsterguide_set',
     ).order_by('pk')
     serializer_class = MonsterSerializer
     pagination_class = BestiarySetPagination

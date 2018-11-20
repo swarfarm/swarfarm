@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from bestiary.models import MonsterGuide
 from herders.models import CraftMaterial, MonsterSource as Source, MonsterSkillEffect as Effect, \
     MonsterSkillEffectDetail as EffectDetail, MonsterSkill as Skill, MonsterLeaderSkill as LeaderSkill, \
     HomunculusSkill, HomunculusSkillCraftCost, MonsterCraftCost, Monster, Fusion, Building
@@ -130,6 +131,12 @@ class MonsterCraftCostSerializer(serializers.ModelSerializer):
         fields = ['material', 'quantity']
 
 
+class MonsterGuideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MonsterGuide
+        fields = ['id', 'short_text', 'long_text', 'last_updated']
+
+
 class MonsterSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='bestiary/monsters-detail')
     element = serializers.SerializerMethodField()
@@ -139,6 +146,7 @@ class MonsterSerializer(serializers.ModelSerializer):
     homunculus_skills = serializers.PrimaryKeyRelatedField(source='homunculusskill_set', read_only=True, many=True)
     craft_materials = MonsterCraftCostSerializer(many=True, source='monstercraftcost_set', read_only=True)
     resources = serializers.SerializerMethodField()
+    guides = MonsterGuideSerializer(source='monsterguide_set', read_only=True, many=True)
 
     class Meta:
         model = Monster
@@ -155,7 +163,7 @@ class MonsterSerializer(serializers.ModelSerializer):
             'awaken_mats_light_low', 'awaken_mats_light_mid', 'awaken_mats_light_high',
             'awaken_mats_dark_low', 'awaken_mats_dark_mid', 'awaken_mats_dark_high',
             'awaken_mats_magic_low', 'awaken_mats_magic_mid', 'awaken_mats_magic_high',
-            'source', 'fusion_food', 'resources',
+            'source', 'fusion_food', 'resources', 'guides',
             'homunculus', 'craft_cost', 'craft_materials',
         )
 

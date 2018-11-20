@@ -87,7 +87,7 @@ class ProfileItemMixin(viewsets.GenericViewSet):
         username = self.kwargs.get('user_pk')
 
         if username is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return queryset.none()
 
         queryset = queryset.filter(owner__user__username=username)
 

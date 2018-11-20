@@ -95,3 +95,6 @@ class MonsterGuide(GuideBase):
 
     def __str__(self):
         return f'Monster Guide - {self.monster}'
+
+    class Meta:
+        ordering = ['monster__name']

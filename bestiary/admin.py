@@ -16,6 +16,7 @@ class LevelAdmin(admin.ModelAdmin):
 @admin.register(MonsterGuide)
 class MonsterGuideAdmin(admin.ModelAdmin):
     list_display = ['monster', 'last_updated', 'edited_by']
+    search_fields = ['monster__name']
 
     def save_model(self, request, obj, form, change):
         obj.edited_by = request.user

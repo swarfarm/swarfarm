@@ -13,6 +13,7 @@ class NestedStorageRouter(NestedDefaultRouter):
                 'patch': 'partial_update',
             },
             name='{basename}-detail',
+            detail=True,
             initkwargs={'suffix': 'Instance'}
         ),
     ]

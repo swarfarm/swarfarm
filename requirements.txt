@@ -31,7 +31,7 @@ django-recaptcha
 django-redis-cache==1.6.4
 Django-Select2
 django-timezone-field==2.0.0
-djangorestframework==3.7.7
+djangorestframework==3.9.0
 djangorestframework-jwt
 djangorestframework-jwt-refresh-token==0.2
 drf-extensions

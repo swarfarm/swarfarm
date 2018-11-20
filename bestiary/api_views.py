@@ -69,6 +69,7 @@ class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'max_level',
     )
 
+
 class MonsterLeaderSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = LeaderSkill.objects.all().order_by('pk')
     serializer_class = LeaderSkillSerializer
@@ -95,7 +96,9 @@ class HomunculusSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'skill__monsterskilleffectdetail_set',
         'skill__monsterskilleffectdetail_set__effect',
         'homunculusskillcraftcost_set',
+        'homunculusskillcraftcost_set__craft',
         'prerequisites',
+        'monsters',
     )
     serializer_class = HomunculusSkillSerializer
     pagination_class = BestiarySetPagination

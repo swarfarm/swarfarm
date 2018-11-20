@@ -20,6 +20,7 @@ from .forms import *
 from .filters import *
 from .models import Summoner, Monster, Fusion, Building, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance, Storage
 
+DEFAULT_VIEW_MODE = 'box'
 
 def register(request):
     form = RegisterUserForm(request.POST or None)
@@ -371,7 +372,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     if request.session.modified:
         return HttpResponse("Profile view mode cookie set")
 
-    view_mode = request.session.get('profile_view_mode', 'box').lower()
+    view_mode = request.session.get('profile_view_mode', DEFAULT_VIEW_MODE).lower()
     box_grouping = request.session.get('profile_group_method', 'grade').lower()
 
     try:
@@ -1012,7 +1013,7 @@ def monster_instance_edit(request, profile_name, instance_id):
             mon = form.save()
             messages.success(request, 'Successfully edited ' + str(mon))
 
-            view_mode = request.session.get('profile_view_mode', 'list').lower()
+            view_mode = request.session.get('profile_view_mode', DEFAULT_VIEW_MODE).lower()
 
             if view_mode == 'list':
                 template = loader.get_template('herders/profile/monster_inventory/monster_list_row_snippet.html')
@@ -1256,7 +1257,7 @@ def monster_instance_duplicate(request, profile_name, instance_id):
         newmonster.save()
         messages.success(request, 'Succesfully copied ' + str(newmonster))
 
-        view_mode = request.session.get('profile_view_mode', 'list').lower()
+        view_mode = request.session.get('profile_view_mode', DEFAULT_VIEW_MODE).lower()
 
         if view_mode == 'list':
             template = loader.get_template('herders/profile/monster_inventory/monster_list_row_snippet.html')

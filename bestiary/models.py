@@ -91,7 +91,7 @@ class GuideBase(models.Model):
 
 
 class MonsterGuide(GuideBase):
-    monster = models.ForeignKey('herders.Monster', on_delete=models.CASCADE)
+    monster = models.OneToOneField('herders.Monster', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'Monster Guide - {self.monster}'

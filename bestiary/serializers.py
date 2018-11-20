@@ -146,7 +146,7 @@ class MonsterSerializer(serializers.ModelSerializer):
     homunculus_skills = serializers.PrimaryKeyRelatedField(source='homunculusskill_set', read_only=True, many=True)
     craft_materials = MonsterCraftCostSerializer(many=True, source='monstercraftcost_set', read_only=True)
     resources = serializers.SerializerMethodField()
-    guides = MonsterGuideSerializer(source='monsterguide_set', read_only=True, many=True)
+    guides = MonsterGuideSerializer(source='monsterguide', read_only=True)
 
     class Meta:
         model = Monster

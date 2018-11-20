@@ -2,6 +2,8 @@ from django.conf.urls import url, include
 
 from . import views
 
+app_name = 'feedback'
+
 urlpatterns = [
     # User management stuff
     url(r'^$', views.IssueList.as_view(), {'mode': 'open'}, name='index'),

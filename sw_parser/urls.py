@@ -2,6 +2,8 @@ from django.conf.urls import url, include
 
 from . import views
 
+app_name = 'sw_parser'
+
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^import/', include([

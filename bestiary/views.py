@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
 from django.template import loader, RequestContext
@@ -26,7 +26,7 @@ def bestiary(request):
     }
     context.update(_bestiary_inventory(request))
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         context['profile_name'] = request.user.username
 
     return render(request, 'bestiary/base.html', context)
@@ -113,7 +113,7 @@ def bestiary_detail(request, monster_slug):
         'active_slug': monster_slug,
     }
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         context['profile_name'] = request.user.username
 
     if monster.is_awakened and monster.awakens_from is not None:

@@ -2,7 +2,7 @@ import json
 
 import requests
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.cache import cache_page
 from django_filters import rest_framework as filters

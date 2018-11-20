@@ -73,7 +73,7 @@ class Monster(models.Model):
 
     skills = models.ManyToManyField('MonsterSkill', blank=True)
     skill_ups_to_max = models.IntegerField(null=True, blank=True)
-    leader_skill = models.ForeignKey('MonsterLeaderSkill', null=True, blank=True)
+    leader_skill = models.ForeignKey('MonsterLeaderSkill', on_delete=models.SET_NULL, null=True, blank=True)
 
     # 1-star lvl 1 values from data source
     raw_hp = models.IntegerField(null=True, blank=True)
@@ -102,10 +102,10 @@ class Monster(models.Model):
     craft_cost = models.IntegerField(null=True, blank=True)
 
     # Unicorn fields
-    transforms_into = models.ForeignKey('self', null=True, blank=True, related_name='+')
+    transforms_into = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
 
-    awakens_from = models.ForeignKey('self', null=True, blank=True, related_name='+')
-    awakens_to = models.ForeignKey('self', null=True, blank=True, related_name='+')
+    awakens_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+    awakens_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     awaken_mats_fire_low = models.IntegerField(blank=True, default=0)
     awaken_mats_fire_mid = models.IntegerField(blank=True, default=0)
     awaken_mats_fire_high = models.IntegerField(blank=True, default=0)
@@ -669,7 +669,7 @@ class MonsterSkillScalingStat(models.Model):
 
 
 class HomunculusSkill(models.Model):
-    skill = models.ForeignKey(MonsterSkill)
+    skill = models.ForeignKey(MonsterSkill, on_delete=models.CASCADE)
     monsters = models.ManyToManyField(Monster)
     craft_materials = models.ManyToManyField('CraftMaterial', through='HomunculusSkillCraftCost')
     mana_cost = models.IntegerField(default=0)
@@ -700,7 +700,7 @@ class MonsterSource(models.Model):
 
 
 class Fusion(models.Model):
-    product = models.ForeignKey('Monster', related_name='product')
+    product = models.ForeignKey('Monster', on_delete=models.CASCADE, related_name='product')
     stars = models.IntegerField()
     cost = models.IntegerField()
     ingredients = models.ManyToManyField('Monster')
@@ -935,7 +935,7 @@ class Summoner(models.Model):
         (SERVER_CHINA, 'China'),
     ]
 
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     summoner_name = models.CharField(max_length=256, null=True, blank=True)
     com2us_id = models.BigIntegerField(default=None, null=True, blank=True)
     server = models.IntegerField(choices=SERVER_CHOICES, default=SERVER_GLOBAL, null=True, blank=True)
@@ -943,7 +943,7 @@ class Summoner(models.Model):
     public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
-    preferences = JSONField(default=dict())
+    preferences = JSONField(default=dict)
     last_update = models.DateTimeField(auto_now=True)
 
     def get_rune_counts(self):
@@ -968,6 +968,10 @@ class Summoner(models.Model):
         return self.user.username
 
 
+def _default_storage_data():
+    return [0, 0, 0]
+
+
 class Storage(models.Model):
     ESSENCE_LOW = 0
     ESSENCE_MID = 1
@@ -982,15 +986,15 @@ class Storage(models.Model):
     ESSENCE_FIELDS = ['magic_essence', 'fire_essence', 'water_essence', 'wind_essence', 'light_essence', 'dark_essence']
     CRAFT_FIELDS = ['wood', 'leather', 'rock', 'ore', 'mithril', 'cloth', 'rune_piece', 'dust', 'symbol_harmony', 'symbol_transcendance', 'symbol_chaos', 'crystal_water', 'crystal_fire', 'crystal_wind', 'crystal_light', 'crystal_dark', 'crystal_magic', 'crystal_pure']
 
-    owner = models.OneToOneField(Summoner)
+    owner = models.OneToOneField(Summoner, on_delete=models.CASCADE)
 
     # Elemental Essences
-    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Magic Essence")
-    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Fire Essence")
-    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Water Essence")
-    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Wind Essence")
-    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Light Essence")
-    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=list([0, 0, 0]), help_text="Dark Essence")
+    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Magic Essence")
+    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Fire Essence")
+    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Water Essence")
+    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Wind Essence")
+    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Light Essence")
+    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Dark Essence")
 
     # Crafting materials
     wood = models.IntegerField(default=0, help_text="Hard Wood")
@@ -1065,8 +1069,8 @@ class MonsterInstance(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    owner = models.ForeignKey('Summoner')
-    monster = models.ForeignKey('Monster')
+    owner = models.ForeignKey('Summoner', on_delete=models.CASCADE)
+    monster = models.ForeignKey('Monster', on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     created = models.DateTimeField(blank=True, null=True)
     stars = models.IntegerField()
@@ -1483,8 +1487,8 @@ class MonsterPiece(models.Model):
     }
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    owner = models.ForeignKey('Summoner')
-    monster = models.ForeignKey('Monster')
+    owner = models.ForeignKey('Summoner', on_delete=models.CASCADE)
+    monster = models.ForeignKey('Monster', on_delete=models.CASCADE)
     pieces = models.IntegerField(default=0)
 
     class Meta:
@@ -2030,9 +2034,9 @@ class RuneInstance(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.IntegerField(choices=TYPE_CHOICES)
-    owner = models.ForeignKey(Summoner)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
-    assigned_to = models.ForeignKey(MonsterInstance, blank=True, null=True)
+    assigned_to = models.ForeignKey(MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
 
@@ -2715,7 +2719,7 @@ class RuneCraftInstance(models.Model):
     CRAFT_VALUE_RANGES[RuneInstance.CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    owner = models.ForeignKey(Summoner)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     type = models.IntegerField(choices=RuneInstance.CRAFT_CHOICES)
     rune = models.IntegerField(choices=RuneInstance.TYPE_CHOICES, blank=True, null=True)
@@ -2762,7 +2766,7 @@ class RuneCraftInstance(models.Model):
 
 
 class TeamGroup(models.Model):
-    owner = models.ForeignKey(Summoner)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=30)
 
@@ -2775,9 +2779,9 @@ class TeamGroup(models.Model):
 
 class Team(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    owner = models.ForeignKey(Summoner, null=True, blank=True)
-    level = models.ForeignKey(Level, null=True, blank=True)
-    group = models.ForeignKey(TeamGroup)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE, null=True, blank=True)
+    level = models.ForeignKey(Level, on_delete=models.SET_NULL, null=True, blank=True)
+    group = models.ForeignKey(TeamGroup, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=30)
     favorite = models.BooleanField(default=False, blank=True)
     description = models.TextField(
@@ -2785,7 +2789,7 @@ class Team(models.Model):
         blank=True,
         help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled')
     )
-    leader = models.ForeignKey('MonsterInstance', related_name='team_leader', null=True, blank=True)
+    leader = models.ForeignKey('MonsterInstance', on_delete=models.SET_NULL, related_name='team_leader', null=True, blank=True)
     roster = models.ManyToManyField('MonsterInstance', blank=True)
 
     class Meta:
@@ -2797,8 +2801,8 @@ class Team(models.Model):
 
 class BuildingInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    owner = models.ForeignKey(Summoner)
-    building = models.ForeignKey(Building)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    building = models.ForeignKey(Building, on_delete=models.CASCADE)
     level = models.IntegerField()
 
     class Meta:

@@ -1045,6 +1045,39 @@ class Storage(models.Model):
 
         return storage
 
+    @staticmethod
+    def _min_zero(x):
+        return max(x, 0)
+
+    def save(self, *args, **kwargs):
+        # Ensure all are at 0 or higher
+        self.magic_essence = list(map(self._min_zero, self.magic_essence))
+        self.fire_essence = list(map(self._min_zero, self.fire_essence))
+        self.wind_essence = list(map(self._min_zero, self.wind_essence))
+        self.light_essence = list(map(self._min_zero, self.light_essence))
+        self.dark_essence = list(map(self._min_zero, self.dark_essence))
+
+        self.wood = max(self.wood, 0)
+        self.leather = max(self.leather, 0)
+        self.rock = max(self.rock, 0)
+        self.ore = max(self.ore, 0)
+        self.mithril = max(self.mithril, 0)
+        self.cloth = max(self.cloth, 0)
+        self.rune_piece = max(self.rune_piece, 0)
+        self.dust = max(self.dust, 0)
+        self.symbol_harmony = max(self.symbol_harmony, 0)
+        self.symbol_transcendance = max(self.symbol_transcendance, 0)
+        self.symbol_chaos = max(self.symbol_chaos, 0)
+        self.crystal_water = max(self.crystal_water, 0)
+        self.crystal_fire = max(self.crystal_fire, 0)
+        self.crystal_wind = max(self.crystal_wind, 0)
+        self.crystal_light = max(self.crystal_light, 0)
+        self.crystal_dark = max(self.crystal_dark, 0)
+        self.crystal_magic = max(self.crystal_magic, 0)
+        self.crystal_pure = max(self.crystal_pure, 0)
+
+        super(Storage, self).save(*args, **kwargs)
+
 
 class MonsterTag(models.Model):
     name = models.CharField(max_length=100)

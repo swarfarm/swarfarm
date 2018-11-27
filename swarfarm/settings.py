@@ -281,7 +281,6 @@ JWT_AUTH = {
 
 GRAPHENE = {
     'SCHEMA': 'swarfarm.schema.schema',
-    'RELAY_CONNECTION_ENFORCE_FIRST_OR_LAST': True,
 }
 
 if DEBUG:

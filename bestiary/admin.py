@@ -5,7 +5,7 @@ from .models import Dungeon, Level, MonsterGuide
 
 @admin.register(Dungeon)
 class DungeonAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'name', 'type', 'max_floors']
+    list_display = ['pk', 'name', 'category', 'max_floors']
 
 
 @admin.register(Level)

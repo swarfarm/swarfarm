@@ -6,6 +6,7 @@ from django.contrib.staticfiles import views
 
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 from refreshtoken.views import delegate_jwt_token
+from graphene_django.views import GraphQLView
 
 from apiv2.views import generate_basic_auth_token
 from bestiary.autocomplete import *
@@ -15,6 +16,7 @@ from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, Cr
 
 urlpatterns = [
     # AJAX-y stuff first
+    url(r'graphql', GraphQLView.as_view(graphiql=True)),
     url(r'^autocomplete/', include([
         url(r'^bestiary/$', BestiaryAutocomplete.as_view(), name='bestiary-monster-autocomplete'),
         url(r'^quick-search/$', QuickSearchAutocomplete.as_view(), name='bestiary-quicksearch-autocomplete'),

@@ -20,6 +20,7 @@ class MonsterFilter(filters.FilterSet):
             'obtainable': ['exact'],
             'is_awakened': ['exact'],
             'fusion_food': ['exact'],
+            'homunculus': ['exact'],
         }
 
     def filter_name(self, queryset, name, value):

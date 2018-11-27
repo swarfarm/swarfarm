@@ -13,22 +13,22 @@ EXPORT_FOLDER = 'log_data'
 
 
 def export_scenarios():
-    queryset = RunLog.objects.filter(dungeon__type=Dungeon.TYPE_SCENARIO, timestamp__isnull=False)
+    queryset = RunLog.objects.filter(dungeon__category=Dungeon.CATEGORY_SCENARIO, timestamp__isnull=False)
     _do_export('scenarios', queryset, RunLogSerializer)
 
 
 def export_rune_dungeons():
-    queryset = RunLog.objects.filter(dungeon__type=Dungeon.TYPE_RUNE_DUNGEON)
+    queryset = RunLog.objects.filter(dungeon__category=Dungeon.CATEGORY_RUNE_DUNGEON)
     _do_export('rune_dungeons', queryset, RunLogSerializer)
 
 
 def export_elemental_dungeons():
-    queryset = RunLog.objects.filter(dungeon__type=Dungeon.TYPE_ESSENCE_DUNGEON)
+    queryset = RunLog.objects.filter(dungeon__category=Dungeon.CATEGORY_ESSENCE_DUNGEON)
     _do_export('elemental_dungeons', queryset, RunLogSerializer)
 
 
 def export_other_dungeons():
-    queryset = RunLog.objects.filter(dungeon__type=Dungeon.TYPE_OTHER_DUNGEON)
+    queryset = RunLog.objects.filter(dungeon__category=Dungeon.CATEGORY_OTHER_DUNGEON)
     _do_export('other_dungeons', queryset, RunLogSerializer)
 
 

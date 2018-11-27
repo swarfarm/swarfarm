@@ -696,9 +696,9 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
     try:
         dungeon = Dungeon.objects.get(slug=dungeon_slug)
         if not floor:
-            if dungeon.type in [Dungeon.CATEGORY_ESSENCE_DUNGEON, Dungeon.CATEGORY_RUNE_DUNGEON, Dungeon.CATEGORY_OTHER_DUNGEON]:
+            if dungeon.category in [Dungeon.CATEGORY_ESSENCE_DUNGEON, Dungeon.CATEGORY_RUNE_DUNGEON, Dungeon.CATEGORY_OTHER_DUNGEON]:
                 floor = dungeon.max_floors
-            elif dungeon.type == Dungeon.CATEGORY_SCENARIO:
+            elif dungeon.category == Dungeon.CATEGORY_SCENARIO:
                 # Automatically choose the one with the most logs
                 floor = RunLog.objects.filter(dungeon=dungeon).values_list('stage', flat=True).annotate(count=Count('pk')).order_by('-count').first()
             else:
@@ -709,7 +709,7 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
         floor = min(max(floor, 1), dungeon.max_floors)
 
         if difficulty is None:
-            if dungeon.type == Dungeon.CATEGORY_SCENARIO:
+            if dungeon.category == Dungeon.CATEGORY_SCENARIO:
                 # Automatically choose hell for scenarios
                 difficulty = RunLog.DIFFICULTY_HELL
             else:
@@ -736,7 +736,7 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
         success_rate = None
         run_times = None
 
-        if dungeon.type == Dungeon.CATEGORY_HALL_OF_HEROES:
+        if dungeon.category == Dungeon.CATEGORY_HALL_OF_HEROES:
             context = {
                 'dungeon': dungeon,
                 'stages': [],
@@ -810,7 +810,7 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
         else:
             runs = RunLog.objects.filter(dungeon=dungeon, stage=floor, success=True, **date_filter['filters'])
 
-            if dungeon.type == Dungeon.CATEGORY_SCENARIO:
+            if dungeon.category == Dungeon.CATEGORY_SCENARIO:
                 runs = runs.filter(difficulty=difficulty)
             else:
                 difficulty = 0  # Default value for non-scenarios
@@ -818,7 +818,7 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
             if mine:
                 runs = runs.filter(summoner=summoner)
 
-                if dungeon.type == Dungeon.CATEGORY_SCENARIO:
+                if dungeon.category == Dungeon.CATEGORY_SCENARIO:
                     total_runs = RunLog.objects.filter(summoner=summoner, dungeon=dungeon, stage=floor, difficulty=difficulty, success__isnull=False, **date_filter['filters']).count()
                 else:
                     total_runs = RunLog.objects.filter(summoner=summoner, dungeon=dungeon, stage=floor, success__isnull=False, **date_filter['filters']).count()
@@ -910,12 +910,12 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
                 if data['count']:
                     data['drop_chance'] = float(data['count']) / context['total_runs'] * 100
 
-            if dungeon.type == Dungeon.CATEGORY_RUNE_DUNGEON:
+            if dungeon.category == Dungeon.CATEGORY_RUNE_DUNGEON:
                 context['rune_types'] = [RuneDrop.TYPE_CHOICES[type_id - 1] for type_id in valid_rune_drop_map[int(dungeon.pk)]]
                 context['log_view'] = 'Rune Dungeons'
                 context['template'] = 'sw_parser/log/rune_dungeon_stats.html'
 
-            elif dungeon.type == Dungeon.CATEGORY_ESSENCE_DUNGEON:
+            elif dungeon.category == Dungeon.CATEGORY_ESSENCE_DUNGEON:
                 # Build a essence drop per energy/run table
                 context['essence_table'] = []
                 essence_data = runs.filter(drop_type__in=RunLog.DROP_ESSENCES).values('drop_type')\
@@ -935,7 +935,7 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
                 context['log_view'] = 'Elemental Dungeons'
                 context['template'] = 'sw_parser/log/essence_dungeon_stats.html'
 
-            elif dungeon.type == Dungeon.CATEGORY_SCENARIO:
+            elif dungeon.category == Dungeon.CATEGORY_SCENARIO:
                 context['difficulty'] = RunLog.DIFFICULTY_CHOICES[difficulty]
                 context['difficulties'] = []
 
@@ -954,7 +954,7 @@ def view_dungeon_log(request, dungeon_slug, floor=None, difficulty=None, mine=Fa
                 context['log_view'] = 'Scenarios'
                 context['template'] = 'sw_parser/log/scenarios/detailed_stats.html'
 
-            elif dungeon.type == Dungeon.CATEGORY_OTHER_DUNGEON:
+            elif dungeon.category == Dungeon.CATEGORY_OTHER_DUNGEON:
                 context['log_view'] = 'Other Dungeons'
 
                 context['template'] = 'sw_parser/log/generic_dungeon_stats.html'

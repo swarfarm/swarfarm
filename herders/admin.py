@@ -15,7 +15,6 @@ class MonsterCraftCostInline(admin.TabularInline):
 
 @admin.register(Monster)
 class MonsterAdmin(admin.ModelAdmin):
-    suit_form_tabs = (('basic', 'Basic Info'), ('awakening', 'Awakening'), ('other', 'Other'))
     fieldsets = [
         ('Basic Information', {
             'classes': ('suit-tab', 'suit-tab-basic'),
@@ -99,14 +98,6 @@ class MonsterAdmin(admin.ModelAdmin):
             'fields': (
                 'source',
                 'farmable',
-            ),
-        }),
-        ('Resources', {
-            'classes': ('suit-tab', 'suit-tab-other'),
-            'fields': (
-                'summonerswar_co_url',
-                'wikia_url',
-                'bestiary_slug',
             ),
         }),
     ]

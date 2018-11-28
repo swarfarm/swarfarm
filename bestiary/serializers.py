@@ -145,7 +145,6 @@ class MonsterSerializer(serializers.ModelSerializer):
     leader_skill = LeaderSkillSerializer(read_only=True)
     homunculus_skills = serializers.PrimaryKeyRelatedField(source='homunculusskill_set', read_only=True, many=True)
     craft_materials = MonsterCraftCostSerializer(many=True, source='monstercraftcost_set', read_only=True)
-    resources = serializers.SerializerMethodField()
     guide = MonsterGuideSerializer(source='monsterguide', read_only=True)
 
     class Meta:
@@ -163,7 +162,7 @@ class MonsterSerializer(serializers.ModelSerializer):
             'awaken_mats_light_low', 'awaken_mats_light_mid', 'awaken_mats_light_high',
             'awaken_mats_dark_low', 'awaken_mats_dark_mid', 'awaken_mats_dark_high',
             'awaken_mats_magic_low', 'awaken_mats_magic_mid', 'awaken_mats_magic_high',
-            'source', 'fusion_food', 'resources', 'guide',
+            'source', 'fusion_food', 'guide',
             'homunculus', 'craft_cost', 'craft_materials',
         )
 
@@ -172,13 +171,6 @@ class MonsterSerializer(serializers.ModelSerializer):
 
     def get_archetype(self, instance):
         return instance.get_archetype_display()
-
-    def get_resources(self, instance):
-        return {
-            'Wikia': instance.wikia_url,
-            'summonerswar.co': instance.summonerswar_co_url,
-            'SummonersWarMonsters.com': instance.summonerswarmonsters_url,
-        }
 
 
 class FusionSerializer(serializers.ModelSerializer):

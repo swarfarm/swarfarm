@@ -60,35 +60,35 @@ class Monster(models.Model):
     )
 
     name = models.CharField(max_length=40)
-    com2us_id = models.IntegerField(blank=True, null=True)
-    family_id = models.IntegerField(blank=True, null=True)
+    com2us_id = models.IntegerField(blank=True, null=True, help_text='ID given in game data files')
+    family_id = models.IntegerField(blank=True, null=True, help_text='Identifier that matches same family monsters')
     image_filename = models.CharField(max_length=250, null=True, blank=True)
     element = models.CharField(max_length=6, choices=ELEMENT_CHOICES, default=ELEMENT_FIRE)
     archetype = models.CharField(max_length=10, choices=TYPE_CHOICES, default=TYPE_ATTACK)
-    base_stars = models.IntegerField(choices=STAR_CHOICES)
-    obtainable = models.BooleanField(default=True)
-    can_awaken = models.BooleanField(default=True)
-    is_awakened = models.BooleanField(default=False)
-    awaken_bonus = models.TextField(blank=True)
+    base_stars = models.IntegerField(choices=STAR_CHOICES, help_text='Default stars a monster is summoned at')
+    obtainable = models.BooleanField(default=True, help_text='Is available for players to acquire')
+    can_awaken = models.BooleanField(default=True, help_text='Has an awakened form')
+    is_awakened = models.BooleanField(default=False, help_text='Is the awakened form')
+    awaken_bonus = models.TextField(blank=True, help_text='Bonus given upon awakening')
 
     skills = models.ManyToManyField('MonsterSkill', blank=True)
-    skill_ups_to_max = models.IntegerField(null=True, blank=True)
+    skill_ups_to_max = models.IntegerField(null=True, blank=True, help_text='Number of skill-ups required to max all skills')
     leader_skill = models.ForeignKey('MonsterLeaderSkill', on_delete=models.SET_NULL, null=True, blank=True)
 
     # 1-star lvl 1 values from data source
-    raw_hp = models.IntegerField(null=True, blank=True)
-    raw_attack = models.IntegerField(null=True, blank=True)
-    raw_defense = models.IntegerField(null=True, blank=True)
+    raw_hp = models.IntegerField(null=True, blank=True, help_text='HP value from game data files')
+    raw_attack = models.IntegerField(null=True, blank=True, help_text='ATK value from game data files')
+    raw_defense = models.IntegerField(null=True, blank=True, help_text='DEF value from game data files')
 
     # Base-star lvl MAX values as seen in-game
-    base_hp = models.IntegerField(null=True, blank=True)
-    base_attack = models.IntegerField(null=True, blank=True)
-    base_defense = models.IntegerField(null=True, blank=True)
+    base_hp = models.IntegerField(null=True, blank=True, help_text='HP at base_stars lvl 1')
+    base_attack = models.IntegerField(null=True, blank=True, help_text='ATK at base_stars lvl 1')
+    base_defense = models.IntegerField(null=True, blank=True, help_text='DEF at base_stars lvl 1')
 
     # 6-star lvl MAX values
-    max_lvl_hp = models.IntegerField(null=True, blank=True)
-    max_lvl_attack = models.IntegerField(null=True, blank=True)
-    max_lvl_defense = models.IntegerField(null=True, blank=True)
+    max_lvl_hp = models.IntegerField(null=True, blank=True, help_text='HP at 6-stars lvl 40')
+    max_lvl_attack = models.IntegerField(null=True, blank=True, help_text='ATK at 6-stars lvl 40')
+    max_lvl_defense = models.IntegerField(null=True, blank=True, help_text='DEF at 6-stars lvl 40')
 
     speed = models.IntegerField(null=True, blank=True)
     crit_rate = models.IntegerField(null=True, blank=True)
@@ -99,13 +99,13 @@ class Monster(models.Model):
     # Homunculus monster fields
     homunculus = models.BooleanField(default=False)
     craft_materials = models.ManyToManyField('CraftMaterial', through='MonsterCraftCost')
-    craft_cost = models.IntegerField(null=True, blank=True)
+    craft_cost = models.IntegerField(null=True, blank=True, help_text='Mana cost to craft this monster')
 
     # Unicorn fields
-    transforms_into = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+    transforms_into = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+', help_text='Monster which this monster can transform into during battle')
 
-    awakens_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
-    awakens_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
+    awakens_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+', help_text='Unawakened form of this monster')
+    awakens_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+', help_text='Awakened form of this monster')
     awaken_mats_fire_low = models.IntegerField(blank=True, default=0)
     awaken_mats_fire_mid = models.IntegerField(blank=True, default=0)
     awaken_mats_fire_high = models.IntegerField(blank=True, default=0)
@@ -125,13 +125,10 @@ class Monster(models.Model):
     awaken_mats_magic_mid = models.IntegerField(blank=True, default=0)
     awaken_mats_magic_high = models.IntegerField(blank=True, default=0)
 
-    source = models.ManyToManyField('MonsterSource', blank=True)
-    farmable = models.BooleanField(default=False)
-    fusion_food = models.BooleanField(default=False)
+    source = models.ManyToManyField('MonsterSource', blank=True, help_text='Where this monster can be acquired from')
+    farmable = models.BooleanField(default=False, help_text='Monster can be acquired easily without luck')
+    fusion_food = models.BooleanField(default=False, help_text='Monster is used as a fusion ingredient')
     bestiary_slug = models.SlugField(max_length=255, editable=False, null=True)
-    summonerswar_co_url = models.URLField(null=True, blank=True)
-    wikia_url = models.URLField(null=True, blank=True)
-    summonerswarmonsters_url = models.URLField(null=True, blank=True)
 
     def image_url(self):
         if self.image_filename:
@@ -258,59 +255,6 @@ class Monster(models.Model):
         mats['dark']['high'] = self.awaken_mats_dark_high
 
         return mats
-
-    def set_resource_urls(self):
-        # Creates URLs patterns for resource websites
-        if self.is_awakened:
-            normal_name = self.awakens_from.name if self.awakens_from is not None else ''
-            awakened_name = self.name
-        elif self.can_awaken:
-            normal_name = self.name
-            awakened_name = self.awakens_to.name if self.awakens_to is not None else ''
-        else:
-            # Silver star monsters
-            normal_name = self.name
-            awakened_name = None
-
-        # Summonerswar.co
-        if self.can_awaken and self.base_stars > 1 and self.archetype is not self.TYPE_MATERIAL:
-            if self.summonerswar_co_url is None or self.summonerswar_co_url == '':
-                base = 'http://summonerswar.co/'
-                url = base + slugify(self.element + '-' + normal_name + '-' + awakened_name)
-                if _test_resource_url(url):
-                    self.summonerswar_co_url = url
-                else:
-                    self.summonerswar_co_url = None
-                    print('summonerswar.co url failed to verify: {}'.format(url))
-        else:
-            # Summonerswar.co doesn't do silver star or material monsters
-            self.summonerswar_co_url = None
-
-        # Wikia
-        if self.wikia_url is None or self.wikia_url == '':
-            base = 'http://summonerswar.wikia.com/wiki/'
-            url = base + normal_name.replace(' ', '_') + '_(' + self.get_element_display() + ')'
-
-            if _test_resource_url(url):
-                self.wikia_url = url
-            else:
-                self.wikia_url = None
-                print('Wikia url failed to verify: {}'.format(url))
-
-        # Summonerswarmonsters
-        if self.summonerswarmonsters_url is None or self.summonerswarmonsters_url == '':
-            if awakened_name:
-                url = 'http://www.summonerswarmonsters.com/{}/{}'.format(self.get_element_display().lower(), slugify(awakened_name.lower()))
-            else:
-                url = 'http://www.summonerswarmonsters.com/{}/{}'.format(self.get_element_display().lower(), slugify(normal_name.lower()))
-
-            if _test_resource_url(url):
-                self.summonerswarmonsters_url = url
-            else:
-                self.summonerswarmonsters_url = None
-                print('Summonerswarmonsters.com url failed to verify: {}'.format(url))
-
-        self.save()
 
     def clean(self):
         # Update null values
@@ -450,35 +394,23 @@ class Monster(models.Model):
             return self.name + ' (' + self.element.capitalize() + ')'
 
 
-def _test_resource_url(url):
-    # Checks that a given URL gives HTTP code 200 when requested
-    from urllib.request import Request, urlopen
-    try:
-        request = Request(url)
-        request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36')
-        code = urlopen(request).code
-        return code == 200
-    except:
-        return False
-
-
 class MonsterSkill(models.Model):
     name = models.CharField(max_length=40)
-    com2us_id = models.IntegerField(blank=True, null=True)
+    com2us_id = models.IntegerField(blank=True, null=True, help_text='ID given in game data files')
     description = models.TextField()
-    slot = models.IntegerField(default=1)
+    slot = models.IntegerField(default=1, help_text='Which button position the skill is in during battle')
     skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
-    effect = models.ManyToManyField('MonsterSkillEffect', through='MonsterSkillEffectDetail', blank=True, related_name='effect')
-    cooltime = models.IntegerField(null=True, blank=True)
-    hits = models.IntegerField(default=1)
-    aoe = models.BooleanField(default=False)
-    passive = models.BooleanField(default=False)
+    effect = models.ManyToManyField('MonsterSkillEffect', through='MonsterSkillEffectDetail', blank=True, related_name='effect', help_text='Detailed skill effect information')
+    cooltime = models.IntegerField(null=True, blank=True, help_text='Number of turns until skill can be used again')
+    hits = models.IntegerField(default=1, help_text='Number of times this skill hits an enemy')
+    aoe = models.BooleanField(default=False, help_text='Skill affects all enemies or allies')
+    passive = models.BooleanField(default=False, help_text='Skill activates automatically')
     max_level = models.IntegerField()
-    level_progress_description = models.TextField(null=True, blank=True)
+    level_progress_description = models.TextField(null=True, blank=True, help_text='Description of bonus each skill level')
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
-    multiplier_formula = models.TextField(null=True, blank=True)
-    multiplier_formula_raw = models.CharField(max_length=150, null=True, blank=True)
-    scaling_stats = models.ManyToManyField('MonsterSkillScalingStat', blank=True)
+    multiplier_formula = models.TextField(null=True, blank=True, help_text='Parsed multiplier formula')
+    multiplier_formula_raw = models.CharField(max_length=150, null=True, blank=True, help_text='Multiplier formula given in game data files')
+    scaling_stats = models.ManyToManyField('MonsterSkillScalingStat', blank=True, help_text='Monster stats which this skill scales on')
 
     def image_url(self):
         if self.icon_filename:
@@ -548,10 +480,10 @@ class MonsterLeaderSkill(models.Model):
         (AREA_GUILD, 'Guild'),
     )
 
-    attribute = models.IntegerField(choices=ATTRIBUTE_CHOICES)
-    amount = models.IntegerField()
-    area = models.IntegerField(choices=AREA_CHOICES, default=AREA_GENERAL)
-    element = models.CharField(max_length=6, null=True, blank=True, choices=Monster.ELEMENT_CHOICES)
+    attribute = models.IntegerField(choices=ATTRIBUTE_CHOICES, help_text='Monster stat which is granted the bonus')
+    amount = models.IntegerField(help_text='Amount of bonus granted')
+    area = models.IntegerField(choices=AREA_CHOICES, default=AREA_GENERAL, help_text='Where this leader skill has an effect')
+    element = models.CharField(max_length=6, null=True, blank=True, choices=Monster.ELEMENT_CHOICES, help_text='Element of monster which this leader skill applies to')
 
     def skill_string(self):
         if self.area == self.AREA_DUNGEON:
@@ -614,7 +546,7 @@ class MonsterSkillEffectOtherManager(models.Manager):
 
 
 class MonsterSkillEffect(models.Model):
-    is_buff = models.BooleanField(default=True)
+    is_buff = models.BooleanField(default=True, help_text='Effect is beneficial to affected monster')
     name = models.CharField(max_length=40)
     description = models.TextField()
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
@@ -650,7 +582,7 @@ class MonsterSkillEffectDetail(models.Model):
     all = models.BooleanField(default=False, help_text='This effect affects all items on the target')
     self_hp = models.BooleanField(default=False, help_text="Amount of this effect is based on casting monster's HP")
     target_hp = models.BooleanField(default=False, help_text="Amount of this effect is based on target monster's HP")
-    damage = models.BooleanField(default=False, help_text="Amount of this effect is based on damage dealt")
+    damage = models.BooleanField(default=False, help_text='Amount of this effect is based on damage dealt')
     note = models.TextField(blank=True, null=True, help_text="Explain anything else that doesn't fit in other fields")
 
 
@@ -671,9 +603,9 @@ class MonsterSkillScalingStat(models.Model):
 class HomunculusSkill(models.Model):
     skill = models.ForeignKey(MonsterSkill, on_delete=models.CASCADE)
     monsters = models.ManyToManyField(Monster)
-    craft_materials = models.ManyToManyField('CraftMaterial', through='HomunculusSkillCraftCost')
-    mana_cost = models.IntegerField(default=0)
-    prerequisites = models.ManyToManyField(MonsterSkill, blank=True, related_name='homunculus_prereq')
+    craft_materials = models.ManyToManyField('CraftMaterial', through='HomunculusSkillCraftCost', help_text='Crafting materials required to purchase')
+    mana_cost = models.IntegerField(default=0, help_text='Cost to purchase')
+    prerequisites = models.ManyToManyField(MonsterSkill, blank=True, related_name='homunculus_prereq', help_text='Skills which must be acquired first')
 
     def __str__(self):
         return '{} ({})'.format(self.skill, self.skill.com2us_id)
@@ -989,32 +921,32 @@ class Storage(models.Model):
     owner = models.OneToOneField(Summoner, on_delete=models.CASCADE)
 
     # Elemental Essences
-    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Magic Essence")
-    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Fire Essence")
-    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Water Essence")
-    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Wind Essence")
-    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Light Essence")
-    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text="Dark Essence")
+    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Magic Essence')
+    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Fire Essence')
+    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Water Essence')
+    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Wind Essence')
+    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Light Essence')
+    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Dark Essence')
 
     # Crafting materials
-    wood = models.IntegerField(default=0, help_text="Hard Wood")
-    leather = models.IntegerField(default=0, help_text="Tough Leather")
-    rock = models.IntegerField(default=0, help_text="Solid Rock")
-    ore = models.IntegerField(default=0, help_text="Solid Iron Ore")
-    mithril = models.IntegerField(default=0, help_text="Shining Mythril")
-    cloth = models.IntegerField(default=0, help_text="Thick Cloth")
-    rune_piece = models.IntegerField(default=0, help_text="Rune Piece")
-    dust = models.IntegerField(default=0, help_text="Magic Dust")
-    symbol_harmony = models.IntegerField(default=0, help_text="Symbol of Harmony")
-    symbol_transcendance = models.IntegerField(default=0, help_text="Symbol of Transcendance")
-    symbol_chaos = models.IntegerField(default=0, help_text="Symbol of Chaos")
-    crystal_water = models.IntegerField(default=0, help_text="Frozen Water Crystal")
-    crystal_fire = models.IntegerField(default=0, help_text="Flaming Fire Crystal")
-    crystal_wind = models.IntegerField(default=0, help_text="Whirling Wind Crystal")
-    crystal_light = models.IntegerField(default=0, help_text="Shiny Light Crystal")
-    crystal_dark = models.IntegerField(default=0, help_text="Pitch-black Dark Crystal")
-    crystal_magic = models.IntegerField(default=0, help_text="Condensed Magic Crystal")
-    crystal_pure = models.IntegerField(default=0, help_text="Pure Magic Crystal")
+    wood = models.IntegerField(default=0, help_text='Hard Wood')
+    leather = models.IntegerField(default=0, help_text='Tough Leather')
+    rock = models.IntegerField(default=0, help_text='Solid Rock')
+    ore = models.IntegerField(default=0, help_text='Solid Iron Ore')
+    mithril = models.IntegerField(default=0, help_text='Shining Mythril')
+    cloth = models.IntegerField(default=0, help_text='Thick Cloth')
+    rune_piece = models.IntegerField(default=0, help_text='Rune Piece')
+    dust = models.IntegerField(default=0, help_text='Magic Dust')
+    symbol_harmony = models.IntegerField(default=0, help_text='Symbol of Harmony')
+    symbol_transcendance = models.IntegerField(default=0, help_text='Symbol of Transcendance')
+    symbol_chaos = models.IntegerField(default=0, help_text='Symbol of Chaos')
+    crystal_water = models.IntegerField(default=0, help_text='Frozen Water Crystal')
+    crystal_fire = models.IntegerField(default=0, help_text='Flaming Fire Crystal')
+    crystal_wind = models.IntegerField(default=0, help_text='Whirling Wind Crystal')
+    crystal_light = models.IntegerField(default=0, help_text='Shiny Light Crystal')
+    crystal_dark = models.IntegerField(default=0, help_text='Pitch-black Dark Crystal')
+    crystal_magic = models.IntegerField(default=0, help_text='Condensed Magic Crystal')
+    crystal_pure = models.IntegerField(default=0, help_text='Pure Magic Crystal')
 
     def get_storage(self):
         storage = OrderedDict()

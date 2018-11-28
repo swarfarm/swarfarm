@@ -108,7 +108,7 @@ class MonsterAdmin(admin.ModelAdmin):
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)
     inlines = (MonsterCraftCostInline,)
-    readonly_fields = ('bestiary_slug', 'base_hp', 'base_attack', 'base_defense', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack', 'skill_ups_to_max',)
+    readonly_fields = ('bestiary_slug', 'base_hp', 'base_attack', 'base_defense', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack',)
     search_fields = ['name', 'com2us_id']
     save_as = True
     actions = ['resave']
@@ -136,20 +136,11 @@ class MonsterAdmin(admin.ModelAdmin):
         # Has to be done here instead of in model's save() because django admin clears M2M on form submit
         if form.instance.awakens_from and form.instance.awakens_from.source.count() > 0:
             # This is the awakened one so copy from awakens_from monster
-            form.instance.source.clear()
-            form.instance.source = form.instance.awakens_from.source.all()
+            form.instance.source.set(form.instance.awakens_from.source.all())
 
         if form.instance.awakens_to:
             # This is the unawakened one so push to the awakened one
-            form.instance.awakens_to.source.clear()
-            form.instance.awakens_to.source = form.instance.source.all()
-
-        # Update various info fields
-        if form.instance.skills is not None:
-            skill_list = form.instance.skills.values_list('max_level', flat=True)
-            form.instance.skill_ups_to_max = sum(skill_list) - len(skill_list)
-        else:
-            form.instance.skill_ups_to_max = 0
+            form.instance.awakens_to.source.set(form.instance.source.all())
 
         form.instance.save()
 

@@ -583,10 +583,17 @@ def parse_monster_data(preview=False):
 
         if set(existing_skills) != set(skill_set):
             if not preview:
-                monster.skills.clear()
-                monster.skills.add(*skill_set)
+                monster.skills.set(skill_set)
             print("Updated {} ({}) skill set".format(monster, master_id))
-            # No need for updated = True because .add() immediately takes effect
+            # updated=True skipped because m2m relationship set directly
+
+        skill_max_levels = skill_set.values_list('max_level', flat=True)
+        skill_ups_to_max = sum(skill_max_levels) - len(skill_max_levels)
+
+        if monster.skill_ups_to_max != skill_ups_to_max:
+            monster.skill_ups_to_max = skill_ups_to_max
+            print(f'Updated {monster} ({master_id}) skill ups to max to {skill_ups_to_max}.')
+            updated = True
 
         # Icon
         icon_nums = json.loads(row['thumbnail'])

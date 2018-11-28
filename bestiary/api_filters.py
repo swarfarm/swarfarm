@@ -10,6 +10,13 @@ class MonsterFilter(filters.FilterSet):
     archetype = filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
     leader_skill_attribute = filters.MultipleChoiceFilter(field_name='leader_skill__attribute', choices=LeaderSkill.ATTRIBUTE_CHOICES)
     leader_skill_area = filters.MultipleChoiceFilter(field_name='leader_skill__area', choices=LeaderSkill.AREA_CHOICES)
+    order_by = filters.OrderingFilter(fields=[
+        'name', 'element', 'base_stars', 'archetype', 'com2us_id', 'family_id',
+        'raw_hp', 'raw_attack', 'raw_defense',
+        'base_hp', 'base_attack', 'base_defense',
+        'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',
+        'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
+    ])
 
     class Meta:
         model = Monster

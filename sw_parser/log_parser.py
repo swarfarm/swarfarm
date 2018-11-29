@@ -443,7 +443,7 @@ def parse_buy_shop_item(log_data):
             rune = _parse_rune_log(rune_data, rune)
             rune.save()
 
-    elif purchase_type in [1300008, 1300009]:
+    elif purchase_type in [1300008, 1300009, 1300012]:
         # Ignore if user has not restarted their proxy to include the correct data
         if 'view_item_list' in log_data['response']:
             log_entry = _parse_common_log_data(MagicBoxCraft(), log_data)

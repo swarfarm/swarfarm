@@ -148,6 +148,8 @@ if env('BUGSNAG_API_KEY'):
 
 # URL stuff
 ROOT_URLCONF = 'swarfarm.urls'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = 'news:latest_news'
 LOGOUT_REDIRECT_URL = 'news:latest_news'
 

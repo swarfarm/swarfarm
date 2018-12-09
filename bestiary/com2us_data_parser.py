@@ -870,6 +870,16 @@ class LocalvalueTables(IntEnum):
     GUILD_SIEGE_RANKINGS = 91
 
 
+def save_localvalue_tables():
+    for x in range(1,99):
+        table = _get_localvalue_tables(x)
+        with open(f'bestiary/com2us_data/localvalue_{x}.csv', 'w') as f:
+            writer = csv.DictWriter(f, fieldnames=table['header'])
+            writer.writeheader()
+            for row in table['rows']:
+                writer.writerow(row)
+
+
 def _decrypt_localvalue_dat():
     with open('bestiary/com2us_data/localvalue.dat') as f:
         return decrypt_response(f.read().strip('\0'))

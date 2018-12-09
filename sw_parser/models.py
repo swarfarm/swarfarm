@@ -1304,10 +1304,12 @@ class MagicBoxRuneCraftDrop(RuneCraftDrop):
 class MagicBoxCraft(LogEntry):
     BOX_UNKNOWN_MAGIC = 0
     BOX_MYSTICAL_MAGIC = 1
+    BOX_LEGENDARY_MAGIC = 2
 
     BOX_CHOICES = [
         (BOX_UNKNOWN_MAGIC, 'Unknown Magic Box'),
         (BOX_MYSTICAL_MAGIC, 'Mystical Magic Box'),
+        (BOX_LEGENDARY_MAGIC, 'Legendary Magic Box'),
     ]
 
     box_type = models.IntegerField(choices=BOX_CHOICES)

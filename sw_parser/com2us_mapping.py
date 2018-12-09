@@ -526,6 +526,7 @@ secret_dungeon_map = {
 shop_item_map = {
     1300008: MagicBoxCraft.BOX_UNKNOWN_MAGIC,
     1300009: MagicBoxCraft.BOX_MYSTICAL_MAGIC,
+    1300012: MagicBoxCraft.BOX_LEGENDARY_MAGIC,
     1401001: RuneCraftLog.CRAFT_LOW,
     1401002: RuneCraftLog.CRAFT_LOW,
     1401003: RuneCraftLog.CRAFT_LOW,

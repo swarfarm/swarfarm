@@ -3,20 +3,21 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles import views
-
-from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
-from refreshtoken.views import delegate_jwt_token
+from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
+from refreshtoken.views import delegate_jwt_token
+from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 
 from apiv2.views import generate_basic_auth_token
 from bestiary.autocomplete import *
-from herders.autocomplete import *
 from herders import views as herder_views
-from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, CrispyPasswordResetForm, CrispySetPasswordForm
+from herders.autocomplete import *
+from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, CrispyPasswordResetForm, \
+    CrispySetPasswordForm
 
 urlpatterns = [
     # AJAX-y stuff first
-    url(r'graphql', GraphQLView.as_view(graphiql=True)),
+    url(r'graphql', csrf_exempt(GraphQLView.as_view(graphiql=True)) if settings.DEBUG else GraphQLView.as_view()),
     url(r'^autocomplete/', include([
         url(r'^bestiary/$', BestiaryAutocomplete.as_view(), name='bestiary-monster-autocomplete'),
         url(r'^quick-search/$', QuickSearchAutocomplete.as_view(), name='bestiary-quicksearch-autocomplete'),

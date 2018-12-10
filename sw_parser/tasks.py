@@ -53,7 +53,7 @@ def com2us_data_import(data, user_id, import_options):
 
     results = parse_sw_json(data, summoner, import_options)
 
-    if current_task.request.id is not None:
+    if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'summoner'})
 
     # Disconnect summoner profile last update post-save signal to avoid mass spamming updates
@@ -113,7 +113,7 @@ def com2us_data_import(data, user_id, import_options):
         # Set missing buildings to level 0
         BuildingInstance.objects.filter(owner=summoner).exclude(pk__in=[bldg.pk for bldg in results['buildings']]).update(level=0)
 
-    if current_task.request.id is not None:
+    if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'monsters'})
 
     with transaction.atomic():
@@ -127,7 +127,7 @@ def com2us_data_import(data, user_id, import_options):
             piece.save()
             imported_pieces.append(piece.pk)
 
-    if current_task.request.id is not None:
+    if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'runes'})
 
     with transaction.atomic():
@@ -139,7 +139,7 @@ def com2us_data_import(data, user_id, import_options):
             rune.save()
             imported_runes.append(rune.pk)
 
-    if current_task.request.id is not None:
+    if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'crafts'})
 
     with transaction.atomic():

@@ -27,8 +27,8 @@ def parse_summon_unit(log_data):
         log_entry = _parse_common_log_data(SummonLog(), log_data)
 
         # Summon method
-        if log_data['response']['item_info']:
-            log_entry.summon_method = summon_source_map[log_data['response']['item_info']['item_master_id']]
+        if len(log_data['response'].get('item_list', [])) > 0:
+            log_entry.summon_method = summon_source_map[log_data['response']['item_list'][0]['item_master_id']]
         else:
             mode = log_data['request']['mode']
             if mode == 3:
@@ -702,7 +702,7 @@ accepted_api_params = {
             'tzone',
             'tvalue',
             'unit_list',
-            'item_info',
+            'item_list',
         ],
     },
     'DoRandomWishItem': {

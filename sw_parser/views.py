@@ -3048,6 +3048,10 @@ def log_data(request):
             # New plugin, parse with new methods
             api_command = result_json['request'].get('command')
 
+            # Check if user is using older and incompatible accepted commands list which would result in failure to log.
+            if api_command == 'SummonUnit' and 'item_info' in result_json['response']:
+                return HttpResponseBadRequest('You must restart SWEX to get the latest command list for SWARFARM logging.')
+
             if api_command and api_command in log_parse_dispatcher:
                 try:
                     log_parse_dispatcher[api_command](result_json)

@@ -3067,7 +3067,7 @@ def log_data(request):
                         """.format(api_command, result_json, str(e)),
                         fail_silently=True,
                     )
-                    return HttpResponseBadRequest(str(e))
+                    return HttpResponseBadRequest('An error was encountered logging this action.')
                 else:
                     return HttpResponse('Log OK')
     else:

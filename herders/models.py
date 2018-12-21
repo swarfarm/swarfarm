@@ -549,7 +549,7 @@ class MonsterSkillEffect(models.Model):
     is_buff = models.BooleanField(default=True, help_text='Effect is beneficial to affected monster')
     name = models.CharField(max_length=40)
     description = models.TextField()
-    icon_filename = models.CharField(max_length=100, null=True, blank=True)
+    icon_filename = models.CharField(max_length=100, blank=True, default='')
 
     objects = models.Manager()
 

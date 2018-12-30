@@ -48,6 +48,20 @@ _named_timestamps = {
 
 DEFAULT_TIMESTAMP_FILTER = _named_timestamps['4.0.8-present']
 
+DEFAULT_IMPORT_OPTIONS = {
+    'clear_profile': False,
+    'default_priority': '',
+    'lock_monsters': True,
+    'minimum_stars': 1,
+    'ignore_silver': False,
+    'ignore_material': False,
+    'except_with_runes': True,
+    'except_light_and_dark': True,
+    'except_fusion_ingredient': True,
+    'delete_missing_monsters': 1,
+    'delete_missing_runes': 1,
+    'ignore_validation_errors': False
+}
 
 @login_required
 def home(request):

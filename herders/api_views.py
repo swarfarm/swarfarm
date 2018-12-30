@@ -16,6 +16,7 @@ from herders.permissions import *
 from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
 from sw_parser.com2us_parser import validate_sw_json
 from sw_parser.tasks import com2us_data_import
+from sw_parser.views import DEFAULT_IMPORT_OPTIONS
 
 
 class SummonerViewSet(viewsets.ModelViewSet):
@@ -268,10 +269,7 @@ class ProfileJsonUpload(viewsets.ViewSet):
         if validation_errors:
             validation_failures = "Uploaded data does not match previously imported data. To override, set import preferences to ignore validation errors and import again."
 
-        import_options = request.user.summoner.preferences.get('import_options')
-
-        if import_options is None:
-            errors.append('You have not saved your import options. Import via normal method and be sure to save your preferences.')
+        import_options = request.user.summoner.preferences.get('import_options', DEFAULT_IMPORT_OPTIONS)
 
         if not errors and (not validation_failures or import_options['ignore_validation_errors']):
             # Queue the import

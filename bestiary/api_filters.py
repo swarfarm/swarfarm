@@ -21,6 +21,7 @@ class MonsterFilter(filters.FilterSet):
     class Meta:
         model = Monster
         fields = {
+            'id': ['in'],
             'com2us_id': ['exact'],
             'family_id': ['exact'],
             'base_stars': ['lte', 'gte'],
@@ -48,6 +49,7 @@ class SkillFilter(filters.FilterSet):
     class Meta:
         model = Skill
         fields = {
+            'id': ['in'],
             'name': ['exact'],
             'com2us_id': ['exact'],
             'slot': ['exact'],

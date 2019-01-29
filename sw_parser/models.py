@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 
-from bestiary.models import Dungeon, Level
-from herders.models import Summoner, Monster
+from bestiary.models import Monster, Dungeon, Level
+from herders.models import Summoner
 
 
 class LogEntry(models.Model):

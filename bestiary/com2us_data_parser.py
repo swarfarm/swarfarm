@@ -9,7 +9,7 @@ from numbers import Number
 from sympy import simplify
 from bitstring import Bits, BitStream, ConstBitStream, ReadError
 
-from herders.models import MonsterSkill as Skill, MonsterSkillScalingStat as ScalingStat, MonsterSkillEffect as Effect, \
+from .models import MonsterSkill as Skill, MonsterSkillScalingStat as ScalingStat, MonsterSkillEffect as Effect, \
     CraftMaterial, MonsterCraftCost, HomunculusSkill, HomunculusSkillCraftCost
 from sw_parser.com2us_mapping import *
 from sw_parser.com2us_parser import decrypt_response

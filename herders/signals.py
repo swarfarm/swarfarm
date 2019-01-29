@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import MonsterInstance, RuneInstance, RuneCraftInstance, Team
+
+from .models import MonsterInstance, RuneInstance, RuneCraftInstance
 
 
 @receiver(post_save, sender=MonsterInstance)

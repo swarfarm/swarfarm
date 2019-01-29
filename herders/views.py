@@ -1,26 +1,34 @@
 from collections import OrderedDict
 from copy import deepcopy
 
-from django.core.mail import mail_admins
-from django.urls import reverse
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from crispy_forms.bootstrap import FieldWithButtons, StrictButton, Field, Div
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.mail import mail_admins
 from django.db import IntegrityError
+from django.db.models import FieldDoesNotExist, Q
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
-from django.db.models import FieldDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template import loader, RequestContext, Context
+from django.template import loader
 from django.template.context_processors import csrf
+from django.urls import reverse
 
-from .forms import *
-from .filters import *
-from .models import Summoner, Monster, Fusion, Building, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance, Storage
+from bestiary.models import Monster, Fusion, Building
+from .filters import MonsterInstanceFilter, RuneInstanceFilter
+from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, FilterMonsterInstanceForm, \
+    EditBuildingForm, EditUserForm, EditSummonerForm, AddMonsterInstanceForm, BulkAddMonsterInstanceForm, \
+    BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
+    MonsterPieceForm, AddTeamGroupForm, EditTeamGroupForm, DeleteTeamGroupForm, EditTeamForm, FilterRuneForm, \
+    AddRuneInstanceForm, AssignRuneForm, AddRuneCraftInstanceForm
+from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, \
+    RuneCraftInstance, Storage
 
 DEFAULT_VIEW_MODE = 'box'
+
 
 def register(request):
     form = RegisterUserForm(request.POST or None)

@@ -1,4 +1,5 @@
-from herders.models import Monster, MonsterLeaderSkill as LeaderSkill, RuneInstance, RuneCraftInstance, Summoner
+from bestiary.models import Monster, MonsterLeaderSkill as LeaderSkill
+from herders.models import RuneInstance, RuneCraftInstance, Summoner
 from .models import RunLog, SummonLog, RuneDrop, ItemDrop, RuneCraftLog, MagicBoxCraft
 
 element_map = {

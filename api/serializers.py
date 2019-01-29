@@ -1,8 +1,8 @@
 from rest_framework import serializers
-
-from herders.models import Monster, MonsterSkill as Skill, MonsterLeaderSkill as LeaderSkill, \
+from bestiary.models import Monster, MonsterSkill as Skill, MonsterLeaderSkill as LeaderSkill, \
     MonsterSkillEffect as Effect, MonsterSkillScalingStat as ScalingStat, MonsterSource as Source, CraftMaterial, \
-    HomunculusSkillCraftCost, HomunculusSkill, MonsterTag, RuneInstance, TeamGroup, Team, MonsterInstance, Summoner
+    HomunculusSkillCraftCost, HomunculusSkill
+from herders.models import MonsterTag, RuneInstance, TeamGroup, Team, MonsterInstance, Summoner
 
 
 # Read-only monster database stuff.

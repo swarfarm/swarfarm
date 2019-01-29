@@ -1,4 +1,4 @@
-from herders.models import Monster, MonsterSource
+from .models import Monster, MonsterSource
 
 
 def set_sources():

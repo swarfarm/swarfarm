@@ -8,7 +8,7 @@ from django import forms
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from herders.models import Monster, MonsterLeaderSkill as LeaderSkill, MonsterSkillScalingStat as ScalingStat, \
+from .models import Monster, MonsterLeaderSkill as LeaderSkill, MonsterSkillScalingStat as ScalingStat, \
     MonsterSkillEffect as Effect, MonsterSkill as Skill
 from .fields import AdvancedSelectMultiple
 from .widgets import EffectSelectMultipleWidget, ElementSelectMultipleWidget

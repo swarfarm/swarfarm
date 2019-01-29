@@ -1,7 +1,7 @@
 import django_filters
 from django.db.models import Q
 
-from herders.models import Monster, MonsterSkillEffect as Effect, MonsterSkill as Skill, \
+from .models import Monster, MonsterSkillEffect as Effect, MonsterSkill as Skill, \
     MonsterLeaderSkill as LeaderSkill, MonsterSkillScalingStat as ScalingStat
 
 

@@ -16,8 +16,9 @@ from django.utils.safestring import mark_safe
 
 from bestiary.fields import AdvancedSelectMultiple
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
-from .models import Monster, MonsterSkillEffect as Effect, MonsterLeaderSkill as LeaderSkill, \
-    MonsterSkillScalingStat as ScalingStat, MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
+from bestiary.models import Monster, MonsterSkillEffect as Effect, MonsterLeaderSkill as LeaderSkill, \
+    MonsterSkillScalingStat as ScalingStat
+from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
     RuneInstance, RuneCraftInstance, BuildingInstance
 
 STATIC_URL_PREFIX = static('herders/images/')

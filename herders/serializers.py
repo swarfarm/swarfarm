@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedIdentityField
 
-from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, TeamGroup, Team
+from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, \
+    RuneCraftInstance, TeamGroup, Team
 
 
 class RuneInstanceSerializer(serializers.ModelSerializer):

@@ -1,14 +1,12 @@
-from collections import OrderedDict
-
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.urls import reverse
 from django.http import Http404, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
-from django.template import loader, RequestContext
+from django.template import loader
+from django.urls import reverse
 
-from .models import *
-from .forms import *
 from .filters import MonsterFilter
+from .forms import FilterMonsterForm, SkillForm
+from .models import Monster, MonsterSkill as Skill
 
 
 def bestiary(request):

@@ -1,8 +1,9 @@
 import django_filters
 from django.db.models import Q
 
-from .models import Monster, MonsterSkillEffect as Effect, MonsterSkill as Skill, MonsterLeaderSkill as LeaderSkill, \
-    MonsterSkillScalingStat as ScalingStat, MonsterInstance, MonsterTag, RuneInstance
+from bestiary.models import Monster, MonsterSkillEffect as Effect, MonsterSkill as Skill, \
+    MonsterLeaderSkill as LeaderSkill, MonsterSkillScalingStat as ScalingStat
+from .models import MonsterInstance, MonsterTag, RuneInstance
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):

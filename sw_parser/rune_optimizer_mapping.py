@@ -1,4 +1,5 @@
-from herders.models import Monster, RuneInstance, RuneCraftInstance
+from bestiary.models import Monster
+from herders.models import RuneInstance, RuneCraftInstance
 
 type_encode_dict = {
     RuneInstance.TYPE_ENERGY: 'Energy',

@@ -3,11 +3,10 @@ from graphene import relay
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
 
-from herders.models import Monster, MonsterLeaderSkill as LeaderSkill, MonsterSkill as Skill, \
-    MonsterSkillEffect as Effect, MonsterSkillEffectDetail as EffectDetail, MonsterSource as Source, \
-    MonsterSkillScalingStat as ScalingStat, MonsterCraftCost, CraftMaterial
 from .api_filters import MonsterFilter, SkillFilter
-from .models import Dungeon, Level
+from .models import Monster, MonsterLeaderSkill as LeaderSkill, MonsterSkill as Skill, \
+    MonsterSkillEffect as Effect, MonsterSkillEffectDetail as EffectDetail, MonsterSource as Source, \
+    MonsterSkillScalingStat as ScalingStat, MonsterCraftCost, CraftMaterial, Dungeon, Level
 
 
 class LevelNode(DjangoObjectType):

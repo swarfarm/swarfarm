@@ -6,9 +6,9 @@ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-
 
 # Install packages
 echo "Installing software packages..."
-sudo apt -qq update
-sudo apt -qq upgrade -y
-sudo apt -qq install -y nginx postgresql-11 libpq-dev rabbitmq-server redis-server git make build-essential libjpeg-dev libffi-dev libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev
+sudo DEBIAN_FRONTEND=noninteractive apt -yq update
+sudo DEBIAN_FRONTEND=noninteractive apt -yq upgrade
+sudo DEBIAN_FRONTEND=noninteractive apt -yq install -y nginx postgresql-11 libpq-dev rabbitmq-server redis-server git make build-essential libjpeg-dev libffi-dev libssl-dev zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev
 
 # Postgresql setup
 # Allow listening on all interfaces to connect directly from host PC

@@ -1,0 +1,13 @@
+[Unit]
+Description=swarfarm gunicorn daemon
+Requires=swarfarm.socket
+After=network.target
+
+[Service]
+User=vagrant
+Group=www-data
+WorkingDirectory=/vagrant
+ExecStart=/home/vagrant/.pyenv/versions/swarfarm-3.6.8/bin/celery --workdir=/vagrant -A swarfarm.celery worker --loglevel=info
+
+[Install]
+WantedBy=multi-user.target

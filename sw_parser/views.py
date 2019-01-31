@@ -2,27 +2,23 @@ import csv
 from collections import OrderedDict
 from copy import deepcopy
 
-from celery.result import AsyncResult
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.urls import reverse
 from django.db.models import Count, Min, Max, Avg, Sum, Value, F, ExpressionWrapper, DurationField
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import pluralize
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from django_pivot.histogram import histogram
 
 from sw_parser import chart_templates
-from .com2us_mapping import valid_rune_drop_map
-from .com2us_parser import *
+from bestiary.com2us_mapping import valid_rune_drop_map
 from .forms import *
 from .log_parser import *
-from .rune_optimizer_parser import *
-from .tasks import com2us_data_import
+from herders.rune_optimizer_parser import *
 
 _named_timestamps = {
     '4.0.8-present': {
@@ -47,214 +43,6 @@ _named_timestamps = {
 }
 
 DEFAULT_TIMESTAMP_FILTER = _named_timestamps['4.0.8-present']
-
-DEFAULT_IMPORT_OPTIONS = {
-    'clear_profile': False,
-    'default_priority': '',
-    'lock_monsters': True,
-    'minimum_stars': 1,
-    'ignore_silver': False,
-    'ignore_material': False,
-    'except_with_runes': True,
-    'except_light_and_dark': True,
-    'except_fusion_ingredient': True,
-    'delete_missing_monsters': 1,
-    'delete_missing_runes': 1,
-    'ignore_validation_errors': False
-}
-
-@login_required
-def home(request):
-    return render(request, 'sw_parser/base.html', context={'view': 'importexport'})
-
-
-@login_required
-@csrf_exempt
-def import_pcap(request):
-    request.upload_handlers = [TemporaryFileUploadHandler()]
-    return _import_pcap(request)
-
-
-def _get_import_options(form_data):
-    return {
-        'clear_profile': form_data.get('clear_profile'),
-        'default_priority': form_data.get('default_priority'),
-        'lock_monsters': form_data.get('lock_monsters'),
-        'minimum_stars': int(form_data.get('minimum_stars', 1)),
-        'ignore_silver': form_data.get('ignore_silver'),
-        'ignore_material': form_data.get('ignore_material'),
-        'except_with_runes': form_data.get('except_with_runes'),
-        'except_light_and_dark': form_data.get('except_light_and_dark'),
-        'except_fusion_ingredient': form_data.get('except_fusion_ingredient'),
-        'delete_missing_monsters': form_data.get('missing_monster_action'),
-        'delete_missing_runes': form_data.get('missing_rune_action'),
-        'ignore_validation_errors': form_data.get('ignore_validation'),
-    }
-
-@csrf_protect
-def _import_pcap(request):
-    errors = []
-    validation_failures = []
-
-    if request.POST:
-        form = ImportPCAPForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            summoner = get_object_or_404(Summoner, user__username=request.user.username)
-            uploaded_file = form.cleaned_data['pcap']
-            import_options = _get_import_options(form.cleaned_data)
-
-            if form.cleaned_data.get('save_defaults'):
-                summoner.preferences['import_options'] = import_options
-                summoner.save()
-
-            try:
-                data = parse_pcap(uploaded_file)
-            except Exception as e:
-                errors.append('Exception ' + str(type(e)) + ': ' + str(e))
-            else:
-                if data:
-                    schema_errors, validation_errors = validate_sw_json(data, request.user.summoner)
-
-                    if schema_errors:
-                        errors += schema_errors
-
-                    if validation_errors:
-                        validation_failures += validation_errors
-
-                    if not errors and (not validation_failures or import_options['ignore_validation_errors']):
-                        # Queue the import
-                        task = com2us_data_import.delay(data, summoner.pk, import_options)
-                        request.session['import_task_id'] = task.task_id
-
-                        return render(request, 'sw_parser/import_progress.html')
-
-                else:
-                    errors.append("Unable to find Summoner's War data in the uploaded file")
-    else:
-        form = ImportPCAPForm(
-            initial=request.user.summoner.preferences.get('import_options', {
-                'ignore_silver': True
-            })
-        )
-
-    context = {
-        'form': form,
-        'errors': errors,
-        'validation_failures': validation_failures,
-        'view': 'importexport'
-    }
-
-    return render(request, 'sw_parser/import_pcap.html', context)
-
-
-@login_required
-def import_sw_json(request):
-    errors = []
-    validation_failures = []
-    request.session['import_stage'] = None
-    request.session['import_total'] = 0
-    request.session['import_current'] = 0
-
-    if request.POST:
-        request.session['import_stage'] = None
-        request.session.save()
-
-        form = ImportSWParserJSONForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            summoner = get_object_or_404(Summoner, user__username=request.user.username)
-            uploaded_file = form.cleaned_data['json_file']
-            import_options = _get_import_options(form.cleaned_data)
-
-            if form.cleaned_data.get('save_defaults'):
-                summoner.preferences['import_options'] = import_options
-                summoner.save()
-
-            try:
-                data = json.load(uploaded_file)
-            except ValueError as e:
-                errors.append('Unable to parse file: ' + str(e))
-            except AttributeError:
-                errors.append('Issue opening uploaded file. Please try again.')
-            else:
-                schema_errors, validation_errors = validate_sw_json(data, request.user.summoner)
-
-                if schema_errors:
-                    errors.append(schema_errors)
-
-                if validation_errors:
-                    validation_failures += validation_errors
-
-                if not errors and (not validation_failures or import_options['ignore_validation_errors']):
-                    # Queue the import
-                    task = com2us_data_import.delay(data, summoner.pk, import_options)
-                    request.session['import_task_id'] = task.task_id
-
-                    return render(request, 'sw_parser/import_progress.html')
-    else:
-        form = ImportSWParserJSONForm(
-            initial=request.user.summoner.preferences.get('import_options', {})
-        )
-
-    context = {
-        'form': form,
-        'errors': errors,
-        'validation_failures': validation_failures,
-        'view': 'importexport',
-    }
-
-    return render(request, 'sw_parser/import_sw_json.html', context)
-
-
-@login_required
-def import_status(request):
-    task_id = request.GET.get('id', request.session.get('import_task_id'))
-    task = AsyncResult(task_id)
-
-    if task:
-        try:
-            return JsonResponse({
-                'status': task.status,
-                'result': task.result,
-            })
-        except:
-            return JsonResponse({
-                'status': 'error',
-            })
-    else:
-        raise Http404('Task ID not provided')
-
-
-@login_required
-def export_rune_optimizer(request, download_file=False):
-    summoner = get_object_or_404(Summoner, user=request.user)
-
-    export_data = export_runes(
-        MonsterInstance.objects.filter(owner=summoner),
-        RuneInstance.objects.filter(owner=summoner, assigned_to=None),
-    )
-    if download_file:
-        response = HttpResponse(export_data)
-        response['Content-Disposition'] = 'attachment; filename=' + request.user.username + '_swarfarm_rune_optimizer_export.json'
-
-        return response
-    else:
-        form = ExportOptimizerForm(initial={'json_data': export_data})
-
-        return render(request, 'sw_parser/export_rune_optimizer.html', {'export_form': form, 'view': 'importexport'})
-
-
-@login_required
-def export_win10_optimizer(request):
-    summoner = get_object_or_404(Summoner, user=request.user)
-
-    export_data = export_win10(summoner)
-
-    response = HttpResponse(export_data)
-    response['Content-Disposition'] = 'attachment; filename=' + request.user.username + '_swarfarm_win10_optimizer_export.json'
-
-    return response
 
 
 def log_home(request):

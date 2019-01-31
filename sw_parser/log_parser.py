@@ -5,14 +5,12 @@ import pytz
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins
 
-from herders.models import Summoner
-
-from bestiary.models import Dungeon
 from .models import *
-from .com2us_parser import get_monster_from_id
-from .com2us_mapping import inventory_type_map, timezone_server_map, summon_source_map, scenario_difficulty_map, \
+from bestiary.models import Monster
+from bestiary.com2us_mapping import inventory_type_map, timezone_server_map, summon_source_map, scenario_difficulty_map, \
     rune_stat_type_map, rune_set_map, drop_essence_map, drop_craft_map, drop_currency_map, \
     craft_type_map, craft_quality_map, secret_dungeon_map, shop_item_map
+from herders.models import Summoner
 
 
 def _get_summoner(wizard_id):
@@ -39,7 +37,7 @@ def parse_summon_unit(log_data):
         # Monster
         summoned_mon = MonsterDrop()
         monster_data = log_data['response']['unit_list'][x]
-        summoned_mon.monster = get_monster_from_id(monster_data.get('unit_master_id'))
+        summoned_mon.monster = Monster.objects.get(com2us_id=monster_data.get('unit_master_id'))
         summoned_mon.grade = monster_data['class']
         summoned_mon.level = monster_data['unit_level']
 
@@ -64,7 +62,7 @@ def parse_do_random_wish_item(log_data):
     if drop_type == inventory_type_map['monster'] or drop_type == inventory_type_map['rainbowmon']:
         unit_info = log_data['response']['unit_info']
         wish_drop = WishMonsterDrop()
-        wish_drop.monster = get_monster_from_id(unit_info['unit_master_id'])
+        wish_drop.monster = Monster.objects.get(com2us_id=unit_info['unit_master_id'])
         wish_drop.grade = unit_info['class']
         wish_drop.level = unit_info['unit_level']
     elif drop_type == inventory_type_map['currency']:
@@ -287,7 +285,7 @@ def parse_battle_rift_dungeon_result(log_data):
             else:
                 if drop_type == inventory_type_map['monster']:
                     rift_drop = RiftDungeonMonsterDrop()
-                    rift_drop.monster = get_monster_from_id(drop['info']['unit_master_id'])
+                    rift_drop.monster = Monster.objects.get(com2us_id=drop['info']['unit_master_id'])
                     rift_drop.grade = drop['info']['class']
                     rift_drop.level = drop['info']['unit_level']
                 elif drop_type == inventory_type_map['craft_stuff']:
@@ -376,7 +374,7 @@ def parse_battle_rift_of_worlds_raid_end(log_data):
                     battle_key=battle_key, wizard_id=drop_wizard_id,
                     defaults={
                         'log': log_entry,
-                        'monster': get_monster_from_id(drop_item_info['item_master_id']),
+                        'monster': Monster.objects.get(com2us_id=drop_item_info['item_master_id']),
                         'grade': drop_item_info['unit_class'],
                         'level': drop_item_info['unit_level'],
                     }
@@ -513,7 +511,7 @@ def parse_get_black_market_list(log_data):
                 sale_entry = ShopRefreshMonster()
                 sale_entry.log = log_entry
                 sale_entry.cost = sale_item['buy_mana']
-                sale_entry.monster = get_monster_from_id(sale_item['item_master_id'])
+                sale_entry.monster = Monster.objects.get(com2us_id=sale_item['item_master_id'])
                 sale_entry.grade = sale_item['class']
                 sale_entry.level = 1
             elif sale_item['item_master_type'] == inventory_type_map['scroll']:
@@ -627,7 +625,7 @@ def _parse_battle_reward(log_entry, reward, instance_info=None):
                 log_entry.drop_quantity = 1
 
                 drop_mon = MonsterDrop()
-                drop_mon.monster = get_monster_from_id(crate['unit_info']['unit_master_id'])
+                drop_mon.monster = Monster.objects.get(com2us_id=crate['unit_info']['unit_master_id'])
                 drop_mon.grade = crate['unit_info']['class']
                 drop_mon.level = crate['unit_info']['unit_level']
 
@@ -658,7 +656,7 @@ def _parse_battle_reward(log_entry, reward, instance_info=None):
                 log_entry.drop_quantity = crate['summon_pieces']['item_quantity']
 
                 drop_mon = MonsterDrop()
-                drop_mon.monster = get_monster_from_id(crate['summon_pieces']['item_master_id'])
+                drop_mon.monster = Monster.objects.get(com2us_id=crate['summon_pieces']['item_master_id'])
                 drop_mon.grade = drop_mon.monster.base_stars
                 drop_mon.level = 1
                 drop_mon.save()
@@ -682,7 +680,7 @@ def _parse_battle_reward(log_entry, reward, instance_info=None):
         log_entry.drop_type = RunLog.DROP_SECRET_DUNGEON
         if instance_info['instance_id'] in secret_dungeon_map:
             drop_mon = MonsterDrop()
-            drop_mon.monster = get_monster_from_id(secret_dungeon_map[instance_info['instance_id']])
+            drop_mon.monster = Monster.objects.get(com2us_id=secret_dungeon_map[instance_info['instance_id']])
             drop_mon.grade = drop_mon.monster.base_stars
             drop_mon.level = 1
             drop_mon.save()

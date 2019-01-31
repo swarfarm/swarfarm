@@ -14,9 +14,9 @@ from herders.serializers import *
 from herders.pagination import *
 from herders.permissions import *
 from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
-from sw_parser.com2us_parser import validate_sw_json
-from sw_parser.tasks import com2us_data_import
-from sw_parser.views import DEFAULT_IMPORT_OPTIONS
+from .profile_parser import validate_sw_json
+from .tasks import com2us_data_import
+from .views import DEFAULT_IMPORT_OPTIONS
 
 
 class SummonerViewSet(viewsets.ModelViewSet):

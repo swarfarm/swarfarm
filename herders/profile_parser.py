@@ -1,44 +1,17 @@
-import base64
+
 import dpkt
 import json
-import zlib
-from Crypto.Cipher import AES
-from jsonschema import ErrorTree
 from jsonschema.exceptions import best_match
 from dateutil.parser import *
-import pytz
-import datetime
 
 from django.utils.timezone import get_current_timezone
-from django.conf import settings
 
+
+from bestiary import com2us_mapping
 from bestiary.models import Monster, Building
-from herders.models import MonsterPiece, MonsterInstance, RuneInstance, BuildingInstance
+from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance
 
-from .models import *
-from .com2us_mapping import *
-from .com2us_json_schema import HubUserLoginValidator, VisitFriendValidator
-
-
-def _decrypt(msg):
-    obj = AES.new(
-        bytes(settings.SUMMONERS_WAR_SECRET_KEY, encoding='latin-1'),
-        AES.MODE_CBC,
-        b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-    )
-    decrypted = obj.decrypt(msg)
-    return decrypted[:-decrypted[-1]]
-
-
-def decrypt_request(msg):
-    return _decrypt(base64.b64decode(msg))
-
-
-def decrypt_response(msg):
-    decoded = base64.b64decode(msg)
-    decrypted = _decrypt(decoded)
-    decompressed = zlib.decompress(decrypted)
-    return decompressed
+from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
 
 def parse_pcap(pcap_file):
@@ -160,19 +133,19 @@ def parse_sw_json(data, owner, options):
     if inventory_info:
         for item in inventory_info:
             # Essence Inventory
-            if item['item_master_type'] == inventory_type_map['essences']:
-                essence = inventory_essence_map.get(item['item_master_id'])
+            if item['item_master_type'] == com2us_mapping.inventory_type_map['essences']:
+                essence = com2us_mapping.inventory_essence_map.get(item['item_master_id'])
                 quantity = item.get('item_quantity')
 
                 if essence and quantity:
                     parsed_inventory[essence] = quantity
-            elif item['item_master_type'] == inventory_type_map['craft_stuff']:
-                craft = inventory_craft_map.get(item['item_master_id'])
+            elif item['item_master_type'] == com2us_mapping.inventory_type_map['craft_stuff']:
+                craft = com2us_mapping.inventory_craft_map.get(item['item_master_id'])
                 quantity = item.get('item_quantity')
 
                 if craft and quantity:
                     parsed_inventory[craft] = quantity
-            elif item['item_master_type'] == inventory_type_map['monster_piece']:
+            elif item['item_master_type'] == com2us_mapping.inventory_type_map['monster_piece']:
                 quantity = item.get('item_quantity')
                 if quantity > 0:
                     mon = get_monster_from_id(item['item_master_id'])
@@ -326,7 +299,7 @@ def parse_rune_data(rune_data, owner):
         rune = RuneInstance()
 
     # Basic rune info
-    rune.type = rune_set_map.get(rune_data.get('set_id'))
+    rune.type = com2us_mapping.rune_set_map.get(rune_data.get('set_id'))
 
     rune.com2us_id = com2us_id
     rune.value = rune_data.get('sell_value')
@@ -336,22 +309,22 @@ def parse_rune_data(rune_data, owner):
     original_quality = rune_data.get('extra')
 
     if original_quality:
-        rune.original_quality = rune_quality_map[original_quality]
+        rune.original_quality = com2us_mapping.rune_quality_map[original_quality]
 
     # Rune stats
     main_stat = rune_data.get('pri_eff')
     if main_stat:
-        rune.main_stat = rune_stat_type_map.get(main_stat[0])
+        rune.main_stat = com2us_mapping.rune_stat_type_map.get(main_stat[0])
         rune.main_stat_value = main_stat[1]
 
     innate_stat = rune_data.get('prefix_eff')
     if innate_stat:
-        rune.innate_stat = rune_stat_type_map.get(innate_stat[0])
+        rune.innate_stat = com2us_mapping.rune_stat_type_map.get(innate_stat[0])
         rune.innate_stat_value = innate_stat[1]
 
     substats = rune_data.get('sec_eff', [])
     if len(substats) >= 1:
-        rune.substat_1 = rune_stat_type_map.get(substats[0][0])
+        rune.substat_1 = com2us_mapping.rune_stat_type_map.get(substats[0][0])
         rune.substat_1_value = substats[0][1] + substats[0][3]
         if substats[0][3]:
             rune.substat_1_craft = RuneInstance.CRAFT_GRINDSTONE
@@ -359,7 +332,7 @@ def parse_rune_data(rune_data, owner):
             rune.substat_1_craft = RuneInstance.CRAFT_ENCHANT_GEM
 
     if len(substats) >= 2:
-        rune.substat_2 = rune_stat_type_map.get(substats[1][0])
+        rune.substat_2 = com2us_mapping.rune_stat_type_map.get(substats[1][0])
         rune.substat_2_value = substats[1][1] + substats[1][3]
         if substats[1][3]:
             rune.substat_2_craft = RuneInstance.CRAFT_GRINDSTONE
@@ -367,7 +340,7 @@ def parse_rune_data(rune_data, owner):
             rune.substat_2_craft = RuneInstance.CRAFT_ENCHANT_GEM
 
     if len(substats) >= 3:
-        rune.substat_3 = rune_stat_type_map.get(substats[2][0])
+        rune.substat_3 = com2us_mapping.rune_stat_type_map.get(substats[2][0])
         rune.substat_3_value = substats[2][1] + substats[2][3]
         if substats[2][3]:
             rune.substat_3_craft = RuneInstance.CRAFT_GRINDSTONE
@@ -375,7 +348,7 @@ def parse_rune_data(rune_data, owner):
             rune.substat_3_craft = RuneInstance.CRAFT_ENCHANT_GEM
 
     if len(substats) >= 4:
-        rune.substat_4 = rune_stat_type_map.get(substats[3][0])
+        rune.substat_4 = com2us_mapping.rune_stat_type_map.get(substats[3][0])
         rune.substat_4_value = substats[3][1] + substats[3][3]
         if substats[3][3]:
             rune.substat_4_craft = RuneInstance.CRAFT_GRINDSTONE
@@ -404,12 +377,10 @@ def parse_rune_craft_data(craft_data, owner):
     stat = int(craft_type_id[-4:-2])
     rune_set = int(craft_type_id[:-4])
 
-    craft.type = craft_type_map.get(craft_data['craft_type'])
-    craft.quality = craft_quality_map.get(quality)
-    craft.stat = rune_stat_type_map.get(stat)
-    craft.rune = rune_set_map.get(rune_set)
+    craft.type = com2us_mapping.craft_type_map.get(craft_data['craft_type'])
+    craft.quality = com2us_mapping.craft_quality_map.get(quality)
+    craft.stat = com2us_mapping.rune_stat_type_map.get(stat)
+    craft.rune = com2us_mapping.rune_set_map.get(rune_set)
     craft.value = craft_data['sell_value']
 
     return craft
-
-

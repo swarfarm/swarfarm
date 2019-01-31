@@ -1,18 +1,43 @@
-from enum import IntEnum
-from glob import iglob
-from PIL import Image
+import base64
 import binascii
 import csv
 import json
 import re
+import zlib
+from enum import IntEnum
+from glob import iglob
 from numbers import Number
-from sympy import simplify
-from bitstring import Bits, BitStream, ConstBitStream, ReadError
 
+from Crypto.Cipher import AES
+from PIL import Image
+from bitstring import Bits, BitStream, ConstBitStream, ReadError
+from django.conf import settings
+from sympy import simplify
+
+from bestiary.com2us_mapping import *
 from .models import MonsterSkill as Skill, MonsterSkillScalingStat as ScalingStat, MonsterSkillEffect as Effect, \
     CraftMaterial, MonsterCraftCost, HomunculusSkill, HomunculusSkillCraftCost
-from sw_parser.com2us_mapping import *
-from sw_parser.com2us_parser import decrypt_response
+
+
+def _decrypt(msg):
+    obj = AES.new(
+        bytes(settings.SUMMONERS_WAR_SECRET_KEY, encoding='latin-1'),
+        AES.MODE_CBC,
+        b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    )
+    decrypted = obj.decrypt(msg)
+    return decrypted[:-decrypted[-1]]
+
+
+def decrypt_request(msg):
+    return _decrypt(base64.b64decode(msg))
+
+
+def decrypt_response(msg):
+    decoded = base64.b64decode(msg)
+    decrypted = _decrypt(decoded)
+    decompressed = zlib.decompress(decrypted)
+    return decompressed
 
 
 def update_all():

@@ -25,11 +25,21 @@
                         </a>
                     </li>
                 {% endif %}
+
+                {% comment %}
                 <li {% if view == 'data' %}class="active"{% endif %}>
                     <a href="{% url 'sw_parser:log_home' %}">
                         <i class="fa fa-database"></i> Data Logs
                     </a>
                 </li>
+                {% endcomment %}
+
+                <li class="disabled">
+                    <p class="navbar-text">
+                        <i class="fa fa-database"></i> Data Logs
+                    </p>
+                </li>
+
                 <li {% if view == 'bestiary' %}class="active"{% endif %}>
                     <a href="{% url 'bestiary:home' %}">
                         <span class="fa fa-book"></span> Bestiary
@@ -50,7 +60,7 @@
                         {% if user.is_staff %}
                             <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
                         {% endif %}
-                        <li><a href="{% url 'sw_parser:home' %}"><span class="fa fa-cloud-download"></span> Import/Export</a></li>
+                        <li><a href="{% url 'herders:import_export_home' %}"><span class="fa fa-cloud-download"></span> Import/Export</a></li>
                         <li><a href="{% url 'feedback:index' %}"><span class="fa fa-comments"></span> Feedback</a></li>
                         <li><a href="{% url 'herders:profile_following' profile_name=user.username %}"><span class="fa fa-user"></span> Friends</a></li>
                         <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>

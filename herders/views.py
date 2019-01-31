@@ -2527,13 +2527,16 @@ def rune_craft_delete(request, profile_name, craft_id):
 
 
 @login_required
-def import_export_home(request):
-    return render(request, 'herders/profile/import_export/base.html', context={'view': 'importexport'})
+def import_export_home(request, profile_name):
+    return render(request, 'herders/profile/import_export/base.html', context={
+        'profile_name': profile_name,
+        'view': 'importexport'
+    })
 
 
 @login_required
 @csrf_exempt
-def import_pcap(request):
+def import_pcap(request, profile_name):
     request.upload_handlers = [TemporaryFileUploadHandler()]
     return _import_pcap(request)
 
@@ -2556,12 +2559,13 @@ def _get_import_options(form_data):
 
 
 @csrf_protect
-def _import_pcap(request):
+def _import_pcap(request, profile_name):
     errors = []
     validation_failures = []
 
     if request.POST:
         form = ImportPCAPForm(request.POST, request.FILES)
+        form.helper.form_action = reverse('herders:import_pcap', kwargs={'profile_name': profile_name})
 
         if form.is_valid():
             summoner = get_object_or_404(Summoner, user__username=request.user.username)
@@ -2603,6 +2607,7 @@ def _import_pcap(request):
         )
 
     context = {
+        'profile_name': profile_name,
         'form': form,
         'errors': errors,
         'validation_failures': validation_failures,
@@ -2613,7 +2618,7 @@ def _import_pcap(request):
 
 
 @login_required
-def import_sw_json(request):
+def import_sw_json(request, profile_name):
     errors = []
     validation_failures = []
     request.session['import_stage'] = None
@@ -2625,6 +2630,7 @@ def import_sw_json(request):
         request.session.save()
 
         form = ImportSWParserJSONForm(request.POST, request.FILES)
+        form.helper.form_action = reverse('herders:import_swparser', kwargs={'profile_name': profile_name})
 
         if form.is_valid():
             summoner = get_object_or_404(Summoner, user__username=request.user.username)
@@ -2662,6 +2668,7 @@ def import_sw_json(request):
         )
 
     context = {
+        'profile_name': profile_name,
         'form': form,
         'errors': errors,
         'validation_failures': validation_failures,
@@ -2672,7 +2679,7 @@ def import_sw_json(request):
 
 
 @login_required
-def import_status(request):
+def import_status(request, profile_name):
     task_id = request.GET.get('id', request.session.get('import_task_id'))
     task = AsyncResult(task_id)
 

@@ -60,7 +60,7 @@
                         {% if user.is_staff %}
                             <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
                         {% endif %}
-                        <li><a href="{% url 'herders:import_export_home' %}"><span class="fa fa-cloud-download"></span> Import/Export</a></li>
+                        <li><a href="{% url 'herders:import_export_home' profile_name=user.username %}"><span class="fa fa-cloud-download"></span> Import/Export</a></li>
                         <li><a href="{% url 'feedback:index' %}"><span class="fa fa-comments"></span> Feedback</a></li>
                         <li><a href="{% url 'herders:profile_following' profile_name=user.username %}"><span class="fa fa-user"></span> Friends</a></li>
                         <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>

@@ -12,12 +12,12 @@
                     <div class="panel-body">
                         <div class="col-md-6">
                             <h2>Network Capture</h2>
-                            <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_pcap' %}" role="button">Import PCAP capture</a></p>
+                            <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'herders:import_pcap' profile_name=request.user.username %}" role="button">Import PCAP capture</a></p>
                             <p>Use a packet capture tool to record network traffic directly from your phone.</p>
                         </div>
                         <div class="col-md-6">
                             <h2>JSON Data</h2>
-                            <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'sw_parser:import_swparser' %}" role="button">Import SW JSON</a></p>
+                            <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'herders:import_swparser' profile_name=request.user.username  %}" role="button">Import SW JSON</a></p>
                             <p>Upload extracted JSON data produced by using the <a href="https://github.com/Xzandro/sw-exporter">Summoner's War Exporter</a> or SWProxy program.</p>
                         </div>
                     </div>
@@ -28,25 +28,12 @@
             <div class="row">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-md-offset-3">
                             <h2>SWOP Optimizer</h2>
                             <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                                <a class="btn btn-primary btn-lg" href="{% url 'sw_parser:export_win10_optimizer' %}" role="button">Download File</a>
+                                <a class="btn btn-primary btn-lg" href="{% url 'herders:export_win10_optimizer' profile_name=request.user.username  %}" role="button">Download File</a>
                             </div>
                             <p>Windows 10 app or <a href="http://tool.swop.one" target="_blank">online version.</a></p>
-                        </div>
-                        <div class="col-md-6">
-                            <h2>Legacy Optimizer</h2>
-                            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                                <a class="btn btn-primary btn-lg" href="{% url 'sw_parser:export_optimizer' %}" role="button">Copy Text</a>
-                                <a class="btn btn-primary btn-lg" href="{% url 'sw_parser:export_optimizer_file' %}" role="button">Download File</a>
-                            </div>
-                            <p>Data for the various optimizers using the original format in redeemer40's optimizer.</p>
-                            <ul>
-                                <li><a href="https://github.com/nikilauda1983/sw_optimize/releases" target="_blank">Java rune optimizer</a></li>
-                                <li><a href="http://arybin2013.wixsite.com/anton-rybin-site/windows" target="_blank">Windows Optimizer (Windows Vista SP2/7 (SP1)/8/10)</a></li>
-                                <li><a href="http://swrunes.all.my" target="_blank">Original optimizer</a></li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -55,7 +42,3 @@
     </div>
 
 {% endblock content %}
-
-{% block javascript_compressed %}
-<script type="text/javascript" src="{% static 'sw_parser/custom.js' %}"></script>
-{% endblock %}

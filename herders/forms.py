@@ -1371,6 +1371,7 @@ class AddRuneCraftInstanceForm(ModelForm):
         )
 
 
+# Profile import/export
 class MonsterImportOptionsMixin(forms.Form):
     missing_choices = (
         (1, 'Delete missing'),
@@ -1519,7 +1520,6 @@ class ImportSWParserJSONForm(MonsterImportOptionsMixin, forms.Form):
     )
 
     helper = FormHelper()
-    helper.form_action = 'sw_parser:import_swparser'
     helper.form_class = 'import-form'
     helper.layout = Layout(
         Div(

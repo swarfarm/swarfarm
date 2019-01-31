@@ -1,8 +1,8 @@
-Django==2.1.4
+Django>=2.1.0,<2.2.0
 gunicorn
 eventlet
 psycopg2-binary
-amqp==2.1.3
+amqp
 bcrypt
 bitstring
 bugsnag

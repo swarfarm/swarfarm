@@ -66,9 +66,12 @@ sudo mv ~/celery.service /etc/systemd/system/celery.service
 sudo mv ~/celery_beat.service /etc/systemd/system/celery_beat.service
 
 sudo systemctl daemon-reload
+sudo systemctl enable swarfarm
+sudo systemctl enable celery
+sudo systemctl enable celery_beat
 sudo service swarfarm start
-sudo service celeryd start
-sudo service celerybeat start
+sudo service celery start
+sudo service celery_beat start
 
 pyenv deactivate
 echo "Done! Check the console for any errors."

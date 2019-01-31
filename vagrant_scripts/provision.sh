@@ -20,8 +20,11 @@ echo "host    all             all             all                     md5" | sud
 sudo service postgresql restart
 
 # Set up database and user
-sudo -u postgres psql --command="CREATE DATABASE swarfarm_dev;"
+sudo -u postgres psql --command="CREATE DATABASE swarfarm_dev template=template0 ENCODING='UTF8' LC_COLLATE='en_US.UTF-8' LC_CTYPE='en_US.UTF-8';"
 sudo -u postgres psql --command="CREATE USER swarfarmer_dev WITH PASSWORD 'intentionallyweak';"
+sudo -u postgres psql --command="ALTER ROLE swarfarmer_dev SET client_encoding TO 'utf8';"
+sudo -u postgres psql --command="ALTER ROLE swarfarmer_dev SET default_transaction_isolation TO 'read committed';"
+sudo -u postgres psql --command="ALTER ROLE swarfarmer_dev SET timezone TO 'UTC';"
 sudo -u postgres psql --command="GRANT ALL PRIVILEGES ON DATABASE swarfarm_dev TO swarfarmer_dev;"
 
 # Set up nginx

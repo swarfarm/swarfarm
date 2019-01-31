@@ -701,34 +701,6 @@ class Fusion(models.Model):
 
         return cost
 
-    # TODO: Move this to view or something out of bestiary
-    # def missing_awakening_cost(self, owner):
-    #     # This calculation takes into account owned monsters which can be used as fusion ingredients.
-    #     owned_ingredients = MonsterInstance.objects.filter(
-    #         monster__pk__in=self.ingredients.values_list('pk', flat=True),
-    #         ignore_for_fusion=False,
-    #         owner=owner,
-    #     )
-    #     total_cost = self.total_awakening_cost(owned_ingredients)
-    #     essence_storage = owner.storage.get_storage()
-    #
-    #     missing_essences = {
-    #         element: {
-    #             size: total_cost[element][size] - essence_storage[element][size] if total_cost[element][size] > essence_storage[element][size] else 0
-    #             for size, qty in element_sizes.items()
-    #         }
-    #         for element, element_sizes in total_cost.items()
-    #     }
-    #
-    #     # Check if there are any missing
-    #     sufficient_qty = True
-    #     for sizes in missing_essences.values():
-    #         for qty in sizes.values():
-    #             if qty > 0:
-    #                 sufficient_qty = False
-    #
-    #     return sufficient_qty, missing_essences
-
 
 class Building(models.Model):
     AREA_GENERAL = 0

@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from bestiary.models import Monster, MonsterSkill as Skill, MonsterLeaderSkill as LeaderSkill, \
-    MonsterSkillEffect as Effect, MonsterSkillScalingStat as ScalingStat, MonsterSource as Source, CraftMaterial, \
+
+from bestiary.models import Monster, Skill, LeaderSkill, SkillEffect, ScalingStat, Source, CraftMaterial, \
     HomunculusSkillCraftCost, HomunculusSkill
 from herders.models import MonsterTag, RuneInstance, TeamGroup, Team, MonsterInstance, Summoner
 
@@ -20,7 +20,7 @@ class MonsterSourceSerializer(serializers.ModelSerializer):
 
 class MonsterSkillEffectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Effect
+        model = SkillEffect
         fields = ('name', 'is_buff', 'description', 'icon_filename')
 
 

@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from .models import CraftMaterial, MonsterSource as Source, MonsterSkillEffect as Effect, \
-    MonsterSkillEffectDetail as EffectDetail, MonsterSkill as Skill, MonsterLeaderSkill as LeaderSkill, \
+from .models import CraftMaterial, Source, SkillEffect, SkillEffectDetail, Skill, LeaderSkill, \
     HomunculusSkill, HomunculusSkillCraftCost, MonsterCraftCost, Monster, Fusion, Building, MonsterGuide
 
 
@@ -29,7 +28,7 @@ class SourceSerializer(serializers.ModelSerializer):
 
 class SkillEffectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Effect
+        model = SkillEffect
         fields = ('id', 'url', 'name', 'is_buff', 'description', 'icon_filename')
         extra_kwargs = {
             'url': {
@@ -42,7 +41,7 @@ class SkillEffectDetailSerializer(serializers.ModelSerializer):
     effect = SkillEffectSerializer()
 
     class Meta:
-        model = EffectDetail
+        model = SkillEffectDetail
         fields = [
             'effect',
             'aoe', 'single_target', 'self_effect',

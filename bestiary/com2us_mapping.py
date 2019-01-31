@@ -1,4 +1,4 @@
-from bestiary.models import Monster, MonsterLeaderSkill as LeaderSkill
+from bestiary.models import Monster, LeaderSkill as LeaderSkill
 from herders.models import RuneInstance, RuneCraftInstance
 
 element_map = {

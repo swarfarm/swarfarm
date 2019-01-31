@@ -4,9 +4,8 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
 
 from .api_filters import MonsterFilter, SkillFilter
-from .models import Monster, MonsterLeaderSkill as LeaderSkill, MonsterSkill as Skill, \
-    MonsterSkillEffect as Effect, MonsterSkillEffectDetail as EffectDetail, MonsterSource as Source, \
-    MonsterSkillScalingStat as ScalingStat, MonsterCraftCost, CraftMaterial, Dungeon, Level
+from .models import Monster, LeaderSkill, Skill, SkillEffect, SkillEffectDetail, Source, ScalingStat, MonsterCraftCost, \
+    CraftMaterial, Dungeon, Level
 
 
 class LevelNode(DjangoObjectType):
@@ -45,14 +44,14 @@ class LeaderSkillNode(DjangoObjectType):
 
 class EffectNode(DjangoObjectType):
     class Meta:
-        model = Effect
+        model = SkillEffect
         interfaces = (relay.Node,)
         filter_fields = []
 
 
 class EffectDetailNode(DjangoObjectType):
     class Meta:
-        model = EffectDetail
+        model = SkillEffectDetail
         interfaces = (relay.Node,)
         filter_fields = []
 

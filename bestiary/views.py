@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from .filters import MonsterFilter
 from .forms import FilterMonsterForm, SkillForm
-from .models import Monster, MonsterSkill as Skill
+from .models import Monster, Skill
 
 
 def bestiary(request):

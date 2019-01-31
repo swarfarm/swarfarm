@@ -16,8 +16,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.fields import AdvancedSelectMultiple
-from bestiary.models import Monster, MonsterSkillEffect as Effect, MonsterLeaderSkill as LeaderSkill, \
-    MonsterSkillScalingStat as ScalingStat
+from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
     RuneInstance, RuneCraftInstance, BuildingInstance
@@ -527,13 +526,13 @@ class FilterMonsterInstanceForm(forms.Form):
     )
     buff_debuff_effects = AdvancedSelectMultiple(
         label='Buffs/Debuffs',
-        queryset=Effect.objects.exclude(icon_filename=''),
+        queryset=SkillEffect.objects.exclude(icon_filename=''),
         required=False,
         widget=EffectSelectMultipleWidget,
     )
     other_effects = forms.ModelMultipleChoiceField(
         label='Other Effects',
-        queryset=Effect.objects.filter(icon_filename=''),
+        queryset=SkillEffect.objects.filter(icon_filename=''),
         required=False,
     )
     effects_logic = forms.BooleanField(

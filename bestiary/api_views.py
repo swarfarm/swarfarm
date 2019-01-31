@@ -78,7 +78,7 @@ class MonsterLeaderSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSe
 
 
 class MonsterSkillEffectViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = Effect.objects.all().order_by('pk')
+    queryset = SkillEffect.objects.all().order_by('pk')
     serializer_class = SkillEffectSerializer
     pagination_class = BestiarySetPagination
 

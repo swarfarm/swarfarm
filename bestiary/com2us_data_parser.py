@@ -15,8 +15,7 @@ from django.conf import settings
 from sympy import simplify
 
 from bestiary.com2us_mapping import *
-from .models import MonsterSkill as Skill, MonsterSkillScalingStat as ScalingStat, MonsterSkillEffect as Effect, \
-    CraftMaterial, MonsterCraftCost, HomunculusSkill, HomunculusSkillCraftCost
+from .models import Skill, ScalingStat, SkillEffect, CraftMaterial, MonsterCraftCost, HomunculusSkill, HomunculusSkillCraftCost
 
 
 def _decrypt(msg):
@@ -106,7 +105,7 @@ def parse_skill_data(preview=False):
     homunculus_skill_list = [json.loads(row['master id']) for row in homunculus_skill_table['rows']]
 
     scaling_stats = ScalingStat.objects.all()
-    ignore_def_effect = Effect.objects.get(name='Ignore DEF')
+    ignore_def_effect = SkillEffect.objects.get(name='Ignore DEF')
 
     # Tracking IDs of skills with known issues
     golem_def_skills = [2401, 2402, 2403, 2404, 2405, 2406, 2407, 2410]

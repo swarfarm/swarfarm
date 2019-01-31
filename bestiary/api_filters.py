@@ -1,7 +1,6 @@
 import django_filters.rest_framework as filters
 
-from .models import Monster, MonsterSkillEffect as Effect, MonsterSkill as Skill, MonsterLeaderSkill as LeaderSkill, \
-    MonsterSkillScalingStat as ScalingStat
+from .models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat
 
 
 class MonsterFilter(filters.FilterSet):
@@ -43,7 +42,7 @@ class SkillFilter(filters.FilterSet):
     description = filters.CharFilter(method='filter_description')
     scaling_stats__pk = filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
     effects_logic = filters.BooleanFilter(method='filter_effects_logic')
-    effect__pk = filters.ModelMultipleChoiceFilter(queryset=Effect.objects.all(), method='filter_skill_effects')
+    effect__pk = filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_skill_effects')
     used_on = filters.NumberFilter(method='filter_used_on')
 
     class Meta:

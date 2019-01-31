@@ -11,8 +11,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
-from bestiary.models import Monster, MonsterSkill as Skill, MonsterLeaderSkill as LeaderSkill, \
-    MonsterSkillEffect as Effect, MonsterSource as Source
+from bestiary.models import Monster, Skill, LeaderSkill, SkillEffect, Source
 from herders.models import RuneCraftInstance, MonsterInstance, RuneInstance, TeamGroup, Team, Summoner
 from .serializers import MonsterSerializer, MonsterSummarySerializer, MonsterSkillSerializer, \
     MonsterLeaderSkillSerializer, MonsterSkillEffectSerializer, MonsterSourceSerializer, MonsterInstanceSerializer, \
@@ -68,7 +67,7 @@ class MonsterLeaderSkillViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class MonsterSkillEffectViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Effect.objects.all()
+    queryset = SkillEffect.objects.all()
     serializer_class = MonsterSkillEffectSerializer
     pagination_class = BestiarySetPagination
 

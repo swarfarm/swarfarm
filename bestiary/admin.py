@@ -3,9 +3,9 @@ from django.db.models import TextField, ForeignKey
 from django.forms.widgets import TextInput
 from django_select2.forms import Select2Widget
 
-from .models import Monster, MonsterSkill, MonsterSkillEffectDetail, MonsterCraftCost, Dungeon, Level, MonsterGuide, \
-    HomunculusSkillCraftCost, HomunculusSkill, MonsterLeaderSkill, MonsterSkillEffect, MonsterSkillScalingStat, \
-    MonsterSource, Fusion, Building, CraftMaterial
+from .models import Monster, Skill, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, MonsterGuide, \
+    HomunculusSkillCraftCost, HomunculusSkill, LeaderSkill, SkillEffect, ScalingStat, \
+    Source, Fusion, Building, CraftMaterial
 
 
 class MonsterCraftCostInline(admin.TabularInline):
@@ -146,14 +146,14 @@ class MonsterAdmin(admin.ModelAdmin):
 
 
 class EffectDetailInline(admin.StackedInline):
-    model = MonsterSkillEffectDetail
+    model = SkillEffectDetail
     extra = 3
     formfield_overrides = {
         TextField: {'widget': TextInput},
     }
 
 
-@admin.register(MonsterSkill)
+@admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
     readonly_fields = ('used_on',)
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
@@ -183,25 +183,25 @@ class HomunculusSkillAdmin(admin.ModelAdmin):
     }
 
 
-@admin.register(MonsterLeaderSkill)
+@admin.register(LeaderSkill)
 class LeaderSkillAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'attribute', 'amount', 'skill_string', 'area',)
     list_filter = ('attribute', 'area',)
 
 
-@admin.register(MonsterSkillEffect)
+@admin.register(SkillEffect)
 class EffectAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'is_buff')
 
 
-@admin.register(MonsterSkillScalingStat)
+@admin.register(ScalingStat)
 class ScalingStatAdmin(admin.ModelAdmin):
     list_display = ['stat', 'com2us_desc', 'description']
     search_fields = ['stat', 'com2us_desc']
     save_as = True
 
 
-@admin.register(MonsterSource)
+@admin.register(Source)
 class SourceAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'meta_order',)
 

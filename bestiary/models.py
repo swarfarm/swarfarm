@@ -63,9 +63,9 @@ class Monster(models.Model):
     is_awakened = models.BooleanField(default=False, help_text='Is the awakened form')
     awaken_bonus = models.TextField(blank=True, help_text='Bonus given upon awakening')
 
-    skills = models.ManyToManyField('MonsterSkill', blank=True)
+    skills = models.ManyToManyField('Skill', blank=True)
     skill_ups_to_max = models.IntegerField(null=True, blank=True, help_text='Number of skill-ups required to max all skills')
-    leader_skill = models.ForeignKey('MonsterLeaderSkill', on_delete=models.SET_NULL, null=True, blank=True)
+    leader_skill = models.ForeignKey('LeaderSkill', on_delete=models.SET_NULL, null=True, blank=True)
 
     # 1-star lvl 1 values from data source
     raw_hp = models.IntegerField(null=True, blank=True, help_text='HP value from game data files')
@@ -117,7 +117,7 @@ class Monster(models.Model):
     awaken_mats_magic_mid = models.IntegerField(blank=True, default=0)
     awaken_mats_magic_high = models.IntegerField(blank=True, default=0)
 
-    source = models.ManyToManyField('MonsterSource', blank=True, help_text='Where this monster can be acquired from')
+    source = models.ManyToManyField('Source', blank=True, help_text='Where this monster can be acquired from')
     farmable = models.BooleanField(default=False, help_text='Monster can be acquired easily without luck')
     fusion_food = models.BooleanField(default=False, help_text='Monster is used as a fusion ingredient')
     bestiary_slug = models.SlugField(max_length=255, editable=False, null=True)
@@ -217,7 +217,7 @@ class Monster(models.Model):
         ]
 
     def all_skill_effects(self):
-        return MonsterSkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))
+        return SkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))
 
     def get_awakening_materials(self):
         mats = OrderedDict()
@@ -386,13 +386,13 @@ class Monster(models.Model):
             return self.name + ' (' + self.element.capitalize() + ')'
 
 
-class MonsterSkill(models.Model):
+class Skill(models.Model):
     name = models.CharField(max_length=40)
     com2us_id = models.IntegerField(blank=True, null=True, help_text='ID given in game data files')
     description = models.TextField()
     slot = models.IntegerField(default=1, help_text='Which button position the skill is in during battle')
-    skill_effect = models.ManyToManyField('MonsterSkillEffect', blank=True)
-    effect = models.ManyToManyField('MonsterSkillEffect', through='MonsterSkillEffectDetail', blank=True, related_name='effect', help_text='Detailed skill effect information')
+    skill_effect = models.ManyToManyField('SkillEffect', blank=True)
+    effect = models.ManyToManyField('SkillEffect', through='SkillEffectDetail', blank=True, related_name='effect', help_text='Detailed skill effect information')
     cooltime = models.IntegerField(null=True, blank=True, help_text='Number of turns until skill can be used again')
     hits = models.IntegerField(default=1, help_text='Number of times this skill hits an enemy')
     aoe = models.BooleanField(default=False, help_text='Skill affects all enemies or allies')
@@ -402,7 +402,7 @@ class MonsterSkill(models.Model):
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
     multiplier_formula = models.TextField(null=True, blank=True, help_text='Parsed multiplier formula')
     multiplier_formula_raw = models.CharField(max_length=150, null=True, blank=True, help_text='Multiplier formula given in game data files')
-    scaling_stats = models.ManyToManyField('MonsterSkillScalingStat', blank=True, help_text='Monster stats which this skill scales on')
+    scaling_stats = models.ManyToManyField('ScalingStat', blank=True, help_text='Monster stats which this skill scales on')
 
     def image_url(self):
         if self.icon_filename:
@@ -437,7 +437,7 @@ class MonsterSkill(models.Model):
         verbose_name_plural = 'Skills'
 
 
-class MonsterLeaderSkill(models.Model):
+class LeaderSkill(models.Model):
     ATTRIBUTE_HP = 1
     ATTRIBUTE_ATK = 2
     ATTRIBUTE_DEF = 3
@@ -522,22 +522,22 @@ class MonsterLeaderSkill(models.Model):
         verbose_name_plural = 'Leader Skills'
 
 
-class MonsterSkillEffectBuffsManager(models.Manager):
+class SkillEffectBuffsManager(models.Manager):
     def get_queryset(self):
-        return super(MonsterSkillEffectBuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=True).exclude(icon_filename='')
+        return super(SkillEffectBuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=True).exclude(icon_filename='')
 
 
-class MonsterSkillEffectDebuffsManager(models.Manager):
+class SkillEffectDebuffsManager(models.Manager):
     def get_queryset(self):
-        return super(MonsterSkillEffectDebuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=False).exclude(icon_filename='')
+        return super(SkillEffectDebuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=False).exclude(icon_filename='')
 
 
-class MonsterSkillEffectOtherManager(models.Manager):
+class SkillEffectOtherManager(models.Manager):
     def get_queryset(self):
-        return super(MonsterSkillEffectOtherManager, self).get_queryset().filter(icon_filename='')
+        return super(SkillEffectOtherManager, self).get_queryset().filter(icon_filename='')
 
 
-class MonsterSkillEffect(models.Model):
+class SkillEffect(models.Model):
     is_buff = models.BooleanField(default=True, help_text='Effect is beneficial to affected monster')
     name = models.CharField(max_length=40)
     description = models.TextField()
@@ -560,9 +560,9 @@ class MonsterSkillEffect(models.Model):
         return self.name
 
 
-class MonsterSkillEffectDetail(models.Model):
-    skill = models.ForeignKey(MonsterSkill, on_delete=models.CASCADE)
-    effect = models.ForeignKey(MonsterSkillEffect, on_delete=models.CASCADE)
+class SkillEffectDetail(models.Model):
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
+    effect = models.ForeignKey(SkillEffect, on_delete=models.CASCADE)
     aoe = models.BooleanField(default=False, help_text='Effect applies to entire friendly or enemy group')
     single_target = models.BooleanField(default=False, help_text='Effect applies to a single monster')
     self_effect = models.BooleanField(default=False, help_text='Effect applies to the monster using the skill')
@@ -578,7 +578,7 @@ class MonsterSkillEffectDetail(models.Model):
     note = models.TextField(blank=True, null=True, help_text="Explain anything else that doesn't fit in other fields")
 
 
-class MonsterSkillScalingStat(models.Model):
+class ScalingStat(models.Model):
     stat = models.CharField(max_length=20)
     com2us_desc = models.CharField(max_length=30, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -593,17 +593,17 @@ class MonsterSkillScalingStat(models.Model):
 
 
 class HomunculusSkill(models.Model):
-    skill = models.ForeignKey(MonsterSkill, on_delete=models.CASCADE)
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     monsters = models.ManyToManyField(Monster)
     craft_materials = models.ManyToManyField('CraftMaterial', through='HomunculusSkillCraftCost', help_text='Crafting materials required to purchase')
     mana_cost = models.IntegerField(default=0, help_text='Cost to purchase')
-    prerequisites = models.ManyToManyField(MonsterSkill, blank=True, related_name='homunculus_prereq', help_text='Skills which must be acquired first')
+    prerequisites = models.ManyToManyField(Skill, blank=True, related_name='homunculus_prereq', help_text='Skills which must be acquired first')
 
     def __str__(self):
         return '{} ({})'.format(self.skill, self.skill.com2us_id)
 
 
-class MonsterSource(models.Model):
+class Source(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
@@ -812,7 +812,7 @@ class CraftMaterial(models.Model):
     name = models.CharField(max_length=40)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
     sell_value = models.IntegerField(blank=True, null=True)
-    source = models.ManyToManyField(MonsterSource, blank=True)
+    source = models.ManyToManyField(Source, blank=True)
 
     def image_url(self):
         if self.icon_filename:

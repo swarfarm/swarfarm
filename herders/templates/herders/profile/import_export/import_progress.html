@@ -111,7 +111,7 @@ function updateImportProgress() {
     var $success_indicator = $('#success_indicator');
 
     var complete_status = '<span class="glyphicon glyphicon-check"></span>';
-    var status_url = '/profiles/' + PROFILE_NAME + '/data/import/progress/';
+    var status_url = '/profile/' + PROFILE_NAME + '/import/progress/';
 
     $.ajax({
         type: 'get',
@@ -119,8 +119,8 @@ function updateImportProgress() {
         global: false
     }).done(function(response) {
         console.log(response.status, response.result);
-        const status = response.status;
-        const info = response.result;
+        var status = response.status;
+        var info = response.result;
 
         switch (status) {
             case 'PENDING':

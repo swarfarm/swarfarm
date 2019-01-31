@@ -2595,7 +2595,7 @@ def _import_pcap(request, profile_name):
                         task = com2us_data_import.delay(data, summoner.pk, import_options)
                         request.session['import_task_id'] = task.task_id
 
-                        return render(request, 'herders/profile/import_export/import_progress.html')
+                        return render(request, 'herders/profile/import_export/import_progress.html', context={'profile_name': profile_name})
 
                 else:
                     errors.append("Unable to find Summoner's War data in the uploaded file")
@@ -2661,7 +2661,7 @@ def import_sw_json(request, profile_name):
                     task = com2us_data_import.delay(data, summoner.pk, import_options)
                     request.session['import_task_id'] = task.task_id
 
-                    return render(request, 'herders/profile/import_export/import_progress.html')
+                    return render(request, 'herders/profile/import_export/import_progress.html', context={'profile_name': profile_name})
     else:
         form = ImportSWParserJSONForm(
             initial=request.user.summoner.preferences.get('import_options', {})

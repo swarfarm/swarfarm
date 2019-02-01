@@ -1579,7 +1579,24 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                 owner=summoner,
             )
             total_cost = fusion.total_awakening_cost(awakened_owned_ingredients)
-            essences_satisfied, total_missing = fusion.missing_awakening_cost(summoner)
+
+            # Calculate fulfilled/missing essences
+            essence_storage = summoner.storage.get_storage()
+
+            total_missing = {
+                element: {
+                    size: total_cost[element][size] - essence_storage[element][size] if total_cost[element][size] > essence_storage[element][size] else 0
+                    for size, qty in element_sizes.items()
+                }
+                for element, element_sizes in total_cost.items()
+            }
+
+            # Check if there are any missing
+            essences_satisfied = True
+            for sizes in total_missing.values():
+                for qty in sizes.values():
+                    if qty > 0:
+                        essences_satisfied = False
 
             # Determine the total/missing essences including sub-fusions
             if fusion.sub_fusion_available():

@@ -57,7 +57,7 @@ def register(request):
 
     if request.method == 'POST':
         if form.is_valid():
-            if User.objects.filter(username=form.cleaned_data['username']).exists():
+            if User.objects.filter(username__iexact=form.cleaned_data['username']).exists():
                 form.add_error('username', 'Username already taken')
             else:
                 new_user = None

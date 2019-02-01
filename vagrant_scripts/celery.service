@@ -1,6 +1,5 @@
 [Unit]
-Description=swarfarm gunicorn daemon
-Requires=swarfarm.socket
+Description=swarfarm celery task runner
 After=network.target
 
 [Service]

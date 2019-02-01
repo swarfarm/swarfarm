@@ -2555,7 +2555,7 @@ def import_export_home(request, profile_name):
 @csrf_exempt
 def import_pcap(request, profile_name):
     request.upload_handlers = [TemporaryFileUploadHandler()]
-    return _import_pcap(request)
+    return _import_pcap(request, profile_name)
 
 
 def _get_import_options(form_data):

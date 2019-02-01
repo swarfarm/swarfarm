@@ -73,7 +73,7 @@ class SkillNode(DjangoObjectType):
     scaling_stats = graphene.List(of_type=ScalingStatNode)
 
     def resolve_effects(self, info, *args, **kwargs):
-        return self.monsterskilleffectdetail_set.all()
+        return self.skilleffectdetail_set.all()
 
     def resolve_scaling_stats(self, info, *args, **kwargs):
         return self.scaling_stats.all()
@@ -213,9 +213,9 @@ def _optimized_monster_queryset():
 def _optimized_skill_queryset():
     return Skill.objects.all().prefetch_related(
         'scaling_stats',
-        'monsterskilleffectdetail_set',
-        'monsterskilleffectdetail_set__effect',
-        'monsterskilleffectdetail_set__effect__effect',
+        'skilleffectdetail_set',
+        'skilleffectdetail_set__effect',
+        'skilleffectdetail_set__effect__effect',
     )
 
 

@@ -52,8 +52,8 @@ class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Skill.objects.all().prefetch_related(
         'scaling_stats',
         'monster_set',
-        'monsterskilleffectdetail_set',
-        'monsterskilleffectdetail_set__effect',
+        'skilleffectdetail_set',
+        'skilleffectdetail_set__effect',
     ).order_by('pk')
     serializer_class = SkillSerializer
     pagination_class = BestiarySetPagination
@@ -93,8 +93,8 @@ class HomunculusSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = HomunculusSkill.objects.all().order_by('pk').prefetch_related(
         'skill',
         'skill__monster_set',
-        'skill__monsterskilleffectdetail_set',
-        'skill__monsterskilleffectdetail_set__effect',
+        'skill__skilleffectdetail_set',
+        'skill__skilleffectdetail_set__effect',
         'homunculusskillcraftcost_set',
         'homunculusskillcraftcost_set__craft',
         'prerequisites',

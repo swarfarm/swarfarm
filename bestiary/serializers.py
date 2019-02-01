@@ -53,7 +53,7 @@ class SkillEffectDetailSerializer(serializers.ModelSerializer):
 
 class SkillSerializer(serializers.HyperlinkedModelSerializer):
     level_progress_description = serializers.SerializerMethodField()
-    effects = SkillEffectDetailSerializer(many=True, read_only=True, source='monsterskilleffectdetail_set')
+    effects = SkillEffectDetailSerializer(many=True, read_only=True, source='skilleffectdetail_set')
     scales_with = serializers.SerializerMethodField()
     used_on = serializers.PrimaryKeyRelatedField(source='monster_set', many=True, read_only=True)
 

@@ -2715,7 +2715,7 @@ def import_status(request, profile_name):
 
 
 @login_required
-def export_win10_optimizer(request):
+def export_win10_optimizer(request, profile_name):
     summoner = get_object_or_404(Summoner, user=request.user)
 
     export_data = export_win10(summoner)

@@ -1,0 +1,13 @@
+[Unit]
+Description=swarfarm gunicorn daemon
+Requires=swarfarm.socket
+After=network.target
+
+[Service]
+User=vagrant
+Group=www-data
+WorkingDirectory=/vagrant
+ExecStart=/home/vagrant/.pyenv/versions/swarfarm-3.6.8/bin/gunicorn --chdir=/vagrant --workers 2 --worker-class eventlet --timeout 120 --bind 127.0.0.1:8001 --reload swarfarm.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

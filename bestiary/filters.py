@@ -1,8 +1,7 @@
 import django_filters
 from django.db.models import Q
 
-from herders.models import Monster, MonsterSkillEffect as Effect, MonsterSkill as Skill, \
-    MonsterLeaderSkill as LeaderSkill, MonsterSkillScalingStat as ScalingStat
+from .models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat
 
 
 class MonsterFilter(django_filters.FilterSet):
@@ -14,7 +13,7 @@ class MonsterFilter(django_filters.FilterSet):
     skills__scaling_stats__pk = django_filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
     skills__cooltime = django_filters.CharFilter(method='filter_skills_cooltime')
     effects_logic = django_filters.BooleanFilter(method='filter_effects_logic')
-    skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=Effect.objects.all(), method='filter_skill_effects')
+    skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_skill_effects')
 
     class Meta:
         model = Monster

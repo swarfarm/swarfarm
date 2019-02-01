@@ -2,9 +2,9 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-    config.vm.box = "bento/ubuntu-14.04"
+    config.vm.box = "bento/ubuntu-18.04"
     config.vm.provider "virtualbox" do |v|
-        v.memory = 2048
+        v.memory = 3072
         v.cpus = 2
     end
 
@@ -15,12 +15,10 @@ Vagrant.configure("2") do |config|
     config.vm.network "forwarded_port", guest: 6379, host: 6379  # redis
     config.vm.network "forwarded_port", guest: 8000, host: 8000  # manage.py runserver using remote python interpreter
 
-    config.vm.provision "file", source: "./vagrant_scripts/gunicorn_upstart.conf", destination: "gunicorn_upstart.conf"
-    config.vm.provision "file", source: "./vagrant_scripts/celery_upstart.conf", destination: "celery_upstart.conf"
-    config.vm.provision "file", source: "./vagrant_scripts/celery_beat_upstart.conf", destination: "celery_beat_upstart.conf"
+    config.vm.provision "file", source: "./vagrant_scripts/swarfarm.service", destination: "swarfarm.service"
+    config.vm.provision "file", source: "./vagrant_scripts/swarfarm.socket", destination: "swarfarm.socket"
+    config.vm.provision "file", source: "./vagrant_scripts/celery.service", destination: "celery.service"
+    config.vm.provision "file", source: "./vagrant_scripts/celery_beat.service", destination: "celery_beat.service"
     config.vm.provision "file", source: "./vagrant_scripts/nginx_config", destination: "nginx_config"
-    config.vm.provision "file", source: "./vagrant_scripts/pgbouncer.ini", destination: "pgbouncer.ini"
-    config.vm.provision "file", source: "./vagrant_scripts/pgbouncer_userlist.txt", destination: "pgbouncer_userlist.txt"
-    config.vm.provision "file", source: "./vagrant_scripts/pgbouncer_start", destination: "pgbouncer_start"
     config.vm.provision "shell", privileged: false, path: './vagrant_scripts/provision.sh'
 end

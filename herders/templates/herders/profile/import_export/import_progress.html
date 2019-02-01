@@ -1,4 +1,4 @@
-{% extends 'sw_parser/base.html' %}
+{% extends 'herders/profile/import_export/base.html' %}
 
 {% load staticfiles %}
 
@@ -111,15 +111,16 @@ function updateImportProgress() {
     var $success_indicator = $('#success_indicator');
 
     var complete_status = '<span class="glyphicon glyphicon-check"></span>';
+    var status_url = '/profile/' + PROFILE_NAME + '/import/progress/';
 
     $.ajax({
         type: 'get',
-        url: '/data/import/progress/',
+        url: status_url,
         global: false
     }).done(function(response) {
         console.log(response.status, response.result);
-        const status = response.status;
-        const info = response.result;
+        var status = response.status;
+        var info = response.result;
 
         switch (status) {
             case 'PENDING':

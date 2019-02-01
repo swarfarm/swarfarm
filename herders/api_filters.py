@@ -2,8 +2,8 @@ import django_filters
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-from .models import Monster, MonsterSkill as Skill, MonsterSkillEffect as Effect, MonsterLeaderSkill as LeaderSkill, \
-    MonsterSkillScalingStat as ScalingStat, MonsterInstance, MonsterTag, RuneInstance, Team
+from bestiary.models import Monster, Skill, SkillEffect, LeaderSkill, ScalingStat
+from .models import MonsterInstance, MonsterTag, RuneInstance, Team
 
 
 class SummonerFilter(django_filters.FilterSet):
@@ -25,7 +25,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
     monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
     monster__skills__scaling_stats__pk = django_filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
-    monster__skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=Effect.objects.all(), method='filter_monster__skills__skill_effect__pk')
+    monster__skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_monster__skills__skill_effect__pk')
     effects_logic = django_filters.BooleanFilter(method='filter_effects_logic')
     monster__fusion_food = django_filters.BooleanFilter(method='filter_monster__fusion_food')
 

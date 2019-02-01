@@ -8,8 +8,7 @@ from django import forms
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from herders.models import Monster, MonsterLeaderSkill as LeaderSkill, MonsterSkillScalingStat as ScalingStat, \
-    MonsterSkillEffect as Effect, MonsterSkill as Skill
+from .models import Monster, LeaderSkill, ScalingStat,  SkillEffect, Skill
 from .fields import AdvancedSelectMultiple
 from .widgets import EffectSelectMultipleWidget, ElementSelectMultipleWidget
 
@@ -105,19 +104,19 @@ class FilterMonsterForm(forms.Form):
     )
     buffs = AdvancedSelectMultiple(
         label='Buffs',
-        queryset=Effect.objects.filter(is_buff=True).exclude(icon_filename=''),
+        queryset=SkillEffect.objects.filter(is_buff=True).exclude(icon_filename=''),
         required=False,
         widget=EffectSelectMultipleWidget
     )
     debuffs = AdvancedSelectMultiple(
         label='Debuffs',
-        queryset=Effect.objects.filter(is_buff=False).exclude(icon_filename=''),
+        queryset=SkillEffect.objects.filter(is_buff=False).exclude(icon_filename=''),
         required=False,
         widget=EffectSelectMultipleWidget,
     )
     other_effects = forms.ModelMultipleChoiceField(
         label='Other Effects',
-        queryset=Effect.objects.filter(icon_filename=''),
+        queryset=SkillEffect.objects.filter(icon_filename=''),
         required=False,
     )
     effects_logic = forms.BooleanField(

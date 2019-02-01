@@ -112,7 +112,7 @@ INSTALLED_APPS = [
     'bestiary',
     'news',
     'feedback',
-    'sw_parser',
+    # 'sw_parser',
 ]
 
 if DEBUG:

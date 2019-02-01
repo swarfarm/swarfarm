@@ -1,33 +1,63 @@
+import json
 from collections import OrderedDict
 from copy import deepcopy
 
-from django.core.mail import mail_admins
-from django.urls import reverse
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from celery.result import AsyncResult
+from crispy_forms.bootstrap import FieldWithButtons, StrictButton, Field, Div
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.files.uploadhandler import TemporaryFileUploadHandler
+from django.core.mail import mail_admins
 from django.db import IntegrityError
+from django.db.models import FieldDoesNotExist, Q
 from django.forms.models import modelformset_factory
-from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
-from django.db.models import FieldDoesNotExist
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest, Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.template import loader, RequestContext, Context
+from django.template import loader
 from django.template.context_processors import csrf
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
-from .forms import *
-from .filters import *
-from .models import Summoner, Monster, Fusion, Building, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, RuneCraftInstance, Storage
+from bestiary.models import Monster, Fusion, Building
+from .filters import MonsterInstanceFilter, RuneInstanceFilter
+from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, FilterMonsterInstanceForm, \
+    EditBuildingForm, EditUserForm, EditSummonerForm, AddMonsterInstanceForm, BulkAddMonsterInstanceForm, \
+    BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
+    MonsterPieceForm, AddTeamGroupForm, EditTeamGroupForm, DeleteTeamGroupForm, EditTeamForm, FilterRuneForm, \
+    AddRuneInstanceForm, AssignRuneForm, AddRuneCraftInstanceForm, ImportPCAPForm, ImportSWParserJSONForm
+from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, \
+    RuneCraftInstance, Storage
+from .profile_parser import parse_pcap, validate_sw_json
+from .rune_optimizer_parser import export_win10
+from .tasks import com2us_data_import
 
 DEFAULT_VIEW_MODE = 'box'
+
+DEFAULT_IMPORT_OPTIONS = {
+    'clear_profile': False,
+    'default_priority': '',
+    'lock_monsters': True,
+    'minimum_stars': 1,
+    'ignore_silver': False,
+    'ignore_material': False,
+    'except_with_runes': True,
+    'except_light_and_dark': True,
+    'except_fusion_ingredient': True,
+    'delete_missing_monsters': 1,
+    'delete_missing_runes': 1,
+    'ignore_validation_errors': False
+}
+
 
 def register(request):
     form = RegisterUserForm(request.POST or None)
 
     if request.method == 'POST':
         if form.is_valid():
-            if User.objects.filter(username=form.cleaned_data['username']).exists():
+            if User.objects.filter(username__iexact=form.cleaned_data['username']).exists():
                 form.add_error('username', 'Username already taken')
             else:
                 new_user = None
@@ -2494,3 +2524,187 @@ def rune_craft_delete(request, profile_name, craft_id):
         return JsonResponse(response_data)
     else:
         return HttpResponseForbidden()
+
+
+@login_required
+def import_export_home(request, profile_name):
+    return render(request, 'herders/profile/import_export/base.html', context={
+        'profile_name': profile_name,
+        'view': 'importexport'
+    })
+
+
+@login_required
+@csrf_exempt
+def import_pcap(request, profile_name):
+    request.upload_handlers = [TemporaryFileUploadHandler()]
+    return _import_pcap(request)
+
+
+def _get_import_options(form_data):
+    return {
+        'clear_profile': form_data.get('clear_profile'),
+        'default_priority': form_data.get('default_priority'),
+        'lock_monsters': form_data.get('lock_monsters'),
+        'minimum_stars': int(form_data.get('minimum_stars', 1)),
+        'ignore_silver': form_data.get('ignore_silver'),
+        'ignore_material': form_data.get('ignore_material'),
+        'except_with_runes': form_data.get('except_with_runes'),
+        'except_light_and_dark': form_data.get('except_light_and_dark'),
+        'except_fusion_ingredient': form_data.get('except_fusion_ingredient'),
+        'delete_missing_monsters': form_data.get('missing_monster_action'),
+        'delete_missing_runes': form_data.get('missing_rune_action'),
+        'ignore_validation_errors': form_data.get('ignore_validation'),
+    }
+
+
+@csrf_protect
+def _import_pcap(request, profile_name):
+    errors = []
+    validation_failures = []
+
+    if request.POST:
+        form = ImportPCAPForm(request.POST, request.FILES)
+        form.helper.form_action = reverse('herders:import_pcap', kwargs={'profile_name': profile_name})
+
+        if form.is_valid():
+            summoner = get_object_or_404(Summoner, user__username=request.user.username)
+            uploaded_file = form.cleaned_data['pcap']
+            import_options = _get_import_options(form.cleaned_data)
+
+            if form.cleaned_data.get('save_defaults'):
+                summoner.preferences['import_options'] = import_options
+                summoner.save()
+
+            try:
+                data = parse_pcap(uploaded_file)
+            except Exception as e:
+                errors.append('Exception ' + str(type(e)) + ': ' + str(e))
+            else:
+                if data:
+                    schema_errors, validation_errors = validate_sw_json(data, request.user.summoner)
+
+                    if schema_errors:
+                        errors += schema_errors
+
+                    if validation_errors:
+                        validation_failures += validation_errors
+
+                    if not errors and (not validation_failures or import_options['ignore_validation_errors']):
+                        # Queue the import
+                        task = com2us_data_import.delay(data, summoner.pk, import_options)
+                        request.session['import_task_id'] = task.task_id
+
+                        return render(request, 'herders/profile/import_export/import_progress.html', context={'profile_name': profile_name})
+
+                else:
+                    errors.append("Unable to find Summoner's War data in the uploaded file")
+    else:
+        form = ImportPCAPForm(
+            initial=request.user.summoner.preferences.get('import_options', {
+                'ignore_silver': True
+            })
+        )
+
+    context = {
+        'profile_name': profile_name,
+        'form': form,
+        'errors': errors,
+        'validation_failures': validation_failures,
+        'view': 'importexport'
+    }
+
+    return render(request, 'herders/profile/import_export/import_pcap.html', context)
+
+
+@login_required
+def import_sw_json(request, profile_name):
+    errors = []
+    validation_failures = []
+    request.session['import_stage'] = None
+    request.session['import_total'] = 0
+    request.session['import_current'] = 0
+
+    if request.POST:
+        request.session['import_stage'] = None
+        request.session.save()
+
+        form = ImportSWParserJSONForm(request.POST, request.FILES)
+        form.helper.form_action = reverse('herders:import_swparser', kwargs={'profile_name': profile_name})
+
+        if form.is_valid():
+            summoner = get_object_or_404(Summoner, user__username=request.user.username)
+            uploaded_file = form.cleaned_data['json_file']
+            import_options = _get_import_options(form.cleaned_data)
+
+            if form.cleaned_data.get('save_defaults'):
+                summoner.preferences['import_options'] = import_options
+                summoner.save()
+
+            try:
+                data = json.load(uploaded_file)
+            except ValueError as e:
+                errors.append('Unable to parse file: ' + str(e))
+            except AttributeError:
+                errors.append('Issue opening uploaded file. Please try again.')
+            else:
+                schema_errors, validation_errors = validate_sw_json(data, request.user.summoner)
+
+                if schema_errors:
+                    errors.append(schema_errors)
+
+                if validation_errors:
+                    validation_failures += validation_errors
+
+                if not errors and (not validation_failures or import_options['ignore_validation_errors']):
+                    # Queue the import
+                    task = com2us_data_import.delay(data, summoner.pk, import_options)
+                    request.session['import_task_id'] = task.task_id
+
+                    return render(request, 'herders/profile/import_export/import_progress.html', context={'profile_name': profile_name})
+    else:
+        form = ImportSWParserJSONForm(
+            initial=request.user.summoner.preferences.get('import_options', {})
+        )
+
+    context = {
+        'profile_name': profile_name,
+        'form': form,
+        'errors': errors,
+        'validation_failures': validation_failures,
+        'view': 'importexport',
+    }
+
+    return render(request, 'herders/profile/import_export/import_sw_json.html', context)
+
+
+@login_required
+def import_status(request, profile_name):
+    task_id = request.GET.get('id', request.session.get('import_task_id'))
+    task = AsyncResult(task_id)
+
+    if task:
+        try:
+            return JsonResponse({
+                'status': task.status,
+                'result': task.result,
+            })
+        except:
+            return JsonResponse({
+                'status': 'error',
+            })
+    else:
+        raise Http404('Task ID not provided')
+
+
+@login_required
+def export_win10_optimizer(request):
+    summoner = get_object_or_404(Summoner, user=request.user)
+
+    export_data = export_win10(summoner)
+
+    response = HttpResponse(export_data)
+    response['Content-Disposition'] = 'attachment; filename=' + request.user.username + '_swarfarm_win10_optimizer_export.json'
+
+    return response
+

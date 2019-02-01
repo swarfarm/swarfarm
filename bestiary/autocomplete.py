@@ -3,7 +3,7 @@ from django.template import loader
 
 from dal import autocomplete
 
-from herders.models import Monster
+from .models import Monster
 
 
 class BestiaryAutocomplete(autocomplete.Select2QuerySetView):

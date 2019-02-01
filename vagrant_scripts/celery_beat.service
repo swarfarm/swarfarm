@@ -1,0 +1,12 @@
+[Unit]
+Description=swarfarm gunicorn daemon
+After=network.target
+
+[Service]
+User=vagrant
+Group=www-data
+WorkingDirectory=/vagrant
+ExecStart=/home/vagrant/.pyenv/versions/swarfarm-3.6.8/bin/celery --workdir=/vagrant -A swarfarm.celery beat --loglevel=info -S django
+
+[Install]
+WantedBy=multi-user.target

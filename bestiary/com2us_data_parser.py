@@ -1,18 +1,42 @@
-from enum import IntEnum
-from glob import iglob
-from PIL import Image
+import base64
 import binascii
 import csv
 import json
 import re
+import zlib
+from enum import IntEnum
+from glob import iglob
 from numbers import Number
-from sympy import simplify
-from bitstring import Bits, BitStream, ConstBitStream, ReadError
 
-from herders.models import MonsterSkill as Skill, MonsterSkillScalingStat as ScalingStat, MonsterSkillEffect as Effect, \
-    CraftMaterial, MonsterCraftCost, HomunculusSkill, HomunculusSkillCraftCost
-from sw_parser.com2us_mapping import *
-from sw_parser.com2us_parser import decrypt_response
+from Crypto.Cipher import AES
+from PIL import Image
+from bitstring import Bits, BitStream, ConstBitStream, ReadError
+from django.conf import settings
+from sympy import simplify
+
+from bestiary.com2us_mapping import *
+from .models import Skill, ScalingStat, SkillEffect, CraftMaterial, MonsterCraftCost, HomunculusSkill, HomunculusSkillCraftCost
+
+
+def _decrypt(msg):
+    obj = AES.new(
+        bytes(settings.SUMMONERS_WAR_SECRET_KEY, encoding='latin-1'),
+        AES.MODE_CBC,
+        b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    )
+    decrypted = obj.decrypt(msg)
+    return decrypted[:-decrypted[-1]]
+
+
+def decrypt_request(msg):
+    return _decrypt(base64.b64decode(msg))
+
+
+def decrypt_response(msg):
+    decoded = base64.b64decode(msg)
+    decrypted = _decrypt(decoded)
+    decompressed = zlib.decompress(decrypted)
+    return decompressed
 
 
 def update_all():
@@ -81,7 +105,7 @@ def parse_skill_data(preview=False):
     homunculus_skill_list = [json.loads(row['master id']) for row in homunculus_skill_table['rows']]
 
     scaling_stats = ScalingStat.objects.all()
-    ignore_def_effect = Effect.objects.get(name='Ignore DEF')
+    ignore_def_effect = SkillEffect.objects.get(name='Ignore DEF')
 
     # Tracking IDs of skills with known issues
     golem_def_skills = [2401, 2402, 2403, 2404, 2405, 2406, 2407, 2410]

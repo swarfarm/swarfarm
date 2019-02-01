@@ -90,5 +90,14 @@ urlpatterns = [
             url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_add, name='profile_follow_add'),
             url(r'^remove/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.follow_remove, name='profile_follow_remove'),
         ])),
+        url(r'^data/$', views.import_export_home, name='import_export_home'),
+        url(r'^import/', include([
+            url(r'^pcap/$', views.import_pcap, name='import_pcap'),
+            url(r'^swjson/$', views.import_sw_json, name='import_swparser'),
+            url(r'^progress/$', views.import_status, name='import_status_data'),
+        ])),
+        url(r'^export/', include([
+            url(r'^swop_optimizer/$', views.export_win10_optimizer, name='export_win10_optimizer'),
+        ])),
     ])),
 ]

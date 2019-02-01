@@ -5,17 +5,6 @@ from . import views
 app_name = 'sw_parser'
 
 urlpatterns = [
-    url(r'^$', views.home, name='home'),
-    url(r'^import/', include([
-        url(r'^pcap/$', views.import_pcap, name='import_pcap'),
-        url(r'^swjson/$', views.import_sw_json, name='import_swparser'),
-        url(r'^progress/$', views.import_status, name='import_status_data'),
-    ])),
-    url(r'^export/', include([
-        url(r'^legacy_optimizer/$', views.export_rune_optimizer, name='export_optimizer'),
-        url(r'^legacy_optimizer/file/$', views.export_rune_optimizer, {'download_file': True}, name='export_optimizer_file'),
-        url(r'^swop_optimizer/$', views.export_win10_optimizer, name='export_win10_optimizer'),
-    ])),
     url(r'^log/', include([
         url(r'^$', views.log_home, name='log_home'),
         url(r'^accepted_commands/', views.log_accepted_commands, name='log_accepted_commands'),

@@ -1,4 +1,4 @@
-{% extends 'sw_parser/base.html' %}
+{% extends 'herders/profile/import_export/base.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}Import Network Capture - {{ block.super }}{% endblock title %}
@@ -19,8 +19,8 @@
             </li>
         </ol>
 
-        {% include 'sw_parser/import_error_snippet.html' with errors=errors only %}
-        {% include 'sw_parser/import_validation_snippet.html' with errors=validation_failures only %}
+        {% include 'herders/profile/import_export/import_error_snippet.html' with errors=errors only %}
+        {% include 'herders/profile/import_export/import_validation_snippet.html' with errors=validation_failures only %}
 
         {% crispy form %}
     </div>

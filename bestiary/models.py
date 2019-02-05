@@ -814,6 +814,690 @@ class HomunculusSkillCraftCost(models.Model):
         return '{} - qty. {}'.format(self.craft.name, self.quantity)
 
 
+class RuneObjectBase:
+    # Provides basic rune related constants
+    TYPE_ENERGY = 1
+    TYPE_FATAL = 2
+    TYPE_BLADE = 3
+    TYPE_RAGE = 4
+    TYPE_SWIFT = 5
+    TYPE_FOCUS = 6
+    TYPE_GUARD = 7
+    TYPE_ENDURE = 8
+    TYPE_VIOLENT = 9
+    TYPE_WILL = 10
+    TYPE_NEMESIS = 11
+    TYPE_SHIELD = 12
+    TYPE_REVENGE = 13
+    TYPE_DESPAIR = 14
+    TYPE_VAMPIRE = 15
+    TYPE_DESTROY = 16
+    TYPE_FIGHT = 17
+    TYPE_DETERMINATION = 18
+    TYPE_ENHANCE = 19
+    TYPE_ACCURACY = 20
+    TYPE_TOLERANCE = 21
+
+    TYPE_CHOICES = (
+        (TYPE_ENERGY, 'Energy'),
+        (TYPE_FATAL, 'Fatal'),
+        (TYPE_BLADE, 'Blade'),
+        (TYPE_RAGE, 'Rage'),
+        (TYPE_SWIFT, 'Swift'),
+        (TYPE_FOCUS, 'Focus'),
+        (TYPE_GUARD, 'Guard'),
+        (TYPE_ENDURE, 'Endure'),
+        (TYPE_VIOLENT, 'Violent'),
+        (TYPE_WILL, 'Will'),
+        (TYPE_NEMESIS, 'Nemesis'),
+        (TYPE_SHIELD, 'Shield'),
+        (TYPE_REVENGE, 'Revenge'),
+        (TYPE_DESPAIR, 'Despair'),
+        (TYPE_VAMPIRE, 'Vampire'),
+        (TYPE_DESTROY, 'Destroy'),
+        (TYPE_FIGHT, 'Fight'),
+        (TYPE_DETERMINATION, 'Determination'),
+        (TYPE_ENHANCE, 'Enhance'),
+        (TYPE_ACCURACY, 'Accuracy'),
+        (TYPE_TOLERANCE, 'Tolerance'),
+    )
+
+    STAR_CHOICES = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+    )
+
+    STAT_HP = 1
+    STAT_HP_PCT = 2
+    STAT_ATK = 3
+    STAT_ATK_PCT = 4
+    STAT_DEF = 5
+    STAT_DEF_PCT = 6
+    STAT_SPD = 7
+    STAT_CRIT_RATE_PCT = 8
+    STAT_CRIT_DMG_PCT = 9
+    STAT_RESIST_PCT = 10
+    STAT_ACCURACY_PCT = 11
+
+    # Used for selecting type of stat in form
+    STAT_CHOICES = (
+        (STAT_HP, 'HP'),
+        (STAT_HP_PCT, 'HP %'),
+        (STAT_ATK, 'ATK'),
+        (STAT_ATK_PCT, 'ATK %'),
+        (STAT_DEF, 'DEF'),
+        (STAT_DEF_PCT, 'DEF %'),
+        (STAT_SPD, 'SPD'),
+        (STAT_CRIT_RATE_PCT, 'CRI Rate %'),
+        (STAT_CRIT_DMG_PCT, 'CRI Dmg %'),
+        (STAT_RESIST_PCT, 'Resistance %'),
+        (STAT_ACCURACY_PCT, 'Accuracy %'),
+    )
+
+    # This list of tuples is used for display of rune stats
+    STAT_DISPLAY = {
+        STAT_HP: 'HP',
+        STAT_HP_PCT: 'HP',
+        STAT_ATK: 'ATK',
+        STAT_ATK_PCT: 'ATK',
+        STAT_DEF: 'DEF',
+        STAT_DEF_PCT: 'DEF',
+        STAT_SPD: 'SPD',
+        STAT_CRIT_RATE_PCT: 'CRI Rate',
+        STAT_CRIT_DMG_PCT: 'CRI Dmg',
+        STAT_RESIST_PCT: 'Resistance',
+        STAT_ACCURACY_PCT: 'Accuracy',
+    }
+
+    PERCENT_STATS = [
+        STAT_HP_PCT,
+        STAT_ATK_PCT,
+        STAT_DEF_PCT,
+        STAT_CRIT_RATE_PCT,
+        STAT_CRIT_DMG_PCT,
+        STAT_RESIST_PCT,
+        STAT_ACCURACY_PCT,
+    ]
+
+    FLAT_STATS = [
+        STAT_HP,
+        STAT_ATK,
+        STAT_DEF,
+        STAT_SPD,
+    ]
+
+    QUALITY_NORMAL = 0
+    QUALITY_MAGIC = 1
+    QUALITY_RARE = 2
+    QUALITY_HERO = 3
+    QUALITY_LEGEND = 4
+
+    QUALITY_CHOICES = (
+        (QUALITY_NORMAL, 'Normal'),
+        (QUALITY_MAGIC, 'Magic'),
+        (QUALITY_RARE, 'Rare'),
+        (QUALITY_HERO, 'Hero'),
+        (QUALITY_LEGEND, 'Legend'),
+    )
+
+
+class Rune(RuneObjectBase):
+    MAIN_STAT_VALUES = {
+        # [stat][stars][level]: value
+        RuneObjectBase.STAT_HP: {
+            1: [40, 85, 130, 175, 220, 265, 310, 355, 400, 445, 490, 535, 580, 625, 670, 804],
+            2: [70, 130, 190, 250, 310, 370, 430, 490, 550, 610, 670, 730, 790, 850, 910, 1092],
+            3: [100, 175, 250, 325, 400, 475, 550, 625, 700, 775, 850, 925, 1000, 1075, 1150, 1380],
+            4: [160, 250, 340, 430, 520, 610, 700, 790, 880, 970, 1060, 1150, 1240, 1330, 1420, 1704],
+            5: [270, 375, 480, 585, 690, 795, 900, 1005, 1110, 1215, 1320, 1425, 1530, 1635, 1740, 2088],
+            6: [360, 480, 600, 720, 840, 960, 1080, 1200, 1320, 1440, 1560, 1680, 1800, 1920, 2040, 2448],
+        },
+        RuneObjectBase.STAT_HP_PCT: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [5, 7, 9, 11, 13, 16, 18, 20, 22, 24, 27, 29, 31, 33, 36, 43],
+            5: [8, 10, 12, 15, 17, 20, 22, 24, 27, 29, 32, 34, 37, 40, 43, 51],
+            6: [11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 63],
+        },
+        RuneObjectBase.STAT_ATK: {
+            1: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 54],
+            2: [5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 73],
+            3: [7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77, 92],
+            4: [10, 16, 22, 28, 34, 40, 46, 52, 58, 64, 70, 76, 82, 88, 94, 112],
+            5: [15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99, 106, 113, 135],
+            6: [22, 30, 38, 46, 54, 62, 70, 78, 86, 94, 102, 110, 118, 126, 134, 160],
+        },
+        RuneObjectBase.STAT_ATK_PCT: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [5, 7, 9, 11, 13, 16, 18, 20, 22, 24, 27, 29, 31, 33, 36, 43],
+            5: [8, 10, 12, 15, 17, 20, 22, 24, 27, 29, 32, 34, 37, 40, 43, 51],
+            6: [11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 63],
+        },
+        RuneObjectBase.STAT_DEF: {
+            1: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 54],
+            2: [5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 73],
+            3: [7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77, 92],
+            4: [10, 16, 22, 28, 34, 40, 46, 52, 58, 64, 70, 76, 82, 88, 94, 112],
+            5: [15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99, 106, 113, 135],
+            6: [22, 30, 38, 46, 54, 62, 70, 78, 86, 94, 102, 110, 118, 126, 134, 160],
+        },
+        RuneObjectBase.STAT_DEF_PCT: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [5, 7, 9, 11, 13, 16, 18, 20, 22, 24, 27, 29, 31, 33, 36, 43],
+            5: [8, 10, 12, 15, 17, 20, 22, 24, 27, 29, 32, 34, 37, 40, 43, 51],
+            6: [11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 63],
+        },
+        RuneObjectBase.STAT_SPD: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 18, 19, 21, 25],
+            4: [4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25, 30],
+            5: [5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 39],
+            6: [7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 42],
+        },
+        RuneObjectBase.STAT_CRIT_RATE_PCT: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 37],
+            4: [4, 6, 8, 11, 13, 15, 17, 19, 22, 24, 26, 28, 30, 33, 35, 41],
+            5: [5, 7, 10, 12, 15, 17, 19, 22, 24, 27, 29, 31, 34, 36, 39, 47],
+            6: [7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 58],
+        },
+        RuneObjectBase.STAT_CRIT_DMG_PCT: {
+            1: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            2: [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 37],
+            3: [4, 6, 9, 11, 13, 16, 18, 20, 22, 25, 27, 29, 32, 34, 36, 43],
+            4: [6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 57],
+            5: [8, 11, 15, 18, 21, 25, 28, 31, 34, 38, 41, 44, 48, 51, 54, 65],
+            6: [11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59, 63, 67, 80],
+        },
+        RuneObjectBase.STAT_RESIST_PCT: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [6, 8, 10, 13, 15, 17, 19, 21, 24, 26, 28, 30, 32, 35, 37, 44],
+            5: [9, 11, 14, 16, 19, 21, 23, 26, 28, 31, 33, 35, 38, 40, 43, 51],
+            6: [12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 64],
+        },
+        RuneObjectBase.STAT_ACCURACY_PCT: {
+            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
+            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
+            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
+            4: [6, 8, 10, 13, 15, 17, 19, 21, 24, 26, 28, 30, 32, 35, 37, 44],
+            5: [9, 11, 14, 16, 19, 21, 23, 26, 28, 31, 33, 35, 38, 40, 43, 51],
+            6: [12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 64],
+        },
+    }
+
+    SUBSTAT_INCREMENTS = {
+        # [stat][stars]: value
+        RuneObjectBase.STAT_HP: {
+            1: 60,
+            2: 105,
+            3: 165,
+            4: 225,
+            5: 300,
+            6: 375,
+        },
+        RuneObjectBase.STAT_HP_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        RuneObjectBase.STAT_ATK: {
+            1: 4,
+            2: 5,
+            3: 8,
+            4: 10,
+            5: 15,
+            6: 20,
+        },
+        RuneObjectBase.STAT_ATK_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        RuneObjectBase.STAT_DEF: {
+            1: 4,
+            2: 5,
+            3: 8,
+            4: 10,
+            5: 15,
+            6: 20,
+        },
+        RuneObjectBase.STAT_DEF_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        RuneObjectBase.STAT_SPD: {
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 5,
+            6: 6,
+        },
+        RuneObjectBase.STAT_CRIT_RATE_PCT: {
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 5,
+            6: 6,
+        },
+        RuneObjectBase.STAT_CRIT_DMG_PCT: {
+            1: 2,
+            2: 3,
+            3: 4,
+            4: 5,
+            5: 6,
+            6: 7,
+        },
+        RuneObjectBase.STAT_RESIST_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+        RuneObjectBase.STAT_ACCURACY_PCT: {
+            1: 2,
+            2: 3,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        },
+    }
+
+    INNATE_STAT_TITLES = {
+        RuneObjectBase.STAT_HP: 'Strong',
+        RuneObjectBase.STAT_HP_PCT: 'Tenacious',
+        RuneObjectBase.STAT_ATK: 'Ferocious',
+        RuneObjectBase.STAT_ATK_PCT: 'Powerful',
+        RuneObjectBase.STAT_DEF: 'Sturdy',
+        RuneObjectBase.STAT_DEF_PCT: 'Durable',
+        RuneObjectBase.STAT_SPD: 'Quick',
+        RuneObjectBase.STAT_CRIT_RATE_PCT: 'Mortal',
+        RuneObjectBase.STAT_CRIT_DMG_PCT: 'Cruel',
+        RuneObjectBase.STAT_RESIST_PCT: 'Resistant',
+        RuneObjectBase.STAT_ACCURACY_PCT: 'Intricate',
+    }
+
+    RUNE_SET_COUNT_REQUIREMENTS = {
+        RuneObjectBase.TYPE_ENERGY: 2,
+        RuneObjectBase.TYPE_FATAL: 4,
+        RuneObjectBase.TYPE_BLADE: 2,
+        RuneObjectBase.TYPE_RAGE: 4,
+        RuneObjectBase.TYPE_SWIFT: 4,
+        RuneObjectBase.TYPE_FOCUS: 2,
+        RuneObjectBase.TYPE_GUARD: 2,
+        RuneObjectBase.TYPE_ENDURE: 2,
+        RuneObjectBase.TYPE_VIOLENT: 4,
+        RuneObjectBase.TYPE_WILL: 2,
+        RuneObjectBase.TYPE_NEMESIS: 2,
+        RuneObjectBase.TYPE_SHIELD: 2,
+        RuneObjectBase.TYPE_REVENGE: 2,
+        RuneObjectBase.TYPE_DESPAIR: 4,
+        RuneObjectBase.TYPE_VAMPIRE: 4,
+        RuneObjectBase.TYPE_DESTROY: 2,
+        RuneObjectBase.TYPE_FIGHT: 2,
+        RuneObjectBase.TYPE_DETERMINATION: 2,
+        RuneObjectBase.TYPE_ENHANCE: 2,
+        RuneObjectBase.TYPE_ACCURACY: 2,
+        RuneObjectBase.TYPE_TOLERANCE: 2,
+    }
+
+    RUNE_SET_BONUSES = {
+        RuneObjectBase.TYPE_ENERGY: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_HP_PCT,
+            'value': 15.0,
+            'team': False,
+            'description': '2 Set: HP +15%',
+        },
+        RuneObjectBase.TYPE_FATAL: {
+            'count': 4,
+            'stat': RuneObjectBase.STAT_ATK_PCT,
+            'value': 35.0,
+            'team': False,
+            'description': '4 Set: Attack Power +35%',
+        },
+        RuneObjectBase.TYPE_BLADE: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_CRIT_RATE_PCT,
+            'value': 12.0,
+            'team': False,
+            'description': '2 Set: Critical Rate +12%',
+        },
+        RuneObjectBase.TYPE_RAGE: {
+            'count': 4,
+            'stat': RuneObjectBase.STAT_CRIT_DMG_PCT,
+            'value': 40.0,
+            'team': False,
+            'description': '4 Set: Critical Damage +40%',
+        },
+        RuneObjectBase.TYPE_SWIFT: {
+            'count': 4,
+            'stat': RuneObjectBase.STAT_SPD,
+            'value': 25.0,
+            'team': False,
+            'description': '4 Set: Attack Speed +25%',
+        },
+        RuneObjectBase.TYPE_FOCUS: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_ACCURACY_PCT,
+            'value': 20.0,
+            'team': False,
+            'description': '2 Set: Accuracy +20%',
+        },
+        RuneObjectBase.TYPE_GUARD: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_DEF_PCT,
+            'value': 15.0,
+            'team': False,
+            'description': '2 Set: Defense +15%',
+        },
+        RuneObjectBase.TYPE_ENDURE: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_RESIST_PCT,
+            'value': 20.0,
+            'team': False,
+            'description': '2 Set: Resistance +20%',
+        },
+        RuneObjectBase.TYPE_VIOLENT: {
+            'count': 4,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '4 Set: Get Extra Turn +22%',
+        },
+        RuneObjectBase.TYPE_WILL: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '2 Set: Immunity +1 turn',
+        },
+        RuneObjectBase.TYPE_NEMESIS: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '2 Set: ATK Gauge +4% (for every 7% HP lost)',
+        },
+        RuneObjectBase.TYPE_SHIELD: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': True,
+            'description': '2 Set: Ally Shield 3 turns (15% of HP)',
+        },
+        RuneObjectBase.TYPE_REVENGE: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '2 Set: Counterattack +15%',
+        },
+        RuneObjectBase.TYPE_DESPAIR: {
+            'count': 4,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '4 Set: Stun Rate +25%',
+        },
+        RuneObjectBase.TYPE_VAMPIRE: {
+            'count': 4,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': '4 Set: Life Drain +35%',
+        },
+        RuneObjectBase.TYPE_DESTROY: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP",
+        },
+        RuneObjectBase.TYPE_FIGHT: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_ATK,
+            'value': 7.0,
+            'team': True,
+            'description': '2 Set: Increase the Attack Power of all allies by 7%',
+        },
+        RuneObjectBase.TYPE_DETERMINATION: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_DEF,
+            'value': 7.0,
+            'team': True,
+            'description': '2 Set: Increase the Defense of all allies by 7%',
+        },
+        RuneObjectBase.TYPE_ENHANCE: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_HP,
+            'value': 7.0,
+            'team': True,
+            'description': '2 Set: Increase the HP of all allies by 7%',
+        },
+        RuneObjectBase.TYPE_ACCURACY: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_ACCURACY_PCT,
+            'value': 10.0,
+            'team': True,
+            'description': '2 Set: Increase the Accuracy of all allies by 10%',
+        },
+        RuneObjectBase.TYPE_TOLERANCE: {
+            'count': 2,
+            'stat': RuneObjectBase.STAT_RESIST_PCT,
+            'value': 10.0,
+            'team': True,
+            'description': '2 Set: Increase the Resistance of all allies by 10%',
+        },
+    }
+
+
+class RuneCraft(RuneObjectBase):
+    CRAFT_GRINDSTONE = 0
+    CRAFT_ENCHANT_GEM = 1
+    CRAFT_IMMEMORIAL_GRINDSTONE = 2
+    CRAFT_IMMEMORIAL_GEM = 3
+
+    CRAFT_CHOICES = (
+        (CRAFT_GRINDSTONE, 'Grindstone'),
+        (CRAFT_ENCHANT_GEM, 'Enchant Gem'),
+        (CRAFT_IMMEMORIAL_GRINDSTONE, 'Immemorial Grindstone'),
+        (CRAFT_IMMEMORIAL_GEM, 'Immemorial Gem'),
+    )
+
+    # Type > Stat > Quality > Min/Max
+    CRAFT_VALUE_RANGES = {
+        CRAFT_GRINDSTONE: {
+            RuneObjectBase.STAT_HP: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 80, 'max': 120},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 100, 'max': 200},
+                RuneObjectBase.QUALITY_RARE: {'min': 180, 'max': 250},
+                RuneObjectBase.QUALITY_HERO: {'min': 230, 'max': 450},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 430, 'max': 550},
+            },
+            RuneObjectBase.STAT_HP_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneObjectBase.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneObjectBase.STAT_ATK: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 4, 'max': 8},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 6, 'max': 12},
+                RuneObjectBase.QUALITY_RARE: {'min': 10, 'max': 18},
+                RuneObjectBase.QUALITY_HERO: {'min': 12, 'max': 22},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 18, 'max': 30},
+            },
+            RuneObjectBase.STAT_ATK_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneObjectBase.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneObjectBase.STAT_DEF: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 4, 'max': 8},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 6, 'max': 12},
+                RuneObjectBase.QUALITY_RARE: {'min': 10, 'max': 18},
+                RuneObjectBase.QUALITY_HERO: {'min': 12, 'max': 22},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 18, 'max': 30},
+            },
+            RuneObjectBase.STAT_DEF_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneObjectBase.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 5, 'max': 10},
+            },
+            RuneObjectBase.STAT_SPD: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 2},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 1, 'max': 2},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 3},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 4},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 5},
+            },
+            RuneObjectBase.STAT_CRIT_RATE_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 2},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 6},
+            },
+            RuneObjectBase.STAT_CRIT_DMG_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 7},
+            },
+            RuneObjectBase.STAT_RESIST_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
+            RuneObjectBase.STAT_ACCURACY_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
+        },
+        CRAFT_ENCHANT_GEM: {
+            RuneObjectBase.STAT_HP: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 100, 'max': 150},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 130, 'max': 220},
+                RuneObjectBase.QUALITY_RARE: {'min': 200, 'max': 310},
+                RuneObjectBase.QUALITY_HERO: {'min': 290, 'max': 420},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 400, 'max': 580},
+            },
+            RuneObjectBase.STAT_HP_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneObjectBase.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneObjectBase.STAT_ATK: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 8, 'max': 12},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 10, 'max': 16},
+                RuneObjectBase.QUALITY_RARE: {'min': 15, 'max': 23},
+                RuneObjectBase.QUALITY_HERO: {'min': 20, 'max': 30},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 28, 'max': 40},
+            },
+            RuneObjectBase.STAT_ATK_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneObjectBase.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneObjectBase.STAT_DEF: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 8, 'max': 12},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 10, 'max': 16},
+                RuneObjectBase.QUALITY_RARE: {'min': 15, 'max': 23},
+                RuneObjectBase.QUALITY_HERO: {'min': 20, 'max': 30},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 28, 'max': 40},
+            },
+            RuneObjectBase.STAT_DEF_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 9},
+                RuneObjectBase.QUALITY_HERO: {'min': 7, 'max': 11},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 9, 'max': 13},
+            },
+            RuneObjectBase.STAT_SPD: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneObjectBase.QUALITY_HERO: {'min': 5, 'max': 8},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
+            RuneObjectBase.STAT_CRIT_RATE_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 5},
+                RuneObjectBase.QUALITY_HERO: {'min': 4, 'max': 7},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 6, 'max': 9},
+            },
+            RuneObjectBase.STAT_CRIT_DMG_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 5},
+                RuneObjectBase.QUALITY_RARE: {'min': 4, 'max': 6},
+                RuneObjectBase.QUALITY_HERO: {'min': 5, 'max': 8},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 7, 'max': 10},
+            },
+            RuneObjectBase.STAT_RESIST_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 6},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 8},
+                RuneObjectBase.QUALITY_HERO: {'min': 6, 'max': 9},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 8, 'max': 11},
+            },
+            RuneObjectBase.STAT_ACCURACY_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 6},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 8},
+                RuneObjectBase.QUALITY_HERO: {'min': 6, 'max': 9},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 8, 'max': 11},
+            },
+        }
+    }
+    CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GEM] = CRAFT_VALUE_RANGES[CRAFT_ENCHANT_GEM]
+    CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[CRAFT_GRINDSTONE]
+
+
+#
 class Dungeon(models.Model):
     CATEGORY_SCENARIO = 0
     CATEGORY_RUNE_DUNGEON = 1
@@ -908,3 +1592,4 @@ class MonsterGuide(GuideBase):
 
     class Meta:
         ordering = ['monster__name']
+

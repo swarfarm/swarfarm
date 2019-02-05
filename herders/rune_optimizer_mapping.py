@@ -132,10 +132,10 @@ rune_quality_map = {
 }
 
 craft_type_map = {
-    RuneInstance.CRAFT_ENCHANT_GEM: 1,
-    RuneInstance.CRAFT_GRINDSTONE: 2,
-    RuneInstance.CRAFT_IMMEMORIAL_GEM: 3,
-    RuneInstance.CRAFT_IMMEMORIAL_GRINDSTONE: 4,
+    RuneCraftInstance.CRAFT_ENCHANT_GEM: 1,
+    RuneCraftInstance.CRAFT_GRINDSTONE: 2,
+    RuneCraftInstance.CRAFT_IMMEMORIAL_GEM: 3,
+    RuneCraftInstance.CRAFT_IMMEMORIAL_GRINDSTONE: 4,
 }
 
 craft_quality_map = {

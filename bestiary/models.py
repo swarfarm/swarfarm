@@ -1,8 +1,12 @@
 from collections import OrderedDict
+from functools import partial
+from math import floor, ceil
+from operator import is_not
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils.safestring import mark_safe
@@ -945,7 +949,7 @@ class RuneObjectBase:
     )
 
 
-class Rune(RuneObjectBase):
+class Rune(models.Model, RuneObjectBase):
     MAIN_STAT_VALUES = {
         # [stat][stars][level]: value
         RuneObjectBase.STAT_HP: {
@@ -1036,6 +1040,47 @@ class Rune(RuneObjectBase):
             5: [9, 11, 14, 16, 19, 21, 23, 26, 28, 31, 33, 35, 38, 40, 43, 51],
             6: [12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 64],
         },
+    }
+
+    MAIN_STATS_BY_SLOT = {
+        1: [
+            RuneObjectBase.STAT_ATK,
+        ],
+        2: [
+            RuneObjectBase.STAT_ATK,
+            RuneObjectBase.STAT_ATK_PCT,
+            RuneObjectBase.STAT_DEF,
+            RuneObjectBase.STAT_DEF_PCT,
+            RuneObjectBase.STAT_HP,
+            RuneObjectBase.STAT_HP_PCT,
+            RuneObjectBase.STAT_SPD,
+        ],
+        3: [
+            RuneObjectBase.STAT_DEF,
+        ],
+        4: [
+            RuneObjectBase.STAT_ATK,
+            RuneObjectBase.STAT_ATK_PCT,
+            RuneObjectBase.STAT_DEF,
+            RuneObjectBase.STAT_DEF_PCT,
+            RuneObjectBase.STAT_HP,
+            RuneObjectBase.STAT_HP_PCT,
+            RuneObjectBase.STAT_CRIT_RATE_PCT,
+            RuneObjectBase.STAT_CRIT_DMG_PCT,
+        ],
+        5: [
+            RuneObjectBase.STAT_HP,
+        ],
+        6: [
+            RuneObjectBase.STAT_ATK,
+            RuneObjectBase.STAT_ATK_PCT,
+            RuneObjectBase.STAT_DEF,
+            RuneObjectBase.STAT_DEF_PCT,
+            RuneObjectBase.STAT_HP,
+            RuneObjectBase.STAT_HP_PCT,
+            RuneObjectBase.STAT_RESIST_PCT,
+            RuneObjectBase.STAT_ACCURACY_PCT,
+        ]
     }
 
     SUBSTAT_INCREMENTS = {
@@ -1318,6 +1363,204 @@ class Rune(RuneObjectBase):
         },
     }
 
+    type = models.IntegerField(choices=RuneObjectBase.TYPE_CHOICES)
+    stars = models.IntegerField()
+    level = models.IntegerField()
+    slot = models.IntegerField()
+    quality = models.IntegerField(default=0, choices=RuneObjectBase.QUALITY_CHOICES)
+    original_quality = models.IntegerField(choices=RuneObjectBase.QUALITY_CHOICES, blank=True, null=True)
+    value = models.IntegerField(blank=True, null=True)
+    main_stat = models.IntegerField(choices=RuneObjectBase.STAT_CHOICES)
+    main_stat_value = models.IntegerField()
+    innate_stat = models.IntegerField(choices=RuneObjectBase.STAT_CHOICES, null=True, blank=True)
+    innate_stat_value = models.IntegerField(null=True, blank=True)
+    substats = ArrayField(
+        models.IntegerField(choices=RuneObjectBase.STAT_CHOICES, null=True, blank=True),
+        size=4,
+        null=True,
+        blank=True
+    )
+    substat_values = ArrayField(
+        models.IntegerField(blank=True, null=True),
+        size=4,
+        null=True,
+        blank=True
+    )
+
+    # The following fields exist purely to allow easier filtering and are updated on model save
+    has_hp = models.BooleanField(default=False)
+    has_atk = models.BooleanField(default=False)
+    has_def = models.BooleanField(default=False)
+    has_crit_rate = models.BooleanField(default=False)
+    has_crit_dmg = models.BooleanField(default=False)
+    has_speed = models.BooleanField(default=False)
+    has_resist = models.BooleanField(default=False)
+    has_accuracy = models.BooleanField(default=False)
+    efficiency = models.FloatField(blank=True, null=True)
+    max_efficiency = models.FloatField(blank=True, null=True)
+    substat_upgrades_remaining = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+    def get_stat(self, stat_type, sub_stats_only=False):
+        if self.main_stat == stat_type and not sub_stats_only:
+            return self.main_stat_value
+        elif self.innate_stat == stat_type and not sub_stats_only:
+            return self.innate_stat_value
+        else:
+            for idx, substat in enumerate(self.substats):
+                if substat == stat_type:
+                    return self.substat_values[idx]
+
+        return 0
+
+    @property
+    def substat_upgrades_received(self):
+        return int(floor(min(self.level, 12) / 3) + 1)
+
+    def get_efficiency(self):
+        # https://www.youtube.com/watch?v=SBWeptNNbYc
+        # All runes are compared against max stat values for perfect 6* runes.
+
+        # Main stat efficiency
+        running_sum = float(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15]) / float(self.MAIN_STAT_VALUES[self.main_stat][6][15])
+
+        # Substat efficiencies
+        if self.innate_stat is not None:
+            running_sum += self.innate_stat_value / float(self.SUBSTAT_INCREMENTS[self.innate_stat][6] * 5)
+
+        for substat, value in zip(self.substats, self.substat_values):
+            running_sum += self.value / float(self.SUBSTAT_INCREMENTS[substat][6] * 5)
+
+        return running_sum / 2.8 * 100
+
+    def update_fields(self):
+        # Ensure substat values length matches substats length
+        self.substat_values = self.substat_values[:len(self.substats)]
+
+        # Set filterable fields
+        rune_stat_types = [self.main_stat, self.innate_stat] + self.substats
+        self.has_hp = any([i for i in rune_stat_types if i in [self.STAT_HP, self.STAT_HP_PCT]])
+        self.has_atk = any([i for i in rune_stat_types if i in [self.STAT_ATK, self.STAT_ATK_PCT]])
+        self.has_def = any([i for i in rune_stat_types if i in [self.STAT_DEF, self.STAT_DEF_PCT]])
+        self.has_crit_rate = self.STAT_CRIT_RATE_PCT in rune_stat_types
+        self.has_crit_dmg = self.STAT_CRIT_DMG_PCT in rune_stat_types
+        self.has_speed = self.STAT_SPD in rune_stat_types
+        self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
+        self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
+
+        self.quality = len([substat for substat in self.substats if substat])
+        self.substat_upgrades_remaining = 5 - self.substat_upgrades_received
+        self.efficiency = self.get_efficiency()
+        self.max_efficiency = self.efficiency + max(ceil((12 - self.level) / 3.0), 0) * 0.2 / 2.8 * 100
+
+        # Cap stat values to appropriate value
+        # Very old runes can have different values, but never higher than the cap
+        if self.main_stat_value:
+            self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15], self.main_stat_value)
+        else:
+            self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+
+        if self.innate_stat and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]:
+            self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
+
+        for idx, substat in enumerate(self.substats):
+            max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
+            if self.substat_values[idx] > max_sub_value:
+                self.substat_values[idx] = max_sub_value
+
+    def clean(self):
+        # Check slot, level, etc for valid ranges
+        if self.slot is not None:
+            if self.slot < 1 or self.slot > 6:
+                raise ValidationError({
+                    'slot': ValidationError(
+                        'Slot must be 1 through 6.',
+                        code='invalid_rune_slot',
+                    )
+                })
+            # Do slot vs stat check
+            if self.main_stat not in self.MAIN_STATS_BY_SLOT[self.slot]:
+                raise ValidationError({
+                    'main_stat': ValidationError(
+                        'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
+                        params={
+                            'slot': self.slot,
+                            'valid_stats': ', '.join(str(self.MAIN_STATS_BY_SLOT[self.slot]))
+                        },
+                        code='invalid_rune_main_stat'
+                    ),
+                })
+
+        if self.level is not None and (self.level < 0 or self.level > 15):
+            raise ValidationError({
+                'level': ValidationError(
+                    'Level must be 0 through 15.',
+                    code='invalid_rune_level',
+                )
+            })
+
+        if self.stars is not None and (self.stars < 1 or self.stars > 6):
+            raise ValidationError({
+                'stars': ValidationError(
+                    'Stars must be between 1 and 6.',
+                    code='invalid_rune_stars',
+                )
+            })
+
+        # Check that the same stat type was not used multiple times
+        stat_list = list(filter(
+            partial(is_not, None),
+            [self.main_stat, self.innate_stat] + self.substats
+        ))
+        if len(stat_list) != len(set(stat_list)):
+            raise ValidationError(
+                'All stats and substats must be unique.',
+                code='duplicate_stats'
+            )
+
+        # Check if stat type was specified that it has value > 0
+        if self.stars is not (None and self.level is not None):
+            if self.main_stat_value:
+                self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15], self.main_stat_value)
+            else:
+                self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+
+            if self.innate_stat is not None:
+                if self.innate_stat_value is None or self.innate_stat_value <= 0:
+                    raise ValidationError({
+                        'innate_stat_value': ValidationError(
+                            'Must be greater than 0.',
+                            code='invalid_rune_innate_stat_value'
+                        )
+                    })
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
+                if self.innate_stat_value > max_sub_value:
+                    raise ValidationError({
+                        'innate_stat_value': ValidationError(
+                            'Must be less than ' + str(max_sub_value) + '.',
+                            code='invalid_rune_innate_stat_value'
+                        )
+                    })
+            for substat, value in zip(self.substats, self.substat_values):
+                if value is None or value <= 0:
+                    raise ValidationError({
+                        f'substat_values]': ValidationError(
+                            'Must be greater than 0.',
+                            code=f'invalid_rune_substat_values'
+                        )
+                    })
+
+                max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
+                if value > max_sub_value:
+                    raise ValidationError({
+                        f'substat_values': ValidationError(
+                            'Must be less than ' + str(max_sub_value) + '.',
+                            code=f'invalid_rune_substat_value]'
+                        )
+                    })
+
 
 class RuneCraft(RuneObjectBase):
     CRAFT_GRINDSTONE = 0
@@ -1497,7 +1740,7 @@ class RuneCraft(RuneObjectBase):
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[CRAFT_GRINDSTONE]
 
 
-#
+
 class Dungeon(models.Model):
     CATEGORY_SCENARIO = 0
     CATEGORY_RUNE_DUNGEON = 1

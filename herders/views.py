@@ -2607,7 +2607,6 @@ def import_export_home(request, profile_name):
     })
 
 
-@username_case_redirect
 @login_required
 @csrf_exempt
 def import_pcap(request, profile_name):
@@ -2632,7 +2631,6 @@ def _get_import_options(form_data):
     }
 
 
-@username_case_redirect
 @csrf_protect
 def _import_pcap(request, profile_name):
     errors = []

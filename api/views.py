@@ -138,7 +138,10 @@ class TeamViewSet(viewsets.ReadOnlyModelViewSet):
 
 # Custom API
 def get_rune_stats_by_slot(request, slot):
-    valid_stats = RuneInstance.get_valid_stats_for_slot(int(slot))
+    valid_stats = {
+        stat: RuneInstance.STAT_CHOICES[stat - 1][1]
+        for stat in RuneInstance.MAIN_STATS_BY_SLOT[int(slot)]
+    }
 
     if valid_stats:
         return JsonResponse({

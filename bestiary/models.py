@@ -902,7 +902,8 @@ class RuneObjectBase:
         (STAT_ACCURACY_PCT, 'Accuracy %'),
     )
 
-    # This list of tuples is used for display of rune stats
+    # The STAT_DISPLAY is used to construct rune values for display as 'HP: 5%' rather than 'HP %: 5' using
+    # the built in get_FOO_display() functions
     STAT_DISPLAY = {
         STAT_HP: 'HP',
         STAT_HP_PCT: 'HP',
@@ -1377,14 +1378,12 @@ class Rune(models.Model, RuneObjectBase):
     substats = ArrayField(
         models.IntegerField(choices=RuneObjectBase.STAT_CHOICES, null=True, blank=True),
         size=4,
-        null=True,
-        blank=True
+        default=list,
     )
     substat_values = ArrayField(
         models.IntegerField(blank=True, null=True),
         size=4,
-        null=True,
-        blank=True
+        default=list,
     )
 
     # The following fields exist purely to allow easier filtering and are updated on model save
@@ -1402,6 +1401,18 @@ class Rune(models.Model, RuneObjectBase):
 
     class Meta:
         abstract = True
+
+    def get_main_stat_rune_display(self):
+        return RuneObjectBase.STAT_DISPLAY.get(self.main_stat, '')
+
+    def get_innate_stat_rune_display(self):
+        return RuneObjectBase.STAT_DISPLAY.get(self.innate_stat, '')
+
+    def get_substat_rune_display(self, idx):
+        if len(self.substats) > idx:
+            return RuneObjectBase.STAT_DISPLAY.get(self.substats[idx], '')
+        else:
+            return ''
 
     def get_stat(self, stat_type, sub_stats_only=False):
         if self.main_stat == stat_type and not sub_stats_only:
@@ -1431,14 +1442,11 @@ class Rune(models.Model, RuneObjectBase):
             running_sum += self.innate_stat_value / float(self.SUBSTAT_INCREMENTS[self.innate_stat][6] * 5)
 
         for substat, value in zip(self.substats, self.substat_values):
-            running_sum += self.value / float(self.SUBSTAT_INCREMENTS[substat][6] * 5)
+            running_sum += value / float(self.SUBSTAT_INCREMENTS[substat][6] * 5)
 
         return running_sum / 2.8 * 100
 
     def update_fields(self):
-        # Ensure substat values length matches substats length
-        self.substat_values = self.substat_values[:len(self.substats)]
-
         # Set filterable fields
         rune_stat_types = [self.main_stat, self.innate_stat] + self.substats
         self.has_hp = any([i for i in rune_stat_types if i in [self.STAT_HP, self.STAT_HP_PCT]])
@@ -1472,6 +1480,22 @@ class Rune(models.Model, RuneObjectBase):
 
     def clean(self):
         # Check slot, level, etc for valid ranges
+        if self.level is None or self.level < 0 or self.level > 15:
+            raise ValidationError({
+                'level': ValidationError(
+                    'Level must be 0 through 15.',
+                    code='invalid_rune_level',
+                )
+            })
+
+        if self.stars is None or (self.stars < 1 or self.stars > 6):
+            raise ValidationError({
+                'stars': ValidationError(
+                    'Stars must be between 1 and 6.',
+                    code='invalid_rune_stars',
+                )
+            })
+
         if self.slot is not None:
             if self.slot < 1 or self.slot > 6:
                 raise ValidationError({
@@ -1487,27 +1511,11 @@ class Rune(models.Model, RuneObjectBase):
                         'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
                         params={
                             'slot': self.slot,
-                            'valid_stats': ', '.join(str(self.MAIN_STATS_BY_SLOT[self.slot]))
+                            'valid_stats': ', '.join([RuneObjectBase.STAT_CHOICES[stat - 1][1] for stat in self.MAIN_STATS_BY_SLOT[self.slot]])
                         },
                         code='invalid_rune_main_stat'
                     ),
                 })
-
-        if self.level is not None and (self.level < 0 or self.level > 15):
-            raise ValidationError({
-                'level': ValidationError(
-                    'Level must be 0 through 15.',
-                    code='invalid_rune_level',
-                )
-            })
-
-        if self.stars is not None and (self.stars < 1 or self.stars > 6):
-            raise ValidationError({
-                'stars': ValidationError(
-                    'Stars must be between 1 and 6.',
-                    code='invalid_rune_stars',
-                )
-            })
 
         # Check that the same stat type was not used multiple times
         stat_list = list(filter(
@@ -1521,45 +1529,55 @@ class Rune(models.Model, RuneObjectBase):
             )
 
         # Check if stat type was specified that it has value > 0
-        if self.stars is not (None and self.level is not None):
-            if self.main_stat_value:
-                self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15], self.main_stat_value)
-            else:
-                self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+        if self.main_stat_value is None:
+            raise ValidationError({
+                'main_stat_value': ValidationError(
+                    'Missing main stat value.',
+                    code='main_stat_missing_value',
+                )
+            })
 
-            if self.innate_stat is not None:
-                if self.innate_stat_value is None or self.innate_stat_value <= 0:
-                    raise ValidationError({
-                        'innate_stat_value': ValidationError(
-                            'Must be greater than 0.',
-                            code='invalid_rune_innate_stat_value'
-                        )
-                    })
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
-                if self.innate_stat_value > max_sub_value:
-                    raise ValidationError({
-                        'innate_stat_value': ValidationError(
-                            'Must be less than ' + str(max_sub_value) + '.',
-                            code='invalid_rune_innate_stat_value'
-                        )
-                    })
-            for substat, value in zip(self.substats, self.substat_values):
-                if value is None or value <= 0:
-                    raise ValidationError({
-                        f'substat_values]': ValidationError(
-                            'Must be greater than 0.',
-                            code=f'invalid_rune_substat_values'
-                        )
-                    })
+        max_main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+        if self.main_stat_value > max_main_stat_value:
+            raise ValidationError(
+                f'Main stat value for {self.get_main_stat_display()} at {self.stars}* lv. {self.level} must be less than {max_main_stat_value}',
+                code='main_stat_value_invalid',
+            )
 
-                max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
-                if value > max_sub_value:
-                    raise ValidationError({
-                        f'substat_values': ValidationError(
-                            'Must be less than ' + str(max_sub_value) + '.',
-                            code=f'invalid_rune_substat_value]'
-                        )
-                    })
+        if self.innate_stat is not None:
+            if self.innate_stat_value is None or self.innate_stat_value <= 0:
+                raise ValidationError({
+                    'innate_stat_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_innate_stat_value'
+                    )
+                })
+            max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
+            if self.innate_stat_value > max_sub_value:
+                raise ValidationError({
+                    'innate_stat_value': ValidationError(
+                        'Must be less than or equal to ' + str(max_sub_value) + '.',
+                        code='invalid_rune_innate_stat_value'
+                    )
+                })
+
+        for substat, value in zip(self.substats, self.substat_values):
+            if value is None or value <= 0:
+                raise ValidationError({
+                    f'substat_values]': ValidationError(
+                        'Must be greater than 0.',
+                        code=f'invalid_rune_substat_values'
+                    )
+                })
+
+            max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
+            if value > max_sub_value:
+                raise ValidationError({
+                    f'substat_values': ValidationError(
+                        'Must be less than or equal to ' + str(max_sub_value) + '.',
+                        code=f'invalid_rune_substat_value]'
+                    )
+                })
 
 
 class RuneCraft(RuneObjectBase):
@@ -1574,6 +1592,16 @@ class RuneCraft(RuneObjectBase):
         (CRAFT_IMMEMORIAL_GRINDSTONE, 'Immemorial Grindstone'),
         (CRAFT_IMMEMORIAL_GEM, 'Immemorial Gem'),
     )
+
+    CRAFT_ENCHANT_GEMS = [
+        CRAFT_ENCHANT_GEM,
+        CRAFT_IMMEMORIAL_GEM,
+    ]
+
+    CRAFT_GRINDSTONES = [
+        CRAFT_GRINDSTONE,
+        CRAFT_IMMEMORIAL_GRINDSTONE,
+    ]
 
     # Type > Stat > Quality > Min/Max
     CRAFT_VALUE_RANGES = {
@@ -1738,7 +1766,6 @@ class RuneCraft(RuneObjectBase):
     }
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GEM] = CRAFT_VALUE_RANGES[CRAFT_ENCHANT_GEM]
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[CRAFT_GRINDSTONE]
-
 
 
 class Dungeon(models.Model):

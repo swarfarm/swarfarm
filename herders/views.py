@@ -2135,14 +2135,13 @@ def rune_inventory_crafts(request, profile_name):
 
     if is_owner or summoner.public:
         craft_box = OrderedDict()
-        for (craft, craft_name) in RuneInstance.CRAFT_CHOICES:
+        for (craft, craft_name) in RuneCraftInstance.CRAFT_CHOICES:
             craft_box[craft_name] = OrderedDict()
             for rune, rune_name in RuneInstance.TYPE_CHOICES:
                 craft_box[craft_name][rune_name] = RuneCraftInstance.objects.filter(owner=summoner, type=craft, rune=rune).order_by('stat', 'quality')
 
             # Immemorial
             craft_box[craft_name]['Immemorial'] = RuneCraftInstance.objects.filter(owner=summoner, type=craft, rune__isnull=True).order_by('stat', 'quality')
-
 
         context['crafts'] = craft_box
 

@@ -22,6 +22,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from bestiary.models import Monster, Fusion, Building
+from .decorators import username_case_redirect
 from .filters import MonsterInstanceFilter, RuneInstanceFilter
 from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, FilterMonsterInstanceForm, \
     EditBuildingForm, EditUserForm, EditSummonerForm, AddMonsterInstanceForm, BulkAddMonsterInstanceForm, \
@@ -128,6 +129,7 @@ def change_username_complete(request):
     return render(request, 'registration/change_username_complete.html')
 
 
+@username_case_redirect
 @login_required
 def profile_delete(request, profile_name):
     user = request.user
@@ -156,6 +158,7 @@ def profile_delete(request, profile_name):
         return HttpResponseForbidden("You don't own this profile")
 
 
+@username_case_redirect
 @login_required
 def following(request, profile_name):
     return_path = request.GET.get(
@@ -181,6 +184,7 @@ def following(request, profile_name):
     return render(request, 'herders/profile/following/list.html', context)
 
 
+@username_case_redirect
 @login_required
 def follow_add(request, profile_name, follow_username):
     return_path = request.GET.get(
@@ -203,6 +207,7 @@ def follow_add(request, profile_name, follow_username):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def follow_remove(request, profile_name, follow_username):
     return_path = request.GET.get(
@@ -225,6 +230,7 @@ def follow_remove(request, profile_name, follow_username):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 def profile(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
@@ -250,6 +256,7 @@ def profile(request, profile_name):
         return render(request, 'herders/profile/not_public.html')
 
 
+@username_case_redirect
 def buildings(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
@@ -267,6 +274,7 @@ def buildings(request, profile_name):
     return render(request, 'herders/profile/buildings/base.html', context)
 
 
+@username_case_redirect
 def buildings_inventory(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
@@ -310,6 +318,7 @@ def buildings_inventory(request, profile_name):
     return render(request, 'herders/profile/buildings/inventory.html', context)
 
 
+@username_case_redirect
 @login_required
 def building_edit(request, profile_name, building_id):
     try:
@@ -391,6 +400,7 @@ def _building_data(summoner, building):
     }
 
 
+@username_case_redirect
 def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     # If we passed in view mode or sort method, set the session variable and redirect back to ourself without the view mode or box grouping
     if view_mode:
@@ -517,6 +527,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
         return render(request, 'herders/profile/not_public.html', context)
 
 
+@username_case_redirect
 @login_required
 def profile_edit(request, profile_name):
     return_path = request.GET.get(
@@ -555,6 +566,7 @@ def profile_edit(request, profile_name):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def storage(request, profile_name):
     try:
@@ -596,6 +608,7 @@ def storage(request, profile_name):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def storage_update(request, profile_name):
     try:
@@ -645,6 +658,7 @@ def storage_update(request, profile_name):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def quick_fodder_menu(request, profile_name):
     try:
@@ -666,6 +680,7 @@ def quick_fodder_menu(request, profile_name):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required()
 def monster_instance_add(request, profile_name):
     try:
@@ -720,6 +735,7 @@ def monster_instance_add(request, profile_name):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required()
 def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
     return_path = request.GET.get(
@@ -743,6 +759,7 @@ def monster_instance_quick_add(request, profile_name, monster_id, stars, level):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required()
 def monster_instance_bulk_add(request, profile_name):
     return_path = reverse('herders:profile_default', kwargs={'profile_name': profile_name})
@@ -794,6 +811,7 @@ def monster_instance_bulk_add(request, profile_name):
     return render(request, 'herders/profile/monster_inventory/bulk_add_form.html', context)
 
 
+@username_case_redirect
 def monster_instance_view(request, profile_name, instance_id):
     return_path = request.GET.get(
         'next',
@@ -825,6 +843,7 @@ def monster_instance_view(request, profile_name, instance_id):
         return render(request, 'herders/profile/not_public.html')
 
 
+@username_case_redirect
 def monster_instance_view_runes(request, profile_name, instance_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
@@ -857,6 +876,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     return render(request, 'herders/profile/monster_view/runes.html', context)
 
 
+@username_case_redirect
 def monster_instance_view_stats(request, profile_name, instance_id):
     try:
         instance = MonsterInstance.objects.select_related('monster').get(pk=instance_id)
@@ -873,6 +893,7 @@ def monster_instance_view_stats(request, profile_name, instance_id):
     return render(request, 'herders/profile/monster_view/stats.html', context)
 
 
+@username_case_redirect
 def monster_instance_view_skills(request, profile_name, instance_id):
     try:
         instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
@@ -902,6 +923,7 @@ def monster_instance_view_skills(request, profile_name, instance_id):
     return render(request, 'herders/profile/monster_view/skills.html', context)
 
 
+@username_case_redirect
 def monster_instance_view_info(request, profile_name, instance_id):
     try:
         instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
@@ -933,6 +955,7 @@ def monster_instance_view_info(request, profile_name, instance_id):
     return render(request, 'herders/profile/monster_view/notes_info.html', context)
 
 
+@username_case_redirect
 @login_required()
 def monster_instance_remove_runes(request, profile_name, instance_id):
     try:
@@ -962,6 +985,7 @@ def monster_instance_remove_runes(request, profile_name, instance_id):
         raise PermissionDenied()
 
 
+@username_case_redirect
 @login_required()
 def monster_instance_edit(request, profile_name, instance_id):
     try:
@@ -1077,6 +1101,7 @@ def monster_instance_edit(request, profile_name, instance_id):
         raise PermissionDenied()
 
 
+@username_case_redirect
 @login_required()
 def monster_instance_delete(request, profile_name, instance_id):
     return_path = request.GET.get(
@@ -1095,6 +1120,7 @@ def monster_instance_delete(request, profile_name, instance_id):
         return HttpResponseBadRequest()
 
 
+@username_case_redirect
 @login_required()
 def monster_instance_power_up(request, profile_name, instance_id):
     try:
@@ -1188,6 +1214,7 @@ def monster_instance_power_up(request, profile_name, instance_id):
     return JsonResponse(response_data)
 
 
+@username_case_redirect
 @login_required()
 def monster_instance_awaken(request, profile_name, instance_id):
     try:
@@ -1276,6 +1303,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
         raise PermissionDenied()
 
 
+@username_case_redirect
 @login_required()
 def monster_instance_duplicate(request, profile_name, instance_id):
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
@@ -1311,6 +1339,7 @@ def monster_instance_duplicate(request, profile_name, instance_id):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required()
 def monster_piece_add(request, profile_name):
     try:
@@ -1356,6 +1385,7 @@ def monster_piece_add(request, profile_name):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required()
 def monster_piece_edit(request, profile_name, instance_id):
     try:
@@ -1400,6 +1430,7 @@ def monster_piece_edit(request, profile_name, instance_id):
         raise PermissionDenied()
 
 
+@username_case_redirect
 @login_required()
 def monster_piece_summon(request, profile_name, instance_id):
     try:
@@ -1439,6 +1470,7 @@ def monster_piece_summon(request, profile_name, instance_id):
         raise PermissionDenied()
 
 
+@username_case_redirect
 @login_required()
 def monster_piece_delete(request, profile_name, instance_id):
     return_path = request.GET.get(
@@ -1477,6 +1509,7 @@ def fusion_progress(request, profile_name):
     return render(request, 'herders/profile/fusion/base.html', context)
 
 
+@username_case_redirect
 def fusion_progress_detail(request, profile_name, monster_slug):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
@@ -1649,6 +1682,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
         return render(request, 'herders/profile/not_public.html', context)
 
 
+@username_case_redirect
 def teams(request, profile_name):
     return_path = request.GET.get(
         'next',
@@ -1697,6 +1731,7 @@ def team_list(request, profile_name):
     return render(request, 'herders/profile/teams/team_list.html', context)
 
 
+@username_case_redirect
 @login_required
 def team_group_add(request, profile_name):
     return_path = request.GET.get(
@@ -1724,6 +1759,7 @@ def team_group_add(request, profile_name):
         return PermissionDenied("Attempting to add group to profile you don't own.")
 
 
+@username_case_redirect
 @login_required
 def team_group_edit(request, profile_name, group_id):
     return_path = request.GET.get(
@@ -1760,6 +1796,7 @@ def team_group_edit(request, profile_name, group_id):
     return render(request, 'herders/profile/teams/team_group_edit.html', context)
 
 
+@username_case_redirect
 @login_required
 def team_group_delete(request, profile_name, group_id):
     return_path = request.GET.get(
@@ -1812,6 +1849,7 @@ def team_group_delete(request, profile_name, group_id):
         return PermissionDenied()
 
 
+@username_case_redirect
 def team_detail(request, profile_name, team_id):
     return_path = request.GET.get(
         'next',
@@ -1853,6 +1891,7 @@ def team_detail(request, profile_name, team_id):
         return render(request, 'herders/profile/not_public.html', context)
 
 
+@username_case_redirect
 @login_required
 def team_edit(request, profile_name, team_id=None):
     return_path = reverse('herders:teams', kwargs={'profile_name': profile_name})
@@ -1901,6 +1940,7 @@ def team_edit(request, profile_name, team_id=None):
     return render(request, 'herders/profile/teams/team_edit.html', context)
 
 
+@username_case_redirect
 @login_required
 def team_delete(request, profile_name, team_id):
     return_path = request.GET.get(
@@ -1918,6 +1958,7 @@ def team_delete(request, profile_name, team_id):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 def runes(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
@@ -1944,6 +1985,7 @@ def runes(request, profile_name):
         return render(request, 'herders/profile/not_public.html', context)
 
 
+@username_case_redirect
 def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
     # If we passed in view mode or sort method, set the session variable and redirect back to base profile URL
     if view_mode:
@@ -2077,6 +2119,7 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
         return render(request, 'herders/profile/not_public.html', context)
 
 
+@username_case_redirect
 def rune_inventory_crafts(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
@@ -2092,14 +2135,13 @@ def rune_inventory_crafts(request, profile_name):
 
     if is_owner or summoner.public:
         craft_box = OrderedDict()
-        for (craft, craft_name) in RuneInstance.CRAFT_CHOICES:
+        for (craft, craft_name) in RuneCraftInstance.CRAFT_CHOICES:
             craft_box[craft_name] = OrderedDict()
             for rune, rune_name in RuneInstance.TYPE_CHOICES:
                 craft_box[craft_name][rune_name] = RuneCraftInstance.objects.filter(owner=summoner, type=craft, rune=rune).order_by('stat', 'quality')
 
             # Immemorial
             craft_box[craft_name]['Immemorial'] = RuneCraftInstance.objects.filter(owner=summoner, type=craft, rune__isnull=True).order_by('stat', 'quality')
-
 
         context['crafts'] = craft_box
 
@@ -2108,6 +2150,7 @@ def rune_inventory_crafts(request, profile_name):
         return render(request, 'herders/profile/not_public.html')
 
 
+@username_case_redirect
 @login_required
 def rune_add(request, profile_name):
     form = AddRuneInstanceForm(request.POST or None)
@@ -2169,6 +2212,7 @@ def rune_add(request, profile_name):
     return JsonResponse(response_data)
 
 
+@username_case_redirect
 @login_required
 def rune_edit(request, profile_name, rune_id):
     rune = get_object_or_404(RuneInstance, pk=rune_id)
@@ -2215,6 +2259,7 @@ def rune_edit(request, profile_name, rune_id):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def rune_assign(request, profile_name, instance_id, slot=None):
     rune_queryset = RuneInstance.objects.filter(owner=request.user.summoner, assigned_to=None)
@@ -2259,6 +2304,7 @@ def rune_assign(request, profile_name, instance_id, slot=None):
     return JsonResponse(response_data)
 
 
+@username_case_redirect
 @login_required
 def rune_assign_choice(request, profile_name, instance_id, rune_id):
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
@@ -2284,6 +2330,7 @@ def rune_assign_choice(request, profile_name, instance_id, rune_id):
     return JsonResponse(response_data)
 
 
+@username_case_redirect
 @login_required
 def rune_unassign(request, profile_name, rune_id):
     rune = get_object_or_404(RuneInstance, pk=rune_id)
@@ -2311,6 +2358,7 @@ def rune_unassign(request, profile_name, rune_id):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required()
 def rune_unassign_all(request, profile_name):
     try:
@@ -2347,6 +2395,7 @@ def rune_unassign_all(request, profile_name):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def rune_delete(request, profile_name, rune_id):
     rune = get_object_or_404(RuneInstance, pk=rune_id)
@@ -2373,6 +2422,7 @@ def rune_delete(request, profile_name, rune_id):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def rune_delete_all(request, profile_name):
     try:
@@ -2409,6 +2459,7 @@ def rune_delete_all(request, profile_name):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def rune_resave_all(request, profile_name):
     try:
@@ -2431,6 +2482,7 @@ def rune_resave_all(request, profile_name):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def rune_craft_add(request, profile_name):
     form = AddRuneCraftInstanceForm(request.POST or None)
@@ -2477,6 +2529,7 @@ def rune_craft_add(request, profile_name):
     return JsonResponse(response_data)
 
 
+@username_case_redirect
 @login_required
 def rune_craft_edit(request, profile_name, craft_id):
     craft = get_object_or_404(RuneCraftInstance, pk=craft_id)
@@ -2520,6 +2573,7 @@ def rune_craft_edit(request, profile_name, craft_id):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def rune_craft_delete(request, profile_name, craft_id):
     craft = get_object_or_404(RuneCraftInstance, pk=craft_id)
@@ -2543,6 +2597,7 @@ def rune_craft_delete(request, profile_name, craft_id):
         return HttpResponseForbidden()
 
 
+@username_case_redirect
 @login_required
 def import_export_home(request, profile_name):
     return render(request, 'herders/profile/import_export/base.html', context={
@@ -2634,6 +2689,7 @@ def _import_pcap(request, profile_name):
     return render(request, 'herders/profile/import_export/import_pcap.html', context)
 
 
+@username_case_redirect
 @login_required
 def import_sw_json(request, profile_name):
     errors = []
@@ -2695,6 +2751,7 @@ def import_sw_json(request, profile_name):
     return render(request, 'herders/profile/import_export/import_sw_json.html', context)
 
 
+@username_case_redirect
 @login_required
 def import_status(request, profile_name):
     task_id = request.GET.get('id', request.session.get('import_task_id'))
@@ -2714,6 +2771,7 @@ def import_status(request, profile_name):
         raise Http404('Task ID not provided')
 
 
+@username_case_redirect
 @login_required
 def export_win10_optimizer(request, profile_name):
     summoner = get_object_or_404(Summoner, user=request.user)

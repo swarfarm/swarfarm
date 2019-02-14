@@ -8,6 +8,7 @@ from dal import autocomplete
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
+from django.contrib.postgres.forms import SplitArrayField
 from django.core.validators import RegexValidator
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.forms import ModelForm

@@ -1,17 +1,16 @@
 import uuid
 from collections import OrderedDict
-from functools import partial
 from math import floor, ceil
-from operator import is_not
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField, JSONField
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, Count
 from django.utils.safestring import mark_safe
 from timezone_field import TimeZoneField
 
-from bestiary.models import Monster, Building, Level
+from bestiary.models import Monster, Building, Level, Rune, RuneCraft
 
 
 # Individual user/monster collection models
@@ -636,650 +635,57 @@ class MonsterPiece(models.Model):
         return int(floor(self.pieces / self.PIECE_REQUIREMENTS[base_stars]))
 
 
-class RuneInstance(models.Model):
-    TYPE_ENERGY = 1
-    TYPE_FATAL = 2
-    TYPE_BLADE = 3
-    TYPE_RAGE = 4
-    TYPE_SWIFT = 5
-    TYPE_FOCUS = 6
-    TYPE_GUARD = 7
-    TYPE_ENDURE = 8
-    TYPE_VIOLENT = 9
-    TYPE_WILL = 10
-    TYPE_NEMESIS = 11
-    TYPE_SHIELD = 12
-    TYPE_REVENGE = 13
-    TYPE_DESPAIR = 14
-    TYPE_VAMPIRE = 15
-    TYPE_DESTROY = 16
-    TYPE_FIGHT = 17
-    TYPE_DETERMINATION = 18
-    TYPE_ENHANCE = 19
-    TYPE_ACCURACY = 20
-    TYPE_TOLERANCE = 21
-
-    TYPE_CHOICES = (
-        (TYPE_ENERGY, 'Energy'),
-        (TYPE_FATAL, 'Fatal'),
-        (TYPE_BLADE, 'Blade'),
-        (TYPE_RAGE, 'Rage'),
-        (TYPE_SWIFT, 'Swift'),
-        (TYPE_FOCUS, 'Focus'),
-        (TYPE_GUARD, 'Guard'),
-        (TYPE_ENDURE, 'Endure'),
-        (TYPE_VIOLENT, 'Violent'),
-        (TYPE_WILL, 'Will'),
-        (TYPE_NEMESIS, 'Nemesis'),
-        (TYPE_SHIELD, 'Shield'),
-        (TYPE_REVENGE, 'Revenge'),
-        (TYPE_DESPAIR, 'Despair'),
-        (TYPE_VAMPIRE, 'Vampire'),
-        (TYPE_DESTROY, 'Destroy'),
-        (TYPE_FIGHT, 'Fight'),
-        (TYPE_DETERMINATION, 'Determination'),
-        (TYPE_ENHANCE, 'Enhance'),
-        (TYPE_ACCURACY, 'Accuracy'),
-        (TYPE_TOLERANCE, 'Tolerance'),
-    )
-
-    STAR_CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4),
-        (5, 5),
-        (6, 6),
-    )
-
-    STAT_HP = 1
-    STAT_HP_PCT = 2
-    STAT_ATK = 3
-    STAT_ATK_PCT = 4
-    STAT_DEF = 5
-    STAT_DEF_PCT = 6
-    STAT_SPD = 7
-    STAT_CRIT_RATE_PCT = 8
-    STAT_CRIT_DMG_PCT = 9
-    STAT_RESIST_PCT = 10
-    STAT_ACCURACY_PCT = 11
-
-    # Used for selecting type of stat in form
-    STAT_CHOICES = (
-        (STAT_HP, 'HP'),
-        (STAT_HP_PCT, 'HP %'),
-        (STAT_ATK, 'ATK'),
-        (STAT_ATK_PCT, 'ATK %'),
-        (STAT_DEF, 'DEF'),
-        (STAT_DEF_PCT, 'DEF %'),
-        (STAT_SPD, 'SPD'),
-        (STAT_CRIT_RATE_PCT, 'CRI Rate %'),
-        (STAT_CRIT_DMG_PCT, 'CRI Dmg %'),
-        (STAT_RESIST_PCT, 'Resistance %'),
-        (STAT_ACCURACY_PCT, 'Accuracy %'),
-    )
-
-    # This list of tuples is used for display of rune stats
-    RUNE_STAT_DISPLAY = {
-        STAT_HP: 'HP',
-        STAT_HP_PCT: 'HP',
-        STAT_ATK: 'ATK',
-        STAT_ATK_PCT: 'ATK',
-        STAT_DEF: 'DEF',
-        STAT_DEF_PCT: 'DEF',
-        STAT_SPD: 'SPD',
-        STAT_CRIT_RATE_PCT: 'CRI Rate',
-        STAT_CRIT_DMG_PCT: 'CRI Dmg',
-        STAT_RESIST_PCT: 'Resistance',
-        STAT_ACCURACY_PCT: 'Accuracy',
-    }
-
-    PERCENT_STATS = [
-        STAT_HP_PCT,
-        STAT_ATK_PCT,
-        STAT_DEF_PCT,
-        STAT_CRIT_RATE_PCT,
-        STAT_CRIT_DMG_PCT,
-        STAT_RESIST_PCT,
-        STAT_ACCURACY_PCT,
-    ]
-
-    FLAT_STATS = [
-        STAT_HP,
-        STAT_ATK,
-        STAT_DEF,
-        STAT_SPD,
-    ]
-
-    QUALITY_NORMAL = 0
-    QUALITY_MAGIC = 1
-    QUALITY_RARE = 2
-    QUALITY_HERO = 3
-    QUALITY_LEGEND = 4
-
-    QUALITY_CHOICES = (
-        (QUALITY_NORMAL, 'Normal'),
-        (QUALITY_MAGIC, 'Magic'),
-        (QUALITY_RARE, 'Rare'),
-        (QUALITY_HERO, 'Hero'),
-        (QUALITY_LEGEND, 'Legend'),
-    )
-
-    MAIN_STAT_VALUES = {
-        # [stat][stars][level]: value
-        STAT_HP: {
-            1: [40, 85, 130, 175, 220, 265, 310, 355, 400, 445, 490, 535, 580, 625, 670, 804],
-            2: [70, 130, 190, 250, 310, 370, 430, 490, 550, 610, 670, 730, 790, 850, 910, 1092],
-            3: [100, 175, 250, 325, 400, 475, 550, 625, 700, 775, 850, 925, 1000, 1075, 1150, 1380],
-            4: [160, 250, 340, 430, 520, 610, 700, 790, 880, 970, 1060, 1150, 1240, 1330, 1420, 1704],
-            5: [270, 375, 480, 585, 690, 795, 900, 1005, 1110, 1215, 1320, 1425, 1530, 1635, 1740, 2088],
-            6: [360, 480, 600, 720, 840, 960, 1080, 1200, 1320, 1440, 1560, 1680, 1800, 1920, 2040, 2448],
-        },
-        STAT_HP_PCT: {
-            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
-            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
-            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
-            4: [5, 7, 9, 11, 13, 16, 18, 20, 22, 24, 27, 29, 31, 33, 36, 43],
-            5: [8, 10, 12, 15, 17, 20, 22, 24, 27, 29, 32, 34, 37, 40, 43, 51],
-            6: [11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 63],
-        },
-        STAT_ATK: {
-            1: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 54],
-            2: [5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 73],
-            3: [7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77, 92],
-            4: [10, 16, 22, 28, 34, 40, 46, 52, 58, 64, 70, 76, 82, 88, 94, 112],
-            5: [15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99, 106, 113, 135],
-            6: [22, 30, 38, 46, 54, 62, 70, 78, 86, 94, 102, 110, 118, 126, 134, 160],
-        },
-        STAT_ATK_PCT: {
-            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
-            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
-            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
-            4: [5, 7, 9, 11, 13, 16, 18, 20, 22, 24, 27, 29, 31, 33, 36, 43],
-            5: [8, 10, 12, 15, 17, 20, 22, 24, 27, 29, 32, 34, 37, 40, 43, 51],
-            6: [11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 63],
-        },
-        STAT_DEF: {
-            1: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 54],
-            2: [5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 73],
-            3: [7, 12, 17, 22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72, 77, 92],
-            4: [10, 16, 22, 28, 34, 40, 46, 52, 58, 64, 70, 76, 82, 88, 94, 112],
-            5: [15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99, 106, 113, 135],
-            6: [22, 30, 38, 46, 54, 62, 70, 78, 86, 94, 102, 110, 118, 126, 134, 160],
-        },
-        STAT_DEF_PCT: {
-            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
-            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
-            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
-            4: [5, 7, 9, 11, 13, 16, 18, 20, 22, 24, 27, 29, 31, 33, 36, 43],
-            5: [8, 10, 12, 15, 17, 20, 22, 24, 27, 29, 32, 34, 37, 40, 43, 51],
-            6: [11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 63],
-        },
-        STAT_SPD: {
-            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
-            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
-            3: [3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 18, 19, 21, 25],
-            4: [4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25, 30],
-            5: [5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 39],
-            6: [7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 42],
-        },
-        STAT_CRIT_RATE_PCT: {
-            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
-            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
-            3: [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 37],
-            4: [4, 6, 8, 11, 13, 15, 17, 19, 22, 24, 26, 28, 30, 33, 35, 41],
-            5: [5, 7, 10, 12, 15, 17, 19, 22, 24, 27, 29, 31, 34, 36, 39, 47],
-            6: [7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 58],
-        },
-        STAT_CRIT_DMG_PCT: {
-            1: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
-            2: [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 37],
-            3: [4, 6, 9, 11, 13, 16, 18, 20, 22, 25, 27, 29, 32, 34, 36, 43],
-            4: [6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 57],
-            5: [8, 11, 15, 18, 21, 25, 28, 31, 34, 38, 41, 44, 48, 51, 54, 65],
-            6: [11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59, 63, 67, 80],
-        },
-        STAT_RESIST_PCT: {
-            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
-            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
-            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
-            4: [6, 8, 10, 13, 15, 17, 19, 21, 24, 26, 28, 30, 32, 35, 37, 44],
-            5: [9, 11, 14, 16, 19, 21, 23, 26, 28, 31, 33, 35, 38, 40, 43, 51],
-            6: [12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 64],
-        },
-        STAT_ACCURACY_PCT: {
-            1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18],
-            2: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19],
-            3: [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 38],
-            4: [6, 8, 10, 13, 15, 17, 19, 21, 24, 26, 28, 30, 32, 35, 37, 44],
-            5: [9, 11, 14, 16, 19, 21, 23, 26, 28, 31, 33, 35, 38, 40, 43, 51],
-            6: [12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 64],
-        },
-    }
-
-    SUBSTAT_INCREMENTS = {
-        # [stat][stars]: value
-        STAT_HP: {
-            1: 60,
-            2: 105,
-            3: 165,
-            4: 225,
-            5: 300,
-            6: 375,
-        },
-        STAT_HP_PCT: {
-            1: 2,
-            2: 3,
-            3: 5,
-            4: 6,
-            5: 7,
-            6: 8,
-        },
-        STAT_ATK: {
-            1: 4,
-            2: 5,
-            3: 8,
-            4: 10,
-            5: 15,
-            6: 20,
-        },
-        STAT_ATK_PCT: {
-            1: 2,
-            2: 3,
-            3: 5,
-            4: 6,
-            5: 7,
-            6: 8,
-        },
-        STAT_DEF: {
-            1: 4,
-            2: 5,
-            3: 8,
-            4: 10,
-            5: 15,
-            6: 20,
-        },
-        STAT_DEF_PCT: {
-            1: 2,
-            2: 3,
-            3: 5,
-            4: 6,
-            5: 7,
-            6: 8,
-        },
-        STAT_SPD: {
-            1: 1,
-            2: 2,
-            3: 3,
-            4: 4,
-            5: 5,
-            6: 6,
-        },
-        STAT_CRIT_RATE_PCT: {
-            1: 1,
-            2: 2,
-            3: 3,
-            4: 4,
-            5: 5,
-            6: 6,
-        },
-        STAT_CRIT_DMG_PCT: {
-            1: 2,
-            2: 3,
-            3: 4,
-            4: 5,
-            5: 6,
-            6: 7,
-        },
-        STAT_RESIST_PCT: {
-            1: 2,
-            2: 3,
-            3: 5,
-            4: 6,
-            5: 7,
-            6: 8,
-        },
-        STAT_ACCURACY_PCT: {
-            1: 2,
-            2: 3,
-            3: 5,
-            4: 6,
-            5: 7,
-            6: 8,
-        },
-    }
-
-    INNATE_STAT_TITLES = {
-        STAT_HP: 'Strong',
-        STAT_HP_PCT: 'Tenacious',
-        STAT_ATK: 'Ferocious',
-        STAT_ATK_PCT: 'Powerful',
-        STAT_DEF: 'Sturdy',
-        STAT_DEF_PCT: 'Durable',
-        STAT_SPD: 'Quick',
-        STAT_CRIT_RATE_PCT: 'Mortal',
-        STAT_CRIT_DMG_PCT: 'Cruel',
-        STAT_RESIST_PCT: 'Resistant',
-        STAT_ACCURACY_PCT: 'Intricate',
-    }
-
-    RUNE_SET_COUNT_REQUIREMENTS = {
-        TYPE_ENERGY: 2,
-        TYPE_FATAL: 4,
-        TYPE_BLADE: 2,
-        TYPE_RAGE: 4,
-        TYPE_SWIFT: 4,
-        TYPE_FOCUS: 2,
-        TYPE_GUARD: 2,
-        TYPE_ENDURE: 2,
-        TYPE_VIOLENT: 4,
-        TYPE_WILL: 2,
-        TYPE_NEMESIS: 2,
-        TYPE_SHIELD: 2,
-        TYPE_REVENGE: 2,
-        TYPE_DESPAIR: 4,
-        TYPE_VAMPIRE: 4,
-        TYPE_DESTROY: 2,
-        TYPE_FIGHT: 2,
-        TYPE_DETERMINATION: 2,
-        TYPE_ENHANCE: 2,
-        TYPE_ACCURACY: 2,
-        TYPE_TOLERANCE: 2,
-    }
-
-    RUNE_SET_BONUSES = {
-        TYPE_ENERGY: {
-            'count': 2,
-            'stat': STAT_HP_PCT,
-            'value': 15.0,
-            'team': False,
-            'description': '2 Set: HP +15%',
-        },
-        TYPE_FATAL: {
-            'count': 4,
-            'stat': STAT_ATK_PCT,
-            'value': 35.0,
-            'team': False,
-            'description': '4 Set: Attack Power +35%',
-        },
-        TYPE_BLADE: {
-            'count': 2,
-            'stat': STAT_CRIT_RATE_PCT,
-            'value': 12.0,
-            'team': False,
-            'description': '2 Set: Critical Rate +12%',
-        },
-        TYPE_RAGE: {
-            'count': 4,
-            'stat': STAT_CRIT_DMG_PCT,
-            'value': 40.0,
-            'team': False,
-            'description': '4 Set: Critical Damage +40%',
-        },
-        TYPE_SWIFT: {
-            'count': 4,
-            'stat': STAT_SPD,
-            'value': 25.0,
-            'team': False,
-            'description': '4 Set: Attack Speed +25%',
-        },
-        TYPE_FOCUS: {
-            'count': 2,
-            'stat': STAT_ACCURACY_PCT,
-            'value': 20.0,
-            'team': False,
-            'description': '2 Set: Accuracy +20%',
-        },
-        TYPE_GUARD: {
-            'count': 2,
-            'stat': STAT_DEF_PCT,
-            'value': 15.0,
-            'team': False,
-            'description': '2 Set: Defense +15%',
-        },
-        TYPE_ENDURE: {
-            'count': 2,
-            'stat': STAT_RESIST_PCT,
-            'value': 20.0,
-            'team': False,
-            'description': '2 Set: Resistance +20%',
-        },
-        TYPE_VIOLENT: {
-            'count': 4,
-            'stat': None,
-            'value': None,
-            'team': False,
-            'description': '4 Set: Get Extra Turn +22%',
-        },
-        TYPE_WILL: {
-            'count': 2,
-            'stat': None,
-            'value': None,
-            'team': False,
-            'description': '2 Set: Immunity +1 turn',
-        },
-        TYPE_NEMESIS: {
-            'count': 2,
-            'stat': None,
-            'value': None,
-            'team': False,
-            'description': '2 Set: ATK Gauge +4% (for every 7% HP lost)',
-        },
-        TYPE_SHIELD: {
-            'count': 2,
-            'stat': None,
-            'value': None,
-            'team': True,
-            'description': '2 Set: Ally Shield 3 turns (15% of HP)',
-        },
-        TYPE_REVENGE: {
-            'count': 2,
-            'stat': None,
-            'value': None,
-            'team': False,
-            'description': '2 Set: Counterattack +15%',
-        },
-        TYPE_DESPAIR: {
-            'count': 4,
-            'stat': None,
-            'value': None,
-            'team': False,
-            'description': '4 Set: Stun Rate +25%',
-        },
-        TYPE_VAMPIRE: {
-            'count': 4,
-            'stat': None,
-            'value': None,
-            'team': False,
-            'description': '4 Set: Life Drain +35%',
-        },
-        TYPE_DESTROY: {
-            'count': 2,
-            'stat': None,
-            'value': None,
-            'team': False,
-            'description': "2 Set: 30% of the damage dealt will reduce up to 4% of the enemy's Max HP",
-        },
-        TYPE_FIGHT: {
-            'count': 2,
-            'stat': STAT_ATK,
-            'value': 7.0,
-            'team': True,
-            'description': '2 Set: Increase the Attack Power of all allies by 7%',
-        },
-        TYPE_DETERMINATION: {
-            'count': 2,
-            'stat': STAT_DEF,
-            'value': 7.0,
-            'team': True,
-            'description': '2 Set: Increase the Defense of all allies by 7%',
-        },
-        TYPE_ENHANCE: {
-            'count': 2,
-            'stat': STAT_HP,
-            'value': 7.0,
-            'team': True,
-            'description': '2 Set: Increase the HP of all allies by 7%',
-        },
-        TYPE_ACCURACY: {
-            'count': 2,
-            'stat': STAT_ACCURACY_PCT,
-            'value': 10.0,
-            'team': True,
-            'description': '2 Set: Increase the Accuracy of all allies by 10%',
-        },
-        TYPE_TOLERANCE: {
-            'count': 2,
-            'stat': STAT_RESIST_PCT,
-            'value': 10.0,
-            'team': True,
-            'description': '2 Set: Increase the Resistance of all allies by 10%',
-        },
-
-    }
-
-    CRAFT_GRINDSTONE = 0
-    CRAFT_ENCHANT_GEM = 1
-    CRAFT_IMMEMORIAL_GRINDSTONE = 2
-    CRAFT_IMMEMORIAL_GEM = 3
-
-    CRAFT_CHOICES = (
-        (CRAFT_GRINDSTONE, 'Grindstone'),
-        (CRAFT_ENCHANT_GEM, 'Enchant Gem'),
-        (CRAFT_IMMEMORIAL_GRINDSTONE, 'Immemorial Grindstone'),
-        (CRAFT_IMMEMORIAL_GEM, 'Immemorial Gem'),
-    )
-
+class RuneInstance(Rune):
     # Upgrade success rate based on rune level
-    UPGRADE_SUCCESS_RATE = [1.0, 1.0, 1.0, 0.85, 0.70, 0.60, 0.50, 0.40, 0.30, 0.25, 0.20, 0.15, 0.10, 0.08, 0.05]
-
-    UPGRADE_COST = {
-        1: [100, 175, 250, 400, 550, 775, 1000, 1300, 1600, 2000, 2400, 2925, 3450, 4100, 4750],
-        2: [150, 300, 450, 700, 950, 1275, 1600, 2025, 2450, 3000, 3550, 4225, 4900, 5700, 6500],
-        3: [225, 475, 725, 1075, 1425, 1875, 2325, 2850, 3375, 4075, 4775, 5600, 6425, 7375, 8325],
-        4: [330, 680, 1030, 1480, 1930, 2455, 2980, 3680, 4380, 5205, 6030, 6980, 7930, 9130, 10330],
-        5: [500, 950, 1400, 1925, 2450, 3175, 3900, 4750, 5600, 6600, 7600, 8850, 10100, 11600, 13100],
-        6: [750, 1475, 2200, 3050, 3900, 4875, 5850, 6975, 8100, 9350, 10600, 11975, 13350, 14850, 16350],
-    }
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    type = models.IntegerField(choices=TYPE_CHOICES)
+    type = models.IntegerField(choices=Rune.TYPE_CHOICES)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     assigned_to = models.ForeignKey(MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
 
-    stars = models.IntegerField()
-    level = models.IntegerField()
-    slot = models.IntegerField()
-    original_quality = models.IntegerField(choices=QUALITY_CHOICES, blank=True, null=True)
-    value = models.IntegerField(blank=True, null=True)
-    main_stat = models.IntegerField(choices=STAT_CHOICES)
-    main_stat_value = models.IntegerField()
-    innate_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
-    innate_stat_value = models.IntegerField(null=True, blank=True)
-    substats = ArrayField(models.IntegerField(choices=STAT_CHOICES, null=True, blank=True), size=4, null=True, blank=True)
-    substat_values = ArrayField(models.IntegerField(blank=True, null=True), size=4, null=True, blank=True)
-    substat_crafts = ArrayField(models.IntegerField(choices=CRAFT_CHOICES, blank=True, null=True), size=4, null=True, blank=True)
+    substat_crafts = ArrayField(
+        models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, blank=True, null=True),
+        size=4,
+        null=True,
+        blank=True
+    )
+    substat_craft_values = ArrayField(
+        models.IntegerField(),
+        size=4,
+        null=True,
+        blank=True
+    )
 
-    # The following substat fields will be removed eventually. Replaced with the arrayfields above.
-    substat_1 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
+    # Old substat fields to be removed later, but still used
+    substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_1_value = models.IntegerField(null=True, blank=True)
-    substat_1_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
-    substat_2 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
+    substat_1_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_2 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_2_value = models.IntegerField(null=True, blank=True)
-    substat_2_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
-    substat_3 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
+    substat_2_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_3 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_3_value = models.IntegerField(null=True, blank=True)
-    substat_3_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
-    substat_4 = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
+    substat_3_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_4 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_4_value = models.IntegerField(null=True, blank=True)
-    substat_4_craft = models.IntegerField(choices=CRAFT_CHOICES, null=True, blank=True)
-
-    # The following fields exist purely to allow easier filtering and are updated on model save
-    quality = models.IntegerField(default=0, choices=QUALITY_CHOICES)
-    has_hp = models.BooleanField(default=False)
-    has_atk = models.BooleanField(default=False)
-    has_def = models.BooleanField(default=False)
-    has_crit_rate = models.BooleanField(default=False)
-    has_crit_dmg = models.BooleanField(default=False)
-    has_speed = models.BooleanField(default=False)
-    has_resist = models.BooleanField(default=False)
-    has_accuracy = models.BooleanField(default=False)
-    substat_upgrades_remaining = models.IntegerField(blank=True, null=True)
-    efficiency = models.FloatField(blank=True, null=True)
-    max_efficiency = models.FloatField(blank=True, null=True)
+    substat_4_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
 
     class Meta:
         ordering = ['slot', 'type', 'level']
 
-    def get_main_stat_rune_display(self):
-        return self.RUNE_STAT_DISPLAY.get(self.main_stat, '')
-
-    def get_innate_stat_rune_display(self):
-        return self.RUNE_STAT_DISPLAY.get(self.innate_stat, '')
-
     def get_substat_1_rune_display(self):
-        return self.RUNE_STAT_DISPLAY.get(self.substat_1, '')
+        return self.get_substat_rune_display(0)
 
     def get_substat_2_rune_display(self):
-        return self.RUNE_STAT_DISPLAY.get(self.substat_2, '')
+        return self.get_substat_rune_display(1)
 
     def get_substat_3_rune_display(self):
-        return self.RUNE_STAT_DISPLAY.get(self.substat_3, '')
+        return self.get_substat_rune_display(2)
 
     def get_substat_4_rune_display(self):
-        return self.RUNE_STAT_DISPLAY.get(self.substat_4, '')
-
-    @staticmethod
-    def get_valid_stats_for_slot(slot):
-        if slot == 1:
-            return {
-                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
-            }
-        elif slot == 2:
-            return {
-                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
-                RuneInstance.STAT_ATK_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK_PCT - 1][1],
-                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
-                RuneInstance.STAT_DEF_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF_PCT - 1][1],
-                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
-                RuneInstance.STAT_HP_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP_PCT - 1][1],
-                RuneInstance.STAT_SPD: RuneInstance.STAT_CHOICES[RuneInstance.STAT_SPD - 1][1],
-            }
-        elif slot == 3:
-            return {
-                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
-            }
-        elif slot == 4:
-            return {
-                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
-                RuneInstance.STAT_ATK_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK_PCT - 1][1],
-                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
-                RuneInstance.STAT_DEF_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF_PCT - 1][1],
-                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
-                RuneInstance.STAT_HP_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP_PCT - 1][1],
-                RuneInstance.STAT_CRIT_RATE_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_CRIT_RATE_PCT - 1][1],
-                RuneInstance.STAT_CRIT_DMG_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_CRIT_DMG_PCT - 1][1],
-            }
-        elif slot == 5:
-            return {
-                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
-            }
-        elif slot == 6:
-            return {
-                RuneInstance.STAT_ATK: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK - 1][1],
-                RuneInstance.STAT_ATK_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ATK_PCT - 1][1],
-                RuneInstance.STAT_DEF: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF - 1][1],
-                RuneInstance.STAT_DEF_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_DEF_PCT - 1][1],
-                RuneInstance.STAT_HP: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP - 1][1],
-                RuneInstance.STAT_HP_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_HP_PCT - 1][1],
-                RuneInstance.STAT_RESIST_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_RESIST_PCT - 1][1],
-                RuneInstance.STAT_ACCURACY_PCT: RuneInstance.STAT_CHOICES[RuneInstance.STAT_ACCURACY_PCT - 1][1],
-            }
-        else:
-            return None
+        return self.get_substat_rune_display(3)
 
     def get_stat(self, stat_type, sub_stats_only=False):
         if self.main_stat == stat_type and not sub_stats_only:
@@ -1337,141 +743,47 @@ class RuneInstance(models.Model):
         else:
             return ''
 
-    def get_efficiency(self):
-        # https://www.youtube.com/watch?v=SBWeptNNbYc
-        # All runes are compared against max stat values for perfect 6* runes.
-        running_sum = 0.0
-
-        # Main stat efficiency
-        running_sum += float(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15]) / float(self.MAIN_STAT_VALUES[self.main_stat][6][15])
-
-        # Substat efficiencies
-        if self.innate_stat is not None:
-            running_sum += self.innate_stat_value / float(self.SUBSTAT_INCREMENTS[self.innate_stat][6] * 5)
-
-        if self.substat_1 is not None:
-            running_sum += self.substat_1_value / float(self.SUBSTAT_INCREMENTS[self.substat_1][6] * 5)
-
-        if self.substat_2 is not None:
-            running_sum += self.substat_2_value / float(self.SUBSTAT_INCREMENTS[self.substat_2][6] * 5)
-
-        if self.substat_3 is not None:
-            running_sum += self.substat_3_value / float(self.SUBSTAT_INCREMENTS[self.substat_3][6] * 5)
-
-        if self.substat_4 is not None:
-            running_sum += self.substat_4_value / float(self.SUBSTAT_INCREMENTS[self.substat_4][6] * 5)
-
-        return running_sum / 2.8 * 100
-
     def update_fields(self):
-        # Update substat arrays
         self.substats = []
         self.substat_values = []
         self.substat_crafts = []
+        self.substat_craft_values = []
 
         if self.substat_1:
             self.substats.append(self.substat_1)
             self.substat_values.append(self.substat_1_value)
             self.substat_crafts.append(self.substat_1_craft)
+            self.substat_craft_values.append(0)
 
         if self.substat_2:
             self.substats.append(self.substat_2)
             self.substat_values.append(self.substat_2_value)
             self.substat_crafts.append(self.substat_2_craft)
+            self.substat_craft_values.append(0)
 
         if self.substat_3:
             self.substats.append(self.substat_3)
             self.substat_values.append(self.substat_3_value)
             self.substat_crafts.append(self.substat_3_craft)
+            self.substat_craft_values.append(0)
 
         if self.substat_4:
             self.substats.append(self.substat_4)
             self.substat_values.append(self.substat_4_value)
             self.substat_crafts.append(self.substat_4_craft)
+            self.substat_craft_values.append(0)
 
-        # Set flags for filtering
-        rune_stat_types = [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]
-        self.has_hp = any([i for i in rune_stat_types if i in [self.STAT_HP, self.STAT_HP_PCT]])
-        self.has_atk = any([i for i in rune_stat_types if i in [self.STAT_ATK, self.STAT_ATK_PCT]])
-        self.has_def = any([i for i in rune_stat_types if i in [self.STAT_DEF, self.STAT_DEF_PCT]])
-        self.has_crit_rate = self.STAT_CRIT_RATE_PCT in rune_stat_types
-        self.has_crit_dmg = self.STAT_CRIT_DMG_PCT in rune_stat_types
-        self.has_speed = self.STAT_SPD in rune_stat_types
-        self.has_resist = self.STAT_RESIST_PCT in rune_stat_types
-        self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
+        super(RuneInstance, self).update_fields()
 
-        substat_types = [self.substat_1, self.substat_2, self.substat_3, self.substat_4]
-        self.quality = len([_f for _f in substat_types if _f])
-        self.substat_upgrades_remaining = max(floor((self.quality * 3 - self.level) / 3), 0)
-        self.efficiency = self.get_efficiency()
-        self.max_efficiency = self.efficiency + max(ceil((12 - self.level) / 3.0), 0) * 0.2 / 2.8 * 100
+        # Update arrays based on individual fields
+        for idx, (stat, craft) in enumerate(zip(self.substats, self.substat_crafts)):
+            if craft:
+                max_craft_value = RuneCraft.CRAFT_VALUE_RANGES[craft][stat][self.quality]['max']
 
-        # Clean up values that don't have a stat type picked
-        if self.innate_stat is None:
-            self.innate_stat_value = None
-        if self.substat_1 is None:
-            self.substat_1_value = None
-        if self.substat_2 is None:
-            self.substat_2_value = None
-        if self.substat_3 is None:
-            self.substat_3_value = None
-        if self.substat_4 is None:
-            self.substat_4_value = None
-
-        # Cap stat values based on defined max values or substat increment rates and rune level
-        # Old runes can have different main stat values, so just make sure it's less than the cap.
-        # If main stat value isn't defined we'll automatically supply the default.
-        if self.main_stat_value:
-            self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15], self.main_stat_value)
-        else:
-            self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
-
-        if self.innate_stat and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]:
-            self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
-
-        if self.substat_1:
-            if self.substat_1_craft == RuneInstance.CRAFT_ENCHANT_GEM:
-                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
-            else:
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-                if self.substat_1_craft == RuneInstance.CRAFT_GRINDSTONE:
-                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
-
-            if self.substat_1_value > max_sub_value:
-                self.substat_1_value = max_sub_value
-
-        if self.substat_2:
-            if self.substat_2_craft == RuneInstance.CRAFT_ENCHANT_GEM:
-                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
-            else:
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-                if self.substat_2_craft == RuneInstance.CRAFT_GRINDSTONE:
-                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
-
-            if self.substat_2_value > max_sub_value:
-                self.substat_2_value = max_sub_value
-
-        if self.substat_3:
-            if self.substat_3_craft == RuneInstance.CRAFT_ENCHANT_GEM:
-                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
-            else:
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-                if self.substat_3_craft == RuneInstance.CRAFT_GRINDSTONE:
-                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
-
-            if self.substat_3_value > max_sub_value:
-                self.substat_3_value = max_sub_value
-
-        if self.substat_4:
-            if self.substat_4_craft == RuneInstance.CRAFT_ENCHANT_GEM:
-                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
-            else:
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-                if self.substat_4_craft == RuneInstance.CRAFT_GRINDSTONE:
-                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
-
-            if self.substat_4_value > max_sub_value:
-                self.substat_4_value = max_sub_value
+                if craft in RuneCraft.CRAFT_GRINDSTONES and self.substat_craft_values[idx] > max_craft_value:
+                    self.substat_craft_values[idx] = max_craft_value
+                if craft in RuneCraft.CRAFT_ENCHANT_GEMS and self.substat_craft_values[idx] > max_craft_value:
+                    self.substat_values[idx] = max_craft_value
 
         # Check no other runes are in this slot
         if self.assigned_to:
@@ -1480,169 +792,106 @@ class RuneInstance(models.Model):
                 rune.save()
 
     def clean(self):
-        from django.core.exceptions import ValidationError
-
-        # Check slot, level, etc for valid ranges
-        if self.slot is not None:
-            if self.slot < 1 or self.slot > 6:
+        if self.substat_1 is not None:
+            if self.substat_1_value is None or self.substat_1_value <= 0:
                 raise ValidationError({
-                    'slot': ValidationError(
-                        'Slot must be 1 through 6.',
-                        code='invalid_rune_slot',
+                    'substat_1_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_1_value'
                     )
                 })
-            # Do slot vs stat check
-            if self.main_stat not in RuneInstance.get_valid_stats_for_slot(self.slot):
+            if self.substat_1_craft in RuneCraftInstance.CRAFT_ENCHANT_GEMS:
+                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_1_craft][self.substat_1][
+                    RuneCraftInstance.QUALITY_LEGEND]['max']
+            else:
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(
+                    floor(min(self.level, 12) / 3) + 1)
+                if self.substat_1_craft in RuneCraftInstance.CRAFT_GRINDSTONES:
+                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_1_craft][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
+
+            if self.substat_1_value > max_sub_value:
                 raise ValidationError({
-                    'main_stat': ValidationError(
-                        'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
-                        params={
-                            'slot': self.slot,
-                            'valid_stats': ', '.join(RuneInstance.get_valid_stats_for_slot(self.slot).values())
-                        },
-                        code='invalid_rune_main_stat'
-                    ),
+                    'substat_1_value': ValidationError(
+                        'Must be less than or equal to ' + str(max_sub_value) + '.',
+                        code='invalid_rune_substat_1_value'
+                    )
                 })
 
-        if self.level is not None and (self.level < 0 or self.level > 15):
-            raise ValidationError({
-                'level': ValidationError(
-                    'Level must be 0 through 15.',
-                    code='invalid_rune_level',
-                )
-            })
-
-        if self.stars is not None and (self.stars < 1 or self.stars > 6):
-            raise ValidationError({
-                'stars': ValidationError(
-                    'Stars must be between 1 and 6.',
-                    code='invalid_rune_stars',
-                )
-            })
-
-        # Check that the same stat type was not used multiple times
-        stat_list = list(filter(partial(is_not, None), [self.main_stat, self.innate_stat, self.substat_1, self.substat_2, self.substat_3, self.substat_4]))
-        if len(stat_list) != len(set(stat_list)):
-            raise ValidationError(
-                'All stats and substats must be unique.',
-                code='duplicate_stats'
-            )
-
-        # Check if stat type was specified that it has value > 0
-        if self.stars is not (None and self.level is not None):
-            if self.main_stat_value:
-                self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15], self.main_stat_value)
+        if self.substat_2 is not None:
+            if self.substat_2_value is None or self.substat_2_value <= 0:
+                raise ValidationError({
+                    'substat_2_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_2_value'
+                    )
+                })
+            if self.substat_2_craft in RuneCraftInstance.CRAFT_ENCHANT_GEMS:
+                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_2_craft][self.substat_2][
+                    RuneCraftInstance.QUALITY_LEGEND]['max']
             else:
-                self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(
+                    floor(min(self.level, 12) / 3) + 1)
+                if self.substat_2_craft in RuneCraftInstance.CRAFT_GRINDSTONES:
+                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_2_craft][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
 
-            if self.innate_stat is not None:
-                if self.innate_stat_value is None or self.innate_stat_value <= 0:
-                    raise ValidationError({
-                        'innate_stat_value': ValidationError(
-                            'Must be greater than 0.',
-                            code='invalid_rune_innate_stat_value'
-                        )
-                    })
-                max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
-                if self.innate_stat_value > max_sub_value:
-                    raise ValidationError({
-                        'innate_stat_value': ValidationError(
-                            'Must be less than ' + str(max_sub_value) + '.',
-                            code='invalid_rune_innate_stat_value'
-                        )
-                    })
+            if self.substat_2_value > max_sub_value:
+                raise ValidationError({
+                    'substat_2_value': ValidationError(
+                        'Must be less than or equal to ' + str(max_sub_value) + '.',
+                        code='invalid_rune_substat_2_value'
+                    )
+                })
 
-            if self.substat_1 is not None:
-                if self.substat_1_value is None or self.substat_1_value <= 0:
-                    raise ValidationError({
-                        'substat_1_value': ValidationError(
-                            'Must be greater than 0.',
-                            code='invalid_rune_substat_1_value'
-                        )
-                    })
-                if self.substat_1_craft == RuneInstance.CRAFT_ENCHANT_GEM:
-                    max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
-                else:
-                    max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-                    if self.substat_1_craft == RuneInstance.CRAFT_GRINDSTONE:
-                        max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
+        if self.substat_3 is not None:
+            if self.substat_3_value is None or self.substat_3_value <= 0:
+                raise ValidationError({
+                    'substat_3_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_3_value'
+                    )
+                })
 
-                if self.substat_1_value > max_sub_value:
-                    raise ValidationError({
-                        'substat_1_value': ValidationError(
-                            'Must be less than ' + str(max_sub_value) + '.',
-                            code='invalid_rune_substat_1_value'
-                        )
-                    })
+            if self.substat_3_craft in RuneCraftInstance.CRAFT_ENCHANT_GEMS:
+                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_3_craft][self.substat_3][
+                    RuneCraftInstance.QUALITY_LEGEND]['max']
+            else:
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(
+                    floor(min(self.level, 12) / 3) + 1)
+                if self.substat_3_craft in RuneCraftInstance.CRAFT_GRINDSTONES:
+                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_3_craft][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
 
-            if self.substat_2 is not None:
-                if self.substat_2_value is None or self.substat_2_value <= 0:
-                    raise ValidationError({
-                        'substat_2_value': ValidationError(
-                            'Must be greater than 0.',
-                            code='invalid_rune_substat_2_value'
-                        )
-                    })
-                if self.substat_2_craft == RuneInstance.CRAFT_ENCHANT_GEM:
-                    max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
-                else:
-                    max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-                    if self.substat_2_craft == RuneInstance.CRAFT_GRINDSTONE:
-                        max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
+            if self.substat_3_value > max_sub_value:
+                raise ValidationError({
+                    'substat_3_value': ValidationError(
+                        'Must be less than ' + str(max_sub_value) + '.',
+                        code='invalid_rune_substat_3_value'
+                    )
+                })
 
-                if self.substat_2_value > max_sub_value:
-                    raise ValidationError({
-                        'substat_2_value': ValidationError(
-                            'Must be less than ' + str(max_sub_value) + '.',
-                            code='invalid_rune_substat_2_value'
-                        )
-                    })
-            if self.substat_3 is not None:
-                if self.substat_3_value is None or self.substat_3_value <= 0:
-                    raise ValidationError({
-                        'substat_3_value': ValidationError(
-                            'Must be greater than 0.',
-                            code='invalid_rune_substat_3_value'
-                        )
-                    })
+        if self.substat_4 is not None:
+            if self.substat_4_value is None or self.substat_4_value <= 0:
+                raise ValidationError({
+                    'substat_4_value': ValidationError(
+                        'Must be greater than 0.',
+                        code='invalid_rune_substat_4_value'
+                    )
+                })
+            if self.substat_4_craft in RuneCraftInstance.CRAFT_ENCHANT_GEMS:
+                max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_4_craft][self.substat_4][
+                    RuneCraftInstance.QUALITY_LEGEND]['max']
+            else:
+                max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(
+                    floor(min(self.level, 12) / 3) + 1)
+                if self.substat_4_craft == RuneCraftInstance.CRAFT_GRINDSTONES:
+                    max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_4_craft][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
 
-                if self.substat_3_craft == RuneInstance.CRAFT_ENCHANT_GEM:
-                    max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
-                else:
-                    max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-                    if self.substat_3_craft == RuneInstance.CRAFT_GRINDSTONE:
-                        max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
-
-                if self.substat_3_value > max_sub_value:
-                    raise ValidationError({
-                        'substat_3_value': ValidationError(
-                            'Must be less than ' + str(max_sub_value) + '.',
-                            code='invalid_rune_substat_3_value'
-                        )
-                    })
-
-            if self.substat_4 is not None:
-                if self.substat_4_value is None or self.substat_4_value <= 0:
-                    raise ValidationError({
-                        'substat_4_value': ValidationError(
-                            'Must be greater than 0.',
-                            code='invalid_rune_substat_4_value'
-                        )
-                    })
-                if self.substat_4_craft == RuneInstance.CRAFT_ENCHANT_GEM:
-                    max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
-                else:
-                    max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(floor(min(self.level, 12) / 3) + 1)
-                    if self.substat_4_craft == RuneInstance.CRAFT_GRINDSTONE:
-                        max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
-
-                if self.substat_4_value > max_sub_value:
-                    raise ValidationError({
-                        'substat_4_value': ValidationError(
-                            'Must be less than ' + str(max_sub_value) + '.',
-                            code='invalid_rune_substat_4_value'
-                        )
-                    })
+            if self.substat_4_value > max_sub_value:
+                raise ValidationError({
+                    'substat_4_value': ValidationError(
+                        'Must be less than or equal to ' + str(max_sub_value) + '.',
+                        code='invalid_rune_substat_4_value'
+                    )
+                })
 
         # Check that monster rune is assigned to does not already have rune in that slot
         if self.assigned_to is not None and (self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0):
@@ -1653,6 +902,8 @@ class RuneInstance(models.Model):
                 },
                 code='slot_occupied'
             )
+
+        self.update_fields()
 
         super(RuneInstance, self).clean()
 
@@ -1668,193 +919,14 @@ class RuneInstance(models.Model):
         return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
 
 
-class RuneCraftInstance(models.Model):
-    QUALITY_NORMAL = 0
-    QUALITY_MAGIC = 1
-    QUALITY_RARE = 2
-    QUALITY_HERO = 3
-    QUALITY_LEGEND = 4
-
-    QUALITY_CHOICES = (
-        (QUALITY_NORMAL, 'Normal'),
-        (QUALITY_MAGIC, 'Magic'),
-        (QUALITY_RARE, 'Rare'),
-        (QUALITY_HERO, 'Hero'),
-        (QUALITY_LEGEND, 'Legend'),
-    )
-
-    # Valid value ranges
-    # Type > Stat > Quality > Min/Max
-    CRAFT_VALUE_RANGES = {
-        RuneInstance.CRAFT_GRINDSTONE: {
-            RuneInstance.STAT_HP: {
-                RuneInstance.QUALITY_NORMAL: {'min': 80, 'max': 120},
-                RuneInstance.QUALITY_MAGIC: {'min': 100, 'max': 200},
-                RuneInstance.QUALITY_RARE: {'min': 180, 'max': 250},
-                RuneInstance.QUALITY_HERO: {'min': 230, 'max': 450},
-                RuneInstance.QUALITY_LEGEND: {'min': 430, 'max': 550},
-            },
-            RuneInstance.STAT_HP_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
-                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
-                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
-                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
-                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
-            },
-            RuneInstance.STAT_ATK: {
-                RuneInstance.QUALITY_NORMAL: {'min': 4, 'max': 8},
-                RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
-                RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
-                RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
-                RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
-            },
-            RuneInstance.STAT_ATK_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
-                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
-                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
-                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
-                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
-            },
-            RuneInstance.STAT_DEF: {
-                RuneInstance.QUALITY_NORMAL: {'min': 4, 'max': 8},
-                RuneInstance.QUALITY_MAGIC: {'min': 6, 'max': 12},
-                RuneInstance.QUALITY_RARE: {'min': 10, 'max': 18},
-                RuneInstance.QUALITY_HERO: {'min': 12, 'max': 22},
-                RuneInstance.QUALITY_LEGEND: {'min': 18, 'max': 30},
-            },
-            RuneInstance.STAT_DEF_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
-                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 5},
-                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
-                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
-                RuneInstance.QUALITY_LEGEND: {'min': 5, 'max': 10},
-            },
-            RuneInstance.STAT_SPD: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 2},
-                RuneInstance.QUALITY_MAGIC: {'min': 1, 'max': 2},
-                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 3},
-                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 4},
-                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 5},
-            },
-            RuneInstance.STAT_CRIT_RATE_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 2},
-                RuneInstance.QUALITY_MAGIC: {'min': 1, 'max': 3},
-                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 5},
-                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 6},
-            },
-            RuneInstance.STAT_CRIT_DMG_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
-                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 5},
-                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 5},
-                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 7},
-            },
-            RuneInstance.STAT_RESIST_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
-                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 5},
-                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 7},
-                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 8},
-            },
-            RuneInstance.STAT_ACCURACY_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
-                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_RARE: {'min': 2, 'max': 5},
-                RuneInstance.QUALITY_HERO: {'min': 3, 'max': 7},
-                RuneInstance.QUALITY_LEGEND: {'min': 4, 'max': 8},
-            },
-        },
-        RuneInstance.CRAFT_ENCHANT_GEM: {
-            RuneInstance.STAT_HP: {
-                RuneInstance.QUALITY_NORMAL: {'min': 100, 'max': 150},
-                RuneInstance.QUALITY_MAGIC: {'min': 130, 'max': 220},
-                RuneInstance.QUALITY_RARE: {'min': 200, 'max': 310},
-                RuneInstance.QUALITY_HERO: {'min': 290, 'max': 420},
-                RuneInstance.QUALITY_LEGEND: {'min': 400, 'max': 580},
-            },
-            RuneInstance.STAT_HP_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
-                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
-                RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
-                RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
-            },
-            RuneInstance.STAT_ATK: {
-                RuneInstance.QUALITY_NORMAL: {'min': 8, 'max': 12},
-                RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
-                RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
-                RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
-                RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
-            },
-            RuneInstance.STAT_ATK_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
-                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
-                RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
-                RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
-            },
-            RuneInstance.STAT_DEF: {
-                RuneInstance.QUALITY_NORMAL: {'min': 8, 'max': 12},
-                RuneInstance.QUALITY_MAGIC: {'min': 10, 'max': 16},
-                RuneInstance.QUALITY_RARE: {'min': 15, 'max': 23},
-                RuneInstance.QUALITY_HERO: {'min': 20, 'max': 30},
-                RuneInstance.QUALITY_LEGEND: {'min': 28, 'max': 40},
-            },
-            RuneInstance.STAT_DEF_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 7},
-                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 9},
-                RuneInstance.QUALITY_HERO: {'min': 7, 'max': 11},
-                RuneInstance.QUALITY_LEGEND: {'min': 9, 'max': 13},
-            },
-            RuneInstance.STAT_SPD: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
-                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 6},
-                RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
-                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
-            },
-            RuneInstance.STAT_CRIT_RATE_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 1, 'max': 3},
-                RuneInstance.QUALITY_MAGIC: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_RARE: {'min': 3, 'max': 5},
-                RuneInstance.QUALITY_HERO: {'min': 4, 'max': 7},
-                RuneInstance.QUALITY_LEGEND: {'min': 6, 'max': 9},
-            },
-            RuneInstance.STAT_CRIT_DMG_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 5},
-                RuneInstance.QUALITY_RARE: {'min': 4, 'max': 6},
-                RuneInstance.QUALITY_HERO: {'min': 5, 'max': 8},
-                RuneInstance.QUALITY_LEGEND: {'min': 7, 'max': 10},
-            },
-            RuneInstance.STAT_RESIST_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
-                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
-                RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
-                RuneInstance.QUALITY_LEGEND: {'min': 8, 'max': 11},
-            },
-            RuneInstance.STAT_ACCURACY_PCT: {
-                RuneInstance.QUALITY_NORMAL: {'min': 2, 'max': 4},
-                RuneInstance.QUALITY_MAGIC: {'min': 3, 'max': 6},
-                RuneInstance.QUALITY_RARE: {'min': 5, 'max': 8},
-                RuneInstance.QUALITY_HERO: {'min': 6, 'max': 9},
-                RuneInstance.QUALITY_LEGEND: {'min': 8, 'max': 11},
-            },
-        }
-    }
-    CRAFT_VALUE_RANGES[RuneInstance.CRAFT_IMMEMORIAL_GEM] = CRAFT_VALUE_RANGES[RuneInstance.CRAFT_ENCHANT_GEM]
-    CRAFT_VALUE_RANGES[RuneInstance.CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[RuneInstance.CRAFT_GRINDSTONE]
-
+class RuneCraftInstance(models.Model, RuneCraft):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
-    type = models.IntegerField(choices=RuneInstance.CRAFT_CHOICES)
-    rune = models.IntegerField(choices=RuneInstance.TYPE_CHOICES, blank=True, null=True)
-    stat = models.IntegerField(choices=RuneInstance.STAT_CHOICES)
-    quality = models.IntegerField(choices=QUALITY_CHOICES)
+    type = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES)
+    rune = models.IntegerField(choices=RuneCraft.TYPE_CHOICES, blank=True, null=True)
+    stat = models.IntegerField(choices=RuneCraft.STAT_CHOICES)
+    quality = models.IntegerField(choices=RuneCraft.QUALITY_CHOICES)
     value = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -1866,7 +938,7 @@ class RuneCraftInstance(models.Model):
         else:
             percent = ''
 
-        return RuneInstance.RUNE_STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + ' - ' + str(self.get_max_value()) + percent
+        return RuneCraft.STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + ' - ' + str(self.get_max_value()) + percent
 
     def get_min_value(self):
         try:

@@ -1,5 +1,4 @@
-from bestiary.models import Monster, LeaderSkill as LeaderSkill
-from herders.models import RuneInstance, RuneCraftInstance
+from bestiary.models import Monster, LeaderSkill, Rune, RuneCraft
 
 element_map = {
     1: Monster.ELEMENT_WATER,
@@ -139,62 +138,62 @@ inventory_craft_map = {
 }
 
 rune_set_map = {
-    1: RuneInstance.TYPE_ENERGY,
-    2: RuneInstance.TYPE_GUARD,
-    3: RuneInstance.TYPE_SWIFT,
-    4: RuneInstance.TYPE_BLADE,
-    5: RuneInstance.TYPE_RAGE,
-    6: RuneInstance.TYPE_FOCUS,
-    7: RuneInstance.TYPE_ENDURE,
-    8: RuneInstance.TYPE_FATAL,
-    10: RuneInstance.TYPE_DESPAIR,
-    11: RuneInstance.TYPE_VAMPIRE,
-    13: RuneInstance.TYPE_VIOLENT,
-    14: RuneInstance.TYPE_NEMESIS,
-    15: RuneInstance.TYPE_WILL,
-    16: RuneInstance.TYPE_SHIELD,
-    17: RuneInstance.TYPE_REVENGE,
-    18: RuneInstance.TYPE_DESTROY,
-    19: RuneInstance.TYPE_FIGHT,
-    20: RuneInstance.TYPE_DETERMINATION,
-    21: RuneInstance.TYPE_ENHANCE,
-    22: RuneInstance.TYPE_ACCURACY,
-    23: RuneInstance.TYPE_TOLERANCE,
+    1: Rune.TYPE_ENERGY,
+    2: Rune.TYPE_GUARD,
+    3: Rune.TYPE_SWIFT,
+    4: Rune.TYPE_BLADE,
+    5: Rune.TYPE_RAGE,
+    6: Rune.TYPE_FOCUS,
+    7: Rune.TYPE_ENDURE,
+    8: Rune.TYPE_FATAL,
+    10: Rune.TYPE_DESPAIR,
+    11: Rune.TYPE_VAMPIRE,
+    13: Rune.TYPE_VIOLENT,
+    14: Rune.TYPE_NEMESIS,
+    15: Rune.TYPE_WILL,
+    16: Rune.TYPE_SHIELD,
+    17: Rune.TYPE_REVENGE,
+    18: Rune.TYPE_DESTROY,
+    19: Rune.TYPE_FIGHT,
+    20: Rune.TYPE_DETERMINATION,
+    21: Rune.TYPE_ENHANCE,
+    22: Rune.TYPE_ACCURACY,
+    23: Rune.TYPE_TOLERANCE,
 }
 
 rune_stat_type_map = {
-    1: RuneInstance.STAT_HP,
-    2: RuneInstance.STAT_HP_PCT,
-    3: RuneInstance.STAT_ATK,
-    4: RuneInstance.STAT_ATK_PCT,
-    5: RuneInstance.STAT_DEF,
-    6: RuneInstance.STAT_DEF_PCT,
-    8: RuneInstance.STAT_SPD,
-    9: RuneInstance.STAT_CRIT_RATE_PCT,
-    10: RuneInstance.STAT_CRIT_DMG_PCT,
-    11: RuneInstance.STAT_RESIST_PCT,
-    12: RuneInstance.STAT_ACCURACY_PCT,
+    1: Rune.STAT_HP,
+    2: Rune.STAT_HP_PCT,
+    3: Rune.STAT_ATK,
+    4: Rune.STAT_ATK_PCT,
+    5: Rune.STAT_DEF,
+    6: Rune.STAT_DEF_PCT,
+    8: Rune.STAT_SPD,
+    9: Rune.STAT_CRIT_RATE_PCT,
+    10: Rune.STAT_CRIT_DMG_PCT,
+    11: Rune.STAT_RESIST_PCT,
+    12: Rune.STAT_ACCURACY_PCT,
 }
 
 rune_quality_map = {
-    1: RuneInstance.QUALITY_NORMAL,
-    2: RuneInstance.QUALITY_MAGIC,
-    3: RuneInstance.QUALITY_RARE,
-    4: RuneInstance.QUALITY_HERO,
-    5: RuneInstance.QUALITY_LEGEND,
+    1: Rune.QUALITY_NORMAL,
+    2: Rune.QUALITY_MAGIC,
+    3: Rune.QUALITY_RARE,
+    4: Rune.QUALITY_HERO,
+    5: Rune.QUALITY_LEGEND,
 }
 
 craft_type_map = {
-    1: RuneInstance.CRAFT_ENCHANT_GEM,
-    2: RuneInstance.CRAFT_GRINDSTONE,
-    3: RuneInstance.CRAFT_IMMEMORIAL_GEM,
-    4: RuneInstance.CRAFT_IMMEMORIAL_GRINDSTONE,
+    1: RuneCraft.CRAFT_ENCHANT_GEM,
+    2: RuneCraft.CRAFT_GRINDSTONE,
+    3: RuneCraft.CRAFT_IMMEMORIAL_GEM,
+    4: RuneCraft.CRAFT_IMMEMORIAL_GRINDSTONE,
 }
 
 craft_quality_map = {
-    1: RuneCraftInstance.QUALITY_NORMAL,
-    2: RuneCraftInstance.QUALITY_MAGIC,
-    3: RuneCraftInstance.QUALITY_RARE,
-    4: RuneCraftInstance.QUALITY_HERO,
-    5: RuneCraftInstance.QUALITY_LEGEND,
+    1: RuneCraft.QUALITY_NORMAL,
+    2: RuneCraft.QUALITY_MAGIC,
+    3: RuneCraft.QUALITY_RARE,
+    4: RuneCraft.QUALITY_HERO,
+    5: RuneCraft.QUALITY_LEGEND,
 }

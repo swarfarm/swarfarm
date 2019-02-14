@@ -328,33 +328,33 @@ def parse_rune_data(rune_data, owner):
         rune.substat_1 = com2us_mapping.rune_stat_type_map.get(substats[0][0])
         rune.substat_1_value = substats[0][1] + substats[0][3]
         if substats[0][3]:
-            rune.substat_1_craft = RuneInstance.CRAFT_GRINDSTONE
+            rune.substat_1_craft = RuneCraftInstance.CRAFT_GRINDSTONE
         elif substats[0][2]:
-            rune.substat_1_craft = RuneInstance.CRAFT_ENCHANT_GEM
+            rune.substat_1_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
 
     if len(substats) >= 2:
         rune.substat_2 = com2us_mapping.rune_stat_type_map.get(substats[1][0])
         rune.substat_2_value = substats[1][1] + substats[1][3]
         if substats[1][3]:
-            rune.substat_2_craft = RuneInstance.CRAFT_GRINDSTONE
+            rune.substat_2_craft = RuneCraftInstance.CRAFT_GRINDSTONE
         elif substats[1][2]:
-            rune.substat_2_craft = RuneInstance.CRAFT_ENCHANT_GEM
+            rune.substat_2_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
 
     if len(substats) >= 3:
         rune.substat_3 = com2us_mapping.rune_stat_type_map.get(substats[2][0])
         rune.substat_3_value = substats[2][1] + substats[2][3]
         if substats[2][3]:
-            rune.substat_3_craft = RuneInstance.CRAFT_GRINDSTONE
+            rune.substat_3_craft = RuneCraftInstance.CRAFT_GRINDSTONE
         elif substats[2][2]:
-            rune.substat_3_craft = RuneInstance.CRAFT_ENCHANT_GEM
+            rune.substat_3_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
 
     if len(substats) >= 4:
         rune.substat_4 = com2us_mapping.rune_stat_type_map.get(substats[3][0])
         rune.substat_4_value = substats[3][1] + substats[3][3]
         if substats[3][3]:
-            rune.substat_4_craft = RuneInstance.CRAFT_GRINDSTONE
+            rune.substat_4_craft = RuneCraftInstance.CRAFT_GRINDSTONE
         elif substats[3][2]:
-            rune.substat_4_craft = RuneInstance.CRAFT_ENCHANT_GEM
+            rune.substat_4_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
 
     return rune
 

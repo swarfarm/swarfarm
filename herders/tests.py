@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 
-# Create your tests here.
 from herders.models import Summoner
 from herders.tasks import com2us_data_import
 

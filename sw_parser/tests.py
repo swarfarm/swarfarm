@@ -3,7 +3,6 @@ from unittest import mock
 
 from django.test import TestCase
 
-# Create your tests here.
 from sw_parser.views import log_data
 
 

@@ -3,7 +3,7 @@ from django.db.models import TextField, ForeignKey
 from django.forms.widgets import TextInput
 from django_select2.forms import Select2Widget
 
-from .models import Monster, Skill, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, MonsterGuide, \
+from .models import Monster, Skill, SkillEffectDetail, MonsterCraftCost, Dungeon, MonsterGuide, \
     HomunculusSkillCraftCost, HomunculusSkill, LeaderSkill, SkillEffect, ScalingStat, \
     Source, Fusion, Building, CraftMaterial
 
@@ -227,12 +227,7 @@ class CraftMaterialAdmin(admin.ModelAdmin):
 
 @admin.register(Dungeon)
 class DungeonAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'name', 'category', 'max_floors']
-
-
-@admin.register(Level)
-class LevelAdmin(admin.ModelAdmin):
-    list_display = ['dungeon', 'floor', 'difficulty']
+    list_display = ['pk', 'name', 'category']
 
 
 @admin.register(MonsterGuide)

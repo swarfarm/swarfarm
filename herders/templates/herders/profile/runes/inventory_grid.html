@@ -65,7 +65,7 @@
                     </td>
                     <td>{{ rune.slot }}</td>
                     <td>{{ rune.stars }}</td>
-                    <td>{% if rune.value %}<img src="{{ img_url_prefix }}icons/mana.png" class="inline-icon" /> {{ rune.value }}{% endif %}</td>
+                    <td>{% if rune.value %}<img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" /> {{ rune.value }}{% endif %}</td>
                     <td>{% if rune.efficiency %}{{ rune.efficiency|floatformat:1 }}%{% endif %}</td>
                     <td>{% if rune.max_efficiency %}{{ rune.max_efficiency|floatformat:1 }}%{% endif %}</td>
                     <td>{% if rune.get_hp_pct %}<span {% if rune.main_stat == rune.STAT_HP_PCT %}class="lead"{% endif %}>{{ rune.get_hp_pct }}%</span>{% endif %}</td>

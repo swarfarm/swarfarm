@@ -22,7 +22,7 @@
                             <h4 class="list-group-item-heading">{{ essence.name }}</h4>
                         </div>
                         <div class="list-group-item">
-                            <img src="{{ img_url_prefix }}/essences/{{ essence.element }}_low.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_low.png" class="monster-inline pull-left" />
                             <div class="inline-editable essence-input"
                                  data-type="number"
                                  data-name="{{ essence.field_name }}.low"
@@ -34,7 +34,7 @@
                             </div>
                         </div>
                         <div class="list-group-item">
-                            <img src="{{ img_url_prefix }}/essences/{{ essence.element }}_mid.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_mid.png" class="monster-inline pull-left" />
                             <div class="inline-editable essence-input"
                                  data-type="number"
                                  data-name="{{ essence.field_name }}.mid"
@@ -46,7 +46,7 @@
                             </div>
                         </div>
                         <div class="list-group-item">
-                            <img src="{{ img_url_prefix }}/essences/{{ essence.element }}_high.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_high.png" class="monster-inline pull-left" />
                             <div class="inline-editable essence-input"
                                  data-type="number"
                                  data-name="{{ essence.field_name }}.high"
@@ -74,7 +74,7 @@
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
-                            <img src="{{ img_url_prefix }}/crafts/{{ craft.field_name }}.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}items/craft_material_{{ craft.field_name }}.png" class="monster-inline pull-left" />
                             <div id="craft_{{ craft.field_name }}"
                                  class="inline-editable essence-input"
                                  data-type="number"

@@ -784,6 +784,7 @@ class Building(models.Model):
 
 
 class CraftMaterial(models.Model):
+    # To be deleted, use GameItem instead
     com2us_id = models.IntegerField()
     name = models.CharField(max_length=40)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
@@ -792,7 +793,7 @@ class CraftMaterial(models.Model):
 
     def image_url(self):
         if self.icon_filename:
-            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/crafts/' + self.icon_filename))
+            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/items/craft_material_' + self.icon_filename))
         else:
             return 'No Image'
 
@@ -816,6 +817,26 @@ class HomunculusSkillCraftCost(models.Model):
 
     def __str__(self):
         return '{} - qty. {}'.format(self.craft.name, self.quantity)
+
+
+class GuideBase(models.Model):
+    short_text = models.TextField(blank=True, default='')
+    long_text = models.TextField(blank=True, default='')
+    last_updated = models.DateTimeField(auto_now=True)
+    edited_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, editable=False)
+
+    class Meta:
+        abstract = True
+
+
+class MonsterGuide(GuideBase):
+    monster = models.OneToOneField(Monster, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Monster Guide - {self.monster}'
+
+    class Meta:
+        ordering = ['monster__name']
 
 
 class RuneObjectBase:
@@ -1869,21 +1890,40 @@ class RiftBeast(Dungeon):
     max_slots = models.IntegerField(default=6, help_text='Maximum monsters combined front/backline.')
 
 
-class GuideBase(models.Model):
-    short_text = models.TextField(blank=True, default='')
-    long_text = models.TextField(blank=True, default='')
-    last_updated = models.DateTimeField(auto_now=True)
-    edited_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, editable=False)
+class GameItem(models.Model):
+    CATEGORY_MONSTER = 1
+    CATEGORY_CURRENCY = 6
+    CATEGORY_SUMMON_SCROLL = 9
+    CATEGORY_BOOSTER = 10
+    CATEGORY_ESSENCE = 11
+    CATEGORY_MONSTER_PIECE = 12
+    CATEOGRY_GUILD_MONSTER_PIECE = 19
+    CATEGORY_RAINBOWMON = 25
+    CATEGORY_RUNE_CRAFT = 27
+    CATEGORY_CRAFT_STUFF = 29
+
+    CATEGORY_CHOICES = (
+        (CATEGORY_MONSTER, 'Monster'),
+        (CATEGORY_CURRENCY, 'Currency'),
+        (CATEGORY_SUMMON_SCROLL, 'Summoning Scroll'),
+        (CATEGORY_BOOSTER, 'Booster'),
+        (CATEGORY_ESSENCE, 'Essence'),
+        (CATEGORY_MONSTER_PIECE, 'Monster Piece'),
+        (CATEOGRY_GUILD_MONSTER_PIECE, 'Guild Monster Piece'),
+        (CATEGORY_RAINBOWMON, 'Rainbowmon'),
+        (CATEGORY_RUNE_CRAFT, 'Rune Craft'),
+        (CATEGORY_CRAFT_STUFF, 'Craft Material'),
+    )
+
+    com2us_id = models.IntegerField()
+    category = models.IntegerField(choices=CATEGORY_CHOICES, help_text='Typically corresponds to `item_master_id` field')
+    name = models.CharField(max_length=200)
+    icon = models.CharField(max_length=200)
+    description = models.TextField()
+    sell_value = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        abstract = True
-
-
-class MonsterGuide(GuideBase):
-    monster = models.OneToOneField(Monster, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'Monster Guide - {self.monster}'
-
-    class Meta:
-        ordering = ['monster__name']
+        unique_together = (
+            'com2us_id',
+            'category',
+        )

@@ -5,7 +5,7 @@ from django_select2.forms import Select2Widget
 
 from .models import Monster, Skill, SkillEffectDetail, MonsterCraftCost, Dungeon, MonsterGuide, \
     HomunculusSkillCraftCost, HomunculusSkill, LeaderSkill, SkillEffect, ScalingStat, \
-    Source, Fusion, Building, CraftMaterial
+    Source, Fusion, Building, CraftMaterial, Scenario, CairossDungeon, RiftRaid, RiftBeast, GameItem
 
 
 class MonsterCraftCostInline(admin.TabularInline):
@@ -225,11 +225,6 @@ class CraftMaterialAdmin(admin.ModelAdmin):
     save_as = True
 
 
-@admin.register(Dungeon)
-class DungeonAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'name', 'category']
-
-
 @admin.register(MonsterGuide)
 class MonsterGuideAdmin(admin.ModelAdmin):
     list_display = ['monster', 'last_updated', 'edited_by']
@@ -238,3 +233,33 @@ class MonsterGuideAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.edited_by = request.user
         super().save_model(request, obj, form, change)
+
+# Dungeons and levels
+@admin.register(Dungeon)
+class DungeonAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name', 'category')
+    readonly_fields = ('slug',)
+
+
+@admin.register(Scenario)
+class ScenarioAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'stage', 'difficulty')
+    readonly_fields = ('slug',)
+    save_as = True
+
+@admin.register(CairossDungeon)
+class CairossDungeonAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'floor')
+    readonly_fields = ('slug',)
+    save_as = True
+
+@admin.register(RiftRaid)
+class RiftRaidAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'difficulty')
+    readonly_fields = ('slug',)
+    save_as = True
+
+# Items and currency
+@admin.register(GameItem)
+class GameItemAdmin(admin.ModelAdmin):
+    list_display = ('com2us_id', 'category', 'name', 'icon')

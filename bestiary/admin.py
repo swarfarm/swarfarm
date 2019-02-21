@@ -234,6 +234,7 @@ class MonsterGuideAdmin(admin.ModelAdmin):
         obj.edited_by = request.user
         super().save_model(request, obj, form, change)
 
+
 # Dungeons and levels
 @admin.register(Dungeon)
 class DungeonAdmin(admin.ModelAdmin):
@@ -247,11 +248,13 @@ class ScenarioAdmin(admin.ModelAdmin):
     readonly_fields = ('slug',)
     save_as = True
 
+
 @admin.register(CairossDungeon)
 class CairossDungeonAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'floor')
     readonly_fields = ('slug',)
     save_as = True
+
 
 @admin.register(RiftRaid)
 class RiftRaidAdmin(admin.ModelAdmin):
@@ -259,7 +262,8 @@ class RiftRaidAdmin(admin.ModelAdmin):
     readonly_fields = ('slug',)
     save_as = True
 
+
 # Items and currency
 @admin.register(GameItem)
 class GameItemAdmin(admin.ModelAdmin):
-    list_display = ('com2us_id', 'category', 'name', 'icon')
+    list_display = ('image_tag', 'com2us_id', 'category', 'name', 'sell_value')

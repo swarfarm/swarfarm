@@ -10,7 +10,7 @@ from django.db.models import Q, Count
 from django.utils.safestring import mark_safe
 from timezone_field import TimeZoneField
 
-from bestiary.models import Monster, Building, Dungeon, Rune, RuneCraft
+from bestiary.models import Monster, Building, Level, Rune, RuneCraft
 
 
 # Individual user/monster collection models
@@ -982,7 +982,7 @@ class TeamGroup(models.Model):
 class Team(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE, null=True, blank=True)
-    dungeon = models.ForeignKey(Dungeon, on_delete=models.SET_NULL, null=True, blank=True)
+    level = models.ForeignKey(Level, on_delete=models.SET_NULL, null=True, blank=True)
     group = models.ForeignKey(TeamGroup, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=30)
     favorite = models.BooleanField(default=False, blank=True)

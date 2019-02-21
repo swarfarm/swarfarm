@@ -1824,7 +1824,7 @@ class Dungeon(models.Model):
         super(Dungeon, self).save(*args, **kwargs)
 
 
-class Scenario(Dungeon):
+class Level(models.Model):
     DIFFICULTY_NORMAL = 1
     DIFFICULTY_HARD = 2
     DIFFICULTY_HELL = 3
@@ -1834,60 +1834,21 @@ class Scenario(Dungeon):
         (DIFFICULTY_HELL, 'Hell'),
     )
 
-    stage = models.IntegerField()
-    difficulty = models.IntegerField(choices=DIFFICULTY_CHOICES, default=DIFFICULTY_NORMAL)
-    energy_cost = models.IntegerField(default=0, help_text='Energy cost to start a run')
-    xp = models.IntegerField(blank=True, null=True, help_text='XP gained by fully clearing the level')
-    slots = models.IntegerField(
-        default=4,
-        help_text='Serves as general slots if dungeon does not have front/back lines'
-    )
-
-    class Meta:
-        ordering = ('difficulty', 'stage')
-        unique_together = ('stage', 'difficulty')
-
-    def __str__(self):
-        return f'{self.name} {self.stage} - {self.get_difficulty_display()}'
-
-
-class CairossDungeon(Dungeon):
+    dungeon = models.ForeignKey(Dungeon, on_delete=models.CASCADE)
     floor = models.IntegerField()
-    energy_cost = models.IntegerField(default=0, help_text='Energy cost to start a run')
+    difficulty = models.IntegerField(choices=DIFFICULTY_CHOICES, blank=True, null=True)
+    energy_cost = models.IntegerField(blank=True, null=True, help_text='Energy cost to start a run')
     xp = models.IntegerField(blank=True, null=True, help_text='XP gained by fully clearing the level')
-    slots = models.IntegerField(
-        default=4,
+    frontline_slots = models.IntegerField(
+        default=5,
         help_text='Serves as general slots if dungeon does not have front/back lines'
     )
-
-
-class RiftRaid(Dungeon):
-    DIFFICULTY_R1 = 1
-    DIFFICULTY_R2 = 2
-    DIFFICULTY_R3 = 3
-    DIFFICULTY_R4 = 4
-    DIFFICULTY_R5 = 5
-
-    DIFFICULTY_CHOICES = (
-        (DIFFICULTY_R1, 'R1'),
-        (DIFFICULTY_R2, 'R2'),
-        (DIFFICULTY_R3, 'R3'),
-        (DIFFICULTY_R4, 'R4'),
-        (DIFFICULTY_R5, 'R5'),
+    backline_slots = models.IntegerField(blank=True, null=True, help_text='Leave null for normal dungeons')
+    max_slots = models.IntegerField(
+        blank=True,
+        null=True,
+        help_text='Maximum monsters combined front/backline. Not required if backline not specified.'
     )
-
-    difficulty = models.IntegerField(choices=DIFFICULTY_CHOICES)
-    energy_cost = models.IntegerField()
-    frontline_slots = models.IntegerField(default=4)
-    backline_slots = models.IntegerField(default=4)
-    max_slots = models.IntegerField(default=6, help_text='Maximum monsters combined front/backline.')
-
-
-class RiftBeast(Dungeon):
-    energy_cost = models.IntegerField()
-    frontline_slots = models.IntegerField(default=4)
-    backline_slots = models.IntegerField(default=4)
-    max_slots = models.IntegerField(default=6, help_text='Maximum monsters combined front/backline.')
 
 
 class GameItem(models.Model):

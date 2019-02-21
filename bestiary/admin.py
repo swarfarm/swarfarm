@@ -3,9 +3,9 @@ from django.db.models import TextField, ForeignKey
 from django.forms.widgets import TextInput
 from django_select2.forms import Select2Widget
 
-from .models import Monster, Skill, SkillEffectDetail, MonsterCraftCost, Dungeon, MonsterGuide, \
+from .models import Monster, Skill, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, MonsterGuide, \
     HomunculusSkillCraftCost, HomunculusSkill, LeaderSkill, SkillEffect, ScalingStat, \
-    Source, Fusion, Building, CraftMaterial, Scenario, CairossDungeon, RiftRaid, RiftBeast, GameItem
+    Source, Fusion, Building, CraftMaterial, GameItem
 
 
 class MonsterCraftCostInline(admin.TabularInline):
@@ -242,24 +242,9 @@ class DungeonAdmin(admin.ModelAdmin):
     readonly_fields = ('slug',)
 
 
-@admin.register(Scenario)
-class ScenarioAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'stage', 'difficulty')
-    readonly_fields = ('slug',)
-    save_as = True
-
-
-@admin.register(CairossDungeon)
-class CairossDungeonAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'floor')
-    readonly_fields = ('slug',)
-    save_as = True
-
-
-@admin.register(RiftRaid)
-class RiftRaidAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'difficulty')
-    readonly_fields = ('slug',)
+@admin.register(Level)
+class LevelAdmin(admin.ModelAdmin):
+    list_display = ('dungeon', 'floor', 'difficulty', 'energy_cost')
     save_as = True
 
 

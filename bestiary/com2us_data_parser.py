@@ -793,7 +793,7 @@ def parse_scenarios():
         if created:
             print(f'Added new dungeon {dungeon.name} - {dungeon.slug}')
 
-        # Update (or create the scenario level
+        # Update (or create) the scenario level
         difficulty = int(row['difficulty'])
         stage = int(row['stage no'])
         energy_cost = int(row['energy cost'])
@@ -825,6 +825,44 @@ def _get_scenario_names_by_id():
     return {
         scen_id + 1: world_map_names[int(scenario_data['world id'])] for scen_id, scenario_data in enumerate(scenario_table)
     }
+
+
+def parse_caiross_dungeons():
+    dungeon_names = _get_translation_tables()[TranslationTables.CAIROSS_DUNGEON_NAMES]
+
+    with open('bestiary/com2us_data/dungeon_list.json', 'r') as f:
+        for dungeon_data in json.load(f):
+            group_id = dungeon_data['group_id']
+
+            dungeon_id = dungeon_data['dungeon_id']
+            name = dungeon_names[group_id]
+
+            dungeon, created = Dungeon.objects.update_or_create(
+                id=dungeon_id,
+                name=name,
+                category=Dungeon.CATEGORY_CAIROSS,
+            )
+
+            if created:
+                print(f'Added new dungeon {dungeon.name} - {dungeon.slug}')
+
+            # Create levels
+            for level_data in dungeon_data['stage_list']:
+                stage = int(level_data['stage_id'])
+                energy_cost = int(level_data['cost'])
+                slots = 5
+
+                level, created = Level.objects.update_or_create(
+                    dungeon=dungeon,
+                    floor=stage,
+                    energy_cost=energy_cost,
+                    frontline_slots=slots,
+                    backline_slots=None,
+                    total_slots=slots,
+                )
+
+                if created:
+                    print(f'Added new level for {dungeon.name} - {level.get_difficulty_display() if level.difficulty is not None else ""} B{stage}')
 
 
 def save_translation_tables():
@@ -877,12 +915,12 @@ class LocalvalueTables(IntEnum):
     TUTORIALS = 15
     SCENARIO_BOSSES = 16
     SCENARIO_LEVELS = 17
-    CAIROS_BOSS_INTROS = 18
+    CAIROSS_BOSS_INTROS = 18
     # Unknown table 19 - more effect mapping
     WORLD_MAP = 20
     ARENA_RANKS = 21
     MONTHLY_REWARDS = 22
-    CAIROS_DUNGEON_LIST = 23
+    CAIROSS_DUNGEON_LIST = 23
     INVITE_FRIEND_REWARDS_OLD = 24
     # Unknown table 25 - probably x/y positions of 3d models in dungeons/scenarios
     AWAKENING_ESSENCES = 26

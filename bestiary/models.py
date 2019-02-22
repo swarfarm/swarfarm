@@ -1791,21 +1791,21 @@ class RuneCraft(RuneObjectBase):
 
 class Dungeon(models.Model):
     CATEGORY_SCENARIO = 0
-    CATEGORY_RUNE_DUNGEON = 1
-    CATEGORY_ESSENCE_DUNGEON = 2
-    CATEGORY_OTHER_DUNGEON = 3
-    CATEGORY_RIFT_OF_WORLDS_RAID = 4
+    CATEGORY_CAIROSS = 1
+    CATEGORY_TOA = 2
+    CATEGORY_RIFT_OF_WORLDS_RAID = 3
+    CATEGORY_RIFT_OF_WORLDS_BEASTS = 4
     CATEGORY_HALL_OF_HEROES = 5
-    CATEGORY_RIFT_OF_WORLDS_BEASTS = 6
+    CATEGORY_OTHER = 99
 
     CATEGORY_CHOICES = [
-        (CATEGORY_SCENARIO, 'Scenarios'),
-        (CATEGORY_RUNE_DUNGEON, 'Rune Dungeons'),
-        (CATEGORY_ESSENCE_DUNGEON, 'Elemental Dungeons'),
-        (CATEGORY_OTHER_DUNGEON, 'Other Dungeons'),
+        (CATEGORY_SCENARIO, 'Scenario'),
+        (CATEGORY_CAIROSS, 'Caiross Dungeon'),
+        (CATEGORY_TOA, 'Tower of Ascension'),
         (CATEGORY_RIFT_OF_WORLDS_RAID, 'Rift Raid'),
         (CATEGORY_RIFT_OF_WORLDS_BEASTS, 'Rift Beast'),
         (CATEGORY_HALL_OF_HEROES, 'Hall of Heroes'),
+        (CATEGORY_OTHER, 'Other'),
     ]
 
     id = models.IntegerField(primary_key=True, help_text='ID matches com2us data')
@@ -1859,6 +1859,7 @@ class Level(models.Model):
 class GameItem(models.Model):
     CATEGORY_MONSTER = 1
     CATEGORY_CURRENCY = 6
+    CATEGORY_RUNE = 8
     CATEGORY_SUMMON_SCROLL = 9
     CATEGORY_BOOSTER = 10
     CATEGORY_ESSENCE = 11

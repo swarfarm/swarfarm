@@ -15,7 +15,8 @@ from django.conf import settings
 from sympy import simplify
 
 from bestiary.com2us_mapping import *
-from .models import Skill, ScalingStat, SkillEffect, CraftMaterial, MonsterCraftCost, HomunculusSkill, HomunculusSkillCraftCost
+from .models import Skill, ScalingStat, SkillEffect, CraftMaterial, MonsterCraftCost, HomunculusSkill, \
+    HomunculusSkillCraftCost, Dungeon, Level
 
 
 def _decrypt(msg):
@@ -754,6 +755,8 @@ class TranslationTables(IntEnum):
     SUMMON_METHODS = 9
     SKILL_NAMES = 19
     SKILL_DESCRIPTIONS = 20
+    WORLD_MAP_DUNGEON_NAMES = 28
+    CAIROSS_DUNGEON_NAMES = 29
 
 
 def get_monster_names_by_id():
@@ -768,9 +771,65 @@ def get_skill_descs_by_id():
     return _get_translation_tables()[TranslationTables.SKILL_DESCRIPTIONS]
 
 
+# Dungeons and Scenarios
+def parse_scenarios():
+    scenario_table = _get_localvalue_tables(LocalvalueTables.SCENARIOS)
+    scenario_names = _get_scenario_names_by_id()
+
+    for row in scenario_table['rows']:
+        dungeon_id = int(row['region id'])
+        name = scenario_names[dungeon_id]
+
+        if name.strip() == '':
+            name = 'UNKNOWN'
+
+        # Update (or create) the dungeon this scenario level will be assigned to
+        dungeon, created = Dungeon.objects.update_or_create(
+            id=dungeon_id,
+            name=name,
+            category=Dungeon.CATEGORY_SCENARIO,
+        )
+
+        if created:
+            print(f'Added new dungeon {dungeon.name} - {dungeon.slug}')
+
+        # Update (or create the scenario level
+        difficulty = int(row['difficulty'])
+        stage = int(row['stage no'])
+        energy_cost = int(row['energy cost'])
+        slots = int(row['player unit slot'])
+
+        level, created = Level.objects.update_or_create(
+            dungeon=dungeon,
+            difficulty=difficulty,
+            floor=stage,
+            energy_cost=energy_cost,
+            frontline_slots=slots,
+            backline_slots=None,
+            total_slots=slots,
+        )
+
+        if created:
+            print(f'Added new level for {dungeon.name} - {level.get_difficulty_display()} B{stage}')
+
+
+def _get_scenario_names_by_id():
+    # Assemble scenario-only names from world map table to match the 'region id' in SCENARIOS localvalue table
+    world_map_names = _get_translation_tables()[TranslationTables.WORLD_MAP_DUNGEON_NAMES]
+    world_map_table = _get_localvalue_tables(LocalvalueTables.WORLD_MAP)
+
+    scenario_table = [
+        val for val in world_map_table['rows'] if int(val['type']) == 3
+    ]
+
+    return {
+        scen_id + 1: world_map_names[int(scenario_data['world id'])] for scen_id, scenario_data in enumerate(scenario_table)
+    }
+
+
 def save_translation_tables():
     tables = _get_translation_tables()
-    with open('bestiary/com2us_data/text_eng.csv', 'w') as f:
+    with open('bestiary/com2us_data/text_eng.csv', 'w', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(['table_num', 'id', 'text'])
         for table_idx, table in enumerate(tables):
@@ -897,7 +956,7 @@ class LocalvalueTables(IntEnum):
 def save_localvalue_tables():
     for x in range(1,99):
         table = _get_localvalue_tables(x)
-        with open(f'bestiary/com2us_data/localvalue_{x}.csv', 'w') as f:
+        with open(f'bestiary/com2us_data/localvalue_{x}.csv', 'w', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=table['header'])
             writer.writeheader()
             for row in table['rows']:

@@ -1808,7 +1808,7 @@ class Dungeon(models.Model):
         (CATEGORY_HALL_OF_HEROES, 'Hall of Heroes'),
     ]
 
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True, help_text='ID matches com2us data')
     name = models.CharField(max_length=100)
     slug = models.SlugField(blank=True, null=True)
     category = models.IntegerField(choices=CATEGORY_CHOICES, blank=True, null=True)
@@ -1839,16 +1839,21 @@ class Level(models.Model):
     difficulty = models.IntegerField(choices=DIFFICULTY_CHOICES, blank=True, null=True)
     energy_cost = models.IntegerField(blank=True, null=True, help_text='Energy cost to start a run')
     xp = models.IntegerField(blank=True, null=True, help_text='XP gained by fully clearing the level')
-    frontline_slots = models.IntegerField(
-        default=5,
-        help_text='Serves as general slots if dungeon does not have front/back lines'
-    )
+    frontline_slots = models.IntegerField(default=5)
     backline_slots = models.IntegerField(blank=True, null=True, help_text='Leave null for normal dungeons')
-    max_slots = models.IntegerField(
-        blank=True,
-        null=True,
-        help_text='Maximum monsters combined front/backline. Not required if backline not specified.'
-    )
+    total_slots = models.IntegerField(default=5, help_text='Maximum monsters combined front/backline.')
+
+    class Meta:
+        unique_together = (
+            'dungeon',
+            'floor',
+            'difficulty',
+        )
+        ordering = (
+            'dungeon',
+            'difficulty',
+            'floor',
+        )
 
 
 class GameItem(models.Model):

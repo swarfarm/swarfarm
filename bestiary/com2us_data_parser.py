@@ -773,7 +773,7 @@ def get_skill_descs_by_id():
 
 # Dungeons and Scenarios
 def parse_scenarios():
-    scenario_table = _get_localvalue_tables(LocalvalueTables.SCENARIOS)
+    scenario_table = _get_localvalue_tables(LocalvalueTables.SCENARIO_LEVELS)
     scenario_names = _get_scenario_names_by_id()
 
     for row in scenario_table['rows']:
@@ -876,8 +876,8 @@ class LocalvalueTables(IntEnum):
     ACHIEVEMENTS = 14
     TUTORIALS = 15
     SCENARIO_BOSSES = 16
-    SCENARIOS = 17
-    CAIROS_BOSSES = 18
+    SCENARIO_LEVELS = 17
+    CAIROS_BOSS_INTROS = 18
     # Unknown table 19 - more effect mapping
     WORLD_MAP = 20
     ARENA_RANKS = 21
@@ -898,7 +898,7 @@ class LocalvalueTables(IntEnum):
     MONSTER_POWER_UP_COSTS = 36
     RUNE_UNEQUIP_COSTS = 37
     RUNE_UPGRADE_COSTS_AND_CHANCES = 38
-    SCENARIOS2 = 39
+    SCENARIO_REGIONS = 39
     PURCHASEABLE_ITEMS2 = 40
     # Unknown table 41 - scroll/cost related?
     MAIL_ITEMS = 42

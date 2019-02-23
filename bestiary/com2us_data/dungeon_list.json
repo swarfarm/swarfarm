@@ -1,8 +1,363 @@
 [
   {
+    "dungeon_id": 1001,
+    "group_id": 1,
+    "model_type": 1,
+    "update_remained": 179810,
+    "stage_list": [
+      {
+        "stage_id": 1,
+        "cost": 4,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 8,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 2,
+        "cost": 4,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 10,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 3,
+        "cost": 5,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 15,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 4,
+        "cost": 5,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 20,
+          "class": 4
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 5,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 30,
+          "class": 4
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 6,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 40,
+          "class": 5
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 7,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 50,
+          "class": 5
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 8,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 55,
+          "class": 6
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 9,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 60,
+          "class": 6
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 10,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60105,
+          "unit_level": 65,
+          "class": 6
+        },
+        "cleared": 1
+      }
+    ]
+  },
+  {
+    "dungeon_id": 2001,
+    "group_id": 2,
+    "model_type": 1,
+    "update_remained": 179810,
+    "stage_list": [
+      {
+        "stage_id": 1,
+        "cost": 4,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 8,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 2,
+        "cost": 4,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 10,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 3,
+        "cost": 5,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 15,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 4,
+        "cost": 5,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 20,
+          "class": 4
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 5,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 30,
+          "class": 4
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 6,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 40,
+          "class": 5
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 7,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 50,
+          "class": 5
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 8,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 55,
+          "class": 6
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 9,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 60,
+          "class": 6
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 10,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60102,
+          "unit_level": 65,
+          "class": 6
+        },
+        "cleared": 1
+      }
+    ]
+  },
+  {
+    "dungeon_id": 3001,
+    "group_id": 3,
+    "model_type": 1,
+    "update_remained": 179810,
+    "stage_list": [
+      {
+        "stage_id": 1,
+        "cost": 4,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 8,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 2,
+        "cost": 4,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 10,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 3,
+        "cost": 5,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 15,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 4,
+        "cost": 5,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 20,
+          "class": 4
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 5,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 30,
+          "class": 4
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 6,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 40,
+          "class": 5
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 7,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 50,
+          "class": 5
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 8,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 55,
+          "class": 6
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 9,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 60,
+          "class": 6
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 10,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60101,
+          "unit_level": 65,
+          "class": 6
+        },
+        "cleared": 1
+      }
+    ]
+  },
+  {
     "dungeon_id": 4001,
     "group_id": 4,
     "model_type": 1,
+    "update_remained": 179810,
     "stage_list": [
       {
         "stage_id": 1,
@@ -226,6 +581,124 @@
         "num_of_waves": 3,
         "dungeon_boss": {
           "unit_master_id": 62004,
+          "unit_level": 65,
+          "class": 6
+        },
+        "cleared": 1
+      }
+    ]
+  },
+  {
+    "dungeon_id": 7001,
+    "group_id": 6,
+    "model_type": 1,
+    "update_remained": 179810,
+    "stage_list": [
+      {
+        "stage_id": 1,
+        "cost": 4,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
+          "unit_level": 8,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 2,
+        "cost": 4,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
+          "unit_level": 10,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 3,
+        "cost": 5,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
+          "unit_level": 15,
+          "class": 3
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 4,
+        "cost": 5,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
+          "unit_level": 20,
+          "class": 4
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 5,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
+          "unit_level": 30,
+          "class": 4
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 6,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
+          "unit_level": 40,
+          "class": 5
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 7,
+        "cost": 6,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
+          "unit_level": 50,
+          "class": 5
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 8,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
+          "unit_level": 55,
+          "class": 6
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 9,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
+          "unit_level": 60,
+          "class": 6
+        },
+        "cleared": 1
+      },
+      {
+        "stage_id": 10,
+        "cost": 7,
+        "num_of_waves": 3,
+        "dungeon_boss": {
+          "unit_master_id": 60104,
           "unit_level": 65,
           "class": 6
         },

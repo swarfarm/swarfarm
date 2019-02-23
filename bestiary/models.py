@@ -1796,6 +1796,8 @@ class Dungeon(models.Model):
     CATEGORY_RIFT_OF_WORLDS_RAID = 3
     CATEGORY_RIFT_OF_WORLDS_BEASTS = 4
     CATEGORY_HALL_OF_HEROES = 5
+    CATEGORY_ARENA = 6
+    CATEGORY_GUILD = 7
     CATEGORY_OTHER = 99
 
     CATEGORY_CHOICES = [
@@ -1805,6 +1807,8 @@ class Dungeon(models.Model):
         (CATEGORY_RIFT_OF_WORLDS_RAID, 'Rift Raid'),
         (CATEGORY_RIFT_OF_WORLDS_BEASTS, 'Rift Beast'),
         (CATEGORY_HALL_OF_HEROES, 'Hall of Heroes'),
+        (CATEGORY_ARENA, 'Arena'),
+        (CATEGORY_GUILD, 'Guild Content'),
         (CATEGORY_OTHER, 'Other'),
     ]
 

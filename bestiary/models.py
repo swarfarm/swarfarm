@@ -1601,7 +1601,7 @@ class Rune(models.Model, RuneObjectBase):
                 })
 
 
-class RuneCraft(RuneObjectBase):
+class RuneCraft(models.Model, RuneObjectBase):
     CRAFT_GRINDSTONE = 0
     CRAFT_ENCHANT_GEM = 1
     CRAFT_IMMEMORIAL_GRINDSTONE = 2
@@ -1787,6 +1787,50 @@ class RuneCraft(RuneObjectBase):
     }
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GEM] = CRAFT_VALUE_RANGES[CRAFT_ENCHANT_GEM]
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[CRAFT_GRINDSTONE]
+
+    type = models.IntegerField(choices=CRAFT_CHOICES)
+    rune = models.IntegerField(choices=RuneObjectBase.TYPE_CHOICES, blank=True, null=True)
+    stat = models.IntegerField(choices=RuneObjectBase.STAT_CHOICES)
+    quality = models.IntegerField(choices=RuneObjectBase.QUALITY_CHOICES)
+    value = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        if self.stat in RuneObjectBase.PERCENT_STATS:
+            percent = '%'
+        else:
+            percent = ''
+
+        return RuneCraft.STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + ' - ' + str(
+            self.get_max_value()) + percent
+
+    def get_min_value(self):
+        try:
+            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['min']
+        except KeyError:
+            return None
+        except TypeError as e:
+            print(e)
+            return None
+
+    def get_max_value(self):
+        try:
+            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['max']
+        except KeyError:
+            return None
+
+    @staticmethod
+    def get_valid_stats_for_type(craft_type):
+        try:
+            valid_stats = RuneCraft.CRAFT_VALUE_RANGES[craft_type].keys()
+        except KeyError:
+            return None
+        else:
+            stat_names = {stat: RuneObjectBase.STAT_CHOICES[stat - 1][1] for stat in valid_stats}
+
+            return stat_names
 
 
 class Dungeon(models.Model):

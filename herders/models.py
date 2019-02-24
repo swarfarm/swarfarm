@@ -919,52 +919,13 @@ class RuneInstance(Rune):
         return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
 
 
-class RuneCraftInstance(models.Model, RuneCraft):
+class RuneCraftInstance(RuneCraft):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
-    type = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES)
-    rune = models.IntegerField(choices=RuneCraft.TYPE_CHOICES, blank=True, null=True)
-    stat = models.IntegerField(choices=RuneCraft.STAT_CHOICES)
-    quality = models.IntegerField(choices=RuneCraft.QUALITY_CHOICES)
-    value = models.IntegerField(blank=True, null=True)
 
     class Meta:
         ordering = ['type', 'rune']
-
-    def __str__(self):
-        if self.stat in RuneInstance.PERCENT_STATS:
-            percent = '%'
-        else:
-            percent = ''
-
-        return RuneCraft.STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + ' - ' + str(self.get_max_value()) + percent
-
-    def get_min_value(self):
-        try:
-            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['min']
-        except KeyError:
-            return None
-        except TypeError as e:
-            print(e)
-            return None
-
-    def get_max_value(self):
-        try:
-            return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['max']
-        except KeyError:
-            return None
-
-    @staticmethod
-    def get_valid_stats_for_type(craft_type):
-        try:
-            valid_stats = RuneCraftInstance.CRAFT_VALUE_RANGES[craft_type].keys()
-        except KeyError:
-            return None
-        else:
-            stat_names = {stat: RuneInstance.STAT_CHOICES[stat - 1][1] for stat in valid_stats}
-
-            return stat_names
 
 
 class TeamGroup(models.Model):

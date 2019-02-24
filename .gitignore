@@ -2,5 +2,6 @@
 .idea/
 .env
 .vagrant/
+venv/
 log_data/
 celerybeat.pid

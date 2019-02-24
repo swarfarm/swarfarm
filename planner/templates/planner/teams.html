@@ -1,0 +1,127 @@
+{% extends 'planner/base.html' %}
+{% load staticfiles crispy_forms_tags humanize %}
+
+{% block planner %}
+    <div id="planner-teams" class="container">
+        <h1>Stat Planner</h1>
+        <table style="text-align:right;">
+            <tr>
+                <th>Team</th>
+                <th>Dungeon</th>
+                <th># Mons</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr v-for="team of teams">
+                <td v-text="team.name"></td>
+                <td><span v-if="team.dungeon" v-text="team.dungeon.name"/></td>
+                <td v-text="team.monsters.length"></td>
+                <td><button @click="gotoTeam(team.id)">Edit</button></td>
+                <td><button @click="deleteTeam(team.id)">X</button></td>
+            </tr>
+        </table>
+        <hr/>
+        <form>
+            <table>
+                <tr>
+                    <td><label for="name">Team</label></td>
+                    <td><input id="name" type="text" v-model="add_name"></td>
+                </tr>
+                <tr>
+                    <td><label for="dungeon">Dungeon</label></td>
+                    <td><select id="dungeon" v-model="add_dungeon">
+                        <option v-for="option in dungeons" v-bind:value="option.id" v-text="option.name">Loading...</option>
+                    </select>
+                    </td>
+                </tr>
+                <tr><td colspan="2"><button @click.stop.prevent="addTeam">Add Team</button></td></tr>
+            </table>
+        </form>
+        <hr/>
+        <form>
+            <table>
+                <tr>
+                    <td><label for="name">Team</label></td>
+                    <td><input id="name" type="text" v-model="composite_name"></td>
+                </tr>
+                <tr>
+                    <td>Teams:</td>
+                    <td>
+                        <select multiple="true" v-model="composite_ids">
+                            <option v-for="team in teams" :value="team.id" v-text="team.name"></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button @click.stop.prevent="makeComposite">Make Composite</button></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+{% endblock planner %}
+
+{% block javascript %}
+    <!-- development version, includes helpful console warnings -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+    <script type="text/javascript" src="{% static 'planner/js/APIService.js' %}"></script>
+    <script>
+        const api_team = new APIService('{% url 'planner-team-list' %}', '{{ csrf_token }}');
+        const api_dungeon = new APIService('{% url 'dungeon-list' %}', '{{ csrf_token }}');
+        const api_composite = new APIService('{% url 'planner-team-list' %}composite/', '{{ csrf_token }}');
+
+        const app = new Vue({
+            el: "#planner-teams",
+            data: {
+                teams: [],
+                add_name: null,
+                add_dungeon: null,
+                composite_name: null,
+                composite_ids: null,
+                dungeons: [],
+            },
+            methods: {
+                gotoTeam(pk) {
+                    window.location = api_team.url(pk);
+                },
+                loadTeams() {
+                    api_team.list().then((data) => {
+                        this.teams = data;
+                    });
+                },
+                addTeam() {
+                    api_team.create({
+                        name: this.add_name,
+                        dungeon: {id: this.add_dungeon},
+                        monsters: [],
+                    }).then(() => {
+                        this.loadTeams();
+                    });
+                },
+                deleteTeam(pk) {
+                    api_team.remove(pk).then(() => {
+                        this.loadTeams();
+                    })
+                },
+                loadDungeons() {
+                    api_dungeon.list().then((data) => {
+                        this.dungeons = data;
+                    });
+                },
+                makeComposite() {
+                    api_composite.create({
+                        name: this.composite_name,
+                        teams: this.composite_ids,
+                    }).then(() => {
+                        this.loadTeams();
+                    });
+                },
+            },
+            mounted() {
+                this.loadDungeons();
+                this.loadTeams();
+            },
+        });
+    </script>
+{% endblock javascript %}

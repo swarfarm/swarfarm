@@ -1,0 +1,225 @@
+{% extends 'planner/base.html' %}
+{% load staticfiles crispy_forms_tags humanize %}
+
+{% block planner %}
+    <div id="planner-team" class="container">
+        <button v-on:click="gotoTeam()"><< Back to Teams</button>
+        <h1 v-text="name"></h1>
+        <h2 v-if="dungeon" v-text="dungeon.name"></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Monster</th>
+                    <th>Leader</th>
+                    <th title="Effective SPD after towers, sets, and leaders">Min E.SPD</th>
+                    <th>Min HP</th>
+                    <th>Min DEF</th>
+                    <th>Min E.HP</th>
+                    <th>Min RES</th>
+                    <th>Min ACC</th>
+                    <th>Min CRate</th>
+                    <th></th>
+                    <th>Max CRate</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            <template v-for="monster in monsters">
+            <tr>
+                <td v-text="monster.monster.name"></td>
+                <td><input type="radio" name="leader" v-model="leader" v-bind:value="monster.monster.name"></td>
+                <td><input type="text" v-model="monster.min_spd" maxlength="3" size="3"></td>
+                <td><input type="text" v-model="monster.min_hp" maxlength="5" size="5"></td>
+                <td><input type="text" v-model="monster.min_def" maxlength="4" size="4"></td>
+                <td><input type="text" v-model="monster.min_ehp" maxlength="6" size="6"></td>
+                <td><input type="text" v-model="monster.min_res" maxlength="3" size="3"></td>
+                <td><input type="text" v-model="monster.min_acc" maxlength="5" size="5"></td>
+                <td align="right"><input type="text" v-model="monster.min_crate" maxlength="3" size="3"></td>
+                <td>-</td>
+                <td><input type="text" v-model="monster.max_crate" maxlength="3" size="3"></td>
+                <td><button v-on:click="removeMonster(monster)">X</button></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="2">Slower than...</td>
+                <td colspan="8">
+                    <table>
+                        <tr>
+                            <th>Mon</th>
+                            <th>By</th>
+                            <th>Amount</th>
+                            <th></th>
+                        </tr>
+                        <tr v-for="rule in monster.slower_than_by">
+                            <td><select v-model="rule.slower_than.monster">
+                                <option v-for="option in monsters"
+                                        v-if="option.monster.com2us_id != monster.monster.com2us_id"
+                                        v-bind:value="option.monster.com2us_id"
+                                        v-text="option.monster.name">Loading...</option>
+                            </select></td>
+                            <td><select v-model="rule.type">
+                                <option value="0">by Any Amount</option>
+                                <option value="1">by as Little as Possible</option>
+                                <option value="2">but within % SPD</option>
+                                <option value="3">but within flat SPD</option>
+                            </select></td>
+                            <td><input v-model="rule.slower_than.amount" pattern="\d*" maxlength="3" size="3"/></td>
+                            <td><button v-on:click="removeSlowerThan(monster, rule)">X</button></td>
+                        </tr>
+                        <tr><td colspan="3"><button v-on:click="addSlowerThan(monster)">Add Rule</button></td></tr>
+                    </table>
+                </td>
+                <td></td>
+            </tr>
+            </template>
+            </tbody>
+        </table>
+        <button v-on:click="saveTeam">Save</button>
+        <table>
+            <tr>
+                <td><label for="roster">Available Monsters:</label></td>
+                <td><select id="roster" v-model="add_roster">
+                    <option v-for="option in roster" v-bind:value="option.com2us_id" v-text="option.name">Loading...</option>
+                </select>
+                </td>
+                <td colspan="2">
+                    <button v-on:click="addMonster">Add Monster</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endblock planner %}/
+
+{% block javascript %}
+    <!-- development version, includes helpful console warnings -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+    <script type="text/javascript" src="{% static 'planner/js/APIService.js' %}"></script>
+    <script>
+        const api_team = new APIService('{% url 'planner-team-list' %}', '{{ csrf_token }}');
+        const api_roster = new APIService('{% url 'roster-list' %}', '{{ csrf_token }}');
+
+        const app = new Vue({
+            el: "#planner-team",
+            data: {
+                name: "",
+                dungeon: {},
+                leader: null,
+                monsters: [],
+                roster: [],
+                add_roster: null,
+            },
+            methods: {
+                gotoTeam(pk) {
+                    window.location = api_team.url(pk);
+                },
+                loadRoster() {
+                    api_roster.retrieve({{ request.user.pk }}).then((data) => {
+                        Vue.set(this, 'roster', data.monsters);
+                        // Make sure members of team aren't found in roster
+                        this.removeDuplicates();
+                    });
+                },
+                loadTeam() {
+                    api_team.retrieve({{ id }}).then((data) => {
+                        this.name = data.name;
+                        this.dungeon = data.dungeon;
+                        this.monsters = data.monsters;
+                        for (let i=0; i < this.monsters.length; i++) {
+                            if (this.monsters[i].leader) {
+                                this.leader = this.monsters[i].monster.name;
+                            }
+                        }
+                        // Make sure members of team aren't found in roster
+                        this.removeDuplicates();
+                    });
+                },
+                saveTeam() {
+                    this.nullBlanks();
+                    const payload = {
+                        name: this.name,
+                        dungeon: this.dungeon,
+                        monsters: this.monsters,
+                    };
+                    api_team.update({{ id }}, payload)
+                },
+                nullBlanks() {
+                    let fields = ['min_spd', 'min_hp', 'min_def', 'min_ehp',
+                        'min_acc', 'min_res', 'min_crate', 'max_crate'];
+                    for (let i=0; i < this.monsters.length; i++) {
+                        let monster = this.monsters[i];
+                        for (let j=0; j < fields.length; j++) {
+                            if (monster[fields[j]] == '') {
+                                monster[fields[j]] = null;
+                            }
+                        }
+                        monster.leader = monster.monster.name == this.leader;
+                    }
+
+                },
+                removeDuplicates() {
+                    const to_remove = [];
+                    for (let i=0; i < this.monsters.length; i++) {
+                        let monster = this.monsters[i].monster;
+                        for (let j=0; j < this.roster.length; j++) {
+                            if (this.roster[j]['com2us_id'] == monster['com2us_id']) {
+                                to_remove.push(j)
+                            }
+                        }
+                    }
+                    // iterate backwards (using pop) to avoid shifting indexes
+                    while (to_remove.length > 0) {
+                        let i = to_remove.pop();
+                        this.roster.splice(i, 1);
+                    }
+                },
+                addMonster() {
+                    // get name from dropdown
+                    for (let i = 0; i < this.roster.length; i++) {
+                        let monster = this.roster[i];
+                        if (monster.com2us_id == this.add_roster) {
+                            let item = {};
+                            Vue.set(item, 'group', null);
+                            Vue.set(item, 'leader', false);
+                            Vue.set(item, 'min_spd', null);
+                            Vue.set(item, 'min_hp', null);
+                            Vue.set(item, 'min_ehp', null);
+                            Vue.set(item, 'min_def', null);
+                            Vue.set(item, 'min_res', null);
+                            Vue.set(item, 'min_acc', null);
+                            Vue.set(item, 'min_crate', null);
+                            Vue.set(item, 'max_crate', null);
+                            Vue.set(item, 'monster', monster);
+                            Vue.set(item, 'slower_than_by', []);
+                            this.monsters.push(item);
+                            this.roster.splice(i, 1);
+                            break;
+                        }
+                    }
+                },
+                removeMonster(stats) {
+                    this.monsters.splice(this.monsters.indexOf(stats), 1);
+                    this.roster.splice(0, 0, stats.monster);
+                },
+                addSlowerThan(stats) {
+                    let monster = {};
+                    Vue.set(monster, 'com2us_id', null);
+                    let slower_than = {};
+                    Vue.set(slower_than, 'monster', monster);
+                    let slower_than_by = {};
+                    Vue.set(slower_than_by, 'slower_than', slower_than);
+                    Vue.set(slower_than_by, 'type', 0);
+                    Vue.set(slower_than_by, 'amount', null);
+                    stats.slower_than_by.push(slower_than_by);
+                },
+                removeSlowerThan(stats, slower) {
+                    stats.slower_than_by.splice(stats.slower_than_by.indexOf(slower));
+                },
+            },
+            mounted() {
+                this.loadRoster();
+                this.loadTeam();
+            },
+        })
+    </script>
+{% endblock javascript %}

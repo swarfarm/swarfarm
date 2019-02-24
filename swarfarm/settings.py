@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     'news',
     'feedback',
     'data_log',
+    'planner',
 ]
 
 if DEBUG:

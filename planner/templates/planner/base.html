@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load staticfiles crispy_forms_tags humanize %}
+
+{% block subnav %}
+    {% static 'planner/images/' as img_url_prefix %}
+
+    <div class="navbar navbar-default navmenu-collapsed">
+        <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
+    </div>
+{% endblock subnav %}
+
+{% block content %}
+    <div class="navmenu-content">
+        <div class="planner">
+            {% block planner %}
+            {% endblock planner %}
+        </div>
+    </div>
+{% endblock content %}

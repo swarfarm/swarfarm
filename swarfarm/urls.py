@@ -14,6 +14,7 @@ from herders import views as herder_views
 from herders.autocomplete import *
 from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, CrispyPasswordResetForm, \
     CrispySetPasswordForm
+from planner.urls import planner
 
 urlpatterns = [
     # AJAX-y stuff first
@@ -40,6 +41,9 @@ urlpatterns = [
     url(r'^data/', include('data_log.urls', namespace='data_log')),
     url(r'^', include('herders.urls', namespace='herders')),
     url(r'^', include('news.urls', namespace='news')),
+
+    # Planner
+    url(r'^planner/', include(planner.urls)),
 
     # Django auth/admin stuff
     url(r'^admin/', admin.site.urls),

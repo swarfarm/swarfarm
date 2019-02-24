@@ -737,12 +737,6 @@ class RuneInstance(Rune):
     def get_acc(self):
         return self.get_stat(RuneInstance.STAT_ACCURACY_PCT, False)
 
-    def get_innate_stat_title(self):
-        if self.innate_stat is not None:
-            return self.INNATE_STAT_TITLES[self.innate_stat]
-        else:
-            return ''
-
     def update_fields(self):
         self.substats = []
         self.substat_values = []
@@ -908,15 +902,11 @@ class RuneInstance(Rune):
         super(RuneInstance, self).clean()
 
     def save(self, *args, **kwargs):
-        self.update_fields()
         super(RuneInstance, self).save(*args, **kwargs)
 
         # Trigger stat calc update on the assigned monster
         if self.assigned_to:
             self.assigned_to.save()
-
-    def __str__(self):
-        return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
 
 
 class RuneCraftInstance(RuneCraft):

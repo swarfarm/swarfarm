@@ -1429,6 +1429,12 @@ class Rune(models.Model, RuneObjectBase):
     def get_innate_stat_rune_display(self):
         return RuneObjectBase.STAT_DISPLAY.get(self.innate_stat, '')
 
+    def get_innate_stat_title(self):
+        if self.innate_stat is not None:
+            return self.INNATE_STAT_TITLES[self.innate_stat]
+        else:
+            return ''
+
     def get_substat_rune_display(self, idx):
         if len(self.substats) > idx:
             return RuneObjectBase.STAT_DISPLAY.get(self.substats[idx], '')
@@ -1599,6 +1605,13 @@ class Rune(models.Model, RuneObjectBase):
                         code=f'invalid_rune_substat_value]'
                     )
                 })
+
+    def save(self, *args, **kwargs):
+        self.update_fields()
+        super(Rune, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.get_innate_stat_title() + ' ' + self.get_type_display() + ' ' + 'Rune'
 
 
 class RuneCraft(models.Model, RuneObjectBase):
@@ -1797,15 +1810,6 @@ class RuneCraft(models.Model, RuneObjectBase):
     class Meta:
         abstract = True
 
-    def __str__(self):
-        if self.stat in RuneObjectBase.PERCENT_STATS:
-            percent = '%'
-        else:
-            percent = ''
-
-        return RuneCraft.STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + ' - ' + str(
-            self.get_max_value()) + percent
-
     def get_min_value(self):
         try:
             return self.CRAFT_VALUE_RANGES[self.type][self.stat][self.quality]['min']
@@ -1831,6 +1835,15 @@ class RuneCraft(models.Model, RuneObjectBase):
             stat_names = {stat: RuneObjectBase.STAT_CHOICES[stat - 1][1] for stat in valid_stats}
 
             return stat_names
+
+    def __str__(self):
+        if self.stat in RuneObjectBase.PERCENT_STATS:
+            percent = '%'
+        else:
+            percent = ''
+
+        return RuneCraft.STAT_DISPLAY.get(self.stat) + ' +' + str(self.get_min_value()) + percent + ' - ' + str(
+            self.get_max_value()) + percent
 
 
 class Dungeon(models.Model):

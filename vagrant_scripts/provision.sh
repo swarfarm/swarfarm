@@ -25,7 +25,7 @@ sudo -u postgres psql --command="CREATE USER swarfarmer_dev WITH PASSWORD 'inten
 sudo -u postgres psql --command="ALTER ROLE swarfarmer_dev SET client_encoding TO 'utf8';"
 sudo -u postgres psql --command="ALTER ROLE swarfarmer_dev SET default_transaction_isolation TO 'read committed';"
 sudo -u postgres psql --command="ALTER ROLE swarfarmer_dev SET timezone TO 'UTC';"
-sudo -u postgres psql --command="GRANT ALL PRIVILEGES ON DATABASE swarfarm_dev TO swarfarmer_dev;"
+sudo -u postgres psql --command="ALTER ROLE swarfarmer_dev WITH SUPERUSER;"
 
 # Set up nginx
 sudo mv ~/nginx_config /etc/nginx/sites-available/swarfarm

@@ -188,6 +188,10 @@ DATABASES = {
     'default': env.db(),
 }
 
+DATABASES['default']['TEST'] = {
+    'CHARSET': 'UTF8',
+}
+
 # Cache
 CACHES = {
     'default': {

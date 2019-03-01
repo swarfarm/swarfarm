@@ -6,6 +6,7 @@ from rest_framework.reverse import reverse
 from rest_framework.authtoken.models import Token
 
 from data_log import views, models
+from data_log.log_parse import accepted_api_params
 from herders.models import Summoner
 
 
@@ -16,7 +17,7 @@ class BaseLogTest(TestCase):
     def _do_log(self, log_data_filename, *args, **kwargs):
         with open(f'data_log/tests/game_api_responses/{log_data_filename}', 'r') as f:
             view = views.LogData.as_view({'post': 'create'})
-            data = json.load(f)
+            data = get_requested_keys(json.load(f))
             request = self.factory.post(
                 reverse('data_log:log-upload-list'),
                 data=data,
@@ -24,6 +25,28 @@ class BaseLogTest(TestCase):
                 **kwargs,
             )
             view(request)
+
+
+def get_requested_keys(log_data):
+    # Sample data contains entire game API request/response, but log clients will trim data down
+    # to the keys specified in `accepted_api_params`
+    command = log_data['data']['request']['command']
+    requested_data = accepted_api_params[command]
+
+    trimmed_data = {
+        'data': {
+            'request': {},
+            'response': {},
+        }
+    }
+
+    for key in requested_data['request']:
+        trimmed_data['data']['request'][key] = log_data['data']['request'][key]
+
+    for key in requested_data['response']:
+        trimmed_data['data']['response'][key] = log_data['data']['response'][key]
+
+    return trimmed_data
 
 
 class LogDataViewTests(BaseLogTest):

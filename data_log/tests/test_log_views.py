@@ -53,6 +53,37 @@ class LogDataViewTests(BaseLogTest):
     # These tests assume SummonLog functionality is working too, and might fail for SummonLog related reasons
     fixtures = ['test_summon_monsters', 'test_game_items']
 
+    def test_invalid_log_data(self):
+        view = views.LogData.as_view({'post': 'create'})
+        data = {'request': {}, 'response': {}}
+        request = self.factory.post(
+            reverse('data_log:log-upload-list'),
+            data=data,
+            format='json',
+        )
+        response = view(request)
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_non_accepted_api_command(self):
+        view = views.LogData.as_view({'post': 'create'})
+        data = {
+            'data': {
+                'request': {
+                    'command': 'FakeApiCommand'
+                },
+                'response': {},
+            }
+        }
+        request = self.factory.post(
+            reverse('data_log:log-upload-list'),
+            data=data,
+            format='json',
+        )
+        response = view(request)
+
+        self.assertEqual(response.status_code, 400)
+
     def test_anonymous_log(self):
         self._do_log('SummonLog/scroll_unknown_qty1.json')
 

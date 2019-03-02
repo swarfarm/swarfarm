@@ -4,7 +4,15 @@ import pytz
 
 from bestiary.models import GameItem, Monster
 from herders.models import Summoner
-from .models import SummonLog
+from .models import FullLog, SummonLog
+
+
+def parse_full_log(summoner, log_data):
+    log_entry = _parse_common_log_data(FullLog(), summoner, log_data)
+    log_entry.command = log_data['request']['command']
+    log_entry.request = log_data['request']
+    log_entry.response = log_data['response']
+    log_entry.save()
 
 
 def parse_summon_unit(summoner, log_data):
@@ -60,6 +68,7 @@ def _parse_common_log_data(log, summoner, log_data):
     log.timestamp = datetime.datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
 
     return log
+
 
 accepted_api_params = {
     'SummonUnit': {

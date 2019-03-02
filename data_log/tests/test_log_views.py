@@ -6,7 +6,7 @@ from rest_framework.reverse import reverse
 from rest_framework.authtoken.models import Token
 
 from data_log import views, models
-from data_log.log_parse import accepted_api_params
+from data_log.log_parse import accepted_api_params, parse_full_log
 from herders.models import Summoner
 
 
@@ -31,6 +31,10 @@ def get_requested_keys(log_data):
     # Sample data contains entire game API request/response, but log clients will trim data down
     # to the keys specified in `accepted_api_params`
     command = log_data['data']['request']['command']
+
+    if '__all__' in accepted_api_params[command]:
+        return log_data
+
     requested_data = accepted_api_params[command]
 
     trimmed_data = {
@@ -114,3 +118,15 @@ class LogDataViewTests(BaseLogTest):
         log = models.SummonLog.objects.first()
         self.assertEqual(log.summoner, u.summoner)
         self.assertEqual(log.wizard_id, 123)
+
+    def test_full_log(self):
+        with open(f'data_log/tests/game_api_responses/SummonLog/scroll_unknown_qty1.json', 'r') as f:
+            data = json.load(f)
+            accepted_api_params['SummonUnit']['__all__'] = True
+            self._do_log('SummonLog/scroll_unknown_qty1.json')
+            accepted_api_params['SummonUnit'].pop('__all__', None)
+
+            log = models.FullLog.objects.first()
+            self.assertEqual(data['data']['request']['command'], log.command)
+            self.assertEqual(data['data']['request'], log.request)
+            self.assertEqual(data['data']['response'], log.response)

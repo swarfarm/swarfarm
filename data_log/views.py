@@ -5,7 +5,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from herders.models import Summoner
-from .log_parse import accepted_api_params, log_parse_dispatcher
+from .log_parse import accepted_api_params, log_parse_dispatcher, parse_full_log
 from .log_schema import DataLogValidator
 
 
@@ -43,6 +43,11 @@ class LogData(viewsets.ViewSet):
 
         # Parse the log
         log_parse_dispatcher[api_command](summoner, log_data)
+
+        if '__all__' in accepted_api_params[api_command]:
+            # Store full log for later analysis
+            parse_full_log(summoner, log_data)
+
         return Response({'detail': 'Log OK'})
 
 

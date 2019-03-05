@@ -16,7 +16,7 @@ from sympy import simplify
 
 from bestiary.com2us_mapping import *
 from .models import Skill, ScalingStat, SkillEffect, CraftMaterial, MonsterCraftCost, HomunculusSkill, \
-    HomunculusSkillCraftCost, Dungeon, Level
+    HomunculusSkillCraftCost, Dungeon, SecretDungeon, Level
 
 
 def _decrypt(msg):
@@ -863,6 +863,38 @@ def parse_caiross_dungeons():
 
                 if created:
                     print(f'Added new level for {dungeon.name} - {level.get_difficulty_display() if level.difficulty is not None else ""} B{stage}')
+
+
+def parse_secret_dungeons():
+    dungeon_table = _get_localvalue_tables(LocalvalueTables.SECRET_DUNGEONS)
+
+    for row in dungeon_table['rows']:
+        dungeon_id = int(row['instance id'])
+        monster_id = int(row['summon pieces'])
+        monster = Monster.objects.get(com2us_id=monster_id)
+
+        dungeon, created = SecretDungeon.objects.update_or_create(
+            id=dungeon_id,
+            name=f'{monster.get_element_display()} {monster.name} Secret Dungeon',
+            category=SecretDungeon.CATEGORY_SECRET,
+            monster=monster,
+        )
+
+        if created:
+            print(f'Added new secret dungeon {dungeon.name} - {dungeon.slug}')
+
+        # Create a single level referencing this dungeon
+        level, created = Level.objects.update_or_create(
+            dungeon=dungeon.dungeon_ptr,
+            floor=1,
+            energy_cost=3,
+            frontline_slots=5,
+            backline_slots=None,
+            total_slots=5,
+        )
+
+        if created:
+            print(f'Added new level for {dungeon.name} - {level.get_difficulty_display() if level.difficulty is not None else ""} B{1}')
 
 
 def save_translation_tables():

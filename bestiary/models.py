@@ -1855,9 +1855,10 @@ class Dungeon(models.Model):
     CATEGORY_HALL_OF_HEROES = 5
     CATEGORY_ARENA = 6
     CATEGORY_GUILD = 7
+    CATEGORY_SECRET = 8
     CATEGORY_OTHER = 99
 
-    CATEGORY_CHOICES = [
+    CATEGORY_CHOICES = (
         (CATEGORY_SCENARIO, 'Scenario'),
         (CATEGORY_CAIROSS, 'Caiross Dungeon'),
         (CATEGORY_TOA, 'Tower of Ascension'),
@@ -1866,8 +1867,9 @@ class Dungeon(models.Model):
         (CATEGORY_HALL_OF_HEROES, 'Hall of Heroes'),
         (CATEGORY_ARENA, 'Arena'),
         (CATEGORY_GUILD, 'Guild Content'),
+        (CATEGORY_SECRET, 'Secret Dungeon'),
         (CATEGORY_OTHER, 'Other'),
-    ]
+    )
 
     id = models.IntegerField(primary_key=True, help_text='ID matches com2us data')
     name = models.CharField(max_length=100)
@@ -1883,6 +1885,10 @@ class Dungeon(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Dungeon, self).save(*args, **kwargs)
+
+
+class SecretDungeon(Dungeon):
+    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
 
 
 class Level(models.Model):

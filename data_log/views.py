@@ -5,13 +5,187 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from herders.models import Summoner
-from .log_parse import accepted_api_params, log_parse_dispatcher
+from .models import SummonLog, DungeonLog
 from .log_schema import DataLogValidator
 
 
-# Notes for future:
-# Get summoner instance with API key, pass to log parse functions. Fall back to wizard id lookup. None if no matches.
-# Get information on what game data for starting a secret dungeon looks like
+accepted_api_params = {
+    'SummonUnit': {
+        'request': [
+            'wizard_id',
+            'command',
+            'mode',
+        ],
+        'response': [
+            'tzone',
+            'tvalue',
+            'unit_list',
+            'item_list',
+        ],
+    },
+    # 'DoRandomWishItem': {
+    #     'request': [
+    #         'wizard_id',
+    #         'command',
+    #     ],
+    #     'response': [
+    #         'tzone',
+    #         'tvalue',
+    #         'wish_info',
+    #         'unit_info',
+    #         'rune',
+    #     ]
+    # },
+    # 'BattleDungeonResult': {
+    #     'request': [
+    #         'wizard_id',
+    #         'command',
+    #         'dungeon_id',
+    #         'stage_id',
+    #         'clear_time',
+    #         'win_lose',
+    #     ],
+    #     'response': [
+    #         'tzone',
+    #         'tvalue',
+    #         'unit_list',
+    #         'reward',
+    #         'instance_info',
+    #     ]
+    # },
+    'BattleScenarioStart': {
+        'request': [
+            'wizard_id',
+            'command',
+            'region_id',
+            'stage_no',
+            'difficulty',
+        ],
+        'response': [
+            'battle_key'
+        ]
+    },
+    'BattleScenarioResult': {
+        'request': [
+            'wizard_id',
+            'command',
+            'battle_key',
+            'win_lose',
+            'clear_time',
+        ],
+        'response': [
+            'tzone',
+            'tvalue',
+            'reward',
+        ]
+    },
+    # 'BattleWorldBossStart': {
+    #     'request': [
+    #         'wizard_id',
+    #         'command',
+    #     ],
+    #     'response': [
+    #         'tzone',
+    #         'tvalue',
+    #         'battle_key',
+    #         'worldboss_battle_result',
+    #         'reward_info',
+    #     ]
+    # },
+    # 'BattleWorldBossResult': {
+    #     'request': [
+    #         'wizard_id',
+    #         'command',
+    #         'battle_key',
+    #     ],
+    #     'response': [
+    #         'reward',
+    #     ]
+    # },
+    # 'BattleRiftDungeonResult': {
+    #     'request': [
+    #         'wizard_id',
+    #         'command',
+    #         'battle_result',
+    #         'dungeon_id'
+    #     ],
+    #     'response': [
+    #         'tvalue',
+    #         'tzone',
+    #         'item_list',
+    #         'rift_dungeon_box_id',
+    #         'total_damage',
+    #     ]
+    # },
+    # 'BattleRiftOfWorldsRaidStart': {
+    #     'request': [
+    #         'wizard_id',
+    #         'command',
+    #         'battle_key',
+    #     ],
+    #     'response': [
+    #         'tzone',
+    #         'tvalue',
+    #         'battle_info',
+    #     ]
+    # },
+    # 'BattleRiftOfWorldsRaidResult': {
+    #     'request': [
+    #         'wizard_id',
+    #         'command',
+    #         'battle_key',
+    #         'clear_time',
+    #         'win_lose',
+    #         'user_status_list',
+    #     ],
+    #     'response': [
+    #         'tzone',
+    #         'tvalue',
+    #         'battle_reward_list',
+    #         'reward',
+    #     ]
+    # },
+    # 'BuyShopItem': {
+    #     'request': [
+    #         'wizard_id',
+    #         'command',
+    #         'item_id',
+    #     ],
+    #     'response': [
+    #         'tzone',
+    #         'tvalue',
+    #         'reward',
+    #         'view_item_list',
+    #     ]
+    # },
+    # 'GetBlackMarketList': {
+    #     'request': [
+    #         'wizard_id',
+    #         'command',
+    #     ],
+    #     'response': [
+    #         'tzone',
+    #         'tvalue',
+    #         'market_info',
+    #         'market_list',
+    #     ],
+    # },
+}
+
+log_parse_dispatcher = {
+    'SummonUnit': SummonLog.parse_summon_log,
+    # 'DoRandomWishItem': parse_do_random_wish_item,
+    # 'BattleDungeonResult': parse_battle_dungeon_result,
+    'BattleScenarioStart': DungeonLog.parse_scenario_start,
+    'BattleScenarioResult': DungeonLog.parse_scenario_result,
+    # 'BattleWorldBossStart': parse_battle_worldboss_start,
+    # 'BattleWorldBossResult': parse_battle_worldboss_result,
+    # 'BattleRiftDungeonResult': parse_battle_rift_dungeon_result,
+    # 'BattleRiftOfWorldsRaidStart': parse_battle_rift_of_worlds_raid_start,
+    # 'BattleRiftOfWorldsRaidResult': parse_battle_rift_of_worlds_raid_end,
+    # 'BuyShopItem': parse_buy_shop_item,
+    # 'GetBlackMarketList': parse_get_black_market_list,
+}
 
 
 class LogData(viewsets.ViewSet):

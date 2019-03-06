@@ -1,13 +1,22 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+import pytz
+from datetime import datetime, timedelta
 
-from bestiary.models import Monster, Level, GameItem, Rune, RuneCraft
+from bestiary.models import Monster, Dungeon, Level, GameItem, Rune, RuneCraft
 from herders.models import Summoner
 
 
 # Abstract models for encapsulating common data like drops and log entry metadata
 class LogEntry(models.Model):
     # Abstract model with basic fields required for logging anything
+
+    TIMEZONE_SERVER_MAP = {
+        'America/Los_Angeles': Summoner.SERVER_GLOBAL,
+        'Europe/Berlin': Summoner.SERVER_EUROPE,
+        'Asia/Seoul': Summoner.SERVER_KOREA,
+        'Asia/Shanghai': Summoner.SERVER_ASIA,
+    }
 
     wizard_id = models.BigIntegerField()
     summoner = models.ForeignKey(Summoner, on_delete=models.SET_NULL, blank=True, null=True)
@@ -17,8 +26,22 @@ class LogEntry(models.Model):
     class Meta:
         abstract = True
 
+    def parse_common_log_data(self, log_data):
+        self.wizard_id = log_data['request']['wizard_id']
+        self.server = LogEntry.TIMEZONE_SERVER_MAP.get(log_data['response']['tzone'])
+        self.timestamp = datetime.fromtimestamp(log_data['response']['tvalue'], tz=pytz.timezone('GMT'))
+
 
 class ItemDrop(models.Model):
+    PARSE_KEYS = (
+        'mana',
+        'energy',
+        'crystal',
+        'random_scroll',
+        'material',
+        'craft_stuff',
+    )
+
     item = models.ForeignKey(GameItem, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
@@ -28,8 +51,50 @@ class ItemDrop(models.Model):
     def __str__(self):
         return f'{self.item} x{self.quantity}'
 
+    @classmethod
+    def parse(cls, key, val):
+        if key == 'mana':
+            log_item = cls(
+                item=GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Mana'),
+                quantity=val,
+            )
+        elif key == 'energy':
+            log_item = cls(
+                item=GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Energy'),
+                quantity=val
+            )
+        elif key == 'crystal':
+            log_item = cls(
+                item=GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Crystal'),
+                quantity=val
+            )
+        elif key == 'random_scroll':
+            log_item = cls(
+                item=GameItem.objects.get(category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=val['item_master_id']),
+                quantity=val['item_quantity'],
+            )
+        elif key == 'material':
+            log_item = cls(
+                item=GameItem.objects.get(category=GameItem.CATEGORY_ESSENCE, com2us_id=val['item_master_id']),
+                quantity=val['item_quantity'],
+            )
+        elif key == 'craft_stuff':
+            log_item = cls(
+                item=GameItem.objects.get(category=GameItem.CATEGORY_CRAFT_STUFF, com2us_id=val['item_master_id']),
+                quantity=val['item_quantity'],
+            )
+        else:
+            # TODO: Implement parsing of:
+            # `costume_point`, `rune_upgrade_stone`, `summon_pieces`, `event_item`
+            raise NotImplementedError(f"Can't parse item type {key} with {cls.__name__}")
+
+        return log_item
+
 
 class MonsterDrop(models.Model):
+    PARSE_KEYS = (
+        'unit_info',
+    )
     monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
     grade = models.IntegerField()
     level = models.IntegerField()
@@ -40,15 +105,72 @@ class MonsterDrop(models.Model):
     def __str__(self):
         return f'{self.monster} {self.grade}* lv.{self.level}'
 
+    @classmethod
+    def parse(cls, key, val):
+        if key != 'unit_info':
+            raise NotImplementedError(f"Can't parse item type {key} with {cls.__name__}")
+
+        return cls(
+            monster=Monster.objects.get(com2us_id=val['unit_master_id']),
+            grade=val['class'],
+            level=val['unit_level'],
+        )
+
 
 class RuneDrop(Rune):
+    PARSE_KEYS = (
+        'rune',
+    )
+
     class Meta:
         abstract = True
+
+    @classmethod
+    def parse(cls, key, val):
+        if key != 'rune':
+            raise NotImplementedError(f"Can't parse item type {key} with {cls.__name__}")
+
+        rune_set = cls.COM2US_TYPE_MAP[val['set_id']]
+        original_quality = cls.COM2US_QUALITY_MAP[val['extra']]
+        main_stat = cls.COM2US_STAT_MAP[val['pri_eff'][0]]
+        main_stat_value = val['pri_eff'][1]
+        innate_stat = cls.COM2US_STAT_MAP.get(val['prefix_eff'][0])
+        innate_stat_value = val['prefix_eff'][1] if innate_stat else None
+
+        substats = []
+        substat_values = []
+
+        for sub, sub_val in val['sec_eff']:
+            substats.append(cls.COM2US_STAT_MAP[sub])
+            substat_values.append(sub_val)
+
+        return cls(
+            type=rune_set,
+            stars=val['class'],
+            level=0,
+            slot=val['slot_no'],
+            original_quality=original_quality,
+            value=val['sell_value'],
+            main_stat=main_stat,
+            main_stat_value=main_stat_value,
+            innate_stat=innate_stat,
+            innate_stat_value=innate_stat_value,
+            substats=substats,
+            substat_values=substat_values,
+        )
 
 
 class RuneCraftDrop(RuneCraft):
+    PARSE_KEYS = (
+
+    )
+
     class Meta:
         abstract = True
+
+    @classmethod
+    def parse(cls, key, val):
+        raise NotImplementedError()
 
 
 # Data gathering model to store game API data for development and debugging purposes
@@ -165,6 +287,51 @@ class SummonLog(LogEntry, MonsterDrop):
     def __str__(self):
         return f'SummonLog - {self.item} - {self.monster} {self.grade}*'
 
+    @classmethod
+    def parse(cls, key, val):
+        # Disabled for SummonLog
+        pass
+
+    @classmethod
+    def parse_summon_log(cls, summoner, log_data):
+        if log_data['response']['unit_list'] is None:
+            return
+
+        for x in range(0, len(log_data['response']['unit_list'])):
+            log_entry = cls()
+            log_entry.summoner = summoner
+            log_entry.parse_common_log_data(log_data)
+
+            # Summon method
+            if len(log_data['response'].get('item_list', [])) > 0:
+                item_info = log_data['response']['item_list'][0]
+
+                log_entry.item = GameItem.objects.get(
+                    category=item_info['item_master_type'],
+                    com2us_id=item_info['item_master_id']
+                )
+            else:
+                mode = log_data['request']['mode']
+                if mode == 3:
+                    # Crystal summon
+                    log_entry.item = GameItem.objects.get(
+                        category=GameItem.CATEGORY_CURRENCY,
+                        com2us_id=1,
+                    )
+                elif mode == 5:
+                    # Social summon
+                    log_entry.item = GameItem.objects.get(
+                        category=GameItem.CATEGORY_CURRENCY,
+                        com2us_id=2,
+                    )
+
+            # Monster
+            monster_data = log_data['response']['unit_list'][x]
+            log_entry.monster = Monster.objects.get(com2us_id=monster_data.get('unit_master_id'))
+            log_entry.grade = monster_data['class']
+            log_entry.level = monster_data['unit_level']
+            log_entry.save()
+
 
 # Dungeons
 class DungeonLog(LogEntry):
@@ -172,6 +339,58 @@ class DungeonLog(LogEntry):
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
     success = models.NullBooleanField(help_text='Null indicates that run was not completed')
     clear_time = models.DurationField(blank=True, null=True)
+
+    @classmethod
+    def parse_scenario_start(cls, summoner, log_data):
+        battle_key = log_data['response'].get('battle_key')
+
+        if battle_key and DungeonLog.objects.filter(battle_key=battle_key).exists():
+            return
+
+        log_entry = cls()
+
+        # Partially fill common log data
+        log_entry.wizard_id = log_data['request']['wizard_id']
+        log_entry.battle_key = battle_key
+        log_entry.summoner = summoner
+
+        log_entry.level = Level.objects.get(
+            dungeon__category=Dungeon.CATEGORY_SCENARIO,
+            dungeon__pk=log_data['request']['region_id'],
+            difficulty=log_data['request']['difficulty'],
+            floor=log_data['request']['stage_no'],
+        )
+
+        # Remainder of information comes from BattleScenarioResult
+        log_entry.save()
+
+    @classmethod
+    def parse_scenario_result(cls, summoner, log_data):
+        log_entry = DungeonLog.objects.get(
+            wizard_id=log_data['request']['wizard_id'],
+            battle_key=log_data['request']['battle_key']
+        )
+
+        log_entry.parse_common_log_data(log_data)
+        log_entry.success = log_data['request']['win_lose'] == 1
+        log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
+        log_entry.save()
+        log_entry.parse_rewards(log_data['response']['reward'])
+
+    def parse_rewards(self, rewards):
+        for key, val in rewards.items():
+            reward = None
+
+            if key in DungeonItemDrop.PARSE_KEYS:
+                reward = DungeonItemDrop.parse(key, val)
+            elif key in DungeonRuneDrop.PARSE_KEYS:
+                reward = DungeonRuneDrop.parse(key, val)
+            elif key == 'crate':
+                self.parse_rewards(val)
+
+            if reward:
+                reward.log = self
+                reward.save()
 
 
 class DungeonLogDrop(models.Model):
@@ -200,7 +419,6 @@ class DungeonRuneDrop(RuneDrop, DungeonLogDrop):
 
 class DungeonSecretDungeonDrop(DungeonLogDrop):
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
-    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
 
 
 # Rift dungeon

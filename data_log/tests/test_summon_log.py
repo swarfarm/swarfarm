@@ -1,14 +1,11 @@
-import json
-from django.test import TestCase
 from rest_framework.test import APIRequestFactory
-from rest_framework.reverse import reverse
 
-from data_log import views, models
 from bestiary.models import Monster, GameItem
+from data_log import models
 from .test_log_views import BaseLogTest
 
 
-class SummonTests(BaseLogTest):
+class SummonLogTests(BaseLogTest):
     fixtures = ['test_summon_monsters', 'test_game_items']
 
     def setUp(self):

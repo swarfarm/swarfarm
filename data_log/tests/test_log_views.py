@@ -1,12 +1,12 @@
 import json
-from django.test import TestCase
+
 from django.contrib.auth.models import User
-from rest_framework.test import APIRequestFactory, force_authenticate
-from rest_framework.reverse import reverse
+from django.test import TestCase
 from rest_framework.authtoken.models import Token
+from rest_framework.reverse import reverse
+from rest_framework.test import APIRequestFactory
 
 from data_log import views, models
-from data_log.log_parse import accepted_api_params
 from herders.models import Summoner
 
 
@@ -31,7 +31,7 @@ def get_requested_keys(log_data):
     # Sample data contains entire game API request/response, but log clients will trim data down
     # to the keys specified in `accepted_api_params`
     command = log_data['data']['request']['command']
-    requested_data = accepted_api_params[command]
+    requested_data = views.accepted_api_params[command]
 
     trimmed_data = {
         'data': {

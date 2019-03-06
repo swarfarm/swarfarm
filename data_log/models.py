@@ -84,8 +84,7 @@ class ItemDrop(models.Model):
                 quantity=val['item_quantity'],
             )
         else:
-            # TODO: Implement parsing of:
-            # `costume_point`, `rune_upgrade_stone`, `summon_pieces`, `event_item`
+            # TODO: Implement parsing of: `costume_point`, `rune_upgrade_stone`, `summon_pieces`, `event_item`
             raise NotImplementedError(f"Can't parse item type {key} with {cls.__name__}")
 
         return log_item
@@ -147,7 +146,7 @@ class RuneDrop(Rune):
         return cls(
             type=rune_set,
             stars=val['class'],
-            level=0,
+            level=val['upgrade_curr'],
             slot=val['slot_no'],
             original_quality=original_quality,
             value=val['sell_value'],
@@ -288,19 +287,14 @@ class SummonLog(LogEntry, MonsterDrop):
         return f'SummonLog - {self.item} - {self.monster} {self.grade}*'
 
     @classmethod
-    def parse(cls, key, val):
-        # Disabled for SummonLog
-        pass
-
-    @classmethod
     def parse_summon_log(cls, summoner, log_data):
         if log_data['response']['unit_list'] is None:
             return
 
-        for x in range(0, len(log_data['response']['unit_list'])):
-            log_entry = cls()
-            log_entry.summoner = summoner
+        for unit_info in log_data['response']['unit_list']:
+            log_entry = cls.parse('unit_info', unit_info)
             log_entry.parse_common_log_data(log_data)
+            log_entry.summoner = summoner
 
             # Summon method
             if len(log_data['response'].get('item_list', [])) > 0:
@@ -325,11 +319,6 @@ class SummonLog(LogEntry, MonsterDrop):
                         com2us_id=2,
                     )
 
-            # Monster
-            monster_data = log_data['response']['unit_list'][x]
-            log_entry.monster = Monster.objects.get(com2us_id=monster_data.get('unit_master_id'))
-            log_entry.grade = monster_data['class']
-            log_entry.level = monster_data['unit_level']
             log_entry.save()
 
 

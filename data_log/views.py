@@ -192,7 +192,7 @@ class LogData(viewsets.ViewSet):
 
         api_command = log_data['request']['command']
         if api_command not in accepted_api_params:
-            raise exceptions.APIException(detail='Unsupported Game Command')
+            raise exceptions.ParseError(detail='Unsupported Game Command')
 
         # Determine the user account providing this log
         if request.user.is_authenticated:

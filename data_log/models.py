@@ -1,7 +1,8 @@
+from datetime import datetime, timedelta
+
+import pytz
 from django.contrib.postgres.fields import JSONField
 from django.db import models
-import pytz
-from datetime import datetime, timedelta
 
 from bestiary.models import Monster, Dungeon, Level, GameItem, Rune, RuneCraft
 from herders.models import Summoner
@@ -114,6 +115,21 @@ class MonsterDrop(models.Model):
             grade=val['class'],
             level=val['unit_level'],
         )
+
+
+class MonsterPieceDrop(models.Model):
+    PARSE_KEYS = (
+
+    )
+
+    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f'{self.monster} x{self.quantity}'
 
 
 class RuneDrop(Rune):
@@ -324,49 +340,26 @@ class SummonLog(LogEntry, MonsterDrop):
 
 # Dungeons
 class DungeonLog(LogEntry):
-    battle_key = models.BigIntegerField(db_index=True, null=True, blank=True)
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
     success = models.NullBooleanField(help_text='Null indicates that run was not completed')
     clear_time = models.DurationField(blank=True, null=True)
 
     @classmethod
-    def parse_scenario_start(cls, summoner, log_data):
-        battle_key = log_data['response'].get('battle_key')
-
-        if battle_key and DungeonLog.objects.filter(battle_key=battle_key).exists():
-            return
-
-        log_entry = cls()
-
-        # Partially fill common log data
-        log_entry.wizard_id = log_data['request']['wizard_id']
-        log_entry.battle_key = battle_key
-        log_entry.summoner = summoner
-
+    def parse_scenario_result(cls, summoner, log_data):
+        log_entry = cls(summoner=summoner)
+        log_entry.parse_common_log_data(log_data)
         log_entry.level = Level.objects.get(
             dungeon__category=Dungeon.CATEGORY_SCENARIO,
-            dungeon__pk=log_data['request']['region_id'],
-            difficulty=log_data['request']['difficulty'],
-            floor=log_data['request']['stage_no'],
+            dungeon__pk=log_data['response']['scenario_info']['region_id'],
+            difficulty=log_data['response']['scenario_info']['difficulty'],
+            floor=log_data['response']['scenario_info']['stage_no'],
         )
-
-        # Remainder of information comes from BattleScenarioResult
-        log_entry.save()
-
-    @classmethod
-    def parse_scenario_result(cls, summoner, log_data):
-        log_entry = DungeonLog.objects.get(
-            wizard_id=log_data['request']['wizard_id'],
-            battle_key=log_data['request']['battle_key']
-        )
-
-        log_entry.parse_common_log_data(log_data)
         log_entry.success = log_data['request']['win_lose'] == 1
         log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
         log_entry.save()
-        log_entry.parse_rewards(log_data['response']['reward'])
+        log_entry._parse_rewards(log_data['response']['reward'])
 
-    def parse_rewards(self, rewards):
+    def _parse_rewards(self, rewards):
         for key, val in rewards.items():
             reward = None
 
@@ -374,8 +367,10 @@ class DungeonLog(LogEntry):
                 reward = DungeonItemDrop.parse(key, val)
             elif key in DungeonRuneDrop.PARSE_KEYS:
                 reward = DungeonRuneDrop.parse(key, val)
+            elif key in DungeonMonsterDrop.PARSE_KEYS:
+                reward = DungeonMonsterDrop.parse(key, val)
             elif key == 'crate':
-                self.parse_rewards(val)
+                self._parse_rewards(val)
 
             if reward:
                 reward.log = self
@@ -397,9 +392,8 @@ class DungeonMonsterDrop(MonsterDrop, DungeonLogDrop):
     pass
 
 
-class DungeonMonsterPieceDrop(DungeonLogDrop):
-    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+class DungeonMonsterPieceDrop(MonsterPieceDrop, DungeonLogDrop):
+    pass
 
 
 class DungeonRuneDrop(RuneDrop, DungeonLogDrop):

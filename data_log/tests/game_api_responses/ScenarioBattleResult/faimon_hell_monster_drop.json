@@ -3,11 +3,11 @@
     "request": {
       "command": "BattleScenarioResult",
       "wizard_id": 123,
-      "session_key": "7e8fa21400ec01eb039ba3d2b8c70e",
+      "session_key": "abc123",
       "proto_ver": 11380,
       "infocsv": "4.00.77",
       "channel_uid": 144237507,
-      "ts_val": 1079165888,
+      "ts_val": 1079165518,
       "battle_key": 4,
       "win_lose": 1,
       "opp_unit_status_list": [
@@ -84,10 +84,10 @@
       ],
       "position": {
         "island_id": 3,
-        "pos_x": 13,
+        "pos_x": 16,
         "pos_y": 15
       },
-      "clear_time": 52441,
+      "clear_time": 55998,
       "auto_clear": 1,
       "play_speed": 3,
       "retry": 0
@@ -98,25 +98,59 @@
       "win_lose": 1,
       "clear_time": {
         "is_new_record": 1,
-        "current_time": 52441,
-        "best_time": 52441
+        "current_time": 55998,
+        "best_time": 55998
       },
       "scenario_info": {
         "wizard_id": 123,
         "region_id": 9,
         "difficulty": 3,
-        "stage_no": 4,
+        "stage_no": 1,
         "cleared": 1
       },
       "reward": {
-        "mana": 638,
-        "energy": 1,
+        "mana": 2111,
+        "energy": 2,
         "crate": {
-          "craft_stuff": {
+          "unit_info": {
+            "unit_id": 13138378732,
             "wizard_id": 123,
-            "item_master_type": 29,
-            "item_master_id": 1003,
-            "item_quantity": 4
+            "island_id": 3,
+            "pos_x": 16,
+            "pos_y": 15,
+            "building_id": 0,
+            "unit_master_id": 14102,
+            "unit_level": 1,
+            "class": 2,
+            "con": 61,
+            "atk": 99,
+            "def": 56,
+            "spd": 109,
+            "resist": 15,
+            "accuracy": 0,
+            "critical_rate": 15,
+            "critical_damage": 50,
+            "experience": 0,
+            "exp_gained": 0,
+            "exp_gain_rate": 0,
+            "skills": [
+              [
+                1502,
+                1
+              ],
+              [
+                1507,
+                1
+              ]
+            ],
+            "runes": [],
+            "costume_master_id": 0,
+            "trans_items": [],
+            "attribute": 2,
+            "create_time": "2019-03-05 09:37:36",
+            "source": 14,
+            "homunculus": 0,
+            "homunculus_name": ""
           }
         },
         "event_crate": []
@@ -124,7 +158,7 @@
       "wizard_info": {
         "wizard_id": 123,
         "wizard_name": "fakeuser",
-        "wizard_mana": 7397500,
+        "wizard_mana": 7396862,
         "wizard_crystal": 4109,
         "wizard_crystal_paid": 0,
         "wizard_last_login": "2019-03-05 09:35:05",
@@ -132,7 +166,7 @@
         "wizard_last_lang": "en",
         "wizard_level": 50,
         "experience": 3800000,
-        "wizard_energy": 2478,
+        "wizard_energy": 2483,
         "energy_max": 90,
         "energy_per_min": 0.26,
         "next_energy_gain": 0,
@@ -161,14 +195,6 @@
         "emblem_master_id": 0,
         "gain_exp": 1170
       },
-      "item_list": [
-        {
-          "wizard_id": 123,
-          "item_master_type": 29,
-          "item_master_id": 1003,
-          "item_quantity": 577
-        }
-      ],
       "unit_list": [
         {
           "unit_id": 6105098611,
@@ -518,17 +544,17 @@
           "pos_y": 17,
           "building_id": 0,
           "unit_master_id": 20801,
-          "unit_level": 5,
+          "unit_level": 3,
           "class": 3,
-          "con": 134,
-          "atk": 120,
-          "def": 147,
+          "con": 127,
+          "atk": 115,
+          "def": 140,
           "spd": 97,
           "resist": 15,
           "accuracy": 0,
           "critical_rate": 15,
           "critical_damage": 50,
-          "experience": 3900,
+          "experience": 1950,
           "exp_gained": 0,
           "exp_gain_rate": 0,
           "skills": [
@@ -564,17 +590,17 @@
           "pos_y": 17,
           "building_id": 0,
           "unit_master_id": 17201,
-          "unit_level": 5,
+          "unit_level": 3,
           "class": 3,
-          "con": 128,
-          "atk": 142,
-          "def": 131,
+          "con": 122,
+          "atk": 135,
+          "def": 125,
           "spd": 98,
           "resist": 15,
           "accuracy": 0,
           "critical_rate": 15,
           "critical_damage": 50,
-          "experience": 3900,
+          "experience": 1950,
           "exp_gained": 0,
           "exp_gain_rate": 0,
           "skills": [
@@ -610,17 +636,17 @@
           "pos_y": 4,
           "building_id": 0,
           "unit_master_id": 11501,
-          "unit_level": 5,
+          "unit_level": 3,
           "class": 3,
-          "con": 187,
-          "atk": 80,
-          "def": 134,
+          "con": 178,
+          "atk": 76,
+          "def": 127,
           "spd": 110,
           "resist": 15,
           "accuracy": 0,
           "critical_rate": 15,
           "critical_damage": 50,
-          "experience": 3900,
+          "experience": 1950,
           "exp_gained": 0,
           "exp_gain_rate": 0,
           "skills": [
@@ -645,9 +671,9 @@
           "level_up": 1
         }
       ],
-      "ts_val": 1079165913,
-      "tvalue": 1551746385,
-      "tvaluelocal": 1551685185,
+      "ts_val": 1079165528,
+      "tvalue": 1551746256,
+      "tvaluelocal": 1551685056,
       "tzone": "America/Los_Angeles"
     }
   }

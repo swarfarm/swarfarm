@@ -53,29 +53,17 @@ accepted_api_params = {
     #         'instance_info',
     #     ]
     # },
-    'BattleScenarioStart': {
-        'request': [
-            'wizard_id',
-            'command',
-            'region_id',
-            'stage_no',
-            'difficulty',
-        ],
-        'response': [
-            'battle_key'
-        ]
-    },
     'BattleScenarioResult': {
         'request': [
             'wizard_id',
             'command',
-            'battle_key',
             'win_lose',
             'clear_time',
         ],
         'response': [
             'tzone',
             'tvalue',
+            'scenario_info',
             'reward',
         ]
     },
@@ -176,7 +164,6 @@ log_parse_dispatcher = {
     'SummonUnit': SummonLog.parse_summon_log,
     # 'DoRandomWishItem': parse_do_random_wish_item,
     # 'BattleDungeonResult': parse_battle_dungeon_result,
-    'BattleScenarioStart': DungeonLog.parse_scenario_start,
     'BattleScenarioResult': DungeonLog.parse_scenario_result,
     # 'BattleWorldBossStart': parse_battle_worldboss_start,
     # 'BattleWorldBossResult': parse_battle_worldboss_result,

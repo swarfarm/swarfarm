@@ -1988,6 +1988,10 @@ class Level(models.Model):
             'floor',
         )
 
+    def __str__(self):
+        difficulty = self.get_difficulty_display() if self.difficulty else ''
+        return f'{self.dungeon.name} {difficulty} B{self.floor}'
+
 
 class GameItem(models.Model):
     CATEGORY_MONSTER = 1

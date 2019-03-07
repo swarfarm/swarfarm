@@ -2,8 +2,8 @@
   "data": {
     "request": {
       "command": "BattleScenarioResult",
-      "wizard_id": 12234369,
-      "session_key": "7e8fa21400ec01eb039ba3d2b8c70e",
+      "wizard_id": 123,
+      "session_key": "abc123",
       "proto_ver": 11380,
       "infocsv": "4.00.77",
       "channel_uid": 144237507,
@@ -86,7 +86,7 @@
         "best_time": 16050
       },
       "scenario_info": {
-        "wizard_id": 12234369,
+        "wizard_id": 123,
         "region_id": 3,
         "difficulty": 2,
         "stage_no": 1,
@@ -97,7 +97,7 @@
         "crate": {
           "rune": {
             "rune_id": 25151418647,
-            "wizard_id": 12234369,
+            "wizard_id": 123,
             "occupied_type": 2,
             "occupied_id": 0,
             "slot_no": 1,
@@ -123,8 +123,8 @@
         "event_crate": []
       },
       "wizard_info": {
-        "wizard_id": 12234369,
-        "wizard_name": "porksmash2",
+        "wizard_id": 123,
+        "wizard_name": "fakeuser",
         "wizard_mana": 7351413,
         "wizard_crystal": 4092,
         "wizard_crystal_paid": 0,
@@ -165,7 +165,7 @@
       "unit_list": [
         {
           "unit_id": 5113383656,
-          "wizard_id": 12234369,
+          "wizard_id": 123,
           "island_id": 3,
           "pos_x": 18,
           "pos_y": 1,
@@ -201,7 +201,7 @@
           "runes": [
             {
               "rune_id": 3866323142,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5113383656,
               "slot_no": 1,
@@ -250,7 +250,7 @@
             },
             {
               "rune_id": 4249569277,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5113383656,
               "slot_no": 5,
@@ -299,7 +299,7 @@
             },
             {
               "rune_id": 5285420446,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5113383656,
               "slot_no": 6,
@@ -348,7 +348,7 @@
             },
             {
               "rune_id": 6582052727,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5113383656,
               "slot_no": 3,
@@ -397,7 +397,7 @@
             },
             {
               "rune_id": 7364477716,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5113383656,
               "slot_no": 4,
@@ -440,7 +440,7 @@
             },
             {
               "rune_id": 7478636769,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5113383656,
               "slot_no": 2,
@@ -493,7 +493,7 @@
         },
         {
           "unit_id": 9000968142,
-          "wizard_id": 12234369,
+          "wizard_id": 123,
           "island_id": 3,
           "pos_x": 22,
           "pos_y": 14,
@@ -538,7 +538,7 @@
         },
         {
           "unit_id": 5231094885,
-          "wizard_id": 12234369,
+          "wizard_id": 123,
           "island_id": 3,
           "pos_x": 10,
           "pos_y": 31,
@@ -574,7 +574,7 @@
           "runes": [
             {
               "rune_id": 4442779982,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5231094885,
               "slot_no": 2,
@@ -623,7 +623,7 @@
             },
             {
               "rune_id": 8336931122,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5231094885,
               "slot_no": 6,
@@ -672,7 +672,7 @@
             },
             {
               "rune_id": 8672049780,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5231094885,
               "slot_no": 5,
@@ -721,7 +721,7 @@
             },
             {
               "rune_id": 11384675622,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5231094885,
               "slot_no": 3,
@@ -770,7 +770,7 @@
             },
             {
               "rune_id": 13995592491,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5231094885,
               "slot_no": 4,
@@ -819,7 +819,7 @@
             },
             {
               "rune_id": 15233306157,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 5231094885,
               "slot_no": 1,
@@ -878,7 +878,7 @@
         },
         {
           "unit_id": 7455185974,
-          "wizard_id": 12234369,
+          "wizard_id": 123,
           "island_id": 3,
           "pos_x": 18,
           "pos_y": 8,
@@ -914,7 +914,7 @@
           "runes": [
             {
               "rune_id": 7996136641,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 7455185974,
               "slot_no": 3,
@@ -963,7 +963,7 @@
             },
             {
               "rune_id": 9568877168,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 7455185974,
               "slot_no": 2,
@@ -1012,7 +1012,7 @@
             },
             {
               "rune_id": 12134371951,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 7455185974,
               "slot_no": 4,
@@ -1061,7 +1061,7 @@
             },
             {
               "rune_id": 13172032956,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 7455185974,
               "slot_no": 5,
@@ -1110,7 +1110,7 @@
             },
             {
               "rune_id": 14544229668,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 7455185974,
               "slot_no": 6,
@@ -1159,7 +1159,7 @@
             },
             {
               "rune_id": 15233318152,
-              "wizard_id": 12234369,
+              "wizard_id": 123,
               "occupied_type": 1,
               "occupied_id": 7455185974,
               "slot_no": 1,

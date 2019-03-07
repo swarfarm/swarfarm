@@ -55,6 +55,25 @@ class Monster(models.Model):
         (6, mark_safe('6<span class="glyphicon glyphicon-star"></span>')),
     )
 
+    # Mappings from com2us' API data to model defined values
+    COM2US_ELEMENT_MAP = {
+        1: ELEMENT_WATER,
+        2: ELEMENT_FIRE,
+        3: ELEMENT_WIND,
+        4: ELEMENT_LIGHT,
+        5: ELEMENT_DARK,
+        6: ELEMENT_PURE,
+    }
+
+    COM2US_ARCHETYPE_MAP = {
+        0: TYPE_NONE,
+        1: TYPE_ATTACK,
+        2: TYPE_DEFENSE,
+        3: TYPE_HP,
+        4: TYPE_SUPPORT,
+        5: TYPE_MATERIAL
+    }
+
     name = models.CharField(max_length=40)
     com2us_id = models.IntegerField(blank=True, null=True, help_text='ID given in game data files')
     family_id = models.IntegerField(blank=True, null=True, help_text='Identifier that matches same family monsters')
@@ -970,6 +989,53 @@ class RuneObjectBase:
         (QUALITY_LEGEND, 'Legend'),
     )
 
+    # Mappings from com2us' API data to model defined values
+    COM2US_TYPE_MAP = {
+        1: TYPE_ENERGY,
+        2: TYPE_GUARD,
+        3: TYPE_SWIFT,
+        4: TYPE_BLADE,
+        5: TYPE_RAGE,
+        6: TYPE_FOCUS,
+        7: TYPE_ENDURE,
+        8: TYPE_FATAL,
+        10: TYPE_DESPAIR,
+        11: TYPE_VAMPIRE,
+        13: TYPE_VIOLENT,
+        14: TYPE_NEMESIS,
+        15: TYPE_WILL,
+        16: TYPE_SHIELD,
+        17: TYPE_REVENGE,
+        18: TYPE_DESTROY,
+        19: TYPE_FIGHT,
+        20: TYPE_DETERMINATION,
+        21: TYPE_ENHANCE,
+        22: TYPE_ACCURACY,
+        23: TYPE_TOLERANCE,
+    }
+
+    COM2US_QUALITY_MAP = {
+        1: QUALITY_NORMAL,
+        2: QUALITY_MAGIC,
+        3: QUALITY_RARE,
+        4: QUALITY_HERO,
+        5: QUALITY_LEGEND,
+    }
+
+    COM2US_STAT_MAP = {
+        1: STAT_HP,
+        2: STAT_HP_PCT,
+        3: STAT_ATK,
+        4: STAT_ATK_PCT,
+        5: STAT_DEF,
+        6: STAT_DEF_PCT,
+        8: STAT_SPD,
+        9: STAT_CRIT_RATE_PCT,
+        10: STAT_CRIT_DMG_PCT,
+        11: STAT_RESIST_PCT,
+        12: STAT_ACCURACY_PCT,
+    }
+
 
 class Rune(models.Model, RuneObjectBase):
     MAIN_STAT_VALUES = {
@@ -1855,9 +1921,10 @@ class Dungeon(models.Model):
     CATEGORY_HALL_OF_HEROES = 5
     CATEGORY_ARENA = 6
     CATEGORY_GUILD = 7
+    CATEGORY_SECRET = 8
     CATEGORY_OTHER = 99
 
-    CATEGORY_CHOICES = [
+    CATEGORY_CHOICES = (
         (CATEGORY_SCENARIO, 'Scenario'),
         (CATEGORY_CAIROSS, 'Caiross Dungeon'),
         (CATEGORY_TOA, 'Tower of Ascension'),
@@ -1866,8 +1933,9 @@ class Dungeon(models.Model):
         (CATEGORY_HALL_OF_HEROES, 'Hall of Heroes'),
         (CATEGORY_ARENA, 'Arena'),
         (CATEGORY_GUILD, 'Guild Content'),
+        (CATEGORY_SECRET, 'Secret Dungeon'),
         (CATEGORY_OTHER, 'Other'),
-    ]
+    )
 
     id = models.IntegerField(primary_key=True, help_text='ID matches com2us data')
     name = models.CharField(max_length=100)
@@ -1883,6 +1951,10 @@ class Dungeon(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Dungeon, self).save(*args, **kwargs)
+
+
+class SecretDungeon(Dungeon):
+    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
 
 
 class Level(models.Model):
@@ -1915,6 +1987,10 @@ class Level(models.Model):
             'difficulty',
             'floor',
         )
+
+    def __str__(self):
+        difficulty = self.get_difficulty_display() if self.difficulty else ''
+        return f'{self.dungeon.name} {difficulty} B{self.floor}'
 
 
 class GameItem(models.Model):
@@ -1961,7 +2037,7 @@ class GameItem(models.Model):
         )
 
     def __str__(self):
-        return f'{self.get_category_display()} - {self.com2us_id} - {self.name}'
+        return f'{self.get_category_display()} - {self.name} (id:{self.com2us_id})'
 
     def image_tag(self):
         if self.icon:

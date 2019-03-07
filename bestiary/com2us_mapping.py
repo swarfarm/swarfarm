@@ -1,5 +1,7 @@
 from bestiary.models import Monster, LeaderSkill, Rune, RuneCraft
 
+# TODO: Move these definitions to the models if not already done, delete this file.
+
 element_map = {
     1: Monster.ELEMENT_WATER,
     2: Monster.ELEMENT_FIRE,

@@ -17,6 +17,21 @@ accepted_api_params = {
 }
 
 
+class InvalidLogException(exceptions.APIException):
+    # An API exception class that formats response into a {'message': xxx, 'reinit': true/false } shape
+    status_code = 400
+    default_detail = 'Invalid Log Data'
+    default_code = 'invalid_log_data'
+
+    def __init__(self, detail=None, code=None, reinit=True):
+        message = detail if detail is not None else self.default_detail
+        self.code = code if code is not None else self.default_code
+        self.detail = {
+            'message': exceptions.ErrorDetail(message, self.default_code),
+            'reinit': exceptions.ErrorDetail(reinit, self.default_code),
+        }
+
+
 class LogData(viewsets.ViewSet):
     permission_classes = (permissions.AllowAny, )
     versioning_class = versioning.QueryParameterVersioning  # Ignore default of namespaced based versioning and use default version defined in settings
@@ -26,20 +41,20 @@ class LogData(viewsets.ViewSet):
         log_data = request.data.get('data')
 
         if request.content_type == 'application/x-www-form-urlencoded':
-            # log_data key will be a string, needs to be parsed as json
+            # log_data will be a string, needs to be parsed as json
             log_data = json.loads(log_data)
 
         try:
             api_command = log_data['request']['command']
         except (KeyError, TypeError):
-            raise exceptions.ParseError(detail='Invalid log data format')
+            raise InvalidLogException(detail='Invalid log data format')
 
         if api_command not in active_log_commands:
-            raise exceptions.ParseError(detail='Unsupported Game Command')
+            raise InvalidLogException('Unsupported game command')
 
         # Validate log data format
         if not active_log_commands[api_command].validate(log_data):
-            raise exceptions.ParseError(detail='Invalid log data format')
+            raise InvalidLogException(detail='Log data failed validation')
 
         # Determine the user account providing this log
         if request.user.is_authenticated:

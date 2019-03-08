@@ -64,6 +64,25 @@ class LogDataViewTests(BaseLogTest):
         response = view(request)
 
         self.assertEqual(response.status_code, 400)
+        self.assertIsNotNone(response.data.get('message'))
+        self.assertTrue(response.data.get('reinit'))
+
+    def test_log_data_validation(self):
+        with open(f'data_log/tests/game_api_responses/SummonLog/scroll_unknown_qty1.json', 'r') as f:
+            data = get_requested_keys(json.load(f))
+
+        del data['data']['request']['mode']  # Delete required key for test
+        view = views.LogData.as_view({'post': 'create'})
+        request = self.factory.post(
+            reverse('data_log:log-upload-list'),
+            data=data,
+            format='json'
+        )
+        response = view(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIsNotNone(response.data.get('message'))
+        self.assertTrue(response.data.get('reinit'))
 
     def test_non_accepted_api_command(self):
         view = views.LogData.as_view({'post': 'create'})
@@ -83,6 +102,8 @@ class LogDataViewTests(BaseLogTest):
         response = view(request)
 
         self.assertEqual(response.status_code, 400)
+        self.assertIsNotNone(response.data.get('message'))
+        self.assertTrue(response.data.get('reinit'))
 
     def test_anonymous_log(self):
         self._do_log('SummonLog/scroll_unknown_qty1.json')

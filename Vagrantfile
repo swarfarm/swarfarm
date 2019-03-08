@@ -13,7 +13,6 @@ Vagrant.configure("2") do |config|
     config.vm.network "forwarded_port", guest: 6432, host: 6432  # pgbouncer
     config.vm.network "forwarded_port", guest: 5672, host: 5672  # AMQP
     config.vm.network "forwarded_port", guest: 6379, host: 6379  # redis
-    config.vm.network "forwarded_port", guest: 8000, host: 8000  # manage.py runserver using remote python interpreter
 
     config.vm.provision "file", source: "./vagrant_scripts/swarfarm.service", destination: "swarfarm.service"
     config.vm.provision "file", source: "./vagrant_scripts/swarfarm.socket", destination: "swarfarm.socket"

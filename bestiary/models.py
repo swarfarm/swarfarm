@@ -1914,7 +1914,7 @@ class RuneCraft(models.Model, RuneObjectBase):
 
 class Dungeon(models.Model):
     CATEGORY_SCENARIO = 0
-    CATEGORY_CAIROSS = 1
+    CATEGORY_CAIROS = 1
     CATEGORY_TOA = 2
     CATEGORY_RIFT_OF_WORLDS_RAID = 3
     CATEGORY_RIFT_OF_WORLDS_BEASTS = 4
@@ -1926,7 +1926,7 @@ class Dungeon(models.Model):
 
     CATEGORY_CHOICES = (
         (CATEGORY_SCENARIO, 'Scenario'),
-        (CATEGORY_CAIROSS, 'Caiross Dungeon'),
+        (CATEGORY_CAIROS, 'Cairos Dungeon'),
         (CATEGORY_TOA, 'Tower of Ascension'),
         (CATEGORY_RIFT_OF_WORLDS_RAID, 'Rift Raid'),
         (CATEGORY_RIFT_OF_WORLDS_BEASTS, 'Rift Beast'),

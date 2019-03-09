@@ -18,7 +18,7 @@ class ShopRefreshMonsterDropInline(admin.TabularInline):
 
 class ShopRefreshRuneDropInline(admin.TabularInline):
     model = models.ShopRefreshRuneDrop
-    fields = ('type', 'stars', 'level', 'slot', 'quality', 'original_quality', 'value', 'main_stat', 'main_stat_value')
+    fields = ('type', 'stars', 'cost', 'slot', 'quality', 'value', 'main_stat', 'main_stat_value')
     extra = 0
 
 

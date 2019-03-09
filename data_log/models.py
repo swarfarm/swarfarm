@@ -224,7 +224,7 @@ class ShopRefreshLog(LogEntry):
             if master_type in ShopRefreshItemDrop.PARSE_ITEM_TYPES:
                 item_log = ShopRefreshItemDrop.parse(**item)
             elif master_type in ShopRefreshRuneDrop.PARSE_ITEM_TYPES:
-                item_log = ShopRefreshRuneDrop.parse(**item['runes'][0])
+                item_log = ShopRefreshRuneDrop.parse(**item)
             elif master_type in ShopRefreshMonsterDrop.PARSE_ITEM_TYPES:
                 item_log = ShopRefreshMonsterDrop.parse(**item)
             else:
@@ -254,7 +254,7 @@ class ShopRefreshItemDrop(ItemDrop, ShopRefreshDrop):
 class ShopRefreshRuneDrop(RuneDrop, ShopRefreshDrop):
     @classmethod
     def parse(cls, **kwargs):
-        log = super().parse(**kwargs)
+        log = super().parse(**kwargs['runes'][0])
         log.cost = kwargs.get('buy_mana', 0)
         return log
 

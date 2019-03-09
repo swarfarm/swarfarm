@@ -41,10 +41,12 @@ def get_requested_keys(log_data):
     }
 
     for key in requested_data['request']:
-        trimmed_data['data']['request'][key] = log_data['data']['request'][key]
+        if key in log_data['data']['request']:
+            trimmed_data['data']['request'][key] = log_data['data']['request'][key]
 
     for key in requested_data['response']:
-        trimmed_data['data']['response'][key] = log_data['data']['response'][key]
+        if key in log_data['data']['response']:
+            trimmed_data['data']['response'][key] = log_data['data']['response'][key]
 
     return trimmed_data
 

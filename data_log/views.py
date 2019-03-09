@@ -9,7 +9,9 @@ from . import game_commands
 
 active_log_commands = {
     'SummonUnit': game_commands.SummonUnitCommand,
+    'BattleScenarioStart': game_commands.BattleScenarioStartCommand,
     'BattleScenarioResult': game_commands.BattleScenarioResultCommand,
+    'BattleDungeonResult': game_commands.BattleDungeonResultCommand,
 }
 
 accepted_api_params = {

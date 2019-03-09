@@ -9,7 +9,7 @@ class GameApiCommand:
     def __init__(self, schema, parse_fn):
         self.validator = Draft4Validator(schema)
         self.accepted_commands = {
-            key: schema['properties'][key]['required'] for key in schema['required']
+            key: schema['properties'][key]['properties'].keys() for key in schema['required']
         }
         self.parser = parse_fn
 
@@ -21,7 +21,9 @@ class GameApiCommand:
 
 
 SummonUnitCommand = GameApiCommand(schemas.summon_unit, SummonLog.parse_summon_log)
+BattleScenarioStartCommand = GameApiCommand(schemas.battle_scenario_start, DungeonLog.parse_scenario_start)
 BattleScenarioResultCommand = GameApiCommand(schemas.battle_scenario_result, DungeonLog.parse_scenario_result)
+BattleDungeonResultCommand = GameApiCommand(schemas.battle_dungeon_result, DungeonLog.parse_dungeon_result)
 
 
 # Utility functions

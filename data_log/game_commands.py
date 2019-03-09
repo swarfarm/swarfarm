@@ -1,6 +1,32 @@
 import json
+from jsonschema import Draft4Validator
+
+from .models import SummonLog, DungeonLog
+from . import schemas
 
 
+class GameApiCommand:
+    def __init__(self, schema, parse_fn):
+        self.validator = Draft4Validator(schema)
+        self.accepted_commands = {
+            key: schema['properties'][key]['properties'].keys() for key in schema['required']
+        }
+        self.parser = parse_fn
+
+    def parse(self, *args, **kwargs):
+        return self.parser(*args, **kwargs)
+
+    def validate(self, log_data):
+        return self.validator.is_valid(log_data)
+
+
+SummonUnitCommand = GameApiCommand(schemas.summon_unit, SummonLog.parse_summon_log)
+BattleScenarioStartCommand = GameApiCommand(schemas.battle_scenario_start, DungeonLog.parse_scenario_start)
+BattleScenarioResultCommand = GameApiCommand(schemas.battle_scenario_result, DungeonLog.parse_scenario_result)
+BattleDungeonResultCommand = GameApiCommand(schemas.battle_dungeon_result, DungeonLog.parse_dungeon_result)
+
+
+# Utility functions
 def import_swex_full_log(path, search_commands):
     req = None
     capture = False

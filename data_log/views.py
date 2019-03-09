@@ -5,174 +5,33 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from herders.models import Summoner
-from .models import SummonLog, DungeonLog
-from .log_schema import DataLogValidator
+from . import game_commands
 
+active_log_commands = {
+    'SummonUnit': game_commands.SummonUnitCommand,
+    'BattleScenarioStart': game_commands.BattleScenarioStartCommand,
+    'BattleScenarioResult': game_commands.BattleScenarioResultCommand,
+    'BattleDungeonResult': game_commands.BattleDungeonResultCommand,
+}
 
 accepted_api_params = {
-    'SummonUnit': {
-        'request': [
-            'wizard_id',
-            'command',
-            'mode',
-        ],
-        'response': [
-            'tzone',
-            'tvalue',
-            'unit_list',
-            'item_list',
-        ],
-    },
-    # 'DoRandomWishItem': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'wish_info',
-    #         'unit_info',
-    #         'rune',
-    #     ]
-    # },
-    # 'BattleDungeonResult': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #         'dungeon_id',
-    #         'stage_id',
-    #         'clear_time',
-    #         'win_lose',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'unit_list',
-    #         'reward',
-    #         'instance_info',
-    #     ]
-    # },
-    'BattleScenarioResult': {
-        'request': [
-            'wizard_id',
-            'command',
-            'win_lose',
-            'clear_time',
-        ],
-        'response': [
-            'tzone',
-            'tvalue',
-            'scenario_info',
-            'reward',
-        ]
-    },
-    # 'BattleWorldBossStart': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'battle_key',
-    #         'worldboss_battle_result',
-    #         'reward_info',
-    #     ]
-    # },
-    # 'BattleWorldBossResult': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #         'battle_key',
-    #     ],
-    #     'response': [
-    #         'reward',
-    #     ]
-    # },
-    # 'BattleRiftDungeonResult': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #         'battle_result',
-    #         'dungeon_id'
-    #     ],
-    #     'response': [
-    #         'tvalue',
-    #         'tzone',
-    #         'item_list',
-    #         'rift_dungeon_box_id',
-    #         'total_damage',
-    #     ]
-    # },
-    # 'BattleRiftOfWorldsRaidStart': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #         'battle_key',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'battle_info',
-    #     ]
-    # },
-    # 'BattleRiftOfWorldsRaidResult': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #         'battle_key',
-    #         'clear_time',
-    #         'win_lose',
-    #         'user_status_list',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'battle_reward_list',
-    #         'reward',
-    #     ]
-    # },
-    # 'BuyShopItem': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #         'item_id',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'reward',
-    #         'view_item_list',
-    #     ]
-    # },
-    # 'GetBlackMarketList': {
-    #     'request': [
-    #         'wizard_id',
-    #         'command',
-    #     ],
-    #     'response': [
-    #         'tzone',
-    #         'tvalue',
-    #         'market_info',
-    #         'market_list',
-    #     ],
-    # },
+    cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
 
-log_parse_dispatcher = {
-    'SummonUnit': SummonLog.parse_summon_log,
-    # 'DoRandomWishItem': parse_do_random_wish_item,
-    # 'BattleDungeonResult': parse_battle_dungeon_result,
-    'BattleScenarioResult': DungeonLog.parse_scenario_result,
-    # 'BattleWorldBossStart': parse_battle_worldboss_start,
-    # 'BattleWorldBossResult': parse_battle_worldboss_result,
-    # 'BattleRiftDungeonResult': parse_battle_rift_dungeon_result,
-    # 'BattleRiftOfWorldsRaidStart': parse_battle_rift_of_worlds_raid_start,
-    # 'BattleRiftOfWorldsRaidResult': parse_battle_rift_of_worlds_raid_end,
-    # 'BuyShopItem': parse_buy_shop_item,
-    # 'GetBlackMarketList': parse_get_black_market_list,
-}
+
+class InvalidLogException(exceptions.APIException):
+    # An API exception class that formats response into a {'message': xxx, 'reinit': true/false } shape
+    status_code = 400
+    default_detail = 'Invalid Log Data'
+    default_code = 'invalid_log_data'
+
+    def __init__(self, detail=None, code=None, reinit=True):
+        message = detail if detail is not None else self.default_detail
+        self.code = code if code is not None else self.default_code
+        self.detail = {
+            'message': exceptions.ErrorDetail(message, self.default_code),
+            'reinit': exceptions.ErrorDetail(reinit, self.default_code),
+        }
 
 
 class LogData(viewsets.ViewSet):
@@ -184,15 +43,20 @@ class LogData(viewsets.ViewSet):
         log_data = request.data.get('data')
 
         if request.content_type == 'application/x-www-form-urlencoded':
-            # log_data key will be a string, needs to be parsed as json
+            # log_data will be a string, needs to be parsed as json
             log_data = json.loads(log_data)
 
-        if not DataLogValidator.is_valid(log_data):
-            raise exceptions.ParseError(detail='Invalid log data format')
+        try:
+            api_command = log_data['request']['command']
+        except (KeyError, TypeError):
+            raise InvalidLogException(detail='Invalid log data format')
 
-        api_command = log_data['request']['command']
-        if api_command not in accepted_api_params:
-            raise exceptions.ParseError(detail='Unsupported Game Command')
+        if api_command not in active_log_commands:
+            raise InvalidLogException('Unsupported game command')
+
+        # Validate log data format
+        if not active_log_commands[api_command].validate(log_data):
+            raise InvalidLogException(detail='Log data failed validation')
 
         # Determine the user account providing this log
         if request.user.is_authenticated:
@@ -203,7 +67,7 @@ class LogData(viewsets.ViewSet):
             summoner = Summoner.objects.filter(com2us_id=wizard_id).first()
 
         # Parse the log
-        log_parse_dispatcher[api_command](summoner, log_data)
+        active_log_commands[api_command].parse(summoner, log_data)
         return Response({'detail': 'Log OK'})
 
 

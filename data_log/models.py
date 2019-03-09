@@ -340,26 +340,57 @@ class SummonLog(LogEntry, MonsterDrop):
 
 # Dungeons
 class DungeonLog(LogEntry):
+    battle_key = models.BigIntegerField(db_index=True, null=True, blank=True)
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
     success = models.NullBooleanField(help_text='Null indicates that run was not completed')
     clear_time = models.DurationField(blank=True, null=True)
 
     @classmethod
+    def parse_scenario_start(cls, summoner, log_data):
+        log_entry = cls(summoner=summoner)
+
+        # Partially fill common log data
+        log_entry.wizard_id = log_data['request']['wizard_id']
+        log_entry.battle_key = log_data['response'].get('battle_key')
+
+        log_entry.level = Level.objects.get(
+            dungeon__category=Dungeon.CATEGORY_SCENARIO,
+            dungeon__pk=log_data['request']['region_id'],
+            difficulty=log_data['request']['difficulty'],
+            floor=log_data['request']['stage_no'],
+        )
+
+        # Remainder of information comes from BattleScenarioResult
+        log_entry.save()
+
+    @classmethod
     def parse_scenario_result(cls, summoner, log_data):
+        log_entry = cls.objects.get(
+            wizard_id=log_data['request']['wizard_id'],
+            battle_key=log_data['request']['battle_key']
+        )
+
+        log_entry.parse_common_log_data(log_data)
+        log_entry.success = log_data['request']['win_lose'] == 1
+        log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
+        log_entry.save()
+        log_entry.parse_rewards(log_data['response']['reward'])
+
+    @classmethod
+    def parse_dungeon_result(cls, summoner, log_data):
         log_entry = cls(summoner=summoner)
         log_entry.parse_common_log_data(log_data)
         log_entry.level = Level.objects.get(
-            dungeon__category=Dungeon.CATEGORY_SCENARIO,
-            dungeon__pk=log_data['response']['scenario_info']['region_id'],
-            difficulty=log_data['response']['scenario_info']['difficulty'],
-            floor=log_data['response']['scenario_info']['stage_no'],
+            dungeon__category=Dungeon.CATEGORY_CAIROSS,
+            dungeon__pk=log_data['request']['dungeon_id'],
+            floor=log_data['request']['stage_id'],
         )
         log_entry.success = log_data['request']['win_lose'] == 1
         log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
         log_entry.save()
-        log_entry._parse_rewards(log_data['response']['reward'])
+        log_entry.parse_rewards(log_data['response']['reward'])
 
-    def _parse_rewards(self, rewards):
+    def parse_rewards(self, rewards):
         for key, val in rewards.items():
             reward = None
 
@@ -370,7 +401,7 @@ class DungeonLog(LogEntry):
             elif key in DungeonMonsterDrop.PARSE_KEYS:
                 reward = DungeonMonsterDrop.parse(key, val)
             elif key == 'crate':
-                self._parse_rewards(val)
+                self.parse_rewards(val)
 
             if reward:
                 reward.log = self

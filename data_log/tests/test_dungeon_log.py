@@ -3,7 +3,7 @@ from data_log import models
 from .test_log_views import BaseLogTest
 
 
-class CairossLogTests(BaseLogTest):
+class CairosLogTests(BaseLogTest):
     fixtures = ['test_game_items', 'test_levels', 'test_summon_monsters']
 
     def test_dungeon_result(self):
@@ -50,13 +50,16 @@ class CairossLogTests(BaseLogTest):
         self._do_log('BattleDungeonResult/dragon_b5_transcendance_x1_drop.json')
         log = models.DungeonLog.objects.first()
         # Expect Mana, Energy, and Craft Item
-        self.assertEqual(log.dungeonitemdrop_set.count(), 4)
-        self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=1).exists())
+        self.assertEqual(log.dungeonitemdrop_set.count(), 3)
         self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=102).exists())
         self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=103).exists())
         self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CRAFT_STUFF, item__com2us_id=4002).exists())
 
+    def test_hoh_ignored(self):
+        self._do_log('BattleDungeonResult/hoh_b1_monster_pieces_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertIsNone(log)
+
     # TODO:
-    # hoh ignoreed
     # monster drop
     # secret dungeon drop

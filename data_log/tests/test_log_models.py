@@ -30,6 +30,10 @@ class ItemDropTests(TestCase):
     # Test ItemDrop class using a concrete subclass
     fixtures = ['test_game_items']
 
+    def test_parse_zero_quantity_no_log(self):
+        log = models.DungeonItemDrop.parse('mana', 0)
+        self.assertIsNone(log)
+
     def test_parse_mana_drop(self):
         log = models.DungeonItemDrop.parse('mana', 491)
         self.assertEqual(

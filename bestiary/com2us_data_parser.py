@@ -756,7 +756,7 @@ class TranslationTables(IntEnum):
     SKILL_NAMES = 19
     SKILL_DESCRIPTIONS = 20
     WORLD_MAP_DUNGEON_NAMES = 28
-    CAIROSS_DUNGEON_NAMES = 29
+    CAIROS_DUNGEON_NAMES = 29
 
 
 def get_monster_names_by_id():
@@ -827,8 +827,8 @@ def _get_scenario_names_by_id():
     }
 
 
-def parse_caiross_dungeons():
-    dungeon_names = _get_translation_tables()[TranslationTables.CAIROSS_DUNGEON_NAMES]
+def parse_cairos_dungeons():
+    dungeon_names = _get_translation_tables()[TranslationTables.CAIROS_DUNGEON_NAMES]
 
     with open('bestiary/com2us_data/dungeon_list.json', 'r') as f:
         for dungeon_data in json.load(f):
@@ -840,7 +840,7 @@ def parse_caiross_dungeons():
             dungeon, created = Dungeon.objects.update_or_create(
                 id=dungeon_id,
                 name=name,
-                category=Dungeon.CATEGORY_CAIROSS,
+                category=Dungeon.CATEGORY_CAIROS,
             )
 
             if created:
@@ -947,12 +947,12 @@ class LocalvalueTables(IntEnum):
     TUTORIALS = 15
     SCENARIO_BOSSES = 16
     SCENARIO_LEVELS = 17
-    CAIROSS_BOSS_INTROS = 18
+    CAIROS_BOSS_INTROS = 18
     # Unknown table 19 - more effect mapping
     WORLD_MAP = 20
     ARENA_RANKS = 21
     MONTHLY_REWARDS = 22
-    CAIROSS_DUNGEON_LIST = 23
+    CAIROS_DUNGEON_LIST = 23
     INVITE_FRIEND_REWARDS_OLD = 24
     # Unknown table 25 - probably x/y positions of 3d models in dungeons/scenarios
     AWAKENING_ESSENCES = 26

@@ -55,40 +55,33 @@ class ItemDrop(models.Model):
     @classmethod
     def parse(cls, key, val):
         if key == 'mana':
-            log_item = cls(
-                item=GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Mana'),
-                quantity=val,
-            )
+            item = GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Mana')
+            quantity = val
         elif key == 'energy':
-            log_item = cls(
-                item=GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Energy'),
-                quantity=val
-            )
+            item = GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Energy')
+            quantity = val
         elif key == 'crystal':
-            log_item = cls(
-                item=GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Crystal'),
-                quantity=val
-            )
+            item = GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Crystal')
+            quantity = val
         elif key == 'random_scroll':
-            log_item = cls(
-                item=GameItem.objects.get(category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=val['item_master_id']),
-                quantity=val['item_quantity'],
-            )
+            item = GameItem.objects.get(category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=val['item_master_id'])
+            quantity = val['item_quantity']
         elif key == 'material':
-            log_item = cls(
-                item=GameItem.objects.get(category=GameItem.CATEGORY_ESSENCE, com2us_id=val['item_master_id']),
-                quantity=val['item_quantity'],
-            )
+            item = GameItem.objects.get(category=GameItem.CATEGORY_ESSENCE, com2us_id=val['item_master_id'])
+            quantity = val['item_quantity']
         elif key == 'craft_stuff':
-            log_item = cls(
-                item=GameItem.objects.get(category=GameItem.CATEGORY_CRAFT_STUFF, com2us_id=val['item_master_id']),
-                quantity=val['item_quantity'],
-            )
+            item = GameItem.objects.get(category=GameItem.CATEGORY_CRAFT_STUFF, com2us_id=val['item_master_id'])
+            quantity = val['item_quantity']
         else:
             # TODO: Implement parsing of: `costume_point`, `rune_upgrade_stone`, `summon_pieces`, `event_item`
             raise NotImplementedError(f"Can't parse item type {key} with {cls.__name__}")
 
-        return log_item
+        if item and quantity:
+            log_item = cls(
+                item=item,
+                quantity=quantity,
+            )
+            return log_item
 
 
 class MonsterDrop(models.Model):
@@ -378,11 +371,17 @@ class DungeonLog(LogEntry):
 
     @classmethod
     def parse_dungeon_result(cls, summoner, log_data):
+        dungeon_id = log_data['request']['dungeon_id']
+
+        # Don't log HoH dungeons, which have IDs starting from 10000 and increments by 1 each new HoH.
+        if 10000 <= dungeon_id < 11000:
+            return
+
         log_entry = cls(summoner=summoner)
         log_entry.parse_common_log_data(log_data)
         log_entry.level = Level.objects.get(
-            dungeon__category=Dungeon.CATEGORY_CAIROSS,
-            dungeon__pk=log_data['request']['dungeon_id'],
+            dungeon__category=Dungeon.CATEGORY_CAIROS,
+            dungeon__pk=dungeon_id,
             floor=log_data['request']['stage_id'],
         )
         log_entry.success = log_data['request']['win_lose'] == 1

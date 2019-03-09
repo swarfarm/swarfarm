@@ -141,7 +141,7 @@ battle_dungeon_result = {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
                 'reward': {'type': 'object'},
-                'instance_info': {'type': 'object'},
+                'instance_info': {'type': ['null', 'object']},
             },
             'required': [
                 'tzone',

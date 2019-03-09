@@ -15,7 +15,7 @@ class BaseLogTest(TestCase):
         self.factory = APIRequestFactory()
 
     def _do_log(self, log_data_filename, *args, **kwargs):
-        with open(f'data_log/tests/game_api_responses/{log_data_filename}', 'r') as f:
+        with open(f'data_log/tests/game_api_data/{log_data_filename}', 'r') as f:
             view = views.LogData.as_view({'post': 'create'})
             data = get_requested_keys(json.load(f))
             request = self.factory.post(
@@ -70,7 +70,7 @@ class LogDataViewTests(BaseLogTest):
         self.assertTrue(response.data.get('reinit'))
 
     def test_log_data_validation(self):
-        with open(f'data_log/tests/game_api_responses/SummonLog/scroll_unknown_qty1.json', 'r') as f:
+        with open(f'data_log/tests/game_api_data/SummonLog/scroll_unknown_qty1.json', 'r') as f:
             data = get_requested_keys(json.load(f))
 
         del data['data']['request']['mode']  # Delete required key for test

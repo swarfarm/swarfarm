@@ -8,10 +8,11 @@ from herders.models import Summoner
 from . import game_commands
 
 active_log_commands = {
-    'SummonUnit': game_commands.SummonUnitCommand,
-    'BattleScenarioStart': game_commands.BattleScenarioStartCommand,
-    'BattleScenarioResult': game_commands.BattleScenarioResultCommand,
-    'BattleDungeonResult': game_commands.BattleDungeonResultCommand,
+    'GetBlackMarketList': game_commands.GetBlackMarketList,
+    'SummonUnit': game_commands.SummonUnit,
+    'BattleScenarioStart': game_commands.BattleScenarioStart,
+    'BattleScenarioResult': game_commands.BattleScenarioResult,
+    'BattleDungeonResult': game_commands.BattleDungeonResult,
 }
 
 accepted_api_params = {

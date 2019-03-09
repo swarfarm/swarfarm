@@ -35,12 +35,18 @@ class LogEntry(models.Model):
 
 class ItemDrop(models.Model):
     PARSE_KEYS = (
+        # For when drops are in a key: value format from game API
         'mana',
         'energy',
         'crystal',
-        'random_scroll',
-        'material',
-        'craft_stuff',
+    )
+
+    PARSE_ITEM_TYPES = (
+        # For when drops have a master_item_id and master_item_type specified
+        GameItem.CATEGORY_CURRENCY,
+        GameItem.CATEGORY_SUMMON_SCROLL,
+        GameItem.CATEGORY_ESSENCE,
+        GameItem.CATEGORY_CRAFT_STUFF,
     )
 
     item = models.ForeignKey(GameItem, on_delete=models.CASCADE)
@@ -53,28 +59,38 @@ class ItemDrop(models.Model):
         return f'{self.item} x{self.quantity}'
 
     @classmethod
-    def parse(cls, key, val):
-        if key == 'mana':
-            item = GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Mana')
-            quantity = val
-        elif key == 'energy':
-            item = GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Energy')
-            quantity = val
-        elif key == 'crystal':
-            item = GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Crystal')
-            quantity = val
-        elif key == 'random_scroll':
-            item = GameItem.objects.get(category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=val['item_master_id'])
-            quantity = val['item_quantity']
-        elif key == 'material':
-            item = GameItem.objects.get(category=GameItem.CATEGORY_ESSENCE, com2us_id=val['item_master_id'])
-            quantity = val['item_quantity']
-        elif key == 'craft_stuff':
-            item = GameItem.objects.get(category=GameItem.CATEGORY_CRAFT_STUFF, com2us_id=val['item_master_id'])
-            quantity = val['item_quantity']
+    def parse(cls, **kwargs):
+        key = kwargs.get('key')
+        val = kwargs.get('val')
+        master_type = kwargs.get('item_master_type')
+        master_id = kwargs.get('item_master_id')
+
+        if key and val is not None:
+            # Dungeon drop parsing
+            if key == 'mana':
+                item = GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Mana')
+                quantity = val
+            elif key == 'energy':
+                item = GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Energy')
+                quantity = val
+            elif key == 'crystal':
+                item = GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Crystal')
+                quantity = val
+            else:
+                raise ValueError(f"Can't parse item type {key} with {cls.__name__}")
+        elif master_type and master_id:
+            # type and ID parsing
+            quantity = kwargs.get('amount') or kwargs.get('item_quantity')
+
+            if quantity is None:
+                raise ValueError('Quantity not found')
+
+            if master_type not in cls.PARSE_ITEM_TYPES:
+                raise ValueError(f"Can't parse item type {master_type} with {cls.__name__}")
+
+            item = GameItem.objects.get(category=master_type, com2us_id=master_id)
         else:
-            # TODO: Implement parsing of: `costume_point`, `rune_upgrade_stone`, `summon_pieces`, `event_item`
-            raise NotImplementedError(f"Can't parse item type {key} with {cls.__name__}")
+            raise ValueError('Must specify either (key, val) kwargs or (item_master_type, item_master_id, quantity) kwargs')
 
         if item and quantity:
             log_item = cls(
@@ -85,9 +101,10 @@ class ItemDrop(models.Model):
 
 
 class MonsterDrop(models.Model):
-    PARSE_KEYS = (
-        'unit_info',
+    PARSE_ITEM_TYPES = (
+        GameItem.CATEGORY_MONSTER,
     )
+
     monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
     grade = models.IntegerField()
     level = models.IntegerField()
@@ -99,15 +116,13 @@ class MonsterDrop(models.Model):
         return f'{self.monster} {self.grade}* lv.{self.level}'
 
     @classmethod
-    def parse(cls, key, val):
-        if key != 'unit_info':
-            raise NotImplementedError(f"Can't parse item type {key} with {cls.__name__}")
-
+    def parse(cls, **monster_info):
+        com2us_id = monster_info.get('unit_master_id') or monster_info.get('item_master_id')
         return cls(
-            monster=Monster.objects.get(com2us_id=val['unit_master_id']),
-            grade=val['class'],
-            level=val['unit_level'],
-        )
+                monster=Monster.objects.get(com2us_id=com2us_id),
+                grade=monster_info['class'],
+                level=monster_info.get('unit_level', 1),
+            )
 
 
 class MonsterPieceDrop(models.Model):
@@ -126,39 +141,36 @@ class MonsterPieceDrop(models.Model):
 
 
 class RuneDrop(Rune):
-    PARSE_KEYS = (
-        'rune',
+    PARSE_ITEM_TYPES = (
+        GameItem.CATEGORY_RUNE,
     )
 
     class Meta:
         abstract = True
 
     @classmethod
-    def parse(cls, key, val):
-        if key != 'rune':
-            raise NotImplementedError(f"Can't parse item type {key} with {cls.__name__}")
-
-        rune_set = cls.COM2US_TYPE_MAP[val['set_id']]
-        original_quality = cls.COM2US_QUALITY_MAP[val['extra']]
-        main_stat = cls.COM2US_STAT_MAP[val['pri_eff'][0]]
-        main_stat_value = val['pri_eff'][1]
-        innate_stat = cls.COM2US_STAT_MAP.get(val['prefix_eff'][0])
-        innate_stat_value = val['prefix_eff'][1] if innate_stat else None
+    def parse(cls, **rune_data):
+        rune_set = cls.COM2US_TYPE_MAP[rune_data['set_id']]
+        original_quality = cls.COM2US_QUALITY_MAP[rune_data['extra']]
+        main_stat = cls.COM2US_STAT_MAP[rune_data['pri_eff'][0]]
+        main_stat_value = rune_data['pri_eff'][1]
+        innate_stat = cls.COM2US_STAT_MAP.get(rune_data['prefix_eff'][0])
+        innate_stat_value = rune_data['prefix_eff'][1] if innate_stat else None
 
         substats = []
         substat_values = []
 
-        for sub, sub_val in val['sec_eff']:
+        for sub, sub_val in rune_data['sec_eff']:
             substats.append(cls.COM2US_STAT_MAP[sub])
             substat_values.append(sub_val)
 
         return cls(
             type=rune_set,
-            stars=val['class'],
-            level=val['upgrade_curr'],
-            slot=val['slot_no'],
+            stars=rune_data['class'],
+            level=rune_data['upgrade_curr'],
+            slot=rune_data['slot_no'],
             original_quality=original_quality,
-            value=val['sell_value'],
+            value=rune_data['sell_value'],
             main_stat=main_stat,
             main_stat_value=main_stat_value,
             innate_stat=innate_stat,
@@ -192,6 +204,36 @@ class FullLog(LogEntry):
 class ShopRefreshLog(LogEntry):
     slots_available = models.IntegerField(blank=True, null=True)
 
+    @classmethod
+    def parse_shop_refresh(cls, summoner, log_data):
+        if log_data['response']['market_info']['update_remained'] != 3600:
+            # Ignore any log that does not have the full hour of refresh time indicating it is brand new.
+            return
+
+        log = cls(summoner=summoner)
+        log.parse_common_log_data(log_data)
+        log.slots_available = log_data['response']['market_info']['open_slots']
+        log.save()
+
+        log.parse_items_for_sale(log_data['response']['market_list'])
+
+    def parse_items_for_sale(self, sale_items):
+        for item in sale_items:
+            master_type = item['item_master_type']
+
+            if master_type in ShopRefreshItemDrop.PARSE_ITEM_TYPES:
+                item_log = ShopRefreshItemDrop.parse(**item)
+            elif master_type in ShopRefreshRuneDrop.PARSE_ITEM_TYPES:
+                item_log = ShopRefreshRuneDrop.parse(**item['runes'][0])
+            elif master_type in ShopRefreshMonsterDrop.PARSE_ITEM_TYPES:
+                item_log = ShopRefreshMonsterDrop.parse(**item)
+            else:
+                raise ValueError(f"don't know how to parse {master_type} in shop refresh log")
+
+            if item_log:
+                item_log.log = self
+                item_log.save()
+
 
 class ShopRefreshDrop(models.Model):
     log = models.ForeignKey(ShopRefreshLog, on_delete=models.CASCADE)
@@ -202,15 +244,27 @@ class ShopRefreshDrop(models.Model):
 
 
 class ShopRefreshItemDrop(ItemDrop, ShopRefreshDrop):
-    pass
+    @classmethod
+    def parse(cls, **kwargs):
+        log = super().parse(**kwargs)
+        log.cost = kwargs.get('buy_mana', 0)
+        return log
 
 
 class ShopRefreshRuneDrop(RuneDrop, ShopRefreshDrop):
-    pass
+    @classmethod
+    def parse(cls, **kwargs):
+        log = super().parse(**kwargs)
+        log.cost = kwargs.get('buy_mana', 0)
+        return log
 
 
 class ShopRefreshMonsterDrop(MonsterDrop, ShopRefreshDrop):
-    pass
+    @classmethod
+    def parse(cls, **kwargs):
+        log = super().parse(**kwargs)
+        log.cost = kwargs.get('buy_mana', 0)
+        return log
 
 
 # Wishes
@@ -301,7 +355,7 @@ class SummonLog(LogEntry, MonsterDrop):
             return
 
         for unit_info in log_data['response']['unit_list']:
-            log_entry = cls.parse('unit_info', unit_info)
+            log_entry = cls.parse(**unit_info)
             log_entry.parse_common_log_data(log_data)
             log_entry.summoner = summoner
 
@@ -393,14 +447,21 @@ class DungeonLog(LogEntry):
         for key, val in rewards.items():
             reward = None
 
-            if key in DungeonItemDrop.PARSE_KEYS:
-                reward = DungeonItemDrop.parse(key, val)
-            elif key in DungeonRuneDrop.PARSE_KEYS:
-                reward = DungeonRuneDrop.parse(key, val)
-            elif key in DungeonMonsterDrop.PARSE_KEYS:
-                reward = DungeonMonsterDrop.parse(key, val)
-            elif key == 'crate':
+            if key == 'crate':
                 self.parse_rewards(val)
+            elif isinstance(val, dict):
+                if 'item_master_type' in val:
+                    # Parse by master type
+                    if val['item_master_type'] in DungeonItemDrop.PARSE_ITEM_TYPES:
+                        reward = DungeonItemDrop.parse(**val)
+                elif key == 'rune':
+                    reward = DungeonRuneDrop.parse(**val)
+                elif key == 'unit_info':
+                    reward = DungeonMonsterDrop.parse(**val)
+
+            else:
+                if key in DungeonItemDrop.PARSE_KEYS:
+                    reward = DungeonItemDrop.parse(key=key, val=val)
 
             if reward:
                 reward.log = self

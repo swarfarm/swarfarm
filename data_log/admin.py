@@ -3,6 +3,36 @@ from django.contrib import admin
 from . import models
 
 
+# Shop Refresh
+class ShopRefreshItemDropInline(admin.TabularInline):
+    model = models.ShopRefreshItemDrop
+    readonly_fields = ('item', )
+    extra = 0
+
+
+class ShopRefreshMonsterDropInline(admin.TabularInline):
+    model = models.ShopRefreshMonsterDrop
+    readonly_fields = ('monster', )
+    extra = 0
+
+
+class ShopRefreshRuneDropInline(admin.TabularInline):
+    model = models.ShopRefreshRuneDrop
+    fields = ('type', 'stars', 'level', 'slot', 'quality', 'original_quality', 'value', 'main_stat', 'main_stat_value')
+    extra = 0
+
+
+@admin.register(models.ShopRefreshLog)
+class ShopRefreshLogAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'wizard_id', 'summoner')
+    readonly_fields = ('summoner', )
+    inlines = (
+        ShopRefreshItemDropInline,
+        ShopRefreshMonsterDropInline,
+        ShopRefreshRuneDropInline,
+    )
+
+
 # Summons
 @admin.register(models.SummonLog)
 class SummonLogAdmin(admin.ModelAdmin):
@@ -23,19 +53,19 @@ class DungeonMonsterDropInline(admin.TabularInline):
     extra = 0
 
 
-class DungeonMonsterPieceDrop(admin.TabularInline):
+class DungeonMonsterPieceDropInline(admin.TabularInline):
     model = models.DungeonMonsterPieceDrop
     readonly_fields = ('monster', )
     extra = 0
 
 
-class DungeonRuneDrop(admin.TabularInline):
+class DungeonRuneDropInline(admin.TabularInline):
     model = models.DungeonRuneDrop
     fields = ('type', 'stars', 'level', 'slot', 'quality', 'original_quality', 'value', 'main_stat', 'main_stat_value')
     extra = 0
 
 
-class DungeonSecretDungeonDrop(admin.TabularInline):
+class DungeonSecretDungeonDropInline(admin.TabularInline):
     model = models.DungeonSecretDungeonDrop
     readonly_fields = ('level', )
     extra = 0
@@ -48,7 +78,7 @@ class DungeonLogAdmin(admin.ModelAdmin):
     inlines = (
         DungeonItemDropInline,
         DungeonMonsterDropInline,
-        DungeonMonsterPieceDrop,
-        DungeonRuneDrop,
-        DungeonSecretDungeonDrop,
+        DungeonMonsterPieceDropInline,
+        DungeonRuneDropInline,
+        DungeonSecretDungeonDropInline,
     )

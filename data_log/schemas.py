@@ -1,3 +1,40 @@
+# JSON Schemas for all logged game API commands, used to validate shape of data submitted by users and to generate a
+# list of required keys for each API command for logging clients.
+
+get_black_market_list = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/summon_schema.json',
+    'title': 'summon_schema',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'cash_used': {'type': ['null', 'number']},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'market_info': {'type': 'object'},
+                'market_list': {'type': 'array'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'market_info',
+                'market_list',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
 summon_unit = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
     'id': 'http://swarfarm.com/schemas/summon_schema.json',

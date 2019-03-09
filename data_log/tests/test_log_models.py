@@ -31,11 +31,11 @@ class ItemDropTests(TestCase):
     fixtures = ['test_game_items']
 
     def test_parse_zero_quantity_no_log(self):
-        log = models.DungeonItemDrop.parse('mana', 0)
+        log = models.DungeonItemDrop.parse(key='mana', val=0)
         self.assertIsNone(log)
 
     def test_parse_mana_drop(self):
-        log = models.DungeonItemDrop.parse('mana', 491)
+        log = models.DungeonItemDrop.parse(key='mana', val=491)
         self.assertEqual(
             log.item,
             GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Mana')
@@ -43,7 +43,7 @@ class ItemDropTests(TestCase):
         self.assertEqual(log.quantity, 491)
 
     def test_parse_energy_drop(self):
-        log = models.DungeonItemDrop.parse('energy', 5)
+        log = models.DungeonItemDrop.parse(key='energy', val=5)
         self.assertEqual(
             log.item,
             GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Energy')
@@ -51,7 +51,7 @@ class ItemDropTests(TestCase):
         self.assertEqual(log.quantity, 5)
 
     def test_parse_crystal_drop(self):
-        log = models.DungeonItemDrop.parse('crystal', 9)
+        log = models.DungeonItemDrop.parse(key='crystal', val=9)
         self.assertEqual(
             log.item,
             GameItem.objects.get(category=GameItem.CATEGORY_CURRENCY, name='Crystal')
@@ -59,7 +59,8 @@ class ItemDropTests(TestCase):
         self.assertEqual(log.quantity, 9)
 
     def test_parse_random_scroll_drop(self):
-        log = models.DungeonItemDrop.parse('random_scroll', {
+        log = models.DungeonItemDrop.parse(**{
+            'item_master_type': 9,
             'item_master_id': 1,
             'item_quantity': 3,
         })
@@ -70,7 +71,8 @@ class ItemDropTests(TestCase):
         self.assertEqual(log.quantity, 3)
 
     def test_parse_material_drop(self):
-        log = models.DungeonItemDrop.parse('material', {
+        log = models.DungeonItemDrop.parse(**{
+            'item_master_type': 11,
             'item_master_id': 12005,
             'item_quantity': 4,
         })
@@ -81,7 +83,8 @@ class ItemDropTests(TestCase):
         self.assertEqual(log.quantity, 4)
 
     def test_parse_craft_stuff_drop(self):
-        log = models.DungeonItemDrop.parse('craft_stuff', {
+        log = models.DungeonItemDrop.parse(**{
+            'item_master_type': 29,
             'item_master_id': 1006,
             'item_quantity': 2,
         })
@@ -96,7 +99,7 @@ class MonsterDropTests(TestCase):
     fixtures = ['test_summon_monsters']
 
     def test_parse_monster_drop(self):
-        log = models.DungeonMonsterDrop.parse('unit_info', {
+        log = models.DungeonMonsterDrop.parse(**{
             'unit_id': 13138378732,
             'wizard_id': 12234369,
             'island_id': 3,
@@ -138,7 +141,7 @@ class MonsterDropTests(TestCase):
 
 class RuneDropTests(TestCase):
     def test_parse_rune_drop(self):
-        log = models.DungeonRuneDrop.parse('rune', {
+        log = models.DungeonRuneDrop.parse(**{
             'rune_id': 25190515048,
             'wizard_id': 12234369,
             'occupied_type': 2,

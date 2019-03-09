@@ -1,7 +1,7 @@
 import json
 from jsonschema import Draft4Validator
 
-from .models import SummonLog, DungeonLog
+from . import models
 from . import schemas
 
 
@@ -20,10 +20,11 @@ class GameApiCommand:
         return self.validator.is_valid(log_data)
 
 
-SummonUnitCommand = GameApiCommand(schemas.summon_unit, SummonLog.parse_summon_log)
-BattleScenarioStartCommand = GameApiCommand(schemas.battle_scenario_start, DungeonLog.parse_scenario_start)
-BattleScenarioResultCommand = GameApiCommand(schemas.battle_scenario_result, DungeonLog.parse_scenario_result)
-BattleDungeonResultCommand = GameApiCommand(schemas.battle_dungeon_result, DungeonLog.parse_dungeon_result)
+SummonUnit = GameApiCommand(schemas.summon_unit, models.SummonLog.parse_summon_log)
+BattleScenarioStart = GameApiCommand(schemas.battle_scenario_start, models.DungeonLog.parse_scenario_start)
+BattleScenarioResult = GameApiCommand(schemas.battle_scenario_result, models.DungeonLog.parse_scenario_result)
+BattleDungeonResult = GameApiCommand(schemas.battle_dungeon_result, models.DungeonLog.parse_dungeon_result)
+GetBlackMarketList = GameApiCommand(schemas.get_black_market_list, models.ShopRefreshLog.parse_shop_refresh)
 
 
 # Utility functions

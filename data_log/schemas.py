@@ -3,8 +3,8 @@
 
 get_black_market_list = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
-    'id': 'http://swarfarm.com/schemas/summon_schema.json',
-    'title': 'summon_schema',
+    'id': 'http://swarfarm.com/schemas/get_black_market_list.json',
+    'title': 'get_black_market_list',
     'type': 'object',
     'properties': {
         'request': {
@@ -29,6 +29,39 @@ get_black_market_list = {
                 'tvalue',
                 'market_info',
                 'market_list',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+do_random_wish_item = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/do_random_wish_item.json',
+    'title': 'do_random_wish_item',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'wish_info': {'type': 'object'},
+                'rune': {'type': ['null', 'object']},
+                'unit_info': {'type': ['null', 'object']},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'wish_info',
             ]
         }
     },

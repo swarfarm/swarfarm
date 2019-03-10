@@ -273,6 +273,29 @@ class WishLog(LogEntry):
     wish_sequence = models.IntegerField()
     crystal_used = models.BooleanField()
 
+    @classmethod
+    def parse_wish_log(cls, summoner, log_data):
+        log = cls(summoner=summoner)
+        log.parse_common_log_data(log_data)
+        log.wish_id = log_data['response']['wish_info']['wish_id']
+        log.wish_sequence = log_data['response']['wish_info']['wish_sequence']
+        log.crystal_used = log_data['response']['wish_info']['cash_used']
+        log.save()
+
+        # Wish reward
+        master_type = log_data['response']['wish_info']['item_master_type']
+
+        if master_type == GameItem.CATEGORY_MONSTER:
+            reward = WishLogMonsterDrop.parse(**log_data['response']['unit_info'])
+        elif master_type == GameItem.CATEGORY_RUNE:
+            reward = WishLogRuneDrop.parse(**log_data['response']['rune'])
+        else:
+            reward = WishLogItemDrop.parse(**log_data['response']['wish_info'])
+
+        if reward:
+            reward.log = log
+            reward.save()
+
 
 class WishLogDrop(models.Model):
     log = models.ForeignKey(WishLog, on_delete=models.CASCADE)

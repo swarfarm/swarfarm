@@ -1,0 +1,69 @@
+{
+  "data": {
+    "request": {
+      "command": "DoRandomWishItem",
+      "wizard_id": 123,
+      "session_key": "abc123",
+      "proto_ver": 11380,
+      "infocsv": "4.00.77",
+      "channel_uid": 144237507,
+      "ts_val": 1084976654,
+      "item_list_version": 2019030920,
+      "island_id": 1,
+      "building_id": 148175946,
+      "pos_x": 23,
+      "pos_y": 23,
+      "cash_used": 1
+    },
+    "response": {
+      "command": "DoRandomWishItem",
+      "ret_code": 0,
+      "rune": {
+        "rune_id": 25258738053,
+        "wizard_id": 123,
+        "occupied_type": 2,
+        "occupied_id": 0,
+        "slot_no": 4,
+        "rank": 3,
+        "class": 6,
+        "set_id": 5,
+        "upgrade_limit": 15,
+        "upgrade_curr": 0,
+        "base_value": 456480,
+        "sell_value": 22824,
+        "pri_eff": [
+          1,
+          360
+        ],
+        "prefix_eff": [
+          0,
+          0
+        ],
+        "sec_eff": [
+          [
+            6,
+            5
+          ],
+          [
+            12,
+            6
+          ]
+        ],
+        "extra": 3
+      },
+      "wish_info": {
+        "trial_remained": 0,
+        "wish_sequence": 2,
+        "wish_id": 9,
+        "item_master_type": 8,
+        "item_master_id": 5,
+        "amount": 1,
+        "cash_used": true
+      },
+      "ts_val": 1084976647,
+      "tvalue": 1552181391,
+      "tvaluelocal": 1552120191,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

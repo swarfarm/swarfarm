@@ -1,0 +1,80 @@
+{
+  "data": {
+    "request": {
+      "command": "DoRandomWishItem",
+      "wizard_id": 123,
+      "session_key": "abc123",
+      "proto_ver": 11380,
+      "infocsv": "4.00.77",
+      "channel_uid": 144237507,
+      "ts_val": 1084951542,
+      "item_list_version": 2019030920,
+      "island_id": 1,
+      "building_id": 148175946,
+      "pos_x": 23,
+      "pos_y": 23,
+      "cash_used": 0
+    },
+    "response": {
+      "command": "DoRandomWishItem",
+      "ret_code": 0,
+      "unit_info": {
+        "unit_id": 13158397674,
+        "wizard_id": 123,
+        "island_id": 1,
+        "pos_x": 23,
+        "pos_y": 23,
+        "building_id": 0,
+        "unit_master_id": 10915,
+        "unit_level": 1,
+        "class": 3,
+        "con": 124,
+        "atk": 116,
+        "def": 124,
+        "spd": 93,
+        "resist": 15,
+        "accuracy": 0,
+        "critical_rate": 15,
+        "critical_damage": 50,
+        "experience": 0,
+        "exp_gained": 0,
+        "exp_gain_rate": 0,
+        "skills": [
+          [
+            1905,
+            1
+          ],
+          [
+            1910,
+            1
+          ],
+          [
+            1915,
+            1
+          ]
+        ],
+        "runes": [],
+        "costume_master_id": 0,
+        "trans_items": [],
+        "attribute": 5,
+        "create_time": "2019-03-10 04:01:26",
+        "source": 7,
+        "homunculus": 0,
+        "homunculus_name": ""
+      },
+      "wish_info": {
+        "trial_remained": 0,
+        "wish_sequence": 2,
+        "wish_id": 12,
+        "item_master_type": 1,
+        "item_master_id": 10915,
+        "amount": 1,
+        "cash_used": false
+      },
+      "ts_val": 1084951310,
+      "tvalue": 1552158086,
+      "tvaluelocal": 1552096886,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

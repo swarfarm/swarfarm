@@ -9,6 +9,7 @@ from . import game_commands
 
 active_log_commands = {
     'GetBlackMarketList': game_commands.GetBlackMarketList,
+    'DoRandomWishItem': game_commands.DoRandomWishItem,
     'SummonUnit': game_commands.SummonUnit,
     'BattleScenarioStart': game_commands.BattleScenarioStart,
     'BattleScenarioResult': game_commands.BattleScenarioResult,

@@ -33,6 +33,36 @@ class ShopRefreshLogAdmin(admin.ModelAdmin):
     )
 
 
+# Wishes
+class WishLogItemDropInline(admin.TabularInline):
+    model = models.WishLogItemDrop
+    readonly_fields = ('item', )
+    extra = 0
+
+
+class WishLogMonsterDropInline(admin.TabularInline):
+    model = models.WishLogMonsterDrop
+    readonly_fields = ('monster', )
+    extra = 0
+
+
+class WishLogRuneDropInline(admin.TabularInline):
+    model = models.WishLogRuneDrop
+    fields = ('type', 'stars', 'slot', 'quality', 'value', 'main_stat', 'main_stat_value')
+    extra = 0
+
+
+@admin.register(models.WishLog)
+class WishLogAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'wizard_id', 'summoner')
+    readonly_fields = ('summoner', )
+    inlines = (
+        WishLogItemDropInline,
+        WishLogMonsterDropInline,
+        WishLogRuneDropInline,
+    )
+
+
 # Summons
 @admin.register(models.SummonLog)
 class SummonLogAdmin(admin.ModelAdmin):

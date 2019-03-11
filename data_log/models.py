@@ -465,12 +465,12 @@ class DungeonLog(LogEntry):
             wizard_id=log_data['request']['wizard_id'],
             battle_key=log_data['request']['battle_key']
         )
-
-        log_entry.parse_common_log_data(log_data)
-        log_entry.success = log_data['request']['win_lose'] == 1
-        log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
-        log_entry.save()
-        log_entry.parse_rewards(log_data['response']['reward'])
+        if log_entry:
+            log_entry.parse_common_log_data(log_data)
+            log_entry.success = log_data['request']['win_lose'] == 1
+            log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
+            log_entry.save()
+            log_entry.parse_rewards(log_data['response']['reward'])
 
     @classmethod
     def parse_dungeon_result(cls, summoner, log_data):

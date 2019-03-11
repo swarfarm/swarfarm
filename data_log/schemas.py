@@ -198,13 +198,11 @@ battle_scenario_result = {
             'properties': {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
-                'scenario_info': {'type': 'object'},
                 'reward': {'type': 'object'},
             },
             'required': [
                 'tzone',
                 'tvalue',
-                'scenario_info',
                 'reward',
             ]
         }

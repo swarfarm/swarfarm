@@ -285,7 +285,7 @@ class WishLog(LogEntry):
         # Wish reward
         master_type = log_data['response']['wish_info']['item_master_type']
 
-        if master_type == GameItem.CATEGORY_MONSTER:
+        if master_type in [GameItem.CATEGORY_MONSTER, GameItem.CATEGORY_RAINBOWMON]:
             reward = WishLogMonsterDrop.parse(**log_data['response']['unit_info'])
         elif master_type == GameItem.CATEGORY_RUNE:
             reward = WishLogRuneDrop.parse(**log_data['response']['rune'])

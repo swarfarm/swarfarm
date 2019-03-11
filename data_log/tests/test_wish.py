@@ -26,3 +26,8 @@ class WishTests(BaseLogTest):
         self._do_log('DoRandomWishItem/wish_monster.json')
         log = models.WishLog.objects.last()
         self.assertEqual(log.wishlogmonsterdrop_set.count(), 1)
+
+    def test_wish_rainbowmon_drop(self):
+        self._do_log('DoRandomWishItem/wish_rainbowmon.json')
+        log = models.WishLog.objects.last()
+        self.assertEqual(log.wishlogmonsterdrop_set.count(), 1)

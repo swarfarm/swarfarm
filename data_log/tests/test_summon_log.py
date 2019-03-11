@@ -1,5 +1,3 @@
-from rest_framework.test import APIRequestFactory
-
 from bestiary.models import Monster, GameItem
 from data_log import models
 from .test_log_views import BaseLogTest
@@ -7,9 +5,6 @@ from .test_log_views import BaseLogTest
 
 class SummonLogTests(BaseLogTest):
     fixtures = ['test_summon_monsters', 'test_game_items']
-
-    def setUp(self):
-        self.factory = APIRequestFactory()
 
     def test_summon_1_with_unknown_scroll(self):
         self._do_log('SummonLog/scroll_unknown_qty1.json')

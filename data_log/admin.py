@@ -63,6 +63,13 @@ class WishLogAdmin(admin.ModelAdmin):
     )
 
 
+# Rune Crafting
+@admin.register(models.CraftRuneLog)
+class CraftRuneLogAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'wizard_id', 'summoner', 'craft_level', 'type', 'stars')
+    readonly_fields = ('summoner', )
+
+
 # Summons
 @admin.register(models.SummonLog)
 class SummonLogAdmin(admin.ModelAdmin):

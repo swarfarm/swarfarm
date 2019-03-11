@@ -1,14 +1,9 @@
-from rest_framework.test import APIRequestFactory
-
 from data_log import models
 from .test_log_views import BaseLogTest
 
 
 class WishTests(BaseLogTest):
     fixtures = ['test_wish_monster', 'test_game_items']
-
-    def setUp(self):
-        self.factory = APIRequestFactory()
 
     def test_wish_log(self):
         self._do_log('DoRandomWishItem/wish_mana.json')

@@ -318,9 +318,11 @@ class WishLogRuneDrop(RuneDrop, WishLogDrop):
 
 # Rune Crafting
 class CraftRuneLog(LogEntry, RuneDrop):
-    CRAFT_LOW = 0
-    CRAFT_MID = 1
-    CRAFT_HIGH = 2
+    PARSE_IDS = list(range(1401001, 1401022)) + list(range(1402001, 1402022)) + list(range(1403001, 1403022))
+
+    CRAFT_LOW = 1
+    CRAFT_MID = 2
+    CRAFT_HIGH = 3
 
     CRAFT_CHOICES = [
         (CRAFT_LOW, 'Low'),
@@ -330,12 +332,28 @@ class CraftRuneLog(LogEntry, RuneDrop):
 
     craft_level = models.IntegerField(choices=CRAFT_CHOICES)
 
+    @staticmethod
+    def get_craft_level(com2us_item_id):
+        # Craft level is in 1000s digit
+        return (com2us_item_id - 1400000) // 1000
+
+    @classmethod
+    def parse_buy_shop_item(cls, summoner, log_data):
+        for rune_data in log_data['response']['reward']['crate']['runes']:
+            log_entry = cls.parse(**rune_data)
+            log_entry.summoner = summoner
+            log_entry.parse_common_log_data(log_data)
+            log_entry.craft_level = CraftRuneLog.get_craft_level(log_data['request']['item_id'])
+            log_entry.save()
+
 
 # Magic Box Crafting
 class MagicBoxCraft(LogEntry):
-    BOX_UNKNOWN_MAGIC = 0
-    BOX_MYSTICAL_MAGIC = 1
-    BOX_LEGENDARY_MAGIC = 2
+    PARSE_IDS = [1300008, 1300009, 1300012]
+
+    BOX_UNKNOWN_MAGIC = 8
+    BOX_MYSTICAL_MAGIC = 9
+    BOX_LEGENDARY_MAGIC = 12
 
     BOX_CHOICES = [
         (BOX_UNKNOWN_MAGIC, 'Unknown Magic Box'),
@@ -344,6 +362,14 @@ class MagicBoxCraft(LogEntry):
     ]
 
     box_type = models.IntegerField(choices=BOX_CHOICES)
+
+    @staticmethod
+    def get_box_type(com2us_item_id):
+        return com2us_item_id - 1300000
+
+    @classmethod
+    def parse_buy_shop_item(cls, summoner, log_data):
+        pass
 
 
 class MagicBoxCraftDrop(models.Model):

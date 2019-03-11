@@ -68,6 +68,38 @@ do_random_wish_item = {
     'required': ['request', 'response'],
 }
 
+buy_shop_item = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/buy_shop_item.json',
+    'title': 'buy_shop_item',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'item_id': {'type': 'number'},
+            },
+            'required': ['wizard_id', 'command', 'item_id'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'reward': {'type': 'object'},
+                'view_item_list': {'type': 'array'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
 summon_unit = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
     'id': 'http://swarfarm.com/schemas/summon_schema.json',

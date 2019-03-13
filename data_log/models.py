@@ -184,13 +184,24 @@ class RuneCraftDrop(RuneCraft):
     PARSE_KEYS = (
 
     )
+    PARSE_ITEM_TYPES = (
+        GameItem.CATEGORY_RUNE_CRAFT,
+    )
 
     class Meta:
         abstract = True
 
     @classmethod
-    def parse(cls, key, val):
-        raise NotImplementedError()
+    def parse(cls, **craft_data):
+        craft_type_id = str(craft_data['craft_type_id'])
+        craft_type = craft_data['craft_type']
+
+        return cls(
+            type=cls.COM2US_CRAFT_TYPE_MAP[craft_type],
+            rune=cls.COM2US_TYPE_MAP[int(craft_type_id[:-4])],
+            quality=cls.COM2US_QUALITY_MAP[int(craft_type_id[-1:])],
+            stat=cls.COM2US_STAT_MAP[int(craft_type_id[-4:-2])],
+        )
 
 
 # Data gathering model to store game API data for development and debugging purposes
@@ -369,8 +380,44 @@ class MagicBoxCraft(LogEntry):
 
     @classmethod
     def parse_buy_shop_item(cls, summoner, log_data):
-        pass
+        log_entry = cls(summoner=summoner)
+        log_entry.parse_common_log_data(log_data)
+        log_entry.box_type = cls.get_box_type(log_data['request']['item_id'])
+        log_entry.save()
+        log_entry.parse_items(log_data['response']['view_item_list'])
+        log_entry.parse_crate(log_data['response']['reward']['crate'])
 
+    def parse_items(self, item_list):
+        # Parse items and ignore runes or grindstones/gems
+        for item in item_list:
+            master_type = item['item_master_type']
+
+            if master_type in MagicBoxCraftItemDrop.PARSE_ITEM_TYPES:
+                log_entry = MagicBoxCraftItemDrop.parse(**item)
+            elif master_type in MagicBoxCraftRuneDrop.PARSE_ITEM_TYPES + MagicBoxCraftRuneCraftDrop.PARSE_ITEM_TYPES:
+                # This will be parsed by iterating through the reward crate, skip for now.
+                continue
+            else:
+                raise ValueError(f"Can't parse item type {master_type} with {self.__class__.__name__}")
+
+            if log_entry:
+                log_entry.log = self
+                log_entry.save()
+
+    def parse_crate(self, crate):
+        for key, items in crate.items():
+            if key == 'runes':
+                for rune_data in items:
+                    log_entry = MagicBoxCraftRuneDrop.parse(**rune_data)
+                    log_entry.log = self
+                    log_entry.save()
+            elif key == 'changestones':
+                for runecraft_data in items:
+                    log_entry = MagicBoxCraftRuneCraftDrop.parse(**runecraft_data)
+                    log_entry.log = self
+                    log_entry.save()
+            else:
+                raise ValueError(f"Don't know how to parse crate key `{key}` with {self.__class__.__name__}")
 
 class MagicBoxCraftDrop(models.Model):
     log = models.ForeignKey(MagicBoxCraft, on_delete=models.CASCADE)

@@ -1,0 +1,172 @@
+{
+  "data": {
+    "request": {
+      "command": "BuyShopItem",
+      "wizard_id": 123,
+      "session_key": "abc123",
+      "proto_ver": 10930,
+      "infocsv": "3.01.23",
+      "channel_uid": 157696134,
+      "ts_val": 1169124810,
+      "item_id": 1300009,
+      "island_id": 0,
+      "pos_x": 0,
+      "pos_y": 0
+    },
+    "response": {
+      "command": "BuyShopItem",
+      "ret_code": 0,
+      "wizard_info": {
+        "wizard_id": 123,
+        "wizard_name": "fakeuser",
+        "wizard_level": 50,
+        "experience": 3800000,
+        "wizard_mana": 35061232,
+        "wizard_crystal": 1101,
+        "wizard_energy": 76,
+        "arena_energy": 5,
+        "arena_energy_max": 10,
+        "arena_energy_next_gain": 1100,
+        "wizard_last_login": "2017-08-01 07:20:50",
+        "unit_slots": {
+          "number": 100
+        },
+        "energy_max": 90,
+        "energy_per_min": 0.26,
+        "social_point_current": 930,
+        "social_point_max": 3000,
+        "honor_point": 187,
+        "guild_point": 339,
+        "rep_unit_id": 5167780296,
+        "rep_assigned": 1,
+        "pvp_event": 0,
+        "mail_box_event": 1,
+        "next_energy_gain": 129,
+        "unit_depository_slots": {
+          "number": 520,
+          "upgrade": {
+            "number": 530,
+            "mana": 200000,
+            "crystal": 50
+          }
+        },
+        "darkportal_energy": 10,
+        "darkportal_energy_max": 10,
+        "costume_point": 531,
+        "costume_point_max": 9999,
+        "honor_medal": 337
+      },
+      "item_id": 1300009,
+      "source_list": [],
+      "item_list": [
+        {
+          "wizard_id": 123,
+          "item_master_type": 29,
+          "item_master_id": 5002,
+          "item_quantity": 111
+        },
+        {
+          "wizard_id": 123,
+          "item_master_type": 29,
+          "item_master_id": 5001,
+          "item_quantity": 124
+        },
+        {
+          "wizard_id": 123,
+          "item_master_type": 29,
+          "item_master_id": 5003,
+          "item_quantity": 24
+        },
+        {
+          "wizard_id": 123,
+          "item_master_type": 29,
+          "item_master_id": 6001,
+          "item_quantity": 2552
+        }
+      ],
+      "reward": {
+        "crate": {
+          "changestones": [
+            {
+              "wizard_id": 123,
+              "craft_item_id": 55801331,
+              "craft_type": 2,
+              "craft_type_id": 140602,
+              "sell_value": 11000
+            }
+          ]
+        }
+      },
+      "view_item_list": [
+        {
+          "item_master_type": 6,
+          "item_master_id": 102,
+          "item_quantity": 6000,
+          "unit_class": null,
+          "unit_level": null,
+          "rune_class": null,
+          "rune_set_id": null,
+          "rune_rank": null,
+          "runecraft_type": null,
+          "runecraft_item_id": null,
+          "runecraft_set_id": null,
+          "runecraft_effect_id": null,
+          "runecraft_rank": null,
+          "random_rune_type": null
+        },
+        {
+          "item_master_type": 27,
+          "item_master_id": null,
+          "item_quantity": 1,
+          "unit_class": null,
+          "unit_level": null,
+          "rune_class": null,
+          "rune_set_id": null,
+          "rune_rank": null,
+          "runecraft_type": 2,
+          "runecraft_item_id": 140602,
+          "runecraft_set_id": 14,
+          "runecraft_effect_id": 6,
+          "runecraft_rank": 2,
+          "random_rune_type": null
+        },
+        {
+          "item_master_type": 6,
+          "item_master_id": 102,
+          "item_quantity": 6000,
+          "unit_class": null,
+          "unit_level": null,
+          "rune_class": null,
+          "rune_set_id": null,
+          "rune_rank": null,
+          "runecraft_type": null,
+          "runecraft_item_id": null,
+          "runecraft_set_id": null,
+          "runecraft_effect_id": null,
+          "runecraft_rank": null,
+          "random_rune_type": null
+        },
+        {
+          "item_master_type": 6,
+          "item_master_id": 102,
+          "item_quantity": 6000,
+          "unit_class": null,
+          "unit_level": null,
+          "rune_class": null,
+          "rune_set_id": null,
+          "rune_rank": null,
+          "runecraft_type": null,
+          "runecraft_item_id": null,
+          "runecraft_set_id": null,
+          "runecraft_effect_id": null,
+          "runecraft_rank": null,
+          "random_rune_type": null
+        }
+      ],
+      "ts_val": 1169124810,
+      "tvalue": 1501588290,
+      "tvaluelocal": 1501530690,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

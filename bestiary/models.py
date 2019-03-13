@@ -1867,6 +1867,14 @@ class RuneCraft(models.Model, RuneObjectBase):
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GEM] = CRAFT_VALUE_RANGES[CRAFT_ENCHANT_GEM]
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[CRAFT_GRINDSTONE]
 
+    # Mappings from com2us' API data to model defined values
+    COM2US_CRAFT_TYPE_MAP = {
+        1: CRAFT_ENCHANT_GEM,
+        2: CRAFT_GRINDSTONE,
+        3: CRAFT_IMMEMORIAL_GEM,
+        4: CRAFT_IMMEMORIAL_GRINDSTONE,
+    }
+
     type = models.IntegerField(choices=CRAFT_CHOICES)
     rune = models.IntegerField(choices=RuneObjectBase.TYPE_CHOICES, blank=True, null=True)
     stat = models.IntegerField(choices=RuneObjectBase.STAT_CHOICES)

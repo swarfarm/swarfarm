@@ -419,6 +419,7 @@ class MagicBoxCraft(LogEntry):
             else:
                 raise ValueError(f"Don't know how to parse crate key `{key}` with {self.__class__.__name__}")
 
+
 class MagicBoxCraftDrop(models.Model):
     log = models.ForeignKey(MagicBoxCraft, on_delete=models.CASCADE)
 
@@ -508,16 +509,20 @@ class DungeonLog(LogEntry):
 
     @classmethod
     def parse_scenario_result(cls, summoner, log_data):
-        log_entry = cls.objects.get(
-            wizard_id=log_data['request']['wizard_id'],
-            battle_key=log_data['request']['battle_key']
-        )
-        if log_entry:
-            log_entry.parse_common_log_data(log_data)
-            log_entry.success = log_data['request']['win_lose'] == 1
-            log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
-            log_entry.save()
-            log_entry.parse_rewards(log_data['response']['reward'])
+        try:
+            log_entry = cls.objects.get(
+                wizard_id=log_data['request']['wizard_id'],
+                battle_key=log_data['request']['battle_key']
+            )
+        except cls.DoesNotExist:
+            # Do not parse scenario results that didn't get created with parse_scenario_start()
+            return
+
+        log_entry.parse_common_log_data(log_data)
+        log_entry.success = log_data['request']['win_lose'] == 1
+        log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
+        log_entry.save()
+        log_entry.parse_rewards(log_data['response']['reward'])
 
     @classmethod
     def parse_dungeon_result(cls, summoner, log_data):

@@ -60,6 +60,13 @@ class CairosLogTests(BaseLogTest):
         log = models.DungeonLog.objects.first()
         self.assertIsNone(log)
 
+    def test_parse_rune_with_grind_data(self):
+        # Occasionally see runes with grind values specified as 0s for some reason.
+        self._do_log('BattleDungeonResult/giants_b10_rune_drop2.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.dungeonrunedrop_set.count(), 1)
+
+
     # TODO:
     # monster drop
     # secret dungeon drop

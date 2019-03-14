@@ -3,23 +3,37 @@ from django.contrib import admin
 from . import models
 
 
-# Shop Refresh
-class ShopRefreshItemDropInline(admin.TabularInline):
-    model = models.ShopRefreshItemDrop
+class ItemDropInline(admin.TabularInline):
     readonly_fields = ('item', )
     extra = 0
 
 
-class ShopRefreshMonsterDropInline(admin.TabularInline):
+class MonsterDropInline(admin.TabularInline):
+    readonly_fields = ('monster',)
+    extra = 0
+
+
+class RuneDropInline(admin.TabularInline):
+    fields = ('type', 'stars', 'level', 'slot', 'quality', 'value', 'main_stat', 'main_stat_value')
+    extra = 0
+
+
+class RuneCraftDropinline(admin.TabularInline):
+    fields = ('type', 'rune', 'stat', 'quality', 'value')
+    extra = 0
+
+
+# Shop Refresh
+class ShopRefreshItemDropDropInline(ItemDropInline):
+    model = models.ShopRefreshItemDrop
+
+
+class ShopRefreshMonsterDropInline(MonsterDropInline):
     model = models.ShopRefreshMonsterDrop
-    readonly_fields = ('monster', )
-    extra = 0
 
 
-class ShopRefreshRuneDropInline(admin.TabularInline):
+class ShopRefreshRuneDropInline(RuneDropInline):
     model = models.ShopRefreshRuneDrop
-    fields = ('type', 'stars', 'cost', 'slot', 'quality', 'value', 'main_stat', 'main_stat_value')
-    extra = 0
 
 
 @admin.register(models.ShopRefreshLog)
@@ -27,29 +41,23 @@ class ShopRefreshLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner')
     readonly_fields = ('summoner', )
     inlines = (
-        ShopRefreshItemDropInline,
+        ShopRefreshItemDropDropInline,
         ShopRefreshMonsterDropInline,
         ShopRefreshRuneDropInline,
     )
 
 
 # Wishes
-class WishLogItemDropInline(admin.TabularInline):
+class WishLogItemDropDropInline(ItemDropInline):
     model = models.WishLogItemDrop
-    readonly_fields = ('item', )
-    extra = 0
 
 
-class WishLogMonsterDropInline(admin.TabularInline):
+class WishLogMonsterDropInline(MonsterDropInline):
     model = models.WishLogMonsterDrop
-    readonly_fields = ('monster', )
-    extra = 0
 
 
-class WishLogRuneDropInline(admin.TabularInline):
+class WishLogRuneDropInline(RuneDropInline):
     model = models.WishLogRuneDrop
-    fields = ('type', 'stars', 'slot', 'quality', 'value', 'main_stat', 'main_stat_value')
-    extra = 0
 
 
 @admin.register(models.WishLog)
@@ -57,7 +65,7 @@ class WishLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner')
     readonly_fields = ('summoner', )
     inlines = (
-        WishLogItemDropInline,
+        WishLogItemDropDropInline,
         WishLogMonsterDropInline,
         WishLogRuneDropInline,
     )
@@ -70,6 +78,30 @@ class CraftRuneLogAdmin(admin.ModelAdmin):
     readonly_fields = ('summoner', )
 
 
+# Magic Box Crafting
+class MagicBoxCraftItemDropInline(ItemDropInline):
+    model = models.MagicBoxCraftItemDrop
+
+
+class MagicBoxCraftRuneDropInline(RuneDropInline):
+    model = models.MagicBoxCraftRuneDrop
+
+
+class MagicBoxCraftRuneCraftDropInline(RuneCraftDropinline):
+    model = models.MagicBoxCraftRuneCraftDrop
+
+
+@admin.register(models.MagicBoxCraft)
+class MagicBoxCraftlogAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'wizard_id', 'summoner', 'box_type')
+    readonly_fields = ('summoner', )
+    inlines = (
+        MagicBoxCraftItemDropInline,
+        MagicBoxCraftRuneDropInline,
+        MagicBoxCraftRuneCraftDropInline,
+    )
+
+
 # Summons
 @admin.register(models.SummonLog)
 class SummonLogAdmin(admin.ModelAdmin):
@@ -78,28 +110,20 @@ class SummonLogAdmin(admin.ModelAdmin):
 
 
 # Dungeons
-class DungeonItemDropInline(admin.TabularInline):
+class DungeonItemDropDropInline(ItemDropInline):
     model = models.DungeonItemDrop
-    readonly_fields = ('item', )
-    extra = 0
 
 
-class DungeonMonsterDropInline(admin.TabularInline):
+class DungeonMonsterDropInline(MonsterDropInline):
     model = models.DungeonMonsterDrop
-    readonly_fields = ('monster', )
-    extra = 0
 
 
-class DungeonMonsterPieceDropInline(admin.TabularInline):
+class DungeonMonsterPieceDropInline(MonsterDropInline):
     model = models.DungeonMonsterPieceDrop
-    readonly_fields = ('monster', )
-    extra = 0
 
 
-class DungeonRuneDropInline(admin.TabularInline):
+class DungeonRuneDropInline(RuneDropInline):
     model = models.DungeonRuneDrop
-    fields = ('type', 'stars', 'level', 'slot', 'quality', 'original_quality', 'value', 'main_stat', 'main_stat_value')
-    extra = 0
 
 
 class DungeonSecretDungeonDropInline(admin.TabularInline):
@@ -113,7 +137,7 @@ class DungeonLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner', 'level', 'success', 'clear_time')
     readonly_fields = ('summoner', 'level')
     inlines = (
-        DungeonItemDropInline,
+        DungeonItemDropDropInline,
         DungeonMonsterDropInline,
         DungeonMonsterPieceDropInline,
         DungeonRuneDropInline,

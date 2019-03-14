@@ -160,7 +160,7 @@ class RuneDrop(Rune):
         substats = []
         substat_values = []
 
-        for sub, sub_val in rune_data['sec_eff']:
+        for sub, sub_val, *rest in rune_data['sec_eff']:
             substats.append(cls.COM2US_STAT_MAP[sub])
             substat_values.append(sub_val)
 

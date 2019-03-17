@@ -238,7 +238,7 @@ class MonsterGuideAdmin(admin.ModelAdmin):
 # Dungeons and levels
 @admin.register(Dungeon)
 class DungeonAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'category')
+    list_display = ('name', 'category', 'com2us_id')
     readonly_fields = ('slug',)
 
 

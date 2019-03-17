@@ -838,7 +838,7 @@ def parse_cairos_dungeons():
             name = dungeon_names[group_id]
 
             dungeon, created = Dungeon.objects.update_or_create(
-                id=dungeon_id,
+                com2us_id=dungeon_id,
                 name=name,
                 category=Dungeon.CATEGORY_CAIROS,
             )

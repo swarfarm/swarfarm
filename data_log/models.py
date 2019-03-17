@@ -499,7 +499,7 @@ class DungeonLog(LogEntry):
 
         log_entry.level = Level.objects.get(
             dungeon__category=Dungeon.CATEGORY_SCENARIO,
-            dungeon__pk=log_data['request']['region_id'],
+            dungeon__com2us_id=log_data['request']['region_id'],
             difficulty=log_data['request']['difficulty'],
             floor=log_data['request']['stage_no'],
         )
@@ -536,7 +536,7 @@ class DungeonLog(LogEntry):
         log_entry.parse_common_log_data(log_data)
         log_entry.level = Level.objects.get(
             dungeon__category=Dungeon.CATEGORY_CAIROS,
-            dungeon__pk=dungeon_id,
+            dungeon__com2us_id=dungeon_id,
             floor=log_data['request']['stage_id'],
         )
         log_entry.success = log_data['request']['win_lose'] == 1

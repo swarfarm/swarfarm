@@ -1945,13 +1945,14 @@ class Dungeon(models.Model):
         (CATEGORY_OTHER, 'Other'),
     )
 
-    id = models.IntegerField(primary_key=True, help_text='ID matches com2us data')
+    com2us_id = models.IntegerField()
     name = models.CharField(max_length=100)
     slug = models.SlugField(blank=True, null=True)
     category = models.IntegerField(choices=CATEGORY_CHOICES, blank=True, null=True)
 
     class Meta:
-        ordering = ['id', ]
+        ordering = ['category', 'com2us_id']
+        unique_together = ('com2us_id', 'category')
 
     def __str__(self):
         return self.name

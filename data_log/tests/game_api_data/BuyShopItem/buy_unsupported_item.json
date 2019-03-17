@@ -1,0 +1,78 @@
+{
+  "data": {
+    "request": {
+      "command": "BuyShopItem",
+      "wizard_id": 123,
+      "session_key": "abc123",
+      "proto_ver": 11390,
+      "infocsv": "4.00.82",
+      "channel_uid": 144237507,
+      "ts_val": 1084501288,
+      "item_id": 1200030,
+      "island_id": 1,
+      "pos_x": 25,
+      "pos_y": 15
+    },
+    "response": {
+      "command": "BuyShopItem",
+      "ret_code": 0,
+      "item_id": 1200030,
+      "wizard_info": {
+        "wizard_id": 123,
+        "wizard_name": "fakeuser",
+        "wizard_mana": 8242716,
+        "wizard_crystal": 3963,
+        "wizard_crystal_paid": 0,
+        "wizard_last_login": "2019-03-15 13:17:01",
+        "wizard_last_country": "US",
+        "wizard_last_lang": "en",
+        "wizard_level": 50,
+        "experience": 3800000,
+        "wizard_energy": 2108,
+        "energy_max": 90,
+        "energy_per_min": 0.26,
+        "next_energy_gain": 0,
+        "arena_energy": 20,
+        "arena_energy_max": 10,
+        "arena_energy_next_gain": 0,
+        "unit_slots": {
+          "number": 120
+        },
+        "rep_unit_id": 3788196826,
+        "rep_assigned": 1,
+        "pvp_event": 0,
+        "mail_box_event": 1,
+        "social_point_current": 1120,
+        "social_point_max": 3000,
+        "honor_point": 155,
+        "guild_point": 2564,
+        "darkportal_energy": 10,
+        "darkportal_energy_max": 10,
+        "costume_point": 57,
+        "costume_point_max": 9999,
+        "honor_medal": 0,
+        "honor_mark": 0,
+        "event_coin": 0,
+        "lobby_master_id": 1001,
+        "emblem_master_id": 0
+      },
+      "building_list": [
+        {
+          "building_id": 313222561,
+          "wizard_id": 12234369,
+          "island_id": 1,
+          "building_master_id": 59,
+          "pos_x": 25,
+          "pos_y": 15,
+          "gain_per_hour": 0,
+          "harvest_max": 0
+        }
+      ],
+      "mail_list": [],
+      "ts_val": 1084501303,
+      "tvalue": 1552624575,
+      "tvaluelocal": 1552566975,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

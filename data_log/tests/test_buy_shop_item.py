@@ -46,3 +46,10 @@ class CraftMagicBoxTests(BaseLogTest):
         self._do_log('BuyShopItem/craft_magic_box_mystical.json')
         log = models.MagicBoxCraft.objects.first()
         self.assertEqual(log.magicboxcraftrunecraftdrop_set.count(), 1)
+
+
+class BuyShopItemTests(BaseLogTest):
+    def test_discarding_items_not_logged(self):
+        self._do_log('BuyShopItem/buy_unsupported_item.json')  # expect no errors
+        self.assertEqual(models.MagicBoxCraft.objects.count(), 0)
+        self.assertEqual(models.CraftRuneLog.objects.count(), 0)

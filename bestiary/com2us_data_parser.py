@@ -885,12 +885,71 @@ def parse_secret_dungeons():
 
         # Create a single level referencing this dungeon
         level, created = Level.objects.update_or_create(
-            dungeon=dungeon.dungeon_ptr,
+            dungeon=dungeon,
             floor=1,
             energy_cost=3,
             frontline_slots=5,
             backline_slots=None,
             total_slots=5,
+        )
+
+        if created:
+            print(f'Added new level for {dungeon.name} - {level.get_difficulty_display() if level.difficulty is not None else ""} B{1}')
+
+
+def parse_elemental_rift_dungeons():
+    dungeon_table = _get_localvalue_tables(LocalvalueTables.ELEMENTAL_RIFT_DUNGEONS)
+    monster_names = _get_translation_tables()[TranslationTables.MONSTER_NAMES]
+
+    for row in dungeon_table['rows']:
+        if int(row['enable']):
+            dungeon_id = int(row['master id'])
+            name = monster_names[int(row['unit id'])].strip()
+
+            dungeon, created = Dungeon.objects.update_or_create(
+                com2us_id=dungeon_id,
+                name=name,
+                category=Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS,
+            )
+
+            if created:
+                print(f'Added new dungeon {dungeon.name} - {dungeon.slug}')
+
+            # Create a single level referencing this dungeon
+            level, created = Level.objects.update_or_create(
+                dungeon=dungeon,
+                floor=1,
+                energy_cost=int(row['cost energy']),
+                frontline_slots=4,
+                backline_slots=4,
+                total_slots=6,
+            )
+
+            if created:
+                print(f'Added new level for {dungeon.name} - {level.get_difficulty_display() if level.difficulty is not None else ""} B{1}')
+
+
+def parse_rift_raid():
+    raid_table = _get_localvalue_tables(LocalvalueTables.RIFT_RAIDS)
+
+    for row in raid_table['rows']:
+        raid_id = int(row['raid id'])
+        dungeon, created = Dungeon.objects.update_or_create(
+            com2us_id=raid_id,
+            name='Rift Raid',
+            category=Dungeon.CATEGORY_RIFT_OF_WORLDS_RAID,
+        )
+
+        if created:
+            print(f'Added new dungeon {dungeon.name} - {dungeon.slug}')
+
+        level, created = Level.objects.update_or_create(
+            dungeon=dungeon,
+            floor=int(row['stage id']),
+            energy_cost=int(row['cost energy']),
+            frontline_slots=4,
+            backline_slots=4,
+            total_slots=6,
         )
 
         if created:

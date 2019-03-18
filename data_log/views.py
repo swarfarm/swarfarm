@@ -5,21 +5,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from herders.models import Summoner
-from . import game_commands
-
-active_log_commands = {
-    'GetBlackMarketList': game_commands.GetBlackMarketList,
-    'DoRandomWishItem': game_commands.DoRandomWishItem,
-    'BuyShopItem': game_commands.BuyShopItem,
-    'SummonUnit': game_commands.SummonUnit,
-    'BattleScenarioStart': game_commands.BattleScenarioStart,
-    'BattleScenarioResult': game_commands.BattleScenarioResult,
-    'BattleDungeonResult': game_commands.BattleDungeonResult,
-}
-
-accepted_api_params = {
-    cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
-}
+from .game_commands import active_log_commands, accepted_api_params
 
 
 class InvalidLogException(exceptions.APIException):

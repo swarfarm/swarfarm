@@ -253,40 +253,53 @@ battle_dungeon_result = {
     'required': ['request', 'response'],
 }
 
+battle_rift_dungeon_result = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/battle_rift_dungeon_result.json',
+    'title': 'battle_rift_dungeon_result',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'dungeon_id': {'type': 'number'},
+                'battle_result': {'type': 'number'},
+                'clear_time': {'type': 'number'},
+            },
+            'required': [
+                'wizard_id',
+                'command',
+                'dungeon_id',
+                'battle_result',
+                'clear_time',
+            ],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'total_damage': {'type': 'number'},
+                'rift_dungeon_box_id': {'type': 'number'},
+                'item_list': {'type': ['null', 'array']},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'rift_dungeon_box_id',
+                'total_damage',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
 
 
 # Old static list of accepted API params here for posterity
 # accepted_api_params = {
-#     'DoRandomWishItem': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#         ],
-#         'response': [
-#             'tzone',
-#             'tvalue',
-#             'wish_info',
-#             'unit_info',
-#             'rune',
-#         ]
-#     },
-#     'BattleDungeonResult': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#             'dungeon_id',
-#             'stage_id',
-#             'clear_time',
-#             'win_lose',
-#         ],
-#         'response': [
-#             'tzone',
-#             'tvalue',
-#             'unit_list',
-#             'reward',
-#             'instance_info',
-#         ]
-#     },
 #     'BattleWorldBossStart': {
 #         'request': [
 #             'wizard_id',

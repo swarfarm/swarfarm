@@ -24,7 +24,7 @@ class BaseLogTest(TestCase):
                 format='json',
                 **kwargs,
             )
-            view(request)
+            return view(request)
 
 
 def get_requested_keys(log_data):

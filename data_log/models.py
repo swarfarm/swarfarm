@@ -62,8 +62,8 @@ class ItemDrop(models.Model):
     def parse(cls, **kwargs):
         key = kwargs.get('key')
         val = kwargs.get('val')
-        master_type = kwargs.get('item_master_type')
-        master_id = kwargs.get('item_master_id')
+        master_type = kwargs.get('item_master_type') or kwargs.get('type')
+        master_id = kwargs.get('item_master_id') or kwargs.get('id')
 
         if key and val is not None:
             # Dungeon drop parsing
@@ -80,7 +80,7 @@ class ItemDrop(models.Model):
                 raise ValueError(f"Can't parse item type {key} with {cls.__name__}")
         elif master_type and master_id:
             # type and ID parsing
-            quantity = kwargs.get('amount') or kwargs.get('item_quantity')
+            quantity = kwargs.get('amount') or kwargs.get('item_quantity') or kwargs.get('quantity')
 
             if quantity is None:
                 raise ValueError('Quantity not found')
@@ -239,7 +239,7 @@ class ShopRefreshLog(LogEntry):
             elif master_type in ShopRefreshMonsterDrop.PARSE_ITEM_TYPES:
                 item_log = ShopRefreshMonsterDrop.parse(**item)
             else:
-                raise ValueError(f"don't know how to parse {master_type} in shop refresh log")
+                raise ValueError(f"Don't know how to parse {master_type} in {self.__class__.__name__}")
 
             if item_log:
                 item_log.log = self
@@ -629,10 +629,46 @@ class RiftDungeonLog(LogEntry):
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
     grade = models.IntegerField(choices=GRADE_CHOICES)
     total_damage = models.IntegerField()
+    clear_time = models.DurationField()
     success = models.BooleanField()
 
     def __str__(self):
         return f'RiftDungeonLog {self.level} {self.grade}'
+
+    @classmethod
+    def parse_rift_dungeon_result(cls, summoner, log_data):
+        log_entry = cls(summoner=summoner)
+        log_entry.parse_common_log_data(log_data)
+
+        log_entry.level = Level.objects.get(
+            dungeon__category=Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS,
+            dungeon__com2us_id=log_data['request']['dungeon_id'],
+            floor=1,
+        )
+        log_entry.grade = log_data['response']['rift_dungeon_box_id']
+        log_entry.total_damage = log_data['response']['total_damage']
+        log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
+        log_entry.success = log_data['request']['battle_result'] == 1
+        log_entry.save()
+        log_entry.parse_rewards(log_data['response'].get('item_list', []))
+
+    def parse_rewards(self, items):
+        for item in items:
+            master_type = item['type']
+            if master_type in RiftDungeonItemDrop.PARSE_ITEM_TYPES:
+                log_entry = RiftDungeonItemDrop.parse(**item)
+            elif master_type in RiftDungeonMonsterDrop.PARSE_ITEM_TYPES:
+                log_entry = RiftDungeonMonsterDrop.parse(**item['info'])
+            elif master_type in RiftDungeonRuneDrop.PARSE_ITEM_TYPES:
+                log_entry = RiftDungeonRuneDrop.parse(**item['info'])
+            elif master_type in RiftDungeonRuneCraftDrop.PARSE_ITEM_TYPES:
+                log_entry = RiftDungeonRuneCraftDrop.parse(**item['info'])
+            else:
+                raise ValueError(f"don't know how to parse {master_type} in {self.__class__.__name__}")
+
+            if log_entry:
+                log_entry.log = self
+                log_entry.save()
 
 
 class RiftDungeonLogDrop(models.Model):

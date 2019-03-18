@@ -246,6 +246,10 @@ class DungeonAdmin(admin.ModelAdmin):
 class LevelAdmin(admin.ModelAdmin):
     list_display = ('dungeon', 'floor', 'difficulty', 'energy_cost')
     save_as = True
+    readonly_fields = ('levels', )
+
+    def levels(self, obj):
+        return ', '.join([str(l) for l in obj.level_set.all()])
 
 
 # Items and currency

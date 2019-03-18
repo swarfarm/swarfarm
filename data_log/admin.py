@@ -143,3 +143,31 @@ class DungeonLogAdmin(admin.ModelAdmin):
         DungeonRuneDropInline,
         DungeonSecretDungeonDropInline,
     )
+
+
+class RiftDungeonItemDropInline(ItemDropInline):
+    model = models.RiftDungeonItemDrop
+
+
+class RiftDungeonMonsterDropInlne(MonsterDropInline):
+    model = models.RiftDungeonMonsterDrop
+
+
+class RiftDungeonRuneDropInline(RuneDropInline):
+    model = models.RiftDungeonRuneDrop
+
+
+class RiftDungeonRuneCraftDropInline(RuneCraftDropinline):
+    model = models.RiftDungeonRuneCraftDrop
+
+
+@admin.register(models.RiftDungeonLog)
+class RiftDungeonLogAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'wizard_id', 'summoner', 'level', 'grade', 'clear_time')
+    readonly_fields = ('summoner', 'level')
+    inlines = (
+        RiftDungeonItemDropInline,
+        RiftDungeonMonsterDropInlne,
+        RiftDungeonRuneDropInline,
+        RiftDungeonRuneCraftDropInline,
+    )

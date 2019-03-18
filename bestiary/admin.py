@@ -236,20 +236,18 @@ class MonsterGuideAdmin(admin.ModelAdmin):
 
 
 # Dungeons and levels
+class LevelInline(admin.TabularInline):
+    model = Level
+    extra = 1
+
+
 @admin.register(Dungeon)
 class DungeonAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'com2us_id')
-    readonly_fields = ('slug',)
-
-
-@admin.register(Level)
-class LevelAdmin(admin.ModelAdmin):
-    list_display = ('dungeon', 'floor', 'difficulty', 'energy_cost')
-    save_as = True
-    readonly_fields = ('levels', )
-
-    def levels(self, obj):
-        return ', '.join([str(l) for l in obj.level_set.all()])
+    readonly_fields = ('slug', )
+    inlines = (
+        LevelInline,
+    )
 
 
 # Items and currency

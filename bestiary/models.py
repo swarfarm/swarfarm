@@ -1930,6 +1930,7 @@ class Dungeon(models.Model):
     CATEGORY_ARENA = 6
     CATEGORY_GUILD = 7
     CATEGORY_SECRET = 8
+    CATEGORY_WORLD_BOSS = 9
     CATEGORY_OTHER = 99
 
     CATEGORY_CHOICES = (
@@ -1942,6 +1943,7 @@ class Dungeon(models.Model):
         (CATEGORY_ARENA, 'Arena'),
         (CATEGORY_GUILD, 'Guild Content'),
         (CATEGORY_SECRET, 'Secret Dungeon'),
+        (CATEGORY_WORLD_BOSS, 'World Boss'),
         (CATEGORY_OTHER, 'Other'),
     )
 

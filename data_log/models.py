@@ -357,7 +357,13 @@ class CraftRuneLog(LogEntry, RuneDrop):
 
     @classmethod
     def parse_buy_shop_item(cls, summoner, log_data):
-        for rune_data in log_data['response']['reward']['crate']['runes']:
+        try:
+            runes_data = log_data['response']['reward']['crate']['runes']
+        except KeyError:
+            # Missing rune data - discard the log
+            return
+
+        for rune_data in runes_data:
             log_entry = cls.parse(**rune_data)
             log_entry.summoner = summoner
             log_entry.parse_common_log_data(log_data)
@@ -391,8 +397,15 @@ class MagicBoxCraft(LogEntry):
         log_entry.parse_common_log_data(log_data)
         log_entry.box_type = cls.get_box_type(log_data['request']['item_id'])
         log_entry.save()
-        log_entry.parse_items(log_data['response']['view_item_list'])
-        log_entry.parse_crate(log_data['response']['reward']['crate'])
+        log_entry.parse_items(log_data['response'].get('view_item_list', []))
+
+        try:
+            crate = log_data['response']['reward']['crate']
+        except KeyError:
+            # Crate not in data, or reward key missing. Don't try to parse anything in it.
+            pass
+        else:
+            log_entry.parse_crate(crate)
 
     def parse_items(self, item_list):
         # Parse items and ignore runes or grindstones/gems

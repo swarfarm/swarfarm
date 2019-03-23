@@ -91,8 +91,8 @@ buy_shop_item = {
             'properties': {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
-                'reward': {'type': 'object'},
-                'view_item_list': {'type': 'array'},
+                'reward': {'type': ['null', 'object']},
+                'view_item_list': {'type': ['null', 'array']},
             },
             'required': [
                 'tzone',
@@ -298,7 +298,6 @@ battle_rift_dungeon_result = {
     },
     'required': ['request', 'response'],
 }
-
 
 battle_world_boss_start = {
     '$schema': 'http://json-schema.org/draft-04/schema#',

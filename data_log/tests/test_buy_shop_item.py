@@ -35,17 +35,17 @@ class CraftMagicBoxTests(BaseLogTest):
     def test_box_craft_item_rewards(self):
         self._do_log('BuyShopItem/craft_magic_box_unknown.json')
         log = models.MagicBoxCraft.objects.first()
-        self.assertEqual(log.magicboxcraftitemdrop_set.count(), 3)
+        self.assertEqual(log.items.count(), 3)
 
     def test_box_craft_rune_reward(self):
         self._do_log('BuyShopItem/craft_magic_box_unknown.json')
         log = models.MagicBoxCraft.objects.first()
-        self.assertEqual(log.magicboxcraftrunedrop_set.count(), 1)
+        self.assertEqual(log.runes.count(), 1)
 
     def test_box_craft_runecraft_reward(self):
         self._do_log('BuyShopItem/craft_magic_box_mystical.json')
         log = models.MagicBoxCraft.objects.first()
-        self.assertEqual(log.magicboxcraftrunecraftdrop_set.count(), 1)
+        self.assertEqual(log.rune_crafts.count(), 1)
 
 
 class BuyShopItemTests(BaseLogTest):

@@ -1,0 +1,175 @@
+{
+  "data": {
+    "request": {
+      "command": "BattleWorldBossResult",
+      "wizard_id": 123,
+      "session_key": "abc123",
+      "proto_ver": 11390,
+      "infocsv": "4.00.82",
+      "channel_uid": 144237507,
+      "ts_val": 1084243543,
+      "worldboss_id": 10201,
+      "region_id": 9,
+      "battle_key": 1,
+      "retry": 0
+    },
+    "response": {
+      "command": "BattleWorldBossResult",
+      "ret_code": 0,
+      "wizard_info": {
+        "wizard_id": 123,
+        "wizard_name": "fakeuser",
+        "wizard_mana": 8313836,
+        "wizard_crystal": 3981,
+        "wizard_crystal_paid": 0,
+        "wizard_last_login": "2019-03-18 15:08:54",
+        "wizard_last_country": "US",
+        "wizard_last_lang": "en",
+        "wizard_level": 50,
+        "experience": 3800000,
+        "wizard_energy": 2080,
+        "energy_max": 90,
+        "energy_per_min": 0.26,
+        "next_energy_gain": 0,
+        "arena_energy": 20,
+        "arena_energy_max": 10,
+        "arena_energy_next_gain": 0,
+        "unit_slots": {
+          "number": 120
+        },
+        "rep_unit_id": 3788196826,
+        "rep_assigned": 1,
+        "pvp_event": 0,
+        "mail_box_event": 0,
+        "social_point_current": 1120,
+        "social_point_max": 3000,
+        "honor_point": 155,
+        "guild_point": 2564,
+        "darkportal_energy": 10,
+        "darkportal_energy_max": 10,
+        "costume_point": 57,
+        "costume_point_max": 9999,
+        "honor_medal": 0,
+        "honor_mark": 0,
+        "event_coin": 0,
+        "lobby_master_id": 1001,
+        "emblem_master_id": 0
+      },
+      "worldboss_status": {
+        "worldboss_id": 10201,
+        "region_id": 9,
+        "status": 2,
+        "open_time": "2019-03-15 09:25:00",
+        "open_remained_time": 0,
+        "battle_start_time": "2019-03-15 14:25:00",
+        "battle_end_time": "2019-03-21 01:25:00",
+        "dead_remained_time": 209011,
+        "close_time": "2019-03-21 02:25:00",
+        "close_remained_time": 212611,
+        "base_hp": 0,
+        "hp_rate": 41.231807695843,
+        "daily_battle_init_remained_time": 2311,
+        "refresh_term": 300
+      },
+      "my_worldboss_ranking": {
+        "ranking": 140699,
+        "accumulate_damage": 2655148,
+        "rating_id": 1001,
+        "ranking_rate": 73.9,
+        "is_reward": 0
+      },
+      "my_worldboss_prev_ranking": {
+        "ranking": 0,
+        "accumulate_damage": 0,
+        "rating_id": 0,
+        "ranking_rate": 0
+      },
+      "my_worldboss_best_ranking": {
+        "ranking": 46132,
+        "accumulate_damage": 18099452,
+        "rating_id": 3001,
+        "ranking_rate": 18
+      },
+      "my_worldboss_daily_battle_count": 2,
+      "worldboss_used_unit": [
+        3590403834,
+        4740615627,
+        5526613153,
+        5935735484,
+        5091057153,
+        7455185974,
+        5595859255,
+        2969928836,
+        7534553594,
+        4885207503,
+        3308700842,
+        3068447167,
+        4196440674,
+        5193660579,
+        3430653540,
+        3082120892,
+        6918985286,
+        5231094885,
+        3557601263,
+        5113383656
+      ],
+      "reward": {
+        "crate": {
+          "material": {
+            "item_master_id": 13003,
+            "item_quantity": 1
+          },
+          "runes": [
+            {
+              "rune_id": 25370805995,
+              "wizard_id": 123,
+              "occupied_type": 2,
+              "occupied_id": 0,
+              "slot_no": 6,
+              "rank": 2,
+              "class": 3,
+              "set_id": 21,
+              "upgrade_limit": 15,
+              "upgrade_curr": 0,
+              "base_value": 42713,
+              "sell_value": 3530,
+              "pri_eff": [
+                11,
+                4
+              ],
+              "prefix_eff": [
+                4,
+                2
+              ],
+              "sec_eff": [
+                [
+                  2,
+                  2
+                ]
+              ],
+              "extra": 2
+            }
+          ]
+        }
+      },
+      "item_list": [
+        {
+          "wizard_id": 123,
+          "item_master_type": 11,
+          "item_master_id": 12001,
+          "item_quantity": 78
+        },
+        {
+          "wizard_id": 123,
+          "item_master_type": 11,
+          "item_master_id": 13003,
+          "item_quantity": 60
+        }
+      ],
+      "ts_val": 1084243553,
+      "tvalue": 1552890089,
+      "tvaluelocal": 1552832489,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

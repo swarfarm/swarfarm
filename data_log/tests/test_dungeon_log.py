@@ -18,17 +18,17 @@ class CairosLogTests(BaseLogTest):
     def test_level_parsed_correctly(self):
         self._do_log('BattleDungeonResult/giants_b10_rune_drop.json')
         log = models.DungeonLog.objects.last()
-        self.assertEqual(log.level.dungeon.pk, 8001)
+        self.assertEqual(log.level.dungeon.com2us_id, 8001)
         self.assertEqual(log.level.floor, 10)
 
         self._do_log('BattleDungeonResult/necro_b2_rune_drop.json')
         log = models.DungeonLog.objects.last()
-        self.assertEqual(log.level.dungeon.pk, 6001)
+        self.assertEqual(log.level.dungeon.com2us_id, 6001)
         self.assertEqual(log.level.floor, 2)
 
         self._do_log('BattleDungeonResult/dragon_b5_transcendance_x1_drop.json')
         log = models.DungeonLog.objects.last()
-        self.assertEqual(log.level.dungeon.pk, 9001)
+        self.assertEqual(log.level.dungeon.com2us_id, 9001)
         self.assertEqual(log.level.floor, 5)
 
     def test_dungeon_failed(self):
@@ -44,16 +44,16 @@ class CairosLogTests(BaseLogTest):
     def test_dungeon_rune_drop(self):
         self._do_log('BattleDungeonResult/giants_b10_rune_drop.json')
         log = models.DungeonLog.objects.first()
-        self.assertEqual(log.dungeonrunedrop_set.count(), 1)
+        self.assertEqual(log.runes.count(), 1)
 
     def test_dungeon_item_drop(self):
         self._do_log('BattleDungeonResult/dragon_b5_transcendance_x1_drop.json')
         log = models.DungeonLog.objects.first()
         # Expect Mana, Energy, and Craft Item
-        self.assertEqual(log.dungeonitemdrop_set.count(), 3)
-        self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=102).exists())
-        self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=103).exists())
-        self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CRAFT_STUFF, item__com2us_id=4002).exists())
+        self.assertEqual(log.items.count(), 3)
+        self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=102).exists())
+        self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=103).exists())
+        self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CRAFT_STUFF, item__com2us_id=4002).exists())
 
     def test_hoh_ignored(self):
         self._do_log('BattleDungeonResult/hoh_b1_monster_pieces_drop.json')
@@ -64,7 +64,7 @@ class CairosLogTests(BaseLogTest):
         # Occasionally see runes with grind values specified as 0s for some reason.
         self._do_log('BattleDungeonResult/giants_b10_rune_drop2.json')
         log = models.DungeonLog.objects.first()
-        self.assertEqual(log.dungeonrunedrop_set.count(), 1)
+        self.assertEqual(log.runes.count(), 1)
 
 
     # TODO:

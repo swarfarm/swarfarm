@@ -56,20 +56,20 @@ class ScenarioLogTests(BaseLogTest):
         self._do_log('BattleScenarioStart/garen_normal_b1.json')
         self._do_log('BattleScenarioResult/garen_normal_rune_drop.json')
         log = models.DungeonLog.objects.first()
-        self.assertEqual(log.dungeonrunedrop_set.count(), 1)
+        self.assertEqual(log.runes.count(), 1)
 
     def test_scenario_monster_drop(self):
         self._do_log('BattleScenarioStart/faimon_hell_b1.json')
         self._do_log('BattleScenarioResult/faimon_hell_monster_drop.json')
         log = models.DungeonLog.objects.first()
-        self.assertEqual(log.dungeonmonsterdrop_set.count(), 1)
+        self.assertEqual(log.monsters.count(), 1)
 
     def test_scenario_item_drop(self):
         self._do_log('BattleScenarioStart/faimon_hell_b1.json')
         self._do_log('BattleScenarioResult/faimon_hell_craft_drop.json')
         log = models.DungeonLog.objects.first()
         # Expect Mana, Energy, and Craft Item
-        self.assertEqual(log.dungeonitemdrop_set.count(), 3)
-        self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=102).exists())
-        self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=103).exists())
-        self.assertTrue(log.dungeonitemdrop_set.filter(item__category=GameItem.CATEGORY_CRAFT_STUFF, item__com2us_id=1003).exists())
+        self.assertEqual(log.items.count(), 3)
+        self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=102).exists())
+        self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=103).exists())
+        self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CRAFT_STUFF, item__com2us_id=1003).exists())

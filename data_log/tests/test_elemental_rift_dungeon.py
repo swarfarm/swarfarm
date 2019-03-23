@@ -43,9 +43,9 @@ class ElementalRiftBeastTests(BaseLogTest):
     def test_elemental_rift_rune_drop(self):
         self._do_log('BattleRiftDungeonResult/fire_beast_b.json')
         log = models.RiftDungeonLog.objects.first()
-        self.assertEqual(log.riftdungeonrunedrop_set.count(), 1)
+        self.assertEqual(log.runes.count(), 1)
 
     def test_elemental_rift_craft_item_drop(self):
         self._do_log('BattleRiftDungeonResult/water_beast_a.json')
         log = models.RiftDungeonLog.objects.first()
-        self.assertEqual(log.riftdungeonitemdrop_set.count(), 2)
+        self.assertEqual(log.items.count(), 2)

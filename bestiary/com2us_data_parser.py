@@ -785,7 +785,7 @@ def parse_scenarios():
 
         # Update (or create) the dungeon this scenario level will be assigned to
         dungeon, created = Dungeon.objects.update_or_create(
-            id=dungeon_id,
+            com2us_id=dungeon_id,
             name=name,
             category=Dungeon.CATEGORY_SCENARIO,
         )
@@ -874,7 +874,7 @@ def parse_secret_dungeons():
         monster = Monster.objects.get(com2us_id=monster_id)
 
         dungeon, created = SecretDungeon.objects.update_or_create(
-            id=dungeon_id,
+            com2us_id=dungeon_id,
             name=f'{monster.get_element_display()} {monster.name} Secret Dungeon',
             category=SecretDungeon.CATEGORY_SECRET,
             monster=monster,

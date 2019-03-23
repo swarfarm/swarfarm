@@ -39,7 +39,9 @@ active_log_commands = {
     'BattleScenarioStart': GameApiCommand(schemas.battle_scenario_start, models.DungeonLog.parse_scenario_start),
     'BattleScenarioResult': GameApiCommand(schemas.battle_scenario_result, models.DungeonLog.parse_scenario_result),
     'BattleDungeonResult': GameApiCommand(schemas.battle_dungeon_result, models.DungeonLog.parse_dungeon_result),
-    'BattleRiftDungeonResult': GameApiCommand(schemas.battle_rift_dungeon_result, models.RiftDungeonLog.parse_rift_dungeon_result)
+    'BattleRiftDungeonResult': GameApiCommand(schemas.battle_rift_dungeon_result, models.RiftDungeonLog.parse_rift_dungeon_result),
+    'BattleWorldBossStart': GameApiCommand(schemas.battle_world_boss_start, models.WorldBossLog.parse_world_boss_start),
+    'BattleWorldBossResult': GameApiCommand(schemas.battle_world_boss_result, models.WorldBossLog.parse_world_boss_result),
 }
 
 accepted_api_params = {

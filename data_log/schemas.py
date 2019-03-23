@@ -1,6 +1,9 @@
 # JSON Schemas for all logged game API commands, used to validate shape of data submitted by users and to generate a
 # list of required keys for each API command for logging clients.
 
+# TODO: expand depth of schema properties to cover for all of what is used in code, not just what is required
+# for accepted API params
+
 get_black_market_list = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
     'id': 'http://swarfarm.com/schemas/get_black_market_list.json',
@@ -297,6 +300,83 @@ battle_rift_dungeon_result = {
 }
 
 
+battle_world_boss_start = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/battle_world_boss_start.json',
+    'title': 'battle_world_boss_start',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'worldboss_id': {'type': 'number'},
+                'unit_id_list': {'type': 'array'},
+            },
+            'required': [
+                'wizard_id',
+                'command',
+                'worldboss_id',
+                'unit_id_list',
+            ],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'battle_key': {'type': 'number'},
+                'worldboss_battle_result': {'type': 'object'},
+                'reward_info': {'type': ['null', 'object']},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'battle_key',
+                'worldboss_battle_result',
+                'reward_info',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+battle_world_boss_result = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/battle_world_boss_start.json',
+    'title': 'battle_world_boss_start',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'battle_key': {'type': 'number'},
+            },
+            'required': [
+                'wizard_id',
+                'command',
+                'battle_key',
+            ],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'reward': {'type': ['null', 'object']},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'reward',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
 
 # Old static list of accepted API params here for posterity
 # accepted_api_params = {
@@ -321,21 +401,6 @@ battle_rift_dungeon_result = {
 #         ],
 #         'response': [
 #             'reward',
-#         ]
-#     },
-#     'BattleRiftDungeonResult': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#             'battle_result',
-#             'dungeon_id'
-#         ],
-#         'response': [
-#             'tvalue',
-#             'tzone',
-#             'item_list',
-#             'rift_dungeon_box_id',
-#             'total_damage',
 #         ]
 #     },
 #     'BattleRiftOfWorldsRaidStart': {
@@ -365,30 +430,5 @@ battle_rift_dungeon_result = {
 #             'battle_reward_list',
 #             'reward',
 #         ]
-#     },
-#     'BuyShopItem': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#             'item_id',
-#         ],
-#         'response': [
-#             'tzone',
-#             'tvalue',
-#             'reward',
-#             'view_item_list',
-#         ]
-#     },
-#     'GetBlackMarketList': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#         ],
-#         'response': [
-#             'tzone',
-#             'tvalue',
-#             'market_info',
-#             'market_list',
-#         ],
 #     },
 # }

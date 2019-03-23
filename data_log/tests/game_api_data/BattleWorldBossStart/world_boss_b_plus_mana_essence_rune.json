@@ -1,0 +1,155 @@
+{
+  "data": {
+    "request": {
+      "command": "BattleWorldBossStart",
+      "wizard_id": 123,
+      "session_key": "41b0d6c659e9af65b10710128f7299",
+      "proto_ver": 11390,
+      "infocsv": "4.00.82",
+      "channel_uid": 144237507,
+      "ts_val": 1084243525,
+      "worldboss_id": 10201,
+      "region_id": 9,
+      "unit_id_list": [
+        {
+          "unit_id": 3590403834
+        },
+        {
+          "unit_id": 4740615627
+        },
+        {
+          "unit_id": 5526613153
+        },
+        {
+          "unit_id": 5935735484
+        },
+        {
+          "unit_id": 5091057153
+        },
+        {
+          "unit_id": 7455185974
+        },
+        {
+          "unit_id": 5595859255
+        },
+        {
+          "unit_id": 2969928836
+        },
+        {
+          "unit_id": 7534553594
+        },
+        {
+          "unit_id": 4885207503
+        },
+        {
+          "unit_id": 3308700842
+        },
+        {
+          "unit_id": 3068447167
+        },
+        {
+          "unit_id": 4196440674
+        },
+        {
+          "unit_id": 5193660579
+        },
+        {
+          "unit_id": 3430653540
+        },
+        {
+          "unit_id": 3082120892
+        },
+        {
+          "unit_id": 6918985286
+        },
+        {
+          "unit_id": 5231094885
+        },
+        {
+          "unit_id": 3557601263
+        },
+        {
+          "unit_id": 5113383656
+        }
+      ],
+      "retry": 0
+    },
+    "response": {
+      "command": "BattleWorldBossStart",
+      "ret_code": 0,
+      "reward_info": {
+        "box_id": 6,
+        "name": "B+",
+        "count": 6,
+        "reward_list": [
+          {
+            "item_master_type": 11,
+            "item_master_id": 12001,
+            "unit_class": "",
+            "unit_level": "",
+            "rune_class": "",
+            "rune_set_id": "",
+            "amount": 1
+          },
+          {
+            "item_master_type": 6,
+            "item_master_id": 102,
+            "unit_class": "",
+            "unit_level": "",
+            "rune_class": "",
+            "rune_set_id": "",
+            "amount": 4000
+          },
+          {
+            "item_master_type": 6,
+            "item_master_id": 102,
+            "unit_class": "",
+            "unit_level": "",
+            "rune_class": "",
+            "rune_set_id": "",
+            "amount": 4000
+          },
+          {
+            "item_master_type": 6,
+            "item_master_id": 102,
+            "unit_class": "",
+            "unit_level": "",
+            "rune_class": "",
+            "rune_set_id": "",
+            "amount": 4000
+          },
+          {
+            "item_master_type": 8,
+            "item_master_id": "",
+            "unit_class": "",
+            "unit_level": "",
+            "rune_class": 3,
+            "rune_set_id": 21,
+            "amount": 1
+          },
+          {
+            "item_master_type": 11,
+            "item_master_id": 13003,
+            "unit_class": "",
+            "unit_level": "",
+            "rune_class": "",
+            "rune_set_id": "",
+            "amount": 1
+          }
+        ]
+      },
+      "worldboss_battle_result": {
+        "unit_count": 20,
+        "unit_avg_level": 38.5,
+        "total_battle_point": 118278,
+        "bonus_battle_point": -6447,
+        "total_damage": 1184948
+      },
+      "battle_key": 1,
+      "ts_val": 1084243551,
+      "tvalue": 1552890071,
+      "tvaluelocal": 1552832471,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

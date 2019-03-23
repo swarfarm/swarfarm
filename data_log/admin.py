@@ -3,6 +3,14 @@ from django.contrib import admin
 from . import models
 
 
+# Full Log
+@admin.register(models.FullLog)
+class FullLogAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'command', 'wizard_id', 'summoner')
+    readonly_fields = ('summoner', )
+
+
+# Common drop inlines
 class ItemDropInline(admin.TabularInline):
     readonly_fields = ('item', )
     extra = 0

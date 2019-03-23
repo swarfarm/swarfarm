@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from herders.models import Summoner
 from .game_commands import active_log_commands, accepted_api_params
+from .models import FullLog
 
 
 class InvalidLogException(exceptions.APIException):
@@ -45,6 +46,12 @@ class LogData(viewsets.ViewSet):
 
         # Validate log data format
         if not active_log_commands[api_command].validate(log_data):
+            FullLog.objects.create(
+                command=api_command,
+                request=log_data.get('request', {}),
+                response=log_data.get('response', {}),
+            )
+
             raise InvalidLogException(detail='Log data failed validation')
 
         # Determine the user account providing this log

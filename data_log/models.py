@@ -210,6 +210,15 @@ class FullLog(LogEntry):
     request = JSONField()
     response = JSONField()
 
+    @classmethod
+    def parse(cls, summoner, log_data):
+        log_entry = cls(summoner=summoner)
+        log_entry.parse_common_log_data(log_data)
+        log_entry.command = log_data['request']['command']
+        log_entry.request = log_data['request']
+        log_entry.response = log_data['response']
+        log_entry.save()
+
 
 # Magic Shop
 class ShopRefreshLog(LogEntry):

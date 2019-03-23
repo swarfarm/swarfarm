@@ -85,6 +85,7 @@ class LogDataViewTests(BaseLogTest):
         self.assertEqual(response.status_code, 400)
         self.assertIsNotNone(response.data.get('message'))
         self.assertTrue(response.data.get('reinit'))
+        self.assertEqual(models.FullLog.objects.count(), 1)
 
     def test_non_accepted_api_command(self):
         view = views.LogData.as_view({'post': 'create'})

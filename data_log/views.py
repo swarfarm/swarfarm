@@ -38,29 +38,24 @@ class LogData(viewsets.ViewSet):
 
         try:
             api_command = log_data['request']['command']
+            wizard_id = log_data['request']['wizard_id']
         except (KeyError, TypeError):
             raise InvalidLogException(detail='Invalid log data format')
 
         if api_command not in active_log_commands:
             raise InvalidLogException('Unsupported game command')
 
-        # Validate log data format
-        if not active_log_commands[api_command].validate(log_data):
-            FullLog.objects.create(
-                command=api_command,
-                request=log_data.get('request', {}),
-                response=log_data.get('response', {}),
-            )
-
-            raise InvalidLogException(detail='Log data failed validation')
-
         # Determine the user account providing this log
         if request.user.is_authenticated:
             summoner = request.user.summoner
         else:
             # Attempt to get summoner instance from wizard_id in log data
-            wizard_id = log_data['request']['wizard_id']
             summoner = Summoner.objects.filter(com2us_id=wizard_id).first()
+
+        # Validate log data format
+        if not active_log_commands[api_command].validate(log_data):
+            FullLog.parse(summoner, log_data)
+            raise InvalidLogException(detail='Log data failed validation')
 
         # Parse the log
         active_log_commands[api_command].parse(summoner, log_data)

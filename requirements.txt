@@ -40,3 +40,6 @@ django-rest-swagger
 drf_ujson
 graphene
 graphene-django
+https://github.com/claytondaley/drf-writable-nested/zipball/master/
+https://github.com/claytondaley/drf-mapped-choice/zipball/master/
+https://github.com/claytondaley/drf-keyed-list/zipball/master/

@@ -49,3 +49,8 @@ class ElementalRiftBeastTests(BaseLogTest):
         self._do_log('BattleRiftDungeonResult/water_beast_a.json')
         log = models.RiftDungeonLog.objects.first()
         self.assertEqual(log.items.count(), 2)
+
+    def test_elemental_rift_shapeshifting_stone_drop(self):
+        self._do_log('BattleRiftDungeonResult/fire_beast_sss_transmog_stone.json')
+        log = models.RiftDungeonLog.objects.first()
+        self.assertEqual(log.items.filter(item__category=models.GameItem.CATEGORY_CURRENCY, item__com2us_id=6).count(), 1)

@@ -54,3 +54,9 @@ class ElementalRiftBeastTests(BaseLogTest):
         self._do_log('BattleRiftDungeonResult/fire_beast_sss_transmog_stone.json')
         log = models.RiftDungeonLog.objects.first()
         self.assertEqual(log.items.filter(item__category=models.GameItem.CATEGORY_CURRENCY, item__com2us_id=6).count(), 1)
+
+    def test_quit_before_any_damage(self):
+        self._do_log('BattleRiftDungeonResult/fire_beast_quit_no_damage.json')
+        log = models.RiftDungeonLog.objects.first()
+        self.assertEqual(log.total_damage, 0)
+        self.assertEqual(log.grade, models.RiftDungeonLog.GRADE_F)

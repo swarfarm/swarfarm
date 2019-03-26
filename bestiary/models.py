@@ -1653,6 +1653,8 @@ class Rune(models.Model, RuneObjectBase):
                         code='invalid_rune_innate_stat_value'
                     )
                 })
+        else:
+            self.innate_stat_value = None
 
         for substat, value in zip(self.substats, self.substat_values):
             if value is None or value <= 0:

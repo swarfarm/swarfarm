@@ -47,6 +47,11 @@ class CraftMagicBoxTests(BaseLogTest):
         log = models.MagicBoxCraft.objects.first()
         self.assertEqual(log.rune_crafts.count(), 1)
 
+    def test_box_craft_only_currency_reward(self):
+        self._do_log('BuyShopItem/craft_magic_box_unknown_all_currency.json')
+        log = models.MagicBoxCraft.objects.first()
+        self.assertEqual(log.items.count(), 4)
+
 
 class BuyShopItemTests(BaseLogTest):
     def test_discarding_items_not_logged(self):

@@ -403,7 +403,7 @@ class MagicBoxCraft(LogEntry):
 
         try:
             crate = log_data['response']['reward']['crate']
-        except KeyError:
+        except (KeyError, TypeError):
             # Crate not in data, or reward key missing. Don't try to parse anything in it.
             pass
         else:

@@ -659,7 +659,7 @@ class RiftDungeonLog(LogEntry):
         log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
         log_entry.success = log_data['request']['battle_result'] == 1
         log_entry.save()
-        log_entry.parse_rewards(log_data['response'].get('item_list', []))
+        log_entry.parse_rewards(log_data['response'].get('item_list') or [])
 
     def parse_rewards(self, items):
         for item in items:

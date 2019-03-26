@@ -737,7 +737,7 @@ class RuneInstance(Rune):
     def get_acc(self):
         return self.get_stat(RuneInstance.STAT_ACCURACY_PCT, False)
 
-    def update_fields(self):
+    def update_substat_arrays(self):
         self.substats = []
         self.substat_values = []
         self.substat_crafts = []
@@ -767,6 +767,8 @@ class RuneInstance(Rune):
             self.substat_crafts.append(self.substat_4_craft)
             self.substat_craft_values.append(0)
 
+    def update_fields(self):
+        self.update_substat_arrays()
         super(RuneInstance, self).update_fields()
 
         # Update arrays based on individual fields
@@ -810,6 +812,9 @@ class RuneInstance(Rune):
                         code='invalid_rune_substat_1_value'
                     )
                 })
+        else:
+            self.substat_1_value = None
+            self.substat_1_craft = None
 
         if self.substat_2 is not None:
             if self.substat_2_value is None or self.substat_2_value <= 0:
@@ -835,6 +840,9 @@ class RuneInstance(Rune):
                         code='invalid_rune_substat_2_value'
                     )
                 })
+        else:
+            self.substat_2_value = None
+            self.substat_2_craft = None
 
         if self.substat_3 is not None:
             if self.substat_3_value is None or self.substat_3_value <= 0:
@@ -861,6 +869,9 @@ class RuneInstance(Rune):
                         code='invalid_rune_substat_3_value'
                     )
                 })
+        else:
+            self.substat_3_value = None
+            self.substat_3_craft = None
 
         if self.substat_4 is not None:
             if self.substat_4_value is None or self.substat_4_value <= 0:
@@ -886,6 +897,9 @@ class RuneInstance(Rune):
                         code='invalid_rune_substat_4_value'
                     )
                 })
+        else:
+            self.substat_4_value = None
+            self.substat_4_craft = None
 
         # Check that monster rune is assigned to does not already have rune in that slot
         if self.assigned_to is not None and (self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0):
@@ -897,8 +911,7 @@ class RuneInstance(Rune):
                 code='slot_occupied'
             )
 
-        self.update_fields()
-
+        self.update_substat_arrays()
         super(RuneInstance, self).clean()
 
     def save(self, *args, **kwargs):

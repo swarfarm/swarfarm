@@ -3,7 +3,7 @@ from .test_log_views import BaseLogTest
 
 
 class WorldBossTests(BaseLogTest):
-    fixtures = ['test_game_items', 'test_levels']
+    fixtures = ['test_game_items', 'test_levels', 'test_world_boss_monsters']
 
     def test_world_boss_log_start(self):
         response = self._do_log('BattleWorldBossStart/world_boss_start_a_mana_mystical_essence.json')
@@ -35,3 +35,8 @@ class WorldBossTests(BaseLogTest):
 
         log.refresh_from_db()
         self.assertEqual(log.runes.count(), 1)
+
+    def test_world_boss_monster_drop(self):
+        self._do_log('BattleWorldBossStart/world_boss_a_plus_king_angelmon.json')
+        log = models.WorldBossLog.objects.first()
+        self.assertEqual(log.monsters.count(), 1)

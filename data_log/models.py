@@ -118,10 +118,12 @@ class MonsterDrop(models.Model):
     @classmethod
     def parse(cls, **monster_info):
         com2us_id = monster_info.get('unit_master_id') or monster_info.get('item_master_id')
+        grade = monster_info.get('class') or monster_info.get('unit_class')
+        level = monster_info.get('unit_level') or 1
         return cls(
                 monster=Monster.objects.get(com2us_id=com2us_id),
-                grade=monster_info['class'],
-                level=monster_info.get('unit_level', 1),
+                grade=grade,
+                level=level,
             )
 
 

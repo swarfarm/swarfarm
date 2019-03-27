@@ -1878,7 +1878,7 @@ class RuneCraft(models.Model, RuneObjectBase):
     }
 
     type = models.IntegerField(choices=CRAFT_CHOICES)
-    rune = models.IntegerField(choices=RuneObjectBase.TYPE_CHOICES)
+    rune = models.IntegerField(choices=RuneObjectBase.TYPE_CHOICES, blank=True, null=True)
     stat = models.IntegerField(choices=RuneObjectBase.STAT_CHOICES)
     quality = models.IntegerField(choices=RuneObjectBase.QUALITY_CHOICES)
     value = models.IntegerField(blank=True, null=True)

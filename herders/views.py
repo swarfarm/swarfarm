@@ -2496,7 +2496,8 @@ def rune_craft_add(request, profile_name):
             new_craft.owner = request.user.summoner
             new_craft.save()
 
-            messages.success(request, 'Added ' + new_craft.get_type_display() + ' ' + str(new_craft))
+            rune_name = new_craft.get_rune_display() or ''
+            messages.success(request, f'Added {rune_name} {new_craft.get_type_display()} {new_craft}')
 
             # Send back blank form
             form = AddRuneCraftInstanceForm()
@@ -2585,7 +2586,8 @@ def rune_craft_delete(request, profile_name, craft_id):
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     if is_owner:
-        messages.warning(request, 'Deleted ' + craft.get_rune_display() + ' ' + str(craft))
+        rune_name = craft.get_rune_display() or ''
+        messages.warning(request, f'Deleted {rune_name} {craft.get_type_display()} {craft}')
         craft.delete()
 
         response_data = {

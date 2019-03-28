@@ -3,59 +3,44 @@
 
 {% block planner %}
     <div id="planner-teams" class="container">
-        <h1>Stat Planner</h1>
-        <table style="text-align:right;">
-            <tr>
-                <th>Team</th>
-                <th>Dungeon</th>
-                <th># Mons</th>
-                <th></th>
-                <th></th>
-                <th></th>
+        <div class="table-responsive">
+        <table id="monster-table" class="table table-hover table-condensed monster-table tablesorter tablesorter-default hasSaveSort hasStickyHeaders" id="inventory-container">
+            <tr class="tablesorter-headerRow" role="row">
+                <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                    <div class="tablesorter-header-inner">Name</div>
+                </th>
+                <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                    <div class="tablesorter-header-inner">Dungeon</div>
+                </th>
+                <th class="tablesorter-header sorter-false tablesorter-headerUnSorted"># Mons</th>
+                <th class="tablesorter-header sorter-false tablesorter-headerUnSorted"></th>
+                <th class="tablesorter-header sorter-false tablesorter-headerUnSorted"></th>
+                <th class="tablesorter-header sorter-false tablesorter-headerUnSorted"></th>
             </tr>
-            <tr v-for="team of teams">
+            <tr v-for="team of teams" class="inventory-element" role="row">
                 <td v-text="team.name"></td>
                 <td><span v-if="team.dungeon" v-text="team.dungeon.name"/></td>
                 <td v-text="team.monsters.length"></td>
-                <td><button @click="gotoTeam(team.id)">Edit</button></td>
-                <td><button @click="deleteTeam(team.id)">X</button></td>
+                <td class="monster-image"><button class="btn btn-primary btn btn-primary" @click="gotoTeam(team.id)">Edit</button></td>
+                <td><button class="btn btn-primary btn btn-primary" @click="deleteTeam(team.id)">X</button></td>
             </tr>
         </table>
+        </div>
         <hr/>
+        <h3>Add Team</h3>
         <form>
             <table>
-                <tr>
-                    <td><label for="name">Team</label></td>
-                    <td><input id="name" type="text" v-model="add_name"></td>
-                </tr>
-                <tr>
-                    <td><label for="dungeon">Dungeon</label></td>
-                    <td><select id="dungeon" v-model="add_dungeon">
+                <div class="form-group">
+                    <label for="name" class="control-label requiredField">Team Name:</label>
+                    <input id="name" type="text" class="textinput textInput form-control" v-model="add_name">
+                </div>
+                <div class="form-group">
+                    <label for="dungeon" class="control-label requiredField">Dungeon:</label>
+                    <select id="dungeon" v-model="add_dungeon" class="select form-control">
                         <option v-for="option in dungeons" v-bind:value="option.id" v-text="option.name">Loading...</option>
                     </select>
-                    </td>
-                </tr>
-                <tr><td colspan="2"><button @click.stop.prevent="addTeam">Add Team</button></td></tr>
-            </table>
-        </form>
-        <hr/>
-        <form>
-            <table>
-                <tr>
-                    <td><label for="name">Team</label></td>
-                    <td><input id="name" type="text" v-model="composite_name"></td>
-                </tr>
-                <tr>
-                    <td>Teams:</td>
-                    <td>
-                        <select multiple="true" v-model="composite_ids">
-                            <option v-for="team in teams" :value="team.id" v-text="team.name"></option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"><button @click.stop.prevent="makeComposite">Make Composite</button></td>
-                </tr>
+                </div>
+                <tr><td colspan="2"><button class="btn btn-primary btn btn-primary" @click.stop.prevent="addTeam">Add Team</button></td></tr>
             </table>
         </form>
     </div>

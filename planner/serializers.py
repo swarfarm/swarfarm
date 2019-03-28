@@ -21,7 +21,7 @@ class CurrentSummonerDefault(object):
 class DungeonSerializer(GetOrCreateNestedSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Level
-        fields = ['id', 'name', 'max_slots']
+        fields = ['id', 'name']
         extra_kwargs = {
             'max_slots': {'read_only': True},
             # for matching, need to make explicit (see https://github.com/encode/django-rest-framework/issues/563)

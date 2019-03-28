@@ -31,16 +31,18 @@ class OptimizeTeamViewSet(viewsets.ModelViewSet):
         )
 
     def list(self, request, *args, **kwargs):
-        response = super(OptimizeTeamViewSet, self).list(request, *args, **kwargs)
-        # Inject Patient List Page (for text/html resolution)
-        response.template_name = 'planner/teams.html'
-        return response
+        if self.request.accepted_media_type == 'text/html':
+            # Avoid heavy lifting to return template
+            return Response(template_name='planner/teams.html')
+        else:
+            return super(OptimizeTeamViewSet, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
-        response = super(OptimizeTeamViewSet, self).retrieve(request, *args, **kwargs)
-        # Inject Patient List Page (for text/html resolution)
-        response.template_name = 'planner/team.html'
-        return response
+        if self.request.accepted_media_type == 'text/html':
+            # Avoid heavy lifting to return template
+            return Response(template_name='planner/team.html')
+        else:
+            return super(OptimizeTeamViewSet, self).retrieve(request, *args, **kwargs)
 
     @action(detail=False, methods=['post'])
     def composite(self, request, *args, **kwargs):

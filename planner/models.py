@@ -2,7 +2,6 @@ from django.db import models
 
 from bestiary.models import Level
 from herders.models import MonsterInstance, Monster, RuneInstance, Summoner
-from sw_parser.models import RunLog
 
 
 class MonsterStatTargets(models.Model):

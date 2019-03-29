@@ -1,7 +1,6 @@
 from django.db import transaction
 from rest_framework import viewsets, pagination
 from rest_framework.decorators import action
-from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 
 from bestiary.models import Level

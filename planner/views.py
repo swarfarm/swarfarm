@@ -1,11 +1,14 @@
 from django.db import transaction
 from rest_framework import viewsets, pagination
 from rest_framework.decorators import action
+from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 
 from bestiary.models import Level
+from herders import api_views as herders
 from herders.models import Summoner
 from herders.permissions import IsOwner
+from herders.serializers import SummonerSerializer
 from . import models, serializers, services
 
 
@@ -33,7 +36,9 @@ class OptimizeTeamViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         if self.request.accepted_media_type == 'text/html':
             # Avoid heavy lifting to return template
-            return Response(template_name='planner/teams.html')
+            return Response(template_name='planner/teams.html', data={
+                'user': kwargs.get('user_pk'),
+            })
         else:
             return super(OptimizeTeamViewSet, self).list(request, *args, **kwargs)
 
@@ -41,6 +46,7 @@ class OptimizeTeamViewSet(viewsets.ModelViewSet):
         if self.request.accepted_media_type == 'text/html':
             # Avoid heavy lifting to return template
             return Response(template_name='planner/team.html', data={
+                'user': kwargs.get('user_pk'),
                 'id': kwargs.get('pk'),
             })
         else:
@@ -85,3 +91,8 @@ class RosterViewSet(viewsets.ModelViewSet):
     queryset = Summoner.objects.all().prefetch_related('monsterinstance_set', 'monsterinstance_set__monster')
     lookup_field = 'user'
     lookup_url_kwarg = 'pk'
+
+
+class PlannerViewSet(herders.SummonerViewSet):
+    serializer_class = SummonerSerializer
+    # TODO: provide meaningful UI at planner endpoints

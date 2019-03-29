@@ -52,9 +52,9 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
     <script type="text/javascript" src="{% static 'planner/js/APIService.js' %}"></script>
     <script>
-        const api_team = new APIService('{% url 'planner-team-list' %}', '{{ csrf_token }}');
-        const api_dungeon = new APIService('{% url 'dungeon-list' %}', '{{ csrf_token }}');
-        const api_composite = new APIService('{% url 'planner-team-list' %}composite/', '{{ csrf_token }}');
+        const api_team = new APIService('{% url 'planner-team-list' user %}', '{{ csrf_token }}');
+        const api_dungeon = new APIService('{% url 'dungeon-list' user %}', '{{ csrf_token }}');
+        const api_composite = new APIService('{% url 'planner-team-list' user %}composite/', '{{ csrf_token }}');
 
         const app = new Vue({
             el: "#planner-teams",

@@ -82,7 +82,7 @@ class SpeedTune(RelativeSpeed):
         if self.type != self.SPD_AT_LEAST_FLAT and self.faster_than.leader:
             # make sure a minimum amount exists
             has_by_one = self.faster_than.slower_than_by.filter(
-                self.slower_than, self.faster_than, type=self.SPD_AT_LEAST_FLAT
+                slower_than=self.slower_than, faster_than=self.faster_than, type=self.SPD_AT_LEAST_FLAT
             ).exists()
             if not has_by_one:
                 SpeedTune.objects.create(

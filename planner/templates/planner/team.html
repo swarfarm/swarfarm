@@ -3,24 +3,45 @@
 
 {% block planner %}
     <div id="planner-team" class="container">
-        <button v-on:click="gotoTeam()"><< Back to Teams</button>
+        <button class="btn btn-primary btn btn-primary" v-on:click="gotoTeam()"><< Back to Teams</button>
         <h1 v-text="name"></h1>
         <h2 v-if="dungeon" v-text="dungeon.name"></h2>
-        <table>
+        <div class="table-responsive">
+        <table id="monster-table" class="table table-hover table-condensed monster-table tablesorter tablesorter-default hasSaveSort hasStickyHeaders">
             <thead>
-                <tr>
-                    <th>Monster</th>
-                    <th>Leader</th>
-                    <th title="Effective SPD after towers, sets, and leaders">Min E.SPD</th>
-                    <th>Min HP</th>
-                    <th>Min DEF</th>
-                    <th>Min E.HP</th>
-                    <th>Min RES</th>
-                    <th>Min ACC</th>
-                    <th>Min CRate</th>
-                    <th></th>
-                    <th>Max CRate</th>
-                    <th></th>
+                <tr class="tablesorter-headerRow" role="row">
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner">Monster</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner">Leader</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner" title="Effective SPD after towers, sets, and leaders">Min E.SPD</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner">Min HP</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner">Min DEF</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner">Min E.HP</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner">Min RES</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner">Min ACC</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner">Min CRate</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted"></th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                        <div class="tablesorter-header-inner">Max CRate</div>
+                    </th>
+                    <th class="tablesorter-header sorter-false tablesorter-headerUnSorted"></th>
                 </tr>
             </thead>
             <tbody>
@@ -28,45 +49,53 @@
             <tr>
                 <td v-text="monster.monster.name"></td>
                 <td><input type="radio" name="leader" v-model="leader" v-bind:value="monster.monster.name"></td>
-                <td><input type="text" v-model="monster.min_spd" maxlength="3" size="3"></td>
-                <td><input type="text" v-model="monster.min_hp" maxlength="5" size="5"></td>
-                <td><input type="text" v-model="monster.min_def" maxlength="4" size="4"></td>
-                <td><input type="text" v-model="monster.min_ehp" maxlength="6" size="6"></td>
-                <td><input type="text" v-model="monster.min_res" maxlength="3" size="3"></td>
-                <td><input type="text" v-model="monster.min_acc" maxlength="5" size="5"></td>
-                <td align="right"><input type="text" v-model="monster.min_crate" maxlength="3" size="3"></td>
+                <td><input class="textinput textInput form-control" type="text" v-model="monster.min_spd" maxlength="3" size="3"></td>
+                <td><input class="textinput textInput form-control" type="text" v-model="monster.min_hp" maxlength="5" size="5"></td>
+                <td><input class="textinput textInput form-control" type="text" v-model="monster.min_def" maxlength="4" size="4"></td>
+                <td><input class="textinput textInput form-control" type="text" v-model="monster.min_ehp" maxlength="6" size="6"></td>
+                <td><input class="textinput textInput form-control" type="text" v-model="monster.min_res" maxlength="3" size="3"></td>
+                <td><input class="textinput textInput form-control" type="text" v-model="monster.min_acc" maxlength="5" size="5"></td>
+                <td align="right"><input class="textinput textInput form-control" type="text" v-model="monster.min_crate" maxlength="3" size="3"></td>
                 <td>-</td>
-                <td><input type="text" v-model="monster.max_crate" maxlength="3" size="3"></td>
-                <td><button v-on:click="removeMonster(monster)">X</button></td>
+                <td><input class="textinput textInput form-control" type="text" v-model="monster.max_crate" maxlength="3" size="3"></td>
+                <td class="monster-image"><button class="btn btn-primary btn btn-primary" v-on:click="removeMonster(monster)">X</button></td>
             </tr>
             <tr>
                 <td></td>
                 <td colspan="2">Slower than...</td>
                 <td colspan="8">
-                    <table>
+                    <table class="table table-hover table-condensed monster-table tablesorter tablesorter-default hasSaveSort hasStickyHeaders">
                         <tr>
-                            <th>Mon</th>
-                            <th>By</th>
-                            <th>Amount</th>
+                            <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                                <div class="tablesorter-header-inner">Monster</div>
+                            </th>
+                            <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                                <div class="tablesorter-header-inner">by</div>
+                            </th>
+                            <th class="tablesorter-header sorter-false tablesorter-headerUnSorted">
+                                <div class="tablesorter-header-inner">Amount</div>
+                            </th>
                             <th></th>
                         </tr>
                         <tr v-for="rule in monster.slower_than_by">
-                            <td><select v-model="rule.slower_than.monster">
+                            <td><select class="select form-control" v-model="rule.slower_than.monster">
                                 <option v-for="option in monsters"
                                         v-if="option.monster.com2us_id != monster.monster.com2us_id"
                                         v-bind:value="option.monster.com2us_id"
                                         v-text="option.monster.name">Loading...</option>
                             </select></td>
-                            <td><select v-model="rule.type">
+                            <td><select class="select form-control" v-model="rule.type">
                                 <option value="0">by Any Amount</option>
                                 <option value="1">by as Little as Possible</option>
                                 <option value="2">but within % SPD</option>
                                 <option value="3">but within flat SPD</option>
                             </select></td>
-                            <td><input v-model="rule.slower_than.amount" pattern="\d*" maxlength="3" size="3"/></td>
-                            <td><button v-on:click="removeSlowerThan(monster, rule)">X</button></td>
+                            <td><input class="textinput textInput form-control" v-model="rule.slower_than.amount" pattern="\d*" maxlength="3" size="3"/></td>
+                            <td class="monster-image"><button class="btn btn-primary btn btn-primary" v-on:click="removeSlowerThan(monster, rule)">X</button></td>
                         </tr>
-                        <tr><td colspan="3"><button v-on:click="addSlowerThan(monster)">Add Rule</button></td></tr>
+                        <tr><td colspan="4">
+                            <button class="btn btn-primary btn btn-primary" v-on:click="addSlowerThan(monster)">Add Rule</button>
+                        </td></tr>
                     </table>
                 </td>
                 <td></td>
@@ -74,16 +103,21 @@
             </template>
             </tbody>
         </table>
-        <button v-on:click="saveTeam">Save</button>
+        <button class="btn btn-primary btn btn-primary" v-on:click="saveTeam">Save Team</button>
+        </div>
+        <hr/>
         <table>
             <tr>
-                <td><label for="roster">Available Monsters:</label></td>
-                <td><select id="roster" v-model="add_roster">
-                    <option v-for="option in roster" v-bind:value="option.com2us_id" v-text="option.name">Loading...</option>
-                </select>
+                <td class="control-label requiredField">
+                    <label for="roster" class="control-label requiredField">Add Monster:</label>
+                    <select id="roster" class="select form-control" v-model="add_roster">
+                        <option v-for="option in roster" v-bind:value="option.com2us_id" v-text="option.name">Loading...</option>
+                    </select>
                 </td>
-                <td colspan="2">
-                    <button v-on:click="addMonster">Add Monster</button>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn btn-primary btn btn-primary" v-on:click="addMonster">Add Monster</button>
                 </td>
             </tr>
         </table>

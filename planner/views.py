@@ -40,7 +40,9 @@ class OptimizeTeamViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         if self.request.accepted_media_type == 'text/html':
             # Avoid heavy lifting to return template
-            return Response(template_name='planner/team.html')
+            return Response(template_name='planner/team.html', data={
+                'id': kwargs.get('pk'),
+            })
         else:
             return super(OptimizeTeamViewSet, self).retrieve(request, *args, **kwargs)
 

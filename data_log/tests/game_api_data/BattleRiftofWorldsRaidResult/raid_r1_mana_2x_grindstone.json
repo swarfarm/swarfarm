@@ -1,0 +1,251 @@
+{
+  "data": {
+    "request": {
+      "command": "BattleRiftOfWorldsRaidResult",
+      "wizard_id": 12234369,
+      "session_key": "37ebbd1756203e133601557dd92b5a",
+      "proto_ver": 11390,
+      "infocsv": "4.00.82",
+      "channel_uid": 144237507,
+      "ts_val": 1085760534,
+      "battle_key": 1553490500,
+      "win_lose": 1,
+      "opp_unit_status_list": [
+        {
+          "unit_id": 12,
+          "hp_total": 251865,
+          "hp_cur": 0,
+          "die": 1
+        },
+        {
+          "unit_id": 11,
+          "hp_total": 251865,
+          "hp_cur": 0,
+          "die": 1
+        },
+        {
+          "unit_id": 13,
+          "hp_total": 251865,
+          "hp_cur": 0,
+          "die": 1
+        }
+      ],
+      "user_status_list": [
+        {
+          "wizard_id": 25887721,
+          "damage": 25,
+          "unit_id_list": [
+            {
+              "unit_id": 12517965345,
+              "die": 0
+            },
+            {
+              "unit_id": 11521719636,
+              "die": 0
+            },
+            {
+              "unit_id": 11853424669,
+              "die": 0
+            },
+            {
+              "unit_id": 11800204931,
+              "die": 0
+            },
+            {
+              "unit_id": 12047051636,
+              "die": 0
+            },
+            {
+              "unit_id": 12646952383,
+              "die": 0
+            }
+          ]
+        },
+        {
+          "wizard_id": 16200462,
+          "damage": 34,
+          "unit_id_list": [
+            {
+              "unit_id": 11607145310,
+              "die": 0
+            },
+            {
+              "unit_id": 12009907768,
+              "die": 0
+            },
+            {
+              "unit_id": 8613931563,
+              "die": 0
+            },
+            {
+              "unit_id": 9977992842,
+              "die": 0
+            },
+            {
+              "unit_id": 9776089940,
+              "die": 0
+            },
+            {
+              "unit_id": 12245432833,
+              "die": 0
+            }
+          ]
+        },
+        {
+          "wizard_id": 12234369,
+          "damage": 40,
+          "unit_id_list": [
+            {
+              "unit_id": 6268557136,
+              "die": 0
+            },
+            {
+              "unit_id": 5091057153,
+              "die": 0
+            },
+            {
+              "unit_id": 7455185974,
+              "die": 0
+            },
+            {
+              "unit_id": 5935735484,
+              "die": 0
+            },
+            {
+              "unit_id": 5526613153,
+              "die": 0
+            },
+            {
+              "unit_id": 3590403834,
+              "die": 0
+            }
+          ]
+        }
+      ],
+      "clear_time": 72525,
+      "retry": 0
+    },
+    "response": {
+      "command": "BattleRiftOfWorldsRaidResult",
+      "ret_code": 0,
+      "win_lose": 1,
+      "wizard_info": {
+        "wizard_id": 12234369,
+        "wizard_name": "porksmash2",
+        "wizard_mana": 8406079,
+        "wizard_crystal": 4023,
+        "wizard_crystal_paid": 0,
+        "wizard_last_login": "2019-03-25 13:51:29",
+        "wizard_last_country": "US",
+        "wizard_last_lang": "en",
+        "wizard_level": 50,
+        "experience": 3800000,
+        "wizard_energy": 2077,
+        "energy_max": 90,
+        "energy_per_min": 0.26,
+        "next_energy_gain": 0,
+        "arena_energy": 20,
+        "arena_energy_max": 10,
+        "arena_energy_next_gain": 0,
+        "unit_slots": {
+          "number": 120
+        },
+        "rep_unit_id": 3788196826,
+        "rep_assigned": 1,
+        "pvp_event": 0,
+        "mail_box_event": 0,
+        "social_point_current": 1120,
+        "social_point_max": 3000,
+        "honor_point": 155,
+        "guild_point": 2564,
+        "darkportal_energy": 10,
+        "darkportal_energy_max": 10,
+        "costume_point": 57,
+        "costume_point_max": 9999,
+        "honor_medal": 0,
+        "honor_mark": 0,
+        "event_coin": 0,
+        "lobby_master_id": 1001,
+        "emblem_master_id": 0,
+        "gain_exp": 470
+      },
+      "battle_reward_list": [
+        {
+          "wizard_id": 25887721,
+          "reward_list": [
+            {
+              "item_master_type": 27,
+              "item_master_id": null,
+              "item_quantity": 1,
+              "unit_class": null,
+              "unit_level": null,
+              "rune_class": null,
+              "rune_set_id": null,
+              "rune_rank": null,
+              "runecraft_type": 2,
+              "runecraft_item_id": 110601,
+              "runecraft_set_id": 11,
+              "runecraft_effect_id": 6,
+              "runecraft_rank": 1,
+              "random_rune_type": null
+            }
+          ]
+        },
+        {
+          "wizard_id": 16200462,
+          "reward_list": [
+            {
+              "item_master_type": 27,
+              "item_master_id": null,
+              "item_quantity": 1,
+              "unit_class": null,
+              "unit_level": null,
+              "rune_class": null,
+              "rune_set_id": null,
+              "rune_rank": null,
+              "runecraft_type": 2,
+              "runecraft_item_id": 10201,
+              "runecraft_set_id": 1,
+              "runecraft_effect_id": 2,
+              "runecraft_rank": 1,
+              "random_rune_type": null
+            }
+          ]
+        },
+        {
+          "wizard_id": 12234369,
+          "reward_list": [
+            {
+              "item_master_type": 6,
+              "item_master_id": 102,
+              "item_quantity": 8330,
+              "unit_class": null,
+              "unit_level": null,
+              "rune_class": null,
+              "rune_set_id": null,
+              "rune_rank": null,
+              "runecraft_type": null,
+              "runecraft_item_id": null,
+              "runecraft_set_id": null,
+              "runecraft_effect_id": null,
+              "runecraft_rank": null,
+              "random_rune_type": null
+            }
+          ]
+        }
+      ],
+      "reward": {
+        "event_crate": []
+      },
+      "clear_time": {
+        "is_new_record": 1,
+        "current_time": 72525,
+        "best_time": 72525
+      },
+      "ts_val": 1085760559,
+      "tvalue": 1553490599,
+      "tvaluelocal": 1553432999,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

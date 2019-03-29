@@ -103,6 +103,7 @@ class ItemDrop(models.Model):
 class MonsterDrop(models.Model):
     PARSE_ITEM_TYPES = (
         GameItem.CATEGORY_MONSTER,
+        GameItem.CATEGORY_RAINBOWMON,
     )
 
     monster = models.ForeignKey(Monster, on_delete=models.PROTECT)
@@ -263,10 +264,6 @@ class ShopRefreshDrop(models.Model):
     class Meta:
         abstract = True
 
-
-class ShopRefreshItemDrop(ItemDrop, ShopRefreshDrop):
-    log = models.ForeignKey(ShopRefreshLog, on_delete=models.CASCADE, related_name='items')
-
     @classmethod
     def parse(cls, **kwargs):
         log = super().parse(**kwargs)
@@ -274,7 +271,11 @@ class ShopRefreshItemDrop(ItemDrop, ShopRefreshDrop):
         return log
 
 
-class ShopRefreshRuneDrop(RuneDrop, ShopRefreshDrop):
+class ShopRefreshItemDrop(ShopRefreshDrop, ItemDrop):
+    log = models.ForeignKey(ShopRefreshLog, on_delete=models.CASCADE, related_name='items')
+
+
+class ShopRefreshRuneDrop(ShopRefreshDrop, RuneDrop):
     log = models.ForeignKey(ShopRefreshLog, on_delete=models.CASCADE, related_name='runes')
 
     @classmethod
@@ -284,14 +285,8 @@ class ShopRefreshRuneDrop(RuneDrop, ShopRefreshDrop):
         return log
 
 
-class ShopRefreshMonsterDrop(MonsterDrop, ShopRefreshDrop):
+class ShopRefreshMonsterDrop(ShopRefreshDrop, MonsterDrop):
     log = models.ForeignKey(ShopRefreshLog, on_delete=models.CASCADE, related_name='monsters')
-
-    @classmethod
-    def parse(cls, **kwargs):
-        log = super().parse(**kwargs)
-        log.cost = kwargs.get('buy_mana', 0)
-        return log
 
 
 # Wishes
@@ -312,16 +307,17 @@ class WishLog(LogEntry):
         # Wish reward
         master_type = log_data['response']['wish_info']['item_master_type']
 
-        if master_type in [GameItem.CATEGORY_MONSTER, GameItem.CATEGORY_RAINBOWMON]:
+        if master_type in WishLogMonsterDrop.PARSE_ITEM_TYPES:
             reward = WishLogMonsterDrop.parse(**log_data['response']['unit_info'])
-        elif master_type == GameItem.CATEGORY_RUNE:
+        elif master_type in WishLogRuneDrop.PARSE_ITEM_TYPES:
             reward = WishLogRuneDrop.parse(**log_data['response']['rune'])
-        else:
+        elif master_type in WishLogItemDrop.PARSE_ITEM_TYPES:
             reward = WishLogItemDrop.parse(**log_data['response']['wish_info'])
+        else:
+            raise ValueError(f"Don't know how to parse item type `{master_type}` with {cls.__class__.__name__}")
 
-        if reward:
-            reward.log = log
-            reward.save()
+        reward.log = log
+        reward.save()
 
 
 class WishLogItemDrop(ItemDrop):
@@ -422,9 +418,8 @@ class MagicBoxCraft(LogEntry):
             else:
                 raise ValueError(f"Can't parse item type {master_type} with {self.__class__.__name__}")
 
-            if log_entry:
-                log_entry.log = self
-                log_entry.save()
+            log_entry.log = self
+            log_entry.save()
 
     def parse_crate(self, crate):
         for key, items in crate.items():
@@ -675,9 +670,8 @@ class RiftDungeonLog(LogEntry):
             else:
                 raise ValueError(f"don't know how to parse {master_type} in {self.__class__.__name__}")
 
-            if log_entry:
-                log_entry.log = self
-                log_entry.save()
+            log_entry.log = self
+            log_entry.save()
 
 
 class RiftDungeonItemDrop(ItemDrop):
@@ -703,16 +697,91 @@ class RiftRaidLog(LogEntry):
     success = models.NullBooleanField(help_text='Null indicates that run was not completed')
     contribution_amount = models.IntegerField(blank=True, null=True)
 
+    @classmethod
+    def parse_rift_raid_start(cls, summoner, log_data):
+        log_entry = cls(summoner=summoner)
+        log_entry.parse_common_log_data(log_data)
+        log_entry.battle_key = log_data['request']['battle_key']
+        log_entry.level = Level.objects.get(
+            dungeon__category=Dungeon.CATEGORY_RIFT_OF_WORLDS_RAID,
+            dungeon__com2us_id=log_data['response']['battle_info']['raid_id'],
+            floor=log_data['response']['battle_info']['stage_id'],
+        )
+        log_entry.save()
 
-class RiftRaidItemDrop(ItemDrop):
+    @classmethod
+    def parse_rift_raid_result(cls, summoner, log_data):
+        wizard_id = log_data['request']['wizard_id']
+        battle_key = log_data['request']['battle_key']
+
+        try:
+            if summoner is not None:
+                log_entry = cls.objects.get(summoner=summoner, battle_key=battle_key)
+            else:
+                log_entry = cls.objects.get(wizard_id=wizard_id, battle_key=battle_key)
+        except (cls.DoesNotExist, cls.MultipleObjectsReturned):
+            return
+
+        # Get this user's info out of `user_status_list`
+        user_status = None
+
+        for status in log_data['request']['user_status_list']:
+            if status['wizard_id'] == wizard_id:
+                user_status = status
+                break
+
+        log_entry.parse_common_log_data(log_data)
+        log_entry.success = log_data['request']['win_lose'] == 1
+        log_entry.contribution_amount = user_status['damage']
+        log_entry.save()
+        log_entry.parse_rewards(battle_key, log_data['response']['battle_reward_list'])
+
+    def parse_rewards(self, battle_key, rewards_list):
+        for rewards in rewards_list:
+            reward_wizard_id = rewards['wizard_id']
+
+            for reward_info in rewards:
+                master_type = reward_info['item_master_type']
+
+                if master_type in RiftRaidItemDrop.PARSE_ITEM_TYPES:
+                    log_entry = RiftRaidItemDrop.parse(battle_key, reward_wizard_id, reward_info)
+                elif master_type in RiftRaidMonsterDrop.PARSE_ITEM_TYPES:
+                    log_entry = RiftRaidMonsterDrop.parse(battle_key, reward_wizard_id, reward_info)
+                elif master_type in RiftRaidRuneCraftDrop.PARSE_ITEM_TYPES:
+                    log_entry = RiftRaidRuneCraftDrop.parse(battle_key, reward_wizard_id, reward_info)
+                else:
+                    raise ValueError(f"don't know how to parse {master_type} in {self.__class__.__name__}")
+
+                log_entry.log = self
+                log_entry.save()
+
+
+class RiftRaidDrop(models.Model):
+    wizard_id = models.BigIntegerField()
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def parse(cls, battle_key, wizard_id, item_data):
+        try:
+            log_entry = cls.objects.get(log__battle_key=battle_key, log__wizard_id=wizard_id)
+        except cls.DoesNotExist:
+            log_entry = super().parse(**item_data)
+            log_entry.wizard_id = wizard_id
+
+        return log_entry
+
+
+class RiftRaidItemDrop(RiftRaidDrop, ItemDrop):
     log = models.ForeignKey(RiftRaidLog, on_delete=models.CASCADE, related_name='items')
 
 
-class RiftRaidMonsterDrop(MonsterDrop):
+class RiftRaidMonsterDrop(RiftRaidDrop, MonsterDrop):
     log = models.ForeignKey(RiftRaidLog, on_delete=models.CASCADE, related_name='monsters')
 
 
-class RiftRaidRuneCraftDrop(RuneCraftDrop):
+class RiftRaidRuneCraftDrop(RiftRaidDrop, RuneCraftDrop):
     log = models.ForeignKey(RiftRaidLog, on_delete=models.CASCADE, related_name='runes')
 
 

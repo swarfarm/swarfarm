@@ -32,16 +32,54 @@ def buy_shop_item(summoner, log_data):
 
 # Map to in-game commands and generate list of accepted API params
 active_log_commands = {
-    'GetBlackMarketList': GameApiCommand(schemas.get_black_market_list, models.ShopRefreshLog.parse_shop_refresh),
-    'DoRandomWishItem': GameApiCommand(schemas.do_random_wish_item, models.WishLog.parse_wish_log),
-    'BuyShopItem': GameApiCommand(schemas.buy_shop_item, buy_shop_item),
-    'SummonUnit': GameApiCommand(schemas.summon_unit, models.SummonLog.parse_summon_log),
-    'BattleScenarioStart': GameApiCommand(schemas.battle_scenario_start, models.DungeonLog.parse_scenario_start),
-    'BattleScenarioResult': GameApiCommand(schemas.battle_scenario_result, models.DungeonLog.parse_scenario_result),
-    'BattleDungeonResult': GameApiCommand(schemas.battle_dungeon_result, models.DungeonLog.parse_dungeon_result),
-    'BattleRiftDungeonResult': GameApiCommand(schemas.battle_rift_dungeon_result, models.RiftDungeonLog.parse_rift_dungeon_result),
-    'BattleWorldBossStart': GameApiCommand(schemas.battle_world_boss_start, models.WorldBossLog.parse_world_boss_start),
-    'BattleWorldBossResult': GameApiCommand(schemas.battle_world_boss_result, models.WorldBossLog.parse_world_boss_result),
+    'GetBlackMarketList': GameApiCommand(
+        schemas.get_black_market_list,
+        models.ShopRefreshLog.parse_shop_refresh
+    ),
+    'DoRandomWishItem': GameApiCommand(
+        schemas.do_random_wish_item,
+        models.WishLog.parse_wish_log
+    ),
+    'BuyShopItem': GameApiCommand(
+        schemas.buy_shop_item,
+        buy_shop_item
+    ),
+    'SummonUnit': GameApiCommand(
+        schemas.summon_unit,
+        models.SummonLog.parse_summon_log
+    ),
+    'BattleScenarioStart': GameApiCommand(
+        schemas.battle_scenario_start,
+        models.DungeonLog.parse_scenario_start
+    ),
+    'BattleScenarioResult': GameApiCommand(
+        schemas.battle_scenario_result,
+        models.DungeonLog.parse_scenario_result
+    ),
+    'BattleDungeonResult': GameApiCommand(
+        schemas.battle_dungeon_result,
+        models.DungeonLog.parse_dungeon_result
+    ),
+    'BattleRiftDungeonResult': GameApiCommand(
+        schemas.battle_rift_dungeon_result,
+        models.RiftDungeonLog.parse_rift_dungeon_result
+    ),
+    'BattleWorldBossStart': GameApiCommand(
+        schemas.battle_world_boss_start,
+        models.WorldBossLog.parse_world_boss_start
+    ),
+    'BattleWorldBossResult': GameApiCommand(
+        schemas.battle_world_boss_result,
+        models.WorldBossLog.parse_world_boss_result
+    ),
+    'BattleRiftOfWorldsRaidStart': GameApiCommand(
+        schemas.battle_rift_of_worlds_raid_start,
+        models.RiftRaidLog.parse_rift_raid_start
+    ),
+    'BattleRiftOfWorldsRaidResult': GameApiCommand(
+        schemas.battle_rift_of_worlds_raid_result,
+        models.RiftRaidLog.parse_rift_raid_result
+    ),
 }
 
 accepted_api_params = {

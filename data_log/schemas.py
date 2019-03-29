@@ -377,6 +377,111 @@ battle_world_boss_result = {
     'required': ['request', 'response'],
 }
 
+battle_rift_of_worlds_raid_start = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/battle_rift_of_worlds_raid_start.json',
+    'title': 'battle_rift_of_worlds_raid_start',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'battle_key': {'type': 'number'},
+            },
+            'required': [
+                'wizard_id',
+                'command',
+                'battle_key',
+            ],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'battle_info': {'type': 'object'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'battle_info',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+battle_rift_of_worlds_raid_result = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/battle_rift_of_worlds_raid_start.json',
+    'title': 'battle_rift_of_worlds_raid_start',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'battle_key': {'type': 'number'},
+                'clear_time': {'type': 'number'},
+                'win_lose': {},
+                'user_status_list': {},
+            },
+            'required': [
+                'wizard_id',
+                'command',
+                'battle_key',
+            ],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'battle_reward_list': {'type': 'object'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'battle_reward_list',
+                'reward',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+# 'BattleRiftOfWorldsRaidStart': {
+#         'request': [
+#             'wizard_id',
+#             'command',
+#             'battle_key',
+#         ],
+#         'response': [
+#             'tzone',
+#             'tvalue',
+#             'battle_info',
+#         ]
+#     },
+#     'BattleRiftOfWorldsRaidResult': {
+#         'request': [
+#             'wizard_id',
+#             'command',
+#             'battle_key',
+#             'clear_time',
+#             'win_lose',
+#             'user_status_list',
+#         ],
+#         'response': [
+#             'tzone',
+#             'tvalue',
+#             'battle_reward_list',
+#             'reward',
+#         ]
+#     },
+
 # Old static list of accepted API params here for posterity
 # accepted_api_params = {
 #     'BattleWorldBossStart': {

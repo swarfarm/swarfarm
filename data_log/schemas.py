@@ -440,13 +440,12 @@ battle_rift_of_worlds_raid_result = {
             'properties': {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
-                'battle_reward_list': {'type': 'object'},
+                'battle_reward_list': {'type': 'array'},
             },
             'required': [
                 'tzone',
                 'tvalue',
                 'battle_reward_list',
-                'reward',
             ]
         }
     },

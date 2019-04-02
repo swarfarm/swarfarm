@@ -196,8 +196,8 @@ class RuneCraftDrop(RuneCraft):
 
     @classmethod
     def parse(cls, **craft_data):
-        craft_type_id = str(craft_data['craft_type_id'])
-        craft_type = craft_data['craft_type']
+        craft_type_id = str(craft_data.get('craft_type_id') or craft_data.get('runecraft_item_id'))
+        craft_type = craft_data.get('craft_type') or craft_data.get('runecraft_type')
 
         return cls(
             type=cls.COM2US_CRAFT_TYPE_MAP[craft_type],
@@ -740,7 +740,7 @@ class RiftRaidLog(LogEntry):
         for rewards in rewards_list:
             reward_wizard_id = rewards['wizard_id']
 
-            for reward_info in rewards:
+            for reward_info in rewards['reward_list']:
                 master_type = reward_info['item_master_type']
 
                 if master_type in RiftRaidItemDrop.PARSE_ITEM_TYPES:
@@ -752,7 +752,9 @@ class RiftRaidLog(LogEntry):
                 else:
                     raise ValueError(f"don't know how to parse {master_type} in {self.__class__.__name__}")
 
-                log_entry.log = self
+                if log_entry.log_id is None or log_entry.wizard_id == self.wizard_id:
+                    log_entry.log = self
+
                 log_entry.save()
 
 
@@ -765,7 +767,7 @@ class RiftRaidDrop(models.Model):
     @classmethod
     def parse(cls, battle_key, wizard_id, item_data):
         try:
-            log_entry = cls.objects.get(log__battle_key=battle_key, log__wizard_id=wizard_id)
+            log_entry = cls.objects.get(log__battle_key=battle_key, wizard_id=wizard_id)
         except cls.DoesNotExist:
             log_entry = super().parse(**item_data)
             log_entry.wizard_id = wizard_id
@@ -782,7 +784,7 @@ class RiftRaidMonsterDrop(RiftRaidDrop, MonsterDrop):
 
 
 class RiftRaidRuneCraftDrop(RiftRaidDrop, RuneCraftDrop):
-    log = models.ForeignKey(RiftRaidLog, on_delete=models.CASCADE, related_name='runes')
+    log = models.ForeignKey(RiftRaidLog, on_delete=models.CASCADE, related_name='runecrafts')
 
 
 # World Boss

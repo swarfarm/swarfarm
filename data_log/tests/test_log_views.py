@@ -7,6 +7,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
 from data_log import views, models
+from data_log.game_commands import accepted_api_params
 from herders.models import Summoner
 
 
@@ -31,12 +32,13 @@ def get_requested_keys(log_data):
     # Sample data contains entire game API request/response, but log clients will trim data down
     # to the keys specified in `accepted_api_params`
     command = log_data['data']['request']['command']
-    requested_data = views.accepted_api_params[command]
+    requested_data = accepted_api_params[command]
 
     trimmed_data = {
         'data': {
             'request': {},
             'response': {},
+            '__version': accepted_api_params['__version'],
         }
     }
 
@@ -47,6 +49,21 @@ def get_requested_keys(log_data):
         trimmed_data['data']['response'][key] = log_data['data']['response'].get(key)
 
     return trimmed_data
+
+
+class AcceptedApiParamsViewTests(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+
+    def test_has_version_number(self):
+        view = views.AcceptedCommands.as_view({'get': 'list'})
+        request = self.factory.get(
+            reverse('data_log:log-accepted-commands-list'),
+            format='json',
+        )
+
+        result = view(request)
+        self.assertIsNotNone(result.data.get('__version'))
 
 
 class LogDataViewTests(BaseLogTest):
@@ -136,3 +153,16 @@ class LogDataViewTests(BaseLogTest):
         log = models.SummonLog.objects.first()
         self.assertEqual(log.summoner, u.summoner)
         self.assertEqual(log.wizard_id, 123)
+
+    def test_mismatched_accepted_api_params_version(self):
+        view = views.LogData.as_view({'post': 'create'})
+        with open(f'data_log/tests/game_api_data/SummonLog/scroll_unknown_qty1.json', 'r') as f:
+            data = json.load(f)
+            data['__version'] = 'ttttt'  # Invalid UUID guarantees never matching
+            request = self.factory.post(
+                reverse('data_log:log-upload-list'),
+                data=data,
+                format='json',
+            )
+            response = view(request)
+            self.assertTrue(response.data.get('reinit'))

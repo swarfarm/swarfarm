@@ -2,8 +2,8 @@
   "data": {
     "request": {
       "command": "BattleRiftOfWorldsRaidResult",
-      "wizard_id": 12234369,
-      "session_key": "37ebbd1756203e133601557dd92b5a",
+      "wizard_id": 123,
+      "session_key": "abc123",
       "proto_ver": 11390,
       "infocsv": "4.00.82",
       "channel_uid": 144237507,
@@ -32,7 +32,7 @@
       ],
       "user_status_list": [
         {
-          "wizard_id": 25887721,
+          "wizard_id": 258,
           "damage": 25,
           "unit_id_list": [
             {
@@ -62,7 +62,7 @@
           ]
         },
         {
-          "wizard_id": 16200462,
+          "wizard_id": 162,
           "damage": 34,
           "unit_id_list": [
             {
@@ -92,7 +92,7 @@
           ]
         },
         {
-          "wizard_id": 12234369,
+          "wizard_id": 123,
           "damage": 40,
           "unit_id_list": [
             {
@@ -130,8 +130,8 @@
       "ret_code": 0,
       "win_lose": 1,
       "wizard_info": {
-        "wizard_id": 12234369,
-        "wizard_name": "porksmash2",
+        "wizard_id": 123,
+        "wizard_name": "fakeuser",
         "wizard_mana": 8406079,
         "wizard_crystal": 4023,
         "wizard_crystal_paid": 0,
@@ -171,7 +171,7 @@
       },
       "battle_reward_list": [
         {
-          "wizard_id": 25887721,
+          "wizard_id": 258,
           "reward_list": [
             {
               "item_master_type": 27,
@@ -192,7 +192,7 @@
           ]
         },
         {
-          "wizard_id": 16200462,
+          "wizard_id": 162,
           "reward_list": [
             {
               "item_master_type": 27,
@@ -213,7 +213,7 @@
           ]
         },
         {
-          "wizard_id": 12234369,
+          "wizard_id": 123,
           "reward_list": [
             {
               "item_master_type": 6,

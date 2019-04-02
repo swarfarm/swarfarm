@@ -59,7 +59,13 @@ class LogData(viewsets.ViewSet):
 
         # Parse the log
         active_log_commands[api_command].parse(summoner, log_data)
-        return Response({'detail': 'Log OK'})
+        response = {'detail': 'Log OK'}
+
+        # Check if accepted API params version matches the active version
+        if log_data.get('__version') != accepted_api_params['__version']:
+            response['reinit'] = True
+
+        return Response(response)
 
 
 class AcceptedCommands(viewsets.ViewSet):

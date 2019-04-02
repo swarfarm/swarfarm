@@ -1,4 +1,5 @@
 import json
+from uuid import uuid4
 from jsonschema import Draft4Validator
 
 from . import models
@@ -85,6 +86,7 @@ active_log_commands = {
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
+accepted_api_params['__version'] = uuid4().hex
 
 
 # Utility functions

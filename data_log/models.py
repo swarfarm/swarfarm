@@ -696,6 +696,7 @@ class RiftRaidLog(LogEntry):
     battle_key = models.BigIntegerField(db_index=True, null=True, blank=True)
     success = models.NullBooleanField(help_text='Null indicates that run was not completed')
     contribution_amount = models.IntegerField(blank=True, null=True)
+    clear_time = models.DurationField(blank=True, null=True)
 
     @classmethod
     def parse_rift_raid_start(cls, summoner, log_data):
@@ -733,6 +734,7 @@ class RiftRaidLog(LogEntry):
         log_entry.parse_common_log_data(log_data)
         log_entry.success = log_data['request']['win_lose'] == 1
         log_entry.contribution_amount = user_status['damage']
+        log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
         log_entry.save()
         log_entry.parse_rewards(battle_key, log_data['response']['battle_reward_list'])
 

@@ -433,6 +433,7 @@ battle_rift_of_worlds_raid_result = {
                 'wizard_id',
                 'command',
                 'battle_key',
+                'clear_time',
             ],
         },
         'response': {

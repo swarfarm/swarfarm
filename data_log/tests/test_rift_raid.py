@@ -1,5 +1,6 @@
 from bestiary.models import GameItem
 from data_log import models
+from datetime import timedelta
 from .test_log_views import BaseLogTest
 
 
@@ -25,6 +26,7 @@ class ElementalRiftBeastTests(BaseLogTest):
         log = models.RiftRaidLog.objects.first()
         self.assertTrue(log.success)
         self.assertEqual(log.contribution_amount, 35)
+        self.assertEqual(log.clear_time, timedelta(milliseconds=87975))
 
     def test_raid_fail(self):
         response = self._do_log('BattleRiftOfWorldsRaidStart/raid_r4_fail_extra_placement_support.json')

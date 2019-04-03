@@ -181,6 +181,30 @@ class RiftDungeonLogAdmin(admin.ModelAdmin):
     )
 
 
+# Rift Raid
+class RiftRaidItemDropInline(ItemDropInline):
+    model = models.RiftRaidItemDrop
+
+
+class RiftRaidRuneCraftDropInline(RuneCraftDropinline):
+    model = models.RiftRaidRuneCraftDrop
+
+
+class RiftRaidMonsterDropInline(MonsterDropInline):
+    model = models.RiftRaidMonsterDrop
+
+
+@admin.register(models.RiftRaidLog)
+class RiftRaidLogAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'wizard_id', 'summoner', 'level', 'clear_time', 'success')
+    readonly_fields = ('summoner', 'level')
+    inlines = (
+        RiftRaidItemDropInline,
+        RiftRaidRuneCraftDropInline,
+        RiftRaidMonsterDropInline,
+    )
+
+
 # World Boss
 class WorldBossItemDropInline(ItemDropInline):
     model = models.WorldBossLogItemDrop

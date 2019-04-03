@@ -20,7 +20,7 @@ class InvalidLogException(exceptions.APIException):
         self.code = code if code is not None else self.default_code
         self.detail = {
             'message': exceptions.ErrorDetail(message, self.default_code),
-            'reinit': exceptions.ErrorDetail(reinit, self.default_code),
+            'reinit': reinit,
         }
 
 
@@ -28,6 +28,9 @@ class LogData(viewsets.ViewSet):
     permission_classes = (permissions.AllowAny, )
     versioning_class = versioning.QueryParameterVersioning  # Ignore default of namespaced based versioning and use default version defined in settings
     parser_classes = (parsers.JSONParser, parsers.FormParser)
+
+    def list(self, request):
+        return Response(accepted_api_params)
 
     def create(self, request):
         log_data = request.data.get('data')

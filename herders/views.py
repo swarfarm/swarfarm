@@ -29,7 +29,8 @@ from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm
     EditBuildingForm, EditUserForm, EditSummonerForm, AddMonsterInstanceForm, BulkAddMonsterInstanceForm, \
     BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
     MonsterPieceForm, AddTeamGroupForm, EditTeamGroupForm, DeleteTeamGroupForm, EditTeamForm, FilterRuneForm, \
-    AddRuneInstanceForm, AssignRuneForm, AddRuneCraftInstanceForm, ImportPCAPForm, ImportSWParserJSONForm
+    AddRuneInstanceForm, AssignRuneForm, AddRuneCraftInstanceForm, ImportPCAPForm, ImportSWParserJSONForm, \
+    FilterLogTimeRangeForm
 from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, \
     RuneCraftInstance, Storage
 from .profile_parser import parse_pcap, validate_sw_json
@@ -2787,6 +2788,11 @@ def export_win10_optimizer(request, profile_name):
     return response
 
 
+# Data logs
+DEFAULT_LOG_TIME_RANGE = {
+    'timestamp__gte': '2018-09-13T00:00:00+00:00',
+    'timestamp__lte': '2099-01-01T00:00:00+00:00'
+}
 @username_case_redirect
 @login_required
 def data_log_dashboard(request, profile_name):
@@ -2821,9 +2827,27 @@ def _log_data_table_view(request, profile_name, qs_attr, template):
     if not is_owner:
         return HttpResponseForbidden()
 
-    qs = getattr(summoner, qs_attr)
+    form = FilterLogTimeRangeForm(request.POST or None)
 
-    paginator = Paginator(qs.all(), 50)
+    if request.method == 'POST':
+        # Process form with custom timestamps
+        if form.is_valid():
+            if form.cleaned_data['reset']:
+                request.session['data_log_date_filter'] = {
+                    **DEFAULT_LOG_TIME_RANGE
+                }
+            else:
+                request.session['data_log_date_filter'] = {
+                    'timestamp__gte': form.cleaned_data['start_time'].isoformat(),
+                    'timestamp__lte': form.cleaned_data['end_time'].isoformat(),
+                }
+        else:
+            messages.error(request, 'Unable to set specified time range.')
+
+    time_filters = request.session.get('data_log_date_filter', {})
+
+    qs = getattr(summoner, qs_attr).filter(**time_filters)
+    paginator = Paginator(qs, 50)
     page = request.GET.get('page')
 
     context = {
@@ -2832,6 +2856,9 @@ def _log_data_table_view(request, profile_name, qs_attr, template):
         'is_owner': is_owner,
         'view': 'data_log',
         'logs': paginator.get_page(page),
+        'form': form,
+        'log_timestamp_start': time_filters['timestamp__gte'],
+        'log_timestamp_end': time_filters['timestamp__lte'],
     }
 
     return render(request, template, context)

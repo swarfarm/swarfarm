@@ -1583,3 +1583,8 @@ class ExportOptimizerForm(forms.Form):
         Field('json_data'),
     )
 
+
+class FilterLogTimeRangeForm(forms.Form):
+    start_time = forms.DateTimeField()
+    end_time = forms.DateTimeField()
+    reset = forms.BooleanField(required=False)

@@ -84,7 +84,7 @@ class Efficiencies(TestCase):
             (1.0 + 4 * 0.2) / 2.8 * 100,
             rune.max_efficiency,
         )
-        upgrades_level_6 = [v[6] for v in rune.UPGRADE_VALUES_AVG.values()]
+        upgrades_level_6 = [v[6] for stat, v in rune.UPGRADE_VALUES_AVG.items() if stat != rune.main_stat]
         self.assertAlmostEqual(
             (1.0 + 4 * 0.2 * sum(upgrades_level_6) / len(upgrades_level_6)) / 2.8 * 100,
             rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),
@@ -135,7 +135,7 @@ class Efficiencies(TestCase):
             (51 / 63 + 2 * 0.875 * 0.2) / 2.8 * 100,
             rune.max_efficiency,
         )
-        upgrades_level_5 = [v[5] for v in rune.UPGRADE_VALUES_AVG.values()]
+        upgrades_level_5 = [v[5] for stat, v in rune.UPGRADE_VALUES_AVG.items() if stat != rune.main_stat]
         self.assertAlmostEqual(
             (51 / 63 + 2 * 0.2 * sum(upgrades_level_5) / len(upgrades_level_5)) / 2.8 * 100,
             rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),
@@ -188,7 +188,7 @@ class Efficiencies(TestCase):
             rune.max_efficiency,
         )
         # two average upgrades
-        upgrades_level_4 = [v[4] for v in rune.UPGRADE_VALUES_AVG.values()]
+        upgrades_level_4 = [v[4] for stat, v in rune.UPGRADE_VALUES_AVG.items() if stat != rune.main_stat]
         self.assertAlmostEqual(
             (43 / 63 + 2 * 0.2 * sum(upgrades_level_4) / len(upgrades_level_4)) / 2.8 * 100,
             rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),

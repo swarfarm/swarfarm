@@ -1648,7 +1648,7 @@ class Rune(models.Model, RuneObjectBase):
         # All runes are compared against max stat values for perfect 6* runes.
 
         # Main stat efficiency (max 100%)
-        running_sum = float(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15]) / float(self.MAIN_STAT_VALUES[self.main_stat][6][15])
+        running_sum = float(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15]) / float(self.MAIN_STAT_VALUES[self.main_stat][6][15])  # * factor[self.innate_stat]
 
         # Substat efficiencies (max 20% per; 1 innate, max 4 initial, 4 upgrades)
         if self.innate_stat is not None:
@@ -1681,7 +1681,7 @@ class Rune(models.Model, RuneObjectBase):
             available_stats = [
                 upgrade_value[self.stars] * factor[stat]
                 for stat, upgrade_value in self.UPGRADE_VALUES_MAX.items()
-                if stat not in self.substats
+                if stat not in self.substats and stat != self.main_stat and stat != self.innate_stat
             ]
             max_stats = sorted(available_stats, reverse=True)
             running_sum += sum(max_stats[:new_stats]) * 0.2 / 2.8 * 100
@@ -1710,7 +1710,7 @@ class Rune(models.Model, RuneObjectBase):
             available_stats = [
                 upgrade_value[self.stars] * factor[stat]
                 for stat, upgrade_value in self.UPGRADE_VALUES_AVG.items()
-                if stat not in self.substats
+                if stat not in self.substats and stat != self.main_stat and stat != self.innate_stat
             ]
             ave_stat = sum(available_stats) / len(available_stats)
             running_sum += ave_stat * new_stats * 0.2 / 2.8 * 100

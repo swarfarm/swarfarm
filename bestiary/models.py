@@ -1643,7 +1643,7 @@ class Rune(models.Model, RuneObjectBase):
     def substat_upgrades_received(self):
         return int(floor(min(self.level, 12) / 3) + 1)
 
-    def get_efficiency(self, scale=SUBSTAT_INCREMENTS):
+    def get_efficiency(self):
         # https://www.youtube.com/watch?v=SBWeptNNbYc
         # All runes are compared against max stat values for perfect 6* runes.
 
@@ -1652,14 +1652,14 @@ class Rune(models.Model, RuneObjectBase):
 
         # Substat efficiencies (max 20% per; 1 innate, max 4 initial, 4 upgrades)
         if self.innate_stat is not None:
-            running_sum += self.innate_stat_value / float(scale[self.innate_stat][6]) * 0.2
+            running_sum += self.innate_stat_value / float(self.SUBSTAT_INCREMENTS[self.innate_stat][6]) * 0.2
 
         for substat, value in zip(self.substats, self.substat_values):
-            running_sum += value / float(scale[substat][6]) * 0.2
+            running_sum += value / float(self.SUBSTAT_INCREMENTS[substat][6]) * 0.2
 
         return running_sum / 2.8 * 100
 
-    def get_max_efficiency(self, efficiency=None, substat_upgrades_remaining=None, scale=UPGRADE_VALUES_MAX):
+    def get_max_efficiency(self, efficiency=None, substat_upgrades_remaining=None):
         running_sum = efficiency if efficiency is not None else self.efficiency
         substat_upgrades_remaining = substat_upgrades_remaining if substat_upgrades_remaining is not None else \
             self.substat_upgrades_remaining
@@ -1668,7 +1668,7 @@ class Rune(models.Model, RuneObjectBase):
         old_stats = substat_upgrades_remaining - new_stats
 
         if old_stats > 0:
-            upgrades = [scale[stat][self.stars] for stat in self.substats]
+            upgrades = [self.UPGRADE_VALUES_MAX[stat][self.stars] for stat in self.substats]
             # we can repeatedly upgrade the most value of the existing stats
             max_stat = max(*upgrades, 0)  # use 0 to ensure max() doesn't error if we only have one stat
             running_sum += max_stat * old_stats * 0.2 / 2.8 * 100
@@ -1677,7 +1677,7 @@ class Rune(models.Model, RuneObjectBase):
             # add the top N stats
             available_stats = [
                 upgrade_value[self.stars]
-                for stat, upgrade_value in scale.items()
+                for stat, upgrade_value in self.UPGRADE_VALUES_MAX.items()
                 if stat not in self.substats
             ]
             max_stats = sorted(available_stats, reverse=True)
@@ -1685,7 +1685,7 @@ class Rune(models.Model, RuneObjectBase):
 
         return running_sum
 
-    def get_avg_efficiency(self, efficiency, substat_upgrades_remaining, scale=UPGRADE_VALUES_AVG):
+    def get_avg_efficiency(self, efficiency, substat_upgrades_remaining):
         running_sum = efficiency if efficiency is not None else self.efficiency
         substat_upgrades_remaining = substat_upgrades_remaining if substat_upgrades_remaining is not None else \
             self.substat_upgrades_remaining
@@ -1694,7 +1694,7 @@ class Rune(models.Model, RuneObjectBase):
         old_stats = substat_upgrades_remaining - new_stats
 
         if old_stats > 0:
-            upgrades = [scale[stat][self.stars] for stat in self.substats]
+            upgrades = [self.UPGRADE_VALUES_AVG[stat][self.stars] for stat in self.substats]
             # average value of an upgrade
             ave_stat = sum(upgrades) / len(upgrades)
             running_sum += ave_stat * old_stats * 0.2 / 2.8 * 100
@@ -1703,7 +1703,7 @@ class Rune(models.Model, RuneObjectBase):
             # average the missing stats
             available_stats = [
                 upgrade_value[self.stars]
-                for stat, upgrade_value in scale.items()
+                for stat, upgrade_value in self.UPGRADE_VALUES_AVG.items()
                 if stat not in self.substats
             ]
             ave_stat = sum(available_stats) / len(available_stats)

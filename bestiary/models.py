@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from functools import partial
-from math import floor, ceil
+from itertools import zip_longest
+from math import floor
 from operator import is_not
 
 from django.contrib.auth.models import User
@@ -1171,6 +1172,99 @@ class Rune(models.Model, RuneObjectBase):
         ]
     }
 
+    SUBSTAT_INCREMENTS_MIN = {
+        # [stat][stars]: value
+        RuneObjectBase.STAT_HP: {
+            1: 15,
+            2: 30,
+            3: 45,
+            4: 60,
+            5: 90,
+            6: 135,
+        },
+        RuneObjectBase.STAT_HP_PCT: {
+            1: 1,
+            2: 1,
+            3: 2,
+            4: 3,
+            5: 4,
+            6: 5,
+        },
+        RuneObjectBase.STAT_ATK: {
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 8,
+            6: 10,
+        },
+        RuneObjectBase.STAT_ATK_PCT: {
+            1: 1,
+            2: 1,
+            3: 2,
+            4: 3,
+            5: 4,
+            6: 5,
+        },
+        RuneObjectBase.STAT_DEF: {
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 8,
+            6: 10,
+        },
+        RuneObjectBase.STAT_DEF_PCT: {
+            1: 1,
+            2: 1,
+            3: 2,
+            4: 3,
+            5: 4,
+            6: 5,
+        },
+        RuneObjectBase.STAT_SPD: {
+            1: 1,
+            2: 1,
+            3: 1,
+            4: 2,
+            5: 3,
+            6: 4,
+        },
+        RuneObjectBase.STAT_CRIT_RATE_PCT: {
+            1: 1,
+            2: 1,
+            3: 1,
+            4: 2,
+            5: 3,
+            6: 4,
+        },
+        RuneObjectBase.STAT_CRIT_DMG_PCT: {
+            1: 1,
+            2: 1,
+            3: 2,
+            4: 2,
+            5: 3,
+            6: 4,
+        },
+        RuneObjectBase.STAT_RESIST_PCT: {
+            1: 1,
+            2: 1,
+            3: 2,
+            4: 2,
+            5: 3,
+            6: 4,
+        },
+        RuneObjectBase.STAT_ACCURACY_PCT: {
+            1: 1,
+            2: 1,
+            3: 2,
+            4: 2,
+            5: 3,
+            6: 4,
+        },
+    }
+
+    # maximums
     SUBSTAT_INCREMENTS = {
         # [stat][stars]: value
         RuneObjectBase.STAT_HP: {
@@ -1263,12 +1357,30 @@ class Rune(models.Model, RuneObjectBase):
         },
     }
 
-    UPGRADE_VALUES = {
+    SUBSTAT_INCREMENTS_AVG = {
+        rune_type: {
+            stars: (scale_min[rune_type][stars] + value)/2
+            for stars, value in level_data.items()
+        }
+        for (rune_type, level_data), scale_min in zip_longest(SUBSTAT_INCREMENTS.items(), [],
+                                                              fillvalue=SUBSTAT_INCREMENTS_MIN)
+    }
+
+    UPGRADE_VALUES_MAX = {
         rune_type: {
             stars: value/level_data[6]
             for stars, value in level_data.items()
         }
         for rune_type, level_data in SUBSTAT_INCREMENTS.items()
+    }
+
+    UPGRADE_VALUES_AVG = {
+        rune_type: {
+            stars: value/scale_max[rune_type][6]
+            for stars, value in level_data.items()
+        }
+        for (rune_type, level_data), scale_max in zip_longest(SUBSTAT_INCREMENTS_AVG.items(), [],
+                                                              fillvalue=SUBSTAT_INCREMENTS)
     }
 
     INNATE_STAT_TITLES = {
@@ -1547,7 +1659,7 @@ class Rune(models.Model, RuneObjectBase):
 
         return running_sum / 2.8 * 100
 
-    def get_max_efficiency(self, efficiency, substat_upgrades_remaining):
+    def get_max_efficiency(self, efficiency, substat_upgrades_remaining, scale=UPGRADE_VALUES_MAX):
         new_stats = min(4 - len(self.substats), substat_upgrades_remaining)
         old_stats = substat_upgrades_remaining - new_stats
 
@@ -1555,7 +1667,7 @@ class Rune(models.Model, RuneObjectBase):
             # we can repeatedly upgrade the most value of the existing stats
             best_stat = max(
                 0,  # ensure max() doesn't error if we only have one stat
-                *[self.UPGRADE_VALUES[stat][self.stars] for stat in self.substats]
+                *[scale[stat][self.stars] for stat in self.substats]
             )
             efficiency += best_stat * old_stats * 0.2 / 2.8 * 100
 
@@ -1564,12 +1676,32 @@ class Rune(models.Model, RuneObjectBase):
             available_upgrades = sorted(
                 [
                     upgrade_value[self.stars]
-                    for stat, upgrade_value in self.UPGRADE_VALUES.items()
+                    for stat, upgrade_value in scale.items()
                     if stat not in self.substats
                 ],
                 reverse=True
             )
             efficiency += sum(available_upgrades[:new_stats]) * 0.2 / 2.8 * 100
+
+        return efficiency
+
+    def get_avg_efficiency(self, efficiency, substat_upgrades_remaining, scale=UPGRADE_VALUES_AVG):
+        new_stats = min(4 - len(self.substats), substat_upgrades_remaining)
+        old_stats = substat_upgrades_remaining - new_stats
+
+        if old_stats > 0:
+            # average value of an upgrade
+            upgrades = [scale[stat][self.stars] for stat in self.substats]
+            efficiency += sum(upgrades) / len(upgrades) * old_stats * 0.2 / 2.8 * 100
+
+        if new_stats:
+            # average the missing stats
+            available_stats = [
+                upgrade_value[self.stars]
+                for stat, upgrade_value in scale.items()
+                if stat not in self.substats
+            ]
+            efficiency += sum(available_stats) / len(available_stats) * new_stats * 0.2 / 2.8 * 100
 
         return efficiency
 
@@ -1589,6 +1721,9 @@ class Rune(models.Model, RuneObjectBase):
         self.substat_upgrades_remaining = 5 - self.substat_upgrades_received
         self.efficiency = self.get_efficiency()
         self.max_efficiency = self.get_max_efficiency(self.efficiency, self.substat_upgrades_remaining)
+        """
+        self.avg_efficiency = self.get_avg_efficiency(self.efficiency, self.substat_upgrades_remaining)
+        """
 
         # Cap stat values to appropriate value
         # Very old runes can have different values, but never higher than the cap

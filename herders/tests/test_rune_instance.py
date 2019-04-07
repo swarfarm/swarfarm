@@ -47,6 +47,10 @@ class Efficiencies(TestCase):
             1.0 / 2.8 * 100,
             rune.max_efficiency,
         )
+        self.assertAlmostEqual(
+            1.0 / 2.8 * 100,
+            rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),
+        )
 
     def test_efficiencies_star_6_level_12(self):
         """No upgrades are left so this should match the max level test"""
@@ -62,6 +66,10 @@ class Efficiencies(TestCase):
             1.0 / 2.8 * 100,
             rune.max_efficiency,
         )
+        self.assertAlmostEqual(
+            1.0 / 2.8 * 100,
+            rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),
+        )
 
     def test_efficiencies_star_6_level_0(self):
         rune = self.stub_rune(level=0)
@@ -75,6 +83,11 @@ class Efficiencies(TestCase):
         self.assertAlmostEqual(
             (1.0 + 4 * 0.2) / 2.8 * 100,
             rune.max_efficiency,
+        )
+        upgrades_level_6 = [v[6] for v in rune.UPGRADE_VALUES_AVG.values()]
+        self.assertAlmostEqual(
+            (1.0 + 4 * 0.2 * sum(upgrades_level_6) / len(upgrades_level_6)) / 2.8 * 100,
+            rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),
         )
 
     def test_efficiencies_star_5_level_0_existing(self):
@@ -101,8 +114,15 @@ class Efficiencies(TestCase):
             (51 / 63 + 4 * 0.875 * 0.2) / 2.8 * 100,
             rune.max_efficiency,
         )
+        # four upgrades to existing runes
+        upgrades = [rune.UPGRADE_VALUES_AVG[rune.STAT_HP_PCT][5], rune.UPGRADE_VALUES_AVG[rune.STAT_ATK_PCT][5],
+                    rune.UPGRADE_VALUES_AVG[rune.STAT_DEF_PCT][5], rune.UPGRADE_VALUES_AVG[rune.STAT_HP][5]]
+        self.assertAlmostEqual(
+            (51 / 63 + 4 * 0.2 * sum(upgrades) / len(upgrades)) / 2.8 * 100,
+            rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),
+        )
 
-    def test_efficiencies_star_5_level_0_new_base(self):
+    def test_efficiencies_star_5_level_6_new_base(self):
         rune = self.stub_rune(level=6, stars=5)
         rune.save()
 
@@ -114,6 +134,11 @@ class Efficiencies(TestCase):
         self.assertAlmostEqual(
             (51 / 63 + 2 * 0.875 * 0.2) / 2.8 * 100,
             rune.max_efficiency,
+        )
+        upgrades_level_5 = [v[5] for v in rune.UPGRADE_VALUES_AVG.values()]
+        self.assertAlmostEqual(
+            (51 / 63 + 2 * 0.2 * sum(upgrades_level_5) / len(upgrades_level_5)) / 2.8 * 100,
+            rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),
         )
 
     def test_efficiencies_star_4_level_0_existing(self):
@@ -140,6 +165,13 @@ class Efficiencies(TestCase):
             (43 / 63 + 4 * 0.75 * 0.2) / 2.8 * 100,
             rune.max_efficiency,
         )
+        # four upgrades to existing runes
+        upgrades = [rune.UPGRADE_VALUES_AVG[rune.STAT_HP_PCT][4], rune.UPGRADE_VALUES_AVG[rune.STAT_ATK_PCT][4],
+                    rune.UPGRADE_VALUES_AVG[rune.STAT_DEF_PCT][4], rune.UPGRADE_VALUES_AVG[rune.STAT_HP][4]]
+        self.assertAlmostEqual(
+            (43 / 63 + 4 * 0.2 * sum(upgrades) / len(upgrades)) / 2.8 * 100,
+            rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),
+        )
 
     def test_efficiencies_star_4_level_6_new_base(self):
         """Two upgrades left; a 4* should get the (max) base % upgrades"""
@@ -154,6 +186,12 @@ class Efficiencies(TestCase):
         self.assertAlmostEqual(
             (43 / 63 + 2 * 0.75 * 0.2) / 2.8 * 100,
             rune.max_efficiency,
+        )
+        # two average upgrades
+        upgrades_level_4 = [v[4] for v in rune.UPGRADE_VALUES_AVG.values()]
+        self.assertAlmostEqual(
+            (43 / 63 + 2 * 0.2 * sum(upgrades_level_4) / len(upgrades_level_4)) / 2.8 * 100,
+            rune.get_avg_efficiency(rune.efficiency, rune.substat_upgrades_remaining),
         )
 
     def test_efficiencies_star_4_level_9_new_base(self):

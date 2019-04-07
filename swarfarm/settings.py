@@ -206,9 +206,6 @@ CELERY_BROKER_URL = env('CELERY_BROKER')
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_TRACK_STARTED = True
-if DEBUG:
-    CELERY_ALWAYS_EAGER = True
-    CELERY_TASK_ALWAYS_EAGER = True
 
 # Session config
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'

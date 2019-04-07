@@ -1685,7 +1685,7 @@ class Rune(models.Model, RuneObjectBase):
 
         return running_sum
 
-    def get_avg_efficiency(self, efficiency, substat_upgrades_remaining):
+    def get_avg_efficiency(self, efficiency=None, substat_upgrades_remaining=None):
         running_sum = efficiency if efficiency is not None else self.efficiency
         substat_upgrades_remaining = substat_upgrades_remaining if substat_upgrades_remaining is not None else \
             self.substat_upgrades_remaining

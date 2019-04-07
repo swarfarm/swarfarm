@@ -101,6 +101,7 @@ urlpatterns = [
         ])),
         url(r'^data_logs/', include([
             url(r'^$', views.data_log_dashboard, name='data_log_dashboard'),
+            url(r'^help/$', views.data_log_help, name='data_log_help'),
             url(r'^magic_shop/$', views.data_log_magic_shop, name='data_log_magic_shop'),
             url(r'^wish/$', views.data_log_wish, name='data_log_wish'),
             url(r'^rune_crafting/$', views.data_log_rune_crafting, name='data_log_rune_crafting'),

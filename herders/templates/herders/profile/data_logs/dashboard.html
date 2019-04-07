@@ -1,15 +1,59 @@
 {% extends 'herders/profile/base.html' %}
 
 {% block profile %}
-<ul>
-    <li><a href="{% url 'herders:data_log_magic_shop' profile_name=profile_name %}">Magic Shop</a></li>
-    <li><a href="{% url 'herders:data_log_wish' profile_name=profile_name %}">Wishes</a></li>
-    <li><a href="{% url 'herders:data_log_rune_crafting' profile_name=profile_name %}">Rune Crafting</a></li>
-    <li><a href="{% url 'herders:data_log_magic_box' profile_name=profile_name %}">Magic Box</a></li>
-    <li><a href="{% url 'herders:data_log_summons' profile_name=profile_name %}">Summons</a></li>
-    <li><a href="{% url 'herders:data_log_dungeons' profile_name=profile_name %}">Dungeons</a></li>
-    <li><a href="{% url 'herders:data_log_rift_beast' profile_name=profile_name %}">Elemental Rift Beast</a></li>
-    <li><a href="{% url 'herders:data_log_rift_raid' profile_name=profile_name %}">Rift Raid</a></li>
-    <li><a href="{% url 'herders:data_log_world_boss' profile_name=profile_name %}">World Boss</a></li>
-</ul>
+    <h1>Personal Data Logs</h1>
+
+    {% if total == 0 %}
+        <div class="alert alert-warning" role="alert">
+            You donn't have any data logs yet! See the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.
+        </div>
+    {% endif %}
+
+    <ul class="list-unstyled">
+        <li>
+            <a href="{% url 'herders:data_log_magic_shop' profile_name=profile_name %}">
+                <h2>Magic Shop Refresh <small>{{ counts.magic_shop }} log{{ counts.magic_shop|pluralize }}</small></h2>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'herders:data_log_wish' profile_name=profile_name %}">
+                <h2>Wishes <small>{{ counts.wish }} log{{ counts.wish|pluralize }}</small></h2>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'herders:data_log_rune_crafting' profile_name=profile_name %}">
+                <h2>Rune Crafting <small>{{ counts.rune_crafting }} log{{ counts.rune_crafting|pluralize }}</small></h2>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'herders:data_log_magic_box' profile_name=profile_name %}">
+                <h2>Magic Box Crafting <small>{{ counts.magic_box }} log{{ counts.magic_box|pluralize }}</small></h2>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'herders:data_log_summons' profile_name=profile_name %}">
+                <h2>Summons <small>{{ counts.summons }} log{{ counts.summons|pluralize }}</small></h2>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'herders:data_log_dungeons' profile_name=profile_name %}">
+                <h2>Dungeons <small>{{ counts.dungeons }} log{{ counts.dungeons|pluralize }}</small></h2>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'herders:data_log_rift_beast' profile_name=profile_name %}">
+                <h2>Elemental Rift Beast <small>{{ counts.rift_beast }} log{{ counts.rift_beast|pluralize }}</small></h2>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'herders:data_log_rift_raid' profile_name=profile_name %}">
+                <h2>Rift Raid <small>{{ counts.rift_raid }} log{{ counts.rift_raid|pluralize }}</small></h2>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'herders:data_log_world_boss' profile_name=profile_name %}">
+                <h2>World Boss <small>{{ counts.world_boss }} log{{ counts.world_boss|pluralize }}</small></h2>
+            </a>
+        </li>
+    </ul>
 {% endblock %}

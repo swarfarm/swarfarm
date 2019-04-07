@@ -11,7 +11,15 @@
             <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#custom_timespan_modal">Set Time Range</button>
             {% include "./pagination.html" %}
         </div>
-        {% block logs %}{% endblock %}
+
+        {% if logs.paginator.count == 0 %}
+            <div class="panel-body">
+                <p>No logs found! Need help getting started?</p>
+            </div>
+        {% else %}
+            {% block logs %}{% endblock %}
+        {% endif %}
+
         <div class="panel-footer">{% include "./pagination.html" %}</div>
     </div>
 

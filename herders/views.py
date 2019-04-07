@@ -1,6 +1,7 @@
 import json
 from collections import OrderedDict
 from copy import deepcopy
+from functools import reduce
 
 from celery.result import AsyncResult
 from crispy_forms.bootstrap import FieldWithButtons, StrictButton, Field, Div
@@ -2793,6 +2794,8 @@ DEFAULT_LOG_TIME_RANGE = {
     'timestamp__gte': '2018-09-13T00:00:00+00:00',
     'timestamp__lte': '2099-01-01T00:00:00+00:00'
 }
+
+
 @username_case_redirect
 @login_required
 def data_log_dashboard(request, profile_name):
@@ -2806,14 +2809,51 @@ def data_log_dashboard(request, profile_name):
     if not is_owner:
         return HttpResponseForbidden()
 
+    log_counts = {
+        'magic_shop': summoner.shoprefreshlog_set.count(),
+        'wish': summoner.wishlog_set.count(),
+        'rune_crafting': summoner.craftrunelog_set.count(),
+        'magic_box': summoner.magicboxcraft_set.count(),
+        'summons': summoner.summonlog_set.count(),
+        'dungeons': summoner.dungeonlog_set.count(),
+        'rift_beast': summoner.riftdungeonlog_set.count(),
+        'rift_raid': summoner.riftraidlog_set.count(),
+        'world_boss': summoner.worldbosslog_set.count(),
+    }
+
+    total = reduce(lambda a, b: a + b, log_counts.values())
+
     context = {
         'profile_name': profile_name,
         'summoner': summoner,
         'is_owner': is_owner,
         'view': 'data_log',
+        'counts': log_counts,
+        'total': total,
     }
 
     return render(request, 'herders/profile/data_logs/dashboard.html', context)
+
+
+@username_case_redirect
+@login_required
+def data_log_help(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return HttpResponseForbidden()
+
+    return render(request, 'herders/profile/data_logs/help.html', {
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'is_owner': is_owner,
+        'view': 'data_log',
+    })
 
 
 def _log_data_table_view(request, profile_name, qs_attr, template):
@@ -2844,7 +2884,7 @@ def _log_data_table_view(request, profile_name, qs_attr, template):
         else:
             messages.error(request, 'Unable to set specified time range.')
 
-    time_filters = request.session.get('data_log_date_filter', {})
+    time_filters = request.session.get('data_log_date_filter', DEFAULT_LOG_TIME_RANGE)
 
     qs = getattr(summoner, qs_attr).filter(**time_filters)
     paginator = Paginator(qs, 50)

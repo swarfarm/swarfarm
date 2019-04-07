@@ -1,0 +1,28 @@
+{% extends 'herders/profile/base.html' %}
+
+{% block profile %}
+    <h2>How to get personal logs</h2>
+    <ol>
+        <li>Download the latest package from the <a href="https://github.com/Xzandro/sw-exporter/releases/latest" target="_blank">SW-Exporter</a> project on Github.</li>
+        <li><a href="{% url 'herders:import_swparser' profile_name=profile_name %}">One time only - import your game data via Summoner's War JSON Import</a></li>
+        <li>Play the game while connected to the proxy.</li>
+    </ol>
+
+    <div class="alert alert-warning" role="alert"><strong>Important!</strong> Data logs are only stored for a 6 month period.</div>
+
+    <h2>FAQs</h2>
+    <dl>
+        <dt>Where are the statistics?</dt>
+        <dd>They are under development and coming soon.</dd>
+
+        <dt>Can I download my data logs?</dt>
+        <dd>API access to data logs is coming soon.</dd>
+
+        <dt>Who can see my data logs?</dt>
+        <dd>Only you can. Data logs are 100% private, even if your SWARFARM profile is public.</dd>
+
+        <dt>Will I get banned for using SW-Exporter?</dt>
+        <dd>There has never been any report of being banned for using SW-Exporter or similar tools over the last 3 years.</dd>
+    </dl>
+
+{% endblock %}

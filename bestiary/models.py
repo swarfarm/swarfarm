@@ -1507,6 +1507,11 @@ class Rune(models.Model, RuneObjectBase):
         else:
             return ''
 
+    # For template rendering
+    @property
+    def substat_rune_display(self):
+        return [self.get_substat_rune_display(x) for x in range(len(self.substats)+1)]
+
     def get_stat(self, stat_type, sub_stats_only=False):
         if self.main_stat == stat_type and not sub_stats_only:
             return self.main_stat_value

@@ -1,0 +1,32 @@
+{% extends 'herders/profile/base.html' %}
+
+{% block profile %}
+    {# TODO: log timestamp filter goes here #}
+    
+    <div class="panel panel-default">
+        <div class="panel-heading">{% include "./pagination.html" %}</div>
+        {% block logs %}{% endblock %}
+        <div class="panel-footer">{% include "./pagination.html" %}</div>
+    </div>
+{% endblock profile %}
+
+{% block javascript %}
+    <script type="application/javascript">
+        $(function(){
+            $(".drop-popover").popover({
+                html : true,
+                trigger : 'hover',
+                container : 'body',
+                placement: 'left',
+                content: function() {
+                  var content = $(this).attr("data-popover-content");
+                  return $(content).children(".popover-body").html();
+                },
+                title: function() {
+                  var title = $(this).attr("data-popover-content");
+                  return $(title).children(".popover-heading").html();
+                }
+            });
+        });
+    </script>
+{% endblock %}

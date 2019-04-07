@@ -66,6 +66,11 @@
                     <span class="fa fa-building"></span> Buildings
                 </a>
             </li>
+            <li {% if view == 'data_log' %}class="dropdown open"{% endif %}>
+                <a href="{% url 'herders:data_log_dashboard' profile_name=profile_name %}">
+                    <span class="fa fa-database"></span> Data Logs
+                </a>
+            </li>
         </ul>
     </div>
 {% endblock subnav %}

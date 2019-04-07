@@ -11,6 +11,7 @@ from django.contrib.auth.models import User, Group
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.core.mail import mail_admins
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import FieldDoesNotExist, Q
 from django.forms.models import modelformset_factory
@@ -2785,3 +2786,151 @@ def export_win10_optimizer(request, profile_name):
 
     return response
 
+
+@username_case_redirect
+@login_required
+def data_log_dashboard(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return HttpResponseForbidden()
+
+    context = {
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'is_owner': is_owner,
+        'view': 'data_log',
+    }
+
+    return render(request, 'herders/profile/data_logs/dashboard.html', context)
+
+
+def _log_data_table_view(request, profile_name, qs_attr, template):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return HttpResponseForbidden()
+
+    qs = getattr(summoner, qs_attr)
+
+    paginator = Paginator(qs.all(), 50)
+    page = request.GET.get('page')
+
+    context = {
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'is_owner': is_owner,
+        'view': 'data_log',
+        'logs': paginator.get_page(page),
+    }
+
+    return render(request, template, context)
+
+
+@username_case_redirect
+@login_required
+def data_log_magic_shop(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'shoprefreshlog_set',
+        'herders/profile/data_logs/magic_shop.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_wish(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'wishlog_set',
+        'herders/profile/data_logs/wish.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_rune_crafting(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'craftrunelog_set',
+        'herders/profile/data_logs/rune_crafting.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_magic_box(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'magicboxcraft_set',
+        'herders/profile/data_logs/magic_box.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_summons(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'summonlog_set',
+        'herders/profile/data_logs/summons.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_dungeons(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'dungeonlog_set',
+        'herders/profile/data_logs/dungeons.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_rift_beast(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'riftdungeonlog_set',
+        'herders/profile/data_logs/rift_beast.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_rift_raid(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'riftraidlog_set',
+        'herders/profile/data_logs/rift_raid.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_world_boss(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'worldbosslog_set',
+        'herders/profile/data_logs/world_boss.html',
+    )

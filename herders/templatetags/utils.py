@@ -5,7 +5,7 @@ register = template.Library()
 
 @register.filter
 def get_range(value):
-    if value:
+    if value is not None:
         return range(value)
     else:
         return 0
@@ -31,11 +31,10 @@ def remove_extension(string):
     return string.replace('.png', '').replace("'", "").replace('(', '_').replace(')', '_')
 
 
-@register.filter
 # Get dictionary key by string
+@register.filter
 def key(d, key_name):
     return d[key_name]
-key = register.filter('key', key)
 
 
 @register.filter
@@ -53,3 +52,11 @@ def humanize_number(value):
         return "%s%s" % (return_value, hp)
     except (IndexError, StopIteration):
         return value
+
+
+@register.filter
+def timedelta(delta):
+    total_seconds = delta.total_seconds()
+    minutes = int(total_seconds // 60)
+    seconds = total_seconds - minutes * 60
+    return f'{minutes:02d}:{seconds:2.3f}'

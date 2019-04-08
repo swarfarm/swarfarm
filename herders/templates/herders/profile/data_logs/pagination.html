@@ -1,0 +1,15 @@
+<div class="btn-group">
+    <button class="btn btn-default pager-btn {% if not logs.has_previous %}disabled"{% else %}" data-page="{{ logs.previous_page_number }}"{% endif %} aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+    </button>
+
+    {% for page_num in logs.paginator.page_range %}
+    <a href="?page={{ page_num }}" class="btn btn-default pager-btn {% if page_num == logs.number %}active{% endif %}">
+        {{ page_num }}
+    </a>
+    {% endfor %}
+
+    <button class="btn btn-default pager-btn {% if not logs.has_next %}disabled"{% else %}" data-page="{{ logs.next_page_number }}"{% endif %} aria-label="Previous">
+        <span aria-hidden="true">&raquo;</span>
+    </button>
+</div>

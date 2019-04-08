@@ -1,6 +1,7 @@
 import json
 from collections import OrderedDict
 from copy import deepcopy
+from functools import reduce
 
 from celery.result import AsyncResult
 from crispy_forms.bootstrap import FieldWithButtons, StrictButton, Field, Div
@@ -11,6 +12,7 @@ from django.contrib.auth.models import User, Group
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.core.mail import mail_admins
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import FieldDoesNotExist, Q
 from django.forms.models import modelformset_factory
@@ -28,7 +30,8 @@ from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm
     EditBuildingForm, EditUserForm, EditSummonerForm, AddMonsterInstanceForm, BulkAddMonsterInstanceForm, \
     BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
     MonsterPieceForm, AddTeamGroupForm, EditTeamGroupForm, DeleteTeamGroupForm, EditTeamForm, FilterRuneForm, \
-    AddRuneInstanceForm, AssignRuneForm, AddRuneCraftInstanceForm, ImportPCAPForm, ImportSWParserJSONForm
+    AddRuneInstanceForm, AssignRuneForm, AddRuneCraftInstanceForm, ImportPCAPForm, ImportSWParserJSONForm, \
+    FilterLogTimeRangeForm
 from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, \
     RuneCraftInstance, Storage
 from .profile_parser import parse_pcap, validate_sw_json
@@ -2785,3 +2788,216 @@ def export_win10_optimizer(request, profile_name):
 
     return response
 
+
+# Data logs
+DEFAULT_LOG_TIME_RANGE = {
+    'timestamp__gte': '2018-09-13T00:00:00+00:00',
+    'timestamp__lte': '2099-01-01T00:00:00+00:00'
+}
+
+
+@username_case_redirect
+@login_required
+def data_log_dashboard(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return HttpResponseForbidden()
+
+    log_counts = {
+        'magic_shop': summoner.shoprefreshlog_set.count(),
+        'wish': summoner.wishlog_set.count(),
+        'rune_crafting': summoner.craftrunelog_set.count(),
+        'magic_box': summoner.magicboxcraft_set.count(),
+        'summons': summoner.summonlog_set.count(),
+        'dungeons': summoner.dungeonlog_set.count(),
+        'rift_beast': summoner.riftdungeonlog_set.count(),
+        'rift_raid': summoner.riftraidlog_set.count(),
+        'world_boss': summoner.worldbosslog_set.count(),
+    }
+
+    total = reduce(lambda a, b: a + b, log_counts.values())
+
+    context = {
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'is_owner': is_owner,
+        'view': 'data_log',
+        'counts': log_counts,
+        'total': total,
+    }
+
+    return render(request, 'herders/profile/data_logs/dashboard.html', context)
+
+
+@username_case_redirect
+@login_required
+def data_log_help(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return HttpResponseForbidden()
+
+    return render(request, 'herders/profile/data_logs/help.html', {
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'is_owner': is_owner,
+        'view': 'data_log',
+    })
+
+
+def _log_data_table_view(request, profile_name, qs_attr, template):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return HttpResponseForbidden()
+
+    form = FilterLogTimeRangeForm(request.POST or None)
+
+    if request.method == 'POST':
+        # Process form with custom timestamps
+        if form.is_valid():
+            if form.cleaned_data['reset']:
+                request.session['data_log_date_filter'] = {
+                    **DEFAULT_LOG_TIME_RANGE
+                }
+            else:
+                request.session['data_log_date_filter'] = {
+                    'timestamp__gte': form.cleaned_data['start_time'].isoformat(),
+                    'timestamp__lte': form.cleaned_data['end_time'].isoformat(),
+                }
+        else:
+            messages.error(request, 'Unable to set specified time range.')
+
+    time_filters = request.session.get('data_log_date_filter', DEFAULT_LOG_TIME_RANGE)
+
+    qs = getattr(summoner, qs_attr).filter(**time_filters)
+    paginator = Paginator(qs, 50)
+    page = request.GET.get('page')
+
+    context = {
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'is_owner': is_owner,
+        'view': 'data_log',
+        'logs': paginator.get_page(page),
+        'form': form,
+        'log_timestamp_start': time_filters['timestamp__gte'],
+        'log_timestamp_end': time_filters['timestamp__lte'],
+    }
+
+    return render(request, template, context)
+
+
+@username_case_redirect
+@login_required
+def data_log_magic_shop(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'shoprefreshlog_set',
+        'herders/profile/data_logs/magic_shop.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_wish(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'wishlog_set',
+        'herders/profile/data_logs/wish.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_rune_crafting(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'craftrunelog_set',
+        'herders/profile/data_logs/rune_crafting.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_magic_box(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'magicboxcraft_set',
+        'herders/profile/data_logs/magic_box.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_summons(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'summonlog_set',
+        'herders/profile/data_logs/summons.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_dungeons(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'dungeonlog_set',
+        'herders/profile/data_logs/dungeons.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_rift_beast(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'riftdungeonlog_set',
+        'herders/profile/data_logs/rift_beast.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_rift_raid(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'riftraidlog_set',
+        'herders/profile/data_logs/rift_raid.html',
+    )
+
+
+@username_case_redirect
+@login_required
+def data_log_world_boss(request, profile_name):
+    return _log_data_table_view(
+        request,
+        profile_name,
+        'worldbosslog_set',
+        'herders/profile/data_logs/world_boss.html',
+    )

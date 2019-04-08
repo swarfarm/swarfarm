@@ -99,5 +99,18 @@ urlpatterns = [
         url(r'^export/', include([
             url(r'^swop_optimizer/$', views.export_win10_optimizer, name='export_win10_optimizer'),
         ])),
+        url(r'^data_logs/', include([
+            url(r'^$', views.data_log_dashboard, name='data_log_dashboard'),
+            url(r'^help/$', views.data_log_help, name='data_log_help'),
+            url(r'^magic_shop/$', views.data_log_magic_shop, name='data_log_magic_shop'),
+            url(r'^wish/$', views.data_log_wish, name='data_log_wish'),
+            url(r'^rune_crafting/$', views.data_log_rune_crafting, name='data_log_rune_crafting'),
+            url(r'^magic_box/$', views.data_log_magic_box, name='data_log_magic_box'),
+            url(r'^summons/$', views.data_log_summons, name='data_log_summons'),
+            url(r'^dungeons/$', views.data_log_dungeons, name='data_log_dungeons'),
+            url(r'^rift_beast/$', views.data_log_rift_beast, name='data_log_rift_beast'),
+            url(r'^rift_raid/$', views.data_log_rift_raid, name='data_log_rift_raid'),
+            url(r'^world_boss/$', views.data_log_world_boss, name='data_log_world_boss'),
+        ]))
     ])),
 ]

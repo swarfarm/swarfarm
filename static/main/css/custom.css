@@ -333,6 +333,8 @@ span.monster-image {
     padding: 0!important;
     width: 50px!important;
     height: 50px!important;
+    vertical-align: top;
+    display: inline-block;
     font-size: 0;
 }
 

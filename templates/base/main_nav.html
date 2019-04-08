@@ -26,20 +26,6 @@
                     </li>
                 {% endif %}
 
-                {% comment %}
-                <li {% if view == 'data' %}class="active"{% endif %}>
-                    <a href="{% url 'sw_parser:log_home' %}">
-                        <i class="fa fa-database"></i> Data Logs
-                    </a>
-                </li>
-                {% endcomment %}
-
-                <li class="disabled">
-                    <p class="navbar-text">
-                        <i class="fa fa-database"></i> Data Logs
-                    </p>
-                </li>
-
                 <li {% if view == 'bestiary' %}class="active"{% endif %}>
                     <a href="{% url 'bestiary:home' %}">
                         <span class="fa fa-book"></span> Bestiary

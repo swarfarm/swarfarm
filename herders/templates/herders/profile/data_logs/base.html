@@ -14,7 +14,7 @@
 
         {% if logs.paginator.count == 0 %}
             <div class="panel-body">
-                <p>No logs found! Need help getting started?</p>
+                <p>No logs found! Check the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.</p>
             </div>
         {% else %}
             {% block logs %}{% endblock %}

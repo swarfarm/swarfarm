@@ -68,6 +68,9 @@ def _force_eval_ltr(expr):
                 fixed = True
                 expr_string = expr_string.replace('FIXED', '')
 
+            if 'CEIL' in expr_string:
+                expr_string = expr_string.replace('CEIL', '')
+
             # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
             expr_string = expr_string.replace('*1.0', '')
 

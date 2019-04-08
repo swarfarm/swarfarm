@@ -161,6 +161,10 @@ select.short {
     height: 18px;
 }
 
+.select2-container {
+    min-width: 60px;
+}
+
 .navbar .btn {
     margin-left: 3px;
     margin-right: 3px;

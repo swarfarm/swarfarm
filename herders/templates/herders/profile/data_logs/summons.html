@@ -1,6 +1,9 @@
 {% extends 'herders/profile/data_logs/base.html' %}
 {% load static utils humanize %}
 
+{% block title %}
+    Summons - {{ block.super }}
+{% endblock %}
 
 {% block logs %}
     {% static 'herders/images/' as img_url_prefix %}

@@ -70,7 +70,17 @@ class CairosLogTests(BaseLogTest):
         self._do_log('BattleDungeonResult/hall_of_fire_5_low_essence.json')
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.items.filter(item__category=GameItem.CATEGORY_ESSENCE).count(), 1)
-        self.assertEqual(log.items.filter(item__category=GameItem.CATEGORY_ESSENCE).first().quantity, 5)
+        item_drop = log.items.filter(item__category=GameItem.CATEGORY_ESSENCE).first()
+        self.assertEqual(item_drop.item.com2us_id, 11002)
+        self.assertEqual(item_drop.quantity, 5)
+
+    def test_summon_scroll_drop(self):
+        self._do_log('BattleDungeonResult/giants_b5_unknown_scroll_x7_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.items.filter(item__category=GameItem.CATEGORY_SUMMON_SCROLL).count(), 1)
+        item_drop = log.items.filter(item__category=GameItem.CATEGORY_SUMMON_SCROLL).first()
+        self.assertEqual(item_drop.item.com2us_id, 1)
+        self.assertEqual(item_drop.quantity, 7)
 
     # TODO:
     # monster drop

@@ -630,6 +630,7 @@ class DungeonLog(LogEntry):
             reward = None
 
             if key == 'crate':
+                # Recurse with crate contents
                 self.parse_rewards(val)
             elif isinstance(val, dict):
                 if 'item_master_type' in val:
@@ -642,6 +643,8 @@ class DungeonLog(LogEntry):
                     reward = DungeonMonsterDrop.parse(**val)
                 elif key == 'material':
                     reward = DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_ESSENCE, **val})
+                elif key == 'random_scroll':
+                    reward = DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_SUMMON_SCROLL, **val})
                 else:
                     raise ValueError(f"don't know how to parse {key} reward in {self.__class__.__name__}")
 

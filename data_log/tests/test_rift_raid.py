@@ -42,7 +42,7 @@ class ElementalRiftBeastTests(BaseLogTest):
         self._do_log('BattleRiftOfWorldsRaidResult/raid_r1_3x_grindstones.json')
 
         log = models.RiftRaidLog.objects.first()
-        self.assertEqual(log.runecrafts.count(), 3)
+        self.assertEqual(log.rune_crafts.count(), 3)
 
     def test_raid_mana_drop(self):
         self._do_log('BattleRiftOfWorldsRaidStart/raid_r1_mana_2x_grindstone.json')
@@ -58,7 +58,7 @@ class ElementalRiftBeastTests(BaseLogTest):
 
         log = models.RiftRaidLog.objects.first()
         # Total of 2 drops due to extra placement. One drop is social points
-        self.assertEqual(log.runecrafts.count(), 1)
+        self.assertEqual(log.rune_crafts.count(), 1)
         self.assertEqual(log.items.count(), 1)
         self.assertEqual(log.items.first().item.category, GameItem.CATEGORY_CURRENCY)
         self.assertEqual(log.items.first().item.com2us_id, 2)
@@ -73,8 +73,8 @@ class ElementalRiftBeastTests(BaseLogTest):
 
         # First log has drop for own drop and third person
         log1 = models.RiftRaidLog.objects.get(wizard_id=123)
-        self.assertEqual(log1.runecrafts.count(), 2)
+        self.assertEqual(log1.rune_crafts.count(), 2)
 
         # Second log has drop for self only
         log2 = models.RiftRaidLog.objects.get(wizard_id=258)
-        self.assertEqual(log2.runecrafts.count(), 1)
+        self.assertEqual(log2.rune_crafts.count(), 1)

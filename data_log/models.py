@@ -26,7 +26,7 @@ class LogEntry(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ('-timestamp', )
+        ordering = ('-timestamp', '-pk')
         get_latest_by = 'timestamp'
 
     def parse_common_log_data(self, log_data):
@@ -640,10 +640,18 @@ class DungeonLog(LogEntry):
                     reward = DungeonRuneDrop.parse(**val)
                 elif key == 'unit_info':
                     reward = DungeonMonsterDrop.parse(**val)
+                elif key == 'material':
+                    reward = DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_ESSENCE, **val})
+                else:
+                    raise ValueError(f"don't know how to parse {key} reward in {self.__class__.__name__}")
 
+            elif key in DungeonItemDrop.PARSE_KEYS:
+                reward = DungeonItemDrop.parse(key=key, val=val)
+            elif key == 'event_crate':
+                # Don't care, skip it
+                continue
             else:
-                if key in DungeonItemDrop.PARSE_KEYS:
-                    reward = DungeonItemDrop.parse(key=key, val=val)
+                ValueError(f"don't know how to parse {key} reward in {self.__class__.__name__}")
 
             if reward:
                 reward.log = self

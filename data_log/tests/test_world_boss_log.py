@@ -33,7 +33,7 @@ class WorldBossTests(BaseLogTest):
         response = self._do_log('BattleWorldBossResult/world_boss_b_plus_mana_essence_rune.json')
         self.assertEqual(response.status_code, 200)
 
-        log.refresh_from_db()
+        log = models.WorldBossLog.objects.first()
         self.assertEqual(log.runes.count(), 1)
 
     def test_world_boss_monster_drop(self):

@@ -14,20 +14,20 @@ class WishTests(BaseLogTest):
 
     def test_wish_currency_drop(self):
         self._do_log('DoRandomWishItem/wish_mana.json')
-        log = models.WishLog.objects.last()
+        log = models.WishLog.objects.first()
         self.assertEqual(log.items.count(), 1)
 
     def test_wish_rune_drop(self):
         self._do_log('DoRandomWishItem/wish_rune.json')
-        log = models.WishLog.objects.last()
+        log = models.WishLog.objects.first()
         self.assertEqual(log.runes.count(), 1)
 
     def test_wish_monster_drop(self):
         self._do_log('DoRandomWishItem/wish_monster.json')
-        log = models.WishLog.objects.last()
+        log = models.WishLog.objects.first()
         self.assertEqual(log.monsters.count(), 1)
 
     def test_wish_rainbowmon_drop(self):
         self._do_log('DoRandomWishItem/wish_rainbowmon.json')
-        log = models.WishLog.objects.last()
+        log = models.WishLog.objects.first()
         self.assertEqual(log.monsters.count(), 1)

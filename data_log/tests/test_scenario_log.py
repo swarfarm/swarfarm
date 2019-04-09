@@ -23,20 +23,20 @@ class ScenarioLogTests(BaseLogTest):
 
     def test_level_parsed_correctly(self):
         self._do_log('BattleScenarioStart/garen_normal_b1.json')
-        log = models.DungeonLog.objects.last()
-        self.assertEqual(log.level.dungeon.pk, 1)
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.level.dungeon.com2us_id, 1)
         self.assertEqual(log.level.difficulty, Level.DIFFICULTY_NORMAL)
         self.assertEqual(log.level.floor, 1)
 
         self._do_log('BattleScenarioStart/kabir_ruins_hard_b1.json')
-        log = models.DungeonLog.objects.last()
-        self.assertEqual(log.level.dungeon.pk, 3)
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.level.dungeon.com2us_id, 3)
         self.assertEqual(log.level.difficulty, Level.DIFFICULTY_HARD)
         self.assertEqual(log.level.floor, 1)
 
         self._do_log('BattleScenarioStart/faimon_hell_b3.json')
-        log = models.DungeonLog.objects.last()
-        self.assertEqual(log.level.dungeon.pk, 9)
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.level.dungeon.com2us_id, 9)
         self.assertEqual(log.level.difficulty, Level.DIFFICULTY_HELL)
         self.assertEqual(log.level.floor, 3)
 

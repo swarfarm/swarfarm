@@ -227,3 +227,9 @@ class WorldBossAdmin(admin.ModelAdmin):
         WorldBossMonsterDropInline,
         WorldBossRuneDropInline,
     )
+
+
+# Reports
+@admin.register(models.Report)
+class ReportAdmin(admin.ModelAdmin):
+    pass

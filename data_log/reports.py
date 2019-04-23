@@ -1,7 +1,7 @@
 from datetime import timedelta
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Min, Max, Avg
+from django.db.models import Count, Min, Max, Avg, Sum
 
 from bestiary.models import Dungeon, Level
 from .models import Report, LevelReport, SummonLog, DungeonLog, ItemDrop, MonsterDrop, MonsterPieceDrop, RuneDrop, RuneCraftDrop, DungeonSecretDungeonDrop
@@ -15,44 +15,24 @@ def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=250
         return qs.filter(timestamp__gte=timezone.now() - report_timespan)
 
 
-DROP_TYPES = [
-    ItemDrop.RELATED_NAME,
-    MonsterDrop.RELATED_NAME,
-    MonsterPieceDrop.RELATED_NAME,
-    RuneDrop.RELATED_NAME,
-    RuneCraftDrop.RELATED_NAME,
-    DungeonSecretDungeonDrop.RELATED_NAME,
-]
-
-
-def get_drop_querysets(qs):
-    drop_querysets = {}
-
-    for drop_type in DROP_TYPES:
-        # Get querysets for each possible drop type
-        if hasattr(qs.model, drop_type):
-            drop_model = getattr(qs.model, drop_type).field.model
-            drop_querysets[drop_type] = drop_model.objects.filter(log__in=qs)
-
-    return drop_querysets
-
-
 def get_report_summary(drops):
     summary = {}
 
     for drop_type, qs in drops.items():
         if drop_type == ItemDrop.RELATED_NAME:
             # Item drops are counted individually and contain quantity information
-            summary_data = list(qs.values(
-                'item',
-                'item__name',
-                'item__icon'
-            ).annotate(
-                count=Count('item'),
-                min=Min('quantity'),
-                max=Max('quantity'),
-                avg=Avg('quantity')
-            ))
+            summary_data = list(
+                qs.values(
+                    'item',
+                    'item__name',
+                    'item__icon'
+                ).annotate(
+                    count=Count('item'),
+                    min=Min('quantity'),
+                    max=Max('quantity'),
+                    avg=Avg('quantity')
+                ).order_by('-count')
+            )
         elif drop_type == MonsterDrop.RELATED_NAME:
             # Monster drops are counted by stars
             summary_data = list(qs.values('grade').annotate(count=Count('pk')))
@@ -65,26 +45,87 @@ def get_report_summary(drops):
     return summary
 
 
+def get_item_report(qs, total_runs):
+    results = list(
+        qs.values(
+            'item',
+            'item__name',
+            'item__icon'
+        ).annotate(
+            count=Count('item'),
+            min=Min('quantity'),
+            max=Max('quantity'),
+            avg=Avg('quantity'),
+            sum=Sum('quantity'),
+        ).order_by('-count')
+    )
+
+    for result in results:
+        result['drop_chance'] = float(result['count']) / total_runs
+        result['avg_per_run'] = float(result['sum']) / total_runs
+
+    return results
+
+
+def get_monster_report(qs, total_runs):
+    return "monster report"
+
+
+def get_monster_piece_report(qs, total_runs):
+    return "monster piece report"
+
+
+def get_rune_report(qs, total_runs):
+    return "rune report"
+
+
+def get_rune_craft_report(qs, total_runs):
+    return "rune craft report"
+
+
+def get_secret_dungeon_report(qs, total_runs):
+    return "secret dungeon report"
+
+
+DROP_TYPES = {
+    ItemDrop.RELATED_NAME: get_item_report,
+    MonsterDrop.RELATED_NAME: get_monster_report,
+    MonsterPieceDrop.RELATED_NAME: get_monster_piece_report,
+    RuneDrop.RELATED_NAME: get_rune_report,
+    RuneCraftDrop.RELATED_NAME: get_rune_craft_report,
+    DungeonSecretDungeonDrop.RELATED_NAME: get_secret_dungeon_report,
+}
+
+
+def get_drop_querysets(qs):
+    drop_querysets = {}
+
+    for drop_type in DROP_TYPES.keys():
+        # Get querysets for each possible drop type
+        if hasattr(qs.model, drop_type):
+            drop_model = getattr(qs.model, drop_type).field.model
+            drop_querysets[drop_type] = drop_model.objects.filter(log__in=qs)
+
+    return drop_querysets
+
+
 def generate_scenario_reports():
     content_type = ContentType.objects.get_for_model(DungeonLog)
 
-    for level in Level.objects.filter(
-            dungeon__category=Dungeon.CATEGORY_SCENARIO,
-    ):
-        print(level)
+    for level in Level.objects.filter(dungeon__category=Dungeon.CATEGORY_SCENARIO):
         records = _records_to_report(DungeonLog.objects.filter(level=level), minimum_count=5)
 
         if records.count() > 0:
             report_data = {}
 
-            # Unique contributors
-
-
             # Get querysets for each possible drop type
-            item_drops = get_drop_querysets(records)
+            drops = get_drop_querysets(records)
 
             # Summary of data
-            report_data['summary'] = get_report_summary(item_drops)
+            report_data['summary'] = get_report_summary(drops)
+
+            for key, qs in drops.items():
+                report_data[key] = DROP_TYPES[key](qs, records.count())
 
             LevelReport.objects.create(
                 level=level,

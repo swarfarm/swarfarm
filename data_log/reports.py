@@ -2,9 +2,11 @@ from datetime import timedelta
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Min, Max, Avg, Sum
+from django_pivot.histogram import histogram
 
 from bestiary.models import Dungeon, Level
 from .models import Report, LevelReport, SummonLog, DungeonLog, ItemDrop, MonsterDrop, MonsterPieceDrop, RuneDrop, RuneCraftDrop, DungeonSecretDungeonDrop
+from .util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice
 
 
 def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=2500):
@@ -76,7 +78,38 @@ def get_monster_piece_report(qs, total_runs):
 
 
 def get_rune_report(qs, total_runs):
-    return "rune report"
+    results = dict()
+    results['summary'] = {
+        'stars': list(qs.values('stars').annotate(count=Count('pk')).order_by('-count')),
+        'type': replace_value_with_choice(
+            list(qs.values('type').annotate(count=Count('pk')).order_by('-count')),
+            'type',
+            qs.model.TYPE_CHOICES,
+        ),
+        'quality': replace_value_with_choice(
+            list(qs.values('quality').annotate(count=Count('pk')).order_by('-count')),
+            'quality',
+            qs.model.QUALITY_CHOICES,
+        ),
+        'slot': list(qs.values('slot').annotate(count=Count('pk')).order_by('-count')),
+    }
+
+    # Main stat distribution
+
+    # Innate stat distribution
+
+    # Substat distribution
+
+    # Maximum efficiency by quality
+    results['max_efficiency'] = histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality')
+
+    # Sell value by quality
+    min_value, max_value = qs.aggregate(Min('value'), Max('value')).values()
+    min_value = int(floor_to_nearest(min_value, 1000))
+    max_value = int(ceil_to_nearest(max_value, 1000))
+    results['value'] = histogram(qs, 'value', range(min_value, max_value, 1000), slice_on='quality')
+
+    return results
 
 
 def get_rune_craft_report(qs, total_runs):
@@ -120,8 +153,6 @@ def generate_scenario_reports():
 
             # Get querysets for each possible drop type
             drops = get_drop_querysets(records)
-
-            # Summary of data
             report_data['summary'] = get_report_summary(drops)
 
             for key, qs in drops.items():
@@ -136,3 +167,4 @@ def generate_scenario_reports():
                 unique_contributors=records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
                 report=report_data,
             )
+

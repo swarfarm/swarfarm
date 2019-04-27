@@ -1,12 +1,11 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import Http404, HttpResponseForbidden, JsonResponse
+from django.http import Http404
 from django.shortcuts import render
-from django.template import loader
 from django.urls import reverse
 
 from .filters import MonsterFilter
-from .forms import FilterMonsterForm, SkillForm
-from .models import Monster, Skill
+from .forms import FilterMonsterForm
+from .models import Monster
 
 
 def bestiary(request):
@@ -168,32 +167,3 @@ def bestiary_detail(request, monster_slug):
             context['awakened']['stat_deltas'] = awakened_stats_deltas
 
     return render(request, 'bestiary/detail_base.html', context)
-
-
-def edit_skill(request, pk):
-    skill = Skill.objects.get(pk=pk)
-    form = SkillForm(request.POST or None, instance=skill)
-
-    if request.user.is_superuser:
-        template = loader.get_template('bestiary/edit_skill_form.html')
-
-        if request.method == 'POST' and form.is_valid():
-            form.save()
-            response_data = {
-                'code': 'success'
-            }
-        else:
-
-            form.helper.form_action = reverse('bestiary:edit_skill', kwargs={'pk': pk})
-            response_data = {
-                'code': 'error',
-                'html': template.render({'form': form}),
-            }
-
-        return JsonResponse(response_data)
-    else:
-        return HttpResponseForbidden('Unauthorized')
-
-
-def edit_monster(request):
-    pass

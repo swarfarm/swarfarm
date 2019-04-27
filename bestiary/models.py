@@ -1989,9 +1989,11 @@ class Dungeon(models.Model):
     )
 
     com2us_id = models.IntegerField()
+    enabled = models.BooleanField(default=False)
     name = models.CharField(max_length=100)
     slug = models.SlugField(blank=True, null=True)
     category = models.IntegerField(choices=CATEGORY_CHOICES, blank=True, null=True)
+    icon = models.CharField(max_length=100, default='', blank=True)
 
     class Meta:
         ordering = ['category', 'com2us_id']

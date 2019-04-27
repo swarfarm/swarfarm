@@ -1,0 +1,6 @@
+{% extends 'dungeons/base.html' %}
+
+{% block content %}
+    {{ dungeon.name }} {{ dungeon.get_category_display }} {{ level.get_difficulty_display }} {{ level.floor }}
+
+{% endblock content %}

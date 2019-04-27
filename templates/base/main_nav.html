@@ -31,6 +31,13 @@
                         <span class="fa fa-book"></span> Bestiary
                     </a>
                 </li>
+
+                <li {% if view == 'dungeons' %}class="active"{% endif %}>
+                    <a href="{% url 'bestiary:dungeons' %}">
+                        <img src="{% static 'herders/images/icons/battle.png' %}" /> Dungeons
+                    </a>
+                </li>
+
                 <li>
                     <div style="max-width:300px">{% crispy bestiary_quick_search %}</div>
                 </li>

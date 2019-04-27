@@ -1,11 +1,11 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 
 from .filters import MonsterFilter
 from .forms import FilterMonsterForm
-from .models import Monster
+from .models import Monster, Dungeon, Level
 
 
 def bestiary(request):
@@ -167,3 +167,46 @@ def bestiary_detail(request, monster_slug):
             context['awakened']['stat_deltas'] = awakened_stats_deltas
 
     return render(request, 'bestiary/detail_base.html', context)
+
+
+def dungeons(request):
+    context = {
+        'dungeons': {},
+    }
+
+    for cat_id, category in Dungeon.CATEGORY_CHOICES:
+        d = Dungeon.objects.filter(category=cat_id, enabled=True)
+        if d.count() > 0:
+            context['dungeons'][category] = d
+
+    return render(request, 'dungeons/base.html', context)
+
+
+def dungeon_detail(request, slug, difficulty=None, floor=None):
+    dung = get_object_or_404(Dungeon, slug=slug)
+    lvl = None
+    levels = dung.level_set.all()
+
+    if difficulty:
+        difficulty_id = {v.lower(): k for k, v in dict(Level.DIFFICULTY_CHOICES).items()}[difficulty]
+        levels = levels.filter(difficulty=difficulty_id)
+
+    if floor:
+        levels = levels.filter(floor=floor)
+    else:
+        # Pick the last level automatically for Cairos dungeons
+        if dung.category == Dungeon.CATEGORY_CAIROS:
+            lvl = levels.last()
+
+    if not lvl:
+        # Default to first level for all others
+        lvl = levels.first()
+
+    if not lvl:
+        raise Http404()
+
+    context = {
+        'dungeon': dung,
+        'level': lvl,
+    }
+    return render(request, 'dungeons/detail.html', context)

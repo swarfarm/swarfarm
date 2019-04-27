@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for category, cat_dungeons in dungeons.items %}
+    <h1>{{ category }}</h1>
+    <ul>
+    {% for d in cat_dungeons.values %}
+    <li>{{ d.name }} {{ d.slug }}</li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+{% endblock content %}

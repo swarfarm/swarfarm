@@ -1,7 +1,8 @@
+from collections import Counter
 from datetime import timedelta
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Min, Max, Avg, Sum
+from django.db.models import Count, Min, Max, Avg, Sum, Func, F
 from django_pivot.histogram import histogram
 
 from bestiary.models import Dungeon, Level
@@ -95,10 +96,33 @@ def get_rune_report(qs, total_runs):
     }
 
     # Main stat distribution
+    results['main_stat'] = replace_value_with_choice(list(
+        qs.values('main_stat').annotate(count=Count('main_stat')).order_by('main_stat')),
+        'main_stat',
+        qs.model.STAT_CHOICES
+    )
 
     # Innate stat distribution
+    results['innate_stat'] = replace_value_with_choice(list(
+        qs.values('innate_stat').annotate(count=Count('innate_stat')).order_by('innate_stat')),
+        'innate_stat',
+        qs.model.STAT_CHOICES
+    )
 
     # Substat distribution
+    # Unable to use database aggregation on an ArrayField without a ton of gymnastics, so post-process data in python
+    all_substats = qs.annotate(
+        flat_substats=Func(F('substats'), function='unnest')
+    ).values_list('flat_substats', flat=True)
+    substat_counts = Counter(all_substats)
+    results['substats'] = {
+        'total': len(all_substats),
+        'counts': replace_value_with_choice(
+            sorted([{'substat': k, 'count': v} for k, v in substat_counts.items()], key=lambda count: count['substat']),
+            'substat',
+            qs.model.STAT_CHOICES
+        ),
+    }
 
     # Maximum efficiency by quality
     results['max_efficiency'] = histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality')

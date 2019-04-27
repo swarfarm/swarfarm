@@ -703,7 +703,8 @@ class DungeonSecretDungeonDrop(models.Model):
         return cls(
             level=Level.objects.get(
                 dungeon__category=Dungeon.CATEGORY_SECRET,
-                com2us_id=instance_info['instance_id'],
+                dungeon__com2us_id=instance_info['instance_id'],
+                floor=1,
             )
         )
 

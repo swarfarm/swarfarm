@@ -19,7 +19,7 @@ class ElementalRiftBeastTests(BaseLogTest):
 
     def test_elemental_rift_level_parsed_correctly(self):
         self._do_log('BattleRiftDungeonResult/fire_beast_b.json')
-        log = models.RiftDungeonLog.objects.last()
+        log = models.RiftDungeonLog.objects.first()
         self.assertEqual(log.level, models.Level.objects.get(
             dungeon__category=models.Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS,
             dungeon__com2us_id=2001,
@@ -27,7 +27,7 @@ class ElementalRiftBeastTests(BaseLogTest):
         ))
 
         self._do_log('BattleRiftDungeonResult/water_beast_a.json')
-        log = models.RiftDungeonLog.objects.last()
+        log = models.RiftDungeonLog.objects.first()
         self.assertEqual(log.level, models.Level.objects.get(
             dungeon__category=models.Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS,
             dungeon__com2us_id=1001,

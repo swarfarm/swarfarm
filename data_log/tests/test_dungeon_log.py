@@ -17,17 +17,17 @@ class CairosLogTests(BaseLogTest):
 
     def test_level_parsed_correctly(self):
         self._do_log('BattleDungeonResult/giants_b10_rune_drop.json')
-        log = models.DungeonLog.objects.last()
+        log = models.DungeonLog.objects.first()
         self.assertEqual(log.level.dungeon.com2us_id, 8001)
         self.assertEqual(log.level.floor, 10)
 
         self._do_log('BattleDungeonResult/necro_b2_rune_drop.json')
-        log = models.DungeonLog.objects.last()
+        log = models.DungeonLog.objects.first()
         self.assertEqual(log.level.dungeon.com2us_id, 6001)
         self.assertEqual(log.level.floor, 2)
 
         self._do_log('BattleDungeonResult/dragon_b5_transcendance_x1_drop.json')
-        log = models.DungeonLog.objects.last()
+        log = models.DungeonLog.objects.first()
         self.assertEqual(log.level.dungeon.com2us_id, 9001)
         self.assertEqual(log.level.floor, 5)
 
@@ -66,6 +66,21 @@ class CairosLogTests(BaseLogTest):
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.runes.count(), 1)
 
+    def test_essence_drop(self):
+        self._do_log('BattleDungeonResult/hall_of_fire_5_low_essence.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.items.filter(item__category=GameItem.CATEGORY_ESSENCE).count(), 1)
+        item_drop = log.items.filter(item__category=GameItem.CATEGORY_ESSENCE).first()
+        self.assertEqual(item_drop.item.com2us_id, 11002)
+        self.assertEqual(item_drop.quantity, 5)
+
+    def test_summon_scroll_drop(self):
+        self._do_log('BattleDungeonResult/giants_b5_unknown_scroll_x7_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.items.filter(item__category=GameItem.CATEGORY_SUMMON_SCROLL).count(), 1)
+        item_drop = log.items.filter(item__category=GameItem.CATEGORY_SUMMON_SCROLL).first()
+        self.assertEqual(item_drop.item.com2us_id, 1)
+        self.assertEqual(item_drop.quantity, 7)
 
     # TODO:
     # monster drop

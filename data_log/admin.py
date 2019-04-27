@@ -7,6 +7,7 @@ from . import models
 @admin.register(models.FullLog)
 class FullLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'command', 'wizard_id', 'summoner')
+    search_fields = ('wizard_id', 'summoner__user__username', 'command')
     readonly_fields = ('summoner', )
 
 
@@ -47,6 +48,7 @@ class ShopRefreshRuneDropInline(RuneDropInline):
 @admin.register(models.ShopRefreshLog)
 class ShopRefreshLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner')
+    search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', )
     inlines = (
         ShopRefreshItemDropDropInline,
@@ -71,6 +73,7 @@ class WishLogRuneDropInline(RuneDropInline):
 @admin.register(models.WishLog)
 class WishLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner')
+    search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', )
     inlines = (
         WishLogItemDropDropInline,
@@ -83,6 +86,8 @@ class WishLogAdmin(admin.ModelAdmin):
 @admin.register(models.CraftRuneLog)
 class CraftRuneLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner', 'craft_level', 'type', 'stars')
+    list_filter = ('craft_level', 'type', 'stars')
+    search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', )
 
 
@@ -102,6 +107,8 @@ class MagicBoxCraftRuneCraftDropInline(RuneCraftDropinline):
 @admin.register(models.MagicBoxCraft)
 class MagicBoxCraftlogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner', 'box_type')
+    list_filter = ('box_type', )
+    search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', )
     inlines = (
         MagicBoxCraftItemDropInline,
@@ -114,6 +121,8 @@ class MagicBoxCraftlogAdmin(admin.ModelAdmin):
 @admin.register(models.SummonLog)
 class SummonLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner', 'item', 'monster')
+    list_filter = ('item', )
+    search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', )
 
 
@@ -143,6 +152,8 @@ class DungeonSecretDungeonDropInline(admin.TabularInline):
 @admin.register(models.DungeonLog)
 class DungeonLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner', 'level', 'success', 'clear_time')
+    list_filter = ('level__dungeon__name', 'success')
+    search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', 'level')
     inlines = (
         DungeonItemDropDropInline,
@@ -172,6 +183,8 @@ class RiftDungeonRuneCraftDropInline(RuneCraftDropinline):
 @admin.register(models.RiftDungeonLog)
 class RiftDungeonLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner', 'level', 'grade', 'clear_time')
+    list_filter = ('level__dungeon__name', 'success')
+    search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', 'level')
     inlines = (
         RiftDungeonItemDropInline,
@@ -197,6 +210,8 @@ class RiftRaidMonsterDropInline(MonsterDropInline):
 @admin.register(models.RiftRaidLog)
 class RiftRaidLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner', 'level', 'clear_time', 'success')
+    list_filter = ('level__dungeon__name', 'success')
+    search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', 'level')
     inlines = (
         RiftRaidItemDropInline,
@@ -221,6 +236,8 @@ class WorldBossRuneDropInline(RuneDropInline):
 @admin.register(models.WorldBossLog)
 class WorldBossAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner', 'grade')
+    list_filter = ('grade',)
+    search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', 'level')
     inlines = (
         WorldBossItemDropInline,

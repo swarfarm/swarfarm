@@ -26,7 +26,7 @@ class LogEntry(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ('-timestamp', )
+        ordering = ('-timestamp', '-pk')
         get_latest_by = 'timestamp'
 
     def parse_common_log_data(self, log_data):
@@ -625,11 +625,19 @@ class DungeonLog(LogEntry):
         log_entry.save()
         log_entry.parse_rewards(log_data['response']['reward'])
 
+        # Parse secret dungeon drop
+        sd_info = log_data['response'].get('instance_info')
+        if sd_info:
+            sd_reward = DungeonSecretDungeonDrop.parse(sd_info)
+            sd_reward.log = log_entry
+            sd_reward.save()
+
     def parse_rewards(self, rewards):
         for key, val in rewards.items():
             reward = None
 
             if key == 'crate':
+                # Recurse with crate contents
                 self.parse_rewards(val)
             elif isinstance(val, dict):
                 if 'item_master_type' in val:
@@ -640,10 +648,20 @@ class DungeonLog(LogEntry):
                     reward = DungeonRuneDrop.parse(**val)
                 elif key == 'unit_info':
                     reward = DungeonMonsterDrop.parse(**val)
+                elif key == 'material':
+                    reward = DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_ESSENCE, **val})
+                elif key == 'random_scroll':
+                    reward = DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_SUMMON_SCROLL, **val})
+                else:
+                    raise ValueError(f"don't know how to parse {key} reward in {self.__class__.__name__}")
 
+            elif key in DungeonItemDrop.PARSE_KEYS:
+                reward = DungeonItemDrop.parse(key=key, val=val)
+            elif key == 'event_crate':
+                # Don't care, skip it
+                continue
             else:
-                if key in DungeonItemDrop.PARSE_KEYS:
-                    reward = DungeonItemDrop.parse(key=key, val=val)
+                ValueError(f"don't know how to parse {key} reward in {self.__class__.__name__}")
 
             if reward:
                 reward.log = self
@@ -679,6 +697,15 @@ class DungeonSecretDungeonDrop(models.Model):
 
     log = models.ForeignKey(DungeonLog, on_delete=models.CASCADE, related_name=RELATED_NAME)
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
+
+    @classmethod
+    def parse(cls, instance_info):
+        return cls(
+            level=Level.objects.get(
+                dungeon__category=Dungeon.CATEGORY_SECRET,
+                com2us_id=instance_info['instance_id'],
+            )
+        )
 
 
 # Rift dungeon

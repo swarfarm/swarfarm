@@ -1,5 +1,9 @@
 {% extends 'herders/profile/data_logs/base.html' %}
-{% load static utils %}
+{% load static utils %}.
+
+{% block title %}
+    Rune Crafting - {{ block.super }}
+{% endblock %}
 
 {% block logs %}
 {% static 'herders/images/' as img_url_prefix %}

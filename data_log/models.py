@@ -625,6 +625,13 @@ class DungeonLog(LogEntry):
         log_entry.save()
         log_entry.parse_rewards(log_data['response']['reward'])
 
+        # Parse secret dungeon drop
+        sd_info = log_data['response'].get('instance_info')
+        if sd_info:
+            sd_reward = DungeonSecretDungeonDrop.parse(sd_info)
+            sd_reward.log = log_entry
+            sd_reward.save()
+
     def parse_rewards(self, rewards):
         for key, val in rewards.items():
             reward = None
@@ -690,6 +697,15 @@ class DungeonSecretDungeonDrop(models.Model):
 
     log = models.ForeignKey(DungeonLog, on_delete=models.CASCADE, related_name=RELATED_NAME)
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
+
+    @classmethod
+    def parse(cls, instance_info):
+        return cls(
+            level=Level.objects.get(
+                dungeon__category=Dungeon.CATEGORY_SECRET,
+                com2us_id=instance_info['instance_id'],
+            )
+        )
 
 
 # Rift dungeon

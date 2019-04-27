@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Min, Max, Avg, Sum, Func, F
 from django_pivot.histogram import histogram
 
-from bestiary.models import Dungeon, Level
+from bestiary.models import Monster, Dungeon, Level
 from .models import Report, LevelReport, SummonLog, DungeonLog, ItemDrop, MonsterDrop, MonsterPieceDrop, RuneDrop, RuneCraftDrop, DungeonSecretDungeonDrop
 from .util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice
 
@@ -27,8 +27,8 @@ def get_report_summary(drops):
             summary_data = list(
                 qs.values(
                     'item',
-                    'item__name',
-                    'item__icon'
+                    name=F('item__name'),
+                    icon=F('item__icon'),
                 ).annotate(
                     count=Count('item'),
                     min=Min('quantity'),
@@ -48,7 +48,7 @@ def get_report_summary(drops):
     return summary
 
 
-def get_item_report(qs, total_runs):
+def get_item_report(qs, total_log_count):
     results = list(
         qs.values(
             'item',
@@ -64,22 +64,78 @@ def get_item_report(qs, total_runs):
     )
 
     for result in results:
-        result['drop_chance'] = float(result['count']) / total_runs
-        result['avg_per_run'] = float(result['sum']) / total_runs
+        result['drop_chance'] = float(result['count']) / total_log_count
+        result['avg_per_run'] = float(result['sum']) / total_log_count
 
     return results
 
 
-def get_monster_report(qs, total_runs):
-    return "monster report"
+def get_monster_report(qs, total_log_count):
+    results = {}
+
+    # By unique monster
+    results['monsters'] = {
+        'type': 'occurrences',
+        'total': qs.count(),
+        'occurrences': list(qs.values(
+            'monster',
+            name=F('monster__name'),
+            element=F('monster__element'),
+            com2us_id=F('monster__com2us_id'),
+            icon=F('monster__image_filename')
+        ).annotate(count=Count('pk')))
+    }
+
+    # By family
+    results['family'] = {
+        'type': 'occurrences',
+        'total': qs.count(),
+        'occurrences': list(qs.values(
+            family_id=F('monster__family_id'),
+            name=F('monster__name'),
+        ).annotate(count=Count('pk')))
+    }
+
+    # By nat stars
+    mons_by_nat_stars = list(qs.values(nat_stars=F('monster__base_stars')).annotate(count=Count('monster__base_stars')))
+    for mon in mons_by_nat_stars:
+        mon['drop_chance'] = float(mon['count']) / total_log_count
+        mon['avg_per_run'] = float(mon['count']) / total_log_count
+
+    results['nat_stars'] = {
+        'type': 'occurrences',
+        'total': qs.count(),
+        'occurrences': mons_by_nat_stars,
+    }
+
+    # By element
+    results['element'] = {
+        'type': 'occurrences',
+        'total': qs.count(),
+        'occurrences': replace_value_with_choice(
+            list(qs.values(element=F('monster__element')).annotate(count=Count('pk'))),
+            'element',
+            Monster.ELEMENT_CHOICES
+        )
+    }
+
+    # By awakened/unawakened
+    results['awakened'] = {
+        'type': 'occurrences',
+        'total': qs.count(),
+        'occurrences': list(qs.values(awakened=F('monster__is_awakened')).annotate(count=Count('pk'))),
+    }
+
+    return results
 
 
-def get_monster_piece_report(qs, total_runs):
+def get_monster_piece_report(qs, total_log_count):
     return "monster piece report"
 
 
-def get_rune_report(qs, total_runs):
-    results = dict()
+def get_rune_report(qs, total_log_count):
+    results = {}
+
     results['summary'] = {
         'stars': list(qs.values('stars').annotate(count=Count('pk')).order_by('-count')),
         'type': replace_value_with_choice(
@@ -96,28 +152,37 @@ def get_rune_report(qs, total_runs):
     }
 
     # Main stat distribution
-    results['main_stat'] = replace_value_with_choice(list(
-        qs.values('main_stat').annotate(count=Count('main_stat')).order_by('main_stat')),
-        'main_stat',
-        qs.model.STAT_CHOICES
-    )
+    results['main_stat'] = {
+        'type': 'occurrences',
+        'total': qs.count(),
+        'occurrences': replace_value_with_choice(list(
+            qs.values('main_stat').annotate(count=Count('main_stat')).order_by('main_stat')),
+            'main_stat',
+            qs.model.STAT_CHOICES
+        )
+    }
 
     # Innate stat distribution
-    results['innate_stat'] = replace_value_with_choice(list(
-        qs.values('innate_stat').annotate(count=Count('innate_stat')).order_by('innate_stat')),
-        'innate_stat',
-        qs.model.STAT_CHOICES
-    )
+    results['innate_stat'] = {
+        'type': 'occurrences',
+        'total': qs.count(),
+        'occurrences': replace_value_with_choice(list(
+            qs.values('innate_stat').annotate(count=Count('innate_stat')).order_by('innate_stat')),
+            'innate_stat',
+            qs.model.STAT_CHOICES
+        )
+    }
 
     # Substat distribution
-    # Unable to use database aggregation on an ArrayField without a ton of gymnastics, so post-process data in python
+    # Unable to use database aggregation on an ArrayField without ORM gymnastics, so post-process data in python
     all_substats = qs.annotate(
         flat_substats=Func(F('substats'), function='unnest')
     ).values_list('flat_substats', flat=True)
     substat_counts = Counter(all_substats)
     results['substats'] = {
+        'type': 'occurrences',
         'total': len(all_substats),
-        'counts': replace_value_with_choice(
+        'occurrences': replace_value_with_choice(
             sorted([{'substat': k, 'count': v} for k, v in substat_counts.items()], key=lambda count: count['substat']),
             'substat',
             qs.model.STAT_CHOICES
@@ -125,22 +190,28 @@ def get_rune_report(qs, total_runs):
     }
 
     # Maximum efficiency by quality
-    results['max_efficiency'] = histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality')
+    results['max_efficiency'] = {
+        'type': 'histogram',
+        'histogram': histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality'),
+    }
 
     # Sell value by quality
     min_value, max_value = qs.aggregate(Min('value'), Max('value')).values()
     min_value = int(floor_to_nearest(min_value, 1000))
     max_value = int(ceil_to_nearest(max_value, 1000))
-    results['value'] = histogram(qs, 'value', range(min_value, max_value, 1000), slice_on='quality')
+    results['value'] = {
+        'type': 'histogram',
+        'histogram': histogram(qs, 'value', range(min_value, max_value, 1000), slice_on='quality')
+    }
 
     return results
 
 
-def get_rune_craft_report(qs, total_runs):
+def get_rune_craft_report(qs, total_log_count):
     return "rune craft report"
 
 
-def get_secret_dungeon_report(qs, total_runs):
+def get_secret_dungeon_report(qs, total_log_count):
     return "secret dungeon report"
 
 

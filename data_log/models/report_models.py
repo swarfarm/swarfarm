@@ -13,6 +13,7 @@ class Report(models.Model):
         on_delete=models.SET_NULL,
         help_text="The logging model used to generate this report"
     )
+    generated_on = models.DateTimeField(auto_now_add=True)
     start_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField()
     log_count = models.IntegerField()
@@ -20,7 +21,7 @@ class Report(models.Model):
     report = JSONField()
 
     class Meta:
-        get_latest_by = 'end_timestamp'
+        get_latest_by = 'generated_on'
 
 
 class LevelReport(Report):

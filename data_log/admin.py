@@ -249,4 +249,4 @@ class WorldBossAdmin(admin.ModelAdmin):
 # Reports
 @admin.register(models.Report)
 class ReportAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ('generated_on',)

@@ -205,8 +205,14 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
     if not lvl:
         raise Http404()
 
+    try:
+        report = lvl.logs.latest()
+    except lvl.logs.model.DoesNotExist:
+        report = None
+
     context = {
         'dungeon': dung,
         'level': lvl,
+        'report': report
     }
     return render(request, 'dungeons/detail.html', context)

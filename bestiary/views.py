@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -171,11 +172,23 @@ def bestiary_detail(request, monster_slug):
 
 def dungeons(request):
     context = {
+        'view': 'dungeons',
         'dungeons': {},
     }
 
     for cat_id, category in Dungeon.CATEGORY_CHOICES:
-        d = Dungeon.objects.filter(category=cat_id, enabled=True)
+        d = Dungeon.objects.filter(
+            category=cat_id,
+            enabled=True
+        ).exclude(
+            category=Dungeon.CATEGORY_SECRET
+        ).prefetch_related(
+            'level_set',
+            # Prefetch('level_set', queryset=Level.objects.normal(), to_attr='normal'),
+            # Prefetch('level_set', queryset=Level.objects.hard(), to_attr='hard'),
+            # Prefetch('level_set', queryset=Level.objects.hell(), to_attr='hell'),
+        )
+
         if d.count() > 0:
             context['dungeons'][category] = d
 
@@ -211,6 +224,7 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
         report = None
 
     context = {
+        'view': 'dungeons',
         'dungeon': dung,
         'level': lvl,
         'report': report

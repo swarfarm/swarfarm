@@ -2011,6 +2011,18 @@ class SecretDungeon(Dungeon):
     monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
 
 
+class LevelDifficultyManager(models.Manager):
+    # Provide easy methods to access scenario difficulties
+    def normal(self):
+        return self.get_queryset().filter(difficulty=self.model.DIFFICULTY_NORMAL)
+
+    def hard(self):
+        return self.get_queryset().filter(difficulty=self.model.DIFFICULTY_HARD)
+
+    def hell(self):
+        return self.get_queryset().filter(difficulty=self.model.DIFFICULTY_HELL)
+
+
 class Level(models.Model):
     DIFFICULTY_NORMAL = 1
     DIFFICULTY_HARD = 2
@@ -2029,6 +2041,8 @@ class Level(models.Model):
     frontline_slots = models.IntegerField(default=5)
     backline_slots = models.IntegerField(blank=True, null=True, help_text='Leave null for normal dungeons')
     total_slots = models.IntegerField(default=5, help_text='Maximum monsters combined front/backline.')
+
+    objects = LevelDifficultyManager()
 
     class Meta:
         unique_together = (

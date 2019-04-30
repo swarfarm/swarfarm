@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
+{% block title %}
+    Dungeons - {{ block.super }}
+{% endblock title %}
 
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
@@ -11,7 +14,7 @@
         {% for d in cat_dungeons %}
             <div class="col-md-4">
                 <div class="panel panel-default">
-                    <div class="panel-heading"><a href="{% url 'bestiary:dungeon_detail' slug=d.slug %}">{{ d.name }}</a></div>
+                    <div class="panel-heading">{{ d.name }}</div>
                     <div class="panel-body">
                         {% if d.icon %}
                             <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="img-thumbnail">
@@ -56,7 +59,7 @@
                         {% else %}
                             <ul>
                             {% for l in d.level_set.all %}
-                                <li><a href="{% url 'bestiary:dungeon_detail_floor' slug=d.slug floor=l.floor %}">B{{ l.floor }}</a></li>
+                                <li><a href="{% url 'bestiary:dungeon_detail' slug=d.slug floor=l.floor %}">B{{ l.floor }}</a></li>
                             {% endfor %}
                             </ul>
                         {% endif %}

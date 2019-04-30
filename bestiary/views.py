@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Prefetch
+from django.db.models import Max
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -196,7 +196,7 @@ def dungeons(request):
 
 
 def dungeon_detail(request, slug, difficulty=None, floor=None):
-    dung = get_object_or_404(Dungeon, slug=slug)
+    dung = get_object_or_404(Dungeon.objects.all().prefetch_related('level_set'), slug=slug)
     lvl = None
     levels = dung.level_set.all()
 
@@ -223,10 +223,17 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
     except lvl.logs.model.DoesNotExist:
         report = None
 
+    floor_range = range(
+        1,
+        dung.level_set.aggregate(Max('floor'))['floor__max'] + 1
+    )
+
     context = {
         'view': 'dungeons',
         'dungeon': dung,
+        'is_scenario': dung.category == Dungeon.CATEGORY_SCENARIO,
+        'floor_range': floor_range,
         'level': lvl,
         'report': report
     }
-    return render(request, 'dungeons/detail.html', context)
+    return render(request, 'dungeons/detail/base.html', context)

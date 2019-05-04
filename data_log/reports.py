@@ -2,10 +2,11 @@ from collections import Counter
 from datetime import timedelta
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Min, Max, Avg, Sum, Func, F
+from django.db.models import Count, Min, Max, Avg, Sum, Func, F, CharField, Value
+from django.db.models.functions import Cast, Concat
 from django_pivot.histogram import histogram
 
-from bestiary.models import Monster, Dungeon, Level
+from bestiary.models import Monster, Rune, RuneCraft, Dungeon, Level, GameItem
 from .models import Report, LevelReport, SummonLog, DungeonLog, ItemDrop, MonsterDrop, MonsterPieceDrop, RuneDrop, RuneCraftDrop, DungeonSecretDungeonDrop
 from .util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice
 
@@ -19,31 +20,143 @@ def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=250
 
 
 def get_report_summary(drops):
-    summary = {}
+    summary = {
+        'table': {},
+        'chart': [],
+    }
 
+    # Chart data: list of {'drop': <string>, 'count': <int>}
+    # Table data: dict (by drop type) of lists of items which drop, with stats. 'count' is only required stat.
     for drop_type, qs in drops.items():
         if drop_type == ItemDrop.RELATED_NAME:
-            # Item drops are counted individually and contain quantity information
-            summary_data = list(
+            # Chart excludes currency
+            chart_data = list(
+                qs.exclude(
+                    item__category=GameItem.CATEGORY_CURRENCY,
+                ).values(
+                    drop=F('item__name'),
+                ).annotate(
+                    count=Count('pk'),
+                ).filter(count__gt=0).order_by('-count')
+            )
+
+            table_data = list(
                 qs.values(
-                    'item',
-                    name=F('item__name'),
+                    drop=F('item__name'),
                     icon=F('item__icon'),
                 ).annotate(
-                    count=Count('item'),
+                    count=Count('pk'),
                     min=Min('quantity'),
                     max=Max('quantity'),
-                    avg=Avg('quantity')
-                ).order_by('-count')
+                    avg=Avg('quantity'),
+                ).filter(count__gt=0).order_by('-count')
             )
         elif drop_type == MonsterDrop.RELATED_NAME:
-            # Monster drops are counted by stars
-            summary_data = list(qs.values('grade').annotate(count=Count('pk')))
-        else:
-            # Count only
-            summary_data = qs.aggregate(count=Count('pk'))
+            # Monster drops in chart are counted by stars
+            chart_data = list(
+                qs.values(
+                    drop=Concat(Cast('grade', CharField()), Value('⭐ Monster'))
+                ).annotate(
+                    count=Count('pk')
+                ).filter(count__gt=0).order_by('-count')
+            )
 
-        summary[drop_type] = summary_data
+            table_data = replace_value_with_choice(
+                list(
+                    qs.values(
+                        drop=F('monster__name'),
+                        element=F('monster__element'),
+                        icon=F('monster__image_filename')
+                    ).annotate(
+                        count=Count('pk')
+                    )
+                ),
+                {'element': Monster.ELEMENT_CHOICES}
+            )
+        else:
+            # Chart can is name, count only
+            item_name = ' '.join([s.capitalize() for s in drop_type.split('_')]).rstrip('s')
+            count = qs.aggregate(count=Count('pk'))['count']
+            if count > 0:
+                chart_data = [{
+                    'drop': item_name,
+                    'count': count,
+                }]
+            else:
+                chart_data = []
+
+            # Table data based on item type
+            if drop_type == MonsterDrop.RELATED_NAME:
+                table_data = replace_value_with_choice(
+                    list(
+                        qs.values(
+                            name=F('monster__name'),
+                            icon=F('monster__image_filename'),
+                            element=F('monster__element'),
+                            stars=F('monster__base_stars'),
+                        ).annotate(count=Count('pk'))
+                    ),
+                    {'element': Monster.ELEMENT_CHOICES}
+                )
+
+            elif drop_type == MonsterPieceDrop.RELATED_NAME:
+                table_data = replace_value_with_choice(
+                    list(
+                        qs.values(
+                            name=F('monster__name'),
+                            icon=F('monster__image_filename'),
+                            element=F('monster__element'),
+                            count=Count('pk'),
+                            min=Min('quantity'),
+                            max=Max('quantity'),
+                            avg=Avg('quantity'),
+                        )
+                    ),
+                    {'element': Monster.ELEMENT_CHOICES}
+                )
+            elif drop_type == RuneDrop.RELATED_NAME:
+                table_data = replace_value_with_choice(
+                    list(
+                        qs.values(
+                            'type', 'stars', 'quality'
+                        ).annotate(
+                            count=Count('pk')
+                        ).order_by('type', 'stars', 'quality')
+                    ),
+                    {'type': Rune.TYPE_CHOICES, 'quality': Rune.QUALITY_CHOICES}
+                )
+            elif drop_type == RuneCraftDrop.RELATED_NAME:
+                table_data = replace_value_with_choice(
+                    list(
+                        qs.values(
+                            'type', 'rune', 'quality'
+                        ).annotate(
+                            count=Count('pk'),
+                        ).order_by('type', 'rune', 'quality')
+                    ),
+                    {'type': Rune.TYPE_CHOICES, 'quality': Rune.QUALITY_CHOICES}
+                )
+            elif drop_type == DungeonSecretDungeonDrop.RELATED_NAME:
+                table_data = replace_value_with_choice(
+                    list(
+                        qs.values(
+                            name=F('level__dungeon__secretdungeon__monster__name'),
+                            element=F('level__dungeon__secretdungeon__monster__element'),
+                            icon=F('level__dungeon__secretdungeon__monster__image_filename'),
+                        ).annotate(
+                            count=Count('pk'),
+                        )
+                    ),
+                    {'element': Monster.ELEMENT_CHOICES}
+                )
+
+            else:
+                raise NotImplementedError(f"No summary table generation for {drop_type}")
+
+        summary['chart'] += chart_data
+
+        if table_data:
+            summary['table'][drop_type] = table_data
 
     return summary
 
@@ -52,10 +165,10 @@ def get_item_report(qs, total_log_count):
     results = list(
         qs.values(
             'item',
-            'item__name',
-            'item__icon'
+            name=F('item__name'),
+            icon=F('item__icon'),
         ).annotate(
-            count=Count('item'),
+            count=Count('pk'),
             min=Min('quantity'),
             max=Max('quantity'),
             avg=Avg('quantity'),
@@ -114,8 +227,7 @@ def get_monster_report(qs, total_log_count):
         'total': qs.count(),
         'occurrences': replace_value_with_choice(
             list(qs.values(element=F('monster__element')).annotate(count=Count('pk'))),
-            'element',
-            Monster.ELEMENT_CHOICES
+            {'element': Monster.ELEMENT_CHOICES}
         )
     }
 
@@ -140,13 +252,11 @@ def get_rune_report(qs, total_log_count):
         'stars': list(qs.values('stars').annotate(count=Count('pk')).order_by('-count')),
         'type': replace_value_with_choice(
             list(qs.values('type').annotate(count=Count('pk')).order_by('-count')),
-            'type',
-            qs.model.TYPE_CHOICES,
+            {'type': qs.model.TYPE_CHOICES}
         ),
         'quality': replace_value_with_choice(
             list(qs.values('quality').annotate(count=Count('pk')).order_by('-count')),
-            'quality',
-            qs.model.QUALITY_CHOICES,
+            {'quality': qs.model.QUALITY_CHOICES}
         ),
         'slot': list(qs.values('slot').annotate(count=Count('pk')).order_by('-count')),
     }
@@ -157,8 +267,7 @@ def get_rune_report(qs, total_log_count):
         'total': qs.count(),
         'occurrences': replace_value_with_choice(list(
             qs.values('main_stat').annotate(count=Count('main_stat')).order_by('main_stat')),
-            'main_stat',
-            qs.model.STAT_CHOICES
+            {'main_stat': qs.model.STAT_CHOICES}
         )
     }
 
@@ -168,8 +277,7 @@ def get_rune_report(qs, total_log_count):
         'total': qs.count(),
         'occurrences': replace_value_with_choice(list(
             qs.values('innate_stat').annotate(count=Count('innate_stat')).order_by('innate_stat')),
-            'innate_stat',
-            qs.model.STAT_CHOICES
+            {'innate_stat': qs.model.STAT_CHOICES}
         )
     }
 
@@ -183,9 +291,11 @@ def get_rune_report(qs, total_log_count):
         'type': 'occurrences',
         'total': len(all_substats),
         'occurrences': replace_value_with_choice(
-            sorted([{'substat': k, 'count': v} for k, v in substat_counts.items()], key=lambda count: count['substat']),
-            'substat',
-            qs.model.STAT_CHOICES
+            sorted(
+                [{'substat': k, 'count': v} for k, v in substat_counts.items()],
+                key=lambda count: count['substat']
+            ),
+            {'substat': qs.model.STAT_CHOICES}
         ),
     }
 

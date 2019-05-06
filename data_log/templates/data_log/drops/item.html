@@ -1,0 +1,6 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ item.name }}">
+    <img src="{{ img_url_prefix }}items/{{ item.icon }}" alt="{{ item.name }}" class="monster-thumb"/>
+</div>

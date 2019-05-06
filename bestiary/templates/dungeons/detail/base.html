@@ -6,12 +6,14 @@
 {% endblock title %}
 
 {% block content %}
-    {% include './dungeon_header.html' %}
+    {% include 'dungeons/detail/dungeon_header.html' %}
 
     {% if report %}
-    <p>{{ report.report }}</p>
+        {% include 'data_log/summary.html' with summary=report.report.summary.table only %}
+
+        <p>{{ report.report }}</p>
     {% else %}
-    <p>No report generated for this level yet</p>
+        <p>No report generated for this level yet</p>
     {% endif %}
 
 {% endblock content %}

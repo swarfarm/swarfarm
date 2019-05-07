@@ -23,9 +23,15 @@ class Report(models.Model):
     class Meta:
         get_latest_by = 'generated_on'
 
+    def __str__(self):
+        return f"{self.generated_on} - {self.content_type}"
+
 
 class LevelReport(Report):
     level = models.ForeignKey(Level, on_delete=models.PROTECT, related_name='logs')
+
+    def __str__(self):
+        return f"{self.level} {self.generated_on}"
 
 
 class SummonReport(Report):

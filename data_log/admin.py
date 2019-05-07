@@ -250,3 +250,8 @@ class WorldBossAdmin(admin.ModelAdmin):
 @admin.register(models.Report)
 class ReportAdmin(admin.ModelAdmin):
     readonly_fields = ('generated_on',)
+
+
+@admin.register(models.LevelReport)
+class LevelReportAdmin(admin.ModelAdmin):
+    readonly_fields = ('generated_on', 'level')

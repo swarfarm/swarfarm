@@ -152,6 +152,9 @@ def get_report_summary(drops):
 
 
 def get_item_report(qs, total_log_count):
+    if qs.count() == 0:
+        return None
+
     results = list(
         qs.values(
             'item',
@@ -174,6 +177,9 @@ def get_item_report(qs, total_log_count):
 
 
 def get_monster_report(qs, total_log_count):
+    if qs.count() == 0:
+        return None
+
     results = {}
 
     # By unique monster
@@ -236,6 +242,9 @@ def get_monster_piece_report(qs, total_log_count):
 
 
 def get_rune_report(qs, total_log_count):
+    if qs.count() == 0:
+        return None
+
     results = {}
 
     results['summary'] = {
@@ -337,10 +346,10 @@ def get_drop_querysets(qs):
     return drop_querysets
 
 
-def generate_scenario_reports():
+def generate_level_reports():
     content_type = ContentType.objects.get_for_model(DungeonLog)
 
-    for level in Level.objects.filter(dungeon__category=Dungeon.CATEGORY_SCENARIO):
+    for level in Level.objects.all():
         records = _records_to_report(DungeonLog.objects.filter(level=level))
 
         if records.count() > 0:

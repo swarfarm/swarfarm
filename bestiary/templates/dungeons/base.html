@@ -5,6 +5,14 @@
     Dungeons - {{ block.super }}
 {% endblock title %}
 
+{% block javascript %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+{% endblock javascript %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "bestiary/js/dungeons.js" %}"></script>
+{% endblock javascript_compressed %}
+
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
 
@@ -70,3 +78,4 @@
         </div>
     {% endfor %}
 {% endblock content %}
+

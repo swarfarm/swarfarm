@@ -7,8 +7,8 @@ from django.db.models.functions import Cast, Concat
 from django_pivot.histogram import histogram
 
 from bestiary.models import Monster, Rune, RuneCraft, Dungeon, Level, GameItem
-from .models import Report, LevelReport, SummonLog, DungeonLog, ItemDrop, MonsterDrop, MonsterPieceDrop, RuneDrop, RuneCraftDrop, DungeonSecretDungeonDrop
-from .util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice
+from data_log.models import Report, LevelReport, SummonLog, DungeonLog, ItemDrop, MonsterDrop, MonsterPieceDrop, RuneDrop, RuneCraftDrop, DungeonSecretDungeonDrop
+from data_log.util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice
 
 
 def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=2500):

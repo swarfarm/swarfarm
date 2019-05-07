@@ -1,8 +1,8 @@
-{% if summary.items %}
+{% if items %}
     <div class="list-group-item">
         <h4 class="list-group-item-heading">Item Drops</h4>
         <p class="list-group-item-text">
-            {% for item in summary.items %}
+            {% for item in items %}
                 {% include 'data_log/drops/item.html' with item=item only%}
             {% endfor %}
         </p>

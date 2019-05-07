@@ -9,7 +9,7 @@
     {% include 'dungeons/detail/dungeon_header.html' %}
 
     {% if report %}
-        {% include 'data_log/summary.html' with summary=report.report.summary.table only %}
+        {% include 'data_log/summary.html' with summary=report.report.summary only %}
 
         <p>{{ report.report }}</p>
     {% else %}

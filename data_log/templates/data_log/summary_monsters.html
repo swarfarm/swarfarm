@@ -1,9 +1,8 @@
-
-{% if summary.monsters %}
+{% if monsters %}
     <div class="list-group-item">
         <h4 class="list-group-item-heading">Monster Drops</h4>
         <p class="list-group-item-text">
-            {% for monster in summary.monsters %}
+            {% for monster in monsters %}
                 {% include 'data_log/drops/monster.html' with monster=monster only%}
             {% endfor %}
         </p>

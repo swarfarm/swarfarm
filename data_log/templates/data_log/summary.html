@@ -1,5 +1,11 @@
-<div class="list-group">
-    {% include 'data_log/summary_items.html' %}
-    {% include 'data_log/summary_runes.html' %}
-    {% include 'data_log/summary_monsters.html' %}
+<div class="row">
+    <div class="col-md-6">Chart goes here</div>
+
+    <div class="col-md-6">
+        <div class="list-group">
+            {% include 'data_log/summary_items.html' %}
+            {% include 'data_log/summary_runes.html' %}
+            {% include 'data_log/summary_monsters.html' %}
+        </div>
+    </div>
 </div>

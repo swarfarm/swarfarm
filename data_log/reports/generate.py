@@ -2,7 +2,7 @@ from collections import Counter
 from datetime import timedelta
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Min, Max, Avg, Sum, Func, F, CharField, Value
+from django.db.models import Count, Min, Max, Avg, Sum, Func, F, CharField, FloatField, Value
 from django.db.models.functions import Cast, Concat
 from django_pivot.histogram import histogram
 
@@ -19,7 +19,7 @@ def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=250
         return qs.filter(timestamp__gte=timezone.now() - report_timespan)
 
 
-def get_report_summary(drops):
+def get_report_summary(drops, total_log_count):
     summary = {
         'table': {},
         'chart': [],
@@ -49,6 +49,8 @@ def get_report_summary(drops):
                     min=Min('quantity'),
                     max=Max('quantity'),
                     avg=Avg('quantity'),
+                    drop_chance=Cast(Count('pk'), FloatField()) / total_log_count,
+                    avg_per_run=Cast(Sum('quantity'), FloatField()) / total_log_count,
                 ).filter(count__gt=0).order_by('item__category', '-count')
             )
         elif drop_type == MonsterDrop.RELATED_NAME:
@@ -165,13 +167,10 @@ def get_item_report(qs, total_log_count):
             min=Min('quantity'),
             max=Max('quantity'),
             avg=Avg('quantity'),
-            sum=Sum('quantity'),
+            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count,
+            avg_per_run=Cast(Sum('quantity'), FloatField()) / total_log_count,
         ).order_by('-count')
     )
-
-    for result in results:
-        result['drop_chance'] = float(result['count']) / total_log_count
-        result['avg_per_run'] = float(result['sum']) / total_log_count
 
     return results
 
@@ -357,7 +356,7 @@ def generate_level_reports():
 
             # Get querysets for each possible drop type
             drops = get_drop_querysets(records)
-            report_data['summary'] = get_report_summary(drops)
+            report_data['summary'] = get_report_summary(drops, records.count())
 
             for key, qs in drops.items():
                 report_data[key] = DROP_TYPES[key](qs, records.count())

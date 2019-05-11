@@ -10,6 +10,7 @@
 
     {% if report %}
         {% include 'data_log/summary.html' with summary=report.report.summary only %}
+        {% include 'data_log/runes.html' with runes=report.report.runes only %}
 
         <p>{{ report.report }}</p>
     {% else %}

@@ -2,19 +2,29 @@
 {% load utils %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ monster.element }} {{ monster.name }}">
-    <a href="{% url 'bestiary:detail' monster_slug=monster.slug %}">
-        <img src="{{ img_url_prefix }}monsters/{{ monster.icon }}" alt="{{ monster.name }}" class="monster-thumb"/>
-        <span>
-            {% for x in monster.stars|get_range %}
-                {% if monster.is_awakened %}
-                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                {% elif monster.can_awaken %}
-                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                {% else %}
-                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                {% endif %}
-            {% endfor %}
-        </span>
-    </a>
+<div class="media">
+    <div class="media-left">
+        <div class="monster-image">
+            <a href="{% url 'bestiary:detail' monster_slug=monster.slug %}">
+                <img src="{{ img_url_prefix }}monsters/{{ monster.icon }}" alt="{{ monster.name }}" class="monster-thumb"/>
+                <span>
+                    {% for x in monster.stars|get_range %}
+                        {% if monster.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% elif monster.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+            </a>
+        </div>
+    </div>
+    <div class="media-body">
+        <h4 class="media-heading">{{ monster.element }} {{ monster.name }}</h4>
+        <ul class="list list-unstyled">
+            <li>Chance: {{ monster.drop_chance|stringformat:".1f" }}%</li>
+        </ul>
+    </div>
 </div>

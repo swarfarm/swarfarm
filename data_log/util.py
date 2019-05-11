@@ -21,6 +21,26 @@ def replace_value_with_choice(data, replacements):
         choice_dict = dict(choices)
         for item in data:
             if attribute in item:
-                item[attribute] = choice_dict.get(item[attribute], item[attribute])
+                item[attribute] = choice_dict.get(
+                    item[attribute],
+                    item[attribute] if item[attribute] is not None else 'None'
+                )
 
     return data
+
+
+def transform_to_dict(data, value_key='count'):
+    dict_data = {}
+    name_key = None
+
+    for item in data:
+        if name_key is None:
+            # Find the first key that is not the value_key and use that
+            for key in item.keys():
+                if key != value_key:
+                    name_key = key
+                    break
+
+        dict_data[item[name_key]] = item[value_key]
+
+    return dict_data

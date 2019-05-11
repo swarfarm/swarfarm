@@ -1,0 +1,29 @@
+{% load report_charts %}
+
+<h2>Rune Drops</h2>
+
+<div class="row">
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="dungeon-chart"
+            data-chart="{% chart runes.value title="Rune Sell Value" %}"
+            style="height: 300px"
+        ></div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="dungeon-chart"
+            data-chart="{% chart runes.max_efficiency title="Maximum Efficiency Distribution" %}"
+            style="height: 300px"
+        ></div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="dungeon-chart"
+            data-chart="{% chart runes.main_stat title="By Main Stat" type='pie' %}"
+            style="height: 300px"
+        ></div>
+    </div>
+</div>

@@ -8,7 +8,7 @@ from django_pivot.histogram import histogram
 
 from bestiary.models import Monster, Rune, RuneCraft, Dungeon, Level, GameItem
 from data_log.models import Report, LevelReport, SummonLog, DungeonLog, ItemDrop, MonsterDrop, MonsterPieceDrop, RuneDrop, RuneCraftDrop, DungeonSecretDungeonDrop
-from data_log.util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice
+from data_log.util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice, transform_to_dict
 
 
 def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=2500):
@@ -49,7 +49,7 @@ def get_report_summary(drops, total_log_count):
                     min=Min('quantity'),
                     max=Max('quantity'),
                     avg=Avg('quantity'),
-                    drop_chance=Cast(Count('pk'), FloatField()) / total_log_count,
+                    drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
                     avg_per_run=Cast(Sum('quantity'), FloatField()) / total_log_count,
                 ).filter(count__gt=0).order_by('item__category', '-count')
             )
@@ -73,7 +73,10 @@ def get_report_summary(drops, total_log_count):
                         can_awaken=F('monster__can_awaken'),
                         is_awakened=F('monster__is_awakened'),
                         stars=F('monster__base_stars'),
-                    ).annotate(count=Count('pk'))
+                    ).annotate(
+                        count=Count('pk'),
+                        drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
+                    )
                 ),
                 {'element': Monster.ELEMENT_CHOICES}
             )
@@ -167,7 +170,7 @@ def get_item_report(qs, total_log_count):
             min=Min('quantity'),
             max=Max('quantity'),
             avg=Avg('quantity'),
-            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count,
+            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
             avg_per_run=Cast(Sum('quantity'), FloatField()) / total_log_count,
         ).order_by('-count')
     )
@@ -185,7 +188,7 @@ def get_monster_report(qs, total_log_count):
     results['monsters'] = {
         'type': 'occurrences',
         'total': qs.count(),
-        'occurrences': list(qs.values(
+        'data': list(qs.values(
             'monster',
             name=F('monster__name'),
             element=F('monster__element'),
@@ -198,29 +201,33 @@ def get_monster_report(qs, total_log_count):
     results['family'] = {
         'type': 'occurrences',
         'total': qs.count(),
-        'occurrences': list(qs.values(
+        'data': list(qs.values(
             family_id=F('monster__family_id'),
             name=F('monster__name'),
         ).annotate(count=Count('pk')))
     }
 
     # By nat stars
-    mons_by_nat_stars = list(qs.values(nat_stars=F('monster__base_stars')).annotate(count=Count('monster__base_stars')))
-    for mon in mons_by_nat_stars:
-        mon['drop_chance'] = float(mon['count']) / total_log_count
-        mon['avg_per_run'] = float(mon['count']) / total_log_count
+    mons_by_nat_stars = list(
+        qs.values(
+            nat_stars=F('monster__base_stars'),
+        ).annotate(
+            count=Count('monster__base_stars'),
+            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
+        )
+    )
 
     results['nat_stars'] = {
         'type': 'occurrences',
         'total': qs.count(),
-        'occurrences': mons_by_nat_stars,
+        'data': mons_by_nat_stars,
     }
 
     # By element
     results['element'] = {
         'type': 'occurrences',
         'total': qs.count(),
-        'occurrences': replace_value_with_choice(
+        'data': replace_value_with_choice(
             list(qs.values(element=F('monster__element')).annotate(count=Count('pk'))),
             {'element': Monster.ELEMENT_CHOICES}
         )
@@ -230,7 +237,7 @@ def get_monster_report(qs, total_log_count):
     results['awakened'] = {
         'type': 'occurrences',
         'total': qs.count(),
-        'occurrences': list(qs.values(awakened=F('monster__is_awakened')).annotate(count=Count('pk'))),
+        'data': list(qs.values(awakened=F('monster__is_awakened')).annotate(count=Count('pk'))),
     }
 
     return results
@@ -263,9 +270,11 @@ def get_rune_report(qs, total_log_count):
     results['main_stat'] = {
         'type': 'occurrences',
         'total': qs.count(),
-        'occurrences': replace_value_with_choice(list(
-            qs.values('main_stat').annotate(count=Count('main_stat')).order_by('main_stat')),
-            {'main_stat': qs.model.STAT_CHOICES}
+        'data': transform_to_dict(
+            replace_value_with_choice(
+                list(qs.values('main_stat').annotate(count=Count('main_stat')).order_by('main_stat')),
+                {'main_stat': qs.model.STAT_CHOICES}
+            )
         )
     }
 
@@ -273,9 +282,11 @@ def get_rune_report(qs, total_log_count):
     results['innate_stat'] = {
         'type': 'occurrences',
         'total': qs.count(),
-        'occurrences': replace_value_with_choice(list(
-            qs.values('innate_stat').annotate(count=Count('innate_stat')).order_by('innate_stat')),
-            {'innate_stat': qs.model.STAT_CHOICES}
+        'data': transform_to_dict(
+            replace_value_with_choice(list(
+                qs.values('innate_stat').annotate(count=Count('innate_stat')).order_by('innate_stat')),
+                {'innate_stat': qs.model.STAT_CHOICES}
+            )
         )
     }
 
@@ -288,19 +299,21 @@ def get_rune_report(qs, total_log_count):
     results['substats'] = {
         'type': 'occurrences',
         'total': len(all_substats),
-        'occurrences': replace_value_with_choice(
-            sorted(
-                [{'substat': k, 'count': v} for k, v in substat_counts.items()],
-                key=lambda count: count['substat']
+        'data': transform_to_dict(
+            replace_value_with_choice(
+                sorted(
+                    [{'substat': k, 'count': v} for k, v in substat_counts.items()],
+                    key=lambda count: count['substat']
+                ),
+                {'substat': qs.model.STAT_CHOICES}
             ),
-            {'substat': qs.model.STAT_CHOICES}
-        ),
+        )
     }
 
     # Maximum efficiency by quality
     results['max_efficiency'] = {
         'type': 'histogram',
-        'histogram': histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality'),
+        'data': histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality'),
     }
 
     # Sell value by quality
@@ -309,7 +322,7 @@ def get_rune_report(qs, total_log_count):
     max_value = int(ceil_to_nearest(max_value, 1000))
     results['value'] = {
         'type': 'histogram',
-        'histogram': histogram(qs, 'value', range(min_value, max_value, 1000), slice_on='quality')
+        'data': histogram(qs, 'value', range(min_value, max_value, 1000), slice_on='quality')
     }
 
     return results

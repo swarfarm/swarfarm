@@ -7,6 +7,9 @@
     </div>
     <div class="media-body">
         <h4 class="media-heading">{{ item.name }}</h4>
-        <p>Qty {% if item.drop_chance == 1.0 %}{{ item.min }}{% else %}0{% endif %} - {{ item.max }}</p>
+        <ul class="list list-unstyled">
+            <li>Chance: {{ item.drop_chance|stringformat:".1f" }}%</li>
+            <li>Qty {{ item.min }} - {{ item.max }}</li>
+        </ul>
     </div>
 </div>

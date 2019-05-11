@@ -1,10 +1,14 @@
 {% if monsters %}
     <div class="list-group-item">
-        <h4 class="list-group-item-heading">Monster Drops</h4>
+        <h3 class="list-group-item-heading">Monster Drops</h3>
         <p class="list-group-item-text">
+            <div class="row">
             {% for monster in monsters %}
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                 {% include 'data_log/drops/monster.html' with monster=monster only%}
+                </div>
             {% endfor %}
+            </div>
         </p>
     </div>
 {% endif %}

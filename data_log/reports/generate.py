@@ -283,8 +283,8 @@ def get_rune_report(qs, total_log_count):
         'type': 'occurrences',
         'total': qs.count(),
         'data': transform_to_dict(
-            replace_value_with_choice(list(
-                qs.values('innate_stat').annotate(count=Count('innate_stat')).order_by('innate_stat')),
+            replace_value_with_choice(
+                list(qs.values('innate_stat').annotate(count=Count('pk')).order_by('innate_stat')),
                 {'innate_stat': qs.model.STAT_CHOICES}
             )
         )

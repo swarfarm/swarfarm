@@ -1,0 +1,15 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="media">
+    <div class="media-left">
+        <img class="media-object monster-thumb" src="{{ img_url_prefix }}items/{{ item.icon }}" alt="{{ item.name }}">
+    </div>
+    <div class="media-body">
+        <h4 class="media-heading">{{ item.name }}</h4>
+        <ul class="list list-unstyled">
+            <li>Chance: {{ item.drop_chance|stringformat:".1f" }}%</li>
+            <li>Qty {{ item.min }}{% if item.max != item.min %} - {{ item.max }}{% endif %}</li>
+        </ul>
+    </div>
+</div>

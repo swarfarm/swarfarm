@@ -1,0 +1,20 @@
+{% extends 'dungeons/base.html' %}
+
+{% block title %}
+    {{ dungeon.name }} {% if level.difficulty %}{{ level.get_difficulty_display }}{% endif %}
+    B{{ level.floor }} - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+    {% include 'dungeons/detail/dungeon_header.html' %}
+
+    {% if report %}
+        {% include 'data_log/summary.html' with summary=report.report.summary only %}
+        {% include 'data_log/runes.html' with runes=report.report.runes only %}
+
+        <p>{{ report.report }}</p>
+    {% else %}
+        <p>No report generated for this level yet</p>
+    {% endif %}
+
+{% endblock content %}

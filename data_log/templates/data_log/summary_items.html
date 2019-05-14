@@ -1,0 +1,14 @@
+{% if items %}
+    <div class="list-group-item">
+        <h3 class="list-group-item-heading">Item Drops</h3>
+        <p class="list-group-item-text">
+            <div class="row">
+            {% for item in items %}
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                    {% include 'data_log/drops/item.html' with item=item only%}
+                </div>
+            {% endfor %}
+            </div>
+        </p>
+    </div>
+{% endif %}

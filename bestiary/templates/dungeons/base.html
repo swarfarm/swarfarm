@@ -16,66 +16,27 @@
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
 
+    <div class="row">
     {% for category, cat_dungeons in dungeons.items %}
-        <h1>{{ category }}</h1>
-        <div class="row">
-        {% for d in cat_dungeons %}
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">{{ d.name }}</div>
-                    <div class="panel-body">
+        <div class="col-md-6 col-sm-12">
+            <h1>{{ category }}</h1>
+            <ul class="media-list">
+            {% for d in cat_dungeons %}
+                <li class="media">
+                    <div class="media-left">
                         {% if d.icon %}
-                            <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="img-thumbnail">
-                        {% endif %}
-                        {% if d.category == d.CATEGORY_SCENARIO %}
-                            {# List floors by difficulty #}
-                            <ul>
-                            {% for l in d.level_set.all %}
-                                {% if l.difficulty == l.DIFFICULTY_NORMAL %}
-                                <li>
-                                    <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='normal' floor=l.floor %}">
-                                        {{ l.get_difficulty_display }} B{{ l.floor }}
-                                    </a>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-                            </ul>
-
-                            <ul>
-                            {% for l in d.level_set.all %}
-                                {% if l.difficulty == l.DIFFICULTY_HARD %}
-                                <li>
-                                    <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hard' floor=l.floor %}">
-                                        {{ l.get_difficulty_display }} B{{ l.floor }}
-                                    </a>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-                            </ul>
-
-                            <ul>
-                            {% for l in d.level_set.all %}
-                                {% if l.difficulty == l.DIFFICULTY_HELL %}
-                                <li>
-                                    <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hell' floor=l.floor %}">
-                                        {{ l.get_difficulty_display }} B{{ l.floor }}
-                                    </a>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-                            </ul>
-                        {% else %}
-                            <ul>
-                            {% for l in d.level_set.all %}
-                                <li><a href="{% url 'bestiary:dungeon_detail' slug=d.slug floor=l.floor %}">B{{ l.floor }}</a></li>
-                            {% endfor %}
-                            </ul>
+                            <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="media-object">
                         {% endif %}
                     </div>
-                </div>
-            </div>
-        {% endfor %}
+                    <div class="media-body">
+                        <h4 class="media-heading">{{ d.name }}</h4>
+                        {% include 'dungeons/base_floor_pagination.html' %}
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
         </div>
     {% endfor %}
+    </div>
 {% endblock content %}
 

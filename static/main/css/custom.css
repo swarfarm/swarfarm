@@ -116,6 +116,10 @@ footer {
     padding-right: 5px;
 }
 
+.pagination-compact {
+    margin: 0;
+}
+
 .panel-body {
     position: relative;
 }

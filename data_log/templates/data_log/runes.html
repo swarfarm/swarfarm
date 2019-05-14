@@ -1,12 +1,12 @@
 {% load report_charts %}
 
 <h2>Rune Drops</h2>
-<h3>Stats</h3>
+<h3>Type/slot</h3>
 <div class="row">
     <div class="col-md-6 col-lg-4">
         <div
             class="dungeon-chart"
-            data-chart="{% chart runes.main_stat title="By Main Stat" %}"
+            data-chart="{% chart runes.type chart_type='pie' title="Rune Set" %}"
             style="height: 300px"
         ></div>
     </div>
@@ -14,7 +14,34 @@
     <div class="col-md-6 col-lg-4">
         <div
             class="dungeon-chart"
-            data-chart="{% chart runes.innate_stat title="By Innate Stat" %}"
+            data-chart="{% chart runes.slot chart_type='pie' title="Slot" %}"
+            style="height: 300px"
+        ></div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="dungeon-chart"
+            data-chart="{% chart runes.stars chart_type='pie' title="Stars" %}"
+            style="height: 300px"
+        ></div>
+    </div>
+</div>
+
+<h3>Stats</h3>
+<div class="row">
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="dungeon-chart"
+            data-chart="{% chart runes.main_stat title="By Main Stat" percentage=True %}"
+            style="height: 300px"
+        ></div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="dungeon-chart"
+            data-chart="{% chart runes.innate_stat title="By Innate Stat" percentage=True %}"
             style="height: 300px"
         ></div>
     </div>

@@ -251,81 +251,92 @@ def get_rune_report(qs, total_log_count):
     if qs.count() == 0:
         return None
 
-    results = {}
-
-    results['summary'] = {
-        'stars': list(qs.values('stars').annotate(count=Count('pk')).order_by('-count')),
-        'type': replace_value_with_choice(
-            list(qs.values('type').annotate(count=Count('pk')).order_by('-count')),
-            {'type': qs.model.TYPE_CHOICES}
-        ),
-        'quality': replace_value_with_choice(
-            list(qs.values('quality').annotate(count=Count('pk')).order_by('-count')),
-            {'quality': qs.model.QUALITY_CHOICES}
-        ),
-        'slot': list(qs.values('slot').annotate(count=Count('pk')).order_by('-count')),
-    }
-
-    # Main stat distribution
-    results['main_stat'] = {
-        'type': 'occurrences',
-        'total': qs.count(),
-        'data': transform_to_dict(
-            replace_value_with_choice(
-                list(qs.values('main_stat').annotate(count=Count('main_stat')).order_by('main_stat')),
-                {'main_stat': qs.model.STAT_CHOICES}
-            )
-        )
-    }
-
-    # Innate stat distribution
-    results['innate_stat'] = {
-        'type': 'occurrences',
-        'total': qs.count(),
-        'data': transform_to_dict(
-            replace_value_with_choice(
-                list(qs.values('innate_stat').annotate(count=Count('pk')).order_by('innate_stat')),
-                {'innate_stat': qs.model.STAT_CHOICES}
-            )
-        )
-    }
-
     # Substat distribution
     # Unable to use database aggregation on an ArrayField without ORM gymnastics, so post-process data in python
     all_substats = qs.annotate(
         flat_substats=Func(F('substats'), function='unnest')
     ).values_list('flat_substats', flat=True)
     substat_counts = Counter(all_substats)
-    results['substats'] = {
-        'type': 'occurrences',
-        'total': len(all_substats),
-        'data': transform_to_dict(
-            replace_value_with_choice(
-                sorted(
-                    [{'substat': k, 'count': v} for k, v in substat_counts.items()],
-                    key=lambda count: count['substat']
-                ),
-                {'substat': qs.model.STAT_CHOICES}
-            ),
-        )
-    }
 
-    # Maximum efficiency by quality
-    results['max_efficiency'] = {
-        'type': 'histogram',
-        'data': histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality'),
-    }
-
-    # Sell value by quality
+    # Sell value ranges
     min_value, max_value = qs.aggregate(Min('value'), Max('value')).values()
     min_value = int(floor_to_nearest(min_value, 1000))
     max_value = int(ceil_to_nearest(max_value, 1000))
-    results['value'] = {
-        'type': 'histogram',
-        'data': histogram(qs, 'value', range(min_value, max_value, 1000), slice_on='quality')
-    }
 
-    return results
+    return {
+        'total_count': qs.count(),
+        'stars': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(list(qs.values('stars').annotate(count=Count('pk')).order_by('-count'))),
+        },
+        'type': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('type').annotate(count=Count('pk')).order_by('-count')),
+                    {'type': qs.model.TYPE_CHOICES}
+                )
+            ),
+        },
+        'quality': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('quality').annotate(count=Count('pk')).order_by('-count')),
+                    {'quality': qs.model.QUALITY_CHOICES}
+                )
+            ),
+        },
+        'slot': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(list(qs.values('slot').annotate(count=Count('pk')).order_by('-count'))),
+        },
+        'main_stat': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('main_stat').annotate(count=Count('main_stat')).order_by('main_stat')),
+                    {'main_stat': qs.model.STAT_CHOICES}
+                )
+            )
+        },
+        'innate_stat': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('innate_stat').annotate(count=Count('pk')).order_by('innate_stat')),
+                    {'innate_stat': qs.model.STAT_CHOICES}
+                )
+            )
+        },
+        'substats': {
+            'type': 'occurrences',
+            'total': len(all_substats),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    sorted(
+                        [{'substat': k, 'count': v} for k, v in substat_counts.items()],
+                        key=lambda count: count['substat']
+                    ),
+                    {'substat': qs.model.STAT_CHOICES}
+                ),
+            )
+        },
+        'max_efficiency': {
+            'type': 'histogram',
+            'data': histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality'),
+        },
+        'value': {
+            'type': 'histogram',
+            'data': histogram(qs, 'value', range(min_value, max_value, 250), slice_on='quality')
+        }
+    }
 
 
 def get_rune_craft_report(qs, total_log_count):

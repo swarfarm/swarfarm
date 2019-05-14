@@ -45,10 +45,12 @@ def _common_chart_attributes(chart_template, **kwargs):
         }
 
     if kwargs.get('percentage'):
-        chart_data['yAxis']['max'] = 100
+        # chart_data['yAxis']['max'] = 100
         chart_data['yAxis']['labels'] = {
             'format': '{value}%'
         }
+        if chart_data['chart']['type'] == 'column':
+            chart_data['tooltip']['pointFormat'] = '<tr><td style="color:{series.color};padding:0">{series.name}: </td><td style="padding:0"><b>{point.y}%</b></td></tr>'
 
     return chart_data
 
@@ -162,6 +164,6 @@ chart_types = {
 
 @register.simple_tag
 def chart(data, *args, **kwargs):
-    chart_type = kwargs.get('type', data['type'])
+    chart_type = kwargs.get('chart_type', data['type'])
     chart_data = chart_types[chart_type](**data, **kwargs)
     return json.dumps(chart_data)

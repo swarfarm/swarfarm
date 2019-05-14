@@ -1,0 +1,33 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+{% if runes.sets %}
+    <div class="list-group-item">
+        <h3 class="list-group-item-heading">Rune Drops</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Sets</h5>
+                    <p class="list-group-item-text">
+                        {% for set in runes.sets %}
+                            <div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ set.type }}">
+                                <img src="{{ img_url_prefix }}runes/{{ set.type|lower }}.png" alt="{{ set.type }}" class="monster-thumb" />
+                            </div>
+                        {% endfor %}
+                    </p>
+            </div>
+
+            <div class="col-md-6">
+                <h5>Qualities</h5>
+                <p class="list-group-item-text">
+                    <ul class="list-unstyled">
+                        {% for quality in runes.quality %}
+                            <li>
+                                <span class="label rune-label-{{ quality.quality|lower }}">{{ quality.quality }}</span>&nbsp;
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endif %}

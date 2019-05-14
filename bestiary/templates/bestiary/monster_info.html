@@ -4,6 +4,9 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <span class="panel-title"><strong><img src="{{ img_url_prefix }}elements/{{ mon_data.mon.element }}.png" style="height:1em"/> {{ mon_data.mon.name }}</strong> - <small>{{ mon_data.mon.get_archetype_display }}</small></span>
+        {% if request.user.is_superuser %}
+            <a href="{% url 'admin:bestiary_monster_change' object_id=mon_data.mon.pk %}" class="btn btn-xs edit-skill pull-right" target="_blank"><span class="glyphicon glyphicon-pencil"></span></a>
+        {% endif %}
     </div>
     <div class="panel-body">
         <div class="monster-box">

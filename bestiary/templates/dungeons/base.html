@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    Dungeons - {{ block.super }}
+{% endblock title %}
+
+{% block javascript %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+{% endblock javascript %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "bestiary/js/dungeons.js" %}"></script>
+{% endblock javascript_compressed %}
+
+{% block content %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <div class="row">
+    {% for category, cat_dungeons in dungeons.items %}
+        <div class="col-md-6 col-sm-12">
+            <h1>{{ category }}</h1>
+            <ul class="media-list">
+            {% for d in cat_dungeons %}
+                <li class="media">
+                    <div class="media-left">
+                        {% if d.icon %}
+                            <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="media-object">
+                        {% endif %}
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">{{ d.name }}</h4>
+                        {% include 'dungeons/base_floor_pagination.html' %}
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock content %}
+

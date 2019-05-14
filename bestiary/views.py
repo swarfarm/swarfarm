@@ -1,12 +1,12 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import Http404, HttpResponseForbidden, JsonResponse
-from django.shortcuts import render
-from django.template import loader
+from django.db.models import Max
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 
 from .filters import MonsterFilter
-from .forms import FilterMonsterForm, SkillForm
-from .models import Monster, Skill
+from .forms import FilterMonsterForm
+from .models import Monster, Dungeon, Level
 
 
 def bestiary(request):
@@ -170,30 +170,70 @@ def bestiary_detail(request, monster_slug):
     return render(request, 'bestiary/detail_base.html', context)
 
 
-def edit_skill(request, pk):
-    skill = Skill.objects.get(pk=pk)
-    form = SkillForm(request.POST or None, instance=skill)
+def dungeons(request):
+    context = {
+        'view': 'dungeons',
+        'dungeons': {},
+    }
 
-    if request.user.is_superuser:
-        template = loader.get_template('bestiary/edit_skill_form.html')
+    for cat_id, category in Dungeon.CATEGORY_CHOICES:
+        d = Dungeon.objects.filter(
+            category=cat_id,
+            enabled=True
+        ).exclude(
+            category=Dungeon.CATEGORY_SECRET
+        ).prefetch_related(
+            'level_set',
+            # Prefetch('level_set', queryset=Level.objects.normal(), to_attr='normal'),
+            # Prefetch('level_set', queryset=Level.objects.hard(), to_attr='hard'),
+            # Prefetch('level_set', queryset=Level.objects.hell(), to_attr='hell'),
+        )
 
-        if request.method == 'POST' and form.is_valid():
-            form.save()
-            response_data = {
-                'code': 'success'
-            }
-        else:
+        if d.count() > 0:
+            context['dungeons'][category] = d
 
-            form.helper.form_action = reverse('bestiary:edit_skill', kwargs={'pk': pk})
-            response_data = {
-                'code': 'error',
-                'html': template.render({'form': form}),
-            }
+    return render(request, 'dungeons/base.html', context)
 
-        return JsonResponse(response_data)
+
+def dungeon_detail(request, slug, difficulty=None, floor=None):
+    dung = get_object_or_404(Dungeon.objects.all().prefetch_related('level_set'), slug=slug)
+    lvl = None
+    levels = dung.level_set.all()
+
+    if difficulty:
+        difficulty_id = {v.lower(): k for k, v in dict(Level.DIFFICULTY_CHOICES).items()}[difficulty]
+        levels = levels.filter(difficulty=difficulty_id)
+
+    if floor:
+        levels = levels.filter(floor=floor)
     else:
-        return HttpResponseForbidden('Unauthorized')
+        # Pick the last level automatically for Cairos dungeons
+        if dung.category == Dungeon.CATEGORY_CAIROS:
+            lvl = levels.last()
 
+    if not lvl:
+        # Default to first level for all others
+        lvl = levels.first()
 
-def edit_monster(request):
-    pass
+    if not lvl:
+        raise Http404()
+
+    try:
+        report = lvl.logs.latest()
+    except lvl.logs.model.DoesNotExist:
+        report = None
+
+    floor_range = range(
+        1,
+        dung.level_set.aggregate(Max('floor'))['floor__max'] + 1
+    )
+
+    context = {
+        'view': 'dungeons',
+        'dungeon': dung,
+        'is_scenario': dung.category == Dungeon.CATEGORY_SCENARIO,
+        'floor_range': floor_range,
+        'level': lvl,
+        'report': report
+    }
+    return render(request, 'dungeons/detail/base.html', context)

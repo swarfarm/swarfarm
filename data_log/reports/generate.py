@@ -264,11 +264,18 @@ def get_rune_report(qs, total_log_count):
     max_value = int(ceil_to_nearest(max_value, 1000))
 
     return {
-        'total_count': qs.count(),
         'stars': {
             'type': 'occurrences',
             'total': qs.count(),
-            'data': transform_to_dict(list(qs.values('stars').annotate(count=Count('pk')).order_by('-count'))),
+            'data': transform_to_dict(
+                list(
+                    qs.values(
+                        grade=Concat(Cast('stars', CharField()), Value('⭐'))
+                    ).annotate(
+                        count=Count('pk')
+                    ).order_by('-count')
+                )
+            ),
         },
         'type': {
             'type': 'occurrences',

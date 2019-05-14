@@ -380,7 +380,7 @@ def generate_level_reports():
     content_type = ContentType.objects.get_for_model(DungeonLog)
 
     for level in Level.objects.all():
-        records = _records_to_report(DungeonLog.objects.filter(level=level))
+        records = _records_to_report(DungeonLog.objects.filter(level=level, success=True))
 
         if records.count() > 0:
             report_data = {}

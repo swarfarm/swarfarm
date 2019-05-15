@@ -19,7 +19,7 @@ class InvalidLogException(exceptions.APIException):
         message = detail if detail is not None else self.default_detail
         self.code = code if code is not None else self.default_code
         self.detail = {
-            'message': exceptions.ErrorDetail(message, self.default_code),
+            'detail': exceptions.ErrorDetail(message, self.default_code),
             'reinit': reinit,
         }
 

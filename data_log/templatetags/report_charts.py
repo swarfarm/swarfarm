@@ -85,7 +85,8 @@ def color_series(chart_data, color_type):
     return chart_data
 
 
-def pie(data, **kwargs):
+def pie(**kwargs):
+    data = kwargs.get('data')
     chart_data = _common_chart_attributes(chart_templates.pie, **kwargs)
     chart_data['series'].append({
         'name': '',
@@ -101,7 +102,8 @@ def pie(data, **kwargs):
     return chart_data
 
 
-def bar(data, **kwargs):
+def bar(**kwargs):
+    data = kwargs.get('data')
     chart_data = _common_chart_attributes(chart_templates.column, **kwargs)
     if kwargs.get('percentage'):
         total = float(kwargs.get('total', 1)) / 100
@@ -122,7 +124,8 @@ def bar(data, **kwargs):
     return chart_data
 
 
-def histogram(data, **kwargs):
+def histogram(**kwargs):
+    data = kwargs.get('data')
     chart_data = _common_chart_attributes(chart_templates.column, **kwargs)
 
     categories = [
@@ -163,7 +166,9 @@ chart_types = {
 
 
 @register.simple_tag
-def chart(data, *args, **kwargs):
-    chart_type = kwargs.get('chart_type', data['type'])
-    chart_data = chart_types[chart_type](**data, **kwargs)
+def chart(data, **kwargs):
+    # Merge chart data and kwargs such that kwargs overrides existing keys in data
+    chart_parameters = {**data, **kwargs}
+    chart_type = chart_parameters['type']
+    chart_data = chart_types[chart_type](**chart_parameters)
     return json.dumps(chart_data)

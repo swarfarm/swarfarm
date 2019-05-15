@@ -337,11 +337,13 @@ def get_rune_report(qs, total_log_count):
         },
         'max_efficiency': {
             'type': 'histogram',
+            'width': 5,
             'data': histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality'),
         },
         'value': {
             'type': 'histogram',
-            'data': histogram(qs, 'value', range(min_value, max_value, 250), slice_on='quality')
+            'width': 500,
+            'data': histogram(qs, 'value', range(min_value, max_value, 500), slice_on='quality')
         }
     }
 

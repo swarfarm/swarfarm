@@ -1,17 +1,15 @@
 
-import dpkt
 import json
-from jsonschema.exceptions import best_match
+
+import dpkt
 from dateutil.parser import *
-
 from django.utils.timezone import get_current_timezone
-
+from jsonschema.exceptions import best_match
 
 from bestiary import com2us_mapping
 from bestiary.com2us_data_parser import decrypt_response
 from bestiary.models import Monster, Building
 from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance
-
 from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
 
@@ -157,6 +155,12 @@ def parse_sw_json(data, owner, options):
                             pieces=quantity,
                             owner=owner,
                         ))
+            elif item['item_master_type'] == com2us_mapping.inventory_type_map['enhancing_monster']:
+                monster = com2us_mapping.inventory_enhance_monster_map.get(item['item_master_id'])
+                quantity = item.get('item_quantity')
+
+                if monster and quantity:
+                    parsed_inventory[monster] = quantity
 
     # Extract Rune Inventory (unequipped runes)
     if runes_info:

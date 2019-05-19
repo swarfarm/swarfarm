@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from functools import partial
-from math import floor, ceil
 from operator import is_not
 
 from django.contrib.auth.models import User
@@ -11,6 +10,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
+from math import floor
 
 
 class Monster(models.Model):
@@ -2073,6 +2073,7 @@ class GameItem(models.Model):
     CATEGORY_RAINBOWMON = 25
     CATEGORY_RUNE_CRAFT = 27
     CATEGORY_CRAFT_STUFF = 29
+    CATEGORY_MATERIAL_MONSTER = 61
 
     CATEGORY_CHOICES = (
         (CATEGORY_MONSTER, 'Monster'),
@@ -2085,6 +2086,7 @@ class GameItem(models.Model):
         (CATEGORY_RAINBOWMON, 'Rainbowmon'),
         (CATEGORY_RUNE_CRAFT, 'Rune Craft'),
         (CATEGORY_CRAFT_STUFF, 'Craft Material'),
+        (CATEGORY_MATERIAL_MONSTER, 'Enhancing Monster'),
     )
 
     com2us_id = models.IntegerField()

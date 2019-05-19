@@ -74,6 +74,7 @@
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
+                            <p>{{ craft.name }}</p>
                             <img src="{{ img_url_prefix }}items/craft_material_{{ craft.field_name }}.png" class="monster-inline pull-left" />
                             <div id="craft_{{ craft.field_name }}"
                                  class="inline-editable essence-input"
@@ -84,6 +85,36 @@
                                  data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
                             >
                                 {{ craft.qty }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">Enhancing Monsters</p>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                {% for monster in monster_mats %}
+                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
+                    <div class="panel panel-default">
+                        <div class="panel-body condensed">
+                            <p>{{ monster.name }}</p>
+                            <img src="{{ img_url_prefix }}items/monster_{{ monster.field_name }}.png" class="monster-inline pull-left" />
+                            <div id="craft_{{ monster.field_name }}"
+                                 class="inline-editable essence-input"
+                                 data-type="number"
+                                 data-name="{{ monster.field_name }}"
+                                 data-send="always"
+                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
+                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
+                            >
+                                {{ monster.qty }}
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,5 @@
 import uuid
 from collections import OrderedDict
-from math import floor, ceil
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField, JSONField
@@ -8,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, Count
 from django.utils.safestring import mark_safe
+from math import floor, ceil
 from timezone_field import TimeZoneField
 
 from bestiary.models import Monster, Building, Level, Rune, RuneCraft
@@ -80,7 +80,46 @@ class Storage(models.Model):
     ]
 
     ESSENCE_FIELDS = ['magic_essence', 'fire_essence', 'water_essence', 'wind_essence', 'light_essence', 'dark_essence']
-    CRAFT_FIELDS = ['wood', 'leather', 'rock', 'ore', 'mithril', 'cloth', 'rune_piece', 'dust', 'symbol_harmony', 'symbol_transcendance', 'symbol_chaos', 'crystal_water', 'crystal_fire', 'crystal_wind', 'crystal_light', 'crystal_dark', 'crystal_magic', 'crystal_pure']
+    CRAFT_FIELDS = [
+        'wood',
+        'leather',
+        'rock',
+        'ore',
+        'mithril',
+        'cloth',
+        'rune_piece',
+        'dust',
+        'symbol_harmony',
+        'symbol_transcendance',
+        'symbol_chaos',
+        'crystal_water',
+        'crystal_fire',
+        'crystal_wind',
+        'crystal_light',
+        'crystal_dark',
+        'crystal_magic',
+        'crystal_pure',
+    ]
+    MONSTER_FIELDS = [
+        'fire_angelmon',
+        'water_angelmon',
+        'wind_angelmon',
+        'light_angelmon',
+        'dark_angelmon',
+        'fire_king_angelmon',
+        'water_king_angelmon',
+        'wind_king_angelmon',
+        'light_king_angelmon',
+        'dark_king_angelmon',
+        'rainbowmon_2_20',
+        'rainbowmon_3_1',
+        'rainbowmon_3_25',
+        'rainbowmon_4_1',
+        'rainbowmon_4_30',
+        'rainbowmon_5_1',
+        'super_angelmon',
+        'devilmon',
+    ]
 
     owner = models.OneToOneField(Summoner, on_delete=models.CASCADE)
 
@@ -111,6 +150,29 @@ class Storage(models.Model):
     crystal_dark = models.IntegerField(default=0, help_text='Pitch-black Dark Crystal')
     crystal_magic = models.IntegerField(default=0, help_text='Condensed Magic Crystal')
     crystal_pure = models.IntegerField(default=0, help_text='Pure Magic Crystal')
+
+    # Material monsters
+    fire_angelmon = models.IntegerField(default=0, help_text='Fire Angelmon')
+    water_angelmon = models.IntegerField(default=0, help_text='Water Angelmon')
+    wind_angelmon = models.IntegerField(default=0, help_text='Wind Angelmon')
+    light_angelmon = models.IntegerField(default=0, help_text='Light Angelmon')
+    dark_angelmon = models.IntegerField(default=0, help_text='Dark Angelmon')
+
+    fire_king_angelmon = models.IntegerField(default=0, help_text='Fire King Angelmon')
+    water_king_angelmon = models.IntegerField(default=0, help_text='Water King Angelmon')
+    wind_king_angelmon = models.IntegerField(default=0, help_text='Wind King Angelmon')
+    light_king_angelmon = models.IntegerField(default=0, help_text='Light King Angelmon')
+    dark_king_angelmon = models.IntegerField(default=0, help_text='Dark King Angelmon')
+
+    super_angelmon = models.IntegerField(default=0, help_text='Super Angelmon')
+    devilmon = models.IntegerField(default=0, help_text='Devilmon')
+
+    rainbowmon_2_20 = models.IntegerField(default=0, help_text='Rainbowmon 2⭐ lv.20')
+    rainbowmon_3_1 = models.IntegerField(default=0, help_text='Rainbowmon 3⭐ lv.1')
+    rainbowmon_3_25 = models.IntegerField(default=0, help_text='Rainbowmon 3⭐ lv.25')
+    rainbowmon_4_1 = models.IntegerField(default=0, help_text='Rainbowmon 4⭐ lv.1')
+    rainbowmon_4_30 = models.IntegerField(default=0, help_text='Rainbowmon 4⭐ lv.30')
+    rainbowmon_5_1 = models.IntegerField(default=0, help_text='Rainbowmon 5⭐ lv.1')
 
     def get_storage(self):
         storage = OrderedDict()

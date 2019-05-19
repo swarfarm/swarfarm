@@ -1,9 +1,10 @@
-from celery import shared_task, current_task, states
 from datetime import datetime, timezone, timedelta
-from django.db import transaction
-from django.db.models.signals import post_save
+
+from celery import shared_task, current_task, states
 from django.contrib.auth.models import User
 from django.core import mail
+from django.db import transaction
+from django.db.models.signals import post_save
 
 from .models import Summoner, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, BuildingInstance
 from .profile_parser import parse_sw_json
@@ -79,6 +80,26 @@ def com2us_data_import(data, user_id, import_options):
         summoner.storage.crystal_dark = results['inventory'].get('crystal_dark', 0)
         summoner.storage.crystal_magic = results['inventory'].get('crystal_magic', 0)
         summoner.storage.crystal_pure = results['inventory'].get('crystal_pure', 0)
+
+        summoner.storage.fire_angelmon = results['inventory'].get('fire_angelmon', 0)
+        summoner.storage.water_angelmon = results['inventory'].get('water_angelmon', 0)
+        summoner.storage.wind_angelmon = results['inventory'].get('wind_angelmon', 0)
+        summoner.storage.light_angelmon = results['inventory'].get('light_angelmon', 0)
+        summoner.storage.dark_angelmon = results['inventory'].get('dark_angelmon', 0)
+        summoner.storage.fire_king_angelmon = results['inventory'].get('fire_king_angelmon', 0)
+        summoner.storage.water_king_angelmon = results['inventory'].get('water_king_angelmon', 0)
+        summoner.storage.wind_king_angelmon = results['inventory'].get('wind_king_angelmon', 0)
+        summoner.storage.light_king_angelmon = results['inventory'].get('light_king_angelmon', 0)
+        summoner.storage.dark_king_angelmon = results['inventory'].get('dark_king_angelmon', 0)
+        summoner.storage.super_angelmon = results['inventory'].get('super_angelmon', 0)
+        summoner.storage.devilmon = results['inventory'].get('devilmon', 0)
+        summoner.storage.rainbowmon_2_20 = results['inventory'].get('rainbowmon_2_20', 0)
+        summoner.storage.rainbowmon_3_1 = results['inventory'].get('rainbowmon_3_1', 0)
+        summoner.storage.rainbowmon_3_25 = results['inventory'].get('rainbowmon_3_25', 0)
+        summoner.storage.rainbowmon_4_1 = results['inventory'].get('rainbowmon_4_1', 0)
+        summoner.storage.rainbowmon_4_30 = results['inventory'].get('rainbowmon_4_30', 0)
+        summoner.storage.rainbowmon_5_1 = results['inventory'].get('rainbowmon_5_1', 0)
+
         summoner.storage.save()
 
         # Save imported buildings

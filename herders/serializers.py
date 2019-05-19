@@ -95,6 +95,10 @@ class StorageSerializer(serializers.ModelSerializer):
             'wood', 'leather', 'rock', 'ore', 'mithril', 'cloth', 'rune_piece', 'dust',
             'symbol_harmony',  'symbol_transcendance', 'symbol_chaos',
             'crystal_water', 'crystal_fire', 'crystal_wind', 'crystal_light', 'crystal_dark', 'crystal_magic', 'crystal_pure',
+            'fire_angelmon', 'water_angelmon', 'wind_angelmon', 'light_angelmon', 'dark_angelmon',
+            'fire_king_angelmon', 'water_king_angelmon', 'wind_king_angelmon', 'light_king_angelmon', 'dark_king_angelmon',
+            'rainbowmon_2_20', 'rainbowmon_3_1', 'rainbowmon_3_25', 'rainbowmon_4_1', 'rainbowmon_4_30', 'rainbowmon_5_1',
+            'super_angelmon', 'devilmon',
         ]
 
 

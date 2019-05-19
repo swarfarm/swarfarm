@@ -95,6 +95,7 @@ inventory_type_map = {
     'rainbowmon': 25,   # Possibly material monsters in general. Appears when wish returns a rainbowmon.
     'rune_craft': 27,
     'craft_stuff': 29,
+    'enhancing_monster': 61,
 }
 
 inventory_essence_map = {
@@ -137,6 +138,27 @@ inventory_craft_map = {
     5005: 'crystal_dark',
     6001: 'crystal_magic',
     7001: 'crystal_pure',
+}
+
+inventory_enhance_monster_map = {
+    142110115: 'water_angelmon',
+    142120115: 'fire_angelmon',
+    142130115: 'wind_angelmon',
+    142140115: 'light_angelmon',
+    142150115: 'dark_angelmon',
+    182110115: 'water_king_angelmon',
+    182120115: 'fire_king_angelmon',
+    182130115: 'wind_king_angelmon',
+    182140115: 'light_king_angelmon',
+    182150115: 'dark_king_angelmon',
+    143140220: 'rainbowmon_2_20',
+    143140301: 'rainbowmon_3_1',
+    143140325: 'rainbowmon_3_25',
+    143140401: 'rainbowmon_4_1',
+    143140430: 'rainbowmon_4_30',
+    143140501: 'rainbowmon_5_1',
+    151050101: 'devilmon',
+    217140115: 'super_angelmon,'
 }
 
 rune_set_map = {

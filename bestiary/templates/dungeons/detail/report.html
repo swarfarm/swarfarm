@@ -1,0 +1,6 @@
+{% if report %}
+    {% include 'data_log/summary.html' with summary=report.summary only %}
+    {% include 'data_log/runes.html' with runes=report.runes only %}
+{% else %}
+    <p>No report generated for this level yet</p>
+{% endif %}

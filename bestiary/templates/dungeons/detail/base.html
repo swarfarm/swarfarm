@@ -8,11 +8,9 @@
 {% block content %}
     {% include 'dungeons/detail/dungeon_header.html' %}
 
-    {% if report %}
-        {% include 'data_log/summary.html' with summary=report.report.summary only %}
-        {% include 'data_log/runes.html' with runes=report.report.runes only %}
+    {% if by_grade %}
+        {% include 'dungeons/detail/by_grade.html' with report=report.report %}
     {% else %}
-        <p>No report generated for this level yet</p>
+        {% include 'dungeons/detail/report.html' with report=report.report %}
     {% endif %}
-
 {% endblock content %}

@@ -1,13 +1,14 @@
 from collections import Counter
 from datetime import timedelta
-from django.utils import timezone
+
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Min, Max, Avg, Sum, Func, F, CharField, FloatField, Value
 from django.db.models.functions import Cast, Concat
+from django.utils import timezone
 from django_pivot.histogram import histogram
 
-from bestiary.models import Monster, Rune, RuneCraft, Dungeon, Level, GameItem
-from data_log.models import Report, LevelReport, SummonLog, DungeonLog, ItemDrop, MonsterDrop, MonsterPieceDrop, RuneDrop, RuneCraftDrop, DungeonSecretDungeonDrop
+from bestiary.models import Monster, Rune, Level, GameItem
+from data_log import models
 from data_log.util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice, transform_to_dict
 
 
@@ -28,7 +29,7 @@ def get_report_summary(drops, total_log_count):
     # Chart data: list of {'drop': <string>, 'count': <int>}
     # Table data: dict (by drop type) of lists of items which drop, with stats. 'count' is only required stat.
     for drop_type, qs in drops.items():
-        if drop_type == ItemDrop.RELATED_NAME:
+        if drop_type == models.ItemDrop.RELATED_NAME:
             # Chart excludes currency
             chart_data = list(
                 qs.exclude(
@@ -53,7 +54,7 @@ def get_report_summary(drops, total_log_count):
                     avg_per_run=Cast(Sum('quantity'), FloatField()) / total_log_count,
                 ).filter(count__gt=0).order_by('item__category', '-count')
             )
-        elif drop_type == MonsterDrop.RELATED_NAME:
+        elif drop_type == models.MonsterDrop.RELATED_NAME:
             # Monster drops in chart are counted by stars
             chart_data = list(
                 qs.values(
@@ -93,7 +94,7 @@ def get_report_summary(drops, total_log_count):
                 chart_data = []
 
             # Table data based on item type
-            if drop_type == MonsterPieceDrop.RELATED_NAME:
+            if drop_type == models.MonsterPieceDrop.RELATED_NAME:
                 table_data = replace_value_with_choice(
                     list(
                         qs.values(
@@ -108,7 +109,7 @@ def get_report_summary(drops, total_log_count):
                     ),
                     {'element': Monster.ELEMENT_CHOICES}
                 )
-            elif drop_type == RuneDrop.RELATED_NAME:
+            elif drop_type == models.RuneDrop.RELATED_NAME:
                 table_data = {
                     'sets': replace_value_with_choice(
                         list(qs.values('type').annotate(count=Count('pk')).order_by('type')),
@@ -120,7 +121,7 @@ def get_report_summary(drops, total_log_count):
                         {'quality': Rune.QUALITY_CHOICES}
                     ),
                 }
-            elif drop_type == RuneCraftDrop.RELATED_NAME:
+            elif drop_type == models.RuneCraftDrop.RELATED_NAME:
                 table_data = replace_value_with_choice(
                     list(
                         qs.values(
@@ -131,7 +132,7 @@ def get_report_summary(drops, total_log_count):
                     ),
                     {'type': Rune.TYPE_CHOICES, 'quality': Rune.QUALITY_CHOICES}
                 )
-            elif drop_type == DungeonSecretDungeonDrop.RELATED_NAME:
+            elif drop_type == models.DungeonSecretDungeonDrop.RELATED_NAME:
                 table_data = replace_value_with_choice(
                     list(
                         qs.values(
@@ -357,12 +358,12 @@ def get_secret_dungeon_report(qs, total_log_count):
 
 
 DROP_TYPES = {
-    ItemDrop.RELATED_NAME: get_item_report,
-    MonsterDrop.RELATED_NAME: get_monster_report,
-    MonsterPieceDrop.RELATED_NAME: get_monster_piece_report,
-    RuneDrop.RELATED_NAME: get_rune_report,
-    RuneCraftDrop.RELATED_NAME: get_rune_craft_report,
-    DungeonSecretDungeonDrop.RELATED_NAME: get_secret_dungeon_report,
+    models.ItemDrop.RELATED_NAME: get_item_report,
+    models.MonsterDrop.RELATED_NAME: get_monster_report,
+    models.MonsterPieceDrop.RELATED_NAME: get_monster_piece_report,
+    models.RuneDrop.RELATED_NAME: get_rune_report,
+    models.RuneCraftDrop.RELATED_NAME: get_rune_craft_report,
+    models.DungeonSecretDungeonDrop.RELATED_NAME: get_secret_dungeon_report,
 }
 
 
@@ -378,11 +379,12 @@ def get_drop_querysets(qs):
     return drop_querysets
 
 
-def generate_level_reports():
-    content_type = ContentType.objects.get_for_model(DungeonLog)
+def generate_dungeon_log_reports():
+    content_type = ContentType.objects.get_for_model(models.DungeonLog)
+    levels = models.DungeonLog.objects.values_list('level', flat=True).distinct().order_by()
 
-    for level in Level.objects.all():
-        records = _records_to_report(DungeonLog.objects.filter(level=level, success=True))
+    for level in Level.objects.filter(pk__in=levels):
+        records = _records_to_report(models.DungeonLog.objects.filter(level=level, success=True))
 
         if records.count() > 0:
             report_data = {}
@@ -394,7 +396,7 @@ def generate_level_reports():
             for key, qs in drops.items():
                 report_data[key] = DROP_TYPES[key](qs, records.count())
 
-            LevelReport.objects.create(
+            models.LevelReport.objects.create(
                 level=level,
                 content_type=content_type,
                 start_timestamp=records[records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
@@ -404,3 +406,34 @@ def generate_level_reports():
                 report=report_data,
             )
 
+
+def generate_rift_dungeon_reports():
+    content_type = ContentType.objects.get_for_model(models.RiftDungeonLog)
+    levels = models.RiftDungeonLog.objects.values_list('level', flat=True).distinct().order_by()
+
+    for level in Level.objects.filter(pk__in=levels):
+        report_data = {}
+        for grade, grade_desc in models.RiftDungeonLog.GRADE_CHOICES:
+            records = _records_to_report(models.RiftDungeonLog.objects.filter(level=level, grade=grade))
+            report_data[grade_desc] = {}
+
+            if records.count() > 0:
+                # Get querysets for each possible drop type
+                drops = get_drop_querysets(records)
+                report_data[grade_desc]['summary'] = get_report_summary(drops, records.count())
+
+                for key, qs in drops.items():
+                    report_data[grade_desc][key] = DROP_TYPES[key](qs, records.count())
+
+        # Get records without grade filtering for report metadata
+        records = _records_to_report(models.RiftDungeonLog.objects.filter(level=level))
+
+        models.LevelReport.objects.create(
+            level=level,
+            content_type=content_type,
+            start_timestamp=records[records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+            end_timestamp=records[0].timestamp,
+            log_count=records.count(),
+            unique_contributors=records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+            report=report_data,
+        )

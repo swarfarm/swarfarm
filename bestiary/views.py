@@ -228,26 +228,18 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
         dung.level_set.aggregate(Max('floor'))['floor__max'] + 1
     )
 
-    by_grade =  dung.category in [Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS, Dungeon.CATEGORY_WORLD_BOSS]
-
-    if by_grade and hasattr(report.content_type.model_class(), 'GRADE_CHOICES'):
-        grade_reports = [{
-            **report.report.get(grade[1], {}),
-            'grade': grade[1],
-            'grade_value': grade[0],
-        } for grade in report.content_type.model_class().GRADE_CHOICES]
-    else:
-        grade_reports = None
-
     context = {
         'view': 'dungeons',
         'dungeon': dung,
         'floor_range': floor_range,
         'is_scenario': dung.category == Dungeon.CATEGORY_SCENARIO,
-        'by_grade': by_grade,
-        'grade_reports': grade_reports,
         'level': lvl,
         'report': report
     }
 
-    return render(request, 'dungeons/detail/base.html', context)
+    by_grade = dung.category in [Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS, Dungeon.CATEGORY_WORLD_BOSS]
+
+    if by_grade and hasattr(report.content_type.model_class(), 'GRADE_CHOICES'):
+        return render(request, 'dungeons/detail/report_by_grade.html', context)
+    else:
+        return render(request, 'dungeons/detail/report.html', context)

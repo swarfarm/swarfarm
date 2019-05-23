@@ -379,6 +379,19 @@ def get_drop_querysets(qs):
     return drop_querysets
 
 
+def level_drop_report(qs):
+    report_data = {}
+
+    # Get querysets for each possible drop type
+    drops = get_drop_querysets(qs)
+    report_data['summary'] = get_report_summary(drops, qs.count())
+
+    for key, qs in drops.items():
+        report_data[key] = DROP_TYPES[key](qs, qs.count())
+
+    return report_data
+
+
 def generate_dungeon_log_reports():
     content_type = ContentType.objects.get_for_model(models.DungeonLog)
     levels = models.DungeonLog.objects.values_list('level', flat=True).distinct().order_by()
@@ -387,14 +400,7 @@ def generate_dungeon_log_reports():
         records = _records_to_report(models.DungeonLog.objects.filter(level=level, success=True))
 
         if records.count() > 0:
-            report_data = {}
-
-            # Get querysets for each possible drop type
-            drops = get_drop_querysets(records)
-            report_data['summary'] = get_report_summary(drops, records.count())
-
-            for key, qs in drops.items():
-                report_data[key] = DROP_TYPES[key](qs, records.count())
+            report_data = level_drop_report(records)
 
             models.LevelReport.objects.create(
                 level=level,
@@ -412,21 +418,26 @@ def generate_rift_dungeon_reports():
     levels = models.RiftDungeonLog.objects.values_list('level', flat=True).distinct().order_by()
 
     for level in Level.objects.filter(pk__in=levels):
-        report_data = {}
+        report_data = []
         for grade, grade_desc in models.RiftDungeonLog.GRADE_CHOICES:
             records = _records_to_report(models.RiftDungeonLog.objects.filter(level=level, grade=grade))
-            report_data[grade_desc] = {}
 
             if records.count() > 0:
-                # Get querysets for each possible drop type
-                drops = get_drop_querysets(records)
-                report_data[grade_desc]['summary'] = get_report_summary(drops, records.count())
+                grade_report = level_drop_report(records)
+            else:
+                grade_report = None
 
-                for key, qs in drops.items():
-                    report_data[grade_desc][key] = DROP_TYPES[key](qs, records.count())
+            report_data.append({
+                'grade': grade_desc,
+                'report': grade_report
+            })
 
-        # Get records without grade filtering for report metadata
+        # Generate a report with all results and also use for report metadata
         records = _records_to_report(models.RiftDungeonLog.objects.filter(level=level))
+        report_data.append({
+            'grade': 'all',
+            'report': level_drop_report(records),
+        })
 
         models.LevelReport.objects.create(
             level=level,

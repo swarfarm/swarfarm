@@ -14,8 +14,16 @@ from data_log.util import floor_to_nearest, ceil_to_nearest, replace_value_with_
 
 def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=2500):
     if qs.filter(timestamp__gte=timezone.now() - report_timespan).count() < minimum_count:
-        # Return latest minimum_count logs, ignoring report timespan
-        return qs[:minimum_count]
+        # Want to avoid slicing due to restrictions on any subsequent queryset operations
+        # Find the timestamp of the 2500th record and then filter on timestamp
+        results = qs[:minimum_count]
+
+        if results.count() > 0:
+            earliest_record = results[results.count() - 1]
+            return qs.filter(timestamp__gte=earliest_record.timestamp)
+        else:
+            # Don't have any records so just return it as is
+            return qs
     else:
         return qs.filter(timestamp__gte=timezone.now() - report_timespan)
 
@@ -418,7 +426,10 @@ def generate_rift_dungeon_reports():
     levels = models.RiftDungeonLog.objects.values_list('level', flat=True).distinct().order_by()
 
     for level in Level.objects.filter(pk__in=levels):
+        all_records = models.RiftDungeonLog.objects.none()
         report_data = []
+
+        # Generate a report by grade
         for grade, grade_desc in models.RiftDungeonLog.GRADE_CHOICES:
             records = _records_to_report(models.RiftDungeonLog.objects.filter(level=level, grade=grade))
 
@@ -431,20 +442,21 @@ def generate_rift_dungeon_reports():
                 'grade': grade_desc,
                 'report': grade_report
             })
+            all_records |= records
 
-        # Generate a report with all results and also use for report metadata
-        records = _records_to_report(models.RiftDungeonLog.objects.filter(level=level))
-        report_data.append({
-            'grade': 'all',
-            'report': level_drop_report(records),
-        })
+        if all_records.count() > 0:
+            # Generate a report with all results for a complete list of all things that drop here
+            report_data.append({
+                'grade': 'all',
+                'report': level_drop_report(all_records),
+            })
 
-        models.LevelReport.objects.create(
-            level=level,
-            content_type=content_type,
-            start_timestamp=records[records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
-            end_timestamp=records[0].timestamp,
-            log_count=records.count(),
-            unique_contributors=records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
-            report=report_data,
-        )
+            models.LevelReport.objects.create(
+                level=level,
+                content_type=content_type,
+                start_timestamp=all_records[all_records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+                end_timestamp=all_records[0].timestamp,
+                log_count=all_records.count(),
+                unique_contributors=all_records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+                report=report_data,
+            )

@@ -3,7 +3,7 @@ from django.db.models import TextField, ForeignKey
 from django.forms.widgets import TextInput
 from django_select2.forms import Select2Widget
 
-from .models import Monster, Skill, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, MonsterGuide, \
+from .models import Monster, Skill, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, \
     HomunculusSkillCraftCost, HomunculusSkill, LeaderSkill, SkillEffect, ScalingStat, \
     Source, Fusion, Building, CraftMaterial, GameItem
 
@@ -223,16 +223,6 @@ class CraftMaterialAdmin(admin.ModelAdmin):
     list_display = ('image_url', '__str__')
     filter_horizontal = ['source',]
     save_as = True
-
-
-@admin.register(MonsterGuide)
-class MonsterGuideAdmin(admin.ModelAdmin):
-    list_display = ['monster', 'last_updated', 'edited_by']
-    search_fields = ['monster__name']
-
-    def save_model(self, request, obj, form, change):
-        obj.edited_by = request.user
-        super().save_model(request, obj, form, change)
 
 
 # Dungeons and levels

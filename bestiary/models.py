@@ -838,26 +838,6 @@ class HomunculusSkillCraftCost(models.Model):
         return '{} - qty. {}'.format(self.craft.name, self.quantity)
 
 
-class GuideBase(models.Model):
-    short_text = models.TextField(blank=True, default='')
-    long_text = models.TextField(blank=True, default='')
-    last_updated = models.DateTimeField(auto_now=True)
-    edited_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, editable=False)
-
-    class Meta:
-        abstract = True
-
-
-class MonsterGuide(GuideBase):
-    monster = models.OneToOneField(Monster, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'Monster Guide - {self.monster}'
-
-    class Meta:
-        ordering = ['monster__name']
-
-
 class RuneObjectBase:
     # Provides basic rune related constants
     TYPE_ENERGY = 1

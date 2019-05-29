@@ -10,7 +10,7 @@ from bestiary.serializers import *
 
 # Django REST framework views
 class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = Monster.objects.all().select_related('leader_skill', 'monsterguide').prefetch_related(
+    queryset = Monster.objects.all().select_related('leader_skill').prefetch_related(
         'skills',
         'skills__effect',
         'homunculusskill_set',

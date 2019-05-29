@@ -753,13 +753,13 @@ def decrypt_com2us_png():
 
 
 class TranslationTables(IntEnum):
-    ISLAND_NAMES = 0
-    MONSTER_NAMES = 1
-    SUMMON_METHODS = 9
-    SKILL_NAMES = 19
-    SKILL_DESCRIPTIONS = 20
-    WORLD_MAP_DUNGEON_NAMES = 28
-    CAIROS_DUNGEON_NAMES = 29
+    ISLAND_NAMES = 1
+    MONSTER_NAMES = 2
+    SUMMON_METHODS = 10
+    SKILL_NAMES = 20
+    SKILL_DESCRIPTIONS = 21
+    WORLD_MAP_DUNGEON_NAMES = 29
+    CAIROS_DUNGEON_NAMES = 30
 
 
 def get_monster_names_by_id():
@@ -970,8 +970,11 @@ def save_translation_tables():
 
 
 def _get_translation_tables():
-    raw = ConstBitStream(filename='bestiary/com2us_data/text_eng.dat', offset=0x8 * 8)
+    raw = ConstBitStream(filename='bestiary/com2us_data/text_eng.dat')
     tables = []
+
+    table_ver = raw.read('intle:32')
+    print(f'Translation table version {table_ver}')
 
     try:
         while True:
@@ -979,9 +982,9 @@ def _get_translation_tables():
             table = {}
 
             for _ in range(table_len):
-                parsed_id, str_len = raw.readlist('intle:32, intle:32')
+                str_id, str_len = raw.readlist('intle:32, intle:32')
                 parsed_str = binascii.a2b_hex(raw.read('hex:{}'.format(str_len * 8))[:-4])
-                table[parsed_id] = parsed_str.decode("utf-8")
+                table[str_id] = parsed_str.decode("utf-8")
 
             tables.append(table)
     except ReadError:

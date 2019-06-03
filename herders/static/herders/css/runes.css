@@ -293,34 +293,34 @@ span.rune-set-bonus {
     background-image: url(/static/herders/images/runes/enchant_gem_legend.png);
 }
 .rune-craft.immemorial-gem.normal {
-    background-image: url(/static/herders/images/runes/icon_ancient_amp_common.png);
-}
-.rune-craft.immemorial-gem.magic {
-    background-image: url(/static/herders/images/runes/icon_ancient_amp_magic.png);
-}
-.rune-craft.immemorial-gem.rare {
-    background-image: url(/static/herders/images/runes/icon_ancient_amp_rare.png);
-}
-.rune-craft.immemorial-gem.hero {
-    background-image: url(/static/herders/images/runes/icon_ancient_amp_epic.png);
-}
-.rune-craft.immemorial-gem.legend {
-    background-image: url(/static/herders/images/runes/icon_ancient_amp_legend.png);
-}
-.rune-craft.immemorial-grindstone.normal {
     background-image: url(/static/herders/images/runes/icon_ancient_conversion_common.png);
 }
-.rune-craft.immemorial-grindstone.magic {
+.rune-craft.immemorial-gem.magic {
     background-image: url(/static/herders/images/runes/icon_ancient_conversion_magic.png);
 }
-.rune-craft.immemorial-grindstone.rare {
+.rune-craft.immemorial-gem.rare {
     background-image: url(/static/herders/images/runes/icon_ancient_conversion_rare.png);
 }
-.rune-craft.immemorial-grindstone.hero {
+.rune-craft.immemorial-gem.hero {
     background-image: url(/static/herders/images/runes/icon_ancient_conversion_epic.png);
 }
-.rune-craft.immemorial-grindstone.legend {
+.rune-craft.immemorial-gem.legend {
     background-image: url(/static/herders/images/runes/icon_ancient_conversion_legend.png);
+}
+.rune-craft.immemorial-grindstone.normal {
+    background-image: url(/static/herders/images/runes/icon_ancient_amp_common.png);
+}
+.rune-craft.immemorial-grindstone.magic {
+    background-image: url(/static/herders/images/runes/icon_ancient_amp_magic.png);
+}
+.rune-craft.immemorial-grindstone.rare {
+    background-image: url(/static/herders/images/runes/icon_ancient_amp_rare.png);
+}
+.rune-craft.immemorial-grindstone.hero {
+    background-image: url(/static/herders/images/runes/icon_ancient_amp_epic.png);
+}
+.rune-craft.immemorial-grindstone.legend {
+    background-image: url(/static/herders/images/runes/icon_ancient_amp_legend.png);
 }
 
 .rune-symbol {

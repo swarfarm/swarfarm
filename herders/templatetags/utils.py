@@ -34,7 +34,10 @@ def remove_extension(string):
 # Get dictionary key by string
 @register.filter
 def key(d, key_name):
-    return d.get(key_name)
+    if type(d) == list:
+        return d[key_name]
+    else:
+        return d.get(key_name)
 
 
 @register.filter

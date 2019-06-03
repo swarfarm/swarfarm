@@ -445,9 +445,12 @@ def generate_rift_dungeon_reports():
             all_records |= records
 
         if all_records.count() > 0:
+
+
+
             # Generate a report with all results for a complete list of all things that drop here
             report_data.append({
-                'grade': 'all',
+                'grade': 'summary',
                 'report': level_drop_report(all_records),
             })
 

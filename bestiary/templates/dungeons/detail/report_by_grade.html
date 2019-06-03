@@ -3,26 +3,35 @@
 {% block report %}
     {% if report %}
         <ul class="nav nav-tabs">
-        {% for grade_report in report.report reversed %}
-            <li role="presentation" {% if forloop.first %}class="active"{% endif %}>
-                <a href="#{{ forloop.counter }}_tab" aria-controls="home" role="tab" data-toggle="tab">
-                    {{ grade_report.grade }}
+            <li role="presentation" class="active">
+                <a href="#summary_tab" aria-controls="home" role="tab" data-toggle="tab">
+                    Summary
                 </a>
             </li>
-        {% endfor %}
+            {% for grade_report in report.report reversed %}
+                <li role="presentation">
+                    <a href="#{{ forloop.counter }}_tab" aria-controls="home" role="tab" data-toggle="tab">
+                        {{ grade_report.grade }}
+                    </a>
+                </li>
+            {% endfor %}
         </ul>
 
         <div class="tab-content">
-        {% for grade_report in report.report reversed %}
-            <div  role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="{{ forloop.counter }}_tab">
-                <h2>{{ grade_report.grade }}</h2>
-                {% if grade_report.report %}
-                    {% include 'dungeons/detail/report_snippet.html' with report=grade_report.report only %}
-                {% else %}
-                    <p>No report generated for this grade yet</p>
-                {% endif %}
+            <div role="tabpanel" class="tab-pane active" id="summary_tab">
+                {% include 'dungeons/detail/report_by_grade_summary_table.html' with table=grade_summary_table columns=grade_summary_item_list only %}
             </div>
-        {% endfor %}
+
+            {% for grade_report in report.report reversed %}
+                <div  role="tabpanel" class="tab-pane" id="{{ forloop.counter }}_tab">
+                    <h2>{{ grade_report.grade }}</h2>
+                    {% if grade_report.report %}
+                        {% include 'dungeons/detail/report_snippet.html' with report=grade_report.report only %}
+                    {% else %}
+                        <p>No report generated for this grade yet</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
         </div>
 
     {% endif %}

@@ -229,15 +229,8 @@ class Monster(models.Model):
 
     def monster_family(self):
         should_be_shown = Q(obtainable=True) | Q(transforms_into__isnull=False)
-        family = Monster.objects.filter(family_id=self.family_id).filter(should_be_shown).order_by('element', 'is_awakened')
-
-        return [
-            family.filter(element=Monster.ELEMENT_FIRE).first(),
-            family.filter(element=Monster.ELEMENT_WATER).first(),
-            family.filter(element=Monster.ELEMENT_WIND).first(),
-            family.filter(element=Monster.ELEMENT_LIGHT).first(),
-            family.filter(element=Monster.ELEMENT_DARK).first(),
-        ]
+        has_awakened_version = Q(can_awaken=True) & Q(awakens_to__isnull=False)
+        return Monster.objects.filter(should_be_shown, family_id=self.family_id).exclude(has_awakened_version).order_by('com2us_id')
 
     def all_skill_effects(self):
         return SkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))

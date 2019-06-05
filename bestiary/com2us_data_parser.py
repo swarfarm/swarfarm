@@ -272,7 +272,8 @@ def parse_monster_data(preview=False):
 
     # List of monsters that data indicates are not obtainable, but actually are
     # Dark cow girl
-    definitely_obtainable_monsters = [19305, 19315]
+    # Vampire Lord
+    definitely_obtainable_monsters = [19305, 19315, 23005, 23015]
 
     for row in monster_table['rows']:
         master_id = json.loads(row['unit master id'])
@@ -289,7 +290,7 @@ def parse_monster_data(preview=False):
             print('!!! Creating new monster {} with com2us ID {}'.format(monster_names[master_id], master_id))
             updated = True
 
-        monster_family = json.loads(row['discussion id'])
+        monster_family = json.loads(row['group id'])
         if monster.family_id != monster_family:
             monster.family_id = monster_family
             print('Updated {} ({}) family ID to {}'.format(monster, master_id, monster_family))

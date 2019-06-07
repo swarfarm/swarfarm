@@ -400,6 +400,63 @@ def level_drop_report(qs):
     return report_data
 
 
+def grade_summary_report(qs, grade_choices):
+    report_data = []
+
+    drops = get_drop_querysets(qs)
+
+    # List of all drops. Currently only care about monsters and items
+    all_items = GameItem.objects.filter(pk__in=drops['items'].values_list('item', flat=True)) if 'items' in drops else []
+    all_monsters = Monster.objects.filter(pk__in=drops['monsters'].values_list('monster', flat=True)) if 'monsters' in drops else []
+
+    for grade_id, grade_name in grade_choices:
+        grade_qs = qs.filter(grade=grade_id)
+        grade_report = {
+            'grade': grade_name,
+            'drops': [],
+        }
+        for item in all_items:
+            result = drops['items'].filter(
+                log__in=grade_qs,
+                item=item,
+            ).aggregate(
+                count=Count('pk'),
+                min=Min('quantity'),
+                max=Max('quantity'),
+                avg=Avg('quantity'),
+                drop_chance=Cast(Count('pk'), FloatField()) / qs.count() * 100,
+                avg_per_run=Cast(Sum('quantity'), FloatField()) / qs.count(),
+            )
+
+            grade_report['drops'].append({
+                'type': 'item',
+                'name': item.name,
+                'icon': item.icon,
+                **result,
+            })
+
+        for monster in all_monsters:
+            result = drops['monsters'].filter(
+                log__in=grade_qs,
+                monster=monster
+            ).aggregate(
+                count=Count('pk'),
+                drop_chance=Cast(Count('pk'), FloatField()) / qs.count() * 100,
+            )
+
+            grade_report['drops'].append({
+                'type': 'monster',
+                'name': monster.name,
+                'icon': monster.image_filename,
+                'stars': monster.base_stars,
+                **result,
+            })
+
+        report_data.append(grade_report)
+
+    return report_data
+
+
 def generate_dungeon_log_reports():
     content_type = ContentType.objects.get_for_model(models.DungeonLog)
     levels = models.DungeonLog.objects.values_list('level', flat=True).distinct().order_by()
@@ -445,13 +502,10 @@ def generate_rift_dungeon_reports():
             all_records |= records
 
         if all_records.count() > 0:
-
-
-
             # Generate a report with all results for a complete list of all things that drop here
             report_data.append({
                 'grade': 'summary',
-                'report': level_drop_report(all_records),
+                'report': grade_summary_report(all_records, models.RiftDungeonLog.GRADE_CHOICES),
             })
 
             models.LevelReport.objects.create(

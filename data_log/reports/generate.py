@@ -476,12 +476,12 @@ def grade_summary_report(qs, grade_choices):
     return report_data
 
 
-def generate_dungeon_log_reports():
-    content_type = ContentType.objects.get_for_model(models.DungeonLog)
-    levels = models.DungeonLog.objects.values_list('level', flat=True).distinct().order_by()
+def _generate_level_reports(model):
+    content_type = ContentType.objects.get_for_model(model)
+    levels = model.objects.values_list('level', flat=True).distinct().order_by()
 
     for level in Level.objects.filter(pk__in=levels):
-        records = _records_to_report(models.DungeonLog.objects.filter(level=level, success=True))
+        records = _records_to_report(model.objects.filter(level=level, success=True))
 
         if records.count() > 0:
             report_data = level_drop_report(records)
@@ -495,6 +495,14 @@ def generate_dungeon_log_reports():
                 unique_contributors=records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
                 report=report_data,
             )
+
+
+def generate_dungeon_log_reports():
+    _generate_level_reports(models.DungeonLog)
+
+
+def generate_rift_raid_reports():
+    _generate_level_reports(models.RiftRaidLog)
 
 
 def _generate_by_grade_reports(model):

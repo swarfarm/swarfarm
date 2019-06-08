@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Max
 from django.http import Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
 from .filters import MonsterFilter
@@ -207,9 +207,16 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
     if floor:
         levels = levels.filter(floor=floor)
     else:
-        # Pick the last level automatically for Cairos dungeons
-        if dung.category == Dungeon.CATEGORY_CAIROS:
+        # Pick first hell level for scenarios, otherwise always last level
+        if dung.category == Dungeon.CATEGORY_SCENARIO:
+            lvl = levels.filter(difficulty=Level.DIFFICULTY_HELL).first()
+            return redirect('bestiary:dungeon_detail_difficulty', slug=dung.slug, difficulty='hell', floor=lvl.floor)
+        else:
             lvl = levels.last()
+
+            # Redirect to URL with floor if dungeon has more than 1 floor
+            if dung.level_set.count() > 1:
+                return redirect('bestiary:dungeon_detail', slug=dung.slug, floor=1)
 
     if not lvl:
         # Default to first level for all others

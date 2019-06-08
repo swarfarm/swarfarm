@@ -2,6 +2,14 @@
 
 {% block report %}
     {% if report %}
+        <ul class="list-unstyled">
+            <li>Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
+            <li>{{ report.log_count }} records</li>
+            <li>{{ report.unique_contributors }} unique contributors</li>
+        </ul>
+
         {% include 'dungeons/detail/report_snippet.html' with report=report.report only %}
+    {% else %}
+        <p>No report generated for this level yet :(</p>
     {% endif %}
 {% endblock report %}

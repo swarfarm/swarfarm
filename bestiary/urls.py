@@ -1,4 +1,5 @@
 from django.urls import path, include
+
 from . import views
 
 app_name = 'bestiary'
@@ -8,6 +9,7 @@ urlpatterns = [
     path('inventory/', views.bestiary_inventory, name='inventory'),
     path('dungeons/', include([
         path('', views.dungeons, name='dungeons'),
+        path('<slug:slug>/', views.dungeon_detail, name='dungeon_detail_no_floor'),
         path('<slug:slug>/<int:floor>/', views.dungeon_detail, name='dungeon_detail'),
         path('<slug:slug>/<str:difficulty>/<int:floor>/', views.dungeon_detail, name='dungeon_detail_difficulty'),
     ])),

@@ -497,19 +497,19 @@ def generate_dungeon_log_reports():
             )
 
 
-def generate_rift_dungeon_reports():
-    content_type = ContentType.objects.get_for_model(models.RiftDungeonLog)
-    levels = models.RiftDungeonLog.objects.values_list('level', flat=True).distinct().order_by()
+def _generate_by_grade_reports(model):
+    content_type = ContentType.objects.get_for_model(model)
+    levels = model.objects.values_list('level', flat=True).distinct().order_by()
 
     for level in Level.objects.filter(pk__in=levels):
-        all_records = models.RiftDungeonLog.objects.none()
+        all_records = model.objects.none()
         report_data = {
             'reports': []
         }
 
         # Generate a report by grade
-        for grade, grade_desc in models.RiftDungeonLog.GRADE_CHOICES:
-            records = _records_to_report(models.RiftDungeonLog.objects.filter(level=level, grade=grade))
+        for grade, grade_desc in model.GRADE_CHOICES:
+            records = _records_to_report(model.objects.filter(level=level, grade=grade))
 
             if records.count() > 0:
                 grade_report = level_drop_report(records)
@@ -524,14 +524,22 @@ def generate_rift_dungeon_reports():
 
         if all_records.count() > 0:
             # Generate a report with all results for a complete list of all things that drop here
-            report_data['summary'] = grade_summary_report(all_records, models.RiftDungeonLog.GRADE_CHOICES)
+            report_data['summary'] = grade_summary_report(all_records, model.GRADE_CHOICES)
 
             models.LevelReport.objects.create(
                 level=level,
                 content_type=content_type,
-                start_timestamp=all_records[all_records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
-                end_timestamp=all_records[0].timestamp,
+                start_timestamp=all_records.last().timestamp,
+                end_timestamp=all_records.first().timestamp,
                 log_count=all_records.count(),
                 unique_contributors=all_records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
                 report=report_data,
             )
+
+
+def generate_rift_dungeon_reports():
+    _generate_by_grade_reports(models.RiftDungeonLog)
+
+
+def generate_world_boss_dungeon_reports():
+    _generate_by_grade_reports(models.WorldBossLog)

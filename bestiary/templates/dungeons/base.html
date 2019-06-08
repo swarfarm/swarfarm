@@ -19,17 +19,21 @@
     <div class="row">
     {% for category, cat_dungeons in dungeons.items %}
         <div class="col-md-6 col-sm-12">
-            <h1>{{ category }}</h1>
+            <h1>{{ category }}{{ cat_dungeons|length|pluralize }}</h1>
             <ul class="media-list">
             {% for d in cat_dungeons %}
                 <li class="media">
                     <div class="media-left">
                         {% if d.icon %}
-                            <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="media-object">
+                            <a href="{% url 'bestiary:dungeon_detail_no_floor' slug=d.slug %}">
+                                <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="media-object">
+                            </a>
                         {% endif %}
                     </div>
                     <div class="media-body">
-                        <h4 class="media-heading">{{ d.name }}</h4>
+                        <a href="{% url 'bestiary:dungeon_detail_no_floor' slug=d.slug %}">
+                            <h4 class="media-heading">{{ d.name }}</h4>
+                        </a>
                         {% include 'dungeons/base_floor_pagination.html' %}
                     </div>
                 </li>

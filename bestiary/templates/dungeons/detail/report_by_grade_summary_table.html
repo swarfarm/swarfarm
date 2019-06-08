@@ -30,7 +30,7 @@
         <tr>
             <td>{{ row.grade }}</td>
             {% for drop in row.drops %}
-                <td>{{ drop.drop_chance }}% / {{ drop.avg_per_run|default:0 }}</td>
+                <td>{{ drop.drop_chance|floatformat:2 }}% / {{ drop.avg_per_run|default:0|floatformat:2 }}</td>
             {% endfor %}
         </tr>
     {% endfor %}

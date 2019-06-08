@@ -19,6 +19,7 @@
     </div>
     {% endif %}
 
+    {% if floor_range|length > 1 %}
     <div class="btn-group" style="display: inline-block">
         <button class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         B{{ level.floor }} <span class="caret"></span>
@@ -40,4 +41,5 @@
             {% endfor %}
         </ul>
     </div>
+    {% endif %}
 </h1>

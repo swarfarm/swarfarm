@@ -1,51 +1,53 @@
-{% if d.category == d.CATEGORY_SCENARIO %}
-    {# List floors by difficulty #}
-    <ul class="pagination pagination-compact">
-        <li class="disabled"><a>Normal</a></li>
+{% if d.level_set.count > 1 %}
+    {% if d.category == d.CATEGORY_SCENARIO %}
+        {# List floors by difficulty #}
+        <ul class="pagination pagination-compact">
+            <li class="disabled"><a>Normal</a></li>
+            {% for l in d.level_set.all %}
+                {% if l.difficulty == l.DIFFICULTY_NORMAL %}
+                <li>
+                    <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='normal' floor=l.floor %}">
+                        B{{ l.floor }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <div class="clearfix"></div>
+
+        <ul class="pagination pagination-compact">
+            <li class="disabled"><a>Hard</a></li>
+            {% for l in d.level_set.all %}
+                {% if l.difficulty == l.DIFFICULTY_HARD %}
+                <li>
+                    <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hard' floor=l.floor %}">
+                        B{{ l.floor }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <div class="clearfix"></div>
+
+        <ul class="pagination pagination-compact">
+            <li class="disabled"><a>Hell</a></li>
+            {% for l in d.level_set.all %}
+                {% if l.difficulty == l.DIFFICULTY_HELL %}
+                <li>
+                    <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hell' floor=l.floor %}">
+                        B{{ l.floor }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <ul class="pagination pagination-compact">
         {% for l in d.level_set.all %}
-            {% if l.difficulty == l.DIFFICULTY_NORMAL %}
-            <li>
-                <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='normal' floor=l.floor %}">
-                    B{{ l.floor }}
-                </a>
-            </li>
-            {% endif %}
+            <li><a href="{% url 'bestiary:dungeon_detail' slug=d.slug floor=l.floor %}">B{{ l.floor }}</a></li>
         {% endfor %}
-    </ul>
-
-    <div class="clearfix"></div>
-
-    <ul class="pagination pagination-compact">
-        <li class="disabled"><a>Hard</a></li>
-        {% for l in d.level_set.all %}
-            {% if l.difficulty == l.DIFFICULTY_HARD %}
-            <li>
-                <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hard' floor=l.floor %}">
-                    B{{ l.floor }}
-                </a>
-            </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-
-    <div class="clearfix"></div>
-
-    <ul class="pagination pagination-compact">
-        <li class="disabled"><a>Hell</a></li>
-        {% for l in d.level_set.all %}
-            {% if l.difficulty == l.DIFFICULTY_HELL %}
-            <li>
-                <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hell' floor=l.floor %}">
-                    B{{ l.floor }}
-                </a>
-            </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-{% else %}
-    <ul class="pagination pagination-compact">
-    {% for l in d.level_set.all %}
-        <li><a href="{% url 'bestiary:dungeon_detail' slug=d.slug floor=l.floor %}">B{{ l.floor }}</a></li>
-    {% endfor %}
-    </ul>
+        </ul>
+    {% endif %}
 {% endif %}

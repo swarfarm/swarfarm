@@ -404,10 +404,12 @@ def grade_summary_report(qs, grade_choices):
     report_data = []
 
     drops = get_drop_querysets(qs)
+    total_log_count = qs.count()
 
     # List of all drops. Currently only care about monsters and items
     all_items = GameItem.objects.filter(pk__in=drops['items'].values_list('item', flat=True)) if 'items' in drops else []
     all_monsters = Monster.objects.filter(pk__in=drops['monsters'].values_list('monster', flat=True)) if 'monsters' in drops else []
+    all_runes = drops['runes'] if 'runes' in drops else []
 
     for grade_id, grade_name in grade_choices:
         grade_qs = qs.filter(grade=grade_id)
@@ -424,8 +426,8 @@ def grade_summary_report(qs, grade_choices):
                 min=Min('quantity'),
                 max=Max('quantity'),
                 avg=Avg('quantity'),
-                drop_chance=Cast(Count('pk'), FloatField()) / qs.count() * 100,
-                avg_per_run=Cast(Sum('quantity'), FloatField()) / qs.count(),
+                drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
+                avg_per_run=Cast(Sum('quantity'), FloatField()) / total_log_count,
             )
 
             grade_report['drops'].append({
@@ -441,7 +443,8 @@ def grade_summary_report(qs, grade_choices):
                 monster=monster
             ).aggregate(
                 count=Count('pk'),
-                drop_chance=Cast(Count('pk'), FloatField()) / qs.count() * 100,
+                drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
+                avg_per_run=Cast(Count('pk'), FloatField()) / total_log_count,
             )
 
             grade_report['drops'].append({
@@ -453,6 +456,22 @@ def grade_summary_report(qs, grade_choices):
             })
 
         report_data.append(grade_report)
+
+        for stars in all_runes.values_list('stars', flat=True):
+            result = drops['runes'].filter(
+                log__in=grade_qs,
+                stars=stars,
+            ).aggregate(
+                count=Count('pk'),
+                drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
+                avg_per_run=Cast(Count('pk'), FloatField()) / total_log_count,
+            )
+
+            grade_report['drops'].append({
+                'type': 'rune',
+                'name': f'{stars}⭐ Rune',
+                **result,
+            })
 
     return report_data
 
@@ -484,7 +503,9 @@ def generate_rift_dungeon_reports():
 
     for level in Level.objects.filter(pk__in=levels):
         all_records = models.RiftDungeonLog.objects.none()
-        report_data = []
+        report_data = {
+            'reports': []
+        }
 
         # Generate a report by grade
         for grade, grade_desc in models.RiftDungeonLog.GRADE_CHOICES:
@@ -495,7 +516,7 @@ def generate_rift_dungeon_reports():
             else:
                 grade_report = None
 
-            report_data.append({
+            report_data['reports'].append({
                 'grade': grade_desc,
                 'report': grade_report
             })
@@ -503,10 +524,7 @@ def generate_rift_dungeon_reports():
 
         if all_records.count() > 0:
             # Generate a report with all results for a complete list of all things that drop here
-            report_data.append({
-                'grade': 'summary',
-                'report': grade_summary_report(all_records, models.RiftDungeonLog.GRADE_CHOICES),
-            })
+            report_data['summary'] = grade_summary_report(all_records, models.RiftDungeonLog.GRADE_CHOICES)
 
             models.LevelReport.objects.create(
                 level=level,

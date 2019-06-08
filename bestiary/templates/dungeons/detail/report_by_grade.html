@@ -8,7 +8,7 @@
                     Summary
                 </a>
             </li>
-            {% for grade_report in report.report reversed %}
+            {% for grade_report in report.report.reports reversed %}
                 <li role="presentation">
                     <a href="#{{ forloop.counter }}_tab" aria-controls="home" role="tab" data-toggle="tab">
                         {{ grade_report.grade }}
@@ -19,10 +19,10 @@
 
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="summary_tab">
-                {% include 'dungeons/detail/report_by_grade_summary_table.html' with table=grade_summary_table columns=grade_summary_item_list only %}
+                {% include 'dungeons/detail/report_by_grade_summary_table.html' with table=report.report.summary only %}
             </div>
 
-            {% for grade_report in report.report reversed %}
+            {% for grade_report in report.report.reports reversed %}
                 <div  role="tabpanel" class="tab-pane" id="{{ forloop.counter }}_tab">
                     <h2>{{ grade_report.grade }}</h2>
                     {% if grade_report.report %}

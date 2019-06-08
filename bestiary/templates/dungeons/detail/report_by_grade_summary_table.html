@@ -1,11 +1,27 @@
-{% load utils %}
+{% load static utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+{% if table|length %}
 
 <table class="table table-striped">
     <thead>
     <tr>
         <th>Grade</th>
-        {% for drop in columns %}
-            <th>{{ drop }}</th>
+        {% for drop in table.0.drops %}
+            <th>
+                {% if drop.icon %}
+                <img src="{{ img_url_prefix }}{{ drop.type }}s/{{ drop.icon }}" alt="{{ drop.name }} icon" class="monster-inline"/>
+                {% endif %}
+                {{ drop.name }}
+            </th>
+        {% endfor %}
+    </tr>
+    <tr>
+        <th></th>
+        {% for _ in table.0.drops|length|get_range %}
+        <th>
+            <small>Drop Chance / Avg. Per Run</small>
+        </th>
         {% endfor %}
     </tr>
     </thead>
@@ -13,10 +29,13 @@
     {% for row in table reversed %}
         <tr>
             <td>{{ row.grade }}</td>
-            {% for drop in columns %}
-                <td>{{ row|key:drop|default:0 }}</td>
+            {% for drop in row.drops %}
+                <td>{{ drop.drop_chance }}% / {{ drop.avg_per_run|default:0 }}</td>
             {% endfor %}
         </tr>
     {% endfor %}
     </tbody>
 </table>
+{% else %}
+No data!
+{% endif %}

@@ -404,7 +404,6 @@ def grade_summary_report(qs, grade_choices):
     report_data = []
 
     drops = get_drop_querysets(qs)
-    total_log_count = qs.count()
 
     # List of all drops. Currently only care about monsters and items
     all_items = GameItem.objects.filter(pk__in=drops['items'].values_list('item', flat=True)) if 'items' in drops else []
@@ -426,8 +425,8 @@ def grade_summary_report(qs, grade_choices):
                 min=Min('quantity'),
                 max=Max('quantity'),
                 avg=Avg('quantity'),
-                drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-                avg_per_run=Cast(Sum('quantity'), FloatField()) / total_log_count,
+                drop_chance=Cast(Count('pk'), FloatField()) / grade_qs.count() * 100,
+                avg_per_run=Cast(Sum('quantity'), FloatField()) / grade_qs.count(),
             )
 
             grade_report['drops'].append({
@@ -443,8 +442,8 @@ def grade_summary_report(qs, grade_choices):
                 monster=monster
             ).aggregate(
                 count=Count('pk'),
-                drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-                avg_per_run=Cast(Count('pk'), FloatField()) / total_log_count,
+                drop_chance=Cast(Count('pk'), FloatField()) / grade_qs.count() * 100,
+                avg_per_run=Cast(Count('pk'), FloatField()) / grade_qs.count(),
             )
 
             grade_report['drops'].append({
@@ -463,8 +462,8 @@ def grade_summary_report(qs, grade_choices):
                 stars=stars,
             ).aggregate(
                 count=Count('pk'),
-                drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-                avg_per_run=Cast(Count('pk'), FloatField()) / total_log_count,
+                drop_chance=Cast(Count('pk'), FloatField()) / grade_qs.count() * 100,
+                avg_per_run=Cast(Count('pk'), FloatField()) / grade_qs.count(),
             )
 
             grade_report['drops'].append({

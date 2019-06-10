@@ -2,40 +2,41 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 {% if table|length %}
-
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <th>Grade</th>
-        {% for drop in table.0.drops %}
-            <th>
-                {% if drop.icon %}
-                <img src="{{ img_url_prefix }}{{ drop.type }}s/{{ drop.icon }}" alt="{{ drop.name }} icon" class="monster-inline"/>
-                {% endif %}
-                {{ drop.name }}
-            </th>
-        {% endfor %}
-    </tr>
-    <tr>
-        <th></th>
-        {% for _ in table.0.drops|length|get_range %}
-        <th>
-            <small>Drop Chance / Avg. Per Run</small>
-        </th>
-        {% endfor %}
-    </tr>
-    </thead>
-    <tbody>
-    {% for row in table reversed %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
         <tr>
-            <td>{{ row.grade }}</td>
-            {% for drop in row.drops %}
-                <td>{{ drop.drop_chance|floatformat:2 }}% / {{ drop.avg_per_run|default:0|floatformat:2 }}</td>
+            <th>Grade</th>
+            {% for drop in table.0.drops %}
+                <th>
+                    {% if drop.icon %}
+                    <img src="{{ img_url_prefix }}{{ drop.type }}s/{{ drop.icon }}" alt="{{ drop.name }} icon" class="monster-inline"/>
+                    {% endif %}
+                    {{ drop.name }}
+                </th>
             {% endfor %}
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        <tr>
+            <th></th>
+            {% for _ in table.0.drops|length|get_range %}
+            <th>
+                <small>Drop Chance / Avg. Per Run</small>
+            </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in table reversed %}
+            <tr>
+                <td>{{ row.grade }}</td>
+                {% for drop in row.drops %}
+                    <td>{{ drop.drop_chance|floatformat:2 }}% / {{ drop.avg_per_run|default:0|floatformat:2 }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% else %}
 No data!
 {% endif %}

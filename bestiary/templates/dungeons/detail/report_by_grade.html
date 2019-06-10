@@ -2,6 +2,12 @@
 
 {% block report %}
     {% if report %}
+        <ul class="list-unstyled">
+            <li>Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
+            <li>{{ report.log_count }} records</li>
+            <li>{{ report.unique_contributors }} unique contributors</li>
+        </ul>
+
         <ul class="nav nav-tabs">
             <li role="presentation" class="active">
                 <a href="#summary_tab" aria-controls="home" role="tab" data-toggle="tab">

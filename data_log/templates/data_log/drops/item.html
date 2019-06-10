@@ -10,6 +10,7 @@
         <ul class="list list-unstyled">
             <li>Chance: {{ item.drop_chance|stringformat:".1f" }}%</li>
             <li>Qty {{ item.min }}{% if item.max != item.min %} - {{ item.max }}{% endif %}</li>
+            <li>Per 100 runs: {{ item.qty_per_100|floatformat:2 }}</li>
         </ul>
     </div>
 </div>

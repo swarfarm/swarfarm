@@ -25,6 +25,7 @@
         <h4 class="media-heading">{{ monster.element }} {{ monster.name }}</h4>
         <ul class="list list-unstyled">
             <li>Chance: {{ monster.drop_chance|stringformat:".1f" }}%</li>
+            <li>Per 100 runs: {{ monster.qty_per_100|floatformat:2 }}</li>
         </ul>
     </div>
 </div>

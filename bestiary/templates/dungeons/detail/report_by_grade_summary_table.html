@@ -20,7 +20,7 @@
             <th></th>
             {% for _ in table.0.drops|length|get_range %}
             <th>
-                <small>Drop Chance / Avg. Per Run</small>
+                <small>Qty. per 100 runs</small>
             </th>
             {% endfor %}
         </tr>
@@ -30,7 +30,7 @@
             <tr>
                 <td>{{ row.grade }}</td>
                 {% for drop in row.drops %}
-                    <td>{{ drop.drop_chance|floatformat:2 }}% / {{ drop.avg_per_run|default:0|floatformat:2 }}</td>
+                    <td>{{ drop.qty_per_100|floatformat:2 }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}

@@ -457,7 +457,7 @@ def grade_summary_report(qs, grade_choices):
 
         report_data.append(grade_report)
 
-        for stars in all_runes.values_list('stars', flat=True):
+        for stars in all_runes.values_list('stars', flat=True).distinct():
             result = drops['runes'].filter(
                 log__in=grade_qs,
                 stars=stars,

@@ -2,35 +2,17 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 {% if items %}
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            Item Drops
-        </div>
-
-        <table class="table">
-            <thead>
-                <tr>
-                    <th colspan="2">Item</th>
-                    <th>Drop Chance</th>
-                    <th>Quantity Dropped</th>
-                    <th>Avg. Per 100 Runs</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in items %}
-                    <tr>
-                        <td class="monster-info-icons-column">
-                            <img class="media-object monster-thumb" src="{{ img_url_prefix }}items/{{ item.icon }}" alt="{{ item.name }}">
-                        </td>
-                        <td>
-                            {{ item.name }}
-                        </td>
-                        <td>{{ item.drop_chance|floatformat:2 }}</td>
-                        <td>{{ item.min }}{% if item.max != item.min %} - {{ item.max }}{% endif %}</td>
-                        <td>{{ item.qty_per_100|floatformat }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    {% for item in items %}
+        <tr>
+            <td class="monster-info-icons-column">
+                <img class="media-object monster-thumb" src="{{ img_url_prefix }}items/{{ item.icon }}" alt="{{ item.name }}">
+            </td>
+            <td>
+                {{ item.name }}
+            </td>
+            <td>{{ item.drop_chance|floatformat }}%</td>
+            <td>{{ item.min }}{% if item.max != item.min %} - {{ item.max }}{% endif %}</td>
+            <td>{{ item.qty_per_100|floatformat }}</td>
+        </tr>
+    {% endfor %}
 {% endif %}

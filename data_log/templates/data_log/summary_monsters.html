@@ -1,14 +1,33 @@
+{% load staticfiles utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
 {% if monsters %}
-    <div class="list-group-item">
-        <h3 class="list-group-item-heading">Monster Drops</h3>
-        <p class="list-group-item-text">
-            <div class="row">
-            {% for monster in monsters %}
-                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                {% include 'data_log/drops/monster.html' with monster=monster only%}
+    {% for monster in monsters %}
+        <tr>
+            <td class="monster-info-icons-column">
+                <div class="monster-image">
+                    <a href="{% url 'bestiary:detail' monster_slug=monster.slug %}">
+                        <img src="{{ img_url_prefix }}monsters/{{ monster.icon }}" alt="{{ monster.name }}" class="monster-thumb"/>
+                        <span>
+                            {% for x in monster.stars|get_range %}
+                                {% if monster.is_awakened %}
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% elif monster.can_awaken %}
+                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% else %}
+                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    </a>
                 </div>
-            {% endfor %}
-            </div>
-        </p>
-    </div>
+            </td>
+            <td>
+                {{ monster.element }} {{ monster.name }}
+            </td>
+            <td>{{ monster.drop_chance|floatformat }}%</td>
+            <td></td>
+            <td>{{ Monster.qty_per_100|floatformat }}</td>
+        </tr>
+    {% endfor %}
 {% endif %}

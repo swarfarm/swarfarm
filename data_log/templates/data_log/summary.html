@@ -9,10 +9,26 @@
         </div>
 
         <div class="col-md-6">
-            <div class="list-group">
-                {% include 'data_log/summary_items.html' with items=summary.table.items%}
-                {% include 'data_log/summary_runes.html' with runes=summary.table.runes %}
-                {% include 'data_log/summary_monsters.html' with monsters=summary.table.monsters %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Drop Summary
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Drop</th>
+                                <th>Drop Chance</th>
+                                <th>Quantity Dropped</th>
+                                <th>Avg. Per 100 Runs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% include 'data_log/summary_items.html' with items=summary.table.items%}
+                            {% include 'data_log/summary_monsters.html' with monsters=summary.table.monsters %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

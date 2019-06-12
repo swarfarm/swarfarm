@@ -59,7 +59,7 @@ def get_report_summary(drops, total_log_count):
                     max=Max('quantity'),
                     avg=Avg('quantity'),
                     drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-                    avg_per_run=Cast(Sum('quantity'), FloatField()) / total_log_count,
+                    qty_per_100=Cast(Sum('quantity'), FloatField()) / total_log_count * 100,
                 ).filter(count__gt=0).order_by('item__category', '-count')
             )
         elif drop_type == models.MonsterDrop.RELATED_NAME:
@@ -85,6 +85,7 @@ def get_report_summary(drops, total_log_count):
                     ).annotate(
                         count=Count('pk'),
                         drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
+                        qty_per_100=Cast(Count('pk'), FloatField()) / total_log_count * 100,
                     )
                 ),
                 {'element': Monster.ELEMENT_CHOICES}
@@ -113,6 +114,7 @@ def get_report_summary(drops, total_log_count):
                             min=Min('quantity'),
                             max=Max('quantity'),
                             avg=Avg('quantity'),
+                            qty_per_100=Cast(Sum('quantity'), FloatField()) / total_log_count * 100,
                         )
                     ),
                     {'element': Monster.ELEMENT_CHOICES}
@@ -417,6 +419,7 @@ def grade_summary_report(qs, grade_choices):
 
         grade_report = {
             'grade': grade_name,
+            'log_count': grade_qs.count(),
             'drops': [],
         }
         for item in all_items:

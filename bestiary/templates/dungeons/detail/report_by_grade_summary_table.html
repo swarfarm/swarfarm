@@ -2,41 +2,34 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 {% if table|length %}
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Grade</th>
-            {% for drop in table.0.drops %}
-                <th>
-                    {% if drop.icon %}
-                    <img src="{{ img_url_prefix }}{{ drop.type }}s/{{ drop.icon }}" alt="{{ drop.name }} icon" class="monster-inline"/>
-                    {% endif %}
-                    {{ drop.name }}
-                </th>
-            {% endfor %}
-        </tr>
-        <tr>
-            <th></th>
-            {% for _ in table.0.drops|length|get_range %}
-            <th>
-                <small>Qty. per 100 runs</small>
-            </th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for row in table reversed %}
+    <h3>Average Drops per 100 Runs</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
             <tr>
-                <td>{{ row.grade }}</td>
-                {% for drop in row.drops %}
-                    <td>{{ drop.qty_per_100|floatformat:2 }}</td>
+                <th>Grade</th>
+                {% for drop in table.0.drops %}
+                    <th>
+                        {% if drop.icon %}
+                        <img src="{{ img_url_prefix }}{{ drop.type }}s/{{ drop.icon }}" alt="{{ drop.name }} icon" class="monster-inline"/>
+                        {% endif %}
+                        {{ drop.name }}
+                    </th>
                 {% endfor %}
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+            {% for row in table reversed %}
+                <tr>
+                    <td>{{ row.grade }}</td>
+                    {% for drop in row.drops %}
+                        <td>{{ drop.qty_per_100|floatformat }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% else %}
-No data!
+    No data!
 {% endif %}

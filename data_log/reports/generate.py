@@ -28,7 +28,7 @@ def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=250
         return qs.filter(timestamp__gte=timezone.now() - report_timespan)
 
 
-def get_report_summary(drops, total_log_count):
+def get_report_summary(drops, total_log_count, **kwargs):
     summary = {
         'table': {},
         'chart': [],
@@ -38,17 +38,12 @@ def get_report_summary(drops, total_log_count):
     # Table data: dict (by drop type) of lists of items which drop, with stats. 'count' is only required stat.
     for drop_type, qs in drops.items():
         if drop_type == models.ItemDrop.RELATED_NAME:
-            # Chart excludes currency
-            chart_data = list(
-                qs.exclude(
-                    item__category=GameItem.CATEGORY_CURRENCY,
-                ).values(
-                    name=F('item__name'),
-                ).annotate(
-                    count=Count('pk'),
-                ).filter(count__gt=0).order_by('-count')
-            )
+            chart_qs = qs.values(name=F('item__name')).annotate(count=Count('pk')).filter(count__gt=0).order_by('-count')
 
+            if not kwargs.get('include_currency'):
+                chart_qs = qs.exclude(item__category=GameItem.CATEGORY_CURRENCY)
+
+            chart_data = list(chart_qs)
             table_data = list(
                 qs.values(
                     name=F('item__name'),
@@ -434,12 +429,12 @@ def get_drop_querysets(qs):
     return drop_querysets
 
 
-def level_drop_report(qs):
+def level_drop_report(qs, **kwargs):
     report_data = {}
 
     # Get querysets for each possible drop type
     drops = get_drop_querysets(qs)
-    report_data['summary'] = get_report_summary(drops, qs.count())
+    report_data['summary'] = get_report_summary(drops, qs.count(), **kwargs)
 
     for key, qs in drops.items():
         report_data[key] = DROP_TYPES[key](qs, qs.count())
@@ -525,7 +520,7 @@ def grade_summary_report(qs, grade_choices):
     return report_data
 
 
-def _generate_level_reports(model):
+def _generate_level_reports(model, **kwargs):
     content_type = ContentType.objects.get_for_model(model)
     levels = model.objects.values_list('level', flat=True).distinct().order_by()
 
@@ -533,7 +528,7 @@ def _generate_level_reports(model):
         records = _records_to_report(model.objects.filter(level=level, success=True))
 
         if records.count() > 0:
-            report_data = level_drop_report(records)
+            report_data = level_drop_report(records, **kwargs)
 
             models.LevelReport.objects.create(
                 level=level,
@@ -546,12 +541,12 @@ def _generate_level_reports(model):
             )
 
 
-def generate_dungeon_log_reports():
-    _generate_level_reports(models.DungeonLog)
+def generate_dungeon_log_reports(**kwargs):
+    _generate_level_reports(models.DungeonLog, **kwargs)
 
 
 def generate_rift_raid_reports():
-    _generate_level_reports(models.RiftRaidLog)
+    _generate_level_reports(models.RiftRaidLog, include_currency=True)
 
 
 def _generate_by_grade_reports(model):

@@ -173,3 +173,28 @@ class RuneDropTests(TestCase):
         self.assertEqual(log.innate_stat_value, 15)
         self.assertEqual(log.substats, [models.DungeonRuneDrop.STAT_RESIST_PCT, models.DungeonRuneDrop.STAT_ACCURACY_PCT])
         self.assertEqual(log.substat_values, [4, 3])
+
+
+class RuneCraftDropTests(TestCase):
+    def test_parse_rune_craft_drop(self):
+        log = models.RuneCraftDrop.parse(**{
+            "item_master_type": 27,
+            "item_master_id": None,
+            "item_quantity": 1,
+            "unit_class": None,
+            "unit_level": None,
+            "rune_class": None,
+            "rune_set_id": None,
+            "rune_rank": None,
+            "runecraft_type": 2,
+            "runecraft_item_id": 160301,
+            "runecraft_set_id": 16,
+            "runecraft_effect_id": 3,
+            "runecraft_rank": 1,
+            "random_rune_type": None
+        })
+
+        self.assertEqual(log.type, models.RuneCraftDrop.CRAFT_GRINDSTONE)
+        self.assertEqual(log.rune, models.RuneCraftDrop.TYPE_SHIELD)
+        self.assertEqual(log.quality, models.RuneCraftDrop.QUALITY_NORMAL)
+        self.assertEqual(log.stat, models.RuneCraftDrop.STAT_ATK)

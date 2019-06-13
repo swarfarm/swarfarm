@@ -81,7 +81,7 @@ class LogDataViewTests(BaseLogTest):
         response = view(request)
 
         self.assertEqual(response.status_code, 400)
-        self.assertIsNotNone(response.data.get('message'))
+        self.assertIsNotNone(response.data.get('detail'))
         self.assertTrue(response.data.get('reinit'))
 
     def test_log_data_validation(self):
@@ -98,7 +98,7 @@ class LogDataViewTests(BaseLogTest):
         response = view(request)
 
         self.assertEqual(response.status_code, 400)
-        self.assertIsNotNone(response.data.get('message'))
+        self.assertIsNotNone(response.data.get('detail'))
         self.assertTrue(response.data.get('reinit'))
         self.assertEqual(models.FullLog.objects.count(), 1)
 
@@ -120,7 +120,7 @@ class LogDataViewTests(BaseLogTest):
         response = view(request)
 
         self.assertEqual(response.status_code, 400)
-        self.assertIsNotNone(response.data.get('message'))
+        self.assertIsNotNone(response.data.get('detail'))
         self.assertTrue(response.data.get('reinit'))
 
     def test_anonymous_log(self):

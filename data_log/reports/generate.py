@@ -364,11 +364,6 @@ def get_rune_craft_report(qs, total_log_count):
     if qs.count() == 0:
         return None
 
-    # Sell value ranges
-    min_value, max_value = qs.aggregate(Min('value'), Max('value')).values()
-    min_value = int(floor_to_nearest(min_value, 1000))
-    max_value = int(ceil_to_nearest(max_value, 1000))
-
     return {
         'type': {
             'type': 'occurrences',
@@ -410,11 +405,6 @@ def get_rune_craft_report(qs, total_log_count):
                 )
             )
         },
-        'value': {
-            'type': 'histogram',
-            'width': 500,
-            'data': histogram(qs, 'value', range(min_value, max_value, 500), slice_on='quality')
-        }
     }
 
 

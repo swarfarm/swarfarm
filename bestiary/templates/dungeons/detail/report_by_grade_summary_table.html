@@ -2,12 +2,13 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 {% if table|length %}
-    <h3>Average Drops per 100 Runs</h3>
+    <h3>Average Quantity per 100 Runs</h3>
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
             <tr>
                 <th>Grade</th>
+                <th>Log Count</th>
                 {% for drop in table.0.drops %}
                     <th>
                         {% if drop.icon %}
@@ -22,6 +23,7 @@
             {% for row in table reversed %}
                 <tr>
                     <td>{{ row.grade }}</td>
+                    <td>{{ row.log_count }}</td>
                     {% for drop in row.drops %}
                         <td>{{ drop.qty_per_100|floatformat }}</td>
                     {% endfor %}

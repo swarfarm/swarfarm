@@ -361,7 +361,61 @@ def get_rune_report(qs, total_log_count):
 
 
 def get_rune_craft_report(qs, total_log_count):
-    return "rune craft report"
+    if qs.count() == 0:
+        return None
+
+    # Sell value ranges
+    min_value, max_value = qs.aggregate(Min('value'), Max('value')).values()
+    min_value = int(floor_to_nearest(min_value, 1000))
+    max_value = int(ceil_to_nearest(max_value, 1000))
+
+    return {
+        'type': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('type').annotate(count=Count('pk')).order_by('-count')),
+                    {'type': qs.model.CRAFT_CHOICES}
+                )
+            ),
+        },
+        'rune': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('rune').annotate(count=Count('pk')).order_by('-count')),
+                    {'rune': qs.model.TYPE_CHOICES}
+                )
+            ),
+        },
+        'quality': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('quality').annotate(count=Count('pk')).order_by('-count')),
+                    {'quality': qs.model.QUALITY_CHOICES}
+                )
+            ),
+        },
+        'stat': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('stat').annotate(count=Count('stat')).order_by('stat')),
+                    {'stat': qs.model.STAT_CHOICES}
+                )
+            )
+        },
+        'value': {
+            'type': 'histogram',
+            'width': 500,
+            'data': histogram(qs, 'value', range(min_value, max_value, 500), slice_on='quality')
+        }
+    }
 
 
 def get_secret_dungeon_report(qs, total_log_count):

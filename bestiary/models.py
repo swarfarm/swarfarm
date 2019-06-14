@@ -84,6 +84,13 @@ class Monster(models.Model):
         5: TYPE_MATERIAL
     }
 
+    COM2US_AWAKEN_MAP = {
+        0: AWAKEN_LEVEL_UNAWAKENED,  # Can't awaken
+        1: AWAKEN_LEVEL_UNAWAKENED,  # Can awaken
+        2: AWAKEN_LEVEL_AWAKENED,
+        3: AWAKEN_LEVEL_SECOND,
+    }
+
     name = models.CharField(max_length=40)
     com2us_id = models.IntegerField(blank=True, null=True, help_text='ID given in game data files')
     family_id = models.IntegerField(blank=True, null=True, help_text='Identifier that matches same family monsters')

@@ -13,7 +13,7 @@ HubUserLoginSchema = {
                 'class': {
                     'type': 'number',
                     'minimum': 1,
-                    'maximum': 6,
+                    'maximum': 16,
                 },
                 'rank': {'type': 'number'},
                 'slot_no': {

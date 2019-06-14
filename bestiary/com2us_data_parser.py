@@ -214,6 +214,8 @@ def parse_skill_data(preview=False):
             'TN': 'Cooltime Turn -{0}',
             'SD': 'Shield +{0}%',
             'SD1': 'Shield +{0}%',
+            'GA': 'Attack Bar Recovery +{0}%',
+            'DT': 'Harmful Effect Rate +{0} Turns',
         }
 
         level_up_text = ''
@@ -395,18 +397,24 @@ def parse_monster_data(preview=False):
             updated = True
 
         # Awakening
-        awakened = row['unit master id'][-2] == '1'
+        awaken_level = json.loads(row['awaken'])
+        awakened = awaken_level >= 1
         awakens_to_com2us_id = json.loads(row['awaken unit id'])
         if awakened != monster.is_awakened:
             monster.is_awakened = awakened
             print('Updated {} ({}) awakened status to {}'.format(monster, master_id, monster.is_awakened))
             updated = True
 
+        if awaken_level != monster.awakening:
+            monster.awakening = awaken_level
+            print('Updated {} ({}) awakening level to {}'.format(monster, master_id, monster.get_awakening_display()))
+            updated = True
+
         if monster.can_awaken != (awakened or awakens_to_com2us_id > 0):
             monster.can_awaken = (awakened or awakens_to_com2us_id > 0)
             print('Updated {} ({}) can awaken status to {}'.format(monster, master_id, monster.can_awaken))
 
-        if monster.can_awaken and not monster.is_awakened:
+        if monster.can_awaken and awakens_to_com2us_id > 0:
             # Auto-assign awakens_to if possible (which will auto-update awakens_from on other monster)
             try:
                 awakens_to_monster = Monster.objects.get(com2us_id=awakens_to_com2us_id)
@@ -1090,9 +1098,9 @@ class LocalvalueTables(IntEnum):
 
 
 def save_localvalue_tables():
-    for x in range(1,99):
+    for x in range(1,102):
         table = _get_localvalue_tables(x)
-        with open(f'bestiary/com2us_data/localvalue_{x}.csv', 'w', encoding='utf-8') as f:
+        with open(f'bestiary/com2us_data/localvalue_{x}.csv', 'w', encoding='utf-8', newline='\n') as f:
             writer = csv.DictWriter(f, fieldnames=table['header'])
             writer.writeheader()
             for row in table['rows']:

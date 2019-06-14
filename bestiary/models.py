@@ -55,6 +55,16 @@ class Monster(models.Model):
         (6, mark_safe('6<span class="glyphicon glyphicon-star"></span>')),
     )
 
+    AWAKEN_LEVEL_UNAWAKENED = 0
+    AWAKEN_LEVEL_AWAKENED = 1
+    AWAKEN_LEVEL_SECOND = 2
+
+    AWAKEN_CHOICES = (
+        (AWAKEN_LEVEL_UNAWAKENED, 'Unawakened'),
+        (AWAKEN_LEVEL_AWAKENED, 'Awakened'),
+        (AWAKEN_LEVEL_SECOND, 'Second Awakening'),
+    )
+
     # Mappings from com2us' API data to model defined values
     COM2US_ELEMENT_MAP = {
         1: ELEMENT_WATER,
@@ -84,6 +94,7 @@ class Monster(models.Model):
     obtainable = models.BooleanField(default=True, help_text='Is available for players to acquire')
     can_awaken = models.BooleanField(default=True, help_text='Has an awakened form')
     is_awakened = models.BooleanField(default=False, help_text='Is the awakened form')
+    awakening = models.IntegerField(default=AWAKEN_LEVEL_UNAWAKENED, choices=AWAKEN_CHOICES, help_text='Awakening level')
     awaken_bonus = models.TextField(blank=True, help_text='Bonus given upon awakening')
 
     skills = models.ManyToManyField('Skill', blank=True)
@@ -388,7 +399,7 @@ class Monster(models.Model):
         if self.awakens_from and self.awakens_from.awakens_to is not self:
             self.awakens_from.awakens_to = self
             self.awakens_from.save()
-        elif self.awakens_to and self.awakens_to.awakens_from is not self:
+        if self.awakens_to and self.awakens_to.awakens_from is not self:
             self.awakens_to.awakens_from = self
             self.awakens_to.save()
 
@@ -1438,6 +1449,7 @@ class Rune(models.Model, RuneObjectBase):
     slot = models.IntegerField()
     quality = models.IntegerField(default=0, choices=RuneObjectBase.QUALITY_CHOICES)
     original_quality = models.IntegerField(choices=RuneObjectBase.QUALITY_CHOICES, blank=True, null=True)
+    ancient = models.BooleanField(default=False)
     value = models.IntegerField(blank=True, null=True)
     main_stat = models.IntegerField(choices=RuneObjectBase.STAT_CHOICES)
     main_stat_value = models.IntegerField()
@@ -1657,14 +1669,16 @@ class Rune(models.Model, RuneObjectBase):
                         code='invalid_rune_innate_stat_value'
                     )
                 })
-            max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
-            if self.innate_stat_value > max_sub_value:
-                raise ValidationError({
-                    'innate_stat_value': ValidationError(
-                        'Must be less than or equal to ' + str(max_sub_value) + '.',
-                        code='invalid_rune_innate_stat_value'
-                    )
-                })
+
+            # Temporarily disabled due to unknown values of Ancient runes
+            # max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
+            # if self.innate_stat_value > max_sub_value:
+            #     raise ValidationError({
+            #         'innate_stat_value': ValidationError(
+            #             'Must be less than or equal to ' + str(max_sub_value) + '.',
+            #             code='invalid_rune_innate_stat_value'
+            #         )
+            #     })
         else:
             self.innate_stat_value = None
 
@@ -1677,14 +1691,15 @@ class Rune(models.Model, RuneObjectBase):
                     )
                 })
 
-            max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
-            if value > max_sub_value:
-                raise ValidationError({
-                    f'substat_values': ValidationError(
-                        'Must be less than or equal to ' + str(max_sub_value) + '.',
-                        code=f'invalid_rune_substat_value]'
-                    )
-                })
+            # Temporarily disabled due to unknown values of Ancient runes
+            # max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
+            # if value > max_sub_value:
+            #     raise ValidationError({
+            #         f'substat_values': ValidationError(
+            #             'Must be less than or equal to ' + str(max_sub_value) + '.',
+            #             code=f'invalid_rune_substat_value]'
+            #         )
+            #     })
 
     def save(self, *args, **kwargs):
         self.update_fields()
@@ -1699,22 +1714,28 @@ class RuneCraft(models.Model, RuneObjectBase):
     CRAFT_ENCHANT_GEM = 1
     CRAFT_IMMEMORIAL_GRINDSTONE = 2
     CRAFT_IMMEMORIAL_GEM = 3
+    CRAFT_ANCIENT_GRINDSTONE = 4
+    CRAFT_ANCIENT_GEM = 5
 
     CRAFT_CHOICES = (
         (CRAFT_GRINDSTONE, 'Grindstone'),
         (CRAFT_ENCHANT_GEM, 'Enchant Gem'),
         (CRAFT_IMMEMORIAL_GRINDSTONE, 'Immemorial Grindstone'),
         (CRAFT_IMMEMORIAL_GEM, 'Immemorial Gem'),
+        (CRAFT_ANCIENT_GRINDSTONE, 'Ancient Grindstone'),
+        (CRAFT_ANCIENT_GEM, 'Ancient Gem'),
     )
 
     CRAFT_ENCHANT_GEMS = [
         CRAFT_ENCHANT_GEM,
         CRAFT_IMMEMORIAL_GEM,
+        CRAFT_ANCIENT_GEM,
     ]
 
     CRAFT_GRINDSTONES = [
         CRAFT_GRINDSTONE,
         CRAFT_IMMEMORIAL_GRINDSTONE,
+        CRAFT_ANCIENT_GRINDSTONE,
     ]
 
     # Type > Stat > Quality > Min/Max
@@ -1880,6 +1901,8 @@ class RuneCraft(models.Model, RuneObjectBase):
     }
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GEM] = CRAFT_VALUE_RANGES[CRAFT_ENCHANT_GEM]
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[CRAFT_GRINDSTONE]
+    CRAFT_VALUE_RANGES[CRAFT_ANCIENT_GEM] = CRAFT_VALUE_RANGES[CRAFT_ENCHANT_GEM]  # TODO: Update with Ancient values
+    CRAFT_VALUE_RANGES[CRAFT_ANCIENT_GRINDSTONE] = CRAFT_VALUE_RANGES[CRAFT_GRINDSTONE]  # TODO: Update with Ancient values
 
     # Mappings from com2us' API data to model defined values
     COM2US_CRAFT_TYPE_MAP = {
@@ -1887,12 +1910,15 @@ class RuneCraft(models.Model, RuneObjectBase):
         2: CRAFT_GRINDSTONE,
         3: CRAFT_IMMEMORIAL_GEM,
         4: CRAFT_IMMEMORIAL_GRINDSTONE,
+        5: CRAFT_ANCIENT_GEM,
+        6: CRAFT_ANCIENT_GRINDSTONE,
     }
 
     type = models.IntegerField(choices=CRAFT_CHOICES)
     rune = models.IntegerField(choices=RuneObjectBase.TYPE_CHOICES, blank=True, null=True)
     stat = models.IntegerField(choices=RuneObjectBase.STAT_CHOICES)
     quality = models.IntegerField(choices=RuneObjectBase.QUALITY_CHOICES)
+    ancient = models.BooleanField(default=False)
     value = models.IntegerField(blank=True, null=True)
 
     class Meta:

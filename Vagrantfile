@@ -9,6 +9,7 @@ Vagrant.configure("2") do |config|
     end
 
     config.vm.network "private_network", ip: "10.243.243.10"
+    config.vm.network "forwarded_port", guest: 8000, host: 8001  # remote manage.py runserver
     config.vm.network "forwarded_port", guest: 5432, host: 5432  # postgres
     config.vm.network "forwarded_port", guest: 5672, host: 5672  # AMQP
     config.vm.network "forwarded_port", guest: 6379, host: 6379  # redis

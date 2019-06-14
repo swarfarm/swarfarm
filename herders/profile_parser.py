@@ -309,11 +309,18 @@ def parse_rune_data(rune_data, owner):
     rune.com2us_id = com2us_id
     rune.value = rune_data.get('sell_value')
     rune.slot = rune_data.get('slot_no')
-    rune.stars = rune_data.get('class')
+    stars = rune_data.get('class')
+    if stars > 10:
+        stars -= 10
+        rune.ancient = True
+    rune.stars = stars
     rune.level = rune_data.get('upgrade_curr')
     original_quality = rune_data.get('extra')
 
     if original_quality:
+        if original_quality > 10:
+            original_quality -= 10
+
         rune.original_quality = com2us_mapping.rune_quality_map[original_quality]
 
     # Rune stats

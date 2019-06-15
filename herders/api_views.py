@@ -1,19 +1,17 @@
-from django.contrib.auth.models import User
 from celery.result import AsyncResult
 from django.db.models import Q
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, status
-from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 
-from herders.models import BuildingInstance, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance
-from herders.serializers import *
+from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
 from herders.pagination import *
 from herders.permissions import *
-from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
+from herders.serializers import *
 from .profile_parser import validate_sw_json
 from .tasks import com2us_data_import
 from .views import DEFAULT_IMPORT_OPTIONS
@@ -288,7 +286,6 @@ class ProfileJsonUpload(viewsets.ViewSet):
             try:
                 return Response({
                     'status': task.status,
-                    'result': task.result,
                 })
             except:
                 return Response({

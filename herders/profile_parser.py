@@ -381,7 +381,7 @@ def parse_rune_craft_data(craft_data, owner):
     craft = RuneCraftInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
 
     if not craft:
-        craft = RuneCraftInstance()
+        craft = RuneCraftInstance(com2us_id=com2us_id, owner=owner)
 
     craft_type_id = str(craft_data['craft_type_id'])
 
@@ -389,10 +389,11 @@ def parse_rune_craft_data(craft_data, owner):
     stat = int(craft_type_id[-4:-2])
     rune_set = int(craft_type_id[:-4])
 
-    craft.type = com2us_mapping.craft_type_map.get(craft_data['craft_type'])
-    craft.quality = com2us_mapping.craft_quality_map.get(quality)
-    craft.stat = com2us_mapping.rune_stat_type_map.get(stat)
-    craft.rune = com2us_mapping.rune_set_map.get(rune_set)
+    craft.type = RuneCraftInstance.COM2US_CRAFT_TYPE_MAP.get(craft_data['craft_type'])
+    craft.quality = RuneCraftInstance.COM2US_QUALITY_MAP.get(quality)
+    craft.stat = RuneCraftInstance.COM2US_STAT_MAP.get(stat)
+    craft.rune = RuneCraftInstance.COM2US_TYPE_MAP.get(rune_set)
+    craft.ancient = craft.type in [RuneCraftInstance.CRAFT_ANCIENT_GRINDSTONE, RuneCraftInstance.CRAFT_ANCIENT_GEM]
     craft.value = craft_data['sell_value']
 
     return craft

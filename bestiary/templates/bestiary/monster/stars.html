@@ -1,0 +1,20 @@
+{% load staticfiles utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<span>
+    {% for x in monster.base_stars|get_range %}
+        {% if monster.can_awaken %}
+            {% if monster.awaken_level == monster.AWAKEN_LEVEL_INCOMPLETE %}
+                <img src="{{ img_url_prefix }}stars/star-incomplete.png" class="monster-star monster-star-{{ forloop.counter }}" alt="star"/>
+            {% elif monster.awaken_level == monster.AWAKEN_LEVEL_AWAKENED %}
+                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" alt="star"/>
+            {% elif monster.awaken_level == monster.AWAKEN_LEVEL_SECOND %}
+                <img src="{{ img_url_prefix }}stars/star-awakened2.png" class="monster-star monster-star-{{ forloop.counter }}" alt="star"/>
+            {% else %}
+                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" alt="star"/>
+            {% endif %}
+        {% else %}
+            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" alt="star"/>
+        {% endif %}
+    {% endfor %}
+</span>

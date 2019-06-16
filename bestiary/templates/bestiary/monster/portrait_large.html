@@ -1,0 +1,12 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="monster-box-thumb">
+    <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}" alt="{{ monster.name }} portrait"/>
+    {% include './stars.html' %}
+    <div class="image-plus-icon">
+        {% if monster.fusion_food %}
+            <img src="{{ img_url_prefix }}icons/fusion.png" alt="fusion ingredient"/>
+        {% endif %}
+    </div>
+</div>

@@ -70,7 +70,7 @@
                         {% endif %}
                         <td class="monster-image">
                             <a href="{% url 'bestiary:detail' monster_slug=monster.bestiary_slug %}">
-                                <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}" class="monster-thumb"/>
+                                {% include 'bestiary/monster/portrait_small.html' with monster=monster only %}
                             </a>
                         </td>
                         <td><a href="{% url 'bestiary:detail' monster_slug=monster.bestiary_slug %}">{{ monster.name|title }}</a></td>

@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% load utils %}
 {% static 'herders/images/' as img_url_prefix %}
+
 <div class="panel panel-default">
     <div class="panel-heading">
         <span class="panel-title"><strong><img src="{{ img_url_prefix }}elements/{{ mon_data.mon.element }}.png" style="height:1em"/> {{ mon_data.mon.name }}</strong> - <small>{{ mon_data.mon.get_archetype_display }}</small></span>
@@ -10,25 +11,8 @@
     </div>
     <div class="panel-body">
         <div class="monster-box">
-            <div class="monster-box-thumb">
-                <img src="{{ img_url_prefix }}monsters/{{ mon_data.mon.image_filename }}"/>
-                <span>
-                    {% for x in mon_data.mon.base_stars|get_range %}
-                        {% if mon_data.mon.is_awakened %}
-                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                        {% elif mon_data.mon.can_awaken %}
-                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                        {% else %}
-                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                        {% endif %}
-                    {% endfor %}
-                </span>
-                <div class="image-plus-icon">
-                    {% if mon_data.mon.fusion_food %}
-                        <img src="{{ img_url_prefix }}icons/fusion.png" />
-                    {% endif %}
-                </div>
-            </div>
+            {% include 'bestiary/monster/portrait_large.html' with monster=mon_data.mon only %}
+
             {% if mon_data.mon.obtainable %}
             <div class="monster-box-actions">
                 <button class="btn btn-link btn-xs monster-add" data-monster="{{ mon_data.mon.pk }}" data-stars="{{ mon_data.mon.mon_data_stars }}">

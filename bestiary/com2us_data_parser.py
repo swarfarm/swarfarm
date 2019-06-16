@@ -397,17 +397,17 @@ def parse_monster_data(preview=False):
             updated = True
 
         # Awakening
-        awaken_rank = json.loads(row['awaken rank'])
+        awaken_level = json.loads(row['awaken'])
         awakens_to_com2us_id = json.loads(row['awaken unit id'])
 
-        can_awaken = awaken_rank > 0
+        can_awaken = json.loads(row['awaken rank']) > 0
         if monster.can_awaken != can_awaken:
             monster.can_awaken = can_awaken
             print('Updated {} ({}) can awaken status to {}'.format(monster, master_id, monster.can_awaken))
 
         if can_awaken:
-            is_awakened = awaken_rank > 1
-            awaken_level = Monster.COM2US_AWAKEN_MAP[awaken_rank]
+            is_awakened = awaken_level > 0
+            awaken_level = Monster.COM2US_AWAKEN_MAP[awaken_level]
         else:
             is_awakened = False
             awaken_level = Monster.AWAKEN_LEVEL_UNAWAKENED
@@ -417,9 +417,9 @@ def parse_monster_data(preview=False):
             print('Updated {} ({}) awakened status to {}'.format(monster, master_id, monster.is_awakened))
             updated = True
 
-        if awaken_level != monster.awakening:
-            monster.awakening = awaken_level
-            print('Updated {} ({}) awakening level to {}'.format(monster, master_id, monster.get_awakening_display()))
+        if awaken_level != monster.awaken_level:
+            monster.awaken_level = awaken_level
+            print('Updated {} ({}) awakening level to {}'.format(monster, master_id, monster.get_awaken_level_display()))
             updated = True
 
         if monster.can_awaken and awakens_to_com2us_id > 0:

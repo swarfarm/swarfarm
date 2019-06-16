@@ -207,7 +207,7 @@ def bestary_stat_charts(request, pk):
 
     data_series = []
 
-    if monster.is_awakened and monster.awakens_from and monster.base_stars >= 2:
+    if monster.awaken_level > Monster.AWAKEN_LEVEL_UNAWAKENED and monster.awakens_from and monster.base_stars >= 2:
         base_stars = monster.awakens_from.base_stars
     else:
         base_stars = monster.base_stars

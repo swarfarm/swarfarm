@@ -55,6 +55,7 @@ class Monster(models.Model):
         (6, mark_safe('6<span class="glyphicon glyphicon-star"></span>')),
     )
 
+    AWAKEN_LEVEL_INCOMPLETE = -1  # Japan fusion
     AWAKEN_LEVEL_UNAWAKENED = 0
     AWAKEN_LEVEL_AWAKENED = 1
     AWAKEN_LEVEL_SECOND = 2
@@ -63,6 +64,7 @@ class Monster(models.Model):
         (AWAKEN_LEVEL_UNAWAKENED, 'Unawakened'),
         (AWAKEN_LEVEL_AWAKENED, 'Awakened'),
         (AWAKEN_LEVEL_SECOND, 'Second Awakening'),
+        (AWAKEN_LEVEL_INCOMPLETE, 'Incomplete'),
     )
 
     # Mappings from com2us' API data to model defined values
@@ -85,10 +87,10 @@ class Monster(models.Model):
     }
 
     COM2US_AWAKEN_MAP = {
-        0: AWAKEN_LEVEL_UNAWAKENED,  # Can't awaken
-        1: AWAKEN_LEVEL_UNAWAKENED,  # Can awaken
-        2: AWAKEN_LEVEL_AWAKENED,
-        3: AWAKEN_LEVEL_SECOND,
+        -1: AWAKEN_LEVEL_INCOMPLETE,
+        0: AWAKEN_LEVEL_UNAWAKENED,
+        1: AWAKEN_LEVEL_AWAKENED,
+        2: AWAKEN_LEVEL_SECOND,
     }
 
     name = models.CharField(max_length=40)
@@ -101,7 +103,7 @@ class Monster(models.Model):
     obtainable = models.BooleanField(default=True, help_text='Is available for players to acquire')
     can_awaken = models.BooleanField(default=True, help_text='Has an awakened form')
     is_awakened = models.BooleanField(default=False, help_text='Is the awakened form')
-    awakening = models.IntegerField(default=AWAKEN_LEVEL_UNAWAKENED, choices=AWAKEN_CHOICES, help_text='Awakening level')
+    awaken_level = models.IntegerField(default=AWAKEN_LEVEL_UNAWAKENED, choices=AWAKEN_CHOICES, help_text='Awakening level')
     awaken_bonus = models.TextField(blank=True, help_text='Bonus given upon awakening')
 
     skills = models.ManyToManyField('Skill', blank=True)

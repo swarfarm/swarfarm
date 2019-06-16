@@ -142,7 +142,7 @@ class MonsterSerializer(serializers.ModelSerializer):
         model = Monster
         fields = (
             'id', 'url', 'com2us_id', 'family_id', 'name', 'image_filename', 'element', 'archetype', 'base_stars',
-            'obtainable', 'can_awaken', 'is_awakened', 'awaken_bonus',
+            'obtainable', 'can_awaken', 'awaken_level', 'awaken_bonus',
             'skills', 'skill_ups_to_max', 'leader_skill', 'homunculus_skills',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
             'raw_hp', 'raw_attack', 'raw_defense', 'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',

@@ -39,7 +39,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'awakens_to',
                 'can_awaken',
                 'is_awakened',
-                'awakening',
+                'awaken_level',
                 'awaken_bonus',
             ),
         }),

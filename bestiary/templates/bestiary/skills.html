@@ -2,14 +2,14 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="row condensed">
-    {% if mon_data.mon.leader_skill %}
+    {% if monster.leader_skill %}
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-body">
-                <div class="monster-skill-thumb pull-left"><img src="{{ img_url_prefix }}skills/leader/{{ mon_data.mon.leader_skill.icon_filename }}" /></div>
+                <div class="monster-skill-thumb pull-left"><img src="{{ img_url_prefix }}skills/leader/{{ monster.leader_skill.icon_filename }}" /></div>
                 <h4 class="list-group-item-heading">Leader Skill</h4>
                 <div class="list-group-item-text">
-                    {{ mon_data.mon.leader_skill.skill_string }}
+                    {{ monster.leader_skill.skill_string }}
                 </div>
                 <div class="clearfix"></div>
             </div>
@@ -17,8 +17,8 @@
     </div>
     {% endif %}
 
-    {% for skill in mon_data.skills %}
-    <div class="{% if mon_data.mon.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
+    {% for skill in monster.skills.all %}
+    <div class="{% if monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
         <div class="panel panel-default">
             <div class="panel-heading">
                 {% if request.user.is_superuser %}

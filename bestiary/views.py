@@ -106,66 +106,22 @@ def bestiary_detail(request, monster_slug):
     if monster is None:
         raise Http404()
 
+    mon = monster.base_monster()
+    monsters = []
+
+    while mon is not None:
+        monsters.append(mon)
+        mon = mon.awakens_to
+
     context = {
         'view': 'bestiary',
         'active_slug': monster_slug,
+        'family': monster.monster_family(),
+        'monsters': monsters,
     }
 
     if request.user.is_authenticated:
         context['profile_name'] = request.user.username
-
-    if monster.is_awakened and monster.awakens_from is not None:
-        base_monster = monster.awakens_from
-        awakened_monster = monster
-    else:
-        base_monster = monster
-        awakened_monster = monster.awakens_to
-
-    # Run some calcs to provide stat deltas between awakened and unawakened
-    base_stats = base_monster.get_stats()
-    context['family'] = monster.monster_family()
-
-    context['base'] = {
-        'mon': base_monster,
-        'stats': base_stats,
-        'leader_skill': base_monster.leader_skill,
-        'skills': base_monster.skills.all().order_by('slot'),
-    }
-
-    if base_monster.awakens_to:
-        awakened_stats = awakened_monster.get_stats()
-
-        context['awakened'] = {
-            'mon': awakened_monster,
-            'stats': awakened_stats,
-            'leader_skill': awakened_monster.leader_skill,
-            'skills': awakened_monster.skills.all().order_by('slot'),
-        }
-
-        # Calculate change in stats as monster undergoes awakening
-        if base_stats['6']['HP'] is not None and awakened_stats['6']['HP'] is not None:
-            awakened_stats_deltas = dict()
-
-            for stat, value in base_stats['6'].items():
-                if awakened_stats['6'][stat] != value:
-                    awakened_stats_deltas[stat] = int(round((awakened_stats['6'][stat] / float(value)) * 100 - 100))
-
-            if base_monster.speed != awakened_monster.speed:
-                awakened_stats_deltas['SPD'] = awakened_monster.speed - base_monster.speed
-
-            if base_monster.crit_rate != awakened_monster.crit_rate:
-                awakened_stats_deltas['CRIT_Rate'] = awakened_monster.crit_rate - base_monster.crit_rate
-
-            if base_monster.crit_damage != awakened_monster.crit_damage:
-                awakened_stats_deltas['CRIT_DMG'] = awakened_monster.crit_damage - base_monster.crit_damage
-
-            if base_monster.accuracy != awakened_monster.accuracy:
-                awakened_stats_deltas['Accuracy'] = awakened_monster.accuracy - base_monster.accuracy
-
-            if base_monster.resistance != awakened_monster.resistance:
-                awakened_stats_deltas['Resistance'] = awakened_monster.resistance - base_monster.resistance
-
-            context['awakened']['stat_deltas'] = awakened_stats_deltas
 
     return render(request, 'bestiary/detail_base.html', context)
 

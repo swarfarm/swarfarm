@@ -4,18 +4,18 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <span class="panel-title"><strong><img src="{{ img_url_prefix }}elements/{{ mon_data.mon.element }}.png" style="height:1em"/> {{ mon_data.mon.name }}</strong> - <small>{{ mon_data.mon.get_archetype_display }}</small></span>
+        <span class="panel-title"><strong><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" style="height:1em"/> {{ monster.name }}</strong> - <small>{{ monster.get_archetype_display }}</small></span>
         {% if request.user.is_superuser %}
-            <a href="{% url 'admin:bestiary_monster_change' object_id=mon_data.mon.pk %}" class="btn btn-xs edit-skill pull-right" target="_blank"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="{% url 'admin:bestiary_monster_change' object_id=monster.pk %}" class="btn btn-xs edit-skill pull-right" target="_blank"><span class="glyphicon glyphicon-pencil"></span></a>
         {% endif %}
     </div>
     <div class="panel-body">
         <div class="monster-box">
-            {% include 'bestiary/monster/portrait_large.html' with monster=mon_data.mon only %}
+            {% include 'bestiary/monster/portrait_large.html' with monster=monster only %}
 
-            {% if mon_data.mon.obtainable %}
+            {% if monster.obtainable %}
             <div class="monster-box-actions">
-                <button class="btn btn-link btn-xs monster-add" data-monster="{{ mon_data.mon.pk }}" data-stars="{{ mon_data.mon.mon_data_stars }}">
+                <button class="btn btn-link btn-xs monster-add" data-monster="{{ monster.pk }}" data-stars="{{ monster.stars }}">
                     <span class="glyphicon glyphicon-plus"></span> Collection
                 </button>
             </div>
@@ -25,17 +25,17 @@
         <div class="panel panel-default monster-info-panel">
             <table class="table table-condensed table-bordered">
                 <tbody>
-                {% if mon_data.mon.transforms_into %}
+                {% if monster.transforms_into %}
                     <tr>
                         <td>Transforms Into</td>
-                        <td><a href="{% url 'bestiary:detail' monster_slug=mon_data.mon.transforms_into.bestiary_slug  %}"><img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ mon_data.mon.transforms_into.image_filename }}" /> {{ mon_data.mon.transforms_into }}</a></td>
+                        <td><a href="{% url 'bestiary:detail' monster_slug=monster.transforms_into.bestiary_slug  %}"><img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ monster.transforms_into.image_filename }}" /> {{ monster.transforms_into }}</a></td>
                     </tr>
                 {% endif %}
                 <tr>
                     <td>Awakening Bonus:</td>
-                    <td>{{ mon_data.mon.awaken_bonus }}</td>
+                    <td>{{ monster.awaken_bonus }}</td>
                 </tr>
-                {% with sources=mon_data.mon.source.all %}
+                {% with sources=monster.source.all %}
                 {% if sources|length %}
                 <tr>
                     <td>Sources:</td>
@@ -52,15 +52,15 @@
                 </tr>
                 {% endif %}
                 {% endwith %}
-                {% if mon_data.mon.can_awaken and not mon_data.mon.is_awakened %}
+                {% if monster.can_awaken and not monster.is_awakened %}
                 <tr>
                     <td>Awakening Essences:</td>
                     <td class="monster-awaken-materials">
-                        {% include 'bestiary/awakening_essences.html' with monster=mon_data.mon only %}
+                        {% include 'bestiary/awakening_essences.html' %}
                     </td>
                 </tr>
                 {% endif %}
-                {% with fusion_set=mon_data.mon.fusion_set.all %}
+                {% with fusion_set=monster.fusion_set.all %}
                     {% if fusion_set|length %}
                         <tr>
                             <td>Fusion Ingredient For:</td>
@@ -86,13 +86,13 @@
                     {% endif %}
                 {% endwith %}
 
-                {% if mon_data.mon.skill_ups_to_max %}
+                {% if monster.skill_ups_to_max %}
                 <tr>
                     <td>Skill-ups to Max</td>
                     <td class="monster-awaken-materials">
                         <div class="monster-image">
                             <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
-                            <span class="image-plus image-plus-main">{{ mon_data.mon.skill_ups_to_max }}</span>
+                            <span class="image-plus image-plus-main">{{ monster.skill_ups_to_max }}</span>
                         </div>
                     </td>
                 </tr>

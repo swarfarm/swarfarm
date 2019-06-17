@@ -20,9 +20,11 @@
 
     <div class="tab-content bordered">
         <div role="tabpanel" class="tab-pane active">
-            {% if base %}{% include 'bestiary/monster_detail.html' with mon_data=base %}{% endif %}
-            {% if base and awakened %}<hr />{% endif %}
-            {% if awakened %}{% include 'bestiary/monster_detail.html' with mon_data=awakened %}{% endif %}
+            {% for m in monsters %}
+                {% include 'bestiary/monster_detail.html' with monster=m %}
+
+                {% if monsters|length > 1 and not forloop.last %}<hr />{% endif %}
+            {% endfor %}
         </div>
     </div>
 

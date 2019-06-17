@@ -247,6 +247,12 @@ class Monster(models.Model):
 
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 
+    def base_monster(self):
+        if self.awakens_from is not None:
+            return self.awakens_from.base_monster()
+
+        return self
+
     def monster_family(self):
         should_be_shown = Q(obtainable=True) | Q(transforms_into__isnull=False)
         has_awakened_version = Q(can_awaken=True) & Q(awakens_to__isnull=False)

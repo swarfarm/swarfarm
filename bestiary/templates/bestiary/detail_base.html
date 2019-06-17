@@ -3,7 +3,7 @@
 {% load utils %}
 {% load cache %}
 
-{% block title %}Bestiary - {{ base.mon.get_element_display }} {{ base.mon.name }}{% if awakened %} ({{ awakened.mon.name }}){% endif %} - {{ block.super }}{% endblock title %}
+{% block title %}Bestiary - {{ monsters.0.get_element_display }} {{ monsters.0.name }}{% if monsters.0.can_awaken %} ({{ monsters.0.awakens_to.name }}){% endif %} - {{ block.super }}{% endblock title %}
 
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}

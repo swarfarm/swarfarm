@@ -1,14 +1,13 @@
 from itertools import chain
 
 from captcha.fields import ReCaptchaField
-from crispy_forms.bootstrap import FormActions, FieldWithButtons, StrictButton, InlineField, InlineRadios, Alert
+from crispy_forms.bootstrap import FormActions, FieldWithButtons, StrictButton, InlineField, InlineRadios
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, HTML, Hidden, Reset, Fieldset
 from dal import autocomplete
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
-from django.contrib.postgres.forms import SplitArrayField
 from django.core.validators import RegexValidator
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.forms import ModelForm
@@ -478,11 +477,10 @@ class FilterMonsterInstanceForm(forms.Form):
         choices=MonsterInstance.PRIORITY_CHOICES,
         required=False,
     )
-    monster__is_awakened = forms.ChoiceField(
-        label='Awakened',
+    monster__awaken_level = forms.MultipleChoiceField(
+        label='Awaken Level',
         required=False,
-        choices=[(None, 'N/A'), (True, 'Yes'), (False, 'No')],
-        widget=forms.RadioSelect,
+        choices=Monster.AWAKEN_CHOICES[:3],  # Remove "incomplete" option
     )
     fodder = forms.ChoiceField(
         label='Fodder',
@@ -604,7 +602,10 @@ class FilterMonsterInstanceForm(forms.Form):
                         css_class='col-lg-8 col-md-6'
                     ),
                     Div(
-                        InlineRadios('monster__is_awakened', wrapper_class='form-group-sm form-group-condensed'),
+                        Field(
+                            'monster__awaken_level',
+                            css_class='select2',
+                        ),
                         InlineRadios('fodder', wrapper_class='form-group-sm form-group-condensed'),
                         InlineRadios('in_storage', wrapper_class='form-group-sm form-group-condensed'),
                         InlineRadios('monster__fusion_food', wrapper_class='form-group-sm form-group-condensed'),
@@ -927,8 +928,9 @@ class AddRuneInstanceForm(ModelForm):
             Div(
                 Div(
                     Div(Field('slot', placeholder='1-6', min=1, max=6), css_class='col-md-3'),
-                    Div(Field('stars', placeholder='1-6', min=1, max=6), css_class='col-md-4'),
-                    Div(Field('level', placeholder='0-15', min=0, max=15), css_class='col-md-4'),
+                    Div(Field('stars', placeholder='1-6', min=1, max=6), css_class='col-md-3'),
+                    Div(Field('level', placeholder='0-15', min=0, max=15), css_class='col-md-3'),
+                    Div(Field('ancient'), css_class='col-md-3'),
                     css_class='row'
                 ),
                 Div(
@@ -1000,7 +1002,7 @@ class AddRuneInstanceForm(ModelForm):
     class Meta:
         model = RuneInstance
         fields = (
-            'type', 'stars', 'level', 'slot',
+            'type', 'stars', 'level', 'slot', 'ancient',
             'main_stat', 'main_stat_value',
             'innate_stat', 'innate_stat_value',
             'substat_1', 'substat_1_value', 'substat_1_craft',
@@ -1181,6 +1183,11 @@ class FilterRuneForm(forms.Form):
         choices=RuneInstance.QUALITY_CHOICES,
         required=False,
     )
+    ancient = forms.NullBooleanField(
+        label='Ancient',
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
     assigned_to = forms.NullBooleanField(
         label='Is Assigned',
         required=False,
@@ -1226,6 +1233,7 @@ class FilterRuneForm(forms.Form):
             Div(
                 Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-12'),
                 Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-sm-12',),
+                Field('ancient', wrapper_class='form-group-sm form-group-condensed col-sm-12'),
                 css_class='row col-md-4 col-sm-4'
             ),
             Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),
@@ -1292,54 +1300,6 @@ class FilterRuneForm(forms.Form):
             self.cleaned_data['slot'] += [1, 3, 5]
 
 
-class ImportRuneForm(forms.Form):
-    json_data = forms.CharField(
-        max_length=999999,
-        required=True,
-        label='Paste Rune Data',
-        help_text=mark_safe('Data is exported from the <a href="http://swrunes.all.my/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
-        widget=forms.Textarea(),
-    )
-
-    helper = FormHelper()
-    helper.form_tag = False
-    helper.layout = Layout(
-        Alert('You can only import runes. Importing will create new runes, not update your current runes. Monsters and saved builds from the spreadsheet are ignored.', css_class='alert-warning'),
-        Field('json_data'),
-        FormActions(
-            Submit('import', 'Import'),
-        ),
-    )
-
-    def clean_json_data(self):
-        import json
-
-        data = self.cleaned_data['json_data']
-
-        try:
-            data = json.loads(data)
-        except:
-            raise forms.ValidationError("Error parsing JSON data.")
-
-        return data
-
-
-class ExportRuneForm(forms.Form):
-    json_data = forms.CharField(
-        max_length=999999,
-        label='Exported Rune Data',
-        help_text=mark_safe('You can paste this data into the <a href="http://swrunes.all.my/" target="_blank">Summoners War Rune Database and Optimizer</a>'),
-        widget=forms.Textarea(),
-    )
-
-    helper = FormHelper()
-    helper.form_show_labels = False
-    helper.layout = Layout(
-        Alert('Importing this data will into the optimizer spreadsheet <strong>OVERWRITE</strong> all runes, monsters, and saved builds currently present. It is advised to back up your existing data first.', css_class='alert-danger'),
-        Field('json_data'),
-    )
-
-
 class AddRuneCraftInstanceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddRuneCraftInstanceForm, self).__init__(*args, **kwargs)
@@ -1368,7 +1328,10 @@ class AddRuneCraftInstanceForm(ModelForm):
     class Meta:
         model = RuneCraftInstance
         fields = (
-            'type', 'rune', 'stat', 'quality'
+            'type',
+            'rune',
+            'stat',
+            'quality',
         )
 
 

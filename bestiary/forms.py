@@ -1,6 +1,5 @@
 from itertools import chain
 
-from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Div, Layout, Field, Button, Fieldset
 from dal import autocomplete
@@ -8,8 +7,8 @@ from django import forms
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from .models import Monster, LeaderSkill, ScalingStat,  SkillEffect, Skill
 from .fields import AdvancedSelectMultiple
+from .models import Monster, LeaderSkill, ScalingStat, SkillEffect
 from .widgets import EffectSelectMultipleWidget, ElementSelectMultipleWidget
 
 STATIC_URL_PREFIX = static('herders/images/')
@@ -77,7 +76,11 @@ class FilterMonsterForm(forms.Form):
         choices=Monster.TYPE_CHOICES,
         required=False,
     )
-    is_awakened = forms.NullBooleanField(label='Awakened', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    awaken_level = forms.MultipleChoiceField(
+        label='Awakening Level',
+        choices=Monster.AWAKEN_CHOICES[:3],  # Excluding 'incomplete'
+        required=False,
+    )
     fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
     leader_skill__attribute = forms.MultipleChoiceField(
         label='Leader Skill Stat',
@@ -147,7 +150,11 @@ class FilterMonsterForm(forms.Form):
                         data_slider_ticks_labels='["1", "6"]',
                         wrapper_class='form-group-sm form-group-condensed col-md-4'
                     ),
-                    Field('is_awakened', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field(
+                        'awaken_level',
+                        css_class='select2',
+                        wrapper_class='form-group-sm form-group-condensed col-md-6'
+                    ),
                     Field('fusion_food', wrapper_class='form-group-sm form-group-condensed col-md-6'),
                     Field(
                         'element',

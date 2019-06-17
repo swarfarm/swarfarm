@@ -21,6 +21,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     tags__pk = django_filters.ModelMultipleChoiceFilter(queryset=MonsterTag.objects.all(), to_field_name='pk', conjoined=True)
     monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
+    monster__awaken_level = django_filters.MultipleChoiceFilter(choices=Monster.AWAKEN_CHOICES)
     priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)
     monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
     monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
@@ -40,7 +41,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__element': ['exact'],
             'monster__archetype': ['exact'],
             'priority': ['exact'],
-            'monster__is_awakened': ['exact'],
+            'monster__awaken_level': ['exact'],
             'monster__leader_skill__attribute': ['exact'],
             'monster__leader_skill__area': ['exact'],
             'monster__skills__skill_effect__pk': ['exact'],
@@ -116,6 +117,7 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'slot': ['exact'],
             'quality': ['exact'],
             'original_quality': ['exact'],
+            'ancient': ['exact'],
             'assigned_to': ['exact'],
             'main_stat': ['exact'],
             'innate_stat': ['exact'],

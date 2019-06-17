@@ -7,6 +7,7 @@ class MonsterFilter(filters.FilterSet):
     name = filters.CharFilter(method='filter_name')
     element = filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
     archetype = filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
+    awaken_level = filters.MultipleChoiceFilter(choices=Monster.AWAKEN_CHOICES)
     leader_skill_attribute = filters.MultipleChoiceFilter(field_name='leader_skill__attribute', choices=LeaderSkill.ATTRIBUTE_CHOICES)
     leader_skill_area = filters.MultipleChoiceFilter(field_name='leader_skill__area', choices=LeaderSkill.AREA_CHOICES)
     order_by = filters.OrderingFilter(fields=[
@@ -25,7 +26,6 @@ class MonsterFilter(filters.FilterSet):
             'family_id': ['exact'],
             'base_stars': ['lte', 'gte'],
             'obtainable': ['exact'],
-            'is_awakened': ['exact'],
             'fusion_food': ['exact'],
             'homunculus': ['exact'],
         }

@@ -64,6 +64,9 @@ def _convert_rune_to_win10_json(rune):
         'extra': rune_quality_map.get(rune.original_quality, 0),
     }
 
+    if rune.ancient:
+        exported_rune['class'] += 10
+
     if rune.substat_1:
         exported_rune['sec_eff'].append([
             rune_stat_type_map[rune.substat_1],

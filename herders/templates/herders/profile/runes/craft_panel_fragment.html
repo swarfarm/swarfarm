@@ -2,20 +2,41 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="panel panel-default craft-panel">
-    <div class="panel-body condensed">
-        {% include 'herders/profile/runes/craft_image_fragment.html' with craft=craft only %}
-        <span class="craft-text rune-text-{{ craft.get_quality_display|lower }}">{{ craft }}</span>
+<div>
+    <div class="panel panel-default rune-panel">
+        <div class="panel-heading condensed">
+            {% if is_owner %}
+            <div class="btn-group pull-right">
+                <button class="btn btn-default btn-xs rune-craft-edit" data-craft-id="{{ craft.pk.hex }}">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </button>
+            <button class="btn btn-default btn-xs rune-craft-delete" data-craft-id="{{ craft.pk.hex }}">
+                <span class="glyphicon glyphicon-trash text-danger"></span>
+            </button>
+            </div>
+            {% endif %}
+            <p class="panel-title rune-text rune-text-{{ craft.get_quality_display|lower }}">{{ craft }}</p>
+        </div>
+
+        <div class="panel-body condensed">
+            {% include 'herders/profile/runes/craft_image_fragment.html' with craft=craft only %}
+
+            <ul class="top-right list-unstyled">
+                <li>
+                    <span class="label rune-label-{{ craft.get_quality_display|lower }}">
+                        {% if 'Ancient' in craft.get_type_display %}
+                            <img src="{{ img_url_prefix }}runes/ancient.png" class="inline-icon" alt="Ancient icon" />
+                        {% endif %}
+                        {{ craft.get_quality_display }}
+                    </span>
+                </li>
+                {% if craft.value %}
+                    <li>
+                        <img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" alt="Mana icon"/>
+                        {{ craft.value }}
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-    {% if is_owner %}
-    <div class="btn-group top-right">
-        <button class="btn btn-default btn-xs rune-craft-edit" data-craft-id="{{ craft.pk.hex }}">
-            <span class="glyphicon glyphicon-pencil"></span>
-        </button>
-        <button class="btn btn-default btn-xs rune-craft-delete" data-craft-id="{{ craft.pk.hex }}">
-            <span class="glyphicon glyphicon-trash text-danger"></span>
-        </button>
-    </div>
-    {% endif %}
-    {% if craft.value %}<span class="bottom-right mana-crystals"><img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" /> {{ craft.value }}</span>{% endif %}
 </div>

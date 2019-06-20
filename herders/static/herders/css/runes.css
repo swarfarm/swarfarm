@@ -20,6 +20,7 @@
     min-width: 250px;
     height: auto;
     position: relative;
+    margin-bottom: 5px;
 }
 
 .craft-panel .btn-group {
@@ -159,17 +160,32 @@ span.rune-set-bonus {
 .rune-bg.normal {
     background: url(/static/herders/images/runes/bg_normal.png) no-repeat center;
 }
+.rune-bg.immemorial.normal {
+    background: url(/static/herders/images/runes/bg_normal_immemorial.png) no-repeat center;
+}
 .rune-bg.magic {
     background: url(/static/herders/images/runes/bg_magic.png) no-repeat center;
+}
+.rune-bg.immemorial.magic {
+    background: url(/static/herders/images/runes/bg_magic_immemorial.png) no-repeat center;
 }
 .rune-bg.rare {
     background: url(/static/herders/images/runes/bg_rare.png) no-repeat center;
 }
+.rune-bg.immemorial.rare {
+    background: url(/static/herders/images/runes/bg_rare_immemorial.png) no-repeat center;
+}
 .rune-bg.hero {
     background: url(/static/herders/images/runes/bg_hero.png) no-repeat center;
 }
+.rune-bg.immemorial.hero {
+    background: url(/static/herders/images/runes/bg_hero_immemorial.png) no-repeat center;
+}
 .rune-bg.legend {
     background: url(/static/herders/images/runes/bg_legend.png) no-repeat center;
+}
+.rune-bg.immemorial.legend {
+    background: url(/static/herders/images/runes/bg_legend_immemorial.png) no-repeat center;
 }
 
 .rune-bg > .star {
@@ -259,37 +275,48 @@ span.rune-set-bonus {
     background-size: 50px 50px;
 }
 
-.rune-craft.grindstone.normal {
+.rune-craft.grindstone.normal,
+.rune-craft.ancient-grindstone.normal {
     background-image: url(/static/herders/images/runes/grindstone_common.png);
 }
-.rune-craft.grindstone.magic {
+.rune-craft.grindstone.magic,
+.rune-craft.ancient-grindstone.magic {
     background-image: url(/static/herders/images/runes/grindstone_magic.png);
 }
-.rune-craft.grindstone.rare {
+.rune-craft.grindstone.rare,
+.rune-craft.ancient-grindstone.rare {
     background-image: url(/static/herders/images/runes/grindstone_rare.png);
 }
-.rune-craft.grindstone.hero {
+.rune-craft.grindstone.hero,
+.rune-craft.ancient-grindstone.hero {
     background-image: url(/static/herders/images/runes/grindstone_epic.png);
 }
-.rune-craft.grindstone.legend {
+.rune-craft.grindstone.legend,
+.rune-craft.ancient-grindstone.legend {
     background-image: url(/static/herders/images/runes/grindstone_legend.png);
 }
-.rune-craft.enchant-gem.legend {
+.rune-craft.enchant-gem.legend,
+.rune-craft.ancient-grindstone.legend {
     background-image: url(/static/herders/images/runes/enchant_gem_legend.png);
 }
-.rune-craft.enchant-gem.normal {
+.rune-craft.enchant-gem.normal,
+.rune-craft.ancient-gem.normal {
     background-image: url(/static/herders/images/runes/enchant_gem_common.png);
 }
-.rune-craft.enchant-gem.magic {
+.rune-craft.enchant-gem.magic,
+.rune-craft.ancient-gem.magic {
     background-image: url(/static/herders/images/runes/enchant_gem_magic.png);
 }
-.rune-craft.enchant-gem.rare {
+.rune-craft.enchant-gem.rare,
+.rune-craft.ancient-gem.rare {
     background-image: url(/static/herders/images/runes/enchant_gem_rare.png);
 }
-.rune-craft.enchant-gem.hero {
+.rune-craft.enchant-gem.hero,
+.rune-craft.ancient-gem.hero {
     background-image: url(/static/herders/images/runes/enchant_gem_epic.png);
 }
-.rune-craft.enchant-gem.legend {
+.rune-craft.enchant-gem.legend,
+.rune-craft.ancient-gem.legend {
     background-image: url(/static/herders/images/runes/enchant_gem_legend.png);
 }
 .rune-craft.immemorial-gem.normal {

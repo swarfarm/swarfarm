@@ -16,6 +16,7 @@
         {% endif %}
         <p class="panel-title rune-text rune-text-{{ rune.get_quality_display|lower }}">{{ rune }}</p>
     </div>
+
     <div class="panel-body condensed">
         {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
         <ul class="list-unstyled">
@@ -53,7 +54,14 @@
         {% endif %}
         <ul class="top-right list-unstyled">
             {% if rune.original_quality %}
-                <li data-toggle="tooltip" data-container="body" title="Original rune quality when it dropped">Orig. <span class="label rune-label-{{ rune.get_original_quality_display|lower }}">{{ rune.get_original_quality_display }}</span></li>
+                <li>
+                    Orig: <span class="label rune-label-{{ rune.get_original_quality_display|lower }}">
+                        {% if rune.ancient %}
+                            <img src="{{ img_url_prefix }}runes/ancient.png" class="inline-icon" alt="Ancient icon" />
+                        {% endif %}
+                        {{ rune.get_original_quality_display }}
+                    </span>
+                </li>
             {% endif %}
             {% if rune.value %}
                 <li class="mana-crystals">

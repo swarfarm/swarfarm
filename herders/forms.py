@@ -1204,42 +1204,57 @@ class FilterRuneForm(forms.Form):
     helper.form_id = 'FilterInventoryForm'
     helper.layout = Layout(
         Div(
-            Field('type', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
-            Field('slot', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
-            Field('main_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
-            Field(
-                'stars',
-                data_provide='slider',
-                data_slider_min='1',
-                data_slider_max='6',
-                data_slider_value='[1, 6]',
-                data_slider_step='1',
-                data_slider_ticks='[1, 6]',
-                data_slider_ticks_labels='["1", "6"]',
-                wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'
-            ),
-            Field(
-                'level',
-                data_provide='slider',
-                data_slider_min='0',
-                data_slider_max='15',
-                data_slider_value='[0, 15]',
-                data_slider_step='1',
-                data_slider_ticks='[0, 15]',
-                data_slider_ticks_labels='["0", "15"]',
-                wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'
-            ),
-            Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-4 col-sm-4'),
             Div(
-                Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-sm-12'),
-                Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-sm-12',),
-                Field('ancient', wrapper_class='form-group-sm form-group-condensed col-sm-12'),
-                css_class='row col-md-4 col-sm-4'
+                Field('type', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('slot', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field(
+                    'level',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='15',
+                    data_slider_value='[0, 15]',
+                    data_slider_step='1',
+                    data_slider_ticks='[0, 15]',
+                    data_slider_ticks_labels='["0", "15"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                Field(
+                    'stars',
+                    data_provide='slider',
+                    data_slider_min='1',
+                    data_slider_max='6',
+                    data_slider_value='[1, 6]',
+                    data_slider_step='1',
+                    data_slider_ticks='[1, 6]',
+                    data_slider_ticks_labels='["1", "6"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                css_class='col-md-4 col-sm-6',
             ),
-            Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),
-            Field('original_quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),
-            Field('assigned_to', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),
-            Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed col-md-3 col-sm-3'),
+            Div(
+                Field('main_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field(
+                    'substat_logic',
+                    data_toggle='toggle',
+                    data_on='One or More',
+                    data_onstyle='primary',
+                    data_off='All',
+                    data_offstyle='primary',
+                    data_width='125px',
+                    wrapper_class='form-group-sm form-group-condensed',
+                ),
+                css_class='col-md-4 col-sm-6'
+            ),
+            Div(
+                Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('original_quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('ancient', wrapper_class='form-group-sm form-group-condensed'),
+                Field('assigned_to', wrapper_class='form-group-sm form-group-condensed'),
+                Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed'),
+                css_class='col-md-4 col-sm-6'
+            ),
             css_class='row',
         ),
         Div(

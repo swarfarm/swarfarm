@@ -9,18 +9,7 @@
     </div>
     <div class="monster-box-thumb monster-popover" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }} - {{ instance.monster.get_element_display }} {% if instance.monster.awakens_from %}{{ instance.monster.awakens_from.name }}{% endif %}">
         <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
-            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
-            <span>
-                {% for x in instance.stars|get_range %}
-                    {% if instance.monster.is_awakened %}
-                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% elif instance.monster.can_awaken %}
-                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% else %}
-                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% endif %}
-                {% endfor %}
-            </span>
+            {% include 'bestiary/monster/portrait_large.html' with monster=instance.monster only%}
             <div class="image-plus-icon">
                 {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
                     <img src="{{ img_url_prefix }}icons/fusion.png" />

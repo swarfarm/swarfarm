@@ -66,20 +66,9 @@
                             <td>Fusion Ingredient For:</td>
                             <td class="monster-awaken-materials">
                                 {% for fusion in fusion_set %}
-                                <div class="monster-image">
-                                    <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb"/>
-                                    <span>
-                                        {% for x in fusion.product.base_stars|get_range %}
-                                            {% if fusion.product.is_awakened %}
-                                                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                            {% elif fusion.product.can_awaken %}
-                                                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                            {% else %}
-                                                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                                            {% endif %}
-                                        {% endfor %}
-                                    </span>
-                                </div>
+                                    <a href="{% url 'bestiary:detail' monster_slug=fusion.product.bestiary_slug %}">
+                                        {% include 'bestiary/monster/portrait_small.html' with monster=fusion.product only %}
+                                    </a>
                                 {% endfor %}
                             </td>
                         </tr>

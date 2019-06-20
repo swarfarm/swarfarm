@@ -10,18 +10,7 @@
     </div>
     <div class="panel-body">
         <div class="monster-box">
-            <span>
-                <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}"/>
-                {% for x in instance.stars|get_range %}
-                    {% if instance.monster.is_awakened %}
-                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% elif instance.monster.can_awaken %}
-                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% else %}
-                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
-                    {% endif %}
-                {% endfor %}
-            </span>
+            {% include 'bestiary/monster/portrait_large.html' with monster=instance.monster only%}
             <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
             <div class="image-plus-icon">
                 {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}

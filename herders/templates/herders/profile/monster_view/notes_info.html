@@ -10,7 +10,7 @@
     </div>
     <div class="panel-body">
         <div class="monster-box">
-            {% include 'bestiary/monster/portrait_large.html' with monster=instance.monster only%}
+            {% include 'herders/profile/monster_portrait_large.html' with instance=instance only%}
             <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
             <div class="image-plus-icon">
                 {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}

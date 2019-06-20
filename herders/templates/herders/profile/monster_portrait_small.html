@@ -1,0 +1,7 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="monster-image">
+    <img src="{{ img_url_prefix }}monsters/{{ monster.image_filename }}" class="monster-thumb" alt="{{ monster.name }} portrait" />
+    {% include './monster_portrait_stars.html' %}
+</div>

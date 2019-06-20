@@ -8,7 +8,7 @@
     <td class="monster-image">
         <div>
             <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
-                {% include 'bestiary/monster/portrait_small.html' with monster=instance.monster only %}
+                {% include 'herders/profile/monster_portrait_small.html' with instance=instance only %}
                 <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
             </a>
         </div>

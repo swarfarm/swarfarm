@@ -9,7 +9,7 @@
     </div>
     <div class="monster-box-thumb monster-popover" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }} - {{ instance.monster.get_element_display }} {% if instance.monster.awakens_from %}{{ instance.monster.awakens_from.name }}{% endif %}">
         <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
-            {% include 'bestiary/monster/portrait_large.html' with monster=instance.monster only%}
+            {% include 'herders/profile/monster_portrait_large.html' with instance=instance only%}
             <div class="image-plus-icon">
                 {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
                     <img src="{{ img_url_prefix }}icons/fusion.png" />

@@ -327,14 +327,12 @@ battle_world_boss_start = {
                 'tvalue': {'type': 'number'},
                 'battle_key': {'type': 'number'},
                 'worldboss_battle_result': {'type': 'object'},
-                'reward_info': {'type': ['null', 'object']},
             },
             'required': [
                 'tzone',
                 'tvalue',
                 'battle_key',
                 'worldboss_battle_result',
-                'reward_info',
             ]
         }
     },
@@ -365,11 +363,13 @@ battle_world_boss_result = {
             'properties': {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
+                'reward_info': {'type': ['null', 'object']},
                 'reward': {'type': ['null', 'object']},
             },
             'required': [
                 'tzone',
                 'tvalue',
+                'reward_info',
                 'reward',
             ]
         }
@@ -452,87 +452,3 @@ battle_rift_of_worlds_raid_result = {
     },
     'required': ['request', 'response'],
 }
-
-# 'BattleRiftOfWorldsRaidStart': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#             'battle_key',
-#         ],
-#         'response': [
-#             'tzone',
-#             'tvalue',
-#             'battle_info',
-#         ]
-#     },
-#     'BattleRiftOfWorldsRaidResult': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#             'battle_key',
-#             'clear_time',
-#             'win_lose',
-#             'user_status_list',
-#         ],
-#         'response': [
-#             'tzone',
-#             'tvalue',
-#             'battle_reward_list',
-#             'reward',
-#         ]
-#     },
-
-# Old static list of accepted API params here for posterity
-# accepted_api_params = {
-#     'BattleWorldBossStart': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#         ],
-#         'response': [
-#             'tzone',
-#             'tvalue',
-#             'battle_key',
-#             'worldboss_battle_result',
-#             'reward_info',
-#         ]
-#     },
-#     'BattleWorldBossResult': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#             'battle_key',
-#         ],
-#         'response': [
-#             'reward',
-#         ]
-#     },
-#     'BattleRiftOfWorldsRaidStart': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#             'battle_key',
-#         ],
-#         'response': [
-#             'tzone',
-#             'tvalue',
-#             'battle_info',
-#         ]
-#     },
-#     'BattleRiftOfWorldsRaidResult': {
-#         'request': [
-#             'wizard_id',
-#             'command',
-#             'battle_key',
-#             'clear_time',
-#             'win_lose',
-#             'user_status_list',
-#         ],
-#         'response': [
-#             'tzone',
-#             'tvalue',
-#             'battle_reward_list',
-#             'reward',
-#         ]
-#     },
-# }

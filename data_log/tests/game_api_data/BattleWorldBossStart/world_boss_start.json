@@ -1,0 +1,94 @@
+{
+  "data": {
+    "request": {
+      "command": "BattleWorldBossStart",
+      "wizard_id": 123,
+      "session_key": "abc123",
+      "proto_ver": 11450,
+      "infocsv": "4.01.16",
+      "channel_uid": 144237507,
+      "ts_val": 1093416395,
+      "worldboss_id": 10215,
+      "region_id": 9,
+      "unit_id_list": [
+        {
+          "unit_id": 3590403834
+        },
+        {
+          "unit_id": 7455185974
+        },
+        {
+          "unit_id": 4740615627
+        },
+        {
+          "unit_id": 5935735484
+        },
+        {
+          "unit_id": 5526613153
+        },
+        {
+          "unit_id": 3082120892
+        },
+        {
+          "unit_id": 5113383656
+        },
+        {
+          "unit_id": 5231094885
+        },
+        {
+          "unit_id": 7534553594
+        },
+        {
+          "unit_id": 4196440674
+        },
+        {
+          "unit_id": 3430653540
+        },
+        {
+          "unit_id": 5091057153
+        },
+        {
+          "unit_id": 5193660579
+        },
+        {
+          "unit_id": 13631173920
+        },
+        {
+          "unit_id": 3557601263
+        },
+        {
+          "unit_id": 5595859255
+        },
+        {
+          "unit_id": 3308700842
+        },
+        {
+          "unit_id": 6918985286
+        },
+        {
+          "unit_id": 3068447167
+        },
+        {
+          "unit_id": 4885207503
+        }
+      ],
+      "retry": 0
+    },
+    "response": {
+      "command": "BattleWorldBossStart",
+      "ret_code": 0,
+      "worldboss_battle_result": {
+        "unit_count": 20,
+        "unit_avg_level": 38.05,
+        "total_battle_point": 119118,
+        "bonus_battle_point": -6447,
+        "total_damage": 1150727
+      },
+      "battle_key": 1,
+      "ts_val": 1093416390,
+      "tvalue": 1560490829,
+      "tvaluelocal": 1560433229,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

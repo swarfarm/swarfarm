@@ -970,7 +970,7 @@ class WorldBossLog(LogEntry):
 
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
     battle_key = models.BigIntegerField(null=True, blank=True)
-    grade = models.IntegerField(choices=GRADE_CHOICES)
+    grade = models.IntegerField(choices=GRADE_CHOICES, null=True, blank=True)
     damage = models.IntegerField()
     battle_points = models.IntegerField()
     bonus_battle_points = models.IntegerField()
@@ -983,14 +983,35 @@ class WorldBossLog(LogEntry):
         log_entry.parse_common_log_data(log_data)
         log_entry.level = Level.objects.get(dungeon__category=Dungeon.CATEGORY_WORLD_BOSS, floor=1)
         log_entry.battle_key = log_data['response']['battle_key']
-        log_entry.grade = log_data['response']['reward_info']['box_id']
         log_entry.damage = log_data['response']['worldboss_battle_result']['total_damage']
         log_entry.battle_points = log_data['response']['worldboss_battle_result']['total_battle_point']
         log_entry.bonus_battle_points = log_data['response']['worldboss_battle_result']['bonus_battle_point']
         log_entry.avg_monster_level = log_data['response']['worldboss_battle_result']['unit_avg_level']
         log_entry.monster_count = log_data['response']['worldboss_battle_result']['unit_count']
         log_entry.save()
+
+    @classmethod
+    def parse_world_boss_result(cls, summoner, log_data):
+        try:
+            log_entry = cls.objects.get(
+                wizard_id=log_data['request']['wizard_id'],
+                battle_key=log_data['request']['battle_key'],
+            )
+        except (cls.DoesNotExist, cls.MultipleObjectsReturned):
+            # Unable to find matching log from BattleWorldBossStart command
+            return
+
+        log_entry.grade = log_data['response']['reward_info']['box_id']
         log_entry.parse_rewards(log_data['response']['reward_info']['reward_list'])
+        log_entry.save()
+
+        # Parse runes only out of the reward crate
+        runes_reward = log_data['response']['reward']['crate'].get('runes', [])
+
+        for rune_data in runes_reward:
+            rune_drop = WorldBossLogRuneDrop.parse(**rune_data)
+            rune_drop.log = log_entry
+            rune_drop.save()
 
     def parse_rewards(self, rewards):
         for reward in rewards:
@@ -1008,25 +1029,6 @@ class WorldBossLog(LogEntry):
             if log_entry:
                 log_entry.log = self
                 log_entry.save()
-
-    @classmethod
-    def parse_world_boss_result(cls, summoner, log_data):
-        try:
-            log_entry = cls.objects.get(
-                wizard_id=log_data['request']['wizard_id'],
-                battle_key=log_data['request']['battle_key'],
-            )
-        except (cls.DoesNotExist, cls.MultipleObjectsReturned):
-            # Unable to find matching log from BattleWorldBossStart command
-            return
-
-        # Parse runes only out of the reward crate
-        runes_reward = log_data['response']['reward']['crate'].get('runes', [])
-
-        for rune_data in runes_reward:
-            rune_drop = WorldBossLogRuneDrop.parse(**rune_data)
-            rune_drop.log = log_entry
-            rune_drop.save()
 
 
 class WorldBossLogItemDrop(ItemDrop):

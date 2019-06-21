@@ -26,7 +26,7 @@
                     <div class="media-left">
                         {% if d.icon %}
                             <a href="{% url 'bestiary:dungeon_detail_no_floor' slug=d.slug %}">
-                                <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="media-object">
+                                <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="media-object dungeon-icon">
                             </a>
                         {% endif %}
                     </div>

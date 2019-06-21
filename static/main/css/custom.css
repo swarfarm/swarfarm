@@ -1125,3 +1125,7 @@ button.rune-assign-choice {
     display: block;
     padding: 0 15px;
 }
+
+.dungeon-icon {
+    height: 100px;
+}

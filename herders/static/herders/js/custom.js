@@ -170,13 +170,7 @@ function SetStars(e) {
         global: false
     }).done(function(monster) {
         //Set stars
-        if (monster.is_awakened && monster.base_stars > 1) {
-            //Awakened is -1 star to get actual base
-            $(stars_field).rating('rate', monster.base_stars - 1);
-        }
-        else {
-            $(stars_field).rating('rate', monster.base_stars);
-        }
+        $(stars_field).rating('rate', monster.natural_stars);
 
         //Set fodder
         if (monster.archetype === 'Material') {

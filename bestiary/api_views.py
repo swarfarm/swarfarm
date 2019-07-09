@@ -29,6 +29,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'element',
         'archetype',
         'base_stars',
+        'natural_stars',
         'can_awaken',
         'is_awakened',
         'base_hp',

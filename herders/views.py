@@ -462,24 +462,11 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             monster_stable = OrderedDict()
 
             if box_grouping == 'grade' or box_grouping == 'stars':
-                monster_stable['6*'] = monster_filter.qs.filter(stars=6).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['5*'] = monster_filter.qs.filter(stars=5).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['4*'] = monster_filter.qs.filter(stars=4).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['3*'] = monster_filter.qs.filter(stars=3).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['2*'] = monster_filter.qs.filter(stars=2).order_by('-level', 'monster__element', 'monster__name')
-                monster_stable['1*'] = monster_filter.qs.filter(stars=1).order_by('-level', 'monster__element', 'monster__name')
+                for x in reversed(range(6)):
+                    monster_stable[f'{x+1}*'] = monster_filter.qs.filter(stars=x+1).order_by('-level', 'monster__element', 'monster__name')
             elif box_grouping == 'natural_stars':
-                nat5 = (Q(monster__base_stars=6) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=5) & Q(monster__is_awakened=False))
-                nat4 = (Q(monster__base_stars=5) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=4) & Q(monster__is_awakened=False))
-                nat3 = (Q(monster__base_stars=4) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=3) & Q(monster__is_awakened=False))
-                nat2 = (Q(monster__base_stars=3) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=2) & Q(monster__is_awakened=False))
-                nat1 = (Q(monster__base_stars=2) & Q(monster__is_awakened=True)) | (Q(monster__base_stars=1) & Q(monster__is_awakened=False))
-
-                monster_stable['Natural 5*'] = monster_filter.qs.filter(nat5).order_by('-stars', '-level', 'monster__name')
-                monster_stable['Natural 4*'] = monster_filter.qs.filter(nat4).order_by('-stars', '-level', 'monster__name')
-                monster_stable['Natural 3*'] = monster_filter.qs.filter(nat3).order_by('-stars', '-level', 'monster__name')
-                monster_stable['Natural 2*'] = monster_filter.qs.filter(nat2).order_by('-stars', '-level', 'monster__name')
-                monster_stable['Natural 1*'] = monster_filter.qs.filter(nat1).order_by('-stars', '-level', 'monster__name')
+                for x in reversed(range(5)):
+                    monster_stable[f'Natural {x+1}*'] = monster_filter.qs.filter(monster__natural_stars=x+1).order_by('-stars', '-level', 'monster__name')
             elif box_grouping == 'level':
                 monster_stable['40'] = monster_filter.qs.filter(level=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
                 monster_stable['39-31'] = monster_filter.qs.filter(level__gt=30).filter(level__lt=40).order_by('-level', '-stars', 'monster__element', 'monster__name')
@@ -1455,11 +1442,11 @@ def monster_piece_summon(request, profile_name, instance_id):
 
     if is_owner:
         if pieces.can_summon():
-            new_monster = MonsterInstance.objects.create(owner=summoner, monster=pieces.monster, stars=pieces.monster.base_stars, level=1, fodder=False, notes='', priority=MonsterInstance.PRIORITY_DONE)
+            new_monster = MonsterInstance.objects.create(owner=summoner, monster=pieces.monster, stars=pieces.monster.natural_stars, level=1, fodder=False, notes='', priority=MonsterInstance.PRIORITY_DONE)
             messages.success(request, 'Added %s to your collection.' % new_monster)
 
             # Remove the pieces, delete if 0
-            pieces.pieces -= pieces.PIECE_REQUIREMENTS[pieces.monster.base_stars]
+            pieces.pieces -= pieces.PIECE_REQUIREMENTS[pieces.monster.natural_stars]
             pieces.save()
 
             response_data = {

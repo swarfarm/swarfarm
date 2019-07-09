@@ -689,12 +689,7 @@ class MonsterPiece(models.Model):
         return str(self.monster) + ' - ' + str(self.pieces) + ' pieces'
 
     def can_summon(self):
-        base_stars = self.monster.base_stars
-
-        if self.monster.is_awakened:
-            base_stars -= 1
-
-        return int(floor(self.pieces / self.PIECE_REQUIREMENTS[base_stars]))
+        return int(floor(self.pieces / self.PIECE_REQUIREMENTS[self.monster.natural_stars]))
 
 
 class RuneInstance(Rune):

@@ -70,6 +70,7 @@ class MonsterAdmin(admin.ModelAdmin):
             'classes': ('suit-tab', 'suit-tab-basic'),
             'fields': (
                 'base_stars',
+                'natural_stars',
                 'raw_hp',
                 'raw_attack',
                 'raw_defense',
@@ -103,8 +104,8 @@ class MonsterAdmin(admin.ModelAdmin):
         }),
     ]
 
-    list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'awakens_from', 'awakens_to')
-    list_filter = ('element', 'archetype', 'base_stars', 'is_awakened', 'can_awaken', 'homunculus', 'obtainable')
+    list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'natural_stars', 'awakens_from', 'awakens_to')
+    list_filter = ('element', 'archetype', 'base_stars', 'natural_stars', 'awaken_level', 'homunculus', 'obtainable')
     list_per_page = 100
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)

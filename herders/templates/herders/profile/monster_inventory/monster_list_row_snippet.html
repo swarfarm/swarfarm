@@ -16,11 +16,7 @@
     <td>{% if instance.custom_name %}{{ instance.custom_name }}{% else %}{{ instance.monster.name }}{% endif %}</td>
     <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>
     <td class="monster-stars-column">
-        {% if instance.monster.is_awakened %}
-            {{ instance.monster.base_stars|add:"-1" }}<span class="glyphicon glyphicon-star"></span>
-        {% else %}
-            {{ instance.monster.base_stars }}<span class="glyphicon glyphicon-star"></span>
-        {% endif %}
+        {{ instance.monster.natural_stars }}<span class="glyphicon glyphicon-star"></span>
     </td>
     <td>
         {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}

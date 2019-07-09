@@ -268,6 +268,34 @@ def parse_skill_data(preview=False):
         print('No changes were saved.')
 
 
+def _get_monster_data_by_id(master_id):
+    monster_table = _get_localvalue_tables(LocalvalueTables.MONSTERS)
+    for row in monster_table['rows']:
+        unit_master_id = json.loads(row['unit master id'])
+        if unit_master_id == master_id:
+            return row
+
+
+def _find_monster_awakens_from(master_id):
+    monster_table = _get_localvalue_tables(LocalvalueTables.MONSTERS)
+    for row in monster_table['rows']:
+        awakens_to_id = json.loads(row['awaken unit id'])
+        if awakens_to_id == master_id:
+            return row
+
+
+def _get_natural_stars(master_id):
+    monster_data = _get_monster_data_by_id(master_id)
+    awakens_from = _find_monster_awakens_from(json.loads(monster_data['unit master id']))
+
+    if awakens_from:
+        return _get_natural_stars(json.loads(awakens_from['unit master id']))
+    else:
+        # Unable to find any lesser form of the monster, return this one's base stars as natural stars.
+        base_stars = json.loads(monster_data['base class'])
+        return base_stars
+
+
 def parse_monster_data(preview=False):
     monster_table = _get_localvalue_tables(LocalvalueTables.MONSTERS)
     monster_names = get_monster_names_by_id()
@@ -354,6 +382,13 @@ def parse_monster_data(preview=False):
         if monster.base_stars != json.loads(row['base class']):
             monster.base_stars = json.loads(row['base class'])
             print('Updated {} ({}) base stars to {}'.format(monster, master_id, monster.base_stars))
+            updated = True
+
+        # Set natural stars based on lowest form of the monster's awakening chain
+        natural_stars = _get_natural_stars(master_id)
+        if monster.natural_stars != natural_stars:
+            monster.natural_stars = natural_stars
+            print('Updated {} ({}) natural stars to {}'.format(monster, master_id, monster.natural_stars))
             updated = True
 
         if monster.raw_hp != json.loads(row['base con']):
@@ -1120,7 +1155,12 @@ def _decrypt_localvalue_dat():
         return decrypt_response(f.read().strip('\0'))
 
 
+_localvalue_table_cache = {}
+
 def _get_localvalue_tables(table_id):
+    if table_id in _localvalue_table_cache:
+        return _localvalue_table_cache[table_id]
+
     tables = {}
     decrypted_localvalue = _decrypt_localvalue_dat()
 
@@ -1155,5 +1195,8 @@ def _get_localvalue_tables(table_id):
     table_rows = table_str.split('\r\n')
     table_data['header'] = table_rows[0].split('\t')
     table_data['rows'] = [{table_data['header'][col]: value for col, value in enumerate(row.split('\t'))} for row in table_rows[1:]]
+
+    # Cache results
+    _localvalue_table_cache[table_id] = table_data
 
     return table_data

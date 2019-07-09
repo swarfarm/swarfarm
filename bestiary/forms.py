@@ -61,8 +61,8 @@ class FilterMonsterForm(forms.Form):
         max_length=100,
         required=False,
     )
-    base_stars = forms.CharField(
-        label='Base Stars',
+    natural_stars = forms.CharField(
+        label='Natural Stars',
         required=False,
     )
     element = forms.MultipleChoiceField(
@@ -140,7 +140,7 @@ class FilterMonsterForm(forms.Form):
                 Div(
                     Field('name', wrapper_class='form-group-sm form-group-condensed col-md-8'),
                     Field(
-                        'base_stars',
+                        'natural_stars',
                         data_provide='slider',
                         data_slider_min='1',
                         data_slider_max='6',
@@ -257,13 +257,13 @@ class FilterMonsterForm(forms.Form):
 
         # Split the slider ranges into two min/max fields for the filters
         try:
-            [min_stars, max_stars] = self.cleaned_data['base_stars'].split(',')
+            [min_stars, max_stars] = self.cleaned_data['natural_stars'].split(',')
         except:
             min_stars = 1
             max_stars = 6
 
-        self.cleaned_data['base_stars__gte'] = int(min_stars)
-        self.cleaned_data['base_stars__lte'] = int(max_stars)
+        self.cleaned_data['natural_stars__gte'] = int(min_stars)
+        self.cleaned_data['natural_stars__lte'] = int(max_stars)
 
         try:
             [min_hits, max_hits] = self.cleaned_data['skills__hits'].split(',')

@@ -25,6 +25,7 @@ class MonsterFilter(django_filters.FilterSet):
             'element': ['exact'],
             'archetype': ['exact'],
             'base_stars': ['lte', 'gte'],
+            'natural_stars': ['lte', 'gte'],
             'obtainable': ['exact'],
             'awaken_level': ['exact'],
             'leader_skill__attribute': ['exact'],

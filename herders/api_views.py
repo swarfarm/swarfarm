@@ -150,6 +150,7 @@ class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'monster__element',
         'monster__archetype',
         'monster__base_stars',
+        'monster__natural_stars',
         'monster__can_awaken',
         'monster__is_awakened',
         'monster__base_hp',

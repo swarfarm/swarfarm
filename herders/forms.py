@@ -457,7 +457,7 @@ class FilterMonsterInstanceForm(forms.Form):
         label="Level",
         required=False,
     )
-    monster__base_stars = forms.CharField(
+    monster__natural_stars = forms.CharField(
         label="Natural Stars",
         required=False,
     )
@@ -566,7 +566,7 @@ class FilterMonsterInstanceForm(forms.Form):
                         ),
                         Div(
                             Field(
-                                'monster__base_stars',
+                                'monster__natural_stars',
                                 data_provide='slider',
                                 data_slider_min='1',
                                 data_slider_max='5',
@@ -719,13 +719,13 @@ class FilterMonsterInstanceForm(forms.Form):
         self.cleaned_data['stars__lte'] = int(max_stars)
 
         try:
-            [min_nat_stars, max_nat_stars] = self.cleaned_data['monster__base_stars'].split(',')
+            [min_nat_stars, max_nat_stars] = self.cleaned_data['monster__natural_stars'].split(',')
         except:
             min_nat_stars = 1
             max_nat_stars = 5
 
-        self.cleaned_data['monster__base_stars__gte'] = int(min_nat_stars)
-        self.cleaned_data['monster__base_stars__lte'] = int(max_nat_stars)
+        self.cleaned_data['monster__natural_stars__gte'] = int(min_nat_stars)
+        self.cleaned_data['monster__natural_stars__lte'] = int(max_nat_stars)
 
         try:
             [min_hits, max_hits] = self.cleaned_data['monster__skills__hits'].split(',')

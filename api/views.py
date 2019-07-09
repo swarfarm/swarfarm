@@ -34,7 +34,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Monster.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('name', 'element', 'archetype', 'base_stars', 'obtainable', 'is_awakened', 'com2us_id', 'family_id', 'homunculus')
+    filter_fields = ('name', 'element', 'archetype', 'base_stars', 'natural_stars', 'obtainable', 'is_awakened', 'com2us_id', 'family_id', 'homunculus')
 
     def get_serializer_class(self):
         com2us_id = self.request.GET.get('com2us_id', '')
@@ -207,12 +207,7 @@ def bestary_stat_charts(request, pk):
 
     data_series = []
 
-    if monster.awaken_level > Monster.AWAKEN_LEVEL_UNAWAKENED and monster.awakens_from and monster.base_stars >= 2:
-        base_stars = monster.awakens_from.base_stars
-    else:
-        base_stars = monster.base_stars
-
-    for grade in range(base_stars, 7):
+    for grade in range(monster.natural_stars, 7):
         data_series.append({
             'name': 'HP ' + str(grade) + '*',
             'data': [monster.actual_hp(grade, level) for level in range(1, monster.max_level_from_stars(grade) + 1)],

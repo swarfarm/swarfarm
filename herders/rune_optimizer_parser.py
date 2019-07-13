@@ -1,9 +1,9 @@
 import json
 import random
 
-from .rune_optimizer_mapping import *
-from herders.models import MonsterInstance, BuildingInstance, RuneInstance, RuneCraftInstance
 from bestiary.com2us_mapping import building_id_map
+from herders.models import MonsterInstance, BuildingInstance, RuneInstance, RuneCraftInstance
+from .rune_optimizer_mapping import *
 
 
 def export_win10(summoner):
@@ -66,6 +66,7 @@ def _convert_rune_to_win10_json(rune):
 
     if rune.ancient:
         exported_rune['class'] += 10
+        exported_rune['extra'] += 10
 
     if rune.substat_1:
         exported_rune['sec_eff'].append([

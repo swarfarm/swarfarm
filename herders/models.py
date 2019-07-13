@@ -862,7 +862,8 @@ class RuneInstance(Rune):
                 if self.substat_1_craft in RuneCraftInstance.CRAFT_GRINDSTONES:
                     max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_1_craft][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
 
-            if self.substat_1_value > max_sub_value:
+            # TODO: Remove not ancient check once ancient max substat values are found
+            if self.substat_1_value > max_sub_value and not self.ancient:
                 raise ValidationError({
                     'substat_1_value': ValidationError(
                         'Must be less than or equal to ' + str(max_sub_value) + '.',
@@ -890,7 +891,8 @@ class RuneInstance(Rune):
                 if self.substat_2_craft in RuneCraftInstance.CRAFT_GRINDSTONES:
                     max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_2_craft][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
 
-            if self.substat_2_value > max_sub_value:
+            # TODO: Remove not ancient check once ancient max substat values are found
+            if self.substat_2_value > max_sub_value and not self.ancient:
                 raise ValidationError({
                     'substat_2_value': ValidationError(
                         'Must be less than or equal to ' + str(max_sub_value) + '.',
@@ -919,7 +921,8 @@ class RuneInstance(Rune):
                 if self.substat_3_craft in RuneCraftInstance.CRAFT_GRINDSTONES:
                     max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_3_craft][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
 
-            if self.substat_3_value > max_sub_value:
+            # TODO: Remove not ancient check once ancient max substat values are found
+            if self.substat_3_value > max_sub_value and not self.ancient:
                 raise ValidationError({
                     'substat_3_value': ValidationError(
                         'Must be less than ' + str(max_sub_value) + '.',
@@ -947,7 +950,8 @@ class RuneInstance(Rune):
                 if self.substat_4_craft == RuneCraftInstance.CRAFT_GRINDSTONES:
                     max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_4_craft][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
 
-            if self.substat_4_value > max_sub_value:
+            # TODO: Remove not ancient check once ancient max substat values are found
+            if self.substat_4_value > max_sub_value and not self.ancient:
                 raise ValidationError({
                     'substat_4_value': ValidationError(
                         'Must be less than or equal to ' + str(max_sub_value) + '.',

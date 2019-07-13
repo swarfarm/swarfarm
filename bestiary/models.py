@@ -1685,16 +1685,16 @@ class Rune(models.Model, RuneObjectBase):
                         code='invalid_rune_innate_stat_value'
                     )
                 })
+            max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
 
-            # Temporarily disabled due to unknown values of Ancient runes
-            # max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
-            # if self.innate_stat_value > max_sub_value:
-            #     raise ValidationError({
-            #         'innate_stat_value': ValidationError(
-            #             'Must be less than or equal to ' + str(max_sub_value) + '.',
-            #             code='invalid_rune_innate_stat_value'
-            #         )
-            #     })
+            # TODO: Remove not ancient check once ancient max substat values are found
+            if self.innate_stat_value > max_sub_value and not self.ancient:
+                raise ValidationError({
+                    'innate_stat_value': ValidationError(
+                        'Must be less than or equal to ' + str(max_sub_value) + '.',
+                        code='invalid_rune_innate_stat_value'
+                    )
+                })
         else:
             self.innate_stat_value = None
 
@@ -1707,15 +1707,15 @@ class Rune(models.Model, RuneObjectBase):
                     )
                 })
 
-            # Temporarily disabled due to unknown values of Ancient runes
-            # max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
-            # if value > max_sub_value:
-            #     raise ValidationError({
-            #         f'substat_values': ValidationError(
-            #             'Must be less than or equal to ' + str(max_sub_value) + '.',
-            #             code=f'invalid_rune_substat_value]'
-            #         )
-            #     })
+            max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
+            # TODO: Remove not ancient check once ancient max substat values are found
+            if value > max_sub_value and not self.ancient:
+                raise ValidationError({
+                    f'substat_values': ValidationError(
+                        'Must be less than or equal to ' + str(max_sub_value) + '.',
+                        code=f'invalid_rune_substat_value]'
+                    )
+                })
 
     def save(self, *args, **kwargs):
         self.update_fields()

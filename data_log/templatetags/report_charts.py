@@ -1,6 +1,8 @@
-from django import template
-from copy import deepcopy
 import json
+from copy import deepcopy
+
+from django import template
+
 from bestiary.models import RuneObjectBase
 from data_log.reports import chart_templates
 
@@ -64,6 +66,14 @@ QUALITY_COLORS = {
     _quality_choices[RuneObjectBase.QUALITY_LEGEND]: '#ef9f24',
 }
 
+QUALITY_SORT_ORDER = {
+    v: k for k, v in _quality_choices.items()
+}
+
+RUNE_SET_SORT_ORDER = {
+    v: k for k, v in dict(RuneObjectBase.TYPE_CHOICES).items()
+}
+
 
 def _color_rune_series(series_data):
     for series in series_data:
@@ -78,6 +88,42 @@ _series_colors = {
 }
 
 
+# All _sort_by_x functions assume the input data is a list of tuples which are key:value pairs
+def _sort_by_key(data):
+    return sorted(data, key=lambda x: x[0])
+
+
+def _sort_by_value(data):
+    return sorted(data, key=lambda x: x[1])
+
+
+def _sort_by_rune_set(data):
+    # Assumes keys are rune set strings
+    return sorted(data, key=lambda x: RUNE_SET_SORT_ORDER[x[0]])
+
+
+def _sort_by_quality(data):
+    # Assumes keys are quality strings
+    return sorted(data, key=lambda x: QUALITY_SORT_ORDER[x[0]])
+
+
+_sort_methods = {
+    'value': _sort_by_value,
+    'key': _sort_by_key,
+    'rune': _sort_by_rune_set,
+    'quality': _sort_by_quality,
+}
+
+
+def _sort_data(data, by='value', reverse=False):
+    sorted_data = _sort_methods[by](data)
+
+    if reverse:
+        return list(reversed(sorted_data))
+
+    return sorted_data
+
+
 def color_series(chart_data, color_type):
     if color_type in _series_colors:
         chart_data['series'] = _series_colors[color_type](chart_data['series'])
@@ -86,7 +132,10 @@ def color_series(chart_data, color_type):
 
 
 def pie(**kwargs):
-    data = kwargs.get('data')
+    data = list(kwargs.get('data').items())
+    if 'sorted' in kwargs:
+        data = _sort_data(data, by=kwargs.get('sorted'), reverse=kwargs.get('reverse'))
+
     chart_data = _common_chart_attributes(chart_templates.pie, **kwargs)
     chart_data['series'].append({
         'name': '',
@@ -95,7 +144,7 @@ def pie(**kwargs):
             {
                 'name': k,
                 'y': v,
-            } for k, v in data.items()
+            } for k, v in data
         ],
     })
 
@@ -103,7 +152,10 @@ def pie(**kwargs):
 
 
 def bar(**kwargs):
-    data = kwargs.get('data')
+    data = list(kwargs.get('data').items())
+    if 'sorted' in kwargs:
+        data = _sort_data(data, by=kwargs.get('sorted'), reverse=kwargs.get('reverse'))
+
     chart_data = _common_chart_attributes(chart_templates.column, **kwargs)
     if kwargs.get('percentage'):
         total = float(kwargs.get('total', 1)) / 100
@@ -113,10 +165,11 @@ def bar(**kwargs):
     chart_data['plotOptions']['column']['stacking'] = kwargs.get('stacking')
     chart_data['plotOptions']['column']['groupPadding'] = 0
     chart_data['plotOptions']['column']['pointPadding'] = 0.05
-    chart_data['xAxis']['categories'] = kwargs.get('categories', [k for k in data.keys()])
+
+    chart_data['xAxis']['categories'] = kwargs.get('categories', [v[0] for v in data])
     chart_data['series'] = [{
         'name': 'Main Stats',
-        'data': [float(v) / total for v in data.values()],
+        'data': [float(v[1]) / total for v in data],
     }]
 
     chart_data = color_series(chart_data, kwargs.get('colors'))
@@ -143,6 +196,10 @@ def histogram(**kwargs):
                 series[k] = []
 
             series[k] += [v]
+    series = series.items()
+
+    if 'sorted' in kwargs:
+        series = _sort_data(series, by=kwargs.get('sorted'), reverse=kwargs.get('reverse'))
 
     chart_data['plotOptions']['column']['stacking'] = 'normal'
     chart_data['plotOptions']['column']['groupPadding'] = 0
@@ -151,7 +208,7 @@ def histogram(**kwargs):
     chart_data['series'] = [{
         'name': k,
         'data': v,
-    } for k, v in series.items()]
+    } for k, v in series]
 
     chart_data = color_series(chart_data, kwargs.get('colors'))
 

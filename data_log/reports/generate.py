@@ -41,7 +41,7 @@ def get_report_summary(drops, total_log_count, **kwargs):
             chart_qs = qs.values(name=F('item__name')).annotate(count=Count('pk')).filter(count__gt=0).order_by('-count')
 
             if not kwargs.get('include_currency'):
-                chart_qs = qs.exclude(item__category=GameItem.CATEGORY_CURRENCY)
+                chart_qs = chart_qs.exclude(item__category=GameItem.CATEGORY_CURRENCY)
 
             chart_data = list(chart_qs)
             table_data = list(
@@ -404,7 +404,29 @@ def get_rune_craft_report(qs, total_log_count):
 
 
 def get_secret_dungeon_report(qs, total_log_count):
-    return "secret dungeon report"
+    if qs.count() == 0:
+        return None
+
+    results = {}
+
+    # By unique monster
+    results['monsters'] = {
+        'type': 'occurrences',
+        'total': qs.count(),
+        'data': transform_to_dict(
+            list(
+                qs.prefetch_related(
+                    'level__dungeon__secretdungeon__monster'
+                ).values(
+                    monster=F('level__dungeon__secretdungeon__monster__name'),
+                ).annotate(
+                    count=Count('pk')
+                )
+            )
+        ),
+    }
+
+    return results
 
 
 DROP_TYPES = {

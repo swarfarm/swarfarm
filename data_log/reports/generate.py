@@ -103,12 +103,17 @@ def get_report_summary(drops, total_log_count, **kwargs):
                     list(
                         qs.values(
                             name=F('monster__name'),
+                            slug=F('monster__bestiary_slug'),
                             icon=F('monster__image_filename'),
                             element=F('monster__element'),
+                            can_awaken=F('monster__can_awaken'),
+                            is_awakened=F('monster__is_awakened'),
+                            stars=F('monster__base_stars'),
                             count=Count('pk'),
                             min=Min('quantity'),
                             max=Max('quantity'),
                             avg=Avg('quantity'),
+                            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
                             qty_per_100=Cast(Sum('quantity'), FloatField()) / total_log_count * 100,
                         )
                     ),
@@ -142,10 +147,16 @@ def get_report_summary(drops, total_log_count, **kwargs):
                     list(
                         qs.values(
                             name=F('level__dungeon__secretdungeon__monster__name'),
-                            element=F('level__dungeon__secretdungeon__monster__element'),
+                            slug=F('level__dungeon__secretdungeon__monster__bestiary_slug'),
                             icon=F('level__dungeon__secretdungeon__monster__image_filename'),
+                            element=F('level__dungeon__secretdungeon__monster__element'),
+                            can_awaken=F('level__dungeon__secretdungeon__monster__can_awaken'),
+                            is_awakened=F('level__dungeon__secretdungeon__monster__is_awakened'),
+                            stars=F('level__dungeon__secretdungeon__monster__base_stars'),
                         ).annotate(
                             count=Count('pk'),
+                            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
+                            qty_per_100=Cast(Sum('pk'), FloatField()) / total_log_count * 100,
                         )
                     ),
                     {'element': Monster.ELEMENT_CHOICES}
@@ -248,10 +259,6 @@ def get_monster_report(qs, total_log_count):
     }
 
     return results
-
-
-def get_monster_piece_report(qs, total_log_count):
-    return "monster piece report"
 
 
 def get_rune_report(qs, total_log_count):
@@ -403,39 +410,13 @@ def get_rune_craft_report(qs, total_log_count):
     }
 
 
-def get_secret_dungeon_report(qs, total_log_count):
-    if qs.count() == 0:
-        return None
-
-    results = {}
-
-    # By unique monster
-    results['monsters'] = {
-        'type': 'occurrences',
-        'total': qs.count(),
-        'data': transform_to_dict(
-            list(
-                qs.prefetch_related(
-                    'level__dungeon__secretdungeon__monster'
-                ).values(
-                    monster=F('level__dungeon__secretdungeon__monster__name'),
-                ).annotate(
-                    count=Count('pk')
-                )
-            )
-        ),
-    }
-
-    return results
-
-
 DROP_TYPES = {
     models.ItemDrop.RELATED_NAME: get_item_report,
     models.MonsterDrop.RELATED_NAME: get_monster_report,
-    models.MonsterPieceDrop.RELATED_NAME: get_monster_piece_report,
+    models.MonsterPieceDrop.RELATED_NAME: None,
     models.RuneDrop.RELATED_NAME: get_rune_report,
     models.RuneCraftDrop.RELATED_NAME: get_rune_craft_report,
-    models.DungeonSecretDungeonDrop.RELATED_NAME: get_secret_dungeon_report,
+    models.DungeonSecretDungeonDrop.RELATED_NAME: None,
 }
 
 
@@ -459,7 +440,8 @@ def level_drop_report(qs, **kwargs):
     report_data['summary'] = get_report_summary(drops, qs.count(), **kwargs)
 
     for key, qs in drops.items():
-        report_data[key] = DROP_TYPES[key](qs, qs.count())
+        if DROP_TYPES[key]:
+            report_data[key] = DROP_TYPES[key](qs, qs.count())
 
     return report_data
 

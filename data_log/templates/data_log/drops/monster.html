@@ -7,7 +7,7 @@
 
     </div>
     <div class="media-body">
-        <h4 class="media-heading">{{ monster.element }} {{ monster.name }}</h4>
+        <h4 class="media-heading">{% if not monster.is_awakened %}{{ monster.element }}{% endif %} {{ monster.name }}</h4>
         <ul class="list list-unstyled">
             <li>Chance: {{ monster.drop_chance|floatformat }}%</li>
         </ul>

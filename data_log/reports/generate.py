@@ -85,8 +85,35 @@ def get_report_summary(drops, total_log_count, **kwargs):
                 ),
                 {'element': Monster.ELEMENT_CHOICES}
             )
+        elif drop_type == models.RuneCraftDrop.RELATED_NAME:
+            # Rune crafts are counted by type
+            chart_data = list(
+                replace_value_with_choice(
+                    qs.values(
+                        name=F('type'),
+                    ).annotate(
+                        count=Count('pk'),
+                    ).order_by('-count'),
+                    {'name': models.RuneCraftDrop.CRAFT_CHOICES}
+                )
+            )
+
+            table_data = {
+                'sets': replace_value_with_choice(
+                    list(qs.values('rune').annotate(count=Count('pk')).order_by('rune')),
+                    {'rune': Rune.TYPE_CHOICES}
+                ),
+                'type': replace_value_with_choice(
+                    list(qs.values('type').annotate(count=Count('pk')).order_by('type')),
+                    {'type': Rune.TYPE_CHOICES}
+                ),
+                'quality': replace_value_with_choice(
+                    list(qs.values('quality').annotate(count=Count('pk')).order_by('quality')),
+                    {'quality': Rune.QUALITY_CHOICES}
+                ),
+            }
         else:
-            # Chart can is name, count only
+            # Chart is name, count only
             item_name = ' '.join([s.capitalize() for s in drop_type.split('_')]).rstrip('s')
             count = qs.aggregate(count=Count('pk'))['count']
             if count > 0:
@@ -362,7 +389,7 @@ def get_rune_report(qs, total_log_count):
     }
 
 
-def get_rune_craft_report(qs, total_log_count):
+def _rune_craft_report_data(qs):
     if qs.count() == 0:
         return None
 
@@ -407,6 +434,13 @@ def get_rune_craft_report(qs, total_log_count):
                 )
             )
         },
+    }
+
+
+def get_rune_craft_report(qs, total_log_count):
+    return {
+        'grindstone': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_GRINDSTONES)),
+        'gem': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_ENCHANT_GEMS)),
     }
 
 

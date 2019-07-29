@@ -52,7 +52,7 @@ def _common_chart_attributes(chart_template, **kwargs):
             'format': '{value}%'
         }
         if chart_data['chart']['type'] == 'column':
-            chart_data['tooltip']['pointFormat'] = '<tr><td style="color:{series.color};padding:0">{series.name}: </td><td style="padding:0"><b>{point.y}%</b></td></tr>'
+            chart_data['tooltip']['pointFormat'] = '<tr><td style="color:{series.color};padding:0">{series.name}: </td><td style="padding:0"><b>{point.y:.1f}%</b></td></tr>'
 
     return chart_data
 

@@ -76,7 +76,7 @@ def get_report_summary(drops, total_log_count, **kwargs):
                         element=F('monster__element'),
                         can_awaken=F('monster__can_awaken'),
                         is_awakened=F('monster__is_awakened'),
-                        stars=F('monster__base_stars'),
+                        stars=F('grade'),
                     ).annotate(
                         count=Count('pk'),
                         drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,

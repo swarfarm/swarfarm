@@ -71,6 +71,10 @@ def _force_eval_ltr(expr):
             if 'CEIL' in expr_string:
                 expr_string = expr_string.replace('CEIL', '')
 
+            # Hack for missing multiplication sign for ALIVE_RATE
+            if 'ALIVE_RATE' in expr_string and not '*ALIVE_RATE' in expr_string:
+                expr_string = expr_string.replace('ALIVE_RATE', '*ALIVE_RATE')
+
             # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
             expr_string = expr_string.replace('*1.0', '')
 
@@ -753,6 +757,7 @@ def crop_monster_images():
         im = Image.open(im_path)
 
         if im.size == (102, 102):
+            print(f'Cropping {im_path}')
             crop = im.crop((1, 1, 101, 101))
             im.close()
             crop.save(im_path)
@@ -1156,6 +1161,7 @@ def _decrypt_localvalue_dat():
 
 
 _localvalue_table_cache = {}
+
 
 def _get_localvalue_tables(table_id):
     if table_id in _localvalue_table_cache:

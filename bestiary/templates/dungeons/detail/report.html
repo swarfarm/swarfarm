@@ -1,7 +1,9 @@
 {% extends 'dungeons/detail/base.html' %}
+{% load cache %}
 
 {% block report %}
     {% if report %}
+    {% cache 86400 dungeon_report dungeon.pk level.difficulty level.floor %}
         <ul class="list-unstyled">
             <li>Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
             <li>{{ report.log_count }} records</li>
@@ -9,6 +11,8 @@
         </ul>
 
         {% include 'dungeons/detail/report_snippet.html' with report=report.report only %}
+
+    {% endcache %}
     {% else %}
         <p>No report generated for this level yet :(</p>
     {% endif %}

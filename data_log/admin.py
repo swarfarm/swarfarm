@@ -255,3 +255,6 @@ class ReportAdmin(admin.ModelAdmin):
 @admin.register(models.LevelReport)
 class LevelReportAdmin(admin.ModelAdmin):
     readonly_fields = ('generated_on', 'level')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('level', 'level__dungeon')

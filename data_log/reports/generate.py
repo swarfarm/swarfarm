@@ -38,6 +38,9 @@ def get_report_summary(drops, total_log_count, **kwargs):
     # Table data: dict (by drop type) of lists of items which drop, with stats. 'count' is only required stat.
     for drop_type, qs in drops.items():
         if drop_type == models.ItemDrop.RELATED_NAME:
+            if kwargs.get('exclude_social_points'):
+                qs = qs.exclude(item__category=GameItem.CATEGORY_CURRENCY, item__name='Social Point')
+
             chart_qs = qs.values(name=F('item__name')).annotate(count=Count('pk')).filter(count__gt=0).order_by('-count')
 
             if not kwargs.get('include_currency'):
@@ -584,7 +587,7 @@ def generate_dungeon_log_reports(**kwargs):
 
 
 def generate_rift_raid_reports():
-    _generate_level_reports(models.RiftRaidLog, include_currency=True)
+    _generate_level_reports(models.RiftRaidLog, include_currency=True, exclude_social_points=True)
 
 
 def _generate_by_grade_reports(model):

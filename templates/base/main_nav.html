@@ -32,13 +32,11 @@
                     </a>
                 </li>
 
-                {% comment %}
                 <li {% if view == 'dungeons' %}class="active"{% endif %}>
                     <a href="{% url 'bestiary:dungeons' %}">
-                        <img src="{% static 'herders/images/icons/battle.png' %}" /> Dungeons
+                        <img src="{% static 'herders/images/icons/battle.png' %}" alt="dungeon icon" /> Dungeons
                     </a>
                 </li>
-                {% endcomment %}
 
                 <li>
                     <div style="max-width:300px">{% crispy bestiary_quick_search %}</div>

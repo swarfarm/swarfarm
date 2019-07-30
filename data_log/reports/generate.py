@@ -11,6 +11,8 @@ from bestiary.models import Monster, Rune, Level, GameItem
 from data_log import models
 from data_log.util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice, transform_to_dict
 
+MINIMUM_THRESHOLD = 0.005  # Any drops that occur less than this percentage of time are filtered out
+
 
 def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=2500):
     if qs.filter(timestamp__gte=timezone.now() - report_timespan).count() < minimum_count:
@@ -34,14 +36,19 @@ def get_report_summary(drops, total_log_count, **kwargs):
         'chart': [],
     }
 
+    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
+
     # Chart data: list of {'drop': <string>, 'count': <int>}
     # Table data: dict (by drop type) of lists of items which drop, with stats. 'count' is only required stat.
     for drop_type, qs in drops.items():
+        # Remove very low frequency occurences from dataset
+        qs = qs.annotate(count=Count('pk')).filter(count__gt=min_count)
+
         if drop_type == models.ItemDrop.RELATED_NAME:
             if kwargs.get('exclude_social_points'):
                 qs = qs.exclude(item__category=GameItem.CATEGORY_CURRENCY, item__name='Social Point')
 
-            chart_qs = qs.values(name=F('item__name')).annotate(count=Count('pk')).filter(count__gt=0).order_by('-count')
+            chart_qs = qs.values(name=F('item__name')).annotate(count=Count('pk')).order_by('-count')
 
             if not kwargs.get('include_currency'):
                 chart_qs = chart_qs.exclude(item__category=GameItem.CATEGORY_CURRENCY)
@@ -58,7 +65,7 @@ def get_report_summary(drops, total_log_count, **kwargs):
                     avg=Avg('quantity'),
                     drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
                     qty_per_100=Cast(Sum('quantity'), FloatField()) / total_log_count * 100,
-                ).filter(count__gt=0).order_by('item__category', '-count')
+                ).order_by('item__category', '-count')
             )
         elif drop_type == models.MonsterDrop.RELATED_NAME:
             # Monster drops in chart are counted by stars
@@ -207,6 +214,8 @@ def get_item_report(qs, total_log_count):
     if qs.count() == 0:
         return None
 
+    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
+
     results = list(
         qs.values(
             'item',
@@ -219,7 +228,7 @@ def get_item_report(qs, total_log_count):
             avg=Avg('quantity'),
             drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
             qty_per_100=Cast(Sum('quantity'), FloatField()) / total_log_count * 100,
-        ).order_by('-count')
+        ).filter(count__gt=min_count).order_by('-count')
     )
 
     return results
@@ -228,6 +237,8 @@ def get_item_report(qs, total_log_count):
 def get_monster_report(qs, total_log_count):
     if qs.count() == 0:
         return None
+
+    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
 
     results = {}
 
@@ -241,7 +252,7 @@ def get_monster_report(qs, total_log_count):
             element=F('monster__element'),
             com2us_id=F('monster__com2us_id'),
             icon=F('monster__image_filename')
-        ).annotate(count=Count('pk')))
+        ).annotate(count=Count('pk')).filter(count__gt=min_count))
     }
 
     # By family
@@ -251,7 +262,7 @@ def get_monster_report(qs, total_log_count):
         'data': list(qs.values(
             family_id=F('monster__family_id'),
             name=F('monster__name'),
-        ).annotate(count=Count('pk')))
+        ).annotate(count=Count('pk')).filter(count__gt=min_count))
     }
 
     # By nat stars
@@ -262,7 +273,7 @@ def get_monster_report(qs, total_log_count):
             count=Count('monster__base_stars'),
             drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
             qty_per_100=Cast(Func(Count('pk'), 0, function='nullif'), FloatField()) / total_log_count * 100,
-        )
+        ).filter(count__gt=min_count)
     )
 
     results['nat_stars'] = {
@@ -276,7 +287,7 @@ def get_monster_report(qs, total_log_count):
         'type': 'occurrences',
         'total': qs.count(),
         'data': replace_value_with_choice(
-            list(qs.values(element=F('monster__element')).annotate(count=Count('pk'))),
+            list(qs.values(element=F('monster__element')).annotate(count=Count('pk')).filter(count__gt=min_count)),
             {'element': Monster.ELEMENT_CHOICES}
         )
     }
@@ -285,7 +296,7 @@ def get_monster_report(qs, total_log_count):
     results['awakened'] = {
         'type': 'occurrences',
         'total': qs.count(),
-        'data': list(qs.values(awakened=F('monster__is_awakened')).annotate(count=Count('pk'))),
+        'data': list(qs.values(awakened=F('monster__is_awakened')).annotate(count=Count('pk')).filter(count__gt=min_count)),
     }
 
     return results
@@ -294,6 +305,8 @@ def get_monster_report(qs, total_log_count):
 def get_rune_report(qs, total_log_count):
     if qs.count() == 0:
         return None
+
+    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
 
     # Substat distribution
     # Unable to use database aggregation on an ArrayField without ORM gymnastics, so post-process data in python
@@ -317,7 +330,7 @@ def get_rune_report(qs, total_log_count):
                         grade=Concat(Cast('stars', CharField()), Value('⭐'))
                     ).annotate(
                         count=Count('pk')
-                    ).order_by('-count')
+                    ).filter(count__gt=min_count).order_by('-count')
                 )
             ),
         },
@@ -326,7 +339,7 @@ def get_rune_report(qs, total_log_count):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('type').annotate(count=Count('pk')).order_by('-count')),
+                    list(qs.values('type').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
                     {'type': qs.model.TYPE_CHOICES}
                 )
             ),
@@ -336,7 +349,7 @@ def get_rune_report(qs, total_log_count):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('quality').annotate(count=Count('pk')).order_by('-count')),
+                    list(qs.values('quality').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
                     {'quality': qs.model.QUALITY_CHOICES}
                 )
             ),
@@ -344,14 +357,14 @@ def get_rune_report(qs, total_log_count):
         'slot': {
             'type': 'occurrences',
             'total': qs.count(),
-            'data': transform_to_dict(list(qs.values('slot').annotate(count=Count('pk')).order_by('-count'))),
+            'data': transform_to_dict(list(qs.values('slot').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count'))),
         },
         'main_stat': {
             'type': 'occurrences',
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('main_stat').annotate(count=Count('main_stat')).order_by('main_stat')),
+                    list(qs.values('main_stat').annotate(count=Count('main_stat')).filter(count__gt=min_count).order_by('main_stat')),
                     {'main_stat': qs.model.STAT_CHOICES}
                 )
             )
@@ -361,7 +374,7 @@ def get_rune_report(qs, total_log_count):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('innate_stat').annotate(count=Count('pk')).order_by('innate_stat')),
+                    list(qs.values('innate_stat').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('innate_stat')),
                     {'innate_stat': qs.model.STAT_CHOICES}
                 )
             )
@@ -392,9 +405,11 @@ def get_rune_report(qs, total_log_count):
     }
 
 
-def _rune_craft_report_data(qs):
+def _rune_craft_report_data(qs, total_log_count):
     if qs.count() == 0:
         return None
+
+    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
 
     return {
         'type': {
@@ -402,7 +417,7 @@ def _rune_craft_report_data(qs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('type').annotate(count=Count('pk')).order_by('-count')),
+                    list(qs.values('type').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
                     {'type': qs.model.CRAFT_CHOICES}
                 )
             ),
@@ -412,7 +427,7 @@ def _rune_craft_report_data(qs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('rune').annotate(count=Count('pk')).order_by('-count')),
+                    list(qs.values('rune').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
                     {'rune': qs.model.TYPE_CHOICES}
                 )
             ),
@@ -422,7 +437,7 @@ def _rune_craft_report_data(qs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('quality').annotate(count=Count('pk')).order_by('-count')),
+                    list(qs.values('quality').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
                     {'quality': qs.model.QUALITY_CHOICES}
                 )
             ),
@@ -432,7 +447,7 @@ def _rune_craft_report_data(qs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('stat').annotate(count=Count('stat')).order_by('stat')),
+                    list(qs.values('stat').annotate(count=Count('stat')).filter(count__gt=min_count).order_by('stat')),
                     {'stat': qs.model.STAT_CHOICES}
                 )
             )
@@ -442,8 +457,8 @@ def _rune_craft_report_data(qs):
 
 def get_rune_craft_report(qs, total_log_count):
     return {
-        'grindstone': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_GRINDSTONES)),
-        'gem': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_ENCHANT_GEMS)),
+        'grindstone': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_GRINDSTONES), total_log_count),
+        'gem': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_ENCHANT_GEMS), total_log_count),
     }
 
 

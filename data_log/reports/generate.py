@@ -369,6 +369,38 @@ def get_rune_report(qs, total_log_count):
                 )
             )
         },
+        'slot_2_main_stat': {
+            'type': 'occurrences',
+            'total': qs.filter(slot=2).count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.filter(slot=2).values('main_stat').annotate(count=Count('main_stat')).filter(count__gt=min_count).order_by('main_stat')),
+                    {'main_stat': qs.model.STAT_CHOICES}
+                )
+            )
+        },
+        'slot_4_main_stat': {
+            'type': 'occurrences',
+            'total': qs.filter(slot=4).count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.filter(slot=4).values('main_stat').annotate(count=Count('main_stat')).filter(
+                        count__gt=min_count).order_by('main_stat')),
+                    {'main_stat': qs.model.STAT_CHOICES}
+                )
+            )
+        },
+        'slot_6_main_stat': {
+            'type': 'occurrences',
+            'total': qs.filter(slot=6).count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.filter(slot=6).values('main_stat').annotate(count=Count('main_stat')).filter(
+                        count__gt=min_count).order_by('main_stat')),
+                    {'main_stat': qs.model.STAT_CHOICES}
+                )
+            )
+        },
         'innate_stat': {
             'type': 'occurrences',
             'total': qs.count(),

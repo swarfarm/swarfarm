@@ -42,7 +42,7 @@
         <div class="col-md-6 col-lg-4">
             <div
                 class="dungeon-chart"
-                data-chart="{% chart runes.main_stat title="By Main Stat" percentage=True sorted='value' reverse=True %}"
+                data-chart="{% chart runes.slot_2_main_stat title="Slot 2 Main Stat" percentage=True sorted='value' reverse=True %}"
                 style="height: 300px"
             ></div>
         </div>
@@ -50,12 +50,28 @@
         <div class="col-md-6 col-lg-4">
             <div
                 class="dungeon-chart"
-                data-chart="{% chart runes.innate_stat title="By Innate Stat" percentage=True sorted='value' reverse=True %}"
+                data-chart="{% chart runes.slot_4_main_stat title="Slot 4 Main Stat" percentage=True sorted='value' reverse=True %}"
                 style="height: 300px"
             ></div>
         </div>
 
         <div class="col-md-6 col-lg-4">
+            <div
+                class="dungeon-chart"
+                data-chart="{% chart runes.slot_6_main_stat title="Slot 6 Main Stat" percentage=True sorted='value' reverse=True %}"
+                style="height: 300px"
+            ></div>
+        </div>
+
+        <div class="col-md-6 col-lg-6">
+            <div
+                class="dungeon-chart"
+                data-chart="{% chart runes.innate_stat title="By Innate Stat" percentage=True sorted='value' reverse=True %}"
+                style="height: 300px"
+            ></div>
+        </div>
+
+        <div class="col-md-6 col-lg-6">
             <div
                 class="dungeon-chart"
                 data-chart="{% chart runes.substats title="By Substats" percentage=True sorted='value' reverse=True %}"

@@ -157,7 +157,11 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
     levels = dung.level_set.all()
 
     if difficulty:
-        difficulty_id = {v.lower(): k for k, v in dict(Level.DIFFICULTY_CHOICES).items()}[difficulty]
+        difficulty_id = {v.lower(): k for k, v in dict(Level.DIFFICULTY_CHOICES).items()}.get(difficulty)
+
+        if difficulty_id is None:
+            raise Http404()
+
         levels = levels.filter(difficulty=difficulty_id)
 
     if floor:

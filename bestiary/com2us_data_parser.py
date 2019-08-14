@@ -838,10 +838,7 @@ def parse_scenarios():
 
     for row in scenario_table['rows']:
         dungeon_id = int(row['region id'])
-        name = scenario_names[dungeon_id]
-
-        if name.strip() == '':
-            name = 'UNKNOWN'
+        name = scenario_names.get(dungeon_id, 'UNKNOWN')
 
         # Update (or create) the dungeon this scenario level will be assigned to
         dungeon, created = Dungeon.objects.update_or_create(

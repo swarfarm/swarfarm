@@ -10,6 +10,8 @@
 {% endblock %}
 
 {% block profile %}
+    {% block filter_form %}
+    {% endblock %}
     <div class="panel panel-default">
         <div class="panel-heading">
             <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#custom_timespan_modal">Set Time Range</button>
@@ -96,6 +98,15 @@
         });
         $("#id_end_time").on("dp.change", function (e) {
             $('#id_start_time').data("DateTimePicker").maxDate(e.date);
+        });
+        $('#id_timestamp__gte').datetimepicker(datetimeopts);
+        $('#id_timestamp__lte').datetimepicker(datetimeopts);
+
+        $("#id_timestamp__gte").on("dp.change", function (e) {
+            $('#id_timestamp__lte').data("DateTimePicker").minDate(e.date);
+        });
+        $("#id_timestamp__lte").on("dp.change", function (e) {
+            $('#id_timestamp__gte').data("DateTimePicker").maxDate(e.date);
         });
     </script>
 {% endblock %}

@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'graphql', csrf_exempt(GraphQLView.as_view(graphiql=True)) if settings.DEBUG else GraphQLView.as_view()),
     url(r'^autocomplete/', include([
         url(r'^bestiary/$', BestiaryAutocomplete.as_view(), name='bestiary-monster-autocomplete'),
+        url(r'^dungeon/$', DungeonAutocomplete.as_view(), name='bestiary-dungeon-autocomplete'),
         url(r'^quick-search/$', QuickSearchAutocomplete.as_view(), name='bestiary-quicksearch-autocomplete'),
         url(r'^monster-tag/$', MonsterTagAutocomplete.as_view(), name='monster-tag-autocomplete'),
         url(r'^monster-instance/$', MonsterInstanceAutocomplete.as_view(), name='monster-instance-autocomplete'),

@@ -16,7 +16,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.fields import AdvancedSelectMultiple
-from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat
+from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
     RuneInstance, RuneCraftInstance, BuildingInstance
@@ -1562,7 +1562,62 @@ class ExportOptimizerForm(forms.Form):
     )
 
 
-class FilterLogTimeRangeForm(forms.Form):
-    start_time = forms.DateTimeField()
-    end_time = forms.DateTimeField()
-    reset = forms.BooleanField(required=False)
+# Data logs
+class FilterLogTimeRangeMixin(forms.Form):
+    timestamp__gte = forms.DateTimeField(
+        label='Start Time',
+        required=False,
+    )
+    timestamp__lte = forms.DateTimeField(
+        label='End Time',
+        required=False,
+    )
+
+
+class FilterLogTimeRangeLayout(Layout):
+    def __init__(self):
+        super().__init__(
+            Field('timestamp__gte'),
+            Field('timestamp__lte'),
+        )
+
+
+class FilterDungeonLogForm(FilterLogTimeRangeMixin, forms.Form):
+    level__dungeon__in = forms.ModelMultipleChoiceField(
+        label='Specific Dungeon',
+        queryset=Dungeon.objects.all(),
+        widget=autocomplete.ModelSelect2Multiple(
+            url='bestiary-dungeon-autocomplete',
+        ),
+        required=False,
+    )
+    level__dungeon__category__in = forms.MultipleChoiceField(
+        choices=Dungeon.CATEGORY_CHOICES,
+        label='Category',
+        required=False
+    )
+    level__floor = forms.IntegerField(
+        label='Floor',
+        required=False,
+    )
+    level__difficulty__in = forms.MultipleChoiceField(
+        choices=Level.DIFFICULTY_CHOICES,
+        label='Difficulty',
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        # self.helper.form_class = 'ajax-form'
+        self.helper.form_id = 'id_FilterDungeonLogForm'
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Field('level__dungeon__in'),
+            Field('level__dungeon__category__in', css_class='select2'),
+            Field('level__floor'),
+            Field('level__difficulty__in', css_class='select2'),
+            FilterLogTimeRangeLayout(),
+            Submit('submit', 'Apply')
+        )

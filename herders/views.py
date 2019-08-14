@@ -31,7 +31,7 @@ from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm
     BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
     MonsterPieceForm, AddTeamGroupForm, EditTeamGroupForm, DeleteTeamGroupForm, EditTeamForm, FilterRuneForm, \
     AddRuneInstanceForm, AssignRuneForm, AddRuneCraftInstanceForm, ImportPCAPForm, ImportSWParserJSONForm, \
-    FilterLogTimeRangeForm
+    FilterLogTimeRangeMixin, FilterDungeonLogForm
 from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, \
     RuneCraftInstance, Storage
 from .profile_parser import parse_pcap, validate_sw_json
@@ -2863,7 +2863,7 @@ def _log_data_table_view(request, profile_name, qs_attr, template):
     if not is_owner:
         return HttpResponseForbidden()
 
-    form = FilterLogTimeRangeForm(request.POST or None)
+    form = FilterLogTimeRangeMixin(request.POST or None)
 
     if request.method == 'POST':
         # Process form with custom timestamps
@@ -2958,12 +2958,39 @@ def data_log_summons(request, profile_name):
 @username_case_redirect
 @login_required
 def data_log_dungeons(request, profile_name):
-    return _log_data_table_view(
-        request,
-        profile_name,
-        'dungeonlog_set',
-        'herders/profile/data_logs/dungeons.html',
-    )
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return HttpResponseForbidden()
+
+    form = FilterDungeonLogForm(request.POST or None)
+    qs = summoner.dungeonlog_set.all()
+
+    if request.method == 'POST':
+        if form.is_valid():
+            # Apply filter form
+            for key, value in form.cleaned_data.items():
+                if value:
+                    qs = qs.filter(**{key: value})
+
+    paginator = Paginator(qs, 50)
+    page = request.GET.get('page')
+
+    context = {
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'is_owner': is_owner,
+        'view': 'data_log',
+        'logs': paginator.get_page(page),
+        'form': form,
+    }
+
+    return render(request, 'herders/profile/data_logs/dungeons.html', context)
 
 
 @username_case_redirect

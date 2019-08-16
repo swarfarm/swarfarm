@@ -2968,15 +2968,18 @@ def data_log_dungeons(request, profile_name):
     if not is_owner:
         return HttpResponseForbidden()
 
-    form = FilterDungeonLogForm(request.POST or None)
-    qs = summoner.dungeonlog_set.all()
+    form = FilterDungeonLogForm(request.POST or request.session.get('dungeon_log_filters'))
+    qs = summoner.dungeonlog_set.filter(success__isnull=False)  # Do not include incomplete logs
 
-    if request.method == 'POST':
-        if form.is_valid():
-            # Apply filter form
-            for key, value in form.cleaned_data.items():
-                if value:
-                    qs = qs.filter(**{key: value})
+    if form.is_valid():
+        # Apply filter values
+        for key, value in form.cleaned_data.items():
+            if value:
+                qs = qs.filter(**{key: value})
+
+        if request.POST:
+            # Save time filter timestamps on POST
+            request.session['dungeon_log_filters'] = request.POST
 
     paginator = Paginator(qs, 50)
     page = request.GET.get('page')

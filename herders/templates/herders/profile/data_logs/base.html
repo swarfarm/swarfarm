@@ -14,7 +14,6 @@
     {% endblock %}
     <div class="panel panel-default">
         <div class="panel-heading">
-            <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#custom_timespan_modal">Set Time Range</button>
             {% include "./pagination.html" %}
         </div>
 
@@ -27,37 +26,6 @@
         {% endif %}
 
         <div class="panel-footer">{% include "./pagination.html" %}</div>
-    </div>
-
-    <div class="modal fade" tabindex="-1" role="dialog" id="custom_timespan_modal" aria-labelledby="custom-range-label">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="custom-range-label">Custom Range (24h format)</h4>
-                </div>
-                <form method="post">
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="id_start_time">Start Timestamp</label>
-                            <input type="text" class="form-control" name="start_time" id="id_start_time" autocomplete="off"
-                            {% if log_timestamp_start %}value="{{ log_timestamp_start }}"{% endif %}>
-                        </div>
-                        <div class="form-group">
-                            <label for="id_start_time">End Timestamp</label>
-                            <input type="text" class="form-control" name="end_time" id="id_end_time" autocomplete="off"
-                            {% if log_timestamp_end %}value="{{ log_timestamp_end }}"{% endif %}>
-                        </div>
-                        {% csrf_token %}
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-info" name="reset" value="Reset">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success">Apply</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 {% endblock profile %}
 
@@ -90,15 +58,6 @@
             'showClear': true,
             'showClose': true
         };
-        $('#id_start_time').datetimepicker(datetimeopts);
-        $('#id_end_time').datetimepicker(datetimeopts);
-
-        $("#id_start_time").on("dp.change", function (e) {
-            $('#id_end_time').data("DateTimePicker").minDate(e.date);
-        });
-        $("#id_end_time").on("dp.change", function (e) {
-            $('#id_start_time').data("DateTimePicker").maxDate(e.date);
-        });
         $('#id_timestamp__gte').datetimepicker(datetimeopts);
         $('#id_timestamp__lte').datetimepicker(datetimeopts);
 

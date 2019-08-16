@@ -1577,8 +1577,11 @@ class FilterLogTimeRangeMixin(forms.Form):
 class FilterLogTimeRangeLayout(Layout):
     def __init__(self):
         super().__init__(
-            Field('timestamp__gte'),
-            Field('timestamp__lte'),
+            Fieldset(
+                'Log Time Span',
+                Field('timestamp__gte'),
+                Field('timestamp__lte'),
+            ),
         )
 
 
@@ -1602,7 +1605,7 @@ class FilterDungeonLogForm(FilterLogTimeRangeMixin, forms.Form):
     )
     level__difficulty__in = forms.MultipleChoiceField(
         choices=Level.DIFFICULTY_CHOICES,
-        label='Difficulty',
+        label='Difficulty (Scenario Only)',
         required=False,
     )
 
@@ -1614,10 +1617,29 @@ class FilterDungeonLogForm(FilterLogTimeRangeMixin, forms.Form):
         self.helper.form_id = 'id_FilterDungeonLogForm'
         self.helper.include_media = False
         self.helper.layout = Layout(
-            Field('level__dungeon__in'),
-            Field('level__dungeon__category__in', css_class='select2'),
-            Field('level__floor'),
-            Field('level__difficulty__in', css_class='select2'),
-            FilterLogTimeRangeLayout(),
+            Div(
+                Div(
+                    Fieldset(
+                        'Dungeon Filters',
+                        Div(
+                            Field('level__dungeon__in', wrapper_class='col-md-6'),
+                            Field('level__dungeon__category__in', css_class='select2', wrapper_class='col-md-6'),
+                            css_class='row',
+                        ),
+                        Div(
+                            Field('level__floor', wrapper_class='col-md-6'),
+                            Field('level__difficulty__in', css_class='select2', wrapper_class='col-md-6'),
+                            css_class='row',
+                        )
+
+                    ),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                Div(
+                    FilterLogTimeRangeLayout(),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                css_class='row',
+            ),
             Submit('submit', 'Apply')
         )

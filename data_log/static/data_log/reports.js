@@ -1,7 +1,7 @@
-initialize_charts();
+$('document').ready(initialize_charts);
 
 function initialize_charts() {
-    $('.dungeon-chart').each( function() {
+    $('.report-chart').each( function() {
         var chart_div = $(this);
         var data = chart_div.data('chart');
         console.log(data);

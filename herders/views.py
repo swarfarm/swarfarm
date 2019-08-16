@@ -24,6 +24,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from bestiary.models import Monster, Fusion, Building
+from data_log.reports.generate import level_drop_report
 from .decorators import username_case_redirect
 from .filters import MonsterInstanceFilter, RuneInstanceFilter
 from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, FilterMonsterInstanceForm, \
@@ -2984,12 +2985,18 @@ def data_log_dungeons(request, profile_name):
     paginator = Paginator(qs, 50)
     page = request.GET.get('page')
 
+    if qs.count():
+        report_data = level_drop_report(qs)
+    else:
+        report_data = None
+
     context = {
         'profile_name': profile_name,
         'summoner': summoner,
         'is_owner': is_owner,
         'view': 'data_log',
         'logs': paginator.get_page(page),
+        'report': report_data,
         'form': form,
     }
 

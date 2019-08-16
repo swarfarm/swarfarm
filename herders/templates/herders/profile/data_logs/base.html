@@ -1,5 +1,5 @@
 {% extends 'herders/profile/base.html' %}
-{% load crispy_forms_tags %}
+{% load static crispy_forms_tags %}
 
 {% block css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.45/css/bootstrap-datetimepicker.min.css" />
@@ -32,6 +32,7 @@
 {% block javascript %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.45/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
     <script type="application/javascript">
         $(function(){
             $(".drop-popover").popover({
@@ -69,3 +70,7 @@
         });
     </script>
 {% endblock %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "data_log/reports.js" %}"></script>
+{% endblock javascript_compressed %}

@@ -1,0 +1,16 @@
+{% extends 'herders/profile/data_logs/base.html' %}
+{% load crispy_forms_tags report_charts utils %}
+
+{% block title %}
+    Dungeons - {{ block.super }}
+{% endblock %}
+
+{% block logs %}
+    <h2>Dungeon Log Summary</h2>
+
+    <div
+        class="report-chart"
+        data-chart="{% chart dashboard.energy_spent title="Energy Spent by Dungeon" sorted='value' reverse=True %}"
+        style="height: 300px"
+    ></div>
+{% endblock %}

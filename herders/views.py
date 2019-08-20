@@ -14,7 +14,8 @@ from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.core.mail import mail_admins
 from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.db.models import FieldDoesNotExist, Q
+from django.db.models import FieldDoesNotExist, F, Q, Sum, Value, Count, CharField
+from django.db.models.functions import Concat
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest, Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -24,7 +25,8 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from bestiary.models import Monster, Fusion, Building
-from data_log.reports.generate import level_drop_report
+from data_log.reports.generate import get_drop_querysets
+from data_log.util import transform_to_dict, slice_records
 from .decorators import username_case_redirect
 from .filters import MonsterInstanceFilter, RuneInstanceFilter
 from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, FilterMonsterInstanceForm, \
@@ -2958,7 +2960,8 @@ def data_log_summons(request, profile_name):
 
 @username_case_redirect
 @login_required
-def data_log_dungeons(request, profile_name):
+def data_log_dungeon_dashboard(request, profile_name):
+    # Dashboard of recent dungeon runs and results
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
@@ -2982,25 +2985,71 @@ def data_log_dungeons(request, profile_name):
             # Save time filter timestamps on POST
             request.session['dungeon_log_filters'] = request.POST
 
-    paginator = Paginator(qs, 50)
-    page = request.GET.get('page')
+    # Limit to 2000 results
+    qs = slice_records(qs, maximum_count=2000)
 
-    if qs.count():
-        report_data = level_drop_report(qs)
-    else:
-        report_data = None
+    all_drops = get_drop_querysets(qs)
+    recent_drops = {
+        'items': all_drops['items'].values(
+            'item',
+            name=F('item__name'),
+            icon=F('item__icon'),
+        ).annotate(
+            count=Count('pk'),
+            sum=Sum('quantity')
+        ).order_by('-sum') if 'items' in all_drops else [],
+        'monsters': all_drops['monsters'].values(
+            name=F('monster__name'),
+            element=F('monster__element'),
+            com2us_id=F('monster__com2us_id'),
+            icon=F('monster__image_filename')
+        ).annotate(
+            count=Count('pk')
+        ).order_by('-count') if 'monsters' in all_drops else [],
+        # 'monster_pieces': 'insert_data_here' if 'monster_pieces' in all_drops else [],
+        'runes': all_drops['runes'].values(
+            'type',
+            'quality'
+        ).annotate(
+            count=Count('pk')
+        ).order_by('-count') if 'runes' in all_drops else [],
+        # 'secret_dungeons': 'insert_data_here' if 'runes' in all_drops else [],
+    }
+
+    dashboard_data = {
+        'energy_spent': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                list(
+                    qs.values(
+                        'level'
+                    ).annotate(
+                        dungeon_name=Concat(
+                            F('level__dungeon__name'),
+                            Value(' B'),
+                            F('level__floor'),
+                            output_field=CharField()
+                        ),
+                        count=Sum('level__energy_cost'),
+                    ).order_by('-count')
+                ),
+                name_key='dungeon_name',
+            ),
+        },
+        'recent_drops': recent_drops,
+    }
 
     context = {
         'profile_name': profile_name,
         'summoner': summoner,
         'is_owner': is_owner,
         'view': 'data_log',
-        'logs': paginator.get_page(page),
-        'report': report_data,
+        'dashboard': dashboard_data,
         'form': form,
     }
 
-    return render(request, 'herders/profile/data_logs/dungeons.html', context)
+    return render(request, 'herders/profile/data_logs/dungeons/summary.html', context)
 
 
 @username_case_redirect

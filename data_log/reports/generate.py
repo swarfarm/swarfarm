@@ -4,30 +4,13 @@ from datetime import timedelta
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Min, Max, Avg, Sum, Func, F, CharField, FloatField, Value
 from django.db.models.functions import Cast, Concat
-from django.utils import timezone
 from django_pivot.histogram import histogram
 
 from bestiary.models import Monster, Rune, Level, GameItem
 from data_log import models
-from data_log.util import floor_to_nearest, ceil_to_nearest, replace_value_with_choice, transform_to_dict
+from data_log.util import slice_records, floor_to_nearest, ceil_to_nearest, replace_value_with_choice, transform_to_dict
 
 MINIMUM_THRESHOLD = 0.005  # Any drops that occur less than this percentage of time are filtered out
-
-
-def _records_to_report(qs, report_timespan=timedelta(weeks=2), minimum_count=2500):
-    if qs.filter(timestamp__gte=timezone.now() - report_timespan).count() < minimum_count:
-        # Want to avoid slicing due to restrictions on any subsequent queryset operations
-        # Find the timestamp of the 2500th record and then filter on timestamp
-        results = qs[:minimum_count]
-
-        if results.count() > 0:
-            earliest_record = results[results.count() - 1]
-            return qs.filter(timestamp__gte=earliest_record.timestamp)
-        else:
-            # Don't have any records so just return it as is
-            return qs
-    else:
-        return qs.filter(timestamp__gte=timezone.now() - report_timespan)
 
 
 def get_report_summary(drops, total_log_count, **kwargs):
@@ -613,7 +596,7 @@ def _generate_level_reports(model, **kwargs):
     levels = model.objects.values_list('level', flat=True).distinct().order_by()
 
     for level in Level.objects.filter(pk__in=levels):
-        records = _records_to_report(model.objects.filter(level=level, success=True))
+        records = slice_records(model.objects.filter(level=level, success=True), minimum_count=2500, report_timespan=timedelta(weeks=2))
 
         if records.count() > 0:
             report_data = level_drop_report(records, **kwargs)
@@ -649,7 +632,7 @@ def _generate_by_grade_reports(model):
 
         # Generate a report by grade
         for grade, grade_desc in model.GRADE_CHOICES:
-            records = _records_to_report(model.objects.filter(level=level, grade=grade))
+            records = slice_records(model.objects.filter(level=level, grade=grade), minimum_count=2500, report_timespan=timedelta(weeks=2))
 
             if records.count() > 0:
                 grade_report = level_drop_report(records)

@@ -1,0 +1,28 @@
+{% extends 'herders/profile/base.html' %}
+{% load static crispy_forms_tags %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.45/css/bootstrap-datetimepicker.min.css" />
+{% endblock css %}
+
+{% block title %}
+    Personal Data Logs - {{ block.super }}
+{% endblock %}
+
+{% block logs %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            {% include "./pagination.html" %}
+        </div>
+
+        {% if logs.paginator.count == 0 %}
+            <div class="panel-body">
+                <p>No logs found! Check the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.</p>
+            </div>
+        {% else %}
+            {% block table %}{% endblock %}
+        {% endif %}
+
+        <div class="panel-footer">{% include "./pagination.html" %}</div>
+    </div>
+{% endblock profile %}

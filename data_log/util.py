@@ -1,3 +1,37 @@
+from django.utils import timezone
+
+
+def slice_records(qs, *args, **kwargs):
+    report_timespan = kwargs.get('report_timespan')
+    minimum_count = kwargs.get('minimum_count')
+    maximum_count = kwargs.get('maximum_count')
+
+    if minimum_count and maximum_count:
+        raise ValueError('Cannot use minimum_count and maximum_count at the same time.')
+
+    if qs.count() == 0:
+        return qs
+
+    if report_timespan:
+        result = qs.filter(timestamp__gte=timezone.now() - report_timespan)
+    else:
+        result = qs
+
+    if minimum_count or maximum_count:
+        num_records = result.count()
+
+        if minimum_count and num_records < minimum_count:
+            temp_slice = qs[:minimum_count]
+            earliest_record = temp_slice[temp_slice.count() - 1]
+            result = qs.filter(timestamp__gte=earliest_record.timestamp)
+
+        if maximum_count and num_records > maximum_count:
+            temp_slice = qs[:maximum_count]
+            earliest_record = temp_slice[temp_slice.count() - 1]
+            result = qs.filter(timestamp__gte=earliest_record.timestamp)
+
+    return result
+
 
 def floor_to_nearest(num, multiple_of):
     return num - num % multiple_of
@@ -29,9 +63,9 @@ def replace_value_with_choice(data, replacements):
     return data
 
 
-def transform_to_dict(data, value_key='count'):
+def transform_to_dict(data, value_key='count', **kwargs):
     dict_data = {}
-    name_key = None
+    name_key = kwargs.get('name_key')
 
     for item in data:
         if name_key is None:

@@ -11,22 +11,17 @@
 
 {% block profile %}
     {% block filter_form %}
-    {% endblock %}
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            {% include "./pagination.html" %}
+        <div class="filters">
+        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#monsterFilterCollapse">
+            <span class="glyphicon glyphicon-filter"></span> Filters
+        </button>
+        <div class="collapse" id="monsterFilterCollapse">
+            {% crispy form %}
         </div>
-
-        {% if logs.paginator.count == 0 %}
-            <div class="panel-body">
-                <p>No logs found! Check the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.</p>
-            </div>
-        {% else %}
-            {% block logs %}{% endblock %}
-        {% endif %}
-
-        <div class="panel-footer">{% include "./pagination.html" %}</div>
     </div>
+    {% endblock %}
+
+    {% block logs %}{% endblock %}
 {% endblock profile %}
 
 {% block javascript %}

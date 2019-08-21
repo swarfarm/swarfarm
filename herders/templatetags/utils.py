@@ -42,8 +42,9 @@ def key(d, key_name):
 
 @register.filter
 def humanize_number(value):
-    powers = [10 ** x for x in (3, 6, 9, 12)]
-    human_powers = ('K', 'M', 'B', 'T')
+    powers = [10 ** x for x in (0, 3, 6, 9, 12)]
+    human_powers = ('', 'K', 'M', 'B', 'T')
+
     try:
         index, hp = next((i, p) for i, p in enumerate(human_powers)
                          if 10 ** 3 > value / powers[i] > 0)

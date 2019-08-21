@@ -2999,16 +2999,18 @@ def data_log_dungeon_dashboard(request, profile_name):
         ).annotate(
             count=Sum('quantity')
         ).order_by('-count') if 'items' in all_drops else [],
-        'monsters': all_drops['monsters'].values(
-            name=F('monster__name'),
-            icon=F('monster__image_filename'),
-            element=F('monster__element'),
-            stars=F('grade'),
-            is_awakened=F('monster__is_awakened'),
-            can_awaken=F('monster__can_awaken'),
-        ).annotate(
-            count=Count('pk')
-        ).order_by('-count') if 'monsters' in all_drops else [],
+        'monsters': replace_value_with_choice(
+            list(all_drops['monsters'].values(
+                name=F('monster__name'),
+                icon=F('monster__image_filename'),
+                element=F('monster__element'),
+                stars=F('grade'),
+                is_awakened=F('monster__is_awakened'),
+                can_awaken=F('monster__can_awaken'),
+            ).annotate(
+                count=Count('pk')
+            ).order_by('-count')),
+            {'element': Monster.ELEMENT_CHOICES}) if 'monsters' in all_drops else [],
         # 'monster_pieces': 'insert_data_here' if 'monster_pieces' in all_drops else [],
         'runes': replace_value_with_choice(
             list(all_drops['runes'].values(

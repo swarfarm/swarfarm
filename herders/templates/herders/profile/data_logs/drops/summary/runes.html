@@ -1,0 +1,30 @@
+{% load staticfiles humanize utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Runes</h3>
+    </div>
+
+    <div class="panel-body">
+        {% for rune in runes %}
+            <div class="rune-image" style="margin-right:0!important;" data-toggle="tooltip" data-placement="top" title="{{ rune.stars }}⭐ {{ rune.quality }} {{ rune.type }} Rune x{{ rune.count|intcomma }}">
+                <div class="rune-bg {{ rune.quality|lower }}">
+                    <div class="rune slot1">
+                        <div class="rune-symbol {{ rune.type|lower }}"></div>
+                    </div>
+                    {% for x in rune.stars|get_range %}
+                        {% if rune.level == 15 %}
+                        <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-awakened.png" />
+                        {% else %}
+                        <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
+                        {% endif %}
+                    {% endfor %}
+                    <span class="image-plus image-plus-right">{{ rune.count|humanize_number }}</span >
+                </div>
+            </div>
+        {% empty %}
+            <p>None!</p>
+        {% endfor %}
+    </div>
+</div>

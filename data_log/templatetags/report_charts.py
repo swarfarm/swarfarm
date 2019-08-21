@@ -168,7 +168,7 @@ def bar(**kwargs):
 
     chart_data['xAxis']['categories'] = kwargs.get('categories', [v[0] for v in data])
     chart_data['series'] = [{
-        'name': 'Main Stats',
+        'name': kwargs.get('series_name'),
         'data': [float(v[1]) / total for v in data],
     }]
 

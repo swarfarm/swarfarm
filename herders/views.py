@@ -14,7 +14,7 @@ from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.core.mail import mail_admins
 from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.db.models import FieldDoesNotExist, F, Q, Sum, Value, Count, CharField
+from django.db.models import FieldDoesNotExist, F, Q, Sum, Value, Count, CharField, Case, When
 from django.db.models.functions import Concat
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest, Http404
@@ -24,9 +24,9 @@ from django.template.context_processors import csrf
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
-from bestiary.models import Monster, Fusion, Building
+from bestiary.models import Monster, Fusion, Building, Level
 from data_log.reports.generate import get_drop_querysets
-from data_log.util import transform_to_dict, slice_records
+from data_log.util import transform_to_dict, slice_records, replace_value_with_choice
 from .decorators import username_case_redirect
 from .filters import MonsterInstanceFilter, RuneInstanceFilter
 from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, FilterMonsterInstanceForm, \
@@ -2793,6 +2793,7 @@ DEFAULT_LOG_TIME_RANGE = {
     'timestamp__gte': '2018-09-13T00:00:00+00:00',
     'timestamp__lte': '2099-01-01T00:00:00+00:00'
 }
+MAX_DATA_LOG_RECORDS = 2000
 
 
 @username_case_redirect
@@ -2986,7 +2987,8 @@ def data_log_dungeon_dashboard(request, profile_name):
             request.session['dungeon_log_filters'] = request.POST
 
     # Limit to 2000 results
-    qs = slice_records(qs, maximum_count=2000)
+    qs = slice_records(qs, maximum_count=MAX_DATA_LOG_RECORDS)
+    num_logs = qs.count()
 
     all_drops = get_drop_querysets(qs)
     recent_drops = {
@@ -2995,31 +2997,41 @@ def data_log_dungeon_dashboard(request, profile_name):
             name=F('item__name'),
             icon=F('item__icon'),
         ).annotate(
-            count=Count('pk'),
-            sum=Sum('quantity')
-        ).order_by('-sum') if 'items' in all_drops else [],
+            count=Sum('quantity')
+        ).order_by('-count') if 'items' in all_drops else [],
         'monsters': all_drops['monsters'].values(
             name=F('monster__name'),
+            icon=F('monster__image_filename'),
             element=F('monster__element'),
-            com2us_id=F('monster__com2us_id'),
-            icon=F('monster__image_filename')
+            stars=F('grade'),
+            is_awakened=F('monster__is_awakened'),
+            can_awaken=F('monster__can_awaken'),
         ).annotate(
             count=Count('pk')
         ).order_by('-count') if 'monsters' in all_drops else [],
         # 'monster_pieces': 'insert_data_here' if 'monster_pieces' in all_drops else [],
-        'runes': all_drops['runes'].values(
-            'type',
-            'quality'
-        ).annotate(
-            count=Count('pk')
-        ).order_by('-count') if 'runes' in all_drops else [],
+        'runes': replace_value_with_choice(
+            list(all_drops['runes'].values(
+                'type',
+                'quality',
+                'stars',
+            ).annotate(
+                count=Count('pk')
+            ).order_by('-count') if 'runes' in all_drops else []),
+            {
+                'type': RuneInstance.TYPE_CHOICES,
+                'quality': RuneInstance.QUALITY_CHOICES,
+            }
+        ),
         # 'secret_dungeons': 'insert_data_here' if 'runes' in all_drops else [],
     }
+
+    success_rate = float(qs.filter(success=True).count()) / num_logs * 100
 
     dashboard_data = {
         'energy_spent': {
             'type': 'occurrences',
-            'total': qs.count(),
+            'total': num_logs,
             'data': transform_to_dict(
                 list(
                     qs.values(
@@ -3040,16 +3052,34 @@ def data_log_dungeon_dashboard(request, profile_name):
         'recent_drops': recent_drops,
     }
 
+    level_order = qs.values('level').annotate(
+        energy_spent=Sum('level__energy_cost')
+    ).order_by('-energy_spent').values_list('level', flat=True)
+    preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(level_order)])
+    level_list = Level.objects.filter(
+        pk__in=set(qs.values_list('level', flat=True))
+    ).order_by(preserved_order).prefetch_related('dungeon')[:20]
+
     context = {
         'profile_name': profile_name,
         'summoner': summoner,
         'is_owner': is_owner,
         'view': 'data_log',
-        'dashboard': dashboard_data,
         'form': form,
+        'total_count': num_logs,
+        'records_limited': num_logs == MAX_DATA_LOG_RECORDS,
+        'success_rate': success_rate,
+        'level_list': level_list,
+        'dashboard': dashboard_data,
     }
 
     return render(request, 'herders/profile/data_logs/dungeons/summary.html', context)
+
+
+@username_case_redirect
+@login_required
+def data_log_dungeon_detail(request, profile_name, slug, difficulty=None, floor=None):
+    raise NotImplementedError()
 
 
 @username_case_redirect

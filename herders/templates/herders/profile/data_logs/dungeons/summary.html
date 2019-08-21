@@ -8,9 +8,45 @@
 {% block logs %}
     <h2>Dungeon Log Summary</h2>
 
-    <div
-        class="report-chart"
-        data-chart="{% chart dashboard.energy_spent title="Energy Spent by Dungeon" sorted='value' reverse=True %}"
-        style="height: 300px"
-    ></div>
+    <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
+    <p>Success Rate: {{ success_rate|floatformat:-2 }}%</p>
+
+    <div class="row">
+        <div class="col-lg-9 col-md-8 col-sm-12">
+            <div class="row">
+                <div
+                    class="col-xs-12 report-chart"
+                    data-chart="{% chart dashboard.energy_spent title="Energy Spent by Dungeon" series_name="Energy" sorted='value' reverse=True %}"
+                    style="height: 300px"
+                ></div>
+                <div class="col-xs-12">
+                    <h3>Drops Acquired</h3>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-4 col-md-3">
+                            {% include 'herders/profile/data_logs/drops/summary/items.html' with items=dashboard.recent_drops.items only %}
+                        </div>
+                        <div class="col-sm-6 col-md-4 col-md-3">
+                            {% include 'herders/profile/data_logs/drops/summary/runes.html' with runes=dashboard.recent_drops.runes only %}
+                        </div>
+                        <div class="col-sm-6 col-md-4 col-md-3">
+                            {% include 'herders/profile/data_logs/drops/summary/monsters.html' with monsters=dashboard.recent_drops.monsters only %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Quick Links</h3>
+                </div>
+                <div class="list-group">
+                    {% for level in level_list %}
+                        <a href="#" class="list-group-item">{{ level }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

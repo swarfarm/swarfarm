@@ -1,0 +1,30 @@
+{% load staticfiles humanize utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Monsters</h3>
+    </div>
+
+    <div class="panel-body">
+        {% for monster in monsters %}
+            <div class="monster-image">
+                <img src="{{ img_url_prefix }}monsters/{{ monster.icon }}" alt="{{ monster.name }}" class="monster-thumb"/>
+                <span>
+                    {% for x in monster.stars|get_range %}
+                        {% if monster.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% elif monster.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="image-plus image-plus-right">{{ monster.count|humanize_number }}</span >
+            </div>
+        {% empty %}
+            <p>None!</p>
+        {% endfor %}
+    </div>
+</div>

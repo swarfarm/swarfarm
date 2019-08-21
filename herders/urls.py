@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.urls import path
 
 from . import views
 
@@ -107,7 +108,12 @@ urlpatterns = [
             url(r'^rune_crafting/$', views.data_log_rune_crafting, name='data_log_rune_crafting'),
             url(r'^magic_box/$', views.data_log_magic_box, name='data_log_magic_box'),
             url(r'^summons/$', views.data_log_summons, name='data_log_summons'),
-            url(r'^dungeons/$', views.data_log_dungeon_dashboard, name='data_log_dungeon_dashboard'),
+            url(r'^dungeons/', include([
+                path('', views.data_log_dungeon_dashboard, name='data_log_dungeon_dashboard'),
+                path('<slug:slug>/', views.data_log_dungeon_detail, name='data_log_dungeon_detail_no_floor'),
+                path('<slug:slug>/<int:floor>/', views.data_log_dungeon_detail, name='data_log_dungeon_detail'),
+                path('<slug:slug>/<str:difficulty>/<int:floor>/', views.data_log_dungeon_detail, name='data_log_dungeon_detail_difficulty'),
+            ])),
             url(r'^rift_beast/$', views.data_log_rift_beast, name='data_log_rift_beast'),
             url(r'^rift_raid/$', views.data_log_rift_raid, name='data_log_rift_raid'),
             url(r'^world_boss/$', views.data_log_world_boss, name='data_log_world_boss'),

@@ -110,6 +110,7 @@ urlpatterns = [
             url(r'^summons/$', views.data_log_summons, name='data_log_summons'),
             url(r'^dungeons/', include([
                 path('', views.data_log_dungeon_dashboard, name='data_log_dungeon_dashboard'),
+                path('table/', views.data_log_dungeon_table, name='data_log_dungeon_table'),
                 path('<slug:slug>/', views.data_log_dungeon_detail, name='data_log_dungeon_detail_no_floor'),
                 path('<slug:slug>/<int:floor>/', views.data_log_dungeon_detail, name='data_log_dungeon_detail'),
                 path('<slug:slug>/<str:difficulty>/<int:floor>/', views.data_log_dungeon_detail, name='data_log_dungeon_detail_difficulty'),

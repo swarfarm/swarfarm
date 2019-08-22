@@ -71,6 +71,7 @@
                     <a href="{% url 'herders:data_log_dashboard' profile_name=profile_name %}">
                         <span class="fa fa-database"></span> Data Logs
                     </a>
+                    {% block data_log_menu %}{% endblock data_log_menu %}
                 </li>
             {% endif %}
         </ul>
@@ -80,8 +81,7 @@
 {% block content %}
     <div class="navmenu-content">
         <div class="profile">
-            {% block profile %}
-            {% endblock profile %}
+            {% block profile %}{% endblock profile %}
         </div>
     </div>
 {% endblock content %}

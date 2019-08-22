@@ -1,4 +1,4 @@
-{% extends 'herders/profile/base.html' %}
+{% extends 'herders/profile/data_logs/base.html' %}
 {% load static crispy_forms_tags %}
 
 {% block css %}
@@ -20,9 +20,9 @@
                 <p>No logs found! Check the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.</p>
             </div>
         {% else %}
-            {% block table %}{% endblock %}
+            {% block log_table %}{% endblock log_table %}
         {% endif %}
 
         <div class="panel-footer">{% include "./pagination.html" %}</div>
     </div>
-{% endblock profile %}
+{% endblock logs %}

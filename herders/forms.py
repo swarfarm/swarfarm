@@ -1585,7 +1585,21 @@ class FilterLogTimeRangeLayout(Layout):
         )
 
 
-class FilterDungeonLogForm(FilterLogTimeRangeMixin, forms.Form):
+class FilterLogTimestamp(FilterLogTimeRangeMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        # self.helper.form_class = 'ajax-form'
+        self.helper.form_id = 'id_FilterDungeonLogForm'
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            FilterLogTimeRangeLayout(),
+            Submit('submit', 'Apply')
+        )
+
+
+class FilterDungeonLogForm(FilterLogTimeRangeMixin):
     level__dungeon__in = forms.ModelMultipleChoiceField(
         label='Specific Dungeon',
         queryset=Dungeon.objects.all(),

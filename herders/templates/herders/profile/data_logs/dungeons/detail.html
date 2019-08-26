@@ -1,0 +1,24 @@
+{% extends 'herders/profile/data_logs/dungeons/summary.html' %}
+{% load crispy_forms_tags report_charts utils %}
+
+{% block title %}
+    Dungeons - {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if request.resolver_match.url_name == 'data_log_dungeon_detail' or request.resolver_match.url_name == 'data_log_dungeon_detail_difficulty' %}
+        <li class="active">{{ level }}</li>
+    {% else %}
+        <li><a href="{% include 'herders/profile/data_logs/dungeon_link_url.html' with profile_name=profile_name level=level only %}">{{ level }}</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block logs %}
+    <h2>{{ level }}</h2>
+
+    <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
+    <p>Success Rate: {{ success_rate|floatformat:-2 }}%</p>
+
+    {% include 'dungeons/detail/report_snippet.html' with report=report only %}
+{% endblock %}

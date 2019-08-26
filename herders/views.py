@@ -14,7 +14,7 @@ from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.core.mail import mail_admins
 from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.db.models import FieldDoesNotExist, F, Q, Sum, Value, Count, CharField, Case, When
+from django.db.models import FieldDoesNotExist, F, Q, Sum, Value, Count, CharField, Case, When, Max
 from django.db.models.functions import Concat
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest, Http404
@@ -24,8 +24,8 @@ from django.template.context_processors import csrf
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
-from bestiary.models import Monster, Fusion, Building, Level
-from data_log.reports.generate import get_drop_querysets
+from bestiary.models import Monster, Fusion, Building, Dungeon, Level
+from data_log.reports.generate import get_drop_querysets, level_drop_report
 from data_log.util import transform_to_dict, slice_records, replace_value_with_choice
 from .decorators import username_case_redirect
 from .filters import MonsterInstanceFilter, RuneInstanceFilter
@@ -2841,6 +2841,7 @@ def data_log_dashboard(request, profile_name):
         'summoner': summoner,
         'is_owner': is_owner,
         'view': 'data_log',
+        'view_name': request.resolver_match.view_name,
         'counts': log_counts,
         'total': total,
     }
@@ -2866,6 +2867,7 @@ def data_log_help(request, profile_name):
         'summoner': summoner,
         'is_owner': is_owner,
         'view': 'data_log',
+        'view_name': request.resolver_match.view_name,
     })
 
 
@@ -2905,6 +2907,7 @@ def _log_data_table_view(request, profile_name, qs_attr, template, form_class=No
         'is_owner': is_owner,
         'view': 'data_log',
         'logs': paginator.get_page(page),
+        'total_count': qs.count(),
         'form': form,
     }
 
@@ -3035,7 +3038,7 @@ def data_log_dungeon_dashboard(request, profile_name):
         # 'secret_dungeons': 'insert_data_here' if 'runes' in all_drops else [],
     }
 
-    success_rate = float(qs.filter(success=True).count()) / num_logs * 100
+    success_rate = float(qs.filter(success=True).count()) / num_logs * 100 if num_logs > 0 else None
 
     dashboard_data = {
         'energy_spent': {
@@ -3100,7 +3103,82 @@ def data_log_dungeon_table(request, profile_name):
 @username_case_redirect
 @login_required
 def data_log_dungeon_detail(request, profile_name, slug, difficulty=None, floor=None):
-    raise NotImplementedError()
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return HttpResponseForbidden()
+
+    dung = get_object_or_404(Dungeon.objects.all().prefetch_related('level_set'), slug=slug)
+    lvl = None
+    levels = dung.level_set.all()
+
+    if difficulty:
+        difficulty_id = {v.lower(): k for k, v in dict(Level.DIFFICULTY_CHOICES).items()}.get(difficulty)
+
+        if difficulty_id is None:
+            raise Http404()
+
+        levels = levels.filter(difficulty=difficulty_id)
+
+    if floor:
+        levels = levels.filter(floor=floor)
+    else:
+        # Pick first hell level for scenarios, otherwise always last level
+        if dung.category == Dungeon.CATEGORY_SCENARIO:
+            lvl = levels.filter(difficulty=Level.DIFFICULTY_HELL).first()
+            return redirect('herders:data_log_dungeon_detail_difficulty', profile_name=profile_name, slug=dung.slug, difficulty='hell', floor=lvl.floor)
+        else:
+            lvl = levels.last()
+
+            # Redirect to URL with floor if dungeon has more than 1 floor
+            if dung.level_set.count() > 1:
+                return redirect('herders:data_log_dungeon_detail', profile_name=profile_name, slug=dung.slug, floor=1)
+
+    if not lvl:
+        # Default to first level for all others
+        lvl = levels.first()
+
+    if not lvl:
+        raise Http404()
+
+    form = FilterLogTimestamp(request.POST or _get_log_timespan(request))
+    qs = summoner.dungeonlog_set.filter(level=lvl)
+
+    if form.is_valid():
+        # Apply filter values
+        for key, value in form.cleaned_data.items():
+            if value:
+                qs = qs.filter(**{key: value})
+
+        if request.POST:
+            # Save time filter timestamps on POST
+            _set_log_timespan(request)
+
+    # Limit to 2000 results
+    qs = slice_records(qs, maximum_count=MAX_DATA_LOG_RECORDS)
+    num_logs = qs.count()
+    success_rate = float(qs.filter(success=True).count()) / num_logs * 100 if num_logs > 0 else None
+    report = level_drop_report(qs)
+
+    context = {
+        'profile_name': profile_name,
+        'summoner': summoner,
+        'is_owner': is_owner,
+        'view': 'data_log',
+        'level': lvl,
+        'report': report,
+        'form': form,
+        'total_count': num_logs,
+        'records_limited': num_logs == MAX_DATA_LOG_RECORDS,
+        'success_rate': success_rate,
+    }
+
+    return render(request, 'herders/profile/data_logs/dungeons/detail.html', context)
 
 
 @username_case_redirect

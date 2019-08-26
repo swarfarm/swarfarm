@@ -24,6 +24,16 @@
 {% endblock data_log_menu %}
 
 {% block profile %}
+    <ol class="breadcrumb">
+        {% block breadcrumbs %}
+            {% if view_name == 'herders:data_log_dashboard' %}
+                <li class="active">Data Logs</li>
+            {% else %}
+                <li><a href="{% url "herders:data_log_dashboard" profile_name=profile_name %}">Data Logs</a></li>
+            {% endif %}
+        {% endblock %}
+    </ol>
+
     {% if form %}
         <div class="filters">
             <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#monsterFilterCollapse">
@@ -35,7 +45,11 @@
         </div>
     {% endif %}
 
-    {% block logs %}{% endblock %}
+    {% if total_count or request.resolver_match.view_name == 'herders:data_log_dashboard' %}
+        {% block logs %}{% endblock %}
+    {% else %}
+        <div class="alert alert-info" role="alert"><p>No logs found! Relax your filters or check the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.</p></div>
+    {% endif %}
 {% endblock profile %}
 
 {% block javascript %}

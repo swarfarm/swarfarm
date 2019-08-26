@@ -1,0 +1,5 @@
+{% if level.dungeon.category == level.dungeon.CATEGORY_SCENARIO %}
+{% url 'herders:data_log_dungeon_detail_difficulty' profile_name=profile_name slug=level.dungeon.slug difficulty=level.get_difficulty_display|lower floor=level.floor %}
+{% else %}
+{% url 'herders:data_log_dungeon_detail' profile_name=profile_name slug=level.dungeon.slug floor=level.floor %}
+{% endif %}

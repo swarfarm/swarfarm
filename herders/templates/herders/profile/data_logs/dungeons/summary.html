@@ -5,6 +5,15 @@
     Dungeons - {{ block.super }}
 {% endblock %}
 
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if request.resolver_match.url_name == 'data_log_dungeon_dashboard' %}
+        <li class="active">Dungeons</li>
+    {% else %}
+        <li><a href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}">Dungeons</a></li>
+    {% endif %}
+{% endblock %}
+
 {% block logs %}
     <h2>Dungeon Log Summary</h2>
 
@@ -44,7 +53,7 @@
                 <div class="list-group">
                     <a href="{% url 'herders:data_log_dungeon_table' profile_name=profile_name %}" class="list-group-item">View As Table</a>
                     {% for level in level_list %}
-                        <a href="#" class="list-group-item">{{ level }}</a>
+                        <a href="{% include 'herders/profile/data_logs/dungeon_link_url.html' with profile_name=profile_name level=level %}" class="list-group-item">{{ level }}</a>
                     {% endfor %}
                 </div>
             </div>

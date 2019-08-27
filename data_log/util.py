@@ -1,3 +1,5 @@
+from math import trunc
+
 from django.utils import timezone
 
 
@@ -78,3 +80,10 @@ def transform_to_dict(data, value_key='count', **kwargs):
         dict_data[item[name_key]] = item[value_key]
 
     return dict_data
+
+
+def round_timedelta(input, to_nearest, direction='up'):
+    if direction == 'up':
+        return to_nearest * trunc(input / to_nearest) + to_nearest
+    else:
+        return to_nearest * trunc(input / to_nearest)

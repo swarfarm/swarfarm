@@ -2,15 +2,17 @@ from collections import Counter
 from datetime import timedelta
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Min, Max, Avg, Sum, Func, F, CharField, FloatField, Value
-from django.db.models.functions import Cast, Concat
+from django.db.models import Count, Min, Max, Avg, Sum, Func, F, CharField, FloatField, Value, StdDev
+from django.db.models.functions import Cast, Concat, Extract
 from django_pivot.histogram import histogram
 
 from bestiary.models import Monster, Rune, Level, GameItem
 from data_log import models
-from data_log.util import slice_records, floor_to_nearest, ceil_to_nearest, replace_value_with_choice, transform_to_dict
+from data_log.util import slice_records, floor_to_nearest, ceil_to_nearest, replace_value_with_choice, \
+    transform_to_dict, round_timedelta
 
 MINIMUM_THRESHOLD = 0.005  # Any drops that occur less than this percentage of time are filtered out
+CLEAR_TIME_BIN_WIDTH = timedelta(seconds=5)
 
 
 def get_report_summary(drops, total_log_count, **kwargs):
@@ -506,6 +508,38 @@ def level_drop_report(qs, **kwargs):
     drops = get_drop_querysets(qs)
     report_data['summary'] = get_report_summary(drops, qs.count(), **kwargs)
 
+    if qs.count():
+        # Clear time histogram
+        # Use +/- 3 std deviations of clear time avg as bounds for time range in case of extreme outliers
+        clear_time_aggs = qs.aggregate(
+            std_dev=StdDev(Extract(F('clear_time'), lookup_name='epoch')),
+            avg=Avg('clear_time'),
+            min=Min('clear_time'),
+            max=Max('clear_time'),
+        )
+        min_time = round_timedelta(
+            max(clear_time_aggs['min'], clear_time_aggs['avg'] - timedelta(seconds=clear_time_aggs['std_dev'] * 3)),
+            CLEAR_TIME_BIN_WIDTH,
+            direction='down',
+        )
+        max_time = round_timedelta(
+            min(clear_time_aggs['max'], clear_time_aggs['avg'] + timedelta(seconds=clear_time_aggs['std_dev'] * 3)),
+            CLEAR_TIME_BIN_WIDTH,
+            direction='up',
+        )
+        bins = [min_time + CLEAR_TIME_BIN_WIDTH * x for x in range(0, int((max_time - min_time) / CLEAR_TIME_BIN_WIDTH))]
+        report_data['clear_time'] = {
+            'min': str(clear_time_aggs['min']),
+            'max': str(clear_time_aggs['max']),
+            'avg': str(clear_time_aggs['avg']),
+            'chart': {
+                'type': 'histogram',
+                'width': 5,
+                'data': histogram(qs, 'clear_time', bins, slice_on='success'),
+            }
+        }
+
+    # Individual drop details
     for key, qs in drops.items():
         if DROP_TYPES[key]:
             report_data[key] = DROP_TYPES[key](qs, qs.count())

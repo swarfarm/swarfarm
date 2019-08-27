@@ -14,7 +14,7 @@ from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.core.mail import mail_admins
 from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.db.models import FieldDoesNotExist, F, Q, Sum, Value, Count, CharField, Case, When, Max
+from django.db.models import FieldDoesNotExist, F, Q, Sum, Value, Count, CharField, Case, When
 from django.db.models.functions import Concat
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest, Http404
@@ -2789,7 +2789,7 @@ def export_win10_optimizer(request, profile_name):
 
 
 # Data logs
-MAX_DATA_LOG_RECORDS = 2000
+MAX_DATA_LOG_RECORDS = 20
 
 
 def _set_log_timespan(request):
@@ -3174,6 +3174,8 @@ def data_log_dungeon_detail(request, profile_name, slug, difficulty=None, floor=
         'report': report,
         'form': form,
         'total_count': num_logs,
+        'start_date': qs.last().timestamp,
+        'end_date': qs.first().timestamp,
         'records_limited': num_logs == MAX_DATA_LOG_RECORDS,
         'success_rate': success_rate,
     }

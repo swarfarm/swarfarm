@@ -83,8 +83,19 @@ def _color_rune_series(series_data):
     return series_data
 
 
+def _color_pass_fail_series(series_data):
+    for series in series_data:
+        if series['name'] == 'True':
+            series['color'] = '#1a912e'
+        else:
+            series['color'] = '#911a1a'
+
+    return series_data
+
+
 _series_colors = {
     'rune': _color_rune_series,
+    'pass_fail': _color_pass_fail_series,
 }
 
 

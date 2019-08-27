@@ -16,9 +16,13 @@
 
 {% block logs %}
     <h2>{{ level }}</h2>
+    <ul class="list list-inline">
+        <li>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</li>
+        <li>Success Rate: {{ success_rate|floatformat:-2 }}%</li>
+    </ul>
 
-    <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
-    <p>Success Rate: {{ success_rate|floatformat:-2 }}%</p>
-
-    {% include 'dungeons/detail/report_snippet.html' with report=report only %}
+    {% include 'data_log/clear_time.html' with clear_times=report.clear_time only %}
+    {% include 'data_log/summary.html' with summary=report.summary only %}
+    {% include 'data_log/runes.html' with runes=report.runes only %}
+    {% include 'data_log/rune_crafts.html' with rune_crafts=report.rune_crafts only %}
 {% endblock %}

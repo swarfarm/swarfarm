@@ -1,0 +1,18 @@
+{% load report_charts %}
+
+{% if clear_times %}
+    <h2>Clear Times</h2>
+    <div class="row">
+        <div class="col-sm-4 col-md-3 col-lg-2">
+            <ul class="list list-unstyled">
+                <li>Best: {{ clear_times.min }}</li>
+                <li>Average: {{ clear_times.avg }}</li>
+            </ul>
+        </div>
+        <div
+            class="col-sm-8 col-md-9 col-lg-10 report-chart"
+            data-chart="{% chart clear_times.chart title='Histogram' colors='pass_fail' %}"
+            style="height: 300px"
+        ></div>
+    </div>
+{% endif %}

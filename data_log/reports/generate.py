@@ -508,7 +508,7 @@ def level_drop_report(qs, **kwargs):
     drops = get_drop_querysets(qs)
     report_data['summary'] = get_report_summary(drops, qs.count(), **kwargs)
 
-    if qs.count():
+    if hasattr(qs.model, 'clear_time') and qs.count():
         # Clear time histogram
         # Use +/- 3 std deviations of clear time avg as bounds for time range in case of extreme outliers
         clear_time_aggs = qs.aggregate(

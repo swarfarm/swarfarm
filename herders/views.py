@@ -2789,7 +2789,7 @@ def export_win10_optimizer(request, profile_name):
 
 
 # Data logs
-MAX_DATA_LOG_RECORDS = 20
+MAX_DATA_LOG_RECORDS = 2000
 
 
 def _set_log_timespan(request):

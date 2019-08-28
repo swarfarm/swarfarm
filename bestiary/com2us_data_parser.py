@@ -320,7 +320,7 @@ def parse_monster_data(preview=False):
             monster = Monster.objects.get(com2us_id=master_id)
             updated = False
         except Monster.DoesNotExist:
-            monster = Monster.objects.create(com2us_id=master_id, obtainable=False, name='tempname', base_stars=1)
+            monster = Monster.objects.create(com2us_id=master_id, obtainable=False, name='tempname', base_stars=1, natural_stars=1)
             print('!!! Creating new monster {} with com2us ID {}'.format(monster_names[master_id], master_id))
             updated = True
 

@@ -1,4 +1,4 @@
-{% load report_charts %}
+{% load report_charts utils %}
 
 {% if summary %}
     <h2>Drop Summary</h2>
@@ -24,9 +24,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% include 'data_log/summary_items.html' with items=summary.table.items%}
-                            {% include 'data_log/summary_monsters.html' with monsters=summary.table.monsters %}
-                            {% include 'data_log/summary_secret_dungeons.html' with secret_dungeons=summary.table.secret_dungeons %}
+                            {% include 'data_log/summary_items.html' with items=summary.table|key:"items" only %} {# Avoid conflict with built in items() function for dicts #}
+                            {% include 'data_log/summary_monsters.html' with monsters=summary.table.monsters only %}
+                            {% include 'data_log/summary_secret_dungeons.html' with secret_dungeons=summary.table.secret_dungeons only %}
                         </tbody>
                     </table>
                 </div>

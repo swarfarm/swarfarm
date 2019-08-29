@@ -2792,21 +2792,32 @@ def export_win10_optimizer(request, profile_name):
 MAX_DATA_LOG_RECORDS = 2000
 
 
-def _set_log_timespan(request):
+def _set_data_log_filters(request, section, form):
+    request.session[f'data_log_{section}_filters'] = {}
+    for key, value in form.data.lists():
+        if key in form.base_fields and value[0]:
+            request.session[f'data_log_{section}_filters'][key] = value
+
+    # Set timestamps in a separate session key so they span all data log sections
     if 'data_log_timestamps' not in request.session:
         request.session['data_log_timestamps'] = {}
 
-    if 'timestamp__gte' in request.POST:
-        request.session['data_log_timestamps']['timestamp__gte'] = request.POST['timestamp__gte']
+    timestamp__gte = form.data.get('timestamp__gte')
+    if timestamp__gte:
+        request.session['data_log_timestamps']['timestamp__gte'] = timestamp__gte
         request.session.modified = True
 
-    if 'timestamp__lte' in request.POST:
-        request.session['data_log_timestamps']['timestamp__lte'] = request.POST['timestamp__lte']
+    timestamp__lte = form.data.get('timestamp__lte')
+    if timestamp__lte:
+        request.session['data_log_timestamps']['timestamp__lte'] = timestamp__lte
         request.session.modified = True
 
 
-def _get_log_timespan(request):
-    return request.session.get('data_log_timestamps')
+def _get_data_log_filters(request, section):
+    return {
+        **request.session.get(f'data_log_{section}_filters', {}),
+        **request.session.get('data_log_timestamps', {})
+    }
 
 
 @username_case_redirect
@@ -2885,7 +2896,7 @@ def _log_data_table_view(request, profile_name, qs_attr, template, form_class=No
     if not is_owner:
         return HttpResponseForbidden()
 
-    form = form_class(request.POST or _get_log_timespan(request))
+    form = form_class(request.POST or _get_data_log_filters(request, qs_attr))
     qs = getattr(summoner, qs_attr).all()
 
     if form.is_valid():
@@ -2896,7 +2907,7 @@ def _log_data_table_view(request, profile_name, qs_attr, template, form_class=No
 
         if request.method == 'POST':
             # Process form with custom timestamps
-            _set_log_timespan(request)
+            _set_data_log_filters(request, qs_attr, form)
 
     paginator = Paginator(qs, 50)
     page = request.GET.get('page')
@@ -2983,7 +2994,7 @@ def data_log_dungeon_dashboard(request, profile_name):
     if not is_owner:
         return HttpResponseForbidden()
 
-    form = FilterDungeonLogForm(request.POST or _get_log_timespan(request))
+    form = FilterDungeonLogForm(request.POST or _get_data_log_filters(request, 'dungeonlog_set'))
     qs = summoner.dungeonlog_set.filter(success__isnull=False)  # Do not include incomplete logs
 
     if form.is_valid():
@@ -2994,7 +3005,7 @@ def data_log_dungeon_dashboard(request, profile_name):
 
         if request.POST:
             # Save time filter timestamps on POST
-            _set_log_timespan(request)
+            _set_data_log_filters(request, 'dungeonlog_set', form)
 
     # Limit to 2000 results
     qs = slice_records(qs, maximum_count=MAX_DATA_LOG_RECORDS)
@@ -3146,7 +3157,7 @@ def data_log_dungeon_detail(request, profile_name, slug, difficulty=None, floor=
     if not lvl:
         raise Http404()
 
-    form = FilterLogTimestamp(request.POST or _get_log_timespan(request))
+    form = FilterLogTimestamp(request.POST or _get_data_log_filters(request, 'dungeonlog_set'))
     qs = summoner.dungeonlog_set.filter(level=lvl)
 
     if form.is_valid():
@@ -3157,13 +3168,15 @@ def data_log_dungeon_detail(request, profile_name, slug, difficulty=None, floor=
 
         if request.POST:
             # Save time filter timestamps on POST
-            _set_log_timespan(request)
+            _set_data_log_filters(request, 'dungeonlog_set', form)
 
     # Limit to 2000 results
     qs = slice_records(qs, maximum_count=MAX_DATA_LOG_RECORDS)
     num_logs = qs.count()
-    success_rate = float(qs.filter(success=True).count()) / num_logs * 100 if num_logs > 0 else None
+    success_rate = float(qs.filter(success=True).count()) / num_logs * 100 if num_logs else None
     report = level_drop_report(qs)
+    start_date = qs.last().timestamp if num_logs else None
+    end_date = qs.first().timestamp if num_logs else None
 
     context = {
         'profile_name': profile_name,
@@ -3174,8 +3187,8 @@ def data_log_dungeon_detail(request, profile_name, slug, difficulty=None, floor=
         'report': report,
         'form': form,
         'total_count': num_logs,
-        'start_date': qs.last().timestamp,
-        'end_date': qs.first().timestamp,
+        'start_date': start_date,
+        'end_date': end_date,
         'records_limited': num_logs == MAX_DATA_LOG_RECORDS,
         'success_rate': success_rate,
     }

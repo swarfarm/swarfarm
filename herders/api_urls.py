@@ -1,8 +1,8 @@
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedDefaultRouter
 
-from herders.routers import NestedStorageRouter
 from herders.api_views import *
+from herders.routers import NestedStorageRouter
 
 """
 herders api routes
@@ -33,8 +33,8 @@ Global, for searching and filtering:
 router = DefaultRouter()
 router.register(r'profiles/upload', ProfileJsonUpload, base_name='profile/upload')
 router.register(r'profiles', SummonerViewSet, base_name='profiles')
-router.register(r'monster-instances', GlobalMonsterInstanceViewSet, base_name='monster-instances')
-router.register(r'rune-instances', GlobalRuneInstanceViewSet, base_name='rune-instances')
+# router.register(r'monster-instances', GlobalMonsterInstanceViewSet, base_name='monster-instances')
+# router.register(r'rune-instances', GlobalRuneInstanceViewSet, base_name='rune-instances')
 
 profile_router = NestedDefaultRouter(router, r'profiles', lookup='user')
 profile_router.register(r'monsters', MonsterInstanceViewSet, base_name='profile/monsters')

@@ -16,7 +16,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.fields import AdvancedSelectMultiple
-from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level
+from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level, GameItem
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
     RuneInstance, RuneCraftInstance, BuildingInstance
@@ -1627,8 +1627,6 @@ class FilterDungeonLogForm(FilterLogTimeRangeMixin):
         super().__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
-        # self.helper.form_class = 'ajax-form'
-        self.helper.form_id = 'id_FilterDungeonLogForm'
         self.helper.include_media = False
         self.helper.layout = Layout(
             Div(
@@ -1646,6 +1644,40 @@ class FilterDungeonLogForm(FilterLogTimeRangeMixin):
                             css_class='row',
                         )
 
+                    ),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                Div(
+                    FilterLogTimeRangeLayout(),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                css_class='row',
+            ),
+            Submit('submit', 'Apply')
+        )
+
+
+class FilterSummonLogForm(FilterLogTimeRangeMixin):
+    item__in = forms.ModelMultipleChoiceField(
+        label='Summon Method',
+        queryset=GameItem.objects.all(),
+        widget=autocomplete.ModelSelect2Multiple(
+            url='summon-game-item-autocomplete',
+        ),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Div(
+                        Field('item__in', wrapper_class='col-md-6'),
+                        css_class='row',
                     ),
                     css_class='col-md-6 col-xs-12'
                 ),

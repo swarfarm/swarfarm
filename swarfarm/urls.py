@@ -10,6 +10,7 @@ from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 
 from apiv2.views import generate_basic_auth_token
 from bestiary.autocomplete import *
+from data_log.autocomplete import SummonItemAutocomplete
 from herders import views as herder_views
 from herders.autocomplete import *
 from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, CrispyPasswordResetForm, \
@@ -21,6 +22,8 @@ urlpatterns = [
     url(r'^autocomplete/', include([
         url(r'^bestiary/$', BestiaryAutocomplete.as_view(), name='bestiary-monster-autocomplete'),
         url(r'^dungeon/$', DungeonAutocomplete.as_view(), name='bestiary-dungeon-autocomplete'),
+        url(r'^item/$', DungeonAutocomplete.as_view(), name='bestiary-game-item-autocomplete'),
+        url(r'#summon_item/$', SummonItemAutocomplete.as_view(), name='summon-game-item-autocomplete'),
         url(r'^quick-search/$', QuickSearchAutocomplete.as_view(), name='bestiary-quicksearch-autocomplete'),
         url(r'^monster-tag/$', MonsterTagAutocomplete.as_view(), name='monster-tag-autocomplete'),
         url(r'^monster-instance/$', MonsterInstanceAutocomplete.as_view(), name='monster-instance-autocomplete'),

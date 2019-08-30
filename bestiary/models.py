@@ -2121,7 +2121,7 @@ class GameItem(models.Model):
         )
 
     def __str__(self):
-        return f'{self.get_category_display()} - {self.name} (id:{self.com2us_id})'
+        return self.name
 
     def image_tag(self):
         if self.icon:

@@ -34,7 +34,7 @@ from .forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm
     BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
     MonsterPieceForm, AddTeamGroupForm, EditTeamGroupForm, DeleteTeamGroupForm, EditTeamForm, FilterRuneForm, \
     AddRuneInstanceForm, AssignRuneForm, AddRuneCraftInstanceForm, ImportPCAPForm, ImportSWParserJSONForm, \
-    FilterLogTimestamp, FilterDungeonLogForm
+    FilterLogTimestamp, FilterDungeonLogForm, FilterSummonLogForm
 from .models import Summoner, BuildingInstance, MonsterInstance, MonsterPiece, TeamGroup, Team, RuneInstance, \
     RuneCraftInstance, Storage
 from .profile_parser import parse_pcap, validate_sw_json
@@ -2803,12 +2803,12 @@ def _set_data_log_filters(request, section, form):
         request.session['data_log_timestamps'] = {}
 
     timestamp__gte = form.data.get('timestamp__gte')
-    if timestamp__gte:
+    if timestamp__gte is not None:
         request.session['data_log_timestamps']['timestamp__gte'] = timestamp__gte
         request.session.modified = True
 
     timestamp__lte = form.data.get('timestamp__lte')
-    if timestamp__lte:
+    if timestamp__lte is not None:
         request.session['data_log_timestamps']['timestamp__lte'] = timestamp__lte
         request.session.modified = True
 
@@ -2977,6 +2977,7 @@ def data_log_summons(request, profile_name):
         profile_name,
         'summonlog_set',
         'herders/profile/data_logs/summons.html',
+        FilterSummonLogForm,
     )
 
 
@@ -3107,7 +3108,7 @@ def data_log_dungeon_table(request, profile_name):
         profile_name,
         'dungeonlog_set',
         'herders/profile/data_logs/dungeons/table.html',
-        FilterDungeonLogForm
+        FilterDungeonLogForm,
     )
 
 

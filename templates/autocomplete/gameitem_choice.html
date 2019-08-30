@@ -1,0 +1,9 @@
+
+{% load static %}
+
+{% spaceless %}
+    {% static 'herders/images/' as img_url_prefix %}
+    <span data-value="{{ choice.pk }}">
+        <img src="{{ img_url_prefix }}items/{{ choice.icon }}"/> <span style="padding-left:5px">{{ choice }}</span>
+    </span>
+{% endspaceless %}

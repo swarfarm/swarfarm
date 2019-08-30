@@ -86,3 +86,6 @@ class GameItemAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(query)
 
         return qs
+
+    def get_result_label(self, item):
+        return loader.get_template('autocomplete/gameitem_choice.html').render({'choice': item})

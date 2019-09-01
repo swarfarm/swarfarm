@@ -66,8 +66,8 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(extra_context={'form': CrispyAuthenticationForm}),
         name='password_reset_complete'
     ),
-    url(r'^username_change/$', herder_views.change_username, name="username_change"),
-    url(r'^username_change/done/$', herder_views.change_username_complete, name="username_change_complete"),
+    url(r'^username_change/$', herder_views.profile.change_username, name="username_change"),
+    url(r'^username_change/done/$', herder_views.profile.change_username_complete, name="username_change_complete"),
 ]
 
 if settings.DEBUG:

@@ -41,7 +41,7 @@ class QuickSearchAutocomplete(BestiaryAutocomplete):
 
 class DungeonAutocomplete(autocomplete.Select2QuerySetView):
     paginate_by = 15
-    qs = Dungeon.objects.all()
+    queryset = Dungeon.objects.all()
 
     def get_queryset(self):
         qs = super().get_queryset().filter(enabled=True).exclude(category=Dungeon.CATEGORY_SECRET)

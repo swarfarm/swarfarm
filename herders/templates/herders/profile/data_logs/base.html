@@ -45,11 +45,7 @@
         </div>
     {% endif %}
 
-    {% if total_count or request.resolver_match.view_name == 'herders:data_log_dashboard' %}
-        {% block logs %}{% endblock %}
-    {% else %}
-        <div class="alert alert-info" role="alert"><p>No logs found! Relax your filters or check the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.</p></div>
-    {% endif %}
+    {% block logs %}{% endblock %}
 {% endblock profile %}
 
 {% block javascript %}

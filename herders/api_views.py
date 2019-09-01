@@ -14,7 +14,6 @@ from herders.permissions import *
 from herders.serializers import *
 from .profile_parser import validate_sw_json
 from .tasks import com2us_data_import
-from .views import DEFAULT_IMPORT_OPTIONS
 
 
 class SummonerViewSet(viewsets.ModelViewSet):
@@ -255,6 +254,20 @@ class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
 
 class ProfileJsonUpload(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
+    default_import_options = {
+        'clear_profile': False,
+        'default_priority': '',
+        'lock_monsters': True,
+        'minimum_stars': 1,
+        'ignore_silver': False,
+        'ignore_material': False,
+        'except_with_runes': True,
+        'except_light_and_dark': True,
+        'except_fusion_ingredient': True,
+        'delete_missing_monsters': 1,
+        'delete_missing_runes': 1,
+        'ignore_validation_errors': False
+    }
 
     def create(self, request, *args, **kwargs):
         errors = []
@@ -268,7 +281,7 @@ class ProfileJsonUpload(viewsets.ViewSet):
         if validation_errors:
             validation_failures = "Uploaded data does not match previously imported data. To override, set import preferences to ignore validation errors and import again."
 
-        import_options = request.user.summoner.preferences.get('import_options', DEFAULT_IMPORT_OPTIONS)
+        import_options = request.user.summoner.preferences.get('import_options', self.default_import_options)
 
         if not errors and (not validation_failures or import_options['ignore_validation_errors']):
             # Queue the import

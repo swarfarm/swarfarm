@@ -48,7 +48,7 @@ class Help(SectionMixin, SummonerMixin, OwnerRequiredMixin, TemplateView):
     template_name = 'herders/profile/data_logs/help.html'
 
 
-class DataLogView(SummonerMixin, OwnerRequiredMixin, FormView):
+class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
     log_type = None
     form_class = FilterLogTimestamp
     timestamp_session_key = 'data_log_timestamps'
@@ -129,7 +129,11 @@ class DataLogView(SummonerMixin, OwnerRequiredMixin, FormView):
                 self.request.session[self.get_session_key()][key] = value
 
     def get_filters(self):
-        return self.request.session.get(self.get_session_key(), {})
+        # Only retrieve filter keys used by the current form
+        filter_data = self.request.session.get(self.get_session_key(), {})
+        return {
+            k: v for k, v in filter_data.items() if k in self.get_form_class().base_fields
+        }
 
     def save_timestamp_filters(self, form):
         # Set timestamps in a separate session key so they span all data log sections
@@ -168,57 +172,6 @@ class TableView(DataLogView, ListView):
 class DungeonMixin:
     log_type = 'dungeonlog'
     form_class = FilterDungeonLogForm
-    dungeon = None
-    level = None
-
-    def get_dungeon(self):
-        if self.dungeon:
-            return self.dungeon
-
-        dungeon_slug = self.kwargs.get('slug')
-        if dungeon_slug:
-            try:
-                self.dungeon = Dungeon.objects.get(slug=dungeon_slug)
-                return self.dungeon
-            except Dungeon.DoesNotExist:
-                raise Http404('Dungeon not found')
-
-    def get_level(self):
-        if self.level:
-            return self.level
-
-        floor = self.kwargs.get('floor')
-        difficulty = self.kwargs.get('difficulty')
-
-        levels = self.get_dungeon().level_set.all()
-        level = None
-
-        if difficulty:
-            difficulty_id = {v.lower(): k for k, v in dict(Level.DIFFICULTY_CHOICES).items()}.get(difficulty)
-
-            if difficulty_id is None:
-                raise Http404()
-
-            levels = levels.filter(difficulty=difficulty_id)
-
-        if floor:
-            levels = levels.filter(floor=floor)
-        else:
-            # Pick first hell level for scenarios, otherwise always last level
-            if self.get_dungeon().category == Dungeon.CATEGORY_SCENARIO:
-                level = levels.filter(difficulty=Level.DIFFICULTY_HELL).first()
-            else:
-                level = levels.last()
-
-        if not level:
-            # Default to first level for all others
-            level = levels.first()
-
-        if not level:
-            raise Http404('Level not found')
-
-        self.level = level
-        return level
 
     def get_success_rate(self):
         if self.get_log_count():
@@ -232,8 +185,6 @@ class DungeonMixin:
 
     def get_context_data(self, **kwargs):
         context = {
-            'dungeon': self.get_dungeon(),
-            'level': self.get_level(),
             'success_rate': self.get_success_rate()
         }
         context.update(kwargs)
@@ -333,9 +284,17 @@ class DungeonDashboard(DungeonMixin, DashboardView):
 
 class DungeonDetail(DungeonMixin, DetailView):
     template_name = 'herders/profile/data_logs/dungeons/detail.html'
+    form_class = FilterLogTimestamp  # When viewing specific level, timestamp is only filter required
+    dungeon = None
+    level = None
+
+    def get_queryset(self):
+        return super().get_queryset().filter(level=self.level)
 
     def get_context_data(self, **kwargs):
         context = {
+            'dungeon': self.get_dungeon(),
+            'level': self.get_level(),
             'report': level_drop_report(self.get_queryset()),
             'start_date': self.get_queryset().last().timestamp if self.get_log_count() else None,
             'end_date': self.get_queryset().first().timestamp if self.get_log_count() else None,
@@ -343,6 +302,57 @@ class DungeonDetail(DungeonMixin, DetailView):
 
         context.update(kwargs)
         return super().get_context_data(**context)
+
+    def get_dungeon(self):
+        if self.dungeon:
+            return self.dungeon
+
+        dungeon_slug = self.kwargs.get('slug')
+        if dungeon_slug:
+            try:
+                self.dungeon = Dungeon.objects.get(slug=dungeon_slug)
+                return self.dungeon
+            except Dungeon.DoesNotExist:
+                raise Http404('Dungeon not found')
+        else:
+            raise Http404('No slug provided to locate dungeon')
+
+    def get_level(self):
+        if self.level:
+            return self.level
+
+        floor = self.kwargs.get('floor')
+        difficulty = self.kwargs.get('difficulty')
+
+        level = None
+        levels = self.get_dungeon().level_set.all()
+
+        if difficulty:
+            difficulty_id = {v.lower(): k for k, v in dict(Level.DIFFICULTY_CHOICES).items()}.get(difficulty)
+
+            if difficulty_id is None:
+                raise Http404()
+
+            levels = levels.filter(difficulty=difficulty_id)
+
+        if floor:
+            levels = levels.filter(floor=floor)
+        else:
+            # Pick first hell level for scenarios, otherwise always last level
+            if self.get_dungeon().category == Dungeon.CATEGORY_SCENARIO:
+                level = levels.filter(difficulty=Level.DIFFICULTY_HELL).first()
+            else:
+                level = levels.last()
+
+        if not level:
+            # Default to first level for all others
+            level = levels.first()
+
+        if not level:
+            raise Http404('Level not found')
+
+        self.level = level
+        return level
 
 
 class DungeonTable(DungeonMixin, TableView):

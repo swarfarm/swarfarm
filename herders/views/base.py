@@ -42,7 +42,7 @@ class IsOwnerMixin:
         return self.request.user.username == self.kwargs.get('profile_name')
 
     def get_context_data(self, **kwargs):
-        kwargs['is_owner'] = self.test_func()
+        kwargs['is_owner'] = self.is_owner()
         return super().get_context_data(**kwargs)
 
 

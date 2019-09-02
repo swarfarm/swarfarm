@@ -1,19 +1,16 @@
 from functools import reduce
 
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q, F, Count, Sum, Value, CharField, Case, When
 from django.db.models.functions import Concat
-from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import Http404
 from django.views.generic import FormView, ListView, TemplateView
 
 from bestiary.models import Dungeon, Level
 from data_log.reports.generate import get_drop_querysets, level_drop_report
-from data_log.util import transform_to_dict, slice_records, replace_value_with_choice
-from herders.decorators import username_case_redirect
+from data_log.util import transform_to_dict, replace_value_with_choice
 from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterSummonLogForm
-from herders.models import Summoner, Monster, RuneInstance
+from herders.models import Monster, RuneInstance
 from .base import SummonerMixin, OwnerRequiredMixin
 
 
@@ -25,7 +22,7 @@ class SectionMixin:
         return super().get_context_data(**kwargs)
 
 
-# Data log views
+# Generic views
 class Dashboard(SectionMixin, SummonerMixin, OwnerRequiredMixin, TemplateView):
     template_name = 'herders/profile/data_logs/dashboard.html'
 
@@ -51,9 +48,11 @@ class Help(SectionMixin, SummonerMixin, OwnerRequiredMixin, TemplateView):
     template_name = 'herders/profile/data_logs/help.html'
 
 
-class BaseDataLogView(SummonerMixin, OwnerRequiredMixin, FormView):
+class DataLogView(SummonerMixin, OwnerRequiredMixin, FormView):
     log_type = None
+    form_class = FilterLogTimestamp
     timestamp_session_key = 'data_log_timestamps'
+    log_count = None
     max_records = 2000
 
     def get(self, request, *args, **kwargs):
@@ -90,16 +89,35 @@ class BaseDataLogView(SummonerMixin, OwnerRequiredMixin, FormView):
             if value:
                 query.add(Q(**{key: value}), Q.AND)
 
-        return qs.filter(query)
+        qs = qs.filter(query)
+
+        # Trim queryset to max number of records, if defined
+        num_records = qs.count()
+        if self.max_records and num_records > self.max_records:
+            temp_slice = qs[:self.max_records]
+            earliest_record = temp_slice[temp_slice.count() - 1]
+            qs = qs.filter(timestamp__gte=earliest_record.timestamp)
+
+        return qs
 
     def get_context_data(self, **kwargs):
-        kwargs['total_count'] = self.get_queryset().count()
-        return super().get_context_data(**kwargs)
+        context = {
+            'total_count': self.get_log_count(),
+            'records_limited': self.max_records and self.get_log_count() == self.max_records
+        }
+        context.update(kwargs)
+        return super().get_context_data(**context)
 
     def get_log_type(self):
         if self.log_type is None:
             raise ImproperlyConfigured("log_type is required")
         return self.log_type
+
+    def get_log_count(self):
+        if not self.log_count:
+            self.log_count = self.get_queryset().count()
+
+        return self.log_count
 
     def get_session_key(self):
         return f'data_log_{self.get_log_type()}_filters'
@@ -132,261 +150,241 @@ class BaseDataLogView(SummonerMixin, OwnerRequiredMixin, FormView):
         return self.request.session.get(self.timestamp_session_key, {})
 
 
-class TableDataLogView(BaseDataLogView, ListView):
+class DashboardView(DataLogView):
+    pass
+
+
+class DetailView(DataLogView):
+    pass
+
+
+class TableView(DataLogView, ListView):
     form_class = FilterLogTimestamp
     paginate_by = 50
     context_object_name = 'logs'
 
 
 # Dungeons
-@username_case_redirect
-@login_required
-def data_log_dungeon_dashboard(request, profile_name):
-    # Dashboard of recent dungeon runs and results
-    try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
-    except Summoner.DoesNotExist:
-        return HttpResponseBadRequest()
-
-    is_owner = (request.user.is_authenticated and summoner.user == request.user)
-
-    if not is_owner:
-        return HttpResponseForbidden()
-
-    form = FilterDungeonLogForm(request.POST or _get_data_log_filters(request, 'dungeonlog_set'))
-    qs = summoner.dungeonlog_set.filter(success__isnull=False)  # Do not include incomplete logs
-
-    if form.is_valid():
-        # Apply filter values
-        for key, value in form.cleaned_data.items():
-            if value:
-                qs = qs.filter(**{key: value})
-
-        if request.POST:
-            # Save time filter timestamps on POST
-            _set_data_log_filters(request, 'dungeonlog_set', form)
-
-    # Limit to 2000 results
-    qs = slice_records(qs, maximum_count=MAX_DATA_LOG_RECORDS)
-    num_logs = qs.count()
-
-    all_drops = get_drop_querysets(qs)
-    recent_drops = {
-        'items': all_drops['items'].values(
-            'item',
-            name=F('item__name'),
-            icon=F('item__icon'),
-        ).annotate(
-            count=Sum('quantity')
-        ).order_by('-count') if 'items' in all_drops else [],
-        'monsters': replace_value_with_choice(
-            list(all_drops['monsters'].values(
-                name=F('monster__name'),
-                icon=F('monster__image_filename'),
-                element=F('monster__element'),
-                stars=F('grade'),
-                is_awakened=F('monster__is_awakened'),
-                can_awaken=F('monster__can_awaken'),
-            ).annotate(
-                count=Count('pk')
-            ).order_by('-count')),
-            {'element': Monster.ELEMENT_CHOICES}) if 'monsters' in all_drops else [],
-        # 'monster_pieces': 'insert_data_here' if 'monster_pieces' in all_drops else [],
-        'runes': replace_value_with_choice(
-            list(all_drops['runes'].values(
-                'type',
-                'quality',
-                'stars',
-            ).annotate(
-                count=Count('pk')
-            ).order_by('-count') if 'runes' in all_drops else []),
-            {
-                'type': RuneInstance.TYPE_CHOICES,
-                'quality': RuneInstance.QUALITY_CHOICES,
-            }
-        ),
-        # 'secret_dungeons': 'insert_data_here' if 'runes' in all_drops else [],
-    }
-
-    success_rate = float(qs.filter(success=True).count()) / num_logs * 100 if num_logs > 0 else None
-
-    dashboard_data = {
-        'energy_spent': {
-            'type': 'occurrences',
-            'total': num_logs,
-            'data': transform_to_dict(
-                list(
-                    qs.values(
-                        'level'
-                    ).annotate(
-                        dungeon_name=Concat(
-                            F('level__dungeon__name'),
-                            Value(' B'),
-                            F('level__floor'),
-                            output_field=CharField()
-                        ),
-                        count=Sum('level__energy_cost'),
-                    ).order_by('-count')
-                ),
-                name_key='dungeon_name',
-            ),
-        },
-        'recent_drops': recent_drops,
-    }
-
-    level_order = qs.values('level').annotate(
-        energy_spent=Sum('level__energy_cost')
-    ).order_by('-energy_spent').values_list('level', flat=True)
-    preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(level_order)])
-    level_list = Level.objects.filter(
-        pk__in=set(qs.values_list('level', flat=True))
-    ).order_by(preserved_order).prefetch_related('dungeon')[:20]
-
-    context = {
-        'profile_name': profile_name,
-        'summoner': summoner,
-        'is_owner': is_owner,
-        'view': 'data_log',
-        'form': form,
-        'total_count': num_logs,
-        'records_limited': num_logs == MAX_DATA_LOG_RECORDS,
-        'success_rate': success_rate,
-        'level_list': level_list,
-        'dashboard': dashboard_data,
-    }
-
-    return render(request, 'herders/profile/data_logs/dungeons/summary.html', context)
-
-
-@username_case_redirect
-@login_required
-def data_log_dungeon_detail(request, profile_name, slug, difficulty=None, floor=None):
-    try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
-    except Summoner.DoesNotExist:
-        return HttpResponseBadRequest()
-
-    is_owner = (request.user.is_authenticated and summoner.user == request.user)
-
-    if not is_owner:
-        return HttpResponseForbidden()
-
-    dung = get_object_or_404(Dungeon.objects.all().prefetch_related('level_set'), slug=slug)
-    lvl = None
-    levels = dung.level_set.all()
-
-    if difficulty:
-        difficulty_id = {v.lower(): k for k, v in dict(Level.DIFFICULTY_CHOICES).items()}.get(difficulty)
-
-        if difficulty_id is None:
-            raise Http404()
-
-        levels = levels.filter(difficulty=difficulty_id)
-
-    if floor:
-        levels = levels.filter(floor=floor)
-    else:
-        # Pick first hell level for scenarios, otherwise always last level
-        if dung.category == Dungeon.CATEGORY_SCENARIO:
-            lvl = levels.filter(difficulty=Level.DIFFICULTY_HELL).first()
-            return redirect('herders:data_log_dungeon_detail_difficulty', profile_name=profile_name, slug=dung.slug, difficulty='hell', floor=lvl.floor)
-        else:
-            lvl = levels.last()
-
-            # Redirect to URL with floor if dungeon has more than 1 floor
-            if dung.level_set.count() > 1:
-                return redirect('herders:data_log_dungeon_detail', profile_name=profile_name, slug=dung.slug, floor=1)
-
-    if not lvl:
-        # Default to first level for all others
-        lvl = levels.first()
-
-    if not lvl:
-        raise Http404()
-
-    form = FilterLogTimestamp(request.POST or _get_data_log_filters(request, 'dungeonlog_set'))
-    qs = summoner.dungeonlog_set.filter(level=lvl)
-
-    if form.is_valid():
-        # Apply filter values
-        for key, value in form.cleaned_data.items():
-            if value:
-                qs = qs.filter(**{key: value})
-
-        if request.POST:
-            # Save time filter timestamps on POST
-            _set_data_log_filters(request, 'dungeonlog_set', form)
-
-    # Limit to 2000 results
-    qs = slice_records(qs, maximum_count=MAX_DATA_LOG_RECORDS)
-    num_logs = qs.count()
-    success_rate = float(qs.filter(success=True).count()) / num_logs * 100 if num_logs else None
-    report = level_drop_report(qs)
-    start_date = qs.last().timestamp if num_logs else None
-    end_date = qs.first().timestamp if num_logs else None
-
-    context = {
-        'profile_name': profile_name,
-        'summoner': summoner,
-        'is_owner': is_owner,
-        'view': 'data_log',
-        'level': lvl,
-        'report': report,
-        'form': form,
-        'total_count': num_logs,
-        'start_date': start_date,
-        'end_date': end_date,
-        'records_limited': num_logs == MAX_DATA_LOG_RECORDS,
-        'success_rate': success_rate,
-    }
-
-    return render(request, 'herders/profile/data_logs/dungeons/detail.html', context)
-
-
-class DungeonLogTable(TableDataLogView):
+class DungeonMixin:
     log_type = 'dungeonlog'
     form_class = FilterDungeonLogForm
+    dungeon = None
+    level = None
+
+    def get_dungeon(self):
+        if self.dungeon:
+            return self.dungeon
+
+        dungeon_slug = self.kwargs.get('slug')
+        if dungeon_slug:
+            try:
+                self.dungeon = Dungeon.objects.get(slug=dungeon_slug)
+                return self.dungeon
+            except Dungeon.DoesNotExist:
+                raise Http404('Dungeon not found')
+
+    def get_level(self):
+        if self.level:
+            return self.level
+
+        floor = self.kwargs.get('floor')
+        difficulty = self.kwargs.get('difficulty')
+
+        levels = self.get_dungeon().level_set.all()
+        level = None
+
+        if difficulty:
+            difficulty_id = {v.lower(): k for k, v in dict(Level.DIFFICULTY_CHOICES).items()}.get(difficulty)
+
+            if difficulty_id is None:
+                raise Http404()
+
+            levels = levels.filter(difficulty=difficulty_id)
+
+        if floor:
+            levels = levels.filter(floor=floor)
+        else:
+            # Pick first hell level for scenarios, otherwise always last level
+            if self.get_dungeon().category == Dungeon.CATEGORY_SCENARIO:
+                level = levels.filter(difficulty=Level.DIFFICULTY_HELL).first()
+            else:
+                level = levels.last()
+
+        if not level:
+            # Default to first level for all others
+            level = levels.first()
+
+        if not level:
+            raise Http404('Level not found')
+
+        self.level = level
+        return level
+
+    def get_success_rate(self):
+        if self.get_log_count():
+            success_count = self.get_queryset().filter(success=True).count()
+            return float(success_count) / self.get_log_count() * 100
+
+    def get_queryset(self):
+        # Do not include incomplete logs
+        qs = super().get_queryset()
+        return qs.filter(success__isnull=False)
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'dungeon': self.get_dungeon(),
+            'level': self.get_level(),
+            'success_rate': self.get_success_rate()
+        }
+        context.update(kwargs)
+        return super().get_context_data(**context)
+
+
+class DungeonDashboard(DungeonMixin, DashboardView):
+    template_name = 'herders/profile/data_logs/dungeons/summary.html'
+
+    def get_queryset(self):
+        # Do not include incomplete logs
+        qs = super().get_queryset()
+        return qs.filter(success__isnull=False)
+
+    def get_context_data(self, **kwargs):
+        qs = self.get_queryset()
+        num_logs = qs.count()
+
+        all_drops = get_drop_querysets(qs)
+        recent_drops = {
+            'items': all_drops['items'].values(
+                'item',
+                name=F('item__name'),
+                icon=F('item__icon'),
+            ).annotate(
+                count=Sum('quantity')
+            ).order_by('-count') if 'items' in all_drops else [],
+            'monsters': replace_value_with_choice(
+                list(all_drops['monsters'].values(
+                    name=F('monster__name'),
+                    icon=F('monster__image_filename'),
+                    element=F('monster__element'),
+                    stars=F('grade'),
+                    is_awakened=F('monster__is_awakened'),
+                    can_awaken=F('monster__can_awaken'),
+                ).annotate(
+                    count=Count('pk')
+                ).order_by('-count')),
+                {'element': Monster.ELEMENT_CHOICES}) if 'monsters' in all_drops else [],
+            # 'monster_pieces': 'insert_data_here' if 'monster_pieces' in all_drops else [],
+            'runes': replace_value_with_choice(
+                list(all_drops['runes'].values(
+                    'type',
+                    'quality',
+                    'stars',
+                ).annotate(
+                    count=Count('pk')
+                ).order_by('-count') if 'runes' in all_drops else []),
+                {
+                    'type': RuneInstance.TYPE_CHOICES,
+                    'quality': RuneInstance.QUALITY_CHOICES,
+                }
+            ),
+            # 'secret_dungeons': 'insert_data_here' if 'runes' in all_drops else [],
+        }
+
+        success_rate = float(qs.filter(success=True).count()) / num_logs * 100 if num_logs > 0 else None
+
+        dashboard_data = {
+            'energy_spent': {
+                'type': 'occurrences',
+                'total': num_logs,
+                'data': transform_to_dict(
+                    list(
+                        qs.values(
+                            'level'
+                        ).annotate(
+                            dungeon_name=Concat(
+                                F('level__dungeon__name'),
+                                Value(' B'),
+                                F('level__floor'),
+                                output_field=CharField()
+                            ),
+                            count=Sum('level__energy_cost'),
+                        ).order_by('-count')
+                    ),
+                    name_key='dungeon_name',
+                ),
+            },
+            'recent_drops': recent_drops,
+        }
+
+        level_order = qs.values('level').annotate(
+            energy_spent=Sum('level__energy_cost')
+        ).order_by('-energy_spent').values_list('level', flat=True)
+        preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(level_order)])
+        level_list = Level.objects.filter(
+            pk__in=set(qs.values_list('level', flat=True))
+        ).order_by(preserved_order).prefetch_related('dungeon')[:20]
+
+        kwargs['dashboard'] = dashboard_data
+        kwargs['success_rate'] = success_rate
+        kwargs['level_list'] = level_list
+
+        return super().get_context_data(**kwargs)
+
+
+class DungeonDetail(DungeonMixin, DetailView):
+    template_name = 'herders/profile/data_logs/dungeons/detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'report': level_drop_report(self.get_queryset()),
+            'start_date': self.get_queryset().last().timestamp if self.get_log_count() else None,
+            'end_date': self.get_queryset().first().timestamp if self.get_log_count() else None,
+        }
+
+        context.update(kwargs)
+        return super().get_context_data(**context)
+
+
+class DungeonTable(DungeonMixin, TableView):
     template_name = 'herders/profile/data_logs/dungeons/table.html'
 
 
-class ElementalRiftBeastTable(TableDataLogView):
+class ElementalRiftBeastTable(TableView):
     log_type = 'riftdungeonlog'
     template_name = 'herders/profile/data_logs/rift_beast.html'
 
 
-class RiftRaidTable(TableDataLogView):
+class RiftRaidTable(TableView):
     log_type = 'riftraidlog'
     template_name = 'herders/profile/data_logs/rift_raid.html'
 
 
-class WorldBossTable(TableDataLogView):
+class WorldBossTable(TableView):
     log_type = 'worldbosslog'
     template_name = 'herders/profile/data_logs/world_boss.html'
 
 
-class SummonsTable(TableDataLogView):
+class SummonsTable(TableView):
     log_type = 'summonlog'
     form_class = FilterSummonLogForm
     template_name = 'herders/profile/data_logs/summons.html'
 
 
-class MagicShopTable(TableDataLogView):
+class MagicShopTable(TableView):
     log_type = 'shoprefreshlog'
     template_name = 'herders/profile/data_logs/magic_shop.html'
 
 
-class WishesTable(TableDataLogView):
+class WishesTable(TableView):
     log_type = 'wishlog'
     template_name = 'herders/profile/data_logs/wish.html'
 
 
-class RuneCraftingTable(TableDataLogView):
+class RuneCraftingTable(TableView):
     log_type = 'craftrunelog'
     template_name = 'herders/profile/data_logs/rune_crafting.html'
 
 
-class MagicBoxCraftingTable(TableDataLogView):
+class MagicBoxCraftingTable(TableView):
     log_type = 'magicboxcraft'
     template_name = 'herders/profile/data_logs/magic_box.html'
-
-

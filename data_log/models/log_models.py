@@ -573,9 +573,7 @@ class DungeonLog(LogEntry):
     @classmethod
     def parse_scenario_start(cls, summoner, log_data):
         log_entry = cls(summoner=summoner)
-
-        # Partially fill common log data
-        log_entry.wizard_id = log_data['request']['wizard_id']
+        log_entry.parse_common_log_data(log_data)
         log_entry.battle_key = log_data['response'].get('battle_key')
 
         log_entry.level = Level.objects.get(

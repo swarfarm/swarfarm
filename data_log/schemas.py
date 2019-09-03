@@ -164,9 +164,13 @@ battle_scenario_start = {
             'type': 'object',
             'properties': {
                 'battle_key': {'type': 'number'},
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
             },
             'required': [
                 'battle_key',
+                'tzone',
+                'tvalue',
             ]
         }
     },

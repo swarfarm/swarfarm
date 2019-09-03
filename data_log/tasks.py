@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from celery import shared_task
+from django.db.models import Q
 from django.utils import timezone
 
 from .models import DungeonLog, RiftRaidLog, WorldBossLog
@@ -16,21 +17,14 @@ def generate_all_reports():
     generate_world_boss_dungeon_reports()
 
 
-can_be_incomplete_logs = [
-    DungeonLog,
-    RiftRaidLog,
-    WorldBossLog,
-]
-
-
 @shared_task
 def clean_incomplete_logs():
-    # Delete all incomplete logs that do not have success specified after 1 day
-    days_old = timedelta(days=1)
-    result = {}
-
-    for m in can_be_incomplete_logs:
-        del_count = m.objects.filter(success__isnull=True, timestamp__lte=timezone.now() - days_old)
-        result[m.__name__] = del_count
+    # Delete all logs older than 1 day which have only had a start event captured, and no result event
+    log_is_old = Q(timestamp__lte=timezone.now() - timedelta(days=1))
+    result = {
+        DungeonLog.__name__: DungeonLog.objects.filter(log_is_old, success__isnull=True).delete(),
+        RiftRaidLog.__name__: RiftRaidLog.objects.filter(log_is_old, success__isnull=True).delete(),
+        WorldBossLog.__name__: WorldBossLog.objects.filter(log_is_old, grade__isnull=True).delete(),
+    }
 
     return result

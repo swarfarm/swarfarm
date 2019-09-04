@@ -30,7 +30,7 @@ class SummonerMixin:
 
     def get_context_data(self, **kwargs):
         kwargs['profile_name'] = self.kwargs.get('profile_name')
-        kwargs['summoner']: self.summoner
+        kwargs['summoner'] = self.summoner
         return super().get_context_data(**kwargs)
 
 

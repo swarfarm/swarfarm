@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
     {{ block.super }}
     <li><a href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}">Dungeons</a></li>
-    {% if request.resolver_match.url_name == 'data_log_dungeon_table' %}
+    {% if view_name == 'herders:data_log_dungeon_table' %}
         <li class="active">Table</li>
     {% else %}
         <li><a href="{% url 'herders:data_log_dungeon_table' profile_name=profile_name %}">Table</a></li>

@@ -1,0 +1,27 @@
+{% extends 'herders/profile/data_logs/base.html' %}
+{% load crispy_forms_tags report_charts utils %}
+
+{% block title %}
+    Summons - {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if view_name == 'herders:data_log_summons_dashboard' %}
+        <li class="active">Summons</li>
+    {% else %}
+        <li><a href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}">Summons</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block logs %}
+    <h2>Summon Log Summary</h2>
+
+    {{ dashboard }}
+
+    <div
+        class="report-chart"
+        data-chart="{% chart dashboard.summons_performed type='pie' title="Summons Performed" percentage=False %}"
+        style="height: 300px"
+    ></div>
+{% endblock %}

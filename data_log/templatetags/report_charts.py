@@ -54,6 +54,10 @@ def _common_chart_attributes(chart_template, **kwargs):
         if chart_data['chart']['type'] == 'column':
             chart_data['tooltip']['pointFormat'] = '<tr><td style="color:{series.color};padding:0">{series.name}: </td><td style="padding:0"><b>{point.y:.1f}%</b></td></tr>'
 
+    if kwargs.get('percentage') == False:
+        if chart_data['chart']['type'] == 'pie':
+            chart_data['plotOptions']['pie']['dataLabels']['format'] = '<b>{point.name}</b>: {point.y}'
+
     return chart_data
 
 

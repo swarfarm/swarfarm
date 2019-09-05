@@ -107,7 +107,11 @@ urlpatterns = [
             url(r'^wish/$', views.data_log.WishesTable.as_view(), name='data_log_wish'),
             url(r'^rune_crafting/$', views.data_log.RuneCraftingTable.as_view(), name='data_log_rune_crafting'),
             url(r'^magic_box/$', views.data_log.MagicBoxCraftingTable.as_view(), name='data_log_magic_box'),
-            url(r'^summons/$', views.data_log.SummonsTable.as_view(), name='data_log_summons'),
+            url(r'^summons/', include([
+                path('', views.data_log.SummonsDashboard.as_view(), name='data_log_summons_dashboard'),
+                path('table/', views.data_log.SummonsTable.as_view(), name='data_log_summons_table'),
+                path('<slug:slug>/', views.data_log.SummonsDetail.as_view(), name='data_log_summons_detail'),
+            ])),
             url(r'^dungeons/', include([
                 path('', views.data_log.DungeonDashboard.as_view(), name='data_log_dungeon_dashboard'),
                 path('table/', views.data_log.DungeonTable.as_view(), name='data_log_dungeon_table'),

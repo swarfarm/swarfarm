@@ -159,7 +159,7 @@ class DashboardView(DataLogView):
 
 
 class DetailView(DataLogView):
-    pass
+    form_class = FilterLogTimestamp  # Only need timestamp filters when viewing detail. Other params are source from URL
 
 
 class TableView(DataLogView, ListView):
@@ -192,7 +192,7 @@ class DungeonMixin:
 
 
 class DungeonDashboard(DungeonMixin, DashboardView):
-    template_name = 'herders/profile/data_logs/dungeons/summary.html'
+    template_name = 'herders/profile/data_logs/dungeons/dashboard.html'
 
     def get_queryset(self):
         # Do not include incomplete logs
@@ -200,10 +200,7 @@ class DungeonDashboard(DungeonMixin, DashboardView):
         return qs.filter(success__isnull=False)
 
     def get_context_data(self, **kwargs):
-        qs = self.get_queryset()
-        num_logs = qs.count()
-
-        all_drops = get_drop_querysets(qs)
+        all_drops = get_drop_querysets(self.get_queryset())
         recent_drops = {
             'items': all_drops['items'].values(
                 'item',
@@ -241,15 +238,13 @@ class DungeonDashboard(DungeonMixin, DashboardView):
             # 'secret_dungeons': 'insert_data_here' if 'runes' in all_drops else [],
         }
 
-        success_rate = float(qs.filter(success=True).count()) / num_logs * 100 if num_logs > 0 else None
-
         dashboard_data = {
             'energy_spent': {
                 'type': 'occurrences',
-                'total': num_logs,
+                'total': self.get_log_count(),
                 'data': transform_to_dict(
                     list(
-                        qs.values(
+                        self.get_queryset().values(
                             'level'
                         ).annotate(
                             dungeon_name=Concat(
@@ -267,16 +262,15 @@ class DungeonDashboard(DungeonMixin, DashboardView):
             'recent_drops': recent_drops,
         }
 
-        level_order = qs.values('level').annotate(
+        level_order = self.get_queryset().values('level').annotate(
             energy_spent=Sum('level__energy_cost')
         ).order_by('-energy_spent').values_list('level', flat=True)
         preserved_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(level_order)])
         level_list = Level.objects.filter(
-            pk__in=set(qs.values_list('level', flat=True))
+            pk__in=set(self.get_queryset().values_list('level', flat=True))
         ).order_by(preserved_order).prefetch_related('dungeon')[:20]
 
         kwargs['dashboard'] = dashboard_data
-        kwargs['success_rate'] = success_rate
         kwargs['level_list'] = level_list
 
         return super().get_context_data(**kwargs)
@@ -284,7 +278,6 @@ class DungeonDashboard(DungeonMixin, DashboardView):
 
 class DungeonDetail(DungeonMixin, DetailView):
     template_name = 'herders/profile/data_logs/dungeons/detail.html'
-    form_class = FilterLogTimestamp  # When viewing specific level, timestamp is only filter required
     dungeon = None
     level = None
 
@@ -374,10 +367,40 @@ class WorldBossTable(TableView):
     template_name = 'herders/profile/data_logs/world_boss.html'
 
 
-class SummonsTable(TableView):
+class SummonsMixin:
     log_type = 'summonlog'
     form_class = FilterSummonLogForm
-    template_name = 'herders/profile/data_logs/summons.html'
+
+
+class SummonsDashboard(SummonsMixin, DashboardView):
+    template_name = 'herders/profile/data_logs/summons/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        dashboard_data = {
+            'summons_performed': {
+                'type': 'occurrences',
+                'total': self.get_log_count(),
+                'data': transform_to_dict(
+                    list(self.get_queryset().values('item__name').annotate(count=Count('pk')).order_by('-count')),
+                    name_key='item__name',
+                ),
+            }
+        }
+
+        context = {
+            'dashboard': dashboard_data,
+        }
+
+        context.update(kwargs)
+        return super().get_context_data(**context)
+
+
+class SummonsDetail(SummonsMixin, DetailView):
+    template_name = 'herders/profile/data_logs/summons/detail.html'
+
+
+class SummonsTable(SummonsMixin, TableView):
+    template_name = 'herders/profile/data_logs/summons/table.html'
 
 
 class MagicShopTable(TableView):

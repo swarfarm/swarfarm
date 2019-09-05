@@ -1,4 +1,4 @@
-{% extends 'herders/profile/data_logs/dungeons/summary.html' %}
+{% extends 'herders/profile/data_logs/dungeons/dashboard.html' %}
 {% load crispy_forms_tags report_charts utils %}
 
 {% block title %}
@@ -7,7 +7,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% if request.resolver_match.url_name == 'data_log_dungeon_detail' or request.resolver_match.url_name == 'data_log_dungeon_detail_difficulty' %}
+    {% if view_name == 'herders:data_log_dungeon_detail' or view_name == 'herders:data_log_dungeon_detail_difficulty' %}
         <li class="active">{{ level }}</li>
     {% else %}
         <li><a href="{% include 'herders/profile/data_logs/dungeon_link_url.html' with profile_name=profile_name level=level only %}">{{ level }}</a></li>

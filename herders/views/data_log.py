@@ -6,7 +6,7 @@ from django.db.models.functions import Concat
 from django.http import Http404
 from django.views.generic import FormView, ListView, TemplateView
 
-from bestiary.models import Dungeon, Level
+from bestiary.models import Dungeon, Level, GameItem
 from data_log.reports.generate import get_drop_querysets, level_drop_report
 from data_log.util import transform_to_dict, replace_value_with_choice
 from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterSummonLogForm
@@ -50,7 +50,6 @@ class Help(SectionMixin, SummonerMixin, OwnerRequiredMixin, TemplateView):
 
 class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
     log_type = None
-    form_class = FilterLogTimestamp
     timestamp_session_key = 'data_log_timestamps'
     log_count = None
     max_records = 2000
@@ -154,16 +153,15 @@ class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
         return self.request.session.get(self.timestamp_session_key, {})
 
 
-class DashboardView(DataLogView):
+class DashboardMixin:
     pass
 
 
-class DetailView(DataLogView):
+class DetailMixin:
     form_class = FilterLogTimestamp  # Only need timestamp filters when viewing detail. Other params are source from URL
 
 
 class TableView(DataLogView, ListView):
-    form_class = FilterLogTimestamp
     paginate_by = 50
     context_object_name = 'logs'
 
@@ -191,7 +189,7 @@ class DungeonMixin:
         return super().get_context_data(**context)
 
 
-class DungeonDashboard(DungeonMixin, DashboardView):
+class DungeonDashboard(DashboardMixin, DungeonMixin, DataLogView):
     template_name = 'herders/profile/data_logs/dungeons/dashboard.html'
 
     def get_queryset(self):
@@ -276,7 +274,7 @@ class DungeonDashboard(DungeonMixin, DashboardView):
         return super().get_context_data(**kwargs)
 
 
-class DungeonDetail(DungeonMixin, DetailView):
+class DungeonDetail(DetailMixin, DungeonMixin, DataLogView):
     template_name = 'herders/profile/data_logs/dungeons/detail.html'
     dungeon = None
     level = None
@@ -372,7 +370,7 @@ class SummonsMixin:
     form_class = FilterSummonLogForm
 
 
-class SummonsDashboard(SummonsMixin, DashboardView):
+class SummonsDashboard(DashboardMixin, SummonsMixin, DataLogView):
     template_name = 'herders/profile/data_logs/summons/dashboard.html'
 
     def get_context_data(self, **kwargs):
@@ -387,16 +385,41 @@ class SummonsDashboard(SummonsMixin, DashboardView):
             }
         }
 
+        item_list = GameItem.objects.filter(
+            pk__in=set(self.get_queryset().values_list('item', flat=True))
+        )
+
         context = {
             'dashboard': dashboard_data,
+            'item_list': item_list,
         }
 
         context.update(kwargs)
         return super().get_context_data(**context)
 
 
-class SummonsDetail(SummonsMixin, DetailView):
+class SummonsDetail(DetailMixin, SummonsMixin, DataLogView):
     template_name = 'herders/profile/data_logs/summons/detail.html'
+    item = None
+
+    def get_item(self):
+        if not self.item:
+            slug = self.kwargs.get('slug')
+            if slug:
+                try:
+                    self.item = GameItem.objects.get(slug=slug)
+                except (GameItem.DoesNotExist, GameItem.MultipleObjectsReturned):
+                    pass
+
+        return self.item
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'item': self.get_item(),
+        }
+
+        context.update(kwargs)
+        return super().get_context_data(**context)
 
 
 class SummonsTable(SummonsMixin, TableView):

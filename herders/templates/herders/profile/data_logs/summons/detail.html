@@ -1,0 +1,23 @@
+{% extends 'herders/profile/data_logs/summons/dashboard.html' %}
+{% load crispy_forms_tags report_charts utils %}
+
+{% block title %}
+    {{ item }} - {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if view_name == 'herders:data_log_summons_dashboard' %}
+        <li class="active">Summons</li>
+    {% else %}
+        <li><a href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}">Summons</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block logs %}
+    <h2>{{ item }}</h2>
+    <ul class="list list-inline">
+        <li>Total Summons: {{ total_count }}{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</li>
+    </ul>
+
+{% endblock %}

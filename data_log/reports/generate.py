@@ -2,7 +2,7 @@ from collections import Counter
 from datetime import timedelta
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Min, Max, Avg, Sum, Func, F, Q, CharField, FloatField, Value, StdDev
+from django.db.models import Count, Min, Max, Avg, Sum, Func, F, Func, Q, CharField, FloatField, Value, StdDev
 from django.db.models.functions import Cast, Concat, Extract
 from django_pivot.histogram import histogram
 
@@ -195,11 +195,12 @@ def get_report_summary(drops, total_log_count, **kwargs):
     return summary
 
 
-def get_item_report(qs, total_log_count):
+def get_item_report(qs, total_log_count, min_count=None):
     if qs.count() == 0:
         return None
 
-    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
+    if min_count is None:
+        min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
 
     results = list(
         qs.values(
@@ -219,72 +220,88 @@ def get_item_report(qs, total_log_count):
     return results
 
 
-def get_monster_report(qs, total_log_count):
+def get_monster_report(qs, total_log_count, min_count=None):
     if qs.count() == 0:
         return None
 
-    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
+    if min_count is None:
+        min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
 
-    results = {}
-
-    # By unique monster
-    results['monsters'] = {
-        'type': 'occurrences',
-        'total': qs.count(),
-        'data': list(qs.values(
-            'monster',
-            name=F('monster__name'),
-            element=F('monster__element'),
-            com2us_id=F('monster__com2us_id'),
-            icon=F('monster__image_filename')
-        ).annotate(count=Count('pk')).filter(count__gt=min_count))
+    return {
+        'monsters': {  # By unique monster
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(
+                        qs.values(
+                            'monster',
+                        ).annotate(
+                            monster_name=Func(
+                                Concat(F('monster__element'), Value(' '), F('monster__name')),
+                                function='INITCAP',
+                            ),
+                            count=Count('pk'),
+                        ).filter(count__gt=min_count).order_by('-count')
+                    ),
+                    {'element': Monster.ELEMENT_CHOICES}
+                ),
+                name_key='monster_name'
+            ),
+        },
+        'family': {  # By family
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': list(
+                qs.values(
+                    family_id=F('monster__family_id'),
+                    name=F('monster__name'),
+                ).annotate(
+                    count=Count('pk')
+                ).filter(
+                    count__gt=min_count
+                ).order_by('-count')
+            )
+        },
+        'nat_stars': {  # By nat stars
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': list(
+                qs.values(
+                    nat_stars=F('monster__base_stars'),
+                ).annotate(
+                    count=Count('monster__base_stars'),
+                    drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
+                    qty_per_100=Cast(Func(Count('pk'), 0, function='nullif'), FloatField()) / total_log_count * 100,
+                ).filter(count__gt=min_count).order_by('-count')
+            )
+        },
+        'element': {  # By element
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': replace_value_with_choice(
+                list(
+                    qs.values(
+                        element=F('monster__element')
+                    ).annotate(
+                        count=Count('pk')
+                    ).filter(count__gt=min_count).order_by('-count')
+                ),
+                {'element': Monster.ELEMENT_CHOICES}
+            )
+        },
+        'awakened': {  # By awakened/unawakened
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': list(
+                qs.values(
+                    awakened=F('monster__is_awakened')
+                ).annotate(
+                    count=Count('pk')
+                ).filter(count__gt=min_count).order_by('-count')
+            ),
+        }
     }
-
-    # By family
-    results['family'] = {
-        'type': 'occurrences',
-        'total': qs.count(),
-        'data': list(qs.values(
-            family_id=F('monster__family_id'),
-            name=F('monster__name'),
-        ).annotate(count=Count('pk')).filter(count__gt=min_count))
-    }
-
-    # By nat stars
-    mons_by_nat_stars = list(
-        qs.values(
-            nat_stars=F('monster__base_stars'),
-        ).annotate(
-            count=Count('monster__base_stars'),
-            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-            qty_per_100=Cast(Func(Count('pk'), 0, function='nullif'), FloatField()) / total_log_count * 100,
-        ).filter(count__gt=min_count)
-    )
-
-    results['nat_stars'] = {
-        'type': 'occurrences',
-        'total': qs.count(),
-        'data': mons_by_nat_stars,
-    }
-
-    # By element
-    results['element'] = {
-        'type': 'occurrences',
-        'total': qs.count(),
-        'data': replace_value_with_choice(
-            list(qs.values(element=F('monster__element')).annotate(count=Count('pk')).filter(count__gt=min_count)),
-            {'element': Monster.ELEMENT_CHOICES}
-        )
-    }
-
-    # By awakened/unawakened
-    results['awakened'] = {
-        'type': 'occurrences',
-        'total': qs.count(),
-        'data': list(qs.values(awakened=F('monster__is_awakened')).annotate(count=Count('pk')).filter(count__gt=min_count)),
-    }
-
-    return results
 
 
 def get_rune_report(qs, total_log_count):

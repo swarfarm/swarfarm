@@ -7,7 +7,7 @@ from django.http import Http404
 from django.views.generic import FormView, ListView, TemplateView
 
 from bestiary.models import Dungeon, Level, GameItem
-from data_log.reports.generate import get_drop_querysets, level_drop_report
+from data_log.reports.generate import get_drop_querysets, level_drop_report, get_monster_report
 from data_log.util import transform_to_dict, replace_value_with_choice
 from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterSummonLogForm
 from herders.models import Monster, RuneInstance
@@ -280,7 +280,7 @@ class DungeonDetail(DetailMixin, DungeonMixin, DataLogView):
     level = None
 
     def get_queryset(self):
-        return super().get_queryset().filter(level=self.level)
+        return super().get_queryset().filter(level=self.get_level())
 
     def get_context_data(self, **kwargs):
         context = {
@@ -402,6 +402,9 @@ class SummonsDetail(DetailMixin, SummonsMixin, DataLogView):
     template_name = 'herders/profile/data_logs/summons/detail.html'
     item = None
 
+    def get_queryset(self):
+        return super().get_queryset().filter(item=self.get_item())
+
     def get_item(self):
         if not self.item:
             slug = self.kwargs.get('slug')
@@ -416,6 +419,7 @@ class SummonsDetail(DetailMixin, SummonsMixin, DataLogView):
     def get_context_data(self, **kwargs):
         context = {
             'item': self.get_item(),
+            'report': get_monster_report(self.get_queryset(), self.get_log_count(), min_count=0)
         }
 
         context.update(kwargs)

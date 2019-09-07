@@ -1,3 +1,4 @@
+from datetime import datetime
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
@@ -132,6 +133,8 @@ class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
             elif isinstance(value, Model):
                 # Save the PK of the model
                 value_to_store = value.pk
+            elif isinstance(value, datetime):
+                value_to_store = value.isoformat()
             else:
                 value_to_store = value
 

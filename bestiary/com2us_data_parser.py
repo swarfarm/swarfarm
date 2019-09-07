@@ -15,7 +15,7 @@ from django.conf import settings
 from sympy import simplify
 
 from bestiary.com2us_mapping import *
-from .models import Skill, ScalingStat, SkillEffect, CraftMaterial, MonsterCraftCost, HomunculusSkill, \
+from .models import Skill, ScalingStat, CraftMaterial, MonsterCraftCost, HomunculusSkill, \
     HomunculusSkillCraftCost, Dungeon, SecretDungeon, Level
 
 
@@ -113,12 +113,12 @@ def parse_skill_data(preview=False):
     homunculus_skill_list = [json.loads(row['master id']) for row in homunculus_skill_table['rows']]
 
     scaling_stats = ScalingStat.objects.all()
-    ignore_def_effect = SkillEffect.objects.get(name='Ignore DEF')
 
-    # Tracking IDs of skills with known issues
+    # Tracking IDs of skills with known issues/special cases
     golem_def_skills = [2401, 2402, 2403, 2404, 2405, 2406, 2407, 2410]
     noble_agreement_speed_id = 6519
     holy_light_id = 2909
+    armarna_s3_max_hp = 11214
 
     for skill_data in skill_table['rows']:
         # Get matching skill in DB
@@ -261,6 +261,13 @@ def parse_skill_data(preview=False):
             skill.multiplier_formula = formula
             print('Updated multiplier formula to {}'.format(skill.multiplier_formula))
             updated = True
+
+        # Special cases for scaling stats
+        if master_id == armarna_s3_max_hp:
+            max_hp = scaling_stats.get(com2us_desc='ATTACK_TOT_HP')
+            if max_hp not in skill.scaling_stats.all():
+                skill.scaling_stats.add(max_hp)
+                updated = True
 
         # Finally save it if required
         if updated:

@@ -102,7 +102,9 @@ class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
     def get_context_data(self, **kwargs):
         context = {
             'total_count': self.get_log_count(),
-            'records_limited': self.max_records and self.get_log_count() == self.max_records
+            'records_limited': self.max_records and self.get_log_count() == self.max_records,
+            'start_date': self.get_queryset().last().timestamp if self.get_log_count() else None,
+            'end_date': self.get_queryset().first().timestamp if self.get_log_count() else None,
         }
         context.update(kwargs)
         return super().get_context_data(**context)
@@ -296,8 +298,6 @@ class DungeonDetail(DetailMixin, DungeonMixin, DataLogView):
             'dungeon': self.get_dungeon(),
             'level': self.get_level(),
             'report': level_drop_report(self.get_queryset()),
-            'start_date': self.get_queryset().last().timestamp if self.get_log_count() else None,
-            'end_date': self.get_queryset().first().timestamp if self.get_log_count() else None,
         }
 
         context.update(kwargs)

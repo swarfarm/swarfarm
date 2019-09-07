@@ -19,6 +19,7 @@
 
     <h2>Summon Log Summary</h2>
 
+    {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
     <p>Total Summons: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
 
     <div class="row">
@@ -47,6 +48,4 @@
             </div>
         </div>
     </div>
-
-    {{ dashboard }}
 {% endblock %}

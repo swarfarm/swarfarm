@@ -7,19 +7,19 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% if view_name == 'herders:data_log_summons_dashboard' %}
-        <li class="active">Summons</li>
+    {% if view_name == 'herders:data_log_summons_detail' %}
+        <li class="active">{{ item }}</li>
     {% else %}
-        <li><a href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}">Summons</a></li>
+        <li><a href="{% url 'herders:data_log_summons_detail' profile_name=profile_name slug=item.slug %}">{{ item }}</a></li>
     {% endif %}
 {% endblock %}
 
 {% block logs %}
     <h2>{{ item }}</h2>
     <ul class="list list-inline">
+        {% if start_date %}<li>{{ start_date }} - {{ end_date }}</li>{% endif %}
         <li>Total Summons: {{ total_count }}{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</li>
     </ul>
 
-    {{ report }}
-
+    {% include 'data_log/monster.html' with monsters=report only %}
 {% endblock %}

@@ -68,6 +68,7 @@ def replace_value_with_choice(data, replacements):
 def transform_to_dict(data, value_key='count', **kwargs):
     dict_data = {}
     name_key = kwargs.get('name_key')
+    transform = kwargs.get('transform')
 
     for item in data:
         if name_key is None:
@@ -77,7 +78,10 @@ def transform_to_dict(data, value_key='count', **kwargs):
                     name_key = key
                     break
 
-        dict_data[item[name_key]] = item[value_key]
+        if transform:
+            dict_data[transform[item[name_key]]] = item[value_key]
+        else:
+            dict_data[item[name_key]] = item[value_key]
 
     return dict_data
 

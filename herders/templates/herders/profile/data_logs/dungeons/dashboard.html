@@ -17,6 +17,7 @@
 {% block logs %}
     <h2>Dungeon Log Summary</h2>
 
+    {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
     <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
     <p>Success Rate: {{ success_rate|floatformat:-2 }}%</p>
 

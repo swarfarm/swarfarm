@@ -232,19 +232,16 @@ def get_monster_report(qs, total_log_count, min_count=None):
             'type': 'occurrences',
             'total': qs.count(),
             'data': transform_to_dict(
-                replace_value_with_choice(
-                    list(
-                        qs.values(
-                            'monster',
-                        ).annotate(
-                            monster_name=Func(
-                                Concat(F('monster__element'), Value(' '), F('monster__name')),
-                                function='INITCAP',
-                            ),
-                            count=Count('pk'),
-                        ).filter(count__gt=min_count).order_by('-count')
-                    ),
-                    {'element': Monster.ELEMENT_CHOICES}
+                list(
+                    qs.values(
+                        'monster',
+                    ).annotate(
+                        monster_name=Func(
+                            Concat(F('monster__element'), Value(' '), F('monster__name')),
+                            function='INITCAP',
+                        ),
+                        count=Count('pk'),
+                    ).filter(count__gt=min_count).order_by('-count')
                 ),
                 name_key='monster_name'
             ),
@@ -252,53 +249,68 @@ def get_monster_report(qs, total_log_count, min_count=None):
         'family': {  # By family
             'type': 'occurrences',
             'total': qs.count(),
-            'data': list(
-                qs.values(
-                    family_id=F('monster__family_id'),
-                    name=F('monster__name'),
-                ).annotate(
-                    count=Count('pk')
-                ).filter(
-                    count__gt=min_count
-                ).order_by('-count')
+            'data': transform_to_dict(
+                list(
+                    qs.values(
+                        family_id=F('monster__family_id'),
+                        name=F('monster__name'),
+                    ).annotate(
+                        count=Count('pk')
+                    ).filter(
+                        count__gt=min_count
+                    ).order_by('-count')
+                ),
+                name_key='name'
             )
         },
         'nat_stars': {  # By nat stars
             'type': 'occurrences',
             'total': qs.count(),
-            'data': list(
-                qs.values(
-                    nat_stars=F('monster__base_stars'),
-                ).annotate(
-                    count=Count('monster__base_stars'),
-                    drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-                    qty_per_100=Cast(Func(Count('pk'), 0, function='nullif'), FloatField()) / total_log_count * 100,
-                ).filter(count__gt=min_count).order_by('-count')
+            'data': transform_to_dict(
+                list(
+                    qs.values(
+                        nat_stars=F('monster__base_stars'),
+                    ).annotate(
+                        grade=Concat(Cast('monster__base_stars', CharField()), Value('⭐')),
+                        count=Count('monster__base_stars'),
+                    ).filter(count__gt=min_count).order_by('-count')
+                ),
+                name_key='grade'
             )
         },
         'element': {  # By element
             'type': 'occurrences',
             'total': qs.count(),
-            'data': replace_value_with_choice(
-                list(
-                    qs.values(
-                        element=F('monster__element')
-                    ).annotate(
-                        count=Count('pk')
-                    ).filter(count__gt=min_count).order_by('-count')
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(
+                        qs.values(
+                            element=F('monster__element')
+                        ).annotate(
+                            element_cap=Func(F('monster__element'), function='INITCAP',),
+                            count=Count('pk')
+                        ).filter(count__gt=min_count).order_by('-count')
+                    ),
+                    {'element': Monster.ELEMENT_CHOICES}
                 ),
-                {'element': Monster.ELEMENT_CHOICES}
+                name_key='element_cap',
             )
         },
         'awakened': {  # By awakened/unawakened
             'type': 'occurrences',
             'total': qs.count(),
-            'data': list(
-                qs.values(
-                    awakened=F('monster__is_awakened')
-                ).annotate(
-                    count=Count('pk')
-                ).filter(count__gt=min_count).order_by('-count')
+            'data': transform_to_dict(
+                list(
+                    qs.values(
+                        awakened=F('monster__is_awakened')
+                    ).annotate(
+                        count=Count('pk')
+                    ).filter(count__gt=min_count).order_by('-count')
+                ),
+                transform={
+                    True: 'Awakened',
+                    False: 'Unawakened',
+                }
             ),
         }
     }

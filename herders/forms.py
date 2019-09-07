@@ -1659,7 +1659,7 @@ class FilterDungeonLogForm(FilterLogTimeRangeMixin):
 
 class FilterSummonLogForm(FilterLogTimeRangeMixin):
     item__in = forms.ModelMultipleChoiceField(
-        label='Summon Method',
+        label='Method',
         queryset=GameItem.objects.all(),
         widget=autocomplete.ModelSelect2Multiple(
             url='summon-game-item-autocomplete',
@@ -1675,9 +1675,9 @@ class FilterSummonLogForm(FilterLogTimeRangeMixin):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    Div(
-                        Field('item__in', wrapper_class='col-md-6'),
-                        css_class='row',
+                    Fieldset(
+                        'Summon Filters',
+                        Field('item__in'),
                     ),
                     css_class='col-md-6 col-xs-12'
                 ),

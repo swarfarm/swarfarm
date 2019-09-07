@@ -2,100 +2,36 @@
 
 {% if monsters %}
     <h2>Monsters</h2>
-    <h3>Type/Family</h3>
+    <div
+        class="report-chart"
+        data-chart="{% chart monsters.monsters title="Monsters - Unique" %}"
+        style="height: 300px"
+    ></div>
+
+    <div
+        class="report-chart"
+        data-chart="{% chart monsters.family title="Monsters - By Family" %}"
+        style="height: 300px"
+    ></div>
+
     <div class="row">
-        <div class="col-md-6 col-lg-3">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.type type='pie' title="Rune Set" sorted='rune'%}"
-                style="height: 300px"
-            ></div>
-        </div>
+        <div
+            class="report-chart col-md-4 col-sm-6"
+            data-chart="{% chart monsters.nat_stars type='pie' title="Natural Stars" percentage=False sorted='key' %}"
+            style="height: 300px"
+        ></div>
 
-        <div class="col-md-6 col-lg-3">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.slot type='pie' title="Slot" sorted='key' %}"
-                style="height: 300px"
-            ></div>
-        </div>
+        <div
+            class="report-chart col-md-4 col-sm-6"
+            data-chart="{% chart monsters.element type='pie' title="Element" percentage=False sorted='key' colors='element' %}"
+            style="height: 300px"
+        ></div>
 
-        <div class="col-md-6 col-lg-3">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.stars type='pie' title="Stars" sorted='key' %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.quality type='pie' title="Quality" sorted='quality' %}"
-                style="height: 300px"
-            ></div>
-        </div>
+        <div
+            class="report-chart col-md-4 col-sm-6"
+            data-chart="{% chart monsters.awakened type='pie' title="Awakened/Unawakened" percentage=False %}"
+            style="height: 300px"
+        ></div>
     </div>
 
-    <h3>Stats</h3>
-    <div class="row">
-        <div class="col-md-6 col-lg-4">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.slot_2_main_stat title="Slot 2 Main Stat" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.slot_4_main_stat title="Slot 4 Main Stat" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.slot_6_main_stat title="Slot 6 Main Stat" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-md-6 col-lg-6">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.innate_stat title="By Innate Stat" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-md-6 col-lg-6">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.substats title="By Substats" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
-        </div>
-    </div>
-
-    <h3>Other</h3>
-    <div class="row">
-        <div class="col-sm-12 col-md-6 col-lg-6">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.value title="Rune Sell Value" legend=True colors='rune' sorted='quality' %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-sm-12 col-md-6 col-lg-6">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.max_efficiency title="Maximum Efficiency Distribution" legend=True colors='rune' sorted='quality' %}"
-                style="height: 300px"
-            ></div>
-        </div>
-    </div>
 {% endif %}

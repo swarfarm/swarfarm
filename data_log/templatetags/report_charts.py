@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from django import template
 
-from bestiary.models import RuneObjectBase
+from bestiary.models import RuneObjectBase, Monster
 from data_log.reports import chart_templates
 
 register = template.Library()
@@ -61,6 +61,21 @@ def _common_chart_attributes(chart_template, **kwargs):
     return chart_data
 
 
+TRUE_FALSE_COLORS = {
+    'True': '#1a912e',
+    'False': '#911a1a',
+}
+
+_element_choices = dict(Monster.ELEMENT_CHOICES)
+ELEMENT_COLORS = {
+    _element_choices[Monster.ELEMENT_PURE]: '#ffffff',
+    _element_choices[Monster.ELEMENT_FIRE]: '#cb4f4f',
+    _element_choices[Monster.ELEMENT_WIND]: '#f3dc88',
+    _element_choices[Monster.ELEMENT_WATER]: '#3258a8',
+    _element_choices[Monster.ELEMENT_LIGHT]: '#e9e9e9',
+    _element_choices[Monster.ELEMENT_DARK]: '#4d4d4d',
+}
+
 _quality_choices = dict(RuneObjectBase.QUALITY_CHOICES)
 QUALITY_COLORS = {
     _quality_choices[RuneObjectBase.QUALITY_NORMAL]: '#eeeeee',
@@ -79,27 +94,35 @@ RUNE_SET_SORT_ORDER = {
 }
 
 
-def _color_rune_series(series_data):
+def _apply_colors(series_data, colors):
     for series in series_data:
-        if series['name'] in QUALITY_COLORS:
-            series['color'] = QUALITY_COLORS[series['name']]
-
+        if 'colorByPoint' in series:
+            # Pie chart - color each point individually
+            for point in series['data']:
+                if point['name'] in colors:
+                    point['color'] = colors[point['name']]
+        else:
+            if series['name'] in colors:
+                series['color'] = colors[series['name']]
     return series_data
+
+
+def _color_quality_series(series_data):
+    return _apply_colors(series_data, QUALITY_COLORS)
 
 
 def _color_pass_fail_series(series_data):
-    for series in series_data:
-        if series['name'] == 'True':
-            series['color'] = '#1a912e'
-        else:
-            series['color'] = '#911a1a'
+    return _apply_colors(series_data, TRUE_FALSE_COLORS)
 
-    return series_data
+
+def _color_element_series(series_data):
+    return _apply_colors(series_data, ELEMENT_COLORS)
 
 
 _series_colors = {
-    'rune': _color_rune_series,
+    'quality': _color_quality_series,
     'pass_fail': _color_pass_fail_series,
+    'element': _color_element_series,
 }
 
 
@@ -162,6 +185,8 @@ def pie(**kwargs):
             } for k, v in data
         ],
     })
+
+    chart_data = color_series(chart_data, kwargs.get('colors'))
 
     return chart_data
 

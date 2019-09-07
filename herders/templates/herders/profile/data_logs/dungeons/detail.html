@@ -17,6 +17,7 @@
 {% block logs %}
     <h2>{{ level }}</h2>
     <ul class="list list-inline">
+        {% if start_date %}<li>{{ start_date }} - {{ end_date }}</li>{% endif %}
         <li>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</li>
         <li>Success Rate: {{ success_rate|floatformat:-2 }}%</li>
     </ul>

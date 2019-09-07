@@ -361,16 +361,19 @@ class DungeonTable(DungeonMixin, TableView):
 
 class ElementalRiftBeastTable(TableView):
     log_type = 'riftdungeonlog'
+    form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/rift_beast.html'
 
 
 class RiftRaidTable(TableView):
     log_type = 'riftraidlog'
+    form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/rift_raid.html'
 
 
 class WorldBossTable(TableView):
     log_type = 'worldbosslog'
+    form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/world_boss.html'
 
 
@@ -441,19 +444,23 @@ class SummonsTable(SummonsMixin, TableView):
 
 class MagicShopTable(TableView):
     log_type = 'shoprefreshlog'
+    form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/magic_shop.html'
 
 
 class WishesTable(TableView):
     log_type = 'wishlog'
+    form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/wish.html'
 
 
 class RuneCraftingTable(TableView):
     log_type = 'craftrunelog'
+    form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/rune_crafting.html'
 
 
 class MagicBoxCraftingTable(TableView):
     log_type = 'magicboxcraft'
+    form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/magic_box.html'

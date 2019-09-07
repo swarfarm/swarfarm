@@ -1,7 +1,7 @@
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Q, F, Count, Sum, Value, CharField, Case, When
+from django.db.models import Model, QuerySet, Q, F, Count, Sum, Value, CharField, Case, When
 from django.db.models.functions import Concat
 from django.http import Http404
 from django.views.generic import FormView, ListView, TemplateView
@@ -124,9 +124,18 @@ class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
 
     def save_filters(self, form):
         self.request.session[self.get_session_key()] = {}
-        for key, value in form.data.lists():
-            if key in form.base_fields and value[0]:
-                self.request.session[self.get_session_key()][key] = value
+        for key, value in form.cleaned_data.items():
+            if isinstance(value, QuerySet):
+                # Save a list of the PK of the models
+                value_to_store = list(value.values_list('pk', flat=True))
+            elif isinstance(value, Model):
+                # Save the PK of the model
+                value_to_store = value.pk
+            else:
+                value_to_store = value
+
+            if value_to_store is not None:
+                self.request.session[self.get_session_key()][key] = value_to_store
 
     def get_filters(self):
         # Only retrieve filter keys used by the current form

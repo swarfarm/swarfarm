@@ -6,10 +6,11 @@ from django.db.models import Model, QuerySet, Q, F, Min, Max, Avg, Count, Sum, V
 from django.db.models.functions import Concat
 from django.http import Http404
 from django.views.generic import FormView, ListView, TemplateView
+from django_pivot.histogram import histogram
 
 from bestiary.models import Dungeon, Level, GameItem
 from data_log.reports.generate import get_drop_querysets, level_drop_report, get_monster_report
-from data_log.util import transform_to_dict, replace_value_with_choice
+from data_log.util import transform_to_dict, replace_value_with_choice, floor_to_nearest, ceil_to_nearest
 from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm
 from herders.models import Monster, RuneInstance
 from .base import SummonerMixin, OwnerRequiredMixin
@@ -314,25 +315,24 @@ class DungeonDetail(DetailMixin, DungeonMixin, DataLogView):
         context = {
             'dungeon': self.get_dungeon(),
             'level': self.get_level(),
-            'report': level_drop_report(self.get_queryset()),
+            'report': level_drop_report(self.get_queryset(), min_count=0),
         }
 
         context.update(kwargs)
         return super().get_context_data(**context)
 
     def get_dungeon(self):
-        if self.dungeon:
-            return self.dungeon
-
-        dungeon_slug = self.kwargs.get('slug')
-        if dungeon_slug:
-            try:
-                self.dungeon = Dungeon.objects.get(slug=dungeon_slug)
-                return self.dungeon
-            except Dungeon.DoesNotExist:
-                raise Http404('Dungeon not found')
-        else:
-            raise Http404('No slug provided to locate dungeon')
+        if not self.dungeon:
+            dungeon_slug = self.kwargs.get('slug')
+            if dungeon_slug:
+                try:
+                    self.dungeon = Dungeon.objects.get(slug=dungeon_slug)
+                    return self.dungeon
+                except Dungeon.DoesNotExist:
+                    raise Http404('Dungeon not found')
+            else:
+                raise Http404('No slug provided to locate dungeon')
+        return self.dungeon
 
     def get_level(self):
         if self.level:
@@ -376,6 +376,7 @@ class DungeonTable(DungeonMixin, TableView):
     template_name = 'herders/profile/data_logs/dungeons/table.html'
 
 
+# Elemental Rift Beast Dungeon
 class ElementalRiftDungeonMixin(SuccessMixin, GradeMixin):
     log_type = 'riftdungeonlog'
     form_class = FilterRiftDungeonForm
@@ -454,23 +455,70 @@ class ElementalRiftDungeonDetail(DashboardMixin, ElementalRiftDungeonMixin, Data
     dungeon = None
     level = None
 
+    def get_queryset(self):
+        return super().get_queryset().filter(level=self.get_level())
+
+    def get_context_data(self, **kwargs):
+        bin_width = 50000
+        damage_stats = self.get_queryset().aggregate(min=Min('total_damage'), max=Max('total_damage'))
+        bin_start = floor_to_nearest(damage_stats['min'], bin_width)
+        bin_end = ceil_to_nearest(damage_stats['max'], bin_width)
+
+        context = {
+            'dungeon': self.get_dungeon(),
+            'level': self.get_level(),
+            'report': level_drop_report(self.get_queryset(), min_count=0),
+            'damage': {
+                'type': 'histogram',
+                'width': bin_width,
+                'data': histogram(self.get_queryset(), 'total_damage', range(bin_start, bin_end, bin_width)),
+            }
+        }
+
+        context.update(kwargs)
+        return super().get_context_data(**context)
+
+    def get_dungeon(self):
+        if not self.dungeon:
+            dungeon_slug = self.kwargs.get('slug')
+            if dungeon_slug:
+                try:
+                    self.dungeon = Dungeon.objects.get(slug=dungeon_slug)
+                    return self.dungeon
+                except Dungeon.DoesNotExist:
+                    raise Http404('Dungeon not found')
+            else:
+                raise Http404('No slug provided to locate dungeon')
+        return self.dungeon
+
+    def get_level(self):
+        if not self.level:
+            self.level = self.get_dungeon().level_set.first()
+
+        return self.level
+
+
+
 
 class ElementalRiftBeastTable(ElementalRiftDungeonMixin, TableView):
     template_name = 'herders/profile/data_logs/rift_dungeon/table.html'
 
 
+# Rift Raid
 class RiftRaidTable(TableView):
     log_type = 'riftraidlog'
     form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/rift_raid.html'
 
 
+# World Boss
 class WorldBossTable(TableView):
     log_type = 'worldbosslog'
     form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/world_boss.html'
 
 
+# Summons
 class SummonsMixin:
     log_type = 'summonlog'
     form_class = FilterSummonLogForm
@@ -536,24 +584,28 @@ class SummonsTable(SummonsMixin, TableView):
     template_name = 'herders/profile/data_logs/summons/table.html'
 
 
+# Magic Shop
 class MagicShopTable(TableView):
     log_type = 'shoprefreshlog'
     form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/magic_shop.html'
 
 
+# Wishes
 class WishesTable(TableView):
     log_type = 'wishlog'
     form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/wish.html'
 
 
+# Rune Crafting
 class RuneCraftingTable(TableView):
     log_type = 'craftrunelog'
     form_class = FilterLogTimestamp
     template_name = 'herders/profile/data_logs/rune_crafting.html'
 
 
+# Magic Box Crafting
 class MagicBoxCraftingTable(TableView):
     log_type = 'magicboxcraft'
     form_class = FilterLogTimestamp

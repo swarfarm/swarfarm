@@ -21,7 +21,7 @@ def get_report_summary(drops, total_log_count, **kwargs):
         'chart': [],
     }
 
-    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
+    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     # Chart data: list of {'drop': <string>, 'count': <int>}
     # Table data: dict (by drop type) of lists of items which drop, with stats. 'count' is only required stat.
@@ -195,12 +195,11 @@ def get_report_summary(drops, total_log_count, **kwargs):
     return summary
 
 
-def get_item_report(qs, total_log_count, min_count=None):
+def get_item_report(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
 
-    if min_count is None:
-        min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
+    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     results = list(
         qs.values(
@@ -220,12 +219,11 @@ def get_item_report(qs, total_log_count, min_count=None):
     return results
 
 
-def get_monster_report(qs, total_log_count, min_count=None):
+def get_monster_report(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
 
-    if min_count is None:
-        min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
+    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     return {
         'monsters': {  # By unique monster
@@ -316,11 +314,11 @@ def get_monster_report(qs, total_log_count, min_count=None):
     }
 
 
-def get_rune_report(qs, total_log_count):
+def get_rune_report(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
 
-    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
+    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     # Substat distribution
     # Unable to use database aggregation on an ArrayField without ORM gymnastics, so post-process data in python
@@ -451,11 +449,11 @@ def get_rune_report(qs, total_log_count):
     }
 
 
-def _rune_craft_report_data(qs, total_log_count):
+def _rune_craft_report_data(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
 
-    min_count = max(1, int(MINIMUM_THRESHOLD * total_log_count))
+    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     return {
         'type': {
@@ -501,10 +499,10 @@ def _rune_craft_report_data(qs, total_log_count):
     }
 
 
-def get_rune_craft_report(qs, total_log_count):
+def get_rune_craft_report(qs, total_log_count, **kwargs):
     return {
-        'grindstone': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_GRINDSTONES), total_log_count),
-        'gem': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_ENCHANT_GEMS), total_log_count),
+        'grindstone': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_GRINDSTONES), total_log_count, **kwargs),
+        'gem': _rune_craft_report_data(qs.filter(type__in=qs.model.CRAFT_ENCHANT_GEMS), total_log_count, **kwargs),
     }
 
 
@@ -544,7 +542,6 @@ def level_drop_report(qs, **kwargs):
         )
 
         if successful_runs.count():
-
             clear_time_aggs = successful_runs.aggregate(
                 std_dev=StdDev(Extract(F('clear_time'), lookup_name='epoch')),
                 avg=Avg('clear_time'),
@@ -580,7 +577,7 @@ def level_drop_report(qs, **kwargs):
     # Individual drop details
     for key, qs in drops.items():
         if DROP_TYPES[key]:
-            report_data[key] = DROP_TYPES[key](qs, qs.count())
+            report_data[key] = DROP_TYPES[key](qs, qs.count(), **kwargs)
 
     return report_data
 

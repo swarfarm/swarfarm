@@ -41,14 +41,10 @@ class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
         return super().get(request, *args, **kwargs)
 
     def get_initial(self):
-        return {
-            **self.get_filters(),
-            **self.get_timestamp_filters(),
-        }
+        return self.get_filters()
 
     def form_valid(self, form):
         self.save_filters(form)
-        self.save_timestamp_filters(form)
 
         return super().form_valid(form)
 
@@ -59,10 +55,7 @@ class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
     def get_queryset(self):
         qs = getattr(self.summoner, f'{self.get_log_type()}_set').all()
         query = Q()
-        for key, value in {
-            **self.get_filters(),
-            **self.get_timestamp_filters()
-        }.items():
+        for key, value in self.get_filters().items():
             if value:
                 query.add(Q(**{key: value}), Q.AND)
 
@@ -124,24 +117,6 @@ class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
         return {
             k: v for k, v in filter_data.items() if k in self.get_form_class().base_fields
         }
-
-    def save_timestamp_filters(self, form):
-        # Set timestamps in a separate session key so they span all data log sections
-        if self.timestamp_session_key not in self.request.session:
-            self.request.session[self.timestamp_session_key] = {}
-
-        timestamp__gte = form.data.get('timestamp__gte')
-        if timestamp__gte is not None:
-            self.request.session[self.timestamp_session_key]['timestamp__gte'] = timestamp__gte
-            self.request.session.modified = True
-
-        timestamp__lte = form.data.get('timestamp__lte')
-        if timestamp__lte is not None:
-            self.request.session[self.timestamp_session_key]['timestamp__lte'] = timestamp__lte
-            self.request.session.modified = True
-
-    def get_timestamp_filters(self):
-        return self.request.session.get(self.timestamp_session_key, {})
 
 
 class DashboardMixin:
@@ -479,7 +454,7 @@ class ElementalRiftDungeonDetail(DashboardMixin, ElementalRiftDungeonMixin, Data
             'dungeon': self.get_dungeon(),
             'level': self.get_level(),
             'report': level_drop_report(self.get_queryset(), min_count=0),
-            'damage': damage_histogram
+            'damage_histogram': damage_histogram
         }
 
         context.update(kwargs)
@@ -562,13 +537,29 @@ class WorldBossDashboard(DashboardMixin, WorldBossMixin, DataLogView):
             ),
         }
 
-        dashboard_data = {
-            'recent_drops': recent_drops,
+        if self.get_log_count():
+            bin_width = 50000
+            damage_stats = self.get_queryset().aggregate(min=Min('damage'), max=Max('damage'))
+            bin_start = floor_to_nearest(damage_stats['min'], bin_width)
+            bin_end = ceil_to_nearest(damage_stats['max'], bin_width)
+            damage_histogram = {
+                'type': 'histogram',
+                'width': bin_width,
+                'data': histogram(self.get_queryset(), 'damage', range(bin_start, bin_end, bin_width)),
+            }
+        else:
+            damage_histogram = None
+
+        context = {
+            'dashboard': {
+                'recent_drops': recent_drops,
+            },
+            'report': level_drop_report(self.get_queryset(), min_count=0),
+            'damage_histogram': damage_histogram
         }
 
-        kwargs['dashboard'] = dashboard_data
-
-        return super().get_context_data(**kwargs)
+        context.update(kwargs)
+        return super().get_context_data(**context)
 
 
 class WorldBossTable(WorldBossMixin, TableView):

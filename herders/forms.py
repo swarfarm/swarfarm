@@ -1580,8 +1580,8 @@ class FilterLogTimeRangeLayout(Layout):
         super().__init__(
             Fieldset(
                 'Log Time Span',
-                Field('timestamp__gte'),
-                Field('timestamp__lte'),
+                Field('timestamp__gte', autocomplete='off'),
+                Field('timestamp__lte', autocomplete='off'),
             ),
         )
 

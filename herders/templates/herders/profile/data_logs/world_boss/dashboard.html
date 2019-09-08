@@ -62,6 +62,18 @@
                 </div>
             </div>
         </div>
+
+        {% if damage_histogram %}
+            <div
+                class="report-chart"
+                data-chart="{% chart damage_histogram title="Damage Done" %}"
+                style="height: 300px"
+            ></div>
+        {% endif %}
+
+        {% include 'data_log/summary.html' with summary=report.summary only %}
+        {% include 'data_log/runes.html' with runes=report.runes only %}
+        {% include 'data_log/rune_crafts.html' with rune_crafts=report.rune_crafts only %}
     {% else %}
         {% include 'herders/profile/data_logs/no_data.html' %}
     {% endif %}

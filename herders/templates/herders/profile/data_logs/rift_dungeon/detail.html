@@ -46,13 +46,12 @@
                 {% if damage_histogram %}
                     <div
                         class="report-chart"
-                        data-chart="{% chart damage title="Damage Done" %}"
+                        data-chart="{% chart damage_histogram title="Damage Done" %}"
                         style="height: 300px"
                     ></div>
                 {% endif %}
             </div>
         </div>
-
 
         {% include 'data_log/summary.html' with summary=report.summary only %}
         {% include 'data_log/runes.html' with runes=report.runes only %}

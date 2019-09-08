@@ -1603,10 +1603,7 @@ class FilterLogTimestamp(FilterLogTimeRangeMixin):
 class FilterDungeonLogForm(FilterLogTimeRangeMixin):
     level__dungeon__in = forms.ModelMultipleChoiceField(
         label='Specific Dungeon',
-        queryset=Dungeon.objects.all(),
-        widget=autocomplete.ModelSelect2Multiple(
-            url='bestiary-dungeon-autocomplete',
-        ),
+        queryset=Dungeon.objects.filter(category__in=[Dungeon.CATEGORY_SCENARIO, Dungeon.CATEGORY_CAIROS]),
         required=False,
     )
     level__dungeon__category__in = forms.MultipleChoiceField(
@@ -1635,7 +1632,7 @@ class FilterDungeonLogForm(FilterLogTimeRangeMixin):
                     Fieldset(
                         'Dungeon Filters',
                         Div(
-                            Field('level__dungeon__in', wrapper_class='col-md-6'),
+                            Field('level__dungeon__in', css_class='select2', wrapper_class='col-md-6'),
                             Field('level__dungeon__category__in', css_class='select2', wrapper_class='col-md-6'),
                             css_class='row',
                         ),
@@ -1665,6 +1662,12 @@ class FilterRiftDungeonForm(FilterLogTimeRangeMixin):
         required=False,
     )
 
+    level__dungeon__in = forms.ModelMultipleChoiceField(
+        label='Dungeon',
+        queryset=Dungeon.objects.filter(category=Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS),
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -1675,6 +1678,7 @@ class FilterRiftDungeonForm(FilterLogTimeRangeMixin):
                 Div(
                     Fieldset(
                         'Rift Beast Filters',
+                        Field('level__dungeon__in', css_class='select2'),
                         Field('grade__in', css_class='select2'),
                     ),
                     css_class='col-md-6 col-xs-12'

@@ -2,7 +2,7 @@ from datetime import datetime
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Model, QuerySet, Q, F, Count, Sum, Value, CharField, Case, When
+from django.db.models import Model, QuerySet, Q, F, Min, Max, Avg, Count, Sum, Value, CharField, Case, When
 from django.db.models.functions import Concat
 from django.http import Http404
 from django.views.generic import FormView, ListView, TemplateView
@@ -10,7 +10,7 @@ from django.views.generic import FormView, ListView, TemplateView
 from bestiary.models import Dungeon, Level, GameItem
 from data_log.reports.generate import get_drop_querysets, level_drop_report, get_monster_report
 from data_log.util import transform_to_dict, replace_value_with_choice
-from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterSummonLogForm
+from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm
 from herders.models import Monster, RuneInstance
 from .base import SummonerMixin, OwnerRequiredMixin
 
@@ -175,16 +175,7 @@ class DetailMixin:
     form_class = FilterLogTimestamp  # Only need timestamp filters when viewing detail. Other params are source from URL
 
 
-class TableView(DataLogView, ListView):
-    paginate_by = 50
-    context_object_name = 'logs'
-
-
-# Dungeons
-class DungeonMixin:
-    log_type = 'dungeonlog'
-    form_class = FilterDungeonLogForm
-
+class SuccessMixin:
     def get_success_rate(self):
         if self.get_log_count():
             success_count = self.get_queryset().filter(success=True).count()
@@ -203,13 +194,36 @@ class DungeonMixin:
         return super().get_context_data(**context)
 
 
-class DungeonDashboard(DashboardMixin, DungeonMixin, DataLogView):
-    template_name = 'herders/profile/data_logs/dungeons/dashboard.html'
+class GradeMixin:
+    def get_grade_statistics(self):
+        return super().get_queryset().aggregate(min=Min('grade'), avg=Avg('grade'), max=Max('grade'))
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'grade_stats': self.get_grade_statistics()
+        }
+        context.update(**kwargs)
+        return super().get_context_data(**context)
+
+
+class TableView(DataLogView, ListView):
+    paginate_by = 50
+    context_object_name = 'logs'
+
+
+# Dungeons
+class DungeonMixin(SuccessMixin):
+    log_type = 'dungeonlog'
+    form_class = FilterDungeonLogForm
 
     def get_queryset(self):
         # Do not include incomplete logs
         qs = super().get_queryset()
         return qs.filter(success__isnull=False)
+
+
+class DungeonDashboard(DashboardMixin, DungeonMixin, DataLogView):
+    template_name = 'herders/profile/data_logs/dungeons/dashboard.html'
 
     def get_context_data(self, **kwargs):
         all_drops = get_drop_querysets(self.get_queryset())
@@ -362,10 +376,87 @@ class DungeonTable(DungeonMixin, TableView):
     template_name = 'herders/profile/data_logs/dungeons/table.html'
 
 
-class ElementalRiftBeastTable(TableView):
+class ElementalRiftDungeonMixin(SuccessMixin, GradeMixin):
     log_type = 'riftdungeonlog'
-    form_class = FilterLogTimestamp
-    template_name = 'herders/profile/data_logs/rift_beast.html'
+    form_class = FilterRiftDungeonForm
+
+
+class ElementalRiftDungeonDashboard(DashboardMixin, ElementalRiftDungeonMixin, DataLogView):
+    template_name = 'herders/profile/data_logs/rift_dungeon/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        all_drops = get_drop_querysets(self.get_queryset())
+        recent_drops = {
+            'items': all_drops['items'].values(
+                'item',
+                name=F('item__name'),
+                icon=F('item__icon'),
+            ).annotate(
+                count=Sum('quantity')
+            ).order_by('-count') if 'items' in all_drops else [],
+            'monsters': replace_value_with_choice(
+                list(all_drops['monsters'].values(
+                    name=F('monster__name'),
+                    icon=F('monster__image_filename'),
+                    element=F('monster__element'),
+                    stars=F('grade'),
+                    is_awakened=F('monster__is_awakened'),
+                    can_awaken=F('monster__can_awaken'),
+                ).annotate(
+                    count=Count('pk')
+                ).order_by('-count')),
+                {'element': Monster.ELEMENT_CHOICES}) if 'monsters' in all_drops else [],
+            'runes': replace_value_with_choice(
+                list(all_drops['runes'].values(
+                    'type',
+                    'quality',
+                    'stars',
+                ).annotate(
+                    count=Count('pk')
+                ).order_by('-count') if 'runes' in all_drops else []),
+                {
+                    'type': RuneInstance.TYPE_CHOICES,
+                    'quality': RuneInstance.QUALITY_CHOICES,
+                }
+            ),
+        }
+
+        dashboard_data = {
+            'energy_spent': {
+                'type': 'occurrences',
+                'total': self.get_log_count(),
+                'data': transform_to_dict(
+                    list(
+                        self.get_queryset().values(
+                            'level__dungeon__name'
+                        ).annotate(
+                            count=Sum('level__energy_cost'),
+                        ).order_by('-count')
+                    ),
+                    name_key='level__dungeon__name',
+                ),
+            },
+            'recent_drops': recent_drops,
+        }
+
+        level_list = Level.objects.filter(
+            pk__in=set(self.get_queryset().values_list('level', flat=True))
+        )
+
+        kwargs['dashboard'] = dashboard_data
+        kwargs['level_list'] = level_list
+
+        return super().get_context_data(**kwargs)
+
+
+class ElementalRiftDungeonDetail(DashboardMixin, ElementalRiftDungeonMixin, DataLogView):
+    template_name = 'herders/profile/data_logs/rift_dungeon/detail.html'
+    dungeon = None
+    level = None
+
+
+class ElementalRiftBeastTable(ElementalRiftDungeonMixin, TableView):
+    template_name = 'herders/profile/data_logs/rift_dungeon/table.html'
 
 
 class RiftRaidTable(TableView):

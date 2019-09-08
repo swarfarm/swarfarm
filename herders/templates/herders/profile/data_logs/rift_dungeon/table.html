@@ -1,8 +1,14 @@
 {% extends 'herders/profile/data_logs/base.html' %}
 {% load utils humanize %}
 
-{% block title %}
-    Elemental Rift Beast - {{ block.super }}
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url 'herders:data_log_rift_dungeon_dashboard' profile_name=profile_name %}">Rift Beasts</a></li>
+    {% if view_name == 'herders:data_log_rift_dungeon_table' %}
+        <li class="active">Table</li>
+    {% else %}
+        <li><a href="{% url 'herders:data_rift_dungeon_table' profile_name=profile_name %}">Table</a></li>
+    {% endif %}
 {% endblock %}
 
 {% block logs %}
@@ -33,7 +39,7 @@
             {% endif %}
         </td>
         <td>{{ log.clear_time|timedelta }}</td>
-        <td>{% include './drops/all_drops.html' %}</td>
+        <td>{% include 'herders/profile/data_logs/drops/all_drops.html' %}</td>
     </tr>
 {% endfor %}
 </tbody>

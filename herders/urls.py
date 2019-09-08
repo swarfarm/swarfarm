@@ -119,7 +119,11 @@ urlpatterns = [
                 path('<slug:slug>/<int:floor>/', views.data_log.DungeonDetail.as_view(), name='data_log_dungeon_detail'),
                 path('<slug:slug>/<str:difficulty>/<int:floor>/', views.data_log.DungeonDetail.as_view(), name='data_log_dungeon_detail_difficulty'),
             ])),
-            url(r'^rift_beast/$', views.data_log.ElementalRiftBeastTable.as_view(), name='data_log_rift_beast'),
+            url(r'^rift_beast/', include([
+                path('', views.data_log.ElementalRiftDungeonDashboard.as_view(), name='data_log_rift_dungeon_dashboard'),
+                path('table/', views.data_log.ElementalRiftBeastTable.as_view(), name='data_log_rift_dungeon_table'),
+                path('<slug:slug>/', views.data_log.ElementalRiftDungeonDetail.as_view(), name='data_log_rift_dungeon_detail'),
+            ])),
             url(r'^rift_raid/$', views.data_log.RiftRaidTable.as_view(), name='data_log_rift_raid'),
             url(r'^world_boss/$', views.data_log.WorldBossTable.as_view(), name='data_log_world_boss'),
         ]))

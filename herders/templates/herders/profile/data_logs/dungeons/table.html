@@ -1,6 +1,10 @@
 {% extends 'herders/profile/data_logs/base_table.html' %}
 {% load utils %}
 
+{% block title %}
+    Table - Dungeons - {{ block.super }}
+{% endblock %}
+
 {% block breadcrumbs %}
     {{ block.super }}
     <li><a href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}">Dungeons</a></li>

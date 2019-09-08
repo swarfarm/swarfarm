@@ -1,8 +1,8 @@
-{% extends 'herders/profile/data_logs/base.html' %}
+{% extends 'herders/profile/data_logs/base_table.html' %}
 {% load static utils humanize %}
 
 {% block title %}
-    Summons - {{ block.super }}
+    Table - Summons - {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -15,7 +15,7 @@
     {% endif %}
 {% endblock %}
 
-{% block logs %}
+{% block log_table %}
     {% static 'herders/images/' as img_url_prefix %}
 
     <table class="table table-striped table-condensed">

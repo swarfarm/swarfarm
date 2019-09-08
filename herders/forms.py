@@ -18,7 +18,7 @@ from django.utils.safestring import mark_safe
 from bestiary.fields import AdvancedSelectMultiple
 from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level, GameItem
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
-from data_log.models import RiftDungeonLog
+from data_log.models import RiftDungeonLog, WorldBossLog
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
     RuneInstance, RuneCraftInstance, BuildingInstance
 
@@ -1693,6 +1693,37 @@ class FilterRiftDungeonForm(FilterLogTimeRangeMixin):
         )
 
 
+class FilterWorldBossLogForm(FilterLogTimeRangeMixin):
+    grade__in = forms.MultipleChoiceField(
+        label='Grade',
+        choices=WorldBossLog.GRADE_CHOICES,
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Fieldset(
+                        'World Boss Filters',
+                        Field('grade__in', css_class='select2'),
+                    ),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                Div(
+                    FilterLogTimeRangeLayout(),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                css_class='row',
+            ),
+            Submit('submit', 'Apply')
+        )
+
+
 class FilterSummonLogForm(FilterLogTimeRangeMixin):
     item__in = forms.ModelMultipleChoiceField(
         label='Method',
@@ -1725,4 +1756,3 @@ class FilterSummonLogForm(FilterLogTimeRangeMixin):
             ),
             Submit('submit', 'Apply')
         )
-

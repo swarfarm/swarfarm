@@ -1,6 +1,10 @@
 {% extends 'herders/profile/data_logs/base_table.html' %}
 {% load utils humanize %}
 
+{% block title %}
+    Table - Elemental Rift Beast - {{ block.super }}
+{% endblock %}
+
 {% block breadcrumbs %}
     {{ block.super }}
     <li><a href="{% url 'herders:data_log_rift_dungeon_dashboard' profile_name=profile_name %}">Rift Beasts</a></li>
@@ -11,7 +15,7 @@
     {% endif %}
 {% endblock %}
 
-{% block logs %}
+{% block log_table %}
 <table class="table table-striped table-condensed">
 <thead>
 <tr>

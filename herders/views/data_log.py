@@ -11,7 +11,7 @@ from django_pivot.histogram import histogram
 from bestiary.models import Dungeon, Level, GameItem
 from data_log.reports.generate import get_drop_querysets, level_drop_report, get_monster_report
 from data_log.util import transform_to_dict, replace_value_with_choice, floor_to_nearest, ceil_to_nearest
-from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm
+from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm, FilterWorldBossLogForm
 from herders.models import Monster, RuneInstance
 from .base import SummonerMixin, OwnerRequiredMixin
 
@@ -25,31 +25,6 @@ class SectionMixin:
 
 
 # Generic views
-class Dashboard(SectionMixin, SummonerMixin, OwnerRequiredMixin, TemplateView):
-    template_name = 'herders/profile/data_logs/dashboard.html'
-
-    def get_context_data(self, **kwargs):
-        log_counts = {
-            'magic_shop': self.summoner.shoprefreshlog_set.count(),
-            'wish': self.summoner.wishlog_set.count(),
-            'rune_crafting': self.summoner.craftrunelog_set.count(),
-            'magic_box': self.summoner.magicboxcraft_set.count(),
-            'summons': self.summoner.summonlog_set.count(),
-            'dungeons': self.summoner.dungeonlog_set.count(),
-            'rift_beast': self.summoner.riftdungeonlog_set.count(),
-            'rift_raid': self.summoner.riftraidlog_set.count(),
-            'world_boss': self.summoner.worldbosslog_set.count(),
-        }
-        kwargs['counts'] = log_counts
-        kwargs['total'] = reduce(lambda a, b: a + b, log_counts.values())
-
-        return super().get_context_data(**kwargs)
-
-
-class Help(SectionMixin, SummonerMixin, OwnerRequiredMixin, TemplateView):
-    template_name = 'herders/profile/data_logs/help.html'
-
-
 class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
     log_type = None
     timestamp_session_key = 'data_log_timestamps'
@@ -210,6 +185,32 @@ class GradeMixin:
 class TableView(DataLogView, ListView):
     paginate_by = 50
     context_object_name = 'logs'
+
+
+# Home views
+class Dashboard(SectionMixin, SummonerMixin, OwnerRequiredMixin, TemplateView):
+    template_name = 'herders/profile/data_logs/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        log_counts = {
+            'magic_shop': self.summoner.shoprefreshlog_set.count(),
+            'wish': self.summoner.wishlog_set.count(),
+            'rune_crafting': self.summoner.craftrunelog_set.count(),
+            'magic_box': self.summoner.magicboxcraft_set.count(),
+            'summons': self.summoner.summonlog_set.count(),
+            'dungeons': self.summoner.dungeonlog_set.count(),
+            'rift_beast': self.summoner.riftdungeonlog_set.count(),
+            'rift_raid': self.summoner.riftraidlog_set.count(),
+            'world_boss': self.summoner.worldbosslog_set.count(),
+        }
+        kwargs['counts'] = log_counts
+        kwargs['total'] = reduce(lambda a, b: a + b, log_counts.values())
+
+        return super().get_context_data(**kwargs)
+
+
+class Help(SectionMixin, SummonerMixin, OwnerRequiredMixin, TemplateView):
+    template_name = 'herders/profile/data_logs/help.html'
 
 
 # Dungeons
@@ -498,8 +499,6 @@ class ElementalRiftDungeonDetail(DashboardMixin, ElementalRiftDungeonMixin, Data
         return self.level
 
 
-
-
 class ElementalRiftBeastTable(ElementalRiftDungeonMixin, TableView):
     template_name = 'herders/profile/data_logs/rift_dungeon/table.html'
 
@@ -512,10 +511,62 @@ class RiftRaidTable(TableView):
 
 
 # World Boss
-class WorldBossTable(TableView):
+class WorldBossMixin(GradeMixin):
     log_type = 'worldbosslog'
-    form_class = FilterLogTimestamp
-    template_name = 'herders/profile/data_logs/world_boss.html'
+    form_class = FilterWorldBossLogForm
+
+
+class WorldBossDashboard(DashboardMixin, WorldBossMixin, DataLogView):
+    template_name = 'herders/profile/data_logs/world_boss/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        all_drops = get_drop_querysets(self.get_queryset())
+        recent_drops = {
+            'items': all_drops['items'].values(
+                'item',
+                name=F('item__name'),
+                icon=F('item__icon'),
+            ).annotate(
+                count=Sum('quantity')
+            ).order_by('-count') if 'items' in all_drops else [],
+            'monsters': replace_value_with_choice(
+                list(all_drops['monsters'].values(
+                    name=F('monster__name'),
+                    icon=F('monster__image_filename'),
+                    element=F('monster__element'),
+                    stars=F('grade'),
+                    is_awakened=F('monster__is_awakened'),
+                    can_awaken=F('monster__can_awaken'),
+                ).annotate(
+                    count=Count('pk')
+                ).order_by('-count')),
+                {'element': Monster.ELEMENT_CHOICES}) if 'monsters' in all_drops else [],
+            'runes': replace_value_with_choice(
+                list(all_drops['runes'].values(
+                    'type',
+                    'quality',
+                    'stars',
+                ).annotate(
+                    count=Count('pk')
+                ).order_by('-count') if 'runes' in all_drops else []),
+                {
+                    'type': RuneInstance.TYPE_CHOICES,
+                    'quality': RuneInstance.QUALITY_CHOICES,
+                }
+            ),
+        }
+
+        dashboard_data = {
+            'recent_drops': recent_drops,
+        }
+
+        kwargs['dashboard'] = dashboard_data
+
+        return super().get_context_data(**kwargs)
+
+
+class WorldBossTable(WorldBossMixin, TableView):
+    template_name = 'herders/profile/data_logs/world_boss/table.html'
 
 
 # Summons

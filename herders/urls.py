@@ -125,7 +125,10 @@ urlpatterns = [
                 path('<slug:slug>/', views.data_log.ElementalRiftDungeonDetail.as_view(), name='data_log_rift_dungeon_detail'),
             ])),
             url(r'^rift_raid/$', views.data_log.RiftRaidTable.as_view(), name='data_log_rift_raid'),
-            url(r'^world_boss/$', views.data_log.WorldBossTable.as_view(), name='data_log_world_boss'),
+            url(r'^world_boss/', include([
+                path('', views.data_log.WorldBossDashboard.as_view(), name='data_log_world_boss_dashboard'),
+                path('table/', views.data_log.WorldBossTable.as_view(), name='data_log_world_boss_table'),
+            ])),
         ]))
     ])),
 ]

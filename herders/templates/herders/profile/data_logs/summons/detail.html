@@ -16,10 +16,14 @@
 
 {% block logs %}
     <h2>{{ item }}</h2>
-    <ul class="list list-inline">
-        {% if start_date %}<li>{{ start_date }} - {{ end_date }}</li>{% endif %}
-        <li>Total Summons: {{ total_count }}{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</li>
-    </ul>
+    {% if total_count %}
+        <ul class="list list-inline">
+            {% if start_date %}<li>{{ start_date }} - {{ end_date }}</li>{% endif %}
+            <li>Total Summons: {{ total_count }}{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</li>
+        </ul>
 
-    {% include 'data_log/monster.html' with monsters=report only %}
+        {% include 'data_log/monster.html' with monsters=report only %}
+    {% else %}
+        {% include 'herders/profile/data_logs/no_data.html' %}
+    {% endif %}
 {% endblock %}

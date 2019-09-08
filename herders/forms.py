@@ -1693,6 +1693,39 @@ class FilterRiftDungeonForm(FilterLogTimeRangeMixin):
         )
 
 
+class FilterRiftDungeonFormGradeOnly(FilterLogTimeRangeMixin):
+    grade__in = forms.MultipleChoiceField(
+        label='Grade',
+        choices=RiftDungeonLog.GRADE_CHOICES,
+        required=False,
+    )
+
+    level__dungeon__in = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Fieldset(
+                        'Rift Beast Filters',
+                        Field('grade__in', css_class='select2'),
+                    ),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                Div(
+                    FilterLogTimeRangeLayout(),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                css_class='row',
+            ),
+            Submit('submit', 'Apply')
+        )
+
+
 class FilterWorldBossLogForm(FilterLogTimeRangeMixin):
     grade__in = forms.MultipleChoiceField(
         label='Grade',

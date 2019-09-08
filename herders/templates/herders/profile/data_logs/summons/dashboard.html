@@ -19,33 +19,37 @@
 
     <h2>Summon Log Summary</h2>
 
-    {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
-    <p>Total Summons: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
+    {% if total_count %}
+        {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
+        <p>Total Summons: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
 
-    <div class="row">
-        <div class="col-lg-9 col-md-8 col-sm-12">
-            <div
-                class="report-chart"
-                data-chart="{% chart dashboard.summons_performed type='pie' title="Summons Performed" percentage=False %}"
-                style="height: 300px"
-            ></div>
-        </div>
+        <div class="row">
+            <div class="col-lg-9 col-md-8 col-sm-12">
+                <div
+                    class="report-chart"
+                    data-chart="{% chart dashboard.summons_performed type='pie' title="Summons Performed" percentage=False %}"
+                    style="height: 300px"
+                ></div>
+            </div>
 
-        <div class="col-lg-3 col-md-4 col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Quick Links</h3>
-                </div>
-                <div class="list-group">
-                    <a href="{% url 'herders:data_log_summons_table' profile_name=profile_name %}" class="list-group-item">View As Table</a>
-                    {% for item in item_list %}
-                        <a href="{% url 'herders:data_log_summons_detail' profile_name=profile_name slug=item.slug %}" class="list-group-item">
-                            <img src="{{ img_url_prefix }}items/{{ item.icon }}" class="image-inline" alt="{{ item.name }} icon" />
-                            {{ item }}
-                        </a>
-                    {% endfor %}
+            <div class="col-lg-3 col-md-4 col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Quick Links</h3>
+                    </div>
+                    <div class="list-group">
+                        <a href="{% url 'herders:data_log_summons_table' profile_name=profile_name %}" class="list-group-item">View As Table</a>
+                        {% for item in item_list %}
+                            <a href="{% url 'herders:data_log_summons_detail' profile_name=profile_name slug=item.slug %}" class="list-group-item">
+                                <img src="{{ img_url_prefix }}items/{{ item.icon }}" class="image-inline" alt="{{ item.name }} icon" />
+                                {{ item }}
+                            </a>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% else %}
+        {% include 'herders/profile/data_logs/no_data.html' %}
+    {% endif %}
 {% endblock %}

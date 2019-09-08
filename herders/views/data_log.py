@@ -11,7 +11,8 @@ from django_pivot.histogram import histogram
 from bestiary.models import Dungeon, Level, GameItem
 from data_log.reports.generate import get_drop_querysets, level_drop_report, get_monster_report
 from data_log.util import transform_to_dict, replace_value_with_choice, floor_to_nearest, ceil_to_nearest
-from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm, FilterWorldBossLogForm
+from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm, \
+    FilterWorldBossLogForm, FilterRiftDungeonFormGradeOnly
 from herders.models import Monster, RuneInstance
 from .base import SummonerMixin, OwnerRequiredMixin
 
@@ -452,6 +453,7 @@ class ElementalRiftDungeonDashboard(DashboardMixin, ElementalRiftDungeonMixin, D
 
 
 class ElementalRiftDungeonDetail(DashboardMixin, ElementalRiftDungeonMixin, DataLogView):
+    form_class = FilterRiftDungeonFormGradeOnly
     template_name = 'herders/profile/data_logs/rift_dungeon/detail.html'
     dungeon = None
     level = None
@@ -460,20 +462,24 @@ class ElementalRiftDungeonDetail(DashboardMixin, ElementalRiftDungeonMixin, Data
         return super().get_queryset().filter(level=self.get_level())
 
     def get_context_data(self, **kwargs):
-        bin_width = 50000
-        damage_stats = self.get_queryset().aggregate(min=Min('total_damage'), max=Max('total_damage'))
-        bin_start = floor_to_nearest(damage_stats['min'], bin_width)
-        bin_end = ceil_to_nearest(damage_stats['max'], bin_width)
+        if self.get_log_count():
+            bin_width = 50000
+            damage_stats = self.get_queryset().aggregate(min=Min('total_damage'), max=Max('total_damage'))
+            bin_start = floor_to_nearest(damage_stats['min'], bin_width)
+            bin_end = ceil_to_nearest(damage_stats['max'], bin_width)
+            damage_histogram = {
+                'type': 'histogram',
+                'width': bin_width,
+                'data': histogram(self.get_queryset(), 'total_damage', range(bin_start, bin_end, bin_width)),
+            }
+        else:
+            damage_histogram = None
 
         context = {
             'dungeon': self.get_dungeon(),
             'level': self.get_level(),
             'report': level_drop_report(self.get_queryset(), min_count=0),
-            'damage': {
-                'type': 'histogram',
-                'width': bin_width,
-                'data': histogram(self.get_queryset(), 'total_damage', range(bin_start, bin_end, bin_width)),
-            }
+            'damage': damage_histogram
         }
 
         context.update(kwargs)

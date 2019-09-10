@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from functools import partial
+from math import floor
 from operator import is_not
 
 from django.contrib.auth.models import User
@@ -10,7 +11,6 @@ from django.db import models
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
-from math import floor
 
 
 class Monster(models.Model):
@@ -2072,7 +2072,12 @@ class Level(models.Model):
 
     def __str__(self):
         difficulty = self.get_difficulty_display() if self.difficulty else ''
-        return f'{self.dungeon.name} {difficulty} B{self.floor}'
+        if self.dungeon.category == Dungeon.CATEGORY_RIFT_OF_WORLDS_RAID:
+            level_char = 'R'
+        else:
+            level_char = 'B'
+
+        return f'{self.dungeon.name} {difficulty} {level_char}{self.floor}'
 
 
 class GameItem(models.Model):

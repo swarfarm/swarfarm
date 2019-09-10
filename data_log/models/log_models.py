@@ -875,23 +875,21 @@ class RiftRaidLog(LogEntry):
     def parse_rewards(self, battle_key, rewards_list):
         for rewards in rewards_list:
             reward_wizard_id = rewards['wizard_id']
+            if self.wizard_id == reward_wizard_id:
+                for reward_info in rewards['reward_list']:
+                    master_type = reward_info['item_master_type']
 
-            for reward_info in rewards['reward_list']:
-                master_type = reward_info['item_master_type']
+                    if master_type in RiftRaidItemDrop.PARSE_ITEM_TYPES:
+                        log_entry = RiftRaidItemDrop.parse(battle_key, reward_wizard_id, reward_info)
+                    elif master_type in RiftRaidMonsterDrop.PARSE_ITEM_TYPES:
+                        log_entry = RiftRaidMonsterDrop.parse(battle_key, reward_wizard_id, reward_info)
+                    elif master_type in RiftRaidRuneCraftDrop.PARSE_ITEM_TYPES:
+                        log_entry = RiftRaidRuneCraftDrop.parse(battle_key, reward_wizard_id, reward_info)
+                    else:
+                        raise ValueError(f"don't know how to parse {master_type} in {self.__class__.__name__}")
 
-                if master_type in RiftRaidItemDrop.PARSE_ITEM_TYPES:
-                    log_entry = RiftRaidItemDrop.parse(battle_key, reward_wizard_id, reward_info)
-                elif master_type in RiftRaidMonsterDrop.PARSE_ITEM_TYPES:
-                    log_entry = RiftRaidMonsterDrop.parse(battle_key, reward_wizard_id, reward_info)
-                elif master_type in RiftRaidRuneCraftDrop.PARSE_ITEM_TYPES:
-                    log_entry = RiftRaidRuneCraftDrop.parse(battle_key, reward_wizard_id, reward_info)
-                else:
-                    raise ValueError(f"don't know how to parse {master_type} in {self.__class__.__name__}")
-
-                if log_entry.log_id is None or log_entry.wizard_id == self.wizard_id:
                     log_entry.log = self
-
-                log_entry.save()
+                    log_entry.save()
 
 
 class RiftRaidDrop(models.Model):

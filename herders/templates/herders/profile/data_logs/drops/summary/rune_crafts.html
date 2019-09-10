@@ -1,0 +1,26 @@
+{% load staticfiles humanize utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Grindstones and Enchant Gems</h3>
+    </div>
+
+    <div class="panel-body">
+        {% for craft in rune_crafts %}
+            <div class="rune-image" data-toggle="tooltip" title="{{ craft.quality }} {{ craft.rune }} {{ craft.type }} x{{ craft.count }}">
+                <div class="rune-bg {% if 'Immemorial' in craft.type %}immemorial{%endif %} {{ craft.quality|lower }}">
+                    <div class="rune-craft {{ craft.type|slugify }} {{ craft.quality|lower }}">
+                        <div class="craft-symbol {{ craft.rune|lower }}"></div>
+                    </div>
+                </div>
+                <span class="image-plus image-plus-right">
+                    x{{ craft.count }}
+                </span>
+            </div>
+        {% empty %}
+            <p>None!</p>
+        {% endfor %}
+    </div>
+</div>

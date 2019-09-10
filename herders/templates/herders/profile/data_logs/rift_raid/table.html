@@ -2,16 +2,16 @@
 {% load utils %}
 
 {% block title %}
-    Table - Dungeons - {{ block.super }}
+    Table - Rift Raid - {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}">Dungeons</a></li>
-    {% if view_name == 'herders:data_log_dungeon_table' %}
+    <li><a href="{% url 'herders:data_log_rift_raid_dashboard' profile_name=profile_name %}">Rift Raid</a></li>
+    {% if view_name == 'herders:data_log_rift_raid_table' %}
         <li class="active">Table</li>
     {% else %}
-        <li><a href="{% url 'herders:data_log_dungeon_table' profile_name=profile_name %}">Table</a></li>
+        <li><a href="{% url 'herders:data_log_rift_raid_table' profile_name=profile_name %}">Table</a></li>
     {% endif %}
 {% endblock %}
 

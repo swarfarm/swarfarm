@@ -520,12 +520,14 @@ class RiftRaidDashboard(DashboardMixin, RiftRaidMixin, DataLogView):
                 list(all_drops['rune_crafts'].values(
                     'type',
                     'quality',
+                    'rune',
                 ).annotate(
                     count=Count('pk')
                 ).order_by('-count') if 'rune_crafts' in all_drops else []),
                 {
-                    'type': RuneCraft.TYPE_CHOICES,
+                    'type': RuneCraft.CRAFT_CHOICES,
                     'quality': RuneCraft.QUALITY_CHOICES,
+                    'rune': RuneCraft.TYPE_CHOICES,
                 }
             )
         }
@@ -599,7 +601,7 @@ class RiftRaidDetail(DetailMixin, RiftRaidMixin, DataLogView):
 
 
 class RiftRaidTable(RiftRaidMixin, TableView):
-    template_name = 'herders/profile/data_logs/rift_raid.html'
+    template_name = 'herders/profile/data_logs/rift_raid/table.html'
 
 
 # World Boss

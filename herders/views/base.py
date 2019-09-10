@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import HttpResponseNotFound, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 
 from herders.models import Summoner
@@ -9,28 +9,33 @@ from herders.models import Summoner
 class SummonerMixin:
     summoner = None
 
+    def get_summoner(self):
+        if not self.summoner:
+            profile_name = self.kwargs.get('profile_name')
+
+            try:
+                self.summoner = Summoner.objects.select_related('user').get(user__username__iexact=profile_name)
+            except Summoner.DoesNotExist:
+                raise Http404()
+
+        return self.summoner
+
     def dispatch(self, request, *args, **kwargs):
         profile_name = kwargs.get('profile_name')
 
         if profile_name:
-            try:
-                self.summoner = Summoner.objects.select_related('user').get(
-                    user__username__iexact=kwargs.get('profile_name'),
-                )
-                username = self.summoner.user.username
+            username = self.get_summoner().user.username
 
-                if username != profile_name:
-                    # Redirect to correct URL on an incorrect case mismatch
-                    kwargs['profile_name'] = username
-                    return HttpResponseRedirect(reverse(self.request.resolver_match.view_name, kwargs=kwargs))
+            if username != profile_name:
+                # Redirect to correct URL on an incorrect case mismatch
+                kwargs['profile_name'] = username
+                return HttpResponseRedirect(reverse(self.request.resolver_match.view_name, kwargs=kwargs))
 
-                return super().dispatch(request, *args, **kwargs)
-            except Summoner.DoesNotExist:
-                return HttpResponseNotFound()
+            return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         kwargs['profile_name'] = self.kwargs.get('profile_name')
-        kwargs['summoner'] = self.summoner
+        kwargs['summoner'] = self.get_summoner()
         return super().get_context_data(**kwargs)
 
 

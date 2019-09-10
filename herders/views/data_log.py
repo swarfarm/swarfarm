@@ -8,11 +8,11 @@ from django.http import Http404
 from django.views.generic import FormView, ListView, TemplateView
 from django_pivot.histogram import histogram
 
-from bestiary.models import Dungeon, Level, GameItem
+from bestiary.models import Dungeon, Level, GameItem, RuneCraft
 from data_log.reports.generate import get_drop_querysets, level_drop_report, get_monster_report
 from data_log.util import transform_to_dict, replace_value_with_choice, floor_to_nearest, ceil_to_nearest
 from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm, \
-    FilterWorldBossLogForm, FilterRiftDungeonFormGradeOnly
+    FilterWorldBossLogForm, FilterRiftDungeonFormGradeOnly, FilterRiftRaidLogForm
 from herders.models import Monster, RuneInstance
 from .base import SummonerMixin, OwnerRequiredMixin
 
@@ -485,9 +485,120 @@ class ElementalRiftBeastTable(ElementalRiftDungeonMixin, TableView):
 
 
 # Rift Raid
-class RiftRaidTable(TableView):
+class RiftRaidMixin(SuccessMixin):
     log_type = 'riftraidlog'
+    form_class = FilterRiftRaidLogForm
+
+
+class RiftRaidDashboard(DashboardMixin, RiftRaidMixin, DataLogView):
+    template_name = 'herders/profile/data_logs/rift_raid/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        all_drops = get_drop_querysets(self.get_queryset())
+        recent_drops = {
+            'items': all_drops['items'].values(
+                'item',
+                name=F('item__name'),
+                icon=F('item__icon'),
+            ).annotate(
+                count=Sum('quantity')
+            ).order_by('-count') if 'items' in all_drops else [],
+            'monsters': replace_value_with_choice(
+                list(all_drops['monsters'].values(
+                    name=F('monster__name'),
+                    icon=F('monster__image_filename'),
+                    element=F('monster__element'),
+                    stars=F('grade'),
+                    is_awakened=F('monster__is_awakened'),
+                    can_awaken=F('monster__can_awaken'),
+                ).annotate(
+                    count=Count('pk')
+                ).order_by('-count')),
+                {'element': Monster.ELEMENT_CHOICES}
+            ) if 'monsters' in all_drops else [],
+            'rune_crafts': replace_value_with_choice(
+                list(all_drops['rune_crafts'].values(
+                    'type',
+                    'quality',
+                ).annotate(
+                    count=Count('pk')
+                ).order_by('-count') if 'rune_crafts' in all_drops else []),
+                {
+                    'type': RuneCraft.TYPE_CHOICES,
+                    'quality': RuneCraft.QUALITY_CHOICES,
+                }
+            )
+        }
+
+        level_list = Level.objects.filter(
+            pk__in=set(self.get_queryset().values_list('level', flat=True))
+        ).order_by('-floor').prefetch_related('dungeon')
+
+        kwargs['dashboard'] = {
+            'recent_drops': recent_drops,
+        }
+        kwargs['level_list'] = level_list
+
+        return super().get_context_data(**kwargs)
+
+
+class RiftRaidDetail(DetailMixin, RiftRaidMixin, DataLogView):
     form_class = FilterLogTimestamp
+    template_name = 'herders/profile/data_logs/rift_raid/detail.html'
+    dungeon = None
+    level = None
+
+    def get_queryset(self):
+        return super().get_queryset().filter(level=self.get_level())
+
+    def get_context_data(self, **kwargs):
+        if self.get_log_count():
+            contribution_histogram = {
+                'type': 'histogram',
+                'width': 1,
+                'data': histogram(self.get_queryset(), 'contribution_amount', range(0, 100)),
+            }
+        else:
+            contribution_histogram = None
+
+        context = {
+            'dungeon': self.get_dungeon(),
+            'level': self.get_level(),
+            'report': level_drop_report(
+                self.get_queryset(),
+                min_count=0,
+                include_currency=True,
+                exclude_social_points=True,
+                owner_only=True,
+            ),
+            'contribution_histogram': contribution_histogram
+        }
+
+        context.update(kwargs)
+        return super().get_context_data(**context)
+
+    def get_dungeon(self):
+        if not self.dungeon:
+            try:
+                self.dungeon = Dungeon.objects.get(category=Dungeon.CATEGORY_RIFT_OF_WORLDS_RAID)
+                return self.dungeon
+            except Dungeon.DoesNotExist:
+                raise Http404('Dungeon not found')
+
+        return self.dungeon
+
+    def get_level(self):
+        if not self.level:
+            floor = self.kwargs.get('floor')
+            try:
+                self.level = self.get_dungeon().level_set.get(floor=floor)
+            except Model.DoesNotExist:
+                raise Http404()
+
+        return self.level
+
+
+class RiftRaidTable(RiftRaidMixin, TableView):
     template_name = 'herders/profile/data_logs/rift_raid.html'
 
 

@@ -18,7 +18,7 @@ from django.utils.safestring import mark_safe
 from bestiary.fields import AdvancedSelectMultiple
 from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level, GameItem
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
-from data_log.models import RiftDungeonLog, WorldBossLog
+from data_log.models import RiftDungeonLog, RiftRaidLog, WorldBossLog
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
     RuneInstance, RuneCraftInstance, BuildingInstance
 
@@ -1611,8 +1611,9 @@ class FilterDungeonLogForm(FilterLogTimeRangeMixin):
         label='Category',
         required=False
     )
-    level__floor = forms.IntegerField(
+    level__floor = forms.ChoiceField(
         label='Floor',
+        choices=[(None, '---')] + [(floor, f'B{floor}') for floor in range(1, 11)],
         required=False,
     )
     level__difficulty__in = forms.MultipleChoiceField(
@@ -1713,6 +1714,37 @@ class FilterRiftDungeonFormGradeOnly(FilterLogTimeRangeMixin):
                     Fieldset(
                         'Rift Beast Filters',
                         Field('grade__in', css_class='select2'),
+                    ),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                Div(
+                    FilterLogTimeRangeLayout(),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                css_class='row',
+            ),
+            Submit('submit', 'Apply')
+        )
+
+
+class FilterRiftRaidLogForm(FilterLogTimeRangeMixin):
+    level__floor = forms.ChoiceField(
+        label='Floor',
+        choices=[(None, '---')] + [(floor, f'R{floor}') for floor in range(1, 6)],
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Fieldset(
+                        'Dungeon Filters',
+                        Field('level__floor'),
                     ),
                     css_class='col-md-6 col-xs-12'
                 ),

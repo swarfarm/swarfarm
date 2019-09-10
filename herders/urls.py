@@ -116,15 +116,19 @@ urlpatterns = [
                 path('', views.data_log.DungeonDashboard.as_view(), name='data_log_dungeon_dashboard'),
                 path('table/', views.data_log.DungeonTable.as_view(), name='data_log_dungeon_table'),
                 path('<slug:slug>/', views.data_log.DungeonDetail.as_view(), name='data_log_dungeon_detail_no_floor'),
-                path('<slug:slug>/<int:floor>/', views.data_log.DungeonDetail.as_view(), name='data_log_dungeon_detail'),
-                path('<slug:slug>/<str:difficulty>/<int:floor>/', views.data_log.DungeonDetail.as_view(), name='data_log_dungeon_detail_difficulty'),
+                path('<slug:slug>/b<int:floor>/', views.data_log.DungeonDetail.as_view(), name='data_log_dungeon_detail'),
+                path('<slug:slug>/<str:difficulty>/b<int:floor>/', views.data_log.DungeonDetail.as_view(), name='data_log_dungeon_detail_difficulty'),
             ])),
             url(r'^rift_beast/', include([
                 path('', views.data_log.ElementalRiftDungeonDashboard.as_view(), name='data_log_rift_dungeon_dashboard'),
                 path('table/', views.data_log.ElementalRiftBeastTable.as_view(), name='data_log_rift_dungeon_table'),
                 path('<slug:slug>/', views.data_log.ElementalRiftDungeonDetail.as_view(), name='data_log_rift_dungeon_detail'),
             ])),
-            url(r'^rift_raid/$', views.data_log.RiftRaidTable.as_view(), name='data_log_rift_raid'),
+            url(r'^rift_raid/', include([
+                path('', views.data_log.RiftRaidDashboard.as_view(), name='data_log_rift_raid_dashboard'),
+                path('table/', views.data_log.RiftRaidTable.as_view(), name='data_log_rift_raid_table'),
+                path('r<int:floor>/', views.data_log.RiftRaidDetail.as_view(), name='data_log_rift_raid_detail'),
+            ])),
             url(r'^world_boss/', include([
                 path('', views.data_log.WorldBossDashboard.as_view(), name='data_log_world_boss_dashboard'),
                 path('table/', views.data_log.WorldBossTable.as_view(), name='data_log_world_boss_table'),

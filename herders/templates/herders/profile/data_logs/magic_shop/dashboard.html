@@ -2,21 +2,22 @@
 {% load crispy_forms_tags report_charts utils %}
 
 {% block title %}
-    Dungeons - {{ block.super }}
+    Magic Shop - {{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {% if view_name == 'herders:data_log_dungeon_dashboard' %}
-        <li class="active">Dungeons</li>
+    {% if view_name == 'herders:data_log_magic_shop_dashboard' %}
+        <li class="active">Magic Shop</li>
     {% else %}
-        <li><a href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}">Dungeons</a></li>
+        <li><a href="{% url 'herders:data_log_magic_shop_dashboard' profile_name=profile_name %}">Magic Shop</a></li>
     {% endif %}
 {% endblock %}
 
 {% block logs %}
     <h2>Magic Shop Log Summary</h2>
     {% if total_count %}
+        <a href="{% url 'herders:data_log_magic_shop_table' profile_name=profile_name %}" class="pull-right btn btn-default">View as Table</a>
         {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
         <p>Total Logs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
         <hr />

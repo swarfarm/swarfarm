@@ -27,7 +27,7 @@
             {% for log in logs %}
                 <tr>
                     <td>{{ log.timestamp }}</td>
-                    <td>{% include './drops/all_drops.html' %}</td>
+                    <td>{% include 'herders/profile/data_logs/drops/all_drops.html' %}</td>
                 </tr>
             {% endfor %}
         </tbody>

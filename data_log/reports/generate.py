@@ -26,7 +26,7 @@ def get_report_summary(drops, total_log_count, **kwargs):
     # Chart data: list of {'drop': <string>, 'count': <int>}
     # Table data: dict (by drop type) of lists of items which drop, with stats. 'count' is only required stat.
     for drop_type, qs in drops.items():
-        # Remove very low frequency occurences from dataset
+        # Remove very low frequency occurrences from dataset
         qs = qs.annotate(count=Count('pk')).filter(count__gt=min_count)
 
         if drop_type == models.ItemDrop.RELATED_NAME:
@@ -528,7 +528,7 @@ def get_drop_querysets(qs):
     return drop_querysets
 
 
-def level_drop_report(qs, **kwargs):
+def drop_report(qs, **kwargs):
     report_data = {}
 
     # Get querysets for each possible drop type
@@ -668,7 +668,7 @@ def _generate_level_reports(model, **kwargs):
         records = slice_records(model.objects.filter(level=level, success=True), minimum_count=2500, report_timespan=timedelta(weeks=2))
 
         if records.count() > 0:
-            report_data = level_drop_report(records, **kwargs)
+            report_data = drop_report(records, **kwargs)
 
             models.LevelReport.objects.create(
                 level=level,
@@ -704,7 +704,7 @@ def _generate_by_grade_reports(model):
             records = slice_records(model.objects.filter(level=level, grade=grade), minimum_count=2500, report_timespan=timedelta(weeks=2))
 
             if records.count() > 0:
-                grade_report = level_drop_report(records)
+                grade_report = drop_report(records)
             else:
                 grade_report = None
 

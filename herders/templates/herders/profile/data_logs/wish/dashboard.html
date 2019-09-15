@@ -1,0 +1,32 @@
+{% extends 'herders/profile/data_logs/base.html' %}
+{% load crispy_forms_tags report_charts utils %}
+
+{% block title %}
+    Wishes - {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% if view_name == 'herders:data_log_wish_dashboard' %}
+        <li class="active">Wishes</li>
+    {% else %}
+        <li><a href="{% url 'herders:data_log_wish_dashboard' profile_name=profile_name %}">Wishes</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block logs %}
+    <h2>Wish Log Summary</h2>
+    {% if total_count %}
+        <a href="{% url 'herders:data_log_wish_table' profile_name=profile_name %}" class="pull-right btn btn-default">View as Table</a>
+        {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
+        <p>Total Logs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
+        <hr />
+        {% include 'data_log/summary.html' with summary=report.summary hide_monsters=True only %}
+        <hr />
+        {% include 'data_log/monster.html' with monsters=report.monsters only %}
+        <hr />
+        {% include 'data_log/runes.html' with runes=report.runes only %}
+    {% else %}
+        {% include 'herders/profile/data_logs/no_data.html' %}
+    {% endif %}
+{% endblock %}

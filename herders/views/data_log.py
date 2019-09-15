@@ -9,7 +9,7 @@ from django.views.generic import FormView, ListView, TemplateView
 from django_pivot.histogram import histogram
 
 from bestiary.models import Dungeon, Level, GameItem, RuneCraft
-from data_log.reports.generate import get_drop_querysets, level_drop_report, get_monster_report
+from data_log.reports.generate import get_drop_querysets, drop_report, get_monster_report
 from data_log.util import transform_to_dict, replace_value_with_choice, floor_to_nearest, ceil_to_nearest
 from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm, \
     FilterWorldBossLogForm, FilterRiftDungeonFormGradeOnly, FilterRiftRaidLogForm
@@ -292,7 +292,7 @@ class DungeonDetail(DetailMixin, DungeonMixin, DataLogView):
         context = {
             'dungeon': self.get_dungeon(),
             'level': self.get_level(),
-            'report': level_drop_report(self.get_queryset(), min_count=0),
+            'report': drop_report(self.get_queryset(), min_count=0),
         }
 
         context.update(kwargs)
@@ -453,7 +453,7 @@ class ElementalRiftDungeonDetail(DashboardMixin, ElementalRiftDungeonMixin, Data
         context = {
             'dungeon': self.get_dungeon(),
             'level': self.get_level(),
-            'report': level_drop_report(self.get_queryset(), min_count=0),
+            'report': drop_report(self.get_queryset(), min_count=0),
             'damage_histogram': damage_histogram
         }
 
@@ -566,7 +566,7 @@ class RiftRaidDetail(DetailMixin, RiftRaidMixin, DataLogView):
         context = {
             'dungeon': self.get_dungeon(),
             'level': self.get_level(),
-            'report': level_drop_report(
+            'report': drop_report(
                 self.get_queryset(),
                 min_count=0,
                 include_currency=True,
@@ -667,7 +667,7 @@ class WorldBossDashboard(DashboardMixin, WorldBossMixin, DataLogView):
             'dashboard': {
                 'recent_drops': recent_drops,
             },
-            'report': level_drop_report(self.get_queryset(), min_count=0),
+            'report': drop_report(self.get_queryset(), min_count=0),
             'damage_histogram': damage_histogram
         }
 
@@ -756,7 +756,7 @@ class MagicShopDashboard(DashboardMixin, MagicShopMixin, DataLogView):
 
     def get_context_data(self, **kwargs):
         context = {
-            'report': level_drop_report(self.get_queryset())
+            'report': drop_report(self.get_queryset(), min_count=0)
         }
         context.update(kwargs)
         return super().get_context_data(**context)
@@ -767,10 +767,24 @@ class MagicShopTable(MagicShopMixin, TableView):
 
 
 # Wishes
-class WishesTable(TableView):
+class WishMixin:
     log_type = 'wishlog'
     form_class = FilterLogTimestamp
-    template_name = 'herders/profile/data_logs/wish.html'
+
+
+class WishDashboard(DashboardMixin, WishMixin, DataLogView):
+    template_name = 'herders/profile/data_logs/wish/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'report': drop_report(self.get_queryset(), min_count=0, include_currency=True)
+        }
+        context.update(kwargs)
+        return super().get_context_data(**context)
+
+
+class WishTable(WishMixin, TableView):
+    template_name = 'herders/profile/data_logs/wish/table.html'
 
 
 # Rune Crafting

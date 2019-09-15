@@ -71,8 +71,11 @@
             ></div>
         {% endif %}
 
+        <hr />
         {% include 'data_log/summary.html' with summary=report.summary only %}
+        <hr />
         {% include 'data_log/runes.html' with runes=report.runes only %}
+        <hr />
         {% include 'data_log/rune_crafts.html' with rune_crafts=report.rune_crafts only %}
     {% else %}
         {% include 'herders/profile/data_logs/no_data.html' %}

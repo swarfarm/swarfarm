@@ -754,8 +754,12 @@ class MagicShopMixin:
 class MagicShopDashboard(DashboardMixin, MagicShopMixin, DataLogView):
     template_name = 'herders/profile/data_logs/magic_shop/dashboard.html'
 
-    # def get_context_data(self, **kwargs):
-
+    def get_context_data(self, **kwargs):
+        context = {
+            'report': level_drop_report(self.get_queryset())
+        }
+        context.update(kwargs)
+        return super().get_context_data(**context)
 
 
 class MagicShopTable(MagicShopMixin, TableView):

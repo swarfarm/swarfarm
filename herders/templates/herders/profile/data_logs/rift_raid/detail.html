@@ -23,9 +23,13 @@
             <li>Success Rate: {{ success_rate|floatformat:-2 }}%</li>
         </ul>
 
+        <hr />
         {% include 'data_log/clear_time.html' with clear_times=report.clear_time only %}
+        <hr />
         {% include 'data_log/summary.html' with summary=report.summary only %}
+        <hr />
         {% include 'data_log/runes.html' with runes=report.runes only %}
+        <hr />
         {% include 'data_log/rune_crafts.html' with rune_crafts=report.rune_crafts only %}
     {% else %}
         {% include 'herders/profile/data_logs/no_data.html' %}

@@ -13,7 +13,7 @@ register = template.Library()
 def drop_summary(summary_data):
     # Transform level drop summary to highcharts expected format
     chart_data = deepcopy(chart_templates.pie)
-    chart_data['title']['text'] = 'Overall drop distribution'
+    chart_data['title']['text'] = 'Overall distribution'
     chart_data['series'].append({
         'name': 'Drop Types',
         'colorByPoint': True,

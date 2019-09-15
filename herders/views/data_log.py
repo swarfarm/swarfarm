@@ -726,8 +726,8 @@ class SummonsDetail(DetailMixin, SummonsMixin, DataLogView):
             if slug:
                 try:
                     self.item = GameItem.objects.get(slug=slug)
-                except (GameItem.DoesNotExist, GameItem.MultipleObjectsReturned):
-                    pass
+                except GameItem.DoesNotExist:
+                    raise Http404()
 
         return self.item
 
@@ -746,10 +746,20 @@ class SummonsTable(SummonsMixin, TableView):
 
 
 # Magic Shop
-class MagicShopTable(TableView):
+class MagicShopMixin:
     log_type = 'shoprefreshlog'
     form_class = FilterLogTimestamp
-    template_name = 'herders/profile/data_logs/magic_shop.html'
+
+
+class MagicShopDashboard(DashboardMixin, MagicShopMixin, DataLogView):
+    template_name = 'herders/profile/data_logs/magic_shop/dashboard.html'
+
+    # def get_context_data(self, **kwargs):
+
+
+
+class MagicShopTable(MagicShopMixin, TableView):
+    template_name = 'herders/profile/data_logs/magic_shop/table.html'
 
 
 # Wishes

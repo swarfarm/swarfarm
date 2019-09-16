@@ -18,7 +18,7 @@ from django.utils.safestring import mark_safe
 from bestiary.fields import AdvancedSelectMultiple
 from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level, GameItem
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
-from data_log.models import RiftDungeonLog, RiftRaidLog, WorldBossLog
+from data_log.models import RiftDungeonLog, RiftRaidLog, WorldBossLog, CraftRuneLog, MagicBoxCraft
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
     RuneInstance, RuneCraftInstance, BuildingInstance
 
@@ -1810,6 +1810,68 @@ class FilterSummonLogForm(FilterLogTimeRangeMixin):
                     Fieldset(
                         'Summon Filters',
                         Field('item__in'),
+                    ),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                Div(
+                    FilterLogTimeRangeLayout(),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                css_class='row',
+            ),
+            Submit('submit', 'Apply')
+        )
+
+
+class FilterRuneCraftLogForm(FilterLogTimeRangeMixin):
+    craft_level__in = forms.MultipleChoiceField(
+        label='Craft Level',
+        choices=CraftRuneLog.CRAFT_CHOICES,
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Fieldset(
+                        'Rune Craft Filters',
+                        Field('craft_level__in', css_class='select2'),
+                    ),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                Div(
+                    FilterLogTimeRangeLayout(),
+                    css_class='col-md-6 col-xs-12'
+                ),
+                css_class='row',
+            ),
+            Submit('submit', 'Apply')
+        )
+
+
+class FilterMagicBoxCraftLogForm(FilterLogTimeRangeMixin):
+    box_type__in = forms.MultipleChoiceField(
+        label='Box Type',
+        choices=MagicBoxCraft.BOX_CHOICES,
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Fieldset(
+                        'Magic Box Craft Filters',
+                        Field('box_type__in', css_class='select2'),
                     ),
                     css_class='col-md-6 col-xs-12'
                 ),

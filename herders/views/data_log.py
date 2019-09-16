@@ -9,10 +9,10 @@ from django.views.generic import FormView, ListView, TemplateView
 from django_pivot.histogram import histogram
 
 from bestiary.models import Dungeon, Level, GameItem, RuneCraft
-from data_log.reports.generate import get_drop_querysets, drop_report, get_monster_report
+from data_log.reports.generate import get_drop_querysets, drop_report, get_monster_report, get_rune_report
 from data_log.util import transform_to_dict, replace_value_with_choice, floor_to_nearest, ceil_to_nearest
 from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm, \
-    FilterWorldBossLogForm, FilterRiftDungeonFormGradeOnly, FilterRiftRaidLogForm
+    FilterWorldBossLogForm, FilterRiftDungeonFormGradeOnly, FilterRiftRaidLogForm, FilterRuneCraftLogForm, FilterMagicBoxCraftLogForm
 from herders.models import Monster, RuneInstance
 from .base import SummonerMixin, OwnerRequiredMixin
 
@@ -788,14 +788,42 @@ class WishTable(WishMixin, TableView):
 
 
 # Rune Crafting
-class RuneCraftingTable(TableView):
+class RuneCraftMixin:
     log_type = 'craftrunelog'
-    form_class = FilterLogTimestamp
+    form_class = FilterRuneCraftLogForm
+
+
+class RuneCraftDashboard(DashboardMixin, RuneCraftMixin, DataLogView):
+    template_name = 'herders/profile/data_logs/rune_craft/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'report': get_rune_report(self.get_queryset(), self.get_log_count(), min_count=0)
+        }
+        context.update(kwargs)
+        return super().get_context_data(**context)
+
+
+class RuneCraftTable(RuneCraftMixin, TableView):
     template_name = 'herders/profile/data_logs/rune_crafting.html'
 
 
 # Magic Box Crafting
-class MagicBoxCraftingTable(TableView):
+class MagicBoxCraftMixin:
     log_type = 'magicboxcraft'
-    form_class = FilterLogTimestamp
-    template_name = 'herders/profile/data_logs/magic_box.html'
+    form_class = FilterMagicBoxCraftLogForm
+
+
+class MagicBoxCraftDashboard(DashboardMixin, MagicBoxCraftMixin, DataLogView):
+    template_name = 'herders/profile/data_logs/magic_box/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'report': drop_report(self.get_queryset(), min_count=0, include_currency=True)
+        }
+        context.update(kwargs)
+        return super().get_context_data(**context)
+
+
+class MagicBoxCraftTable(MagicBoxCraftMixin, TableView):
+    template_name = 'herders/profile/data_logs/magic_box/table.html'

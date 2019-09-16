@@ -111,8 +111,14 @@ urlpatterns = [
                 path('', views.data_log.WishDashboard.as_view(), name='data_log_wish_dashboard'),
                 path('table/', views.data_log.WishTable.as_view(), name='data_log_wish_table'),
             ])),
-            url(r'^rune_crafting/$', views.data_log.RuneCraftingTable.as_view(), name='data_log_rune_crafting'),
-            url(r'^magic_box/$', views.data_log.MagicBoxCraftingTable.as_view(), name='data_log_magic_box'),
+            url(r'^rune_crafting/', include([
+                path('', views.data_log.RuneCraftDashboard.as_view(), name='data_log_rune_craft_dashboard'),
+                path('table/', views.data_log.RuneCraftTable.as_view(), name='data_log_rune_craft_table'),
+            ])),
+            url(r'^magic_box/', include([
+                path('', views.data_log.MagicBoxCraftDashboard.as_view(), name='data_log_magic_box_craft_dashboard'),
+                path('table/', views.data_log.MagicBoxCraftTable.as_view(), name='data_log_magic_box_craft_table'),
+            ])),
             url(r'^summons/', include([
                 path('', views.data_log.SummonsDashboard.as_view(), name='data_log_summons_dashboard'),
                 path('table/', views.data_log.SummonsTable.as_view(), name='data_log_summons_table'),

@@ -25,12 +25,12 @@
             </a>
         </li>
         <li>
-            <a href="{% url 'herders:data_log_rune_crafting' profile_name=profile_name %}">
+            <a href="{% url 'herders:data_log_rune_craft_dashboard' profile_name=profile_name %}">
                 <h2>Rune Crafting <small>{{ counts.rune_crafting }} log{{ counts.rune_crafting|pluralize }}</small></h2>
             </a>
         </li>
         <li>
-            <a href="{% url 'herders:data_log_magic_box' profile_name=profile_name %}">
+            <a href="{% url 'herders:data_log_magic_box_craft_dashboard' profile_name=profile_name %}">
                 <h2>Magic Box Crafting <small>{{ counts.magic_box }} log{{ counts.magic_box|pluralize }}</small></h2>
             </a>
         </li>

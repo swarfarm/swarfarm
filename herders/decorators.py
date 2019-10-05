@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
-from django.http import HttpResponseNotFound, HttpResponseRedirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 
 
 def username_case_redirect(function):
@@ -13,7 +14,7 @@ def username_case_redirect(function):
                     kwargs['profile_name'] = username
                     return HttpResponseRedirect(reverse(request.resolver_match.view_name, kwargs=kwargs))
             except User.DoesNotExist:
-                return HttpResponseNotFound()
+                return render(request, 'herders/profile/not_found.html', status=404)
         return function(request, *args, **kwargs)
 
     wrap.__doc__ = function.__doc__

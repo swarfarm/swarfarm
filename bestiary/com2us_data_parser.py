@@ -250,7 +250,7 @@ def parse_skill_data(preview=False):
 
         # Find the scaling stat used in this section of formula
         for stat in scaling_stats:
-            if stat.com2us_desc in formula:
+            if re.search(f'{stat.com2us_desc}\\b', formula):
                 skill.scaling_stats.add(stat)
                 formula = formula.replace(stat.com2us_desc, f'{{{stat.stat}}}')
 

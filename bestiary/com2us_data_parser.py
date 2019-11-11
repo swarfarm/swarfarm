@@ -119,6 +119,7 @@ def parse_skill_data(preview=False):
     noble_agreement_speed_id = 6519
     holy_light_id = 2909
     armarna_s3_max_hp = 11214
+    sin_s3_scale_with_def = 11012
 
     for skill_data in skill_table['rows']:
         # Get matching skill in DB
@@ -267,6 +268,11 @@ def parse_skill_data(preview=False):
             max_hp = scaling_stats.get(com2us_desc='ATTACK_TOT_HP')
             if max_hp not in skill.scaling_stats.all():
                 skill.scaling_stats.add(max_hp)
+                updated = True
+        if master_id == sin_s3_scale_with_def:
+            defense = scaling_stats.get(com2us_desc='DEF')
+            if defense not in skill.scaling_stats.all():
+                skill.scaling_stats.add(defense)
                 updated = True
 
         # Finally save it if required

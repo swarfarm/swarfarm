@@ -335,37 +335,24 @@ def parse_rune_data(rune_data, owner):
         rune.innate_stat_value = innate_stat[1]
 
     substats = rune_data.get('sec_eff', [])
-    if len(substats) >= 1:
-        rune.substat_1 = com2us_mapping.rune_stat_type_map.get(substats[0][0])
-        rune.substat_1_value = substats[0][1] + substats[0][3]
-        if substats[0][3]:
-            rune.substat_1_craft = RuneCraftInstance.CRAFT_GRINDSTONE
-        elif substats[0][2]:
-            rune.substat_1_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
+    rune.substats = []
+    rune.substat_values = []
+    rune.substat_crafts = []
+    rune.substat_craft_values = []
 
-    if len(substats) >= 2:
-        rune.substat_2 = com2us_mapping.rune_stat_type_map.get(substats[1][0])
-        rune.substat_2_value = substats[1][1] + substats[1][3]
-        if substats[1][3]:
-            rune.substat_2_craft = RuneCraftInstance.CRAFT_GRINDSTONE
-        elif substats[1][2]:
-            rune.substat_2_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
+    for substat in substats:
+        substat_type = com2us_mapping.rune_stat_type_map.get(substat[0])
+        substat_value = substat[1]
+        if substat[2] == 1:
+            craft_type = RuneCraftInstance.CRAFT_ENCHANT_GEM
+        elif substat[3]:
+            craft_type = RuneCraftInstance.CRAFT_GRINDSTONE
+        craft_value = substat[3]
 
-    if len(substats) >= 3:
-        rune.substat_3 = com2us_mapping.rune_stat_type_map.get(substats[2][0])
-        rune.substat_3_value = substats[2][1] + substats[2][3]
-        if substats[2][3]:
-            rune.substat_3_craft = RuneCraftInstance.CRAFT_GRINDSTONE
-        elif substats[2][2]:
-            rune.substat_3_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
-
-    if len(substats) >= 4:
-        rune.substat_4 = com2us_mapping.rune_stat_type_map.get(substats[3][0])
-        rune.substat_4_value = substats[3][1] + substats[3][3]
-        if substats[3][3]:
-            rune.substat_4_craft = RuneCraftInstance.CRAFT_GRINDSTONE
-        elif substats[3][2]:
-            rune.substat_4_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
+        rune.substats.append(substat_type)
+        rune.substat_values.append(substat_value)
+        rune.substat_crafts.append(craft_type)
+        rune.substat_craft_values.append(craft_value)
 
     return rune
 

@@ -8,6 +8,7 @@ from dal import autocomplete
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
+from django.contrib.postgres.forms import SplitArrayField
 from django.core.validators import RegexValidator
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.forms import ModelForm
@@ -16,9 +17,9 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.fields import AdvancedSelectMultiple
-from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level, GameItem
+from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, RuneCraft, Dungeon, Level, GameItem
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
-from data_log.models import RiftDungeonLog, RiftRaidLog, WorldBossLog, CraftRuneLog, MagicBoxCraft
+from data_log.models import RiftDungeonLog, WorldBossLog, CraftRuneLog, MagicBoxCraft
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
     RuneInstance, RuneCraftInstance, BuildingInstance
 
@@ -894,6 +895,46 @@ class EditTeamForm(ModelForm):
 
 # Rune Forms
 class AddRuneInstanceForm(ModelForm):
+    substats = SplitArrayField(
+        forms.TypedChoiceField(
+            choices=((None, '---------'), ) + RuneInstance.STAT_CHOICES,
+            coerce=int,
+            empty_value=None,
+        ),
+        size=4,
+        remove_trailing_nulls=True,
+        label='Substat',
+        required=False,
+    )
+
+    substat_values = SplitArrayField(
+        forms.IntegerField(),
+        size=4,
+        remove_trailing_nulls=True,
+        label='Values',
+        required=False,
+    )
+
+    substat_crafts = SplitArrayField(
+        forms.TypedChoiceField(
+            choices=((None, '---------'), ) + RuneCraft.CRAFT_CHOICES,
+            coerce=int,
+            empty_value=None,
+        ),
+        size=4,
+        remove_trailing_nulls=True,
+        label='Grind/Enchant',
+        required=False,
+    )
+
+    substat_craft_values = SplitArrayField(
+        forms.IntegerField(),
+        size=4,
+        remove_trailing_nulls=True,
+        label='Values',
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         super(AddRuneInstanceForm, self).__init__(*args, **kwargs)
         self.fields['type'].choices = self.fields['type'].choices[1:]  # Remove the empty '----' option from the list
@@ -901,18 +942,6 @@ class AddRuneInstanceForm(ModelForm):
         self.fields['main_stat_value'].label = False
         self.fields['innate_stat'].label = False
         self.fields['innate_stat_value'].label = False
-        self.fields['substat_1'].label = False
-        self.fields['substat_1_value'].label = False
-        self.fields['substat_1_craft'].label = False
-        self.fields['substat_2'].label = False
-        self.fields['substat_2_value'].label = False
-        self.fields['substat_2_craft'].label = False
-        self.fields['substat_3'].label = False
-        self.fields['substat_3_value'].label = False
-        self.fields['substat_3_craft'].label = False
-        self.fields['substat_4'].label = False
-        self.fields['substat_4_value'].label = False
-        self.fields['substat_4_craft'].label = False
         self.fields['assigned_to'].label = False
         self.fields['notes'].label = False
 
@@ -948,32 +977,11 @@ class AddRuneInstanceForm(ModelForm):
                         css_class='form-group form-group-condensed',
                     ),
                     Div(
-                        HTML('<label class="col-md-2 control-label">Substat 1</label>'),
-                        Field('substat_1', wrapper_class='col-md-4 inline-horizontal'),
-                        Field('substat_1_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
-                        Field('substat_1_craft', wrapper_class='col-md-3 inline-horizontal'),
-                        css_class='form-group form-group-condensed',
-                    ),
-                    Div(
-                        HTML('<label class="col-md-2 control-label">Substat 2</label>'),
-                        Field('substat_2', wrapper_class='col-md-4 inline-horizontal'),
-                        Field('substat_2_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
-                        Field('substat_2_craft', wrapper_class='col-md-3 inline-horizontal'),
-                        css_class='form-group form-group-condensed',
-                    ),
-                    Div(
-                        HTML('<label class="col-md-2 control-label">Substat 3</label>'),
-                        Field('substat_3', wrapper_class='col-md-4 inline-horizontal'),
-                        Field('substat_3_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
-                        Field('substat_3_craft', wrapper_class='col-md-3 inline-horizontal'),
-                        css_class='form-group form-group-condensed',
-                    ),
-                    Div(
-                        HTML('<label class="col-md-2 control-label">Substat 4</label>'),
-                        Field('substat_4', wrapper_class='col-md-4 inline-horizontal'),
-                        Field('substat_4_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
-                        Field('substat_4_craft', wrapper_class='col-md-3 inline-horizontal'),
-                        css_class='form-group form-group-condensed',
+                        Field('substats', wrapper_class='col-sm-3'),
+                        Field('substat_values', wrapper_class='col-sm-3'),
+                        Field('substat_crafts', wrapper_class='col-sm-3'),
+                        Field('substat_craft_values', wrapper_class='col-sm-3'),
+                        css_class='row'
                     ),
                     Div(
                         HTML('<label class="col-md-2 control-label">Assign To</label>'),
@@ -1006,10 +1014,7 @@ class AddRuneInstanceForm(ModelForm):
             'type', 'stars', 'level', 'slot', 'ancient',
             'main_stat', 'main_stat_value',
             'innate_stat', 'innate_stat_value',
-            'substat_1', 'substat_1_value', 'substat_1_craft',
-            'substat_2', 'substat_2_value', 'substat_2_craft',
-            'substat_3', 'substat_3_value', 'substat_3_craft',
-            'substat_4', 'substat_4_value', 'substat_4_craft',
+            'substats', 'substat_values', 'substat_crafts', 'substat_craft_values',
             'assigned_to', 'notes', 'marked_for_sale',
         )
         widgets = {

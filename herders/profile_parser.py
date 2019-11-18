@@ -337,22 +337,19 @@ def parse_rune_data(rune_data, owner):
     substats = rune_data.get('sec_eff', [])
     rune.substats = []
     rune.substat_values = []
-    rune.substat_crafts = []
-    rune.substat_craft_values = []
+    rune.substats_enchanted = []
+    rune.substats_grind_value = []
 
     for substat in substats:
         substat_type = com2us_mapping.rune_stat_type_map.get(substat[0])
         substat_value = substat[1]
-        if substat[2] == 1:
-            craft_type = RuneCraftInstance.CRAFT_ENCHANT_GEM
-        elif substat[3]:
-            craft_type = RuneCraftInstance.CRAFT_GRINDSTONE
-        craft_value = substat[3]
+        enchanted = substat[2] == 1
+        grind_value = substat[3]
 
         rune.substats.append(substat_type)
         rune.substat_values.append(substat_value)
-        rune.substat_crafts.append(craft_type)
-        rune.substat_craft_values.append(craft_value)
+        rune.substats_enchanted.append(enchanted)
+        rune.substats_grind_value.append(grind_value)
 
     return rune
 

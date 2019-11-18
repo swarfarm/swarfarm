@@ -702,30 +702,15 @@ class RuneInstance(Rune):
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
 
-    substat_crafts = ArrayField(
-        models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, blank=True, null=True),
+    substats_enchanted = ArrayField(
+        models.BooleanField(default=False, blank=True),
         size=4,
-        null=True,
-        blank=True
+        default=list,
     )
-    substat_craft_values = ArrayField(
-        models.IntegerField(),
+    substats_grind_value = ArrayField(
+        models.IntegerField(default=0, blank=True),
         size=4,
-        null=True,
-        blank=True
-    )
-
-    substat_enchanted = ArrayField(
-        models.BooleanField(default=False),
-        size=4,
-        null=True,
-        blank=True,
-    )
-    substat_grinds = ArrayField(
-        models.IntegerField(),
-        size=4,
-        null=True,
-        blank=True
+        default=list,
     )
 
     # Old substat fields to be removed later, but still used
@@ -765,7 +750,7 @@ class RuneInstance(Rune):
         else:
             for idx, substat in enumerate(self.substats):
                 if substat == stat_type:
-                    return self.substat_values[idx] + self.substat_craft_values[idx]
+                    return self.substat_values[idx] + self.substats_grind_value[idx]
 
         # Nothing matching queried stat type
         return 0
@@ -806,16 +791,6 @@ class RuneInstance(Rune):
 
     def update_fields(self):
         super(RuneInstance, self).update_fields()
-
-        # Update arrays based on individual fields
-        for idx, (stat, craft) in enumerate(zip(self.substats, self.substat_crafts)):
-            if craft:
-                max_craft_value = RuneCraft.CRAFT_VALUE_RANGES[craft][stat][self.quality]['max']
-
-                if craft in RuneCraft.CRAFT_GRINDSTONES and self.substat_craft_values[idx] > max_craft_value:
-                    self.substat_craft_values[idx] = max_craft_value
-                if craft in RuneCraft.CRAFT_ENCHANT_GEMS and self.substat_craft_values[idx] > max_craft_value:
-                    self.substat_values[idx] = max_craft_value
 
         # Check no other runes are in this slot
         if self.assigned_to:

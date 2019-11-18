@@ -911,27 +911,23 @@ class AddRuneInstanceForm(ModelForm):
         forms.IntegerField(),
         size=4,
         remove_trailing_nulls=True,
-        label='Values',
+        label='Value',
         required=False,
     )
 
-    substat_crafts = SplitArrayField(
-        forms.TypedChoiceField(
-            choices=((None, '---------'), ) + RuneCraft.CRAFT_CHOICES,
-            coerce=int,
-            empty_value=None,
-        ),
+    substats_enchanted = SplitArrayField(
+        forms.BooleanField(),
         size=4,
         remove_trailing_nulls=True,
-        label='Grind/Enchant',
+        label='Enchanted',
         required=False,
     )
 
-    substat_craft_values = SplitArrayField(
+    substats_grind_value = SplitArrayField(
         forms.IntegerField(),
         size=4,
         remove_trailing_nulls=True,
-        label='Values',
+        label='Grind Value',
         required=False,
     )
 
@@ -979,8 +975,8 @@ class AddRuneInstanceForm(ModelForm):
                     Div(
                         Field('substats', wrapper_class='col-sm-3'),
                         Field('substat_values', wrapper_class='col-sm-3'),
-                        Field('substat_crafts', wrapper_class='col-sm-3'),
-                        Field('substat_craft_values', wrapper_class='col-sm-3'),
+                        Field('substats_enchanted', wrapper_class='col-sm-3'),
+                        Field('substats_grind_value', wrapper_class='col-sm-3'),
                         css_class='row'
                     ),
                     Div(
@@ -1014,7 +1010,7 @@ class AddRuneInstanceForm(ModelForm):
             'type', 'stars', 'level', 'slot', 'ancient',
             'main_stat', 'main_stat_value',
             'innate_stat', 'innate_stat_value',
-            'substats', 'substat_values', 'substat_crafts', 'substat_craft_values',
+            'substats', 'substat_values', 'substats_enchanted', 'substats_grind_value',
             'assigned_to', 'notes', 'marked_for_sale',
         )
         widgets = {

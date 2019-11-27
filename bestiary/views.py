@@ -106,7 +106,7 @@ def bestiary_detail(request, monster_slug):
     if monster is None:
         raise Http404()
 
-    mon = monster.base_monster()
+    mon = monster.base_monster
     monsters = []
 
     while mon is not None:

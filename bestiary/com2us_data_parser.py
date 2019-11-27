@@ -120,6 +120,7 @@ def parse_skill_data(preview=False):
     holy_light_id = 2909
     armarna_s3_max_hp = 11214
     sin_s3_scale_with_def = 11012
+    deva_s3_scale_with_target_hp = 12614
 
     for skill_data in skill_table['rows']:
         # Get matching skill in DB
@@ -273,6 +274,11 @@ def parse_skill_data(preview=False):
             defense = scaling_stats.get(com2us_desc='DEF')
             if defense not in skill.scaling_stats.all():
                 skill.scaling_stats.add(defense)
+                updated = True
+        if master_id == deva_s3_scale_with_target_hp:
+            target_max_hp = scaling_stats.get(com2us_desc='TARGET_TOT_HP')
+            if target_max_hp not in skill.scaling_stats.all():
+                skill.scaling_stats.add(target_max_hp)
                 updated = True
 
         # Finally save it if required

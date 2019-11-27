@@ -1,5 +1,6 @@
 import uuid
 from collections import OrderedDict
+from math import floor, ceil
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField, JSONField
@@ -7,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, Count
 from django.utils.safestring import mark_safe
-from math import floor, ceil
 from timezone_field import TimeZoneField
 
 from bestiary.models import Monster, Building, Level, Rune, RuneCraft
@@ -618,7 +618,7 @@ class MonsterInstance(models.Model):
             self.skill_4_level = skills[3].max_level
 
     def clean(self):
-        from django.core.exceptions import ValidationError, ObjectDoesNotExist
+        from django.core.exceptions import ValidationError
 
         # Check skill levels
         if self.skill_1_level is None or self.skill_1_level < 1:
@@ -644,12 +644,7 @@ class MonsterInstance(models.Model):
                 code='invalid_level'
             )
 
-        try:
-            min_stars = self.monster.base_stars
-            if self.monster.is_awakened:
-                min_stars -= 1
-        except ObjectDoesNotExist:
-            min_stars = 1
+        min_stars = self.monster.base_monster.base_stars
 
         if self.stars and (self.stars > 6 or self.stars < min_stars):
             raise ValidationError(

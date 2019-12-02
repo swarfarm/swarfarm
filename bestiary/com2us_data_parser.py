@@ -119,7 +119,11 @@ def parse_skill_data(preview=False):
     golem_def_skills = [2401, 2402, 2403, 2404, 2405, 2406, 2407, 2410]
     noble_agreement_speed_id = 6519
     holy_light_id = 2909
-    armarna_s3_max_hp = 11214
+    scale_with_max_hp_skills = [
+        11214,  # Amarna S3
+        5663,  # Shakan (2A) S3
+        5665,  # Jultan (2A) S3
+    ]
     sin_s3_scale_with_def = 11012
     deva_s3_scale_with_target_hp = 12614
 
@@ -266,7 +270,7 @@ def parse_skill_data(preview=False):
             updated = True
 
         # Special cases for scaling stats
-        if master_id == armarna_s3_max_hp:
+        if master_id in scale_with_max_hp_skills:
             max_hp = scaling_stats.get(com2us_desc='ATTACK_TOT_HP')
             if max_hp not in skill.scaling_stats.all():
                 skill.scaling_stats.add(max_hp)

@@ -1,6 +1,7 @@
 import base64
 import binascii
 import csv
+import io
 import json
 import re
 import zlib
@@ -809,7 +810,7 @@ def decrypt_com2us_png():
         encrypted.pos = 0x07 * 8
         signature = encrypted.peek('uint:8')
         if signature == 0x0B:
-            print('Decrypting {}'.format(im_path))
+            print(f'Decrypting {im_path}')
             # Correct the PNG signature
             encrypted.overwrite('0x0A', encrypted.pos)
 
@@ -826,6 +827,18 @@ def decrypt_com2us_png():
             # Write it back to the file
             with open(im_path, 'wb') as f:
                 encrypted.tofile(f)
+
+            continue
+
+        # Check for the weird jpeg files that need to be trimmed
+        encrypted.pos = 0
+        if encrypted.peek('bytes:5') == b'Joker':
+            print(f'Trimming and converting weird JPEG to PNG {im_path}')
+            del encrypted[0:16 * 8]
+
+            # Open it as a jpg and resave to disk
+            new_imfile = Image.open(io.BytesIO(encrypted.tobytes()))
+            new_imfile.save(im_path)
 
 
 class TranslationTables(IntEnum):

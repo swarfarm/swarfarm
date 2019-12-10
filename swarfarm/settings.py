@@ -1,5 +1,6 @@
-import os
 import datetime
+import os
+
 import environ
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -15,7 +16,6 @@ env = environ.Env(
     EMAIL_HOST_USER=(str, ''),
     EMAIL_HOST_PASSWORD=(str, ''),
     CACHE_LOCATION=(str, None),
-    GOOGLE_API_KEY=(str, None),
     RECAPTCHA_PUBLIC_KEY=(str, None),
     RECAPTCHA_PRIVATE_KEY=(str, None),
     SUMMONERS_WAR_SECRET_KEY=(str, ''),
@@ -239,7 +239,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api(v\d+)?/.*$'
 
 # Google APIs
-GOOGLE_API_KEY = env('GOOGLE_API_KEY')
 RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
 RECAPTCHA_USE_SSL = True

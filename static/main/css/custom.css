@@ -116,6 +116,10 @@ footer {
     padding-right: 5px;
 }
 
+.full-width {
+    width: 100%;
+}
+
 .pagination-compact {
     margin: 0;
 }

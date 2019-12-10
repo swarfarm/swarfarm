@@ -15,6 +15,7 @@ env = environ.Env(
     EMAIL_PORT=(int, 587),
     EMAIL_HOST_USER=(str, ''),
     EMAIL_HOST_PASSWORD=(str, ''),
+    EMAIL_FROM=(str, ''),
     CACHE_LOCATION=(str, None),
     RECAPTCHA_PUBLIC_KEY=(str, None),
     RECAPTCHA_PRIVATE_KEY=(str, None),
@@ -68,7 +69,7 @@ EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
-SERVER_EMAIL = 'noreply@swarfarm.com'
+SERVER_EMAIL = env('EMAIL_FROM')
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # Admins and Managers

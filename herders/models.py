@@ -1,6 +1,7 @@
 import uuid
 from collections import OrderedDict
 from math import floor, ceil
+from itertools import zip_longest
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField, JSONField
@@ -714,18 +715,18 @@ class RuneInstance(Rune):
     )
 
     # Old substat fields to be removed later, but still used
-    substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
-    substat_1_value = models.IntegerField(null=True, blank=True)
-    substat_1_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    substat_2 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
-    substat_2_value = models.IntegerField(null=True, blank=True)
-    substat_2_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    substat_3 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
-    substat_3_value = models.IntegerField(null=True, blank=True)
-    substat_3_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    substat_4 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
-    substat_4_value = models.IntegerField(null=True, blank=True)
-    substat_4_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    # substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    # substat_1_value = models.IntegerField(null=True, blank=True)
+    # substat_1_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    # substat_2 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    # substat_2_value = models.IntegerField(null=True, blank=True)
+    # substat_2_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    # substat_3 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    # substat_3_value = models.IntegerField(null=True, blank=True)
+    # substat_3_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    # substat_4 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    # substat_4_value = models.IntegerField(null=True, blank=True)
+    # substat_4_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
 
     class Meta:
         ordering = ['slot', 'type', 'level']
@@ -799,135 +800,60 @@ class RuneInstance(Rune):
                 rune.save()
 
     def clean(self):
-        # if self.substat_1 is not None:
-        #     if self.substat_1_value is None or self.substat_1_value <= 0:
-        #         raise ValidationError({
-        #             'substat_1_value': ValidationError(
-        #                 'Must be greater than 0.',
-        #                 code='invalid_rune_substat_1_value'
-        #             )
-        #         })
-        #     if self.substat_1_craft in RuneCraftInstance.CRAFT_ENCHANT_GEMS:
-        #         max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_1_craft][self.substat_1][
-        #             RuneCraftInstance.QUALITY_LEGEND]['max']
-        #     else:
-        #         max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_1][self.stars] * int(
-        #             floor(min(self.level, 12) / 3) + 1)
-        #         if self.substat_1_craft in RuneCraftInstance.CRAFT_GRINDSTONES:
-        #             max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_1_craft][self.substat_1][RuneCraftInstance.QUALITY_LEGEND]['max']
-        #
-        #     # TODO: Remove not ancient check once ancient max substat values are found
-        #     if self.substat_1_value > max_sub_value and not self.ancient:
-        #         raise ValidationError({
-        #             'substat_1_value': ValidationError(
-        #                 'Must be less than or equal to ' + str(max_sub_value) + '.',
-        #                 code='invalid_rune_substat_1_value'
-        #             )
-        #         })
-        # else:
-        #     self.substat_1_value = None
-        #     self.substat_1_craft = None
-        #
-        # if self.substat_2 is not None:
-        #     if self.substat_2_value is None or self.substat_2_value <= 0:
-        #         raise ValidationError({
-        #             'substat_2_value': ValidationError(
-        #                 'Must be greater than 0.',
-        #                 code='invalid_rune_substat_2_value'
-        #             )
-        #         })
-        #     if self.substat_2_craft in RuneCraftInstance.CRAFT_ENCHANT_GEMS:
-        #         max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_2_craft][self.substat_2][
-        #             RuneCraftInstance.QUALITY_LEGEND]['max']
-        #     else:
-        #         max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_2][self.stars] * int(
-        #             floor(min(self.level, 12) / 3) + 1)
-        #         if self.substat_2_craft in RuneCraftInstance.CRAFT_GRINDSTONES:
-        #             max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_2_craft][self.substat_2][RuneCraftInstance.QUALITY_LEGEND]['max']
-        #
-        #     # TODO: Remove not ancient check once ancient max substat values are found
-        #     if self.substat_2_value > max_sub_value and not self.ancient:
-        #         raise ValidationError({
-        #             'substat_2_value': ValidationError(
-        #                 'Must be less than or equal to ' + str(max_sub_value) + '.',
-        #                 code='invalid_rune_substat_2_value'
-        #             )
-        #         })
-        # else:
-        #     self.substat_2_value = None
-        #     self.substat_2_craft = None
-        #
-        # if self.substat_3 is not None:
-        #     if self.substat_3_value is None or self.substat_3_value <= 0:
-        #         raise ValidationError({
-        #             'substat_3_value': ValidationError(
-        #                 'Must be greater than 0.',
-        #                 code='invalid_rune_substat_3_value'
-        #             )
-        #         })
-        #
-        #     if self.substat_3_craft in RuneCraftInstance.CRAFT_ENCHANT_GEMS:
-        #         max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_3_craft][self.substat_3][
-        #             RuneCraftInstance.QUALITY_LEGEND]['max']
-        #     else:
-        #         max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_3][self.stars] * int(
-        #             floor(min(self.level, 12) / 3) + 1)
-        #         if self.substat_3_craft in RuneCraftInstance.CRAFT_GRINDSTONES:
-        #             max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_3_craft][self.substat_3][RuneCraftInstance.QUALITY_LEGEND]['max']
-        #
-        #     # TODO: Remove not ancient check once ancient max substat values are found
-        #     if self.substat_3_value > max_sub_value and not self.ancient:
-        #         raise ValidationError({
-        #             'substat_3_value': ValidationError(
-        #                 'Must be less than ' + str(max_sub_value) + '.',
-        #                 code='invalid_rune_substat_3_value'
-        #             )
-        #         })
-        # else:
-        #     self.substat_3_value = None
-        #     self.substat_3_craft = None
-        #
-        # if self.substat_4 is not None:
-        #     if self.substat_4_value is None or self.substat_4_value <= 0:
-        #         raise ValidationError({
-        #             'substat_4_value': ValidationError(
-        #                 'Must be greater than 0.',
-        #                 code='invalid_rune_substat_4_value'
-        #             )
-        #         })
-        #     if self.substat_4_craft in RuneCraftInstance.CRAFT_ENCHANT_GEMS:
-        #         max_sub_value = RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_4_craft][self.substat_4][
-        #             RuneCraftInstance.QUALITY_LEGEND]['max']
-        #     else:
-        #         max_sub_value = self.SUBSTAT_INCREMENTS[self.substat_4][self.stars] * int(
-        #             floor(min(self.level, 12) / 3) + 1)
-        #         if self.substat_4_craft == RuneCraftInstance.CRAFT_GRINDSTONES:
-        #             max_sub_value += RuneCraftInstance.CRAFT_VALUE_RANGES[self.substat_4_craft][self.substat_4][RuneCraftInstance.QUALITY_LEGEND]['max']
-        #
-        #     # TODO: Remove not ancient check once ancient max substat values are found
-        #     if self.substat_4_value > max_sub_value and not self.ancient:
-        #         raise ValidationError({
-        #             'substat_4_value': ValidationError(
-        #                 'Must be less than or equal to ' + str(max_sub_value) + '.',
-        #                 code='invalid_rune_substat_4_value'
-        #             )
-        #         })
-        # else:
-        #     self.substat_4_value = None
-        #     self.substat_4_craft = None
+        super().clean()
 
-        # Check that monster rune is assigned to does not already have rune in that slot
+        # Trim enchant gem and grind value arrays to match number of substats
+        num_substats = len(self.substats)
+        self.substats_enchanted = self.substats_enchanted[0:num_substats]
+        self.substats_grind_value = self.substats_grind_value[0:num_substats]
+
+        for index, (substat, value, enchanted, grind_value) in enumerate(zip_longest(
+                self.substats,
+                self.substat_values,
+                self.substats_enchanted,
+                self.substats_grind_value
+        )):
+            # Ensure all substat arrays are equal length
+            if enchanted is None:
+                if len(self.substats_grind_value) < len(self.substats):
+                    self.substats_enchanted.append(False)
+                enchanted = False
+
+            if grind_value is None:
+                if len(self.substats_grind_value) < len(self.substats):
+                    self.substats_grind_value.append(0)
+                grind_value = 0
+
+            # Validate grind value
+            max_grind_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneCraftInstance.CRAFT_ANCIENT_GRINDSTONE][substat][RuneCraftInstance.QUALITY_LEGEND]['max']
+            if grind_value > max_grind_value:
+                raise ValidationError({
+                    'substats_grind_value': ValidationError(
+                        f'Substat Grind %(nth)s: Must be less than or equal to {max_grind_value}.',
+                        params={'nth': index + 1},
+                        code=f'invalid_grind_value'
+                    )
+                })
+
+        # Validate number of gems and grindstones applied
+        if sum(self.substats_enchanted) > 1:
+            raise ValidationError({
+                'substats_enchanted': 'Only one substat may have an enchant gem applied.',
+            }, code='too_many_enchant_gems')
+
+        if sum([bool(grind_value) for grind_value in self.substats_grind_value]) > 1:
+            raise ValidationError({
+                'substats_grind_value': 'Only one substat may have a grindstone applied.',
+            }, code='too_many_enchant_gems')
+
         if self.assigned_to is not None and (self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0):
             raise ValidationError(
-                'Monster already has rune in slot %(slot)s. Either pick a different slot or do not assign to the monster yet.',
+                'Monster already has rune in slot %(slot)s.',
                 params={
                     'slot': self.slot,
                 },
                 code='slot_occupied'
             )
-
-        # self.update_substat_arrays()
-        super(RuneInstance, self).clean()
 
     def save(self, *args, **kwargs):
         super(RuneInstance, self).save(*args, **kwargs)

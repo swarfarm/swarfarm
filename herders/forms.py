@@ -908,7 +908,7 @@ class AddRuneInstanceForm(ModelForm):
     )
 
     substat_values = SplitArrayField(
-        forms.IntegerField(),
+        forms.IntegerField(required=False),
         size=4,
         remove_trailing_nulls=True,
         label='Value',
@@ -916,7 +916,7 @@ class AddRuneInstanceForm(ModelForm):
     )
 
     substats_enchanted = SplitArrayField(
-        forms.BooleanField(),
+        forms.BooleanField(required=False),
         size=4,
         remove_trailing_nulls=True,
         label='Enchanted',
@@ -924,12 +924,26 @@ class AddRuneInstanceForm(ModelForm):
     )
 
     substats_grind_value = SplitArrayField(
-        forms.IntegerField(),
+        forms.IntegerField(required=False),
         size=4,
         remove_trailing_nulls=True,
         label='Grind Value',
         required=False,
     )
+
+    class Meta:
+        model = RuneInstance
+        fields = (
+            'type', 'stars', 'level', 'slot', 'ancient',
+            'main_stat', 'main_stat_value',
+            'innate_stat', 'innate_stat_value',
+            'substats', 'substat_values', 'substats_enchanted', 'substats_grind_value',
+            'substats', 'substats_enchanted',
+            'assigned_to', 'notes', 'marked_for_sale',
+        )
+        widgets = {
+            'assigned_to': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
+        }
 
     def __init__(self, *args, **kwargs):
         super(AddRuneInstanceForm, self).__init__(*args, **kwargs)
@@ -1003,19 +1017,6 @@ class AddRuneInstanceForm(ModelForm):
                 Submit('save', 'Save'),
             ),
         )
-
-    class Meta:
-        model = RuneInstance
-        fields = (
-            'type', 'stars', 'level', 'slot', 'ancient',
-            'main_stat', 'main_stat_value',
-            'innate_stat', 'innate_stat_value',
-            'substats', 'substat_values', 'substats_enchanted', 'substats_grind_value',
-            'assigned_to', 'notes', 'marked_for_sale',
-        )
-        widgets = {
-            'assigned_to': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
-        }
 
 
 class AssignRuneForm(forms.Form):

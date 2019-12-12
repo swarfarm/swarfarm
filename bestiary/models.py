@@ -2,6 +2,7 @@ from collections import OrderedDict
 from functools import partial
 from math import floor
 from operator import is_not
+from itertools import zip_longest
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
@@ -1698,11 +1699,15 @@ class Rune(models.Model, RuneObjectBase):
         else:
             self.innate_stat_value = None
 
-        for substat, value in zip(self.substats, self.substat_values):
+        # Trim substat values to match length of defined substats
+        self.substat_values = self.substat_values[0:len(self.substats)]
+
+        for index, (substat, value) in enumerate(zip_longest(self.substats, self.substat_values)):
             if value is None or value <= 0:
                 raise ValidationError({
-                    f'substat_values]': ValidationError(
-                        'Must be greater than 0.',
+                    'substat_values': ValidationError(
+                        'Substat %(nth)s: Must be greater than 0.',
+                        params={'nth': index + 1},
                         code=f'invalid_rune_substat_values'
                     )
                 })
@@ -1711,9 +1716,10 @@ class Rune(models.Model, RuneObjectBase):
             # TODO: Remove not ancient check once ancient max substat values are found
             if value > max_sub_value and not self.ancient:
                 raise ValidationError({
-                    f'substat_values': ValidationError(
-                        'Must be less than or equal to ' + str(max_sub_value) + '.',
-                        code=f'invalid_rune_substat_value]'
+                    'substat_values': ValidationError(
+                        f'Substat %(nth)s: Must be less than or equal to {max_sub_value}.',
+                        params={'nth': index + 1},
+                        code=f'invalid_rune_substat_value'
                     )
                 })
 

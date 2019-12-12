@@ -23,7 +23,7 @@ from herders.decorators import username_case_redirect
 from herders.forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, EditUserForm, \
     EditSummonerForm, EditBuildingForm, ImportPCAPForm, ImportSWParserJSONForm
 from herders.models import Summoner, Storage, Building, BuildingInstance
-from herders.profile_parser import parse_pcap, validate_sw_json
+from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
 
@@ -504,13 +504,6 @@ def import_export_home(request, profile_name):
     })
 
 
-@login_required
-@csrf_exempt
-def import_pcap(request, profile_name):
-    request.upload_handlers = [TemporaryFileUploadHandler()]
-    return _import_pcap(request, profile_name)
-
-
 def _get_import_options(form_data):
     return {
         'clear_profile': form_data.get('clear_profile'),
@@ -526,69 +519,6 @@ def _get_import_options(form_data):
         'delete_missing_runes': form_data.get('missing_rune_action'),
         'ignore_validation_errors': form_data.get('ignore_validation'),
     }
-
-
-@csrf_protect
-def _import_pcap(request, profile_name):
-    errors = []
-    validation_failures = []
-
-    if request.POST:
-        form = ImportPCAPForm(request.POST, request.FILES)
-        form.helper.form_action = reverse('herders:import_pcap', kwargs={'profile_name': profile_name})
-
-        if form.is_valid():
-            summoner = get_object_or_404(Summoner, user__username=request.user.username)
-            uploaded_file = form.cleaned_data['pcap']
-            import_options = _get_import_options(form.cleaned_data)
-
-            if form.cleaned_data.get('save_defaults'):
-                summoner.preferences['import_options'] = import_options
-                summoner.save()
-
-            try:
-                data = parse_pcap(uploaded_file)
-            except Exception as e:
-                errors.append('Exception ' + str(type(e)) + ': ' + str(e))
-            else:
-                if data:
-                    schema_errors, validation_errors = validate_sw_json(data, request.user.summoner)
-
-                    if schema_errors:
-                        errors += schema_errors
-
-                    if validation_errors:
-                        validation_failures += validation_errors
-
-                    if not errors and (not validation_failures or import_options['ignore_validation_errors']):
-                        # Queue the import
-                        task = com2us_data_import.delay(data, summoner.pk, import_options)
-                        request.session['import_task_id'] = task.task_id
-
-                        return render(
-                            request,
-                            'herders/profile/import_export/import_progress.html',
-                            context={'profile_name': profile_name}
-                        )
-
-                else:
-                    errors.append("Unable to find Summoner's War data in the uploaded file")
-    else:
-        form = ImportPCAPForm(
-            initial=request.user.summoner.preferences.get('import_options', {
-                'ignore_silver': True
-            })
-        )
-
-    context = {
-        'profile_name': profile_name,
-        'form': form,
-        'errors': errors,
-        'validation_failures': validation_failures,
-        'view': 'importexport'
-    }
-
-    return render(request, 'herders/profile/import_export/import_pcap.html', context)
 
 
 @username_case_redirect

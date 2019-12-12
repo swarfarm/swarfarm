@@ -13,37 +13,6 @@ from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, Mon
 from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
 
-def parse_pcap(pcap_file):
-    pcap = dpkt.pcap.Reader(pcap_file)
-    streams = dict()
-
-    # Assemble the TCP streams
-    for ts, buf in pcap:
-        eth = dpkt.ethernet.Ethernet(buf)
-        try:
-            ip = eth.data
-            tcp = ip.data
-
-            if type(tcp) == dpkt.tcp.TCP and tcp.sport == 80 and len(tcp.data) > 0:
-                if tcp.ack in streams:
-                    streams[tcp.ack] += tcp.data
-                else:
-                    streams[tcp.ack] = tcp.data
-        except:
-            continue
-
-    # Find the summoner's war command somewhere in there
-    for stream in list(streams.values()):
-        try:
-            resp = dpkt.http.Response(stream)
-            resp_data = json.loads(decrypt_response(resp.body))
-        except:
-            continue
-        else:
-            if resp_data.get('command') == 'HubUserLogin' and 'unit_list' in resp_data:
-                return resp_data
-
-
 def validate_sw_json(data, summoner):
     validation_errors = []
 

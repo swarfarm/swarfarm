@@ -249,9 +249,10 @@ class Monster(models.Model):
 
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))
 
+    @property
     def base_monster(self):
         if self.awakens_from is not None and self.awakens_from.obtainable:
-            return self.awakens_from.base_monster()
+            return self.awakens_from.base_monster
 
         return self
 

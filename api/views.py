@@ -1,7 +1,3 @@
-import json
-
-import requests
-from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
@@ -297,14 +293,7 @@ def nightbot_monsters(request, profile_name, monster_name):
 
                 # get short URL
                 long_url = request.build_absolute_uri(reverse('herders:monster_instance_view', kwargs={'profile_name': summoner.user.username, 'instance_id': mon.pk.hex}))
-                google_api = 'https://www.googleapis.com/urlshortener/v1/url?key=' + settings.GOOGLE_API_KEY
-                req = requests.post(google_api, json={'longUrl': long_url})
-                response = json.loads(req.text)
-                if 'error' in response:
-                    desc += ' - ' + long_url
-                else:
-                    desc += ' - ' + response['id']
-
+                desc += ' - ' + long_url
                 nightbot_responses.append(desc)
 
             return HttpResponse(' -AND- '.join(nightbot_responses))

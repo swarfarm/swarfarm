@@ -15,8 +15,8 @@ env = environ.Env(
     EMAIL_PORT=(int, 587),
     EMAIL_HOST_USER=(str, ''),
     EMAIL_HOST_PASSWORD=(str, ''),
+    EMAIL_FROM=(str, ''),
     CACHE_LOCATION=(str, None),
-    GOOGLE_API_KEY=(str, None),
     RECAPTCHA_PUBLIC_KEY=(str, None),
     RECAPTCHA_PRIVATE_KEY=(str, None),
     SUMMONERS_WAR_SECRET_KEY=(str, ''),
@@ -69,7 +69,7 @@ EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
-SERVER_EMAIL = 'noreply@swarfarm.com'
+SERVER_EMAIL = env('EMAIL_FROM')
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # Admins and Managers
@@ -241,7 +241,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api(v\d+)?/.*$'
 
 # Google APIs
-GOOGLE_API_KEY = env('GOOGLE_API_KEY')
 RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
 RECAPTCHA_USE_SSL = True

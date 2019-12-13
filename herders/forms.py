@@ -307,6 +307,10 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
         widget=autocomplete.ModelSelect2(url='bestiary-monster-autocomplete')
     )
 
+    class Meta:
+        model = MonsterInstance
+        fields = ('monster', 'stars', 'level', 'in_storage', 'fodder')
+
     def __init__(self, *args, **kwargs):
         super(BulkAddMonsterInstanceForm, self).__init__(*args, **kwargs)
         self.fields['monster'].required = False
@@ -317,12 +321,13 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
         self.helper.disable_csrf = True
         self.helper.include_media = False
         self.helper.layout = Layout(
-            HTML('<td>'),
+            HTML('<td width="250px">'),
             InlineField(
                 'monster',
                 data_stars_field=self['stars'].auto_id,
                 data_fodder_field=self['fodder'].auto_id,
-                data_set_stars=''
+                data_set_stars='',
+                wrapper_class='full-width',
             ),
             HTML('</td><td>'),
             InlineField('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
@@ -338,9 +343,8 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
             HTML('</td>'),
         )
 
-    class Meta:
-        model = MonsterInstance
-        fields = ('monster', 'stars', 'level', 'in_storage', 'fodder')
+    def has_changed(self):
+        return all(required_field in self.changed_data for required_field in ['monster', 'stars', 'level'])
 
 
 class EditMonsterInstanceForm(ModelForm):

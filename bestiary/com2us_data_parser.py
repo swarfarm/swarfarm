@@ -1,6 +1,7 @@
 import base64
 import binascii
 import csv
+import io
 import json
 import re
 import zlib
@@ -118,8 +119,13 @@ def parse_skill_data(preview=False):
     golem_def_skills = [2401, 2402, 2403, 2404, 2405, 2406, 2407, 2410]
     noble_agreement_speed_id = 6519
     holy_light_id = 2909
-    armarna_s3_max_hp = 11214
+    scale_with_max_hp_skills = [
+        11214,  # Amarna S3
+        5663,  # Shakan (2A) S3
+        5665,  # Jultan (2A) S3
+    ]
     sin_s3_scale_with_def = 11012
+    deva_s3_scale_with_target_hp = 12614
 
     for skill_data in skill_table['rows']:
         # Get matching skill in DB
@@ -264,7 +270,7 @@ def parse_skill_data(preview=False):
             updated = True
 
         # Special cases for scaling stats
-        if master_id == armarna_s3_max_hp:
+        if master_id in scale_with_max_hp_skills:
             max_hp = scaling_stats.get(com2us_desc='ATTACK_TOT_HP')
             if max_hp not in skill.scaling_stats.all():
                 skill.scaling_stats.add(max_hp)
@@ -273,6 +279,11 @@ def parse_skill_data(preview=False):
             defense = scaling_stats.get(com2us_desc='DEF')
             if defense not in skill.scaling_stats.all():
                 skill.scaling_stats.add(defense)
+                updated = True
+        if master_id == deva_s3_scale_with_target_hp:
+            target_max_hp = scaling_stats.get(com2us_desc='TARGET_TOT_HP')
+            if target_max_hp not in skill.scaling_stats.all():
+                skill.scaling_stats.add(target_max_hp)
                 updated = True
 
         # Finally save it if required
@@ -803,7 +814,7 @@ def decrypt_com2us_png():
         encrypted.pos = 0x07 * 8
         signature = encrypted.peek('uint:8')
         if signature == 0x0B:
-            print('Decrypting {}'.format(im_path))
+            print(f'Decrypting {im_path}')
             # Correct the PNG signature
             encrypted.overwrite('0x0A', encrypted.pos)
 
@@ -820,6 +831,18 @@ def decrypt_com2us_png():
             # Write it back to the file
             with open(im_path, 'wb') as f:
                 encrypted.tofile(f)
+
+            continue
+
+        # Check for the weird jpeg files that need to be trimmed
+        encrypted.pos = 0
+        if encrypted.peek('bytes:5') == b'Joker':
+            print(f'Trimming and converting weird JPEG to PNG {im_path}')
+            del encrypted[0:16 * 8]
+
+            # Open it as a jpg and resave to disk
+            new_imfile = Image.open(io.BytesIO(encrypted.tobytes()))
+            new_imfile.save(im_path)
 
 
 class TranslationTables(IntEnum):

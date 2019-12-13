@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import pytz
 from django.contrib.postgres.fields import JSONField
+from django.core.mail import mail_admins
 from django.db import models
 
 from bestiary.models import Monster, Dungeon, Level, GameItem, Rune, RuneCraft
@@ -606,6 +607,7 @@ class DungeonLog(LogEntry):
     @classmethod
     def parse_dungeon_result(cls, summoner, log_data):
         dungeon_id = log_data['request']['dungeon_id']
+        floor = log_data['request']['stage_id']
 
         # Don't log HoH dungeons, which have IDs starting from 10000 and increments by 1 each new HoH.
         if 10000 <= dungeon_id < 11000:
@@ -613,11 +615,32 @@ class DungeonLog(LogEntry):
 
         log_entry = cls(summoner=summoner)
         log_entry.parse_common_log_data(log_data)
-        log_entry.level = Level.objects.get(
-            dungeon__category=Dungeon.CATEGORY_CAIROS,
-            dungeon__com2us_id=dungeon_id,
-            floor=log_data['request']['stage_id'],
-        )
+        try:
+            log_entry.level = Level.objects.get(
+                dungeon__category=Dungeon.CATEGORY_CAIROS,
+                dungeon__com2us_id=dungeon_id,
+                floor=floor,
+            )
+        except Level.DoesNotExist:
+            # Create a placeholder level for later updating
+            try:
+                d = Dungeon.objects.get(category=Dungeon.CATEGORY_CAIROS, com2us_id=dungeon_id)
+            except Dungeon.DoesNotExist:
+                # Create the dungeon
+                d = Dungeon.objects.create(
+                    com2us_id=dungeon_id,
+                    enabled=False,
+                    name='UNKNOWN DUNGEON',
+                    category=Dungeon.CATEGORY_CAIROS,
+                )
+
+            # Create the level
+            log_entry.level = Level.objects.create(
+                dungeon=d,
+                floor=floor,
+            )
+            mail_admins('New Level Created', f'New level {floor} created in dungeon com2us ID {dungeon_id}.')
+
         log_entry.success = log_data['request']['win_lose'] == 1
         log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
         log_entry.save()

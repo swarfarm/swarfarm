@@ -619,7 +619,7 @@ class MonsterInstance(models.Model):
             self.skill_4_level = skills[3].max_level
 
     def clean(self):
-        from django.core.exceptions import ValidationError, ObjectDoesNotExist
+        from django.core.exceptions import ValidationError
 
         # Check skill levels
         if self.skill_1_level is None or self.skill_1_level < 1:
@@ -645,12 +645,7 @@ class MonsterInstance(models.Model):
                 code='invalid_level'
             )
 
-        try:
-            min_stars = self.monster.base_stars
-            if self.monster.is_awakened:
-                min_stars -= 1
-        except ObjectDoesNotExist:
-            min_stars = 1
+        min_stars = self.monster.base_monster.base_stars
 
         if self.stars and (self.stars > 6 or self.stars < min_stars):
             raise ValidationError(

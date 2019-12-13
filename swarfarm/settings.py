@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'django.contrib.humanize',
     'django.contrib.messages',
+    'django.contrib.postgres',
     'django.contrib.redirects',
     'django.contrib.sessions',
     'django.contrib.sites',

@@ -68,36 +68,12 @@ def _convert_rune_to_win10_json(rune):
         exported_rune['class'] += 10
         exported_rune['extra'] += 10
 
-    if rune.substat_1:
+    for substat, value, enchanted, grind_value in zip(rune.substats, rune.substat_values, rune.substats_enchanted, rune.substats_grind_value):
         exported_rune['sec_eff'].append([
-            rune_stat_type_map[rune.substat_1],
-            rune.substat_1_value,
-            0,
-            0,
-        ])
-
-    if rune.substat_2:
-        exported_rune['sec_eff'].append([
-            rune_stat_type_map[rune.substat_2],
-            rune.substat_2_value,
-            0,
-            0,
-        ])
-
-    if rune.substat_3:
-        exported_rune['sec_eff'].append([
-            rune_stat_type_map[rune.substat_3],
-            rune.substat_3_value,
-            0,
-            0,
-        ])
-
-    if rune.substat_4:
-        exported_rune['sec_eff'].append([
-            rune_stat_type_map[rune.substat_4],
-            rune.substat_4_value,
-            0,
-            0,
+            rune_stat_type_map[substat],
+            value,
+            1 if enchanted else 0,
+            grind_value,
         ])
 
     return exported_rune

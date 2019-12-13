@@ -93,7 +93,6 @@ urlpatterns = [
         ])),
         url(r'^data/$', views.profile.import_export_home, name='import_export_home'),
         url(r'^import/', include([
-            url(r'^pcap/$', views.profile.import_pcap, name='import_pcap'),
             url(r'^swjson/$', views.profile.import_sw_json, name='import_swparser'),
             url(r'^progress/$', views.profile.import_status, name='import_status_data'),
         ])),

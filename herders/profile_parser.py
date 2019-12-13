@@ -13,37 +13,6 @@ from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, Mon
 from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
 
-def parse_pcap(pcap_file):
-    pcap = dpkt.pcap.Reader(pcap_file)
-    streams = dict()
-
-    # Assemble the TCP streams
-    for ts, buf in pcap:
-        eth = dpkt.ethernet.Ethernet(buf)
-        try:
-            ip = eth.data
-            tcp = ip.data
-
-            if type(tcp) == dpkt.tcp.TCP and tcp.sport == 80 and len(tcp.data) > 0:
-                if tcp.ack in streams:
-                    streams[tcp.ack] += tcp.data
-                else:
-                    streams[tcp.ack] = tcp.data
-        except:
-            continue
-
-    # Find the summoner's war command somewhere in there
-    for stream in list(streams.values()):
-        try:
-            resp = dpkt.http.Response(stream)
-            resp_data = json.loads(decrypt_response(resp.body))
-        except:
-            continue
-        else:
-            if resp_data.get('command') == 'HubUserLogin' and 'unit_list' in resp_data:
-                return resp_data
-
-
 def validate_sw_json(data, summoner):
     validation_errors = []
 
@@ -335,37 +304,21 @@ def parse_rune_data(rune_data, owner):
         rune.innate_stat_value = innate_stat[1]
 
     substats = rune_data.get('sec_eff', [])
-    if len(substats) >= 1:
-        rune.substat_1 = com2us_mapping.rune_stat_type_map.get(substats[0][0])
-        rune.substat_1_value = substats[0][1] + substats[0][3]
-        if substats[0][3]:
-            rune.substat_1_craft = RuneCraftInstance.CRAFT_GRINDSTONE
-        elif substats[0][2]:
-            rune.substat_1_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
+    rune.substats = []
+    rune.substat_values = []
+    rune.substats_enchanted = []
+    rune.substats_grind_value = []
 
-    if len(substats) >= 2:
-        rune.substat_2 = com2us_mapping.rune_stat_type_map.get(substats[1][0])
-        rune.substat_2_value = substats[1][1] + substats[1][3]
-        if substats[1][3]:
-            rune.substat_2_craft = RuneCraftInstance.CRAFT_GRINDSTONE
-        elif substats[1][2]:
-            rune.substat_2_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
+    for substat in substats:
+        substat_type = com2us_mapping.rune_stat_type_map.get(substat[0])
+        substat_value = substat[1]
+        enchanted = substat[2] == 1
+        grind_value = substat[3]
 
-    if len(substats) >= 3:
-        rune.substat_3 = com2us_mapping.rune_stat_type_map.get(substats[2][0])
-        rune.substat_3_value = substats[2][1] + substats[2][3]
-        if substats[2][3]:
-            rune.substat_3_craft = RuneCraftInstance.CRAFT_GRINDSTONE
-        elif substats[2][2]:
-            rune.substat_3_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
-
-    if len(substats) >= 4:
-        rune.substat_4 = com2us_mapping.rune_stat_type_map.get(substats[3][0])
-        rune.substat_4_value = substats[3][1] + substats[3][3]
-        if substats[3][3]:
-            rune.substat_4_craft = RuneCraftInstance.CRAFT_GRINDSTONE
-        elif substats[3][2]:
-            rune.substat_4_craft = RuneCraftInstance.CRAFT_ENCHANT_GEM
+        rune.substats.append(substat_type)
+        rune.substat_values.append(substat_value)
+        rune.substats_enchanted.append(enchanted)
+        rune.substats_grind_value.append(grind_value)
 
     return rune
 

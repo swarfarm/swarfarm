@@ -22,10 +22,7 @@ class RuneInstanceSerializer(serializers.ModelSerializer):
             'substat_upgrades_remaining', 'efficiency', 'max_efficiency',
             'main_stat', 'main_stat_value',
             'innate_stat', 'innate_stat_value',
-            'substat_1', 'substat_1_value', 'substat_1_craft',
-            'substat_2', 'substat_2_value', 'substat_2_craft',
-            'substat_3', 'substat_3_value', 'substat_3_craft',
-            'substat_4', 'substat_4_value', 'substat_4_craft',
+            'substats', 'substat_values', 'substats_enchanted', 'substats_grind_value',
         ]
 
     def create(self, validated_data):

@@ -6,7 +6,7 @@ from django.db import migrations
 def fill_substat_arrays(apps, schema_editor):
     RuneInstance = apps.get_model('herders', 'RuneInstance')
 
-    for r in RuneInstance.objects.filter(substat_1__isnull=False):
+    for r in RuneInstance.objects.filter(quality__gt=0, substats_grind_value__len=0):
         r.substats = []
         r.substat_values = []
         r.substats_enchanted = []

@@ -1,4 +1,4 @@
-Django>=2.2.8,<3.0
+git+git://github.com/django/django.git@86befcc172c23170a720b3e0c06db51a99b3da59#egg=Django
 gunicorn
 eventlet
 psycopg2-binary

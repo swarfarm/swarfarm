@@ -1,7 +1,7 @@
 import uuid
 from collections import OrderedDict
-from math import floor, ceil
 from itertools import zip_longest
+from math import floor, ceil
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField, JSONField
@@ -710,18 +710,18 @@ class RuneInstance(Rune):
     )
 
     # Old substat fields to be removed later, but still used
-    # substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
-    # substat_1_value = models.IntegerField(null=True, blank=True)
-    # substat_1_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    # substat_2 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
-    # substat_2_value = models.IntegerField(null=True, blank=True)
-    # substat_2_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    # substat_3 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
-    # substat_3_value = models.IntegerField(null=True, blank=True)
-    # substat_3_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    # substat_4 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
-    # substat_4_value = models.IntegerField(null=True, blank=True)
-    # substat_4_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    substat_1_value = models.IntegerField(null=True, blank=True)
+    substat_1_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_2 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    substat_2_value = models.IntegerField(null=True, blank=True)
+    substat_2_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_3 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    substat_3_value = models.IntegerField(null=True, blank=True)
+    substat_3_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_4 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    substat_4_value = models.IntegerField(null=True, blank=True)
+    substat_4_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
 
     class Meta:
         ordering = ['slot', 'type', 'level']
@@ -854,7 +854,7 @@ class RuneInstance(Rune):
         super(RuneInstance, self).save(*args, **kwargs)
 
         # Trigger stat calc update on the assigned monster
-        if self.assigned_to:
+        if self.assigned_to and not kwargs.get('skip_assigned_to', False):
             self.assigned_to.save()
 
 

@@ -485,7 +485,7 @@ def parse_monster_data(preview=False):
             print('Updated {} ({}) awakening level to {}'.format(monster, master_id, monster.get_awaken_level_display()))
             updated = True
 
-        if monster.can_awaken and awakens_to_com2us_id > 0:
+        if monster.can_awaken and awakens_to_com2us_id > 0 and monster.obtainable:
             # Auto-assign awakens_to if possible (which will auto-update awakens_from on other monster)
             try:
                 awakens_to_monster = Monster.objects.get(com2us_id=awakens_to_com2us_id)

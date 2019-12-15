@@ -1022,6 +1022,10 @@ class AddRuneInstanceForm(ModelForm):
             ),
         )
 
+    def clean_substats_grind_value(self):
+        # Replace instances of None with 0
+        return [x or 0 for x in self.cleaned_data['substats_grind_value']]
+
 
 class AssignRuneForm(forms.Form):
     type = forms.MultipleChoiceField(
@@ -1170,6 +1174,15 @@ class FilterRuneForm(forms.Form):
         label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
         required=False,
     )
+    has_gem = forms.NullBooleanField(
+        label='Enchant Gem Applied',
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
+    has_grind = forms.CharField(
+        label='Grinds Applied',
+        required=False,
+    )
     level = forms.CharField(
         label='Level',
         required=False,
@@ -1252,12 +1265,24 @@ class FilterRuneForm(forms.Form):
                     data_width='125px',
                     wrapper_class='form-group-sm form-group-condensed',
                 ),
+                Field(
+                    'has_grind',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='4',
+                    data_slider_value='[0, 4]',
+                    data_slider_step='1',
+                    data_slider_ticks='[0, 4]',
+                    data_slider_ticks_labels='["0", "4"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
                 css_class='col-md-4 col-sm-6'
             ),
             Div(
                 Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
                 Field('original_quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
                 Field('ancient', wrapper_class='form-group-sm form-group-condensed'),
+                Field('has_gem', wrapper_class='form-group-sm form-group-condensed'),
                 Field('assigned_to', wrapper_class='form-group-sm form-group-condensed'),
                 Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed'),
                 css_class='col-md-4 col-sm-6'
@@ -1311,6 +1336,15 @@ class FilterRuneForm(forms.Form):
 
         self.cleaned_data['stars__gte'] = int(min_stars)
         self.cleaned_data['stars__lte'] = int(max_stars)
+
+        try:
+            [min_grinds, max_grinds] = self.cleaned_data['has_grind'].split(',')
+        except:
+            min_grinds = 0
+            max_grinds = 4
+
+        self.cleaned_data['has_grind__gte'] = int(min_grinds)
+        self.cleaned_data['has_grind__lte'] = int(max_grinds)
 
         # Process even/odd slot shortcuts for rune slot
         if 'even' in self.cleaned_data['slot']:

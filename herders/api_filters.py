@@ -112,8 +112,8 @@ class RuneInstanceFilter(django_filters.FilterSet):
         model = RuneInstance
         fields = {
             'type': ['exact'],
-            'level': ['gte', 'lte'],
-            'stars': ['gte', 'lte'],
+            'level': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'stars': ['exact', 'lte', 'lt', 'gte', 'gt'],
             'slot': ['exact'],
             'quality': ['exact'],
             'original_quality': ['exact'],
@@ -122,6 +122,8 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'main_stat': ['exact'],
             'innate_stat': ['exact'],
             'marked_for_sale': ['exact'],
+            'has_grind': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'has_gem': ['exact'],
         }
 
     def filter_substats(self, queryset, name, value):

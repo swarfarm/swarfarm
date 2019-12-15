@@ -93,6 +93,10 @@
     color: #987500;
 }
 
+.rune-grindstone-text img {
+    height: 1em;
+}
+
 .rune-text-normal {
     text-shadow: none;
 }

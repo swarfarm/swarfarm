@@ -1483,6 +1483,16 @@ class Rune(models.Model, RuneObjectBase):
         size=4,
         default=list,
     )
+    substats_enchanted = ArrayField(
+        models.BooleanField(default=False, blank=True),
+        size=4,
+        default=list,
+    )
+    substats_grind_value = ArrayField(
+        models.IntegerField(default=0, blank=True),
+        size=4,
+        default=list,
+    )
 
     # The following fields exist purely to allow easier filtering and are updated on model save
     has_hp = models.BooleanField(default=False)
@@ -1496,6 +1506,8 @@ class Rune(models.Model, RuneObjectBase):
     efficiency = models.FloatField(blank=True, null=True)
     max_efficiency = models.FloatField(blank=True, null=True)
     substat_upgrades_remaining = models.IntegerField(blank=True, null=True)
+    has_grind = models.IntegerField(default=0, help_text='Number of grindstones applied')
+    has_gem = models.BooleanField(default=False, help_text='Has had an enchant gem applied')
 
     class Meta:
         abstract = True
@@ -1531,9 +1543,43 @@ class Rune(models.Model, RuneObjectBase):
         else:
             for idx, substat in enumerate(self.substats):
                 if substat == stat_type:
-                    return self.substat_values[idx]
+                    return self.substat_values[idx] + self.substats_grind_value[idx]
 
         return 0
+
+    # Individual functions for each stat to use within templates
+    def get_hp_pct(self):
+        return self.get_stat(Rune.STAT_HP_PCT, False)
+
+    def get_hp(self):
+        return self.get_stat(Rune.STAT_HP, False)
+
+    def get_def_pct(self):
+        return self.get_stat(Rune.STAT_DEF_PCT, False)
+
+    def get_def(self):
+        return self.get_stat(Rune.STAT_DEF, False)
+
+    def get_atk_pct(self):
+        return self.get_stat(Rune.STAT_ATK_PCT, False)
+
+    def get_atk(self):
+        return self.get_stat(Rune.STAT_ATK, False)
+
+    def get_spd(self):
+        return self.get_stat(Rune.STAT_SPD, False)
+
+    def get_cri_rate(self):
+        return self.get_stat(Rune.STAT_CRIT_RATE_PCT, False)
+
+    def get_cri_dmg(self):
+        return self.get_stat(Rune.STAT_CRIT_DMG_PCT, False)
+
+    def get_res(self):
+        return self.get_stat(Rune.STAT_RESIST_PCT, False)
+
+    def get_acc(self):
+        return self.get_stat(Rune.STAT_ACCURACY_PCT, False)
 
     @property
     def substat_upgrades_received(self):
@@ -1544,18 +1590,20 @@ class Rune(models.Model, RuneObjectBase):
         # All runes are compared against max stat values for perfect 6* runes.
 
         # Main stat efficiency (max 100%)
-        running_sum = float(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15]) / float(self.MAIN_STAT_VALUES[self.main_stat][6][15])
+        running_sum = float(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15]) / float(
+            self.MAIN_STAT_VALUES[self.main_stat][6][15])
 
         # Substat efficiencies (max 20% per; 1 innate, max 4 initial, 4 upgrades)
         if self.innate_stat is not None:
             running_sum += self.innate_stat_value / float(self.SUBSTAT_INCREMENTS[self.innate_stat][6] * 5)
 
-        for substat, value in zip(self.substats, self.substat_values):
-            running_sum += value / float(self.SUBSTAT_INCREMENTS[substat][6] * 5)
+        for substat, value, grind_value in zip(self.substats, self.substat_values, self.substats_grind_value):
+            running_sum += (value + grind_value) / float(self.SUBSTAT_INCREMENTS[substat][6] * 5)
 
         return running_sum / 2.8 * 100
 
     def get_max_efficiency(self, efficiency, substat_upgrades_remaining):
+        # Max efficiency does not include grinds
         new_stats = min(4 - len(self.substats), substat_upgrades_remaining)
         old_stats = substat_upgrades_remaining - new_stats
 
@@ -1597,6 +1645,8 @@ class Rune(models.Model, RuneObjectBase):
         self.substat_upgrades_remaining = 5 - self.substat_upgrades_received
         self.efficiency = self.get_efficiency()
         self.max_efficiency = self.get_max_efficiency(self.efficiency, self.substat_upgrades_remaining)
+        self.has_grind = sum([bool(x) for x in self.substats_grind_value])
+        self.has_gem = any(self.substats_enchanted)
 
         # Cap stat values to appropriate value
         # Very old runes can have different values, but never higher than the cap
@@ -1701,9 +1751,17 @@ class Rune(models.Model, RuneObjectBase):
             self.innate_stat_value = None
 
         # Trim substat values to match length of defined substats
-        self.substat_values = self.substat_values[0:len(self.substats)]
+        num_substats = len(self.substats)
+        self.substat_values = self.substat_values[0:num_substats]
+        self.substats_enchanted = self.substats_enchanted[0:num_substats]
+        self.substats_grind_value = self.substats_grind_value[0:num_substats]
 
-        for index, (substat, value) in enumerate(zip_longest(self.substats, self.substat_values)):
+        for index, (substat, value, enchanted, grind_value) in enumerate(zip_longest(
+                self.substats,
+                self.substat_values,
+                self.substats_enchanted,
+                self.substats_grind_value
+        )):
             if value is None or value <= 0:
                 raise ValidationError({
                     'substat_values': ValidationError(
@@ -1723,6 +1781,34 @@ class Rune(models.Model, RuneObjectBase):
                         code=f'invalid_rune_substat_value'
                     )
                 })
+
+            # Ensure the optional substat arrays are equal length to number of substats
+            if enchanted is None:
+                if len(self.substats_grind_value) < len(self.substats):
+                    self.substats_enchanted.append(False)
+                enchanted = False
+
+            if grind_value is None:
+                if len(self.substats_grind_value) < len(self.substats):
+                    self.substats_grind_value.append(0)
+                grind_value = 0
+
+                # Validate grind value
+                max_grind_value = RuneCraft.CRAFT_VALUE_RANGES[RuneCraft.CRAFT_ANCIENT_GRINDSTONE][substat][RuneCraft.QUALITY_LEGEND]['max']
+                if grind_value > max_grind_value:
+                    raise ValidationError({
+                        'substats_grind_value': ValidationError(
+                            f'Substat Grind %(nth)s: Must be less than or equal to {max_grind_value}.',
+                            params={'nth': index + 1},
+                            code=f'invalid_grind_value'
+                        )
+                    })
+
+        # Validate number of gems applied
+        if sum(self.substats_enchanted) > 1:
+            raise ValidationError({
+                'substats_enchanted': 'Only one substat may have an enchant gem applied.',
+            }, code='too_many_enchant_gems')
 
     def save(self, *args, **kwargs):
         self.update_fields()

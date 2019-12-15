@@ -698,17 +698,6 @@ class RuneInstance(Rune):
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
 
-    substats_enchanted = ArrayField(
-        models.BooleanField(default=False, blank=True),
-        size=4,
-        default=list,
-    )
-    substats_grind_value = ArrayField(
-        models.IntegerField(default=0, blank=True),
-        size=4,
-        default=list,
-    )
-
     # Old substat fields to be removed later, but still used
     substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_1_value = models.IntegerField(null=True, blank=True)
@@ -726,120 +715,8 @@ class RuneInstance(Rune):
     class Meta:
         ordering = ['slot', 'type', 'level']
 
-    def get_substat_1_rune_display(self):
-        return self.get_substat_rune_display(0)
-
-    def get_substat_2_rune_display(self):
-        return self.get_substat_rune_display(1)
-
-    def get_substat_3_rune_display(self):
-        return self.get_substat_rune_display(2)
-
-    def get_substat_4_rune_display(self):
-        return self.get_substat_rune_display(3)
-
-    def get_stat(self, stat_type, sub_stats_only=False):
-        if self.main_stat == stat_type and not sub_stats_only:
-            return self.main_stat_value
-        elif self.innate_stat == stat_type and not sub_stats_only:
-            return self.innate_stat_value
-        else:
-            for idx, substat in enumerate(self.substats):
-                if substat == stat_type:
-                    return self.substat_values[idx] + self.substats_grind_value[idx]
-
-        # Nothing matching queried stat type
-        return 0
-
-    # Individual functions for each stat to use within templates
-    def get_hp_pct(self):
-        return self.get_stat(RuneInstance.STAT_HP_PCT, False)
-
-    def get_hp(self):
-        return self.get_stat(RuneInstance.STAT_HP, False)
-
-    def get_def_pct(self):
-        return self.get_stat(RuneInstance.STAT_DEF_PCT, False)
-
-    def get_def(self):
-        return self.get_stat(RuneInstance.STAT_DEF, False)
-
-    def get_atk_pct(self):
-        return self.get_stat(RuneInstance.STAT_ATK_PCT, False)
-
-    def get_atk(self):
-        return self.get_stat(RuneInstance.STAT_ATK, False)
-
-    def get_spd(self):
-        return self.get_stat(RuneInstance.STAT_SPD, False)
-
-    def get_cri_rate(self):
-        return self.get_stat(RuneInstance.STAT_CRIT_RATE_PCT, False)
-
-    def get_cri_dmg(self):
-        return self.get_stat(RuneInstance.STAT_CRIT_DMG_PCT, False)
-
-    def get_res(self):
-        return self.get_stat(RuneInstance.STAT_RESIST_PCT, False)
-
-    def get_acc(self):
-        return self.get_stat(RuneInstance.STAT_ACCURACY_PCT, False)
-
-    def update_fields(self):
-        super(RuneInstance, self).update_fields()
-
-        # Check no other runes are in this slot
-        if self.assigned_to:
-            for rune in RuneInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot):
-                rune.assigned_to = None
-                rune.save()
-
     def clean(self):
         super().clean()
-
-        # Trim enchant gem and grind value arrays to match number of substats
-        num_substats = len(self.substats)
-        self.substats_enchanted = self.substats_enchanted[0:num_substats]
-        self.substats_grind_value = self.substats_grind_value[0:num_substats]
-
-        for index, (substat, value, enchanted, grind_value) in enumerate(zip_longest(
-                self.substats,
-                self.substat_values,
-                self.substats_enchanted,
-                self.substats_grind_value
-        )):
-            # Ensure all substat arrays are equal length
-            if enchanted is None:
-                if len(self.substats_grind_value) < len(self.substats):
-                    self.substats_enchanted.append(False)
-                enchanted = False
-
-            if grind_value is None:
-                if len(self.substats_grind_value) < len(self.substats):
-                    self.substats_grind_value.append(0)
-                grind_value = 0
-
-            # Validate grind value
-            max_grind_value = RuneCraftInstance.CRAFT_VALUE_RANGES[RuneCraftInstance.CRAFT_ANCIENT_GRINDSTONE][substat][RuneCraftInstance.QUALITY_LEGEND]['max']
-            if grind_value > max_grind_value:
-                raise ValidationError({
-                    'substats_grind_value': ValidationError(
-                        f'Substat Grind %(nth)s: Must be less than or equal to {max_grind_value}.',
-                        params={'nth': index + 1},
-                        code=f'invalid_grind_value'
-                    )
-                })
-
-        # Validate number of gems and grindstones applied
-        if sum(self.substats_enchanted) > 1:
-            raise ValidationError({
-                'substats_enchanted': 'Only one substat may have an enchant gem applied.',
-            }, code='too_many_enchant_gems')
-
-        if sum([bool(grind_value) for grind_value in self.substats_grind_value]) > 1:
-            raise ValidationError({
-                'substats_grind_value': 'Only one substat may have a grindstone applied.',
-            }, code='too_many_enchant_gems')
 
         if self.assigned_to is not None and (self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0):
             raise ValidationError(
@@ -851,10 +728,15 @@ class RuneInstance(Rune):
             )
 
     def save(self, *args, **kwargs):
-        super(RuneInstance, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
-        # Trigger stat calc update on the assigned monster
-        if self.assigned_to and not kwargs.get('skip_assigned_to', False):
+        if self.assigned_to:
+            # Check no other runes are in this slot
+            for rune in RuneInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot).exclude(pk=self.pk):
+                rune.assigned_to = None
+                rune.save()
+
+            # Trigger stat calc update on the assigned monster
             self.assigned_to.save()
 
 

@@ -38,5 +38,3 @@ drf-extensions
 drf-nested-routers
 django-rest-swagger
 drf_ujson
-graphene
-graphene-django

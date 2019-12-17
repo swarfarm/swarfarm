@@ -3,8 +3,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles import views
-from django.views.decorators.csrf import csrf_exempt
-from graphene_django.views import GraphQLView
 from refreshtoken.views import delegate_jwt_token
 from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token
 
@@ -18,7 +16,6 @@ from herders.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, Cr
 
 urlpatterns = [
     # AJAX-y stuff first
-    url(r'graphql', csrf_exempt(GraphQLView.as_view(graphiql=True)) if settings.DEBUG else GraphQLView.as_view()),
     url(r'^autocomplete/', include([
         url(r'^bestiary/$', BestiaryAutocomplete.as_view(), name='bestiary-monster-autocomplete'),
         url(r'^dungeon/$', DungeonAutocomplete.as_view(), name='bestiary-dungeon-autocomplete'),

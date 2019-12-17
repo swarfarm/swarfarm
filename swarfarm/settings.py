@@ -105,7 +105,6 @@ INSTALLED_APPS = [
     'refreshtoken',
     'rest_framework_swagger',
     'timezone_field',
-    'graphene_django',
 
     # Custom apps
     'api',
@@ -284,10 +283,3 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'apiv2.views.jwt_response_payload_handler',
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }
-
-GRAPHENE = {
-    'SCHEMA': 'swarfarm.schema.schema',
-}
-
-if DEBUG:
-    GRAPHENE['MIDDLEWARE'] = ['graphene_django.debug.DjangoDebugMiddleware',]

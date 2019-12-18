@@ -1,6 +1,5 @@
 import uuid
 from collections import OrderedDict
-from itertools import zip_longest
 from math import floor, ceil
 
 from django.contrib.auth.models import User
@@ -9,6 +8,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, Count
 from django.utils.safestring import mark_safe
+from taggit.managers import TaggableManager
+from taggit.models import TagBase, TaggedItemBase
 from timezone_field import TimeZoneField
 
 from bestiary.models import Monster, Building, Level, Rune, RuneCraft
@@ -688,6 +689,17 @@ class MonsterPiece(models.Model):
         return int(floor(self.pieces / self.PIECE_REQUIREMENTS[self.monster.natural_stars]))
 
 
+class RuneInstanceTag(TagBase):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, db_index=True)  # Override to remove unique requirement
+    slug = models.SlugField(max_length=100, db_index=True)  # Override to remove unique requirement
+
+
+class TaggedRuneInstance(TaggedItemBase):
+    content_object = models.ForeignKey('RuneInstance', on_delete=models.CASCADE)
+    tag = models.ForeignKey(RuneInstanceTag, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_items")
+
+
 class RuneInstance(Rune):
     # Upgrade success rate based on rune level
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -697,6 +709,7 @@ class RuneInstance(Rune):
     assigned_to = models.ForeignKey(MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
+    tags = TaggableManager(through=TaggedRuneInstance)
 
     # Old substat fields to be removed later, but still used
     substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)

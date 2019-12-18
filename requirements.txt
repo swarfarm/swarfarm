@@ -30,6 +30,7 @@ django-pivot
 django-recaptcha
 django-redis-cache
 Django-Select2
+django-taggit
 django-timezone-field==2.0.0
 djangorestframework==3.9.4
 djangorestframework-jwt

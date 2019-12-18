@@ -104,6 +104,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'refreshtoken',
     'rest_framework_swagger',
+    'taggit',
     'timezone_field',
 
     # Custom apps
@@ -283,3 +284,5 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'apiv2.views.jwt_response_payload_handler',
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }
+
+TAGGIT_CASE_INSENSITIVE = True

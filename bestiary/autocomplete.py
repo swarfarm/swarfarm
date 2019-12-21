@@ -5,12 +5,11 @@ from django.template import loader
 from .models import Monster, Dungeon, GameItem
 
 
-class BestiaryAutocomplete(autocomplete.Select2QuerySetView):
-    paginate_by = 15
-    queryset = Monster.objects.all()
+class FilterMultipleAutocompleteView(autocomplete.Select2QuerySetView):
+    filter_fields = []
 
     def get_queryset(self):
-        qs = super().get_queryset().filter(obtainable=True).order_by('family_id', 'element', 'is_awakened')
+        qs = self.queryset
 
         if self.q:
             # Split the terms into words and build a Q object
@@ -18,17 +17,28 @@ class BestiaryAutocomplete(autocomplete.Select2QuerySetView):
             query = Q()
 
             for term in search_terms:
-                query.add(
-                    Q(name__icontains=term) |
-                    Q(awakens_from__name__icontains=term) |
-                    Q(awakens_to__name__icontains=term) |
-                    Q(element__startswith=term),
-                    Q.AND
-                )
+                fields_query = Q()
+
+                for field in self.filter_fields:
+                    fields_query.add(Q(**{field: term}), Q.OR)
+
+                query.add(fields_query, Q.AND)
 
             qs = qs.filter(query)
 
         return qs
+
+
+class BestiaryAutocomplete(FilterMultipleAutocompleteView):
+    paginate_by = 15
+    queryset = Monster.objects.filter(obtainable=True).order_by('family_id', 'element', 'is_awakened')
+    filter_fields = [
+        'name__icontains',
+        'awakens_from__name__icontains',
+        'awakens_from__awakens_from__name__icontains',
+        'awakens_to__name__icontains',
+        'element__istartswith',
+    ]
 
     def get_result_label(self, item):
         return loader.get_template('autocomplete/monster_choice.html').render({'choice': item})
@@ -39,53 +49,23 @@ class QuickSearchAutocomplete(BestiaryAutocomplete):
         return loader.get_template('autocomplete/bestiary_link.html').render({'choice': item})
 
 
-class DungeonAutocomplete(autocomplete.Select2QuerySetView):
+class DungeonAutocomplete(FilterMultipleAutocompleteView):
     paginate_by = 15
-    queryset = Dungeon.objects.all()
-
-    def get_queryset(self):
-        qs = super().get_queryset().filter(enabled=True).exclude(category=Dungeon.CATEGORY_SECRET)
-
-        if self.q:
-            # Split the terms into words and build a Q object
-            search_terms = self.q.split(' ')
-            query = Q()
-
-            for term in search_terms:
-                query.add(
-                    Q(name__icontains=term),
-                    Q.AND
-                )
-
-            qs = qs.filter(query)
-
-        return qs
+    queryset = Dungeon.objects.all().filter(enabled=True).exclude(category=Dungeon.CATEGORY_SECRET)
+    filter_fields = [
+        'name__icontains',
+    ]
 
     def get_result_label(self, item):
         return loader.get_template('autocomplete/dungeon_choice.html').render({'choice': item})
 
 
-class GameItemAutocomplete(autocomplete.Select2QuerySetView):
+class GameItemAutocomplete(FilterMultipleAutocompleteView):
     paginate_by = 15
     queryset = GameItem.objects.all()
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-
-        if self.q:
-            # Split the terms into words and build a Q object
-            search_terms = self.q.split(' ')
-            query = Q()
-
-            for term in search_terms:
-                query.add(
-                    Q(name__icontains=term),
-                    Q.AND
-                )
-
-            qs = qs.filter(query)
-
-        return qs
+    filter_fields = [
+        'name__icontains',
+    ]
 
     def get_result_label(self, item):
         return loader.get_template('autocomplete/gameitem_choice.html').render({'choice': item})

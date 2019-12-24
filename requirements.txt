@@ -1,4 +1,4 @@
-git+git://github.com/django/django.git@86befcc172c23170a720b3e0c06db51a99b3da59#egg=Django
+Django==2.2.9
 gunicorn
 eventlet
 psycopg2-binary
@@ -15,7 +15,7 @@ python-dateutil
 pycryptodome
 redis
 requests
-pillow==5.3.0
+pillow==6.2.1
 sympy>=1.0.0
 django-autocomplete-light==3.3.2
 django-celery-results

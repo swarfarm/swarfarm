@@ -17,7 +17,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.fields import AdvancedSelectMultiple
-from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, RuneCraft, Dungeon, Level, GameItem
+from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level, GameItem
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from data_log.models import RiftDungeonLog, WorldBossLog, CraftRuneLog, MagicBoxCraft
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
@@ -1504,33 +1504,6 @@ class MonsterImportOptionsLayout(Layout):
                 css_class='list-group-item',
             ),
         )
-
-
-class ImportPCAPForm(MonsterImportOptionsMixin, forms.Form):
-    pcap = forms.FileField(
-        required=True,
-        label='PCAP File',
-    )
-    helper = FormHelper()
-    helper.form_method = 'POST'
-    helper.form_class = 'import-form'
-
-    helper.layout = Layout(
-        Div(
-            Div(
-                Field('pcap', template='crispy/file_upload.html'),
-                css_class='list-group-item',
-            ),
-            MonsterImportOptionsLayout(),
-            Div(
-                FormActions(
-                    Submit('import', 'Import'),
-                ),
-                css_class='list-group-item',
-            ),
-            css_class='list-group',
-        )
-    )
 
 
 class ImportSWParserJSONForm(MonsterImportOptionsMixin, forms.Form):

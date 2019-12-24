@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from rest_framework_nested.relations import NestedHyperlinkedIdentityField
 
 from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, \
@@ -115,6 +116,9 @@ class BuildingInstanceSerializer(serializers.ModelSerializer):
 
 
 class SummonerSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(validators=[
+        UniqueValidator(queryset=User.objects.all(), message='Email already in use.')
+    ])
     server = serializers.ChoiceField(source='summoner.server', choices=Summoner.SERVER_CHOICES)
     public = serializers.BooleanField(source='summoner.public')
 

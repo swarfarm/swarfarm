@@ -9,7 +9,6 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.core.mail import mail_admins
 from django.db import IntegrityError
 from django.db.models import FieldDoesNotExist
@@ -17,11 +16,11 @@ from django.http import HttpResponse, JsonResponse, Http404, HttpResponseBadRequ
 from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.template import loader
 from django.template.context_processors import csrf
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.utils.html import mark_safe
 
 from herders.decorators import username_case_redirect
 from herders.forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, EditUserForm, \
-    EditSummonerForm, EditBuildingForm, ImportPCAPForm, ImportSWParserJSONForm
+    EditSummonerForm, EditBuildingForm, ImportSWParserJSONForm
 from herders.models import Summoner, Storage, Building, BuildingInstance
 from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
@@ -35,6 +34,13 @@ def register(request):
         if form.is_valid():
             if User.objects.filter(username__iexact=form.cleaned_data['username']).exists():
                 form.add_error('username', 'Username already taken')
+            if User.objects.filter(email__iexact=form.cleaned_data['email']).exists():
+                form.add_error(
+                    'email',
+                    mark_safe(
+                        f'Email already in use. You can <a href="{reverse("password_reset")}">reset your password if you forgot it</a>.'
+                    )
+                )
             else:
                 new_user = None
                 new_summoner = None

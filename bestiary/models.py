@@ -1,8 +1,8 @@
 from collections import OrderedDict
 from functools import partial
+from itertools import zip_longest
 from math import floor
 from operator import is_not
-from itertools import zip_longest
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
@@ -1602,10 +1602,11 @@ class Rune(models.Model, RuneObjectBase):
 
         return running_sum / 2.8 * 100
 
-    def get_max_efficiency(self, efficiency, substat_upgrades_remaining):
+    def get_max_efficiency(self):
         # Max efficiency does not include grinds
-        new_stats = min(4 - len(self.substats), substat_upgrades_remaining)
-        old_stats = substat_upgrades_remaining - new_stats
+        efficiency = self.get_efficiency()
+        new_stats = min(4 - len(self.substats), self.substat_upgrades_remaining)
+        old_stats = self.substat_upgrades_remaining - new_stats
 
         if old_stats > 0:
             # we can repeatedly upgrade the most value of the existing stats
@@ -1644,7 +1645,7 @@ class Rune(models.Model, RuneObjectBase):
         self.quality = len([substat for substat in self.substats if substat])
         self.substat_upgrades_remaining = 5 - self.substat_upgrades_received
         self.efficiency = self.get_efficiency()
-        self.max_efficiency = self.get_max_efficiency(self.efficiency, self.substat_upgrades_remaining)
+        self.max_efficiency = self.get_max_efficiency()
         self.has_grind = sum([bool(x) for x in self.substats_grind_value])
         self.has_gem = any(self.substats_enchanted)
 

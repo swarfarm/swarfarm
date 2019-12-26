@@ -293,6 +293,16 @@ class Monster(models.Model):
 
         return mats
 
+    def is_fusion(self):
+        has_ingredients = self.product.first()
+        return hasattr(has_ingredients, 'ingredients')
+        
+    def fusion_ingredients(self):
+        if self.is_fusion:
+            return self.product.first().ingredients.all()
+        else:
+            return None
+
     def clean(self):
         # Update null values
         if self.awaken_mats_fire_high is None:

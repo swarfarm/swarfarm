@@ -74,6 +74,19 @@
                         </tr>
                     {% endif %}
                 {% endwith %}
+                
+                {% if monster.is_fusion %}
+                    <tr>
+                        <td>Fusion Product Of:</td>
+                        <td class="monster-awaken-materials">
+                            {% for fusion_from in monster.fusion_ingredients %}
+                                <a href="{% url 'bestiary:detail' monster_slug=fusion_from.bestiary_slug %}">
+                                    {% include 'bestiary/monster/portrait_small.html' with monster=fusion_from only %}
+                                </a>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endif %}
 
                 {% if monster.skill_ups_to_max %}
                 <tr>

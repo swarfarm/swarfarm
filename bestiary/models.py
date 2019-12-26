@@ -1583,7 +1583,7 @@ class Rune(models.Model, RuneObjectBase):
 
     @property
     def substat_upgrades_received(self):
-        return int(floor(min(self.level, 12) / 3) + 1)
+        return int(floor(min(self.level, 12) / 3))
 
     def get_efficiency(self):
         # https://www.youtube.com/watch?v=SBWeptNNbYc
@@ -1643,7 +1643,7 @@ class Rune(models.Model, RuneObjectBase):
         self.has_accuracy = self.STAT_ACCURACY_PCT in rune_stat_types
 
         self.quality = len([substat for substat in self.substats if substat])
-        self.substat_upgrades_remaining = 5 - self.substat_upgrades_received
+        self.substat_upgrades_remaining = 4 - self.substat_upgrades_received
         self.efficiency = self.get_efficiency()
         self.max_efficiency = self.get_max_efficiency()
         self.has_grind = sum([bool(x) for x in self.substats_grind_value])
@@ -1652,7 +1652,7 @@ class Rune(models.Model, RuneObjectBase):
         # Cap stat values to appropriate value
         # Very old runes can have different values, but never higher than the cap
         if self.main_stat_value:
-            self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][15], self.main_stat_value)
+            self.main_stat_value = min(self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level], self.main_stat_value)
         else:
             self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
@@ -1660,7 +1660,7 @@ class Rune(models.Model, RuneObjectBase):
             self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
 
         for idx, substat in enumerate(self.substats):
-            max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
+            max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * (self.substat_upgrades_received + 1)
             if self.substat_values[idx] > max_sub_value:
                 self.substat_values[idx] = max_sub_value
 
@@ -1682,26 +1682,26 @@ class Rune(models.Model, RuneObjectBase):
                 )
             })
 
-        if self.slot is not None:
-            if self.slot < 1 or self.slot > 6:
-                raise ValidationError({
-                    'slot': ValidationError(
-                        'Slot must be 1 through 6.',
-                        code='invalid_rune_slot',
-                    )
-                })
-            # Do slot vs stat check
-            if self.main_stat not in self.MAIN_STATS_BY_SLOT[self.slot]:
-                raise ValidationError({
-                    'main_stat': ValidationError(
-                        'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
-                        params={
-                            'slot': self.slot,
-                            'valid_stats': ', '.join([RuneObjectBase.STAT_CHOICES[stat - 1][1] for stat in self.MAIN_STATS_BY_SLOT[self.slot]])
-                        },
-                        code='invalid_rune_main_stat'
-                    ),
-                })
+        if self.slot is None or self.slot < 1 or self.slot > 6:
+            raise ValidationError({
+                'slot': ValidationError(
+                    'Slot must be 1 through 6.',
+                    code='invalid_rune_slot',
+                )
+            })
+
+        # Check main stat is appropriate for this slot
+        if self.slot and self.main_stat not in self.MAIN_STATS_BY_SLOT[self.slot]:
+            raise ValidationError({
+                'main_stat': ValidationError(
+                    'Unacceptable stat for slot %(slot)s. Must be %(valid_stats)s.',
+                    params={
+                        'slot': self.slot,
+                        'valid_stats': ', '.join([RuneObjectBase.STAT_CHOICES[stat - 1][1] for stat in self.MAIN_STATS_BY_SLOT[self.slot]])
+                    },
+                    code='invalid_rune_main_stat'
+                ),
+            })
 
         # Check that the same stat type was not used multiple times
         stat_list = list(filter(
@@ -1725,10 +1725,12 @@ class Rune(models.Model, RuneObjectBase):
 
         max_main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
         if self.main_stat_value > max_main_stat_value:
-            raise ValidationError(
-                f'Main stat value for {self.get_main_stat_display()} at {self.stars}* lv. {self.level} must be less than {max_main_stat_value}',
-                code='main_stat_value_invalid',
-            )
+            raise ValidationError({
+                'main_stat_value': ValidationError(
+                    f'Main stat value for {self.get_main_stat_display()} at {self.stars}* lv. {self.level} must be less than {max_main_stat_value}',
+                    code='main_stat_value_invalid',
+                )
+            })
 
         if self.innate_stat is not None:
             if self.innate_stat_value is None or self.innate_stat_value <= 0:
@@ -1744,12 +1746,26 @@ class Rune(models.Model, RuneObjectBase):
             if self.innate_stat_value > max_sub_value and not self.ancient:
                 raise ValidationError({
                     'innate_stat_value': ValidationError(
-                        'Must be less than or equal to ' + str(max_sub_value) + '.',
+                        'Must be less than or equal to %(max)',
+                        params={'max': max_sub_value},
                         code='invalid_rune_innate_stat_value'
                     )
                 })
         else:
             self.innate_stat_value = None
+
+        # Check that a minimum number of substats are present based on the level
+        if len(self.substats) < self.substat_upgrades_received:
+            raise ValidationError({
+                'substats': ValidationError(
+                    'A lv. %(level)s rune requires at least %(upgrades) substat(s)',
+                    params={
+                        'level': self.level,
+                        'upgrades': self.substat_upgrades_received,
+                    },
+                    code='not_enough_substats'
+                )
+            })
 
         # Trim substat values to match length of defined substats
         num_substats = len(self.substats)
@@ -1772,7 +1788,7 @@ class Rune(models.Model, RuneObjectBase):
                     )
                 })
 
-            max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * self.substat_upgrades_received
+            max_sub_value = self.SUBSTAT_INCREMENTS[substat][self.stars] * (self.substat_upgrades_received + 1)
             # TODO: Remove not ancient check once ancient max substat values are found
             if value > max_sub_value and not self.ancient:
                 raise ValidationError({

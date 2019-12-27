@@ -1656,7 +1656,7 @@ class Rune(models.Model, RuneObjectBase):
         else:
             self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.stars][self.level]
 
-        if self.innate_stat and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]:
+        if self.innate_stat and self.innate_stat_value and self.innate_stat_value > self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]:
             self.innate_stat_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
 
         for idx, substat in enumerate(self.substats):
@@ -1666,29 +1666,23 @@ class Rune(models.Model, RuneObjectBase):
 
     def clean(self):
         # Check slot, level, etc for valid ranges
-        if self.level is None or self.level < 0 or self.level > 15:
-            raise ValidationError({
-                'level': ValidationError(
-                    'Level must be 0 through 15.',
-                    code='invalid_rune_level',
-                )
-            })
+        stars_message = 'Must be between 1 and 6'
+        if self.stars is None:
+            raise ValidationError({'stars': ValidationError(stars_message, code='stars_missing')})
+        elif self.stars < 1 or self.stars > 6:
+            raise ValidationError({'stars': ValidationError(stars_message, code='stars_invalid')})
 
-        if self.stars is None or (self.stars < 1 or self.stars > 6):
-            raise ValidationError({
-                'stars': ValidationError(
-                    'Stars must be between 1 and 6.',
-                    code='invalid_rune_stars',
-                )
-            })
+        level_message = 'Must be between 0 and 15'
+        if self.level is None:
+            raise ValidationError({'level': ValidationError(level_message, code='level_missing')})
+        elif self.level < 0 or self.level > 15:
+            raise ValidationError({'level': ValidationError(level_message, code='level_invalid')})
 
-        if self.slot is None or self.slot < 1 or self.slot > 6:
-            raise ValidationError({
-                'slot': ValidationError(
-                    'Slot must be 1 through 6.',
-                    code='invalid_rune_slot',
-                )
-            })
+        slot_message = 'Must be between 1 and 6'
+        if self.slot is None:
+            raise ValidationError({'slot': ValidationError(slot_message, code='slot_missing')})
+        elif self.slot < 1 or self.slot > 6:
+            raise ValidationError({'slot': ValidationError(slot_message, code='slot_invalid')})
 
         # Check main stat is appropriate for this slot
         if self.slot and self.main_stat not in self.MAIN_STATS_BY_SLOT[self.slot]:
@@ -1699,7 +1693,7 @@ class Rune(models.Model, RuneObjectBase):
                         'slot': self.slot,
                         'valid_stats': ', '.join([RuneObjectBase.STAT_CHOICES[stat - 1][1] for stat in self.MAIN_STATS_BY_SLOT[self.slot]])
                     },
-                    code='invalid_rune_main_stat'
+                    code='invalid_main_stat_for_slot'
                 ),
             })
 
@@ -1719,7 +1713,7 @@ class Rune(models.Model, RuneObjectBase):
             raise ValidationError({
                 'main_stat_value': ValidationError(
                     'Missing main stat value.',
-                    code='main_stat_missing_value',
+                    code='main_stat_missing',
                 )
             })
 
@@ -1728,16 +1722,23 @@ class Rune(models.Model, RuneObjectBase):
             raise ValidationError({
                 'main_stat_value': ValidationError(
                     f'Main stat value for {self.get_main_stat_display()} at {self.stars}* lv. {self.level} must be less than {max_main_stat_value}',
-                    code='main_stat_value_invalid',
+                    code='main_stat_too_high',
                 )
             })
 
         if self.innate_stat is not None:
-            if self.innate_stat_value is None or self.innate_stat_value <= 0:
+            if self.innate_stat_value is None:
                 raise ValidationError({
                     'innate_stat_value': ValidationError(
-                        'Must be greater than 0.',
-                        code='invalid_rune_innate_stat_value'
+                        'Missing value',
+                        code='innate_stat_missing'
+                    )
+                })
+            if self.innate_stat_value <= 0:
+                raise ValidationError({
+                    'innate_stat_value': ValidationError(
+                        'Must be greater than 0',
+                        code='innate_stat_too_low'
                     )
                 })
             max_sub_value = self.SUBSTAT_INCREMENTS[self.innate_stat][self.stars]
@@ -1748,7 +1749,7 @@ class Rune(models.Model, RuneObjectBase):
                     'innate_stat_value': ValidationError(
                         'Must be less than or equal to %(max)',
                         params={'max': max_sub_value},
-                        code='invalid_rune_innate_stat_value'
+                        code='innate_stat_too_high'
                     )
                 })
         else:
@@ -1758,7 +1759,7 @@ class Rune(models.Model, RuneObjectBase):
         if len(self.substats) < self.substat_upgrades_received:
             raise ValidationError({
                 'substats': ValidationError(
-                    'A lv. %(level)s rune requires at least %(upgrades) substat(s)',
+                    'A lv. %(level)s rune requires at least %(upgrades)s substat(s)',
                     params={
                         'level': self.level,
                         'upgrades': self.substat_upgrades_received,
@@ -1784,7 +1785,7 @@ class Rune(models.Model, RuneObjectBase):
                     'substat_values': ValidationError(
                         'Substat %(nth)s: Must be greater than 0.',
                         params={'nth': index + 1},
-                        code=f'invalid_rune_substat_values'
+                        code=f'substat_too_low'
                     )
                 })
 
@@ -1795,7 +1796,7 @@ class Rune(models.Model, RuneObjectBase):
                     'substat_values': ValidationError(
                         f'Substat %(nth)s: Must be less than or equal to {max_sub_value}.',
                         params={'nth': index + 1},
-                        code=f'invalid_rune_substat_value'
+                        code=f'substat_too_high'
                     )
                 })
 
@@ -1803,7 +1804,6 @@ class Rune(models.Model, RuneObjectBase):
             if enchanted is None:
                 if len(self.substats_grind_value) < len(self.substats):
                     self.substats_enchanted.append(False)
-                enchanted = False
 
             if grind_value is None:
                 if len(self.substats_grind_value) < len(self.substats):
@@ -1817,15 +1817,26 @@ class Rune(models.Model, RuneObjectBase):
                         'substats_grind_value': ValidationError(
                             f'Substat Grind %(nth)s: Must be less than or equal to {max_grind_value}.',
                             params={'nth': index + 1},
-                            code=f'invalid_grind_value'
+                            code=f'grind_too_high'
                         )
                     })
+
+            if self.level < 12 and (enchanted or grind_value):
+                raise ValidationError({
+                    'level': ValidationError(
+                        'Level must be 12 or higher when grind/enchant is applied',
+                        code='level_invalid'
+                    )
+                })
 
         # Validate number of gems applied
         if sum(self.substats_enchanted) > 1:
             raise ValidationError({
-                'substats_enchanted': 'Only one substat may have an enchant gem applied.',
-            }, code='too_many_enchant_gems')
+                'substats_enchanted': ValidationError(
+                    'Only one substat may have an enchant gem applied.',
+                    code='too_many_enchants',
+                ),
+            })
 
     def save(self, *args, **kwargs):
         self.update_fields()

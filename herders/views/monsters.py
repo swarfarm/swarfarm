@@ -434,16 +434,16 @@ def monster_instance_view_info(request, profile_name, instance_id):
         return HttpResponseBadRequest()
 
     if instance.monster.is_awakened:
-        ingredient_in = instance.monster.fusion_set.all()
+        ingredient_in = instance.monster.fusion_ingredient_for.all()
     elif instance.monster.can_awaken and instance.monster.awakens_to:
-        ingredient_in = instance.monster.awakens_to.fusion_set.all()
+        ingredient_in = instance.monster.awakens_to.fusion_ingredient_for.all()
     else:
         ingredient_in = []
 
     if instance.monster.is_awakened and instance.monster.awakens_from:
-        product_of = instance.monster.awakens_from.product.first()
+        product_of = instance.monster.awakens_from.fusion
     elif instance.monster.can_awaken:
-        product_of = instance.monster.product.first()
+        product_of = instance.monster.fusion
     else:
         product_of = []
 

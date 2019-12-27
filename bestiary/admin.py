@@ -210,7 +210,7 @@ class SourceAdmin(admin.ModelAdmin):
 
 @admin.register(Fusion)
 class FusionAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'stars', 'cost', 'meta_order')
+    list_display = ('__str__', 'cost', 'meta_order')
     filter_horizontal = ('ingredients',)
 
 

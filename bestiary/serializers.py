@@ -167,7 +167,7 @@ class MonsterSerializer(serializers.ModelSerializer):
 class FusionSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Fusion
-        fields = ['id', 'url', 'product', 'stars', 'cost', 'ingredients']
+        fields = ['id', 'url', 'product', 'cost', 'ingredients']
         extra_kwargs = {
             'url': {
                 'view_name': 'bestiary/fusions-detail',

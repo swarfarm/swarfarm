@@ -293,16 +293,6 @@ class Monster(models.Model):
 
         return mats
 
-    def is_fusion(self):
-        has_ingredients = self.product.first()
-        return hasattr(has_ingredients, 'ingredients')
-        
-    def fusion_ingredients(self):
-        if self.is_fusion:
-            return self.product.first().ingredients.all()
-        else:
-            return None
-
     def clean(self):
         # Update null values
         if self.awaken_mats_fire_high is None:
@@ -679,10 +669,9 @@ class Source(models.Model):
 
 
 class Fusion(models.Model):
-    product = models.ForeignKey('Monster', on_delete=models.CASCADE, related_name='product')
-    stars = models.IntegerField()
+    product = models.OneToOneField('Monster', on_delete=models.CASCADE, related_name='fusion')
     cost = models.IntegerField()
-    ingredients = models.ManyToManyField('Monster')
+    ingredients = models.ManyToManyField('Monster', related_name='fusion_ingredient_for')
     meta_order = models.IntegerField(db_index=True, default=0)
 
     def __str__(self):

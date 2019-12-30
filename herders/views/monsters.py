@@ -442,7 +442,7 @@ def monster_instance_view_info(request, profile_name, instance_id):
     elif instance.monster.awaken_level == Monster.AWAKEN_LEVEL_AWAKENED:
         ingredient_in = Fusion.objects.filter(ingredients__pk=instance.monster.pk)
         product_of_query = 'product__awakens_to__pk'
-    elif instance.monster.awaken__level == Monster.AWAKEN_LEVEL_SECOND:
+    elif instance.monster.awaken_level == Monster.AWAKEN_LEVEL_SECOND:
         ingredient_in = Fusion.objects.filter(ingredients__awakens_to__pk=instance.monster.pk)
         product_of_query = 'product__awakens_to__awakens_to__pk'
     else:

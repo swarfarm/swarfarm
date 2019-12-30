@@ -669,10 +669,9 @@ class Source(models.Model):
 
 
 class Fusion(models.Model):
-    product = models.ForeignKey('Monster', on_delete=models.CASCADE, related_name='product')
-    stars = models.IntegerField()
+    product = models.OneToOneField('Monster', on_delete=models.CASCADE, related_name='fusion')
     cost = models.IntegerField()
-    ingredients = models.ManyToManyField('Monster')
+    ingredients = models.ManyToManyField('Monster', related_name='fusion_ingredient_for')
     meta_order = models.IntegerField(db_index=True, default=0)
 
     def __str__(self):

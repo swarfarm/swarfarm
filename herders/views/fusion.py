@@ -47,11 +47,15 @@ def fusion_progress_detail(request, profile_name, monster_slug):
 
     if is_owner or summoner.public:
         try:
-            fusion = Fusion.objects.get(product__bestiary_slug=monster_slug)
+            fusion = Fusion.objects.select_related(
+                'product'
+            ).prefetch_related(
+                'ingredients'
+            ).get(product__bestiary_slug=monster_slug)
         except Fusion.DoesNotExist:
             return HttpResponseBadRequest()
         else:
-            level = 10 + fusion.stars * 5
+            level = 10 + fusion.product.base_stars * 5
             ingredients = []
 
             # Check if fusion has been completed already
@@ -77,7 +81,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                 for owned_ingredient in owned_ingredients:
                     if not owned_ingredient.ignore_for_fusion:
                         acquired = True
-                        evolved = owned_ingredient.stars >= fusion.stars
+                        evolved = owned_ingredient.stars >= fusion.product.base_stars
                         leveled = owned_ingredient.level >= level
                         awakened = owned_ingredient.monster.is_awakened
                         complete = acquired & evolved & leveled & awakened
@@ -183,7 +187,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
             progress = {
                 'instance': fusion.product,
                 'acquired': fusion_complete,
-                'stars': fusion.stars,
+                'stars': fusion.product.base_stars,
                 'level': level,
                 'cost': fusion.cost,
                 'ingredients': ingredients,

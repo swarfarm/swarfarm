@@ -116,9 +116,6 @@ class BuildingInstanceSerializer(serializers.ModelSerializer):
 
 
 class SummonerSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(validators=[
-        UniqueValidator(queryset=User.objects.all(), message='Email already in use.')
-    ])
     server = serializers.ChoiceField(source='summoner.server', choices=Summoner.SERVER_CHOICES)
     public = serializers.BooleanField(source='summoner.public')
 
@@ -137,6 +134,9 @@ class SummonerSerializer(serializers.ModelSerializer):
 
 
 class FullUserSerializer(SummonerSerializer):
+    email = serializers.EmailField(validators=[
+        UniqueValidator(queryset=User.objects.all(), message='Email already in use.')
+    ])
     timezone = serializers.CharField(source='summoner.timezone', allow_blank=True)
 
     class Meta:

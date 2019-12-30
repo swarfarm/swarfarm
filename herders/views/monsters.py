@@ -12,7 +12,7 @@ from django.template import loader
 from django.template.context_processors import csrf
 from django.urls import reverse
 
-from bestiary.models import Monster, Building
+from bestiary.models import Monster, Building, Fusion
 from herders.decorators import username_case_redirect
 from herders.filters import MonsterInstanceFilter
 from herders.forms import FilterMonsterInstanceForm, \
@@ -433,19 +433,23 @@ def monster_instance_view_info(request, profile_name, instance_id):
     except ObjectDoesNotExist:
         return HttpResponseBadRequest()
 
-    if instance.monster.is_awakened:
-        ingredient_in = instance.monster.fusion_ingredient_for.all()
-    elif instance.monster.can_awaken and instance.monster.awakens_to:
-        ingredient_in = instance.monster.awakens_to.fusion_ingredient_for.all()
+    if instance.monster.awaken_level == Monster.AWAKEN_LEVEL_INCOMPLETE:
+        ingredient_in = Fusion.objects.filter(ingredients__awakens_from__awakens_from__pk=instance.monster.pk)
+        product_of_query = 'product__pk'
+    elif instance.monster.awaken_level == Monster.AWAKEN_LEVEL_UNAWAKENED:
+        ingredient_in = Fusion.objects.filter(ingredients__awakens_from__pk=instance.monster.pk)
+        product_of_query = 'product__pk'
+    elif instance.monster.awaken_level == Monster.AWAKEN_LEVEL_AWAKENED:
+        ingredient_in = Fusion.objects.filter(ingredients__pk=instance.monster.pk)
+        product_of_query = 'product__awakens_to__pk'
+    elif instance.monster.awaken__level == Monster.AWAKEN_LEVEL_SECOND:
+        ingredient_in = Fusion.objects.filter(ingredients__awakens_to__pk=instance.monster.pk)
+        product_of_query = 'product__awakens_to__awakens_to__pk'
     else:
-        ingredient_in = []
+        ingredient_in = None
+        product_of_query = 'product__pk'
 
-    if instance.monster.is_awakened and instance.monster.awakens_from:
-        product_of = instance.monster.awakens_from.fusion
-    elif instance.monster.can_awaken:
-        product_of = instance.monster.fusion
-    else:
-        product_of = []
+    product_of = Fusion.objects.filter(**{product_of_query: instance.monster.pk}).first()
 
     context = {
         'instance': instance,

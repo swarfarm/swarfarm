@@ -34,7 +34,7 @@ def register(request):
         if form.is_valid():
             if User.objects.filter(username__iexact=form.cleaned_data['username']).exists():
                 form.add_error('username', 'Username already taken')
-            if User.objects.filter(email__iexact=form.cleaned_data['email']).exists():
+            elif User.objects.filter(email__iexact=form.cleaned_data['email']).exists():
                 form.add_error(
                     'email',
                     mark_safe(

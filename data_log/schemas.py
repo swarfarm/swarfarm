@@ -125,12 +125,45 @@ summon_unit = {
                 'tvalue': {'type': 'number'},
                 'unit_list': {'type': 'array'},
                 'item_list': {'type': 'array'},
+                'summon_choices': {'type': 'array'},
             },
             'required': [
                 'tzone',
                 'tvalue',
                 'unit_list',
                 'item_list',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+select_blessing_unit = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/summon_schema.json',
+    'title': 'summon_schema',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'rid': {'type': 'number'},
+            },
+            'required': ['wizard_id', 'command', 'rid'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'unit_list': {'type': 'array'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'unit_list',
             ]
         }
     },

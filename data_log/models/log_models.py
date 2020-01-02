@@ -508,7 +508,13 @@ class MagicBoxCraftRuneCraftDrop(RuneCraftDrop):
 
 # Summons
 class SummonLog(LogEntry, MonsterDrop):
+    # Redefine monster fields to allow nulls due to blessings that do not know which monster is summoned yet
+    monster = models.ForeignKey(Monster, on_delete=models.PROTECT, null=True, blank=True)
+    grade = models.IntegerField(null=True, blank=True)
+    level = models.IntegerField(null=True, blank=True)
+
     item = models.ForeignKey(GameItem, on_delete=models.PROTECT, help_text='Item or currency used to summon')
+    blessing_id = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f'SummonLog - {self.item} - {self.monster} {self.grade}*'
@@ -518,35 +524,63 @@ class SummonLog(LogEntry, MonsterDrop):
         if log_data['response']['unit_list'] is None:
             return
 
+        # Create one entry per unit summoned
         for unit_info in log_data['response']['unit_list']:
             log_entry = cls.parse(**unit_info)
             log_entry.parse_common_log_data(log_data)
             log_entry.summoner = summoner
-
-            # Summon method
-            if len(log_data['response'].get('item_list', [])) > 0:
-                item_info = log_data['response']['item_list'][0]
-
-                log_entry.item = GameItem.objects.get(
-                    category=item_info['item_master_type'],
-                    com2us_id=item_info['item_master_id']
-                )
-            else:
-                mode = log_data['request']['mode']
-                if mode == 3:
-                    # Crystal summon
-                    log_entry.item = GameItem.objects.get(
-                        category=GameItem.CATEGORY_CURRENCY,
-                        com2us_id=1,
-                    )
-                elif mode == 5:
-                    # Social summon
-                    log_entry.item = GameItem.objects.get(
-                        category=GameItem.CATEGORY_CURRENCY,
-                        com2us_id=2,
-                    )
-
+            log_entry.get_summon_method(log_data)
             log_entry.save()
+        else:
+            if log_data['response'].get('summon_choices'):
+                # Blessing popped, parse the common data but leave monster empty
+                log_entry = cls()
+                log_entry.parse_common_log_data(log_data)
+                log_entry.summoner = summoner
+                log_entry.get_summon_method(log_data)
+                log_entry.blessing_id = log_data['response']['summon_choices'][0]['rid']
+                log_entry.save()
+
+    @classmethod
+    def parse_blessing_choice(cls, summoner, log_data):
+        try:
+            log_entry = cls.objects.get(
+                wizard_id=log_data['request']['wizard_id'],
+                blessing_id=log_data['request']['rid']
+            )
+        except cls.DoesNotExist:
+            # Do not parse blessing choices if no prior summon log entry found
+            return
+
+        # Save the monster which was chosen
+        monster_data = cls.parse(**log_data['response']['unit_list'][0])
+        log_entry.monster = monster_data.monster
+        log_entry.grade = monster_data.grade
+        log_entry.level = monster_data.level
+        log_entry.save()
+
+    def get_summon_method(self, log_data):
+        if len(log_data['response'].get('item_list', [])) > 0:
+            item_info = log_data['response']['item_list'][0]
+
+            self.item = GameItem.objects.get(
+                category=item_info['item_master_type'],
+                com2us_id=item_info['item_master_id']
+            )
+        else:
+            mode = log_data['request']['mode']
+            if mode == 3:
+                # Crystal summon
+                self.item = GameItem.objects.get(
+                    category=GameItem.CATEGORY_CURRENCY,
+                    com2us_id=1,
+                )
+            elif mode == 5:
+                # Social summon
+                self.item = GameItem.objects.get(
+                    category=GameItem.CATEGORY_CURRENCY,
+                    com2us_id=2,
+                )
 
 
 # Dungeons

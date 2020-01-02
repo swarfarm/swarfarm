@@ -49,6 +49,10 @@ active_log_commands = {
         schemas.summon_unit,
         models.SummonLog.parse_summon_log
     ),
+    'ConfirmSummonChoice': GameApiCommand(
+        schemas.select_blessing_unit,
+        models.SummonLog.parse_blessing_choice
+    ),
     'BattleScenarioStart': GameApiCommand(
         schemas.battle_scenario_start,
         models.DungeonLog.parse_scenario_start
@@ -86,7 +90,7 @@ active_log_commands = {
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
-accepted_api_params['__version'] = 4
+accepted_api_params['__version'] = 5
 
 
 # Utility functions

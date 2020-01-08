@@ -1,16 +1,16 @@
+from dal import autocomplete
 from django.db.models import Q
 from django.template import loader
 
-from dal import autocomplete
-
-from .models import MonsterTag, MonsterInstance
+from .models import MonsterTag, MonsterInstance, RuneInstanceTag
 
 
 class MonsterInstanceAutocomplete(autocomplete.Select2QuerySetView):
+    queryset = MonsterInstance.objects.all()
     paginate_by = 15
 
     def get_queryset(self):
-        qs = MonsterInstance.objects.filter(owner__user=self.request.user)
+        qs = super().get_queryset().filter(owner__user=self.request.user)
 
         if self.q:
             # Split the terms into words and build a Q object
@@ -45,3 +45,15 @@ class MonsterTagAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(name__icontains=self.q)
 
         return qs
+
+
+class RuneInstanceTagAutocomplete(autocomplete.Select2QuerySetView):
+    queryset = RuneInstanceTag.objects.all()
+    model_field_name = 'name'
+    paginate_by = 15
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return super().get_queryset().none()
+
+        return super().get_queryset().filter(owner__user=self.request.user)

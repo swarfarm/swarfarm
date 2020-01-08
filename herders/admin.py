@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Summoner, MonsterInstance, MonsterTag, Team, TeamGroup, RuneInstance, RuneCraftInstance, \
+from .models import Summoner, MonsterInstance, MonsterTag, Team, TeamGroup, RuneInstance, RuneInstanceTag, \
+    RuneCraftInstance, \
     BuildingInstance
 
 
@@ -53,9 +54,15 @@ class RuneInstanceAdmin(admin.ModelAdmin):
     readonly_fields = ('quality', 'has_hp', 'has_atk', 'has_def', 'has_crit_rate', 'has_crit_dmg', 'has_speed', 'has_resist', 'has_accuracy')
 
 
+@admin.register(RuneInstanceTag)
+class RuneInstanceTagAdmin(admin.ModelAdmin):
+    list_display = ('name', 'owner', 'slug')
+
+
 @admin.register(RuneCraftInstance)
 class RuneCraftInstanceAdmin(admin.ModelAdmin):
     exclude = ('owner',)
 
 
 admin.site.register(BuildingInstance)
+

@@ -942,11 +942,11 @@ class AddRuneInstanceForm(ModelForm):
             'main_stat', 'main_stat_value',
             'innate_stat', 'innate_stat_value',
             'substats', 'substat_values', 'substats_enchanted', 'substats_grind_value',
-            'substats', 'substats_enchanted',
-            'assigned_to', 'notes', 'marked_for_sale',
+            'assigned_to', 'tags',
         )
         widgets = {
             'assigned_to': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
+            'tags': autocomplete.TaggitSelect2(url='rune-instance-tag-autocomplete'),
         }
 
     def __init__(self, *args, **kwargs):
@@ -956,8 +956,6 @@ class AddRuneInstanceForm(ModelForm):
         self.fields['main_stat_value'].label = False
         self.fields['innate_stat'].label = False
         self.fields['innate_stat_value'].label = False
-        self.fields['assigned_to'].label = False
-        self.fields['notes'].label = False
 
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
@@ -998,21 +996,10 @@ class AddRuneInstanceForm(ModelForm):
                         css_class='row'
                     ),
                     Div(
-                        HTML('<label class="col-md-2 control-label">Assign To</label>'),
-                        Div(
-                            Field('assigned_to', wrapper_class='col-md-4', data_placeholder='Start typing...'),
-                        ),
-                        css_class='form-group form-group-condensed',
+                        Field('assigned_to', wrapper_class='col-md-6', data_placeholder='Start typing...'),
+                        Field('tags', wrapper_class='col-md-6', data_placeholder='Start typing...'),
                     ),
-                    Div(
-                        HTML('<label class="col-md-2 control-label">Notes</label>'),
-                        Div(
-                            Field('notes', rows="4", wrapper_class='col-md-10'),
-                            Field('marked_for_sale', wrapper_class='col-md-offset-2 col-md-10'),
-                        ),
-                        css_class='form-group form-group-condensed',
-                    ),
-                    css_class='form-horizontal',
+                    css_class='row',
                 ),
                 css_class='col-md-10',
             ),

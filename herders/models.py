@@ -690,9 +690,9 @@ class MonsterPiece(models.Model):
 
 
 class RuneInstanceTag(TagBase):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, db_index=True)  # Override to remove unique requirement
-    slug = models.SlugField(max_length=100, db_index=True)  # Override to remove unique requirement
+    slug = models.SlugField(max_length=100, db_index=True, blank=True)  # Override to remove unique requirement
 
 
 class TaggedRuneInstance(TaggedItemBase):
@@ -709,7 +709,7 @@ class RuneInstance(Rune):
     assigned_to = models.ForeignKey(MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
-    tags = TaggableManager(through=TaggedRuneInstance)
+    tags = TaggableManager(through=TaggedRuneInstance, help_text=None)
 
     # Old substat fields to be removed later, but still used
     substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)

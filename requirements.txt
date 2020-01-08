@@ -17,7 +17,7 @@ redis
 requests
 pillow==6.2.1
 sympy>=1.0.0
-django-autocomplete-light==3.3.2
+django-autocomplete-light==3.5.0
 django-celery-results
 django-celery-beat
 django_compressor
@@ -30,7 +30,7 @@ django-pivot
 django-recaptcha
 django-redis-cache
 Django-Select2
-git+git://github.com/PeteAndersen/django-taggit.git#egg=django-taggit
+git+git://github.com/PeteAndersen/django-taggit.git@df6c279b97351b7403b76e065aab404e51fb18b2#egg=django-taggit
 django-timezone-field==2.0.0
 djangorestframework==3.9.4
 djangorestframework-jwt

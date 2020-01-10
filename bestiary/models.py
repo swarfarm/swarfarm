@@ -1746,7 +1746,7 @@ class Rune(models.Model, RuneObjectBase):
             if self.innate_stat_value > max_sub_value and not self.ancient:
                 raise ValidationError({
                     'innate_stat_value': ValidationError(
-                        'Must be less than or equal to %(max)',
+                        'Must be less than or equal to %(max)s',
                         params={'max': max_sub_value},
                         code='innate_stat_too_high'
                     )

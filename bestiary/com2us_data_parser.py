@@ -327,6 +327,7 @@ def _get_natural_stars(master_id):
 def parse_monster_data(preview=False):
     monster_table = _get_localvalue_tables(LocalvalueTables.MONSTERS)
     monster_names = get_monster_names_by_id()
+    awaken_stat_bonuses = _get_translation_tables()[TranslationTables.AWAKEN_STAT_BONUSES]
 
     # List of monsters that data indicates are not obtainable, but actually are
     # Dark cow girl
@@ -496,6 +497,19 @@ def parse_monster_data(preview=False):
                     monster.awakens_to = awakens_to_monster
                     print('Updated {} ({}) awakened version to {}'.format(monster, master_id, awakens_to_monster))
                     updated = True
+
+        # Awaken bonus text
+        awaken_bonus_desc = ''
+        if can_awaken and awakens_to_com2us_id > 0:
+            if awakens_to_com2us_id in awaken_stat_bonuses:
+                # First search for provided text description
+                awaken_bonus_desc = awaken_stat_bonuses[awakens_to_com2us_id].strip()
+
+        # Update it
+        if awaken_bonus_desc and monster.awaken_bonus != awaken_bonus_desc:
+            monster.awaken_bonus = awaken_bonus_desc
+            print('Updated {} ({}) awakened bonus to {}'.format(monster, master_id, awaken_bonus_desc))
+            updated = True
 
         awaken_materials = json.loads(row['awaken materials'])
         essences = [x[0] for x in awaken_materials]  # Extract the essences actually used.
@@ -851,6 +865,8 @@ class TranslationTables(IntEnum):
     SUMMON_METHODS = 10
     SKILL_NAMES = 20
     SKILL_DESCRIPTIONS = 21
+    AWAKEN_STAT_BONUSES = 24
+    LEADER_SKILL_DESCRIPTIONS = 25
     WORLD_MAP_DUNGEON_NAMES = 29
     CAIROS_DUNGEON_NAMES = 30
 

@@ -5,7 +5,6 @@ import io
 import json
 import re
 import zlib
-from enum import IntEnum
 from glob import iglob
 from numbers import Number
 
@@ -408,13 +407,14 @@ def parse_monster_data(preview=False):
                 updated = True
 
         # Stats
-        if monster.base_stars != json.loads(row['base class']):
-            monster.base_stars = json.loads(row['base class'])
+        base_stars = json.loads(row['base class'])
+        if monster.base_stars != base_stars:
+            monster.base_stars = base_stars
             print('Updated {} ({}) base stars to {}'.format(monster, master_id, monster.base_stars))
             updated = True
 
         # Set natural stars based on lowest form of the monster's awakening chain
-        natural_stars = _get_natural_stars(master_id)
+        natural_stars = json.loads(row['natural class'])
         if monster.natural_stars != natural_stars:
             monster.natural_stars = natural_stars
             print('Updated {} ({}) natural stars to {}'.format(monster, master_id, monster.natural_stars))
@@ -461,6 +461,7 @@ def parse_monster_data(preview=False):
             updated = True
 
         # Awakening
+        awakening_type = AwakenBonusType(json.loads(row['awaken type']))
         awaken_level = json.loads(row['awaken'])
         awakens_to_com2us_id = json.loads(row['awaken unit id'])
 
@@ -499,13 +500,26 @@ def parse_monster_data(preview=False):
                     updated = True
 
         # Awaken bonus text
-        awaken_bonus_desc = ''
-        if can_awaken and awakens_to_com2us_id > 0:
-            if awakens_to_com2us_id in awaken_stat_bonuses:
-                # First search for provided text description
-                awaken_bonus_desc = awaken_stat_bonuses[awakens_to_com2us_id].strip()
+        if can_awaken:
+            if awakening_type == AwakenBonusType.STAT_BONUS:
+                # TODO: Create function to determine which stat and how much
+                raise NotImplementedError
+            elif awakening_type == AwakenBonusType.NEW_SKILL:
+                # TODO: Get skill name
+                awaken_bonus_desc = 'Gain new skill'
+            elif awakening_type == AwakenBonusType.LEADER_SKILL:
+                # TODO: Get leader skill definition
+                awaken_bonus_desc = 'Leader Skill'
+            elif awakening_type == AwakenBonusType.STRENGTHEN_SKILL:
+                # TODO: Get skill name
+                awaken_bonus_desc = 'Strengthen Skill'
+            elif awakening_type == AwakenBonusType.SECONDARY_AWAKENING:
+                awaken_bonus_desc = 'Secondary Awakening'
+            else:
+                raise ValueError(f'Unhandled Awakening Type: {awakening_type}')
+        else:
+            awaken_bonus_desc = ''
 
-        # Update it
         if awaken_bonus_desc and monster.awaken_bonus != awaken_bonus_desc:
             monster.awaken_bonus = awaken_bonus_desc
             print('Updated {} ({}) awakened bonus to {}'.format(monster, master_id, awaken_bonus_desc))
@@ -1075,8 +1089,8 @@ def save_translation_tables():
                 writer.writerow([table_idx, key, text.strip()])
 
 
-def _get_translation_tables():
-    raw = ConstBitStream(filename='bestiary/com2us_data/text_eng.dat')
+def _get_translation_tables(filename='bestiary/com2us_data/text_eng.dat'):
+    raw = ConstBitStream(filename)
     tables = []
 
     table_ver = raw.read('intle:32')
@@ -1224,8 +1238,8 @@ def _get_localvalue_tables(table_id):
     num_tables = raw.read('intle:32') - 1
     raw.read('pad:{}'.format(0xc * 8))
 
-    if num_tables > int(max(LocalvalueTables)):
-        print('WARNING! Found {} tables in localvalue.dat. There are only {} tables defined!'.format(num_tables, int(max(LocalvalueTables))))
+    # if num_tables > int(max(LocalvalueTables)):
+    #     print('WARNING! Found {} tables in localvalue.dat. There are only {} tables defined!'.format(num_tables, int(max(LocalvalueTables))))
 
     # Read the locations of all defined tables
     for x in range(0, num_tables):

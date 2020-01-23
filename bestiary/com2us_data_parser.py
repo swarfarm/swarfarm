@@ -953,7 +953,7 @@ def _get_scenario_names_by_id():
 def parse_cairos_dungeons():
     dungeon_names = _get_translation_tables()[TranslationTables.CAIROS_DUNGEON_NAMES]
 
-    with open('bestiary/com2us_data/dungeon_list.json', 'r') as f:
+    with open('bestiary/parse/com2us_data/dungeon_list.json', 'r') as f:
         for dungeon_data in json.load(f):
             group_id = dungeon_data['group_id']
 
@@ -1081,7 +1081,7 @@ def parse_rift_raid():
 
 def save_translation_tables():
     tables = _get_translation_tables()
-    with open('bestiary/com2us_data/text_eng.csv', 'w', encoding='utf-8', newline='') as f:
+    with open('bestiary/parse/com2us_data/text_eng.csv', 'w', encoding='utf-8', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['table_num', 'id', 'text'])
         for table_idx, table in enumerate(tables):
@@ -1089,8 +1089,8 @@ def save_translation_tables():
                 writer.writerow([table_idx, key, text.strip()])
 
 
-def _get_translation_tables(filename='bestiary/com2us_data/text_eng.dat'):
-    raw = ConstBitStream(filename)
+def _get_translation_tables(filename='bestiary/parse/com2us_data/text_eng.dat'):
+    raw = ConstBitStream(filename=filename)
     tables = []
 
     table_ver = raw.read('intle:32')
@@ -1211,7 +1211,7 @@ class LocalvalueTables(IntEnum):
 def save_localvalue_tables():
     for x in range(1,102):
         table = _get_localvalue_tables(x)
-        with open(f'bestiary/com2us_data/localvalue_{x}.csv', 'w', encoding='utf-8', newline='') as f:
+        with open(f'bestiary/parse/com2us_data/localvalue_{x}.csv', 'w', encoding='utf-8', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=table['header'])
             writer.writeheader()
             for row in table['rows']:
@@ -1219,7 +1219,7 @@ def save_localvalue_tables():
 
 
 def _decrypt_localvalue_dat():
-    with open('bestiary/com2us_data/localvalue.dat') as f:
+    with open('bestiary/parse/com2us_data/localvalue.dat') as f:
         return decrypt_response(f.read().strip('\0'))
 
 

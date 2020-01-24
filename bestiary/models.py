@@ -432,8 +432,8 @@ class Monster(models.Model):
 
 
 class Skill(models.Model):
-    name = models.CharField(max_length=40)
     com2us_id = models.IntegerField(blank=True, null=True, help_text='ID given in game data files')
+    name = models.CharField(max_length=40)
     description = models.TextField()
     slot = models.IntegerField(default=1, help_text='Which button position the skill is in during battle')
     skill_effect = models.ManyToManyField('SkillEffect', blank=True)
@@ -443,11 +443,13 @@ class Skill(models.Model):
     aoe = models.BooleanField(default=False, help_text='Skill affects all enemies or allies')
     passive = models.BooleanField(default=False, help_text='Skill activates automatically')
     max_level = models.IntegerField()
-    level_progress_description = models.TextField(null=True, blank=True, help_text='Description of bonus each skill level')
     icon_filename = models.CharField(max_length=100, null=True, blank=True)
     multiplier_formula = models.TextField(null=True, blank=True, help_text='Parsed multiplier formula')
     multiplier_formula_raw = models.CharField(max_length=150, null=True, blank=True, help_text='Multiplier formula given in game data files')
     scaling_stats = models.ManyToManyField('ScalingStat', blank=True, help_text='Monster stats which this skill scales on')
+
+    # Depreciated fields - to be removed
+    level_progress_description = models.TextField(null=True, blank=True, help_text='Description of bonus each skill level')
 
     def image_url(self):
         if self.icon_filename:
@@ -480,6 +482,50 @@ class Skill(models.Model):
         ordering = ['slot', 'name']
         verbose_name = 'Skill'
         verbose_name_plural = 'Skills'
+
+
+class SkillUpgrade(models.Model):
+    UPGRADE_EFFECT_RATE = 0
+    UPGRADE_DAMAGE = 1
+    UPGRADE_RECOVERY = 2
+    UPGRADE_COOLTIME = 3
+    UPGRADE_SHIELD = 4
+    UPGRADE_ATK_BAR = 5
+    UPGRADE_EFFECT_DURATION = 6
+
+    UPGRADE_CHOICES = (
+        (UPGRADE_EFFECT_RATE, 'Effect Rate +{0}%'),
+        (UPGRADE_DAMAGE, 'Damage +{0}%'),
+        (UPGRADE_RECOVERY, 'Recovery +{0}%'),
+        (UPGRADE_COOLTIME, 'Cooltime Turn -{0}'),
+        (UPGRADE_SHIELD, 'Shield +{0}%'),
+        (UPGRADE_ATK_BAR, 'Attack Bar Recovery +{0}%'),
+        (UPGRADE_EFFECT_DURATION, 'Harmful Effect Rate +{0} Turns'),
+    )
+
+    # Mappings from com2us' API data to model defined values
+    COM2US_UPGRADE_MAP = {
+        'DR': UPGRADE_EFFECT_RATE,
+        'AT': UPGRADE_DAMAGE,
+        'AT1': UPGRADE_DAMAGE,
+        'HE': UPGRADE_RECOVERY,
+        'TN': UPGRADE_COOLTIME,
+        'SD': UPGRADE_SHIELD,
+        'SD1': UPGRADE_SHIELD,
+        'GA': UPGRADE_ATK_BAR,
+        'DT': UPGRADE_EFFECT_DURATION,
+    }
+
+    skill = models.ForeignKey(Skill, on_delete=models.CASCADE, related_name='upgrades')
+    level = models.IntegerField()
+    effect = models.IntegerField(choices=UPGRADE_CHOICES)
+    amount = models.IntegerField()
+
+    class Meta:
+        ordering = ('level', )
+
+    def __str__(self):
+        return f'{self.get_effect_display().format(self.amount)}'
 
 
 class LeaderSkill(models.Model):

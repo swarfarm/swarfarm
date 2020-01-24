@@ -213,6 +213,18 @@ class _LocalValueData:
         return ConstBitStream(_LocalValueData._decrypted_data)
 
 
+class _TranslationTables:
+    # Known translation table assignments
+    ISLAND_NAMES = 1
+    MONSTER_NAMES = 2
+    SUMMON_METHODS = 10
+    SKILL_NAMES = 20
+    SKILL_DESCRIPTIONS = 21
+    AWAKEN_STAT_BONUSES = 24
+    LEADER_SKILL_DESCRIPTIONS = 25
+    WORLD_MAP_DUNGEON_NAMES = 29
+    CAIROS_DUNGEON_NAMES = 30
+
 
 class _Strings:
     filename = 'bestiary/parse/com2us_data/text_eng.dat'
@@ -242,6 +254,11 @@ class _Strings:
                 # EOF
                 pass
 
+    def __getattr__(self, item):
+        # Allows access to tables by name instead of index.
+        value = getattr(_TranslationTables, item)
+        return self[value]
+
     def __getitem__(self, key):
         return _Strings._tables[key]
 
@@ -251,17 +268,6 @@ class _Strings:
     @staticmethod
     def _get_file():
         return ConstBitStream(filename=_Strings.filename)
-
-    # Known table definitions
-    ISLAND_NAMES = 1
-    MONSTER_NAMES = 2
-    SUMMON_METHODS = 10
-    SKILL_NAMES = 20
-    SKILL_DESCRIPTIONS = 21
-    AWAKEN_STAT_BONUSES = 24
-    LEADER_SKILL_DESCRIPTIONS = 25
-    WORLD_MAP_DUNGEON_NAMES = 29
-    CAIROS_DUNGEON_NAMES = 30
 
 
 tables = _LocalValueData()

@@ -25,6 +25,17 @@ class SourceSerializer(serializers.ModelSerializer):
         }
 
 
+class SkillUpgradeSerializer(serializers.ModelSerializer):
+    effect = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.SkillUpgrade
+        fields = ('effect', 'amount')
+
+    def get_effect(self, instance):
+        return instance.get_effect_display()
+
+
 class SkillEffectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.SkillEffect
@@ -52,6 +63,7 @@ class SkillEffectDetailSerializer(serializers.ModelSerializer):
 
 class SkillSerializer(serializers.HyperlinkedModelSerializer):
     level_progress_description = serializers.SerializerMethodField()
+    upgrades = SkillUpgradeSerializer(many=True, read_only=True)
     effects = SkillEffectDetailSerializer(many=True, read_only=True, source='skilleffectdetail_set')
     scales_with = serializers.SerializerMethodField()
     used_on = serializers.PrimaryKeyRelatedField(source='monster_set', many=True, read_only=True)
@@ -60,8 +72,8 @@ class SkillSerializer(serializers.HyperlinkedModelSerializer):
         model = models.Skill
         fields = (
             'id', 'com2us_id', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'aoe',
-            'max_level', 'level_progress_description', 'effects', 'multiplier_formula', 'multiplier_formula_raw',
-            'scales_with', 'icon_filename', 'used_on',
+            'max_level', 'upgrades', 'effects', 'multiplier_formula', 'multiplier_formula_raw',
+            'scales_with', 'icon_filename', 'used_on', 'level_progress_description',
         )
 
     def get_level_progress_description(self, instance):

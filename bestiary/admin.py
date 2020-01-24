@@ -3,7 +3,7 @@ from django.db.models import TextField, ForeignKey
 from django.forms.widgets import TextInput
 from django_select2.forms import Select2Widget
 
-from .models import Monster, Skill, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, \
+from .models import Monster, Skill, SkillUpgrade, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, \
     HomunculusSkillCraftCost, HomunculusSkill, LeaderSkill, SkillEffect, ScalingStat, \
     Source, Fusion, Building, CraftMaterial, GameItem
 
@@ -147,6 +147,11 @@ class MonsterAdmin(admin.ModelAdmin):
         form.instance.save()
 
 
+class SkillUpgradeInline(admin.TabularInline):
+    model = SkillUpgrade
+    extra = 0
+
+
 class EffectDetailInline(admin.StackedInline):
     model = SkillEffectDetail
     extra = 3
@@ -162,7 +167,7 @@ class SkillAdmin(admin.ModelAdmin):
     filter_vertical = ('skill_effect', 'scaling_stats')
     search_fields = ['com2us_id', 'name', 'description']
     list_filter = ['slot', 'skill_effect', 'passive']
-    inlines = (EffectDetailInline,)
+    inlines = (SkillUpgradeInline, EffectDetailInline,)
     save_as = True
 
     def used_on(self, obj):

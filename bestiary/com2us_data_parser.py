@@ -6,7 +6,6 @@ import json
 import re
 import zlib
 from glob import iglob
-from numbers import Number
 
 from Crypto.Cipher import AES
 from PIL import Image
@@ -15,6 +14,7 @@ from django.conf import settings
 from sympy import simplify
 
 from bestiary.com2us_mapping import *
+from bestiary.parse.skills import _force_eval_ltr
 from .models import Skill, ScalingStat, CraftMaterial, MonsterCraftCost, HomunculusSkill, \
     HomunculusSkillCraftCost, Dungeon, SecretDungeon, Level
 
@@ -52,56 +52,6 @@ def update_all():
 def _create_new_skill(com2us_id, slot):
     print('!!! Creating new skill with com2us ID {}, slot {}'.format(com2us_id, slot))
     return Skill.objects.create(com2us_id=com2us_id, name='tempname', slot=slot, max_level=1)
-
-
-PLAIN_OPERATORS = '+-*/^'
-
-
-def _force_eval_ltr(expr):
-    fixed = False
-    if isinstance(expr, list):
-        # Check if elements are strings or another array
-        if expr and all(isinstance(elem, str) or isinstance(elem, Number) for elem in expr):
-            expr_string = ''.join(map(str, expr))
-
-            if 'FIXED' in expr_string:
-                fixed = True
-                expr_string = expr_string.replace('FIXED', '')
-
-            if 'CEIL' in expr_string:
-                expr_string = expr_string.replace('CEIL', '')
-
-            # Hack for missing multiplication sign for ALIVE_RATE
-            if 'ALIVE_RATE' in expr_string and not '*ALIVE_RATE' in expr_string:
-                expr_string = expr_string.replace('ALIVE_RATE', '*ALIVE_RATE')
-
-            # Remove any multiplications by 1 beforehand. It makes the simplifier function happier.
-            expr_string = expr_string.replace('*1.0', '')
-
-            if expr_string not in PLAIN_OPERATORS:
-                all_operations = filter(None, re.split(r'([+\-*/^])', expr_string))
-                operands = list(filter(None, re.split(r'[+\-*/^]', expr_string)))
-                group_formula = '(' * len(operands)
-
-                for operator in all_operations:
-                    if operator in PLAIN_OPERATORS:
-                        group_formula += operator
-                    else:
-                        group_formula += f'{operator})'
-                return f'({group_formula})', fixed
-            else:
-                return f'{expr_string}', fixed
-        else:
-            # Process each sub-expression in LTR manner
-            ltr_expr = ''
-            for partial_expr in expr:
-                partial_expr_ltr, fixed = _force_eval_ltr(partial_expr)
-                if partial_expr_ltr not in PLAIN_OPERATORS:
-                    ltr_expr = f'({ltr_expr}{partial_expr_ltr})'
-                else:
-                    ltr_expr += partial_expr_ltr
-
-            return ltr_expr, fixed
 
 
 def parse_skill_data(preview=False):

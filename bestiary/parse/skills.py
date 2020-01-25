@@ -101,8 +101,6 @@ def _extract_scaling_stats(mult_formula):
 
 def skills():
     for master_id, raw in game_data.tables.SKILLS.items():
-        # TODO: Implement overrides for known issues w/ skill data
-
         # Get skill object based on com2us_id
         skill, created = Skill.objects.get_or_create(
             com2us_id=master_id,
@@ -115,6 +113,9 @@ def skills():
 
         if created:
             print(f'!!! Created new skill {master_id}')
+
+        # Fix up raw data prior to parsing
+        raw = preprocess_errata(master_id, raw)
 
         # Parse basic skill information from game data
         level_up_text = ''
@@ -164,6 +165,84 @@ def skills():
         # Update scaling stats
         skill.scaling_stats.set(scaling_stats)
 
+        # Post-process skill object with any known issues
+        postprocess_errata(master_id, skill, raw)
+
+
+# Skill erratum
+def replace_attack_def_with_just_def(raw):
+    raw['fun data'] = [["ATK", "*", 1.8], ["+"], ["DEF", "*", 2.5]]
+    return raw
+
+
+def fix_noble_agreement_multiplier(raw):
+    raw['fun data'] = [["ATK", "*", 1.0], ["*"], ["ATTACK_SPEED", "+", 240], ["/"], [60]]
+    return raw
+
+
+def fix_holy_light_multiplier(raw):
+    raw['fun data'] = [["TARGET_CUR_HP", "*", 0.15]]
+    return raw
+
+
+_defense = ScalingStat.objects.get(com2us_desc='DEF')
+_target_hp = ScalingStat.objects.get(com2us_desc='TARGET_TOT_HP')
+_max_hp = ScalingStat.objects.get(com2us_desc='ATTACK_TOT_HP')
+
+
+def add_scales_with_def(obj, raw):
+    obj.scaling_stats.add(_defense)
+    return obj
+
+
+def add_scales_with_max_hp(obj, raw):
+    obj.scaling_stats.add(_max_hp)
+    return obj
+
+
+def add_scales_with_target_hp(obj, raw):
+    obj.scaling_stats.add(_target_hp)
+    return obj
+
+
+_preprocess_erratum = {
+    2401: [replace_attack_def_with_just_def],  # Water Golem S1
+    2402: [replace_attack_def_with_just_def],  # Fire Golem S1
+    2403: [replace_attack_def_with_just_def],  # Wind Golem S1
+    2404: [replace_attack_def_with_just_def],  # Light Golem S1
+    2405: [replace_attack_def_with_just_def],  # Dark Golem S1
+    2406: [replace_attack_def_with_just_def],  # Water Golem S2
+    2407: [replace_attack_def_with_just_def],  # Fire Golem S2
+    2410: [replace_attack_def_with_just_def],  # Dark Golem S2
+    2909: [fix_holy_light_multiplier],  # Light Dragon S2
+    6519: [fix_noble_agreement_multiplier],  # Julianne S2
+}
+
+_postprocess_erratum = {
+    5663: [add_scales_with_max_hp],  # Shakan S3
+    5665: [add_scales_with_max_hp],  # Jultan S3
+    11012: [add_scales_with_def],  # Fire Martial Artist S3
+    11214: [add_scales_with_max_hp],  # Light Anubis S3
+    12614: [add_scales_with_target_hp],  # Light Chakram Dancer S3
+}
+
+
+def preprocess_errata(master_id, raw):
+    if master_id in _preprocess_erratum:
+        print(f'Preprocessing raw data for {master_id}.')
+        for processing_func in _preprocess_erratum[master_id]:
+            raw = processing_func(raw)
+    return raw
+
+
+def postprocess_errata(master_id, skill, raw):
+    if master_id in _postprocess_erratum:
+        print(f'Postprocessing erratum for {master_id}.')
+        for processing_func in _postprocess_erratum[master_id]:
+            skill = processing_func(skill, raw)
+        skill.save()
+
 
 def homonculus_skills():
     pass
+

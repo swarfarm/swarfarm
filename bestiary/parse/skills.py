@@ -1,9 +1,10 @@
-from numbers import Number
 import json
-from sympy import simplify
 import re
+from numbers import Number
 
-from bestiary.models import Skill, SkillUpgrade, ScalingStat
+from sympy import simplify
+
+from bestiary.models import Monster, Skill, SkillUpgrade, ScalingStat, HomunculusSkill
 from bestiary.parse import game_data
 
 
@@ -244,5 +245,14 @@ def postprocess_errata(master_id, skill, raw):
 
 
 def homonculus_skills():
-    pass
+    for master_id, raw in game_data.tables.HOMUNCULUS_SKILL_TREES.items():
+        base_skill = Skill.objects.get(com2us_id=master_id)
+        skill, created = HomunculusSkill.objects.update_or_create(skill=base_skill)
 
+        if skill.mana_cost != raw['upgrade cost'][2]:
+            print(f'Updating mana_cost for {master_id} to {raw["upgrade cost"][2]}.')
+            skill.mana_cost = raw['upgrade cost'][2]
+            skill.save()
+
+        skill.monsters.set(Monster.objects.filter(com2us_id__in=raw['unit master id']))
+        skill.prerequisites.set(Skill.objects.filter(com2us__id__in=raw['prerequisite']))

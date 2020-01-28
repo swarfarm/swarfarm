@@ -15,5 +15,8 @@
             {% endif %}
         {% endfor %}
         <span class="image-plus image-plus-right">+{{ rune.level }}</span>
+        {% if rune.original_quality and not hide_original_quality %}
+            <span class="image-plus image-plus-left rune-text-{{ rune.get_original_quality_display|lower }}">⬤</span>
+        {% endif %}
     </div>
 </div>

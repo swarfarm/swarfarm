@@ -18,7 +18,7 @@
     </div>
 
     <div class="panel-body condensed">
-        {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
+        {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune hide_original_quality=True only %}
         <ul class="list-unstyled">
             <li class="rune-main-stat">{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</li>
             {% if rune.innate_stat %}<li>{{ rune.get_innate_stat_rune_display }} +{{ rune.innate_stat_value }}{% if rune.innate_stat in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}

@@ -1,0 +1,198 @@
+from django.contrib.postgres.fields import ArrayField
+from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.db import models
+from django.utils.safestring import mark_safe
+from django.utils.text import slugify
+
+from . import base
+
+
+class CraftMaterial(models.Model):
+    # To be deleted, use GameItem instead
+    com2us_id = models.IntegerField()
+    name = models.CharField(max_length=40)
+    icon_filename = models.CharField(max_length=100, null=True, blank=True)
+    sell_value = models.IntegerField(blank=True, null=True)
+    source = models.ManyToManyField('Source', blank=True)
+
+    def image_url(self):
+        if self.icon_filename:
+            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/items/craft_material_' + self.icon_filename))
+        else:
+            return 'No Image'
+
+    def __str__(self):
+        return self.name
+
+
+class GameItem(models.Model):
+    CATEGORY_MONSTER = 1
+    CATEGORY_CURRENCY = 6
+    CATEGORY_RUNE = 8
+    CATEGORY_SUMMON_SCROLL = 9
+    CATEGORY_BOOSTER = 10
+    CATEGORY_ESSENCE = 11
+    CATEGORY_MONSTER_PIECE = 12
+    CATEOGRY_GUILD_MONSTER_PIECE = 19
+    CATEGORY_RAINBOWMON = 25
+    CATEGORY_RUNE_CRAFT = 27
+    CATEGORY_CRAFT_STUFF = 29
+    CATEGORY_MATERIAL_MONSTER = 61
+
+    CATEGORY_CHOICES = (
+        (CATEGORY_MONSTER, 'Monster'),
+        (CATEGORY_CURRENCY, 'Currency'),
+        (CATEGORY_SUMMON_SCROLL, 'Summoning Scroll'),
+        (CATEGORY_BOOSTER, 'Booster'),
+        (CATEGORY_ESSENCE, 'Essence'),
+        (CATEGORY_MONSTER_PIECE, 'Monster Piece'),
+        (CATEOGRY_GUILD_MONSTER_PIECE, 'Guild Monster Piece'),
+        (CATEGORY_RAINBOWMON, 'Rainbowmon'),
+        (CATEGORY_RUNE_CRAFT, 'Rune Craft'),
+        (CATEGORY_CRAFT_STUFF, 'Craft Material'),
+        (CATEGORY_MATERIAL_MONSTER, 'Enhancing Monster'),
+    )
+
+    com2us_id = models.IntegerField()
+    category = models.IntegerField(choices=CATEGORY_CHOICES, help_text='Typically corresponds to `item_master_id` field')
+    name = models.CharField(max_length=200)
+    icon = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    slug = models.CharField(max_length=200)
+    sell_value = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        unique_together = (
+            'com2us_id',
+            'category',
+        )
+        ordering = (
+            'category',
+            'com2us_id',
+        )
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def image_tag(self):
+        if self.icon:
+            path = static('herders/images/items/' + self.icon)
+            return mark_safe(f'<img src="{path}" height="42" width="42"/>')
+        else:
+            return 'No Image'
+
+
+class ItemQuantity(models.Model):
+    # Abstract model for representing quantities of items for various purposes
+    item = models.ForeignKey('GameItem', on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.item.name} - qty. {self.quantity}'
+
+    class Meta:
+        abstract = True
+
+
+class Building(models.Model, base.Elements):
+    AREA_GENERAL = 0
+    AREA_GUILD = 1
+
+    AREA_CHOICES = [
+        (AREA_GENERAL, 'Everywhere'),
+        (AREA_GUILD, 'Guild Content'),
+    ]
+
+    # TODO: Replace these with base.Stats model
+    STAT_HP = 0
+    STAT_ATK = 1
+    STAT_DEF = 2
+    STAT_SPD = 3
+    STAT_CRIT_RATE_PCT = 4
+    STAT_CRIT_DMG_PCT = 5
+    STAT_RESIST_PCT = 6
+    STAT_ACCURACY_PCT = 7
+    MAX_ENERGY = 8
+    MANA_STONE_STORAGE = 9
+    MANA_STONE_PRODUCTION = 10
+    ENERGY_PRODUCTION = 11
+    ARCANE_TOWER_ATK = 12
+    ARCANE_TOWER_SPD = 13
+
+    STAT_CHOICES = [
+        (STAT_HP, 'HP'),
+        (STAT_ATK, 'ATK'),
+        (STAT_DEF, 'DEF'),
+        (STAT_SPD, 'SPD'),
+        (STAT_CRIT_RATE_PCT, 'CRI Rate'),
+        (STAT_CRIT_DMG_PCT, 'CRI Dmg'),
+        (STAT_RESIST_PCT, 'Resistance'),
+        (STAT_ACCURACY_PCT, 'Accuracy'),
+        (MAX_ENERGY, 'Max. Energy'),
+        (MANA_STONE_STORAGE, 'Mana Stone Storage'),
+        (MANA_STONE_PRODUCTION, 'Mana Stone Production Rate'),
+        (ENERGY_PRODUCTION, 'Energy Production Rate'),
+        (ARCANE_TOWER_ATK, 'Arcane Tower ATK'),
+        (ARCANE_TOWER_SPD, 'Arcane Tower SPD'),
+    ]
+
+    PERCENT_STATS = [
+        STAT_HP,
+        STAT_ATK,
+        STAT_DEF,
+        STAT_SPD,
+        STAT_CRIT_RATE_PCT,
+        STAT_CRIT_DMG_PCT,
+        STAT_RESIST_PCT,
+        STAT_ACCURACY_PCT,
+        MANA_STONE_PRODUCTION,
+        ENERGY_PRODUCTION,
+        ARCANE_TOWER_ATK,
+        ARCANE_TOWER_SPD,
+    ]
+
+    com2us_id = models.IntegerField()
+    name = models.CharField(max_length=30)
+    max_level = models.IntegerField()
+    area = models.IntegerField(choices=AREA_CHOICES, null=True, blank=True)
+    affected_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
+    element = models.CharField(max_length=6, choices=base.Elements.ELEMENT_CHOICES, blank=True, null=True)
+    stat_bonus = ArrayField(models.IntegerField(blank=True, null=True))
+    upgrade_cost = ArrayField(models.IntegerField(blank=True, null=True))
+    description = models.TextField(null=True, blank=True)
+    icon_filename = models.CharField(max_length=100, null=True, blank=True)
+
+    def image_url(self):
+        if self.icon_filename:
+            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/buildings/' + self.icon_filename))
+        else:
+            return 'No Image'
+
+    def __str__(self):
+        return self.name
+
+
+class Source(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    icon_filename = models.CharField(max_length=100, null=True, blank=True)
+    farmable_source = models.BooleanField(default=False)
+    meta_order = models.IntegerField(db_index=True, default=0)
+
+    def image_url(self):
+        if self.icon_filename:
+            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/icons/' + self.icon_filename))
+        else:
+            return 'No Image'
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['meta_order', 'icon_filename', 'name']
+
+

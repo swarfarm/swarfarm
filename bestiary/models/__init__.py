@@ -1,3 +1,4 @@
+from .base import Elements, Quality, Stats
 from .dungeons import Dungeon, Level, SecretDungeon
 from .items import Building, CraftMaterial, GameItem, ItemQuantity, Source
 from .monsters import Monster, AwakenCost, MonsterCraftCost, Fusion

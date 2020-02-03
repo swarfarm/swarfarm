@@ -1,5 +1,3 @@
-from enum import IntEnum
-
 from bestiary.models import Monster, LeaderSkill, Rune, RuneCraft
 
 # TODO: Move these definitions to the models if not already done, delete this file.
@@ -21,16 +19,6 @@ archetype_map = {
     4: Monster.TYPE_SUPPORT,
     5: Monster.TYPE_MATERIAL
 }
-
-
-class AwakenBonusType(IntEnum):
-    NONE = 0
-    STAT_BONUS = 1
-    NEW_SKILL = 2
-    LEADER_SKILL = 3
-    STRENGTHEN_SKILL = 4
-    SECONDARY_AWAKENING = 6
-
 
 leader_skill_stat_map = {
     1: LeaderSkill.ATTRIBUTE_HP,

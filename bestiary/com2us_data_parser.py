@@ -5,6 +5,7 @@ import io
 import json
 import re
 import zlib
+from enum import IntEnum
 from glob import iglob
 
 from Crypto.Cipher import AES
@@ -259,18 +260,6 @@ def _find_monster_awakens_from(master_id):
         awakens_to_id = json.loads(row['awaken unit id'])
         if awakens_to_id == master_id:
             return row
-
-
-def _get_natural_stars(master_id):
-    monster_data = _get_monster_data_by_id(master_id)
-    awakens_from = _find_monster_awakens_from(json.loads(monster_data['unit master id']))
-
-    if awakens_from:
-        return _get_natural_stars(json.loads(awakens_from['unit master id']))
-    else:
-        # Unable to find any lesser form of the monster, return this one's base stars as natural stars.
-        base_stars = json.loads(monster_data['base class'])
-        return base_stars
 
 
 def parse_monster_data(preview=False):

@@ -5,12 +5,17 @@ from django_select2.forms import Select2Widget
 
 from .models import Monster, Skill, SkillUpgrade, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, \
     HomunculusSkillCraftCost, HomunculusSkill, LeaderSkill, SkillEffect, ScalingStat, \
-    Source, Fusion, Building, CraftMaterial, GameItem
+    Source, Fusion, Building, CraftMaterial, GameItem, AwakenCost
 
 
 class MonsterCraftCostInline(admin.TabularInline):
     model = MonsterCraftCost
-    extra = 4
+    extra = 0
+
+
+class MonsterAwakeningCostInline(admin.TabularInline):
+    model = AwakenCost
+    extra = 0
 
 
 @admin.register(Monster)
@@ -41,29 +46,6 @@ class MonsterAdmin(admin.ModelAdmin):
                 'is_awakened',
                 'awaken_level',
                 'awaken_bonus',
-            ),
-        }),
-        ('Awakening Mats', {
-            'classes': ('suit-tab', 'suit-tab-awakening'),
-            'fields': (
-                'awaken_mats_magic_low',
-                'awaken_mats_magic_mid',
-                'awaken_mats_magic_high',
-                'awaken_mats_fire_low',
-                'awaken_mats_fire_mid',
-                'awaken_mats_fire_high',
-                'awaken_mats_water_low',
-                'awaken_mats_water_mid',
-                'awaken_mats_water_high',
-                'awaken_mats_wind_low',
-                'awaken_mats_wind_mid',
-                'awaken_mats_wind_high',
-                'awaken_mats_light_low',
-                'awaken_mats_light_mid',
-                'awaken_mats_light_high',
-                'awaken_mats_dark_low',
-                'awaken_mats_dark_mid',
-                'awaken_mats_dark_high',
             ),
         }),
         ('Stats', {
@@ -109,7 +91,7 @@ class MonsterAdmin(admin.ModelAdmin):
     list_per_page = 100
     filter_vertical = ('skills',)
     filter_horizontal = ('source',)
-    inlines = (MonsterCraftCostInline,)
+    inlines = (MonsterAwakeningCostInline, MonsterCraftCostInline,)
     readonly_fields = ('bestiary_slug', 'base_hp', 'base_attack', 'base_defense', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack',)
     search_fields = ['name', 'com2us_id']
     save_as = True

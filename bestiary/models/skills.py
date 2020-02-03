@@ -140,6 +140,25 @@ class LeaderSkill(models.Model):
         (AREA_GUILD, 'Guild'),
     )
 
+    # Mappings from com2us' API data to model defined values
+    COM2US_STAT_MAP = {
+        1: ATTRIBUTE_HP,
+        2: ATTRIBUTE_ATK,
+        3: ATTRIBUTE_DEF,
+        4: ATTRIBUTE_SPD,
+        5: ATTRIBUTE_CRIT_RATE,
+        6: ATTRIBUTE_CRIT_DMG,
+        7: ATTRIBUTE_RESIST,
+        8: ATTRIBUTE_ACCURACY,
+    }
+
+    COM2US_AREA_MAP = {
+        0: AREA_GENERAL,
+        1: AREA_ARENA,
+        2: AREA_DUNGEON,
+        5: AREA_GUILD,
+    }
+
     attribute = models.IntegerField(choices=ATTRIBUTE_CHOICES, help_text='Monster stat which is granted the bonus')
     amount = models.IntegerField(help_text='Amount of bonus granted')
     area = models.IntegerField(choices=AREA_CHOICES, default=AREA_GENERAL, help_text='Where this leader skill has an effect')
@@ -176,13 +195,18 @@ class LeaderSkill(models.Model):
 
     def __str__(self):
         if self.area == self.AREA_ELEMENT:
-            condition = ' {}'.format(self.get_element_display())
-        elif self.area == self.AREA_GENERAL:
-            condition = ''
+            area = f' with the {self.get_element_display()} element'
         else:
-            condition = ' {}'.format(self.get_area_display())
+            if self.area == self.AREA_ARENA:
+                area = ' in the Arena'
+            elif self.area == self.AREA_DUNGEON:
+                area = ' in the Dungeons'
+            elif self.area == self.AREA_GUILD:
+                area = ' in Guild content'
+            else:
+                area = ''
 
-        return self.get_attribute_display() + ' ' + str(self.amount) + '%' + condition
+        return f'Increases {self.get_attribute_display()} of ally monsters{area} by {self.amount}%'
 
     class Meta:
         ordering = ['attribute', 'amount', 'element']

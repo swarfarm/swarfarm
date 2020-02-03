@@ -102,6 +102,17 @@ class Stats:
         12: STAT_ACCURACY_PCT,
     }
 
+    COM2US_STAT_ATTRIBUTES = {
+        STAT_HP: 'base con',
+        STAT_ATK: 'base atk',
+        STAT_DEF: 'base def',
+        STAT_SPD: 'base speed',
+        STAT_CRIT_RATE_PCT: 'critical rate',
+        STAT_CRIT_DMG_PCT: 'critical damage',
+        STAT_RESIST_PCT: 'resistance',
+        STAT_ACCURACY_PCT: 'accuracy',
+    }
+
 
 class Quality:
     QUALITY_NORMAL = 0

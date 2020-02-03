@@ -6,6 +6,7 @@ from sympy import simplify
 
 from bestiary.models import Monster, Skill, SkillUpgrade, ScalingStat, HomunculusSkill
 from bestiary.parse import game_data
+from .util import update_bestiary_obj
 
 
 def _get_skill_slot(master_id):
@@ -97,24 +98,11 @@ def _extract_scaling_stats(mult_formula):
             mult_formula = mult_formula.replace(stat.com2us_desc, f'{{{stat.stat}}}')
             scaling_stats.append(stat)
 
-    return scaling_stats, mult_formula
+    return scaling_stats
 
 
 def skills():
     for master_id, raw in game_data.tables.SKILLS.items():
-        # Get skill object based on com2us_id
-        skill, created = Skill.objects.get_or_create(
-            com2us_id=master_id,
-            defaults={
-                'name': '',
-                'description': '',
-                'max_level': 0
-            }
-        )
-
-        if created:
-            print(f'!!! Created new skill {master_id}')
-
         # Fix up raw data prior to parsing
         raw = preprocess_errata(master_id, raw)
 
@@ -124,9 +112,10 @@ def skills():
             upgrade = SkillUpgrade.COM2US_UPGRADE_MAP[upgrade_id]
             level_up_text += SkillUpgrade.UPGRADE_CHOICES[upgrade][1].format(amount) + '\n'
 
-        scaling_stats, multiplier_formula = _extract_scaling_stats(_simplify_multiplier(raw['fun data']))
+        multiplier_formula = _simplify_multiplier(raw['fun data'])
+        scaling_stats = _extract_scaling_stats(multiplier_formula)
 
-        skill_values = {
+        defaults = {
             'name': game_data.strings.SKILL_NAMES.get(master_id, f'skill_{master_id}').strip(),
             'description': game_data.strings.SKILL_DESCRIPTIONS.get(master_id, raw['description']).strip(),
             'slot': _get_skill_slot(master_id),
@@ -139,17 +128,7 @@ def skills():
             'level_progress_description': level_up_text,
         }
 
-        # Compare parsed values to existing values in skill object
-        updated = False
-        for field, value in skill_values.items():
-            if getattr(skill, field) != value:
-                print(f'Updating {field} for {master_id}.')
-                setattr(skill, field, value)
-                updated = True
-
-        # Update skill instance
-        if created or updated:
-            skill.save()
+        skill = update_bestiary_obj(Skill, master_id, defaults)
 
         # Update skill level up progress
         SkillUpgrade.objects.filter(skill=skill, level__gt=skill.max_level).delete()

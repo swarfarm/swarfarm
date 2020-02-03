@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from enum import IntEnum
 
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db import models
@@ -49,7 +50,6 @@ class Monster(models.Model, base.Elements):
     )
 
     # Mappings from com2us' API data to model defined values
-
     COM2US_ARCHETYPE_MAP = {
         0: TYPE_NONE,
         1: TYPE_ATTACK,
@@ -233,10 +233,6 @@ class Monster(models.Model, base.Elements):
         has_awakened_version = Q(can_awaken=True) & Q(awakens_to__isnull=False)
         return Monster.objects.filter(should_be_shown, family_id=self.family_id).exclude(has_awakened_version).order_by('com2us_id')
 
-    def all_skill_effects(self):
-        # TODO: Refactor this and get all skill effects somewhere else
-        return SkillEffect.objects.filter(pk__in=self.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True))
-
     def get_awakening_materials(self):
         mats = OrderedDict()
         mats['magic'] = OrderedDict()
@@ -378,21 +374,7 @@ class Monster(models.Model, base.Elements):
             else:
                 self.bestiary_slug = slugify(" ".join([str(self.com2us_id), self.element, self.name]))
 
-        # Pull info from unawakened version of this monster. This copying of data is one directional only
-        if self.awakens_from:
-            # Copy awaken bonus from unawakened version
-            if self.is_awakened and self.awakens_from.awaken_bonus:
-                self.awaken_bonus = self.awakens_from.awaken_bonus
-
         super(Monster, self).save(*args, **kwargs)
-
-        # Automatically set awakens from/to relationship if none exists
-        if self.awakens_from and self.awakens_from.awakens_to is not self:
-            self.awakens_from.awakens_to = self
-            self.awakens_from.save()
-        if self.awakens_to and self.awakens_to.awakens_from is not self:
-            self.awakens_to.awakens_from = self
-            self.awakens_to.save()
 
     class Meta:
         ordering = ['name', 'element']
@@ -406,6 +388,15 @@ class Monster(models.Model, base.Elements):
 
 class AwakenCost(ItemQuantity):
     monster = models.ForeignKey(Monster, on_delete=models.CASCADE, related_name='awaken_materials')
+
+
+class AwakenBonusType(IntEnum):
+    NONE = 0
+    STAT_BONUS = 1
+    NEW_SKILL = 2
+    LEADER_SKILL = 3
+    STRENGTHEN_SKILL = 4
+    SECONDARY_AWAKENING = 6
 
 
 class MonsterCraftCost(models.Model):

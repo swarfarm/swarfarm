@@ -22,7 +22,6 @@ class MonsterAwakeningCostInline(admin.TabularInline):
 class MonsterAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Basic Information', {
-            'classes': ('suit-tab', 'suit-tab-basic'),
             'fields': (
                 'name',
                 'com2us_id',
@@ -33,15 +32,14 @@ class MonsterAdmin(admin.ModelAdmin):
                 'obtainable',
                 'image_filename',
                 'homunculus',
-                'transforms_into',
+                'transforms_to',
                 'craft_cost',
             ),
         }),
         ('Awakening', {
-            'classes': ('suit-tab', 'suit-tab-awakening'),
             'fields': (
-                'awakens_from',
                 'awakens_to',
+                'awakens_from',
                 'can_awaken',
                 'is_awakened',
                 'awaken_level',
@@ -49,7 +47,6 @@ class MonsterAdmin(admin.ModelAdmin):
             ),
         }),
         ('Stats', {
-            'classes': ('suit-tab', 'suit-tab-basic'),
             'fields': (
                 'base_stars',
                 'natural_stars',
@@ -70,7 +67,6 @@ class MonsterAdmin(admin.ModelAdmin):
             ),
         }),
         ('Skills', {
-            'classes': ('suit-tab', 'suit-tab-basic'),
             'fields': (
                 'leader_skill',
                 'skills',
@@ -78,7 +74,6 @@ class MonsterAdmin(admin.ModelAdmin):
             ),
         }),
         ('Source', {
-            'classes': ('suit-tab', 'suit-tab-other'),
             'fields': (
                 'source',
                 'farmable',
@@ -95,38 +90,6 @@ class MonsterAdmin(admin.ModelAdmin):
     readonly_fields = ('bestiary_slug', 'base_hp', 'base_attack', 'base_defense', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack',)
     search_fields = ['name', 'com2us_id']
     save_as = True
-    actions = ['resave']
-
-    def resave(self, request, queryset):
-        for obj in queryset:
-            if obj.skills is not None:
-                skill_list = obj.skills.values_list('max_level', flat=True)
-                obj.skill_ups_to_max = sum(skill_list) - len(skill_list)
-            else:
-                obj.skill_ups_to_max = 0
-
-            if obj.awakens_from and obj.awakens_from.source.count() > 0:
-                # Update from unawakened version
-                obj.source.clear()
-                obj.source = obj.awakens_from.source.all()
-
-            obj.save()
-    resave.short_description = 'Resave model instances and update data'
-
-    def save_related(self, request, form, formsets, change):
-        super(MonsterAdmin, self).save_related(request, form, formsets, change)
-
-        # Copy the unawakened version's sources if they exist.
-        # Has to be done here instead of in model's save() because django admin clears M2M on form submit
-        if form.instance.awakens_from and form.instance.awakens_from.source.count() > 0:
-            # This is the awakened one so copy from awakens_from monster
-            form.instance.source.set(form.instance.awakens_from.source.all())
-
-        if form.instance.awakens_to:
-            # This is the unawakened one so push to the awakened one
-            form.instance.awakens_to.source.set(form.instance.source.all())
-
-        form.instance.save()
 
 
 class SkillUpgradeInline(admin.TabularInline):

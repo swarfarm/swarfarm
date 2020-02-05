@@ -328,20 +328,20 @@ def parse_monster_data(preview=False):
             updated = True
 
         # Unicorn
-        transforms_into_id = json.loads(row['change'])
-        if transforms_into_id != 0:
+        transforms_to_id = json.loads(row['change'])
+        if transforms_to_id != 0:
             try:
-                transforms_into = Monster.objects.get(com2us_id=transforms_into_id)
+                transforms_to = Monster.objects.get(com2us_id=transforms_to_id)
             except Monster.DoesNotExist:
-                print('!!! {} ({}) can transform into {} but could not find transform monster in database'.format(monster, master_id, transforms_into_id))
+                print('!!! {} ({}) can transform into {} but could not find transform monster in database'.format(monster, master_id, transforms_to_id))
             else:
-                if monster.transforms_into != transforms_into:
-                    monster.transforms_into = transforms_into
-                    print('Updated {} ({}) can transform into {} ({})'.format(monster, master_id, transforms_into, transforms_into_id))
+                if monster.transforms_to != transforms_to:
+                    monster.transforms_to = transforms_to
+                    print('Updated {} ({}) can transform into {} ({})'.format(monster, master_id, transforms_to, transforms_to_id))
                     updated = True
         else:
-            if monster.transforms_into is not None:
-                monster.transforms_into = None
+            if monster.transforms_to is not None:
+                monster.transforms_to = None
                 print('Removed monster transformation from {} ({})'.format(monster, master_id))
                 updated = True
 

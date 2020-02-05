@@ -145,7 +145,7 @@ def monsters():
         # Update related fields
         monster.skills.set(Skill.objects.filter(com2us_id__in=raw['base skill']))
 
-        # AwakenCost (using new model)
+        # Awaken cost
         awaken_cost_objs = []
         for item_id, qty in awaken_materials.items():
             obj, created = monster.awaken_materials.update_or_create(
@@ -197,9 +197,30 @@ def postprocess_errata(master_id, monster, raw):
         monster.save()
 
 
-def awakening_relationships():
-    pass
+def monster_relationships():
+    for master_id, raw in game_data.tables.MONSTERS.items():
+        raw = preprocess_errata(master_id, raw)
+        monster = Monster.objects.get(com2us_id=master_id)
 
+        # Awakening
+        awakens_to_id = raw['awaken unit id']
 
-def transformation_relationships():
-    pass
+        if monster.obtainable and awakens_to_id > 0:
+            awakens_to = Monster.objects.get(com2us_id=awakens_to_id)
+        else:
+            awakens_to = None
+
+        # Transformation
+        transforms_to_id = raw['change']
+
+        if transforms_to_id > 0:
+            transforms_to = Monster.objects.get(com2us_id=transforms_to_id)
+        else:
+            transforms_to = None
+
+        defaults = {
+            'awakens_to': awakens_to,
+            'transforms_to': transforms_to,
+        }
+
+        update_bestiary_obj(Monster, master_id, defaults)

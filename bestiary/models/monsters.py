@@ -79,6 +79,22 @@ class Monster(models.Model, base.Elements):
     is_awakened = models.BooleanField(default=False, help_text='Is the awakened form')
     awaken_level = models.IntegerField(default=AWAKEN_LEVEL_UNAWAKENED, choices=AWAKEN_CHOICES, help_text='Awakening level')
     awaken_bonus = models.TextField(blank=True, help_text='Bonus given upon awakening')
+    awakens_to = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+        help_text='Awakened form of this monster'
+    )
+    awakens_from = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+        help_text='Unawakened form of this monster'
+    )
 
     skills = models.ManyToManyField('Skill', blank=True)
     skill_ups_to_max = models.IntegerField(null=True, blank=True, help_text='Number of skill-ups required to max all skills')
@@ -110,11 +126,15 @@ class Monster(models.Model, base.Elements):
     craft_materials = models.ManyToManyField('CraftMaterial', through='MonsterCraftCost')
     craft_cost = models.IntegerField(null=True, blank=True, help_text='Mana cost to craft this monster')
 
-    # Unicorn fields
-    transforms_into = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+', help_text='Monster which this monster can transform into during battle')
+    transforms_to = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='transforms_from',
+        help_text='Monster which this monster can transform into during battle'
+    )
 
-    awakens_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+', help_text='Unawakened form of this monster')
-    awakens_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='+', help_text='Awakened form of this monster')
     awaken_mats_fire_low = models.IntegerField(blank=True, default=0)
     awaken_mats_fire_mid = models.IntegerField(blank=True, default=0)
     awaken_mats_fire_high = models.IntegerField(blank=True, default=0)
@@ -229,7 +249,7 @@ class Monster(models.Model, base.Elements):
         return self
 
     def monster_family(self):
-        should_be_shown = Q(obtainable=True) | Q(transforms_into__isnull=False)
+        should_be_shown = Q(obtainable=True) | Q(transforms_to__isnull=False)
         has_awakened_version = Q(can_awaken=True) & Q(awakens_to__isnull=False)
         return Monster.objects.filter(should_be_shown, family_id=self.family_id).exclude(has_awakened_version).order_by('com2us_id')
 
@@ -375,6 +395,14 @@ class Monster(models.Model, base.Elements):
                 self.bestiary_slug = slugify(" ".join([str(self.com2us_id), self.element, self.name]))
 
         super(Monster, self).save(*args, **kwargs)
+
+        # Automatically set awakens from/to relationship if none exists
+        if self.awakens_from and self.awakens_from.awakens_to is not self:
+            self.awakens_from.awakens_to = self
+            self.awakens_from.save()
+        if self.awakens_to and self.awakens_to.awakens_from is not self:
+            self.awakens_to.awakens_from = self
+            self.awakens_to.save()
 
     class Meta:
         ordering = ['name', 'element']

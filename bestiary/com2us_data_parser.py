@@ -18,6 +18,7 @@ from bestiary.com2us_mapping import *
 from bestiary.parse.skills import _force_eval_ltr
 from .models import Skill, ScalingStat, CraftMaterial, MonsterCraftCost, HomunculusSkill, \
     HomunculusSkillCraftCost, Dungeon, SecretDungeon, Level
+from .models.monsters import AwakenBonusType
 
 
 def _decrypt(msg):
@@ -438,26 +439,7 @@ def parse_monster_data(preview=False):
                     print('Updated {} ({}) awakened version to {}'.format(monster, master_id, awakens_to_monster))
                     updated = True
 
-        # Awaken bonus text
-        if can_awaken:
-            if awakening_type == AwakenBonusType.STAT_BONUS:
-                # TODO: Create function to determine which stat and how much
-                raise NotImplementedError
-            elif awakening_type == AwakenBonusType.NEW_SKILL:
-                # TODO: Get skill name
-                awaken_bonus_desc = 'Gain new skill'
-            elif awakening_type == AwakenBonusType.LEADER_SKILL:
-                # TODO: Get leader skill definition
-                awaken_bonus_desc = 'Leader Skill'
-            elif awakening_type == AwakenBonusType.STRENGTHEN_SKILL:
-                # TODO: Get skill name
-                awaken_bonus_desc = 'Strengthen Skill'
-            elif awakening_type == AwakenBonusType.SECONDARY_AWAKENING:
-                awaken_bonus_desc = 'Secondary Awakening'
-            else:
-                raise ValueError(f'Unhandled Awakening Type: {awakening_type}')
-        else:
-            awaken_bonus_desc = ''
+        awaken_bonus_desc = ''
 
         if awaken_bonus_desc and monster.awaken_bonus != awaken_bonus_desc:
             monster.awaken_bonus = awaken_bonus_desc

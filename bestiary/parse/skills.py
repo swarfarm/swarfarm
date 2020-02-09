@@ -4,7 +4,8 @@ from numbers import Number
 
 from sympy import simplify
 
-from bestiary.models import Monster, Skill, SkillUpgrade, ScalingStat, HomunculusSkill
+from bestiary.models import Monster, Skill, SkillUpgrade, ScalingStat, HomunculusSkill, HomunculusSkillCraftCost, \
+    GameItem
 from bestiary.parse import game_data
 from .util import update_bestiary_obj
 
@@ -226,12 +227,22 @@ def postprocess_errata(master_id, skill, raw):
 def homonculus_skills():
     for master_id, raw in game_data.tables.HOMUNCULUS_SKILL_TREES.items():
         base_skill = Skill.objects.get(com2us_id=master_id)
-        skill, created = HomunculusSkill.objects.update_or_create(skill=base_skill)
+        homu_skill, created = HomunculusSkill.objects.update_or_create(skill=base_skill)
+        homu_skill.monsters.set(Monster.objects.filter(com2us_id__in=raw['unit master id']))
+        homu_skill.prerequisites.set(Skill.objects.filter(com2us_id__in=raw['prerequisite']))
 
-        if skill.mana_cost != raw['upgrade cost'][2]:
-            print(f'Updating mana_cost for {master_id} to {raw["upgrade cost"][2]}.')
-            skill.mana_cost = raw['upgrade cost'][2]
-            skill.save()
+        # Upgrade cost items
+        craft_cost_ids = []
+        all_materials = [raw['upgrade cost']] + raw['upgrade stuff']
+        for item_category, item_id, qty in all_materials:
+            obj, _ = HomunculusSkillCraftCost.objects.update_or_create(
+                skill=homu_skill,
+                item=GameItem.objects.get(category=item_category, com2us_id=item_id),
+                defaults={
+                    'quantity': qty,
+                }
+            )
+            craft_cost_ids.append(obj.pk)
 
-        skill.monsters.set(Monster.objects.filter(com2us_id__in=raw['unit master id']))
-        skill.prerequisites.set(Skill.objects.filter(com2us__id__in=raw['prerequisite']))
+        # Delete any no longer used
+        HomunculusSkillCraftCost.objects.filter(skill=homu_skill).exclude(pk__in=craft_cost_ids).delete()

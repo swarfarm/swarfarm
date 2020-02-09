@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.safestring import mark_safe
 
 from . import base
-from .items import CraftMaterial
+from .items import GameItem, ItemQuantity
 from .monsters import Monster
 
 
@@ -287,18 +287,21 @@ class ScalingStat(models.Model):
 class HomunculusSkill(models.Model):
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     monsters = models.ManyToManyField(Monster)
-    craft_materials = models.ManyToManyField('CraftMaterial', through='HomunculusSkillCraftCost', help_text='Crafting materials required to purchase')
-    mana_cost = models.IntegerField(default=0, help_text='Cost to purchase')
-    prerequisites = models.ManyToManyField(Skill, blank=True, related_name='homunculus_prereq', help_text='Skills which must be acquired first')
+    craft_materials = models.ManyToManyField(
+        GameItem,
+        through='HomunculusSkillCraftCost',
+        help_text='Crafting materials required to purchase'
+    )
+    prerequisites = models.ManyToManyField(
+        Skill,
+        blank=True,
+        related_name='homunculus_prereq',
+        help_text='Skills which must be acquired first'
+    )
 
     def __str__(self):
         return '{} ({})'.format(self.skill, self.skill.com2us_id)
 
 
-class HomunculusSkillCraftCost(models.Model):
+class HomunculusSkillCraftCost(ItemQuantity):
     skill = models.ForeignKey(HomunculusSkill, on_delete=models.CASCADE)
-    craft = models.ForeignKey(CraftMaterial, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-
-    def __str__(self):
-        return '{} - qty. {}'.format(self.craft.name, self.quantity)

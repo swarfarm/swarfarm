@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
 from . import base
-from .items import CraftMaterial, ItemQuantity
+from .items import GameItem, ItemQuantity
 
 
 class Monster(models.Model, base.Elements):
@@ -95,6 +95,7 @@ class Monster(models.Model, base.Elements):
         related_name='+',
         help_text='Unawakened form of this monster'
     )
+    awaken_cost = models.ManyToManyField(GameItem, through='AwakenCost', related_name='+')
 
     skills = models.ManyToManyField('Skill', blank=True)
     skill_ups_to_max = models.IntegerField(null=True, blank=True, help_text='Number of skill-ups required to max all skills')
@@ -123,7 +124,7 @@ class Monster(models.Model, base.Elements):
 
     # Homunculus monster fields
     homunculus = models.BooleanField(default=False)
-    craft_materials = models.ManyToManyField('CraftMaterial', through='MonsterCraftCost')
+    craft_materials = models.ManyToManyField(GameItem, through='MonsterCraftCost', related_name='+')
     craft_cost = models.IntegerField(null=True, blank=True, help_text='Mana cost to craft this monster')
 
     transforms_to = models.ForeignKey(
@@ -415,7 +416,7 @@ class Monster(models.Model, base.Elements):
 
 
 class AwakenCost(ItemQuantity):
-    monster = models.ForeignKey(Monster, on_delete=models.CASCADE, related_name='awaken_materials')
+    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
 
 
 class AwakenBonusType(IntEnum):
@@ -427,13 +428,8 @@ class AwakenBonusType(IntEnum):
     SECONDARY_AWAKENING = 6
 
 
-class MonsterCraftCost(models.Model):
+class MonsterCraftCost(ItemQuantity):
     monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
-    craft = models.ForeignKey(CraftMaterial, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-
-    def __str__(self):
-        return '{} - qty. {}'.format(self.craft.name, self.quantity)
 
 
 class Fusion(models.Model):

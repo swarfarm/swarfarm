@@ -1,4 +1,4 @@
-from bestiary.models import Monster, Skill, LeaderSkill, Elements, GameItem, Stats
+from bestiary.models import Monster, AwakenCost, MonsterCraftCost, Skill, LeaderSkill, Elements, GameItem, Stats
 from bestiary.models.monsters import AwakenBonusType
 from bestiary.parse import game_data
 
@@ -146,9 +146,10 @@ def monsters():
         monster.skills.set(Skill.objects.filter(com2us_id__in=raw['base skill']))
 
         # Awaken cost
-        awaken_cost_objs = []
+        awaken_obj_ids = []
         for item_id, qty in awaken_materials.items():
-            obj, created = monster.awaken_materials.update_or_create(
+            obj, _ = AwakenCost.objects.update_or_create(
+                monster=monster,
                 item=GameItem.objects.get(
                     category=GameItem.CATEGORY_ESSENCE,
                     com2us_id=item_id,
@@ -157,9 +158,9 @@ def monsters():
                     'quantity': qty,
                 }
             )
-            awaken_cost_objs.append(obj.pk)
+            awaken_obj_ids.append(obj.pk)
 
-        monster.awaken_materials.exclude(pk__in=awaken_cost_objs).delete()
+        AwakenCost.objects.filter(monster=monster).exclude(pk__in=awaken_obj_ids).delete()
 
         postprocess_errata(master_id, monster, raw)
 
@@ -224,3 +225,26 @@ def monster_relationships():
         }
 
         update_bestiary_obj(Monster, master_id, defaults)
+
+
+def monster_crafting():
+    for master_id, raw in game_data.tables.HOMUNCULUS_CRAFT_COSTS.items():
+        for monster_id in raw['unit master id']:
+            monster = Monster.objects.get(com2us_id=monster_id)
+
+            # Upgrade cost items
+            craft_cost_ids = []
+            all_materials = [raw['craft cost']] + raw['craft stuff']
+
+            for item_category, item_id, qty in all_materials:
+                obj, _ = MonsterCraftCost.objects.update_or_create(
+                    monster=monster,
+                    item=GameItem.objects.get(category=item_category, com2us_id=item_id),
+                    defaults={
+                        'quantity': qty,
+                    }
+                )
+                craft_cost_ids.append(obj.pk)
+
+            # Delete any no longer used
+            MonsterCraftCost.objects.filter(monster=monster).exclude(pk__in=craft_cost_ids).delete()

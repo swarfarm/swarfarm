@@ -33,7 +33,6 @@ class MonsterAdmin(admin.ModelAdmin):
                 'image_filename',
                 'homunculus',
                 'transforms_to',
-                'craft_cost',
             ),
         }),
         ('Awakening', {
@@ -126,7 +125,7 @@ class HomunculusSkillCraftCostInline(admin.TabularInline):
 
 @admin.register(HomunculusSkill)
 class HomunculusSkillAdmin(admin.ModelAdmin):
-    list_display = ['skill', 'mana_cost']
+    list_display = ['skill']
     filter_horizontal = ['monsters', 'prerequisites']
     inlines = (HomunculusSkillCraftCostInline,)
     save_as = True

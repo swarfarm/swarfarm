@@ -99,7 +99,7 @@ def _extract_scaling_stats(mult_formula):
             mult_formula = mult_formula.replace(stat.com2us_desc, f'{{{stat.stat}}}')
             scaling_stats.append(stat)
 
-    return scaling_stats
+    return scaling_stats, mult_formula
 
 
 def skills():
@@ -114,7 +114,7 @@ def skills():
             level_up_text += SkillUpgrade.UPGRADE_CHOICES[upgrade][1].format(amount) + '\n'
 
         multiplier_formula = _simplify_multiplier(raw['fun data'])
-        scaling_stats = _extract_scaling_stats(multiplier_formula)
+        scaling_stats, multiplier_formula = _extract_scaling_stats(multiplier_formula)
 
         defaults = {
             'name': game_data.strings.SKILL_NAMES.get(master_id, f'skill_{master_id}').strip(),

@@ -397,14 +397,6 @@ class Monster(models.Model, base.Elements):
 
         super(Monster, self).save(*args, **kwargs)
 
-        # Automatically set awakens from/to relationship if none exists
-        if self.awakens_from and self.awakens_from.awakens_to is not self:
-            self.awakens_from.awakens_to = self
-            self.awakens_from.save()
-        if self.awakens_to and self.awakens_to.awakens_from is not self:
-            self.awakens_to.awakens_from = self
-            self.awakens_to.save()
-
     class Meta:
         ordering = ['name', 'element']
 

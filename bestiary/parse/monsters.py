@@ -226,6 +226,12 @@ def monster_relationships():
 
         update_bestiary_obj(Monster, master_id, defaults)
 
+        # Ensure awakens_to monster has the correct awakens_from. Many entries awaken to
+        # same monster, particularly when transformations are involved, so this is explicitly
+        # set instead of using a reverse relationship.
+        if awakens_to:
+            update_bestiary_obj(Monster, awakens_to.com2us_id, {'awakens_from': monster})
+
 
 def monster_crafting():
     for master_id, raw in game_data.tables.HOMUNCULUS_CRAFT_COSTS.items():

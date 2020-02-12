@@ -5,6 +5,7 @@ from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
+from bestiary.models import SkillEffect
 from herders.decorators import username_case_redirect
 from herders.forms import AddTeamGroupForm, EditTeamGroupForm, DeleteTeamGroupForm, EditTeamForm
 from herders.models import Summoner, MonsterInstance, TeamGroup, Team
@@ -193,16 +194,22 @@ def team_detail(request, profile_name, team_id):
     team = get_object_or_404(Team, pk=team_id)
 
     team_effects = []
-    if team.leader and team.leader.monster.all_skill_effects():
-        for effect in team.leader.monster.all_skill_effects():
+    if team.leader:
+        effects = SkillEffect.objects.filter(
+            pk__in=team.leader.monster.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True)
+        )
+
+        for effect in effects:
             if effect not in team_effects:
                 team_effects.append(effect)
 
     for team_member in team.roster.all():
-        if team_member.monster.all_skill_effects():
-            for effect in team_member.monster.all_skill_effects():
-                if effect not in team_effects:
-                    team_effects.append(effect)
+        effects = SkillEffect.objects.filter(
+            pk__in=team_member.monster.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True)
+        )
+        for effect in effects:
+            if effect not in team_effects:
+                team_effects.append(effect)
 
     context = {
         'view': 'teams',

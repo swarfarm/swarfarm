@@ -14,7 +14,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'homunculusskill_set',
         'source',
         'monstercraftcost_set',
-        'monstercraftcost_set__craft',
+        'monstercraftcost_set__item',
     ).order_by('pk')
     serializer_class = serializers.MonsterSerializer
     pagination_class = pagination.BestiarySetPagination
@@ -95,7 +95,7 @@ class HomunculusSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'skill__skilleffectdetail_set',
         'skill__skilleffectdetail_set__effect',
         'homunculusskillcraftcost_set',
-        'homunculusskillcraftcost_set__craft',
+        'homunculusskillcraftcost_set__item',
         'prerequisites',
         'monsters',
     )
@@ -103,9 +103,9 @@ class HomunculusSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     pagination_class = pagination.BestiarySetPagination
 
 
-class CraftMaterialViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = models.CraftMaterial.objects.all().order_by('pk')
-    serializer_class = serializers.CraftMaterialSerializer
+class GameItemViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = models.GameItem.objects.all()
+    serializer_class = serializers.GameItemSerializer
     pagination_class = pagination.BestiarySetPagination
 
 

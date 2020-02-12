@@ -25,10 +25,10 @@
         <div class="panel panel-default monster-info-panel">
             <table class="table table-condensed table-bordered">
                 <tbody>
-                {% if monster.transforms_into %}
+                {% if monster.transforms_to %}
                     <tr>
                         <td>Transforms Into</td>
-                        <td><a href="{% url 'bestiary:detail' monster_slug=monster.transforms_into.bestiary_slug  %}"><img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ monster.transforms_into.image_filename }}" /> {{ monster.transforms_into }}</a></td>
+                        <td><a href="{% url 'bestiary:detail' monster_slug=monster.transforms_to.bestiary_slug  %}"><img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ monster.transforms_to.image_filename }}" /> {{ monster.transforms_to }}</a></td>
                     </tr>
                 {% endif %}
                 <tr>

@@ -1,17 +1,11 @@
 from rest_framework import serializers
 
-from bestiary.models import Monster, Skill, LeaderSkill, SkillEffect, ScalingStat, Source, CraftMaterial, \
+from bestiary.models import Monster, Skill, LeaderSkill, SkillEffect, ScalingStat, Source, \
     HomunculusSkillCraftCost, HomunculusSkill
 from herders.models import MonsterTag, RuneInstance, TeamGroup, Team, MonsterInstance, Summoner
 
 
 # Read-only monster database stuff.
-class CraftMaterialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CraftMaterial
-        fields = ['name', 'icon_filename']
-
-
 class MonsterSourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source

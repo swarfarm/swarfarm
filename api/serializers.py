@@ -70,7 +70,7 @@ class HomunculusSkillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HomunculusSkill
-        fields = ['skill', 'craft_materials', 'mana_cost', 'prerequisites',]
+        fields = ['skill', 'craft_materials', 'prerequisites']
 
 
 # Small serializer for necessary info for awakens_from/to on main MonsterSerializer

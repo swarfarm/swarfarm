@@ -52,11 +52,15 @@ function AwakenMonster(instance_id) {
             type: 'get',
             url: '/profile/' + PROFILE_NAME + '/monster/awaken/' + instance_id + '/'
         }).done(function(result) {
-            bootbox.dialog({
-                title: 'Awaken Monster',
-                message: result.html
-            });
-            $('.rating').rating();
+            if(result.code === 'success') {
+                update_monster_inventory();
+            } else {
+                bootbox.dialog({
+                    title: 'Awaken Monster',
+                    message: result.html
+                });
+                $('.rating').rating();
+            }
         });
     }
 }

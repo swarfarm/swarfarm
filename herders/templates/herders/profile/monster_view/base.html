@@ -21,7 +21,7 @@
             <li><a class="monster-edit" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-edit"></span> Edit</a></li>
             <li><a class="monster-copy" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-copy"></span> Copy</a></li>
             <li><a class="monster-power-up" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-arrow-up"></span> Power Up</a></li>
-            {% if not instance.monster.is_awakened and instance.monster.can_awaken %}
+            {% if instance.monster.awakens_to is not None %}
                 <li><a class="monster-awaken" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-star" style="color:purple"></span> Awaken</a></li>
             {% endif %}
             <li><a class="monster-delete" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-trash text-danger"></span> Delete</a></li>

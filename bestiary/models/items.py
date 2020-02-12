@@ -7,24 +7,6 @@ from django.utils.text import slugify
 from . import base
 
 
-class CraftMaterial(models.Model):
-    # To be deleted, use GameItem instead
-    com2us_id = models.IntegerField()
-    name = models.CharField(max_length=40)
-    icon_filename = models.CharField(max_length=100, null=True, blank=True)
-    sell_value = models.IntegerField(blank=True, null=True)
-    source = models.ManyToManyField('Source', blank=True)
-
-    def image_url(self):
-        if self.icon_filename:
-            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/items/craft_material_' + self.icon_filename))
-        else:
-            return 'No Image'
-
-    def __str__(self):
-        return self.name
-
-
 class GameItem(models.Model):
     CATEGORY_MONSTER = 1
     CATEGORY_CURRENCY = 6
@@ -88,7 +70,7 @@ class GameItem(models.Model):
 
 class ItemQuantity(models.Model):
     # Abstract model for representing quantities of items for various purposes
-    item = models.ForeignKey('GameItem', on_delete=models.CASCADE)
+    item = models.ForeignKey(GameItem, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
     def __str__(self):

@@ -5,7 +5,7 @@ from django_select2.forms import Select2Widget
 
 from .models import Monster, Skill, SkillUpgrade, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, \
     HomunculusSkillCraftCost, HomunculusSkill, LeaderSkill, SkillEffect, ScalingStat, \
-    Source, Fusion, Building, CraftMaterial, GameItem, AwakenCost
+    Source, Fusion, Building, GameItem, AwakenCost
 
 
 class MonsterCraftCostInline(admin.TabularInline):
@@ -166,13 +166,6 @@ class FusionAdmin(admin.ModelAdmin):
 @admin.register(Building)
 class BuildingAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'com2us_id', 'affected_stat', 'area')
-    save_as = True
-
-
-@admin.register(CraftMaterial)
-class CraftMaterialAdmin(admin.ModelAdmin):
-    list_display = ('image_url', '__str__')
-    filter_horizontal = ['source',]
     save_as = True
 
 

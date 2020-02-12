@@ -3,15 +3,29 @@ from rest_framework import serializers
 from bestiary import models
 
 
-class CraftMaterialSerializer(serializers.ModelSerializer):
+class GameItemSerializer(serializers.ModelSerializer):
+    category = serializers.SerializerMethodField()
+
     class Meta:
-        model = models.CraftMaterial
-        fields = ['id', 'url', 'name', 'icon_filename']
+        model = models.GameItem
+        fields = [
+            'id',
+            'com2us_id',
+            'url',
+            'name',
+            'category',
+            'icon',
+            'description',
+            'sell_value',
+        ]
         extra_kwargs = {
             'url': {
-                'view_name': 'bestiary/craft-materials-detail',
+                'view_name': 'bestiary/items-detail',
             },
         }
+
+    def get_category(self, instance):
+        return instance.get_category_display()
 
 
 class SourceSerializer(serializers.ModelSerializer):
@@ -111,11 +125,11 @@ class LeaderSkillSerializer(serializers.ModelSerializer):
 
 
 class HomunculusSkillCraftCostSerializer(serializers.ModelSerializer):
-    material = CraftMaterialSerializer(source='craft', read_only=True)
+    item = GameItemSerializer(read_only=True)
 
     class Meta:
         model = models.HomunculusSkillCraftCost
-        fields = ['material', 'quantity']
+        fields = ['item', 'quantity']
 
 
 class HomunculusSkillSerializer(serializers.ModelSerializer):
@@ -124,7 +138,7 @@ class HomunculusSkillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.HomunculusSkill
-        fields = ['id', 'url', 'skill', 'craft_materials', 'mana_cost', 'prerequisites', 'used_on']
+        fields = ['id', 'url', 'skill', 'craft_materials', 'prerequisites', 'used_on']
         extra_kwargs = {
             'url': {
                 'view_name': 'bestiary/homunculus-skills-detail',
@@ -133,11 +147,19 @@ class HomunculusSkillSerializer(serializers.ModelSerializer):
 
 
 class MonsterCraftCostSerializer(serializers.ModelSerializer):
-    material = CraftMaterialSerializer(source='craft', read_only=True)
+    item = GameItemSerializer(read_only=True)
 
     class Meta:
         model = models.MonsterCraftCost
-        fields = ['material', 'quantity']
+        fields = ['item', 'quantity']
+
+
+class AwakenCostSerializer(serializers.ModelSerializer):
+    item = GameItemSerializer(read_only=True)
+
+    class Meta:
+        model = models.AwakenCost
+        fields = ['item', 'quantity']
 
 
 class MonsterSerializer(serializers.ModelSerializer):
@@ -146,6 +168,7 @@ class MonsterSerializer(serializers.ModelSerializer):
     archetype = serializers.SerializerMethodField()
     source = SourceSerializer(many=True, read_only=True)
     leader_skill = LeaderSkillSerializer(read_only=True)
+    awaken_cost = AwakenCostSerializer(source='awakencost_set', many=True, read_only=True)
     homunculus_skills = serializers.PrimaryKeyRelatedField(source='homunculusskill_set', read_only=True, many=True)
     craft_materials = MonsterCraftCostSerializer(many=True, source='monstercraftcost_set', read_only=True)
 
@@ -158,13 +181,7 @@ class MonsterSerializer(serializers.ModelSerializer):
             'skills', 'skill_ups_to_max', 'leader_skill', 'homunculus_skills',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
             'raw_hp', 'raw_attack', 'raw_defense', 'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',
-            'awakens_from', 'awakens_to',
-            'awaken_mats_fire_low', 'awaken_mats_fire_mid', 'awaken_mats_fire_high',
-            'awaken_mats_water_low', 'awaken_mats_water_mid', 'awaken_mats_water_high',
-            'awaken_mats_wind_low', 'awaken_mats_wind_mid', 'awaken_mats_wind_high',
-            'awaken_mats_light_low', 'awaken_mats_light_mid', 'awaken_mats_light_high',
-            'awaken_mats_dark_low', 'awaken_mats_dark_mid', 'awaken_mats_dark_high',
-            'awaken_mats_magic_low', 'awaken_mats_magic_mid', 'awaken_mats_magic_high',
+            'awakens_from', 'awakens_to', 'awaken_cost',
             'source', 'fusion_food',
             'homunculus', 'craft_cost', 'craft_materials',
         )

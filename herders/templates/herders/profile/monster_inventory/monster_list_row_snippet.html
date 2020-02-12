@@ -172,7 +172,7 @@
                 <button class="btn btn-link btn-xs monster-copy" data-instance-id="{{ instance.pk.hex }}">
                     <span class="glyphicon glyphicon-copy" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Copy"></span>
                 </button>
-                {% if not instance.monster.is_awakened and instance.monster.can_awaken %}
+                {% if instance.monster.awakens_to is not None %}
                 <button class="btn btn-link btn-xs monster-awaken" data-instance-id="{{ instance.pk.hex }}">
                     <span class="glyphicon glyphicon-star" style="color:purple" data-toggle="tooltip" data-placement="top" title="Awaken"></span>
                 </button>

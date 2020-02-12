@@ -738,34 +738,9 @@ def monster_instance_awaken(request, profile_name, instance_id):
     form.helper.form_action = reverse('herders:monster_instance_awaken', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
 
     if is_owner:
-        if not monster.monster.is_awakened:
-            if request.method == 'POST' and form.is_valid():
-                # Subtract essences from inventory if requested
-                if form.cleaned_data['subtract_materials']:
-                    summoner = Summoner.objects.get(user=request.user)
-
-                    summoner.storage.magic_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_magic_high
-                    summoner.storage.magic_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_magic_mid
-                    summoner.storage.magic_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_magic_low
-                    summoner.storage.fire_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_fire_high
-                    summoner.storage.fire_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_fire_mid
-                    summoner.storage.fire_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_fire_low
-                    summoner.storage.water_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_water_high
-                    summoner.storage.water_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_water_mid
-                    summoner.storage.water_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_water_low
-                    summoner.storage.wind_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_wind_high
-                    summoner.storage.wind_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_wind_mid
-                    summoner.storage.wind_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_wind_low
-                    summoner.storage.dark_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_dark_high
-                    summoner.storage.dark_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_dark_mid
-                    summoner.storage.dark_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_dark_low
-                    summoner.storage.light_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_light_high
-                    summoner.storage.light_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_light_mid
-                    summoner.storage.light_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_light_low
-
-                    summoner.storage.save()
-
-                # Perform the awakening by instance's monster source ID
+        if monster.monster.awakens_to is not None:
+            if monster.monster.awakens_to.awaken_level == Monster.AWAKEN_LEVEL_SECOND:
+                # Just do it without messing with essence storage
                 monster.monster = monster.monster.awakens_to
                 monster.save()
 
@@ -773,31 +748,67 @@ def monster_instance_awaken(request, profile_name, instance_id):
                     'code': 'success',
                     'removeElement': '#awakenMonsterButton',
                 }
-
             else:
-                storage = summoner.storage.get_storage()
-                available_essences = OrderedDict()
+                # Display form confirming essences subtracted
+                if request.method == 'POST' and form.is_valid():
+                    # Subtract essences from inventory if requested
+                    if form.cleaned_data['subtract_materials']:
+                        summoner = Summoner.objects.get(user=request.user)
 
-                for element, essences in monster.monster.get_awakening_materials().items():
-                    available_essences[element] = OrderedDict()
-                    for size, cost in essences.items():
-                        if cost > 0:
-                            available_essences[element][size] = {
-                                'qty': storage[element][size],
-                                'sufficient': storage[element][size] >= cost,
-                            }
+                        summoner.storage.magic_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_magic_high
+                        summoner.storage.magic_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_magic_mid
+                        summoner.storage.magic_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_magic_low
+                        summoner.storage.fire_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_fire_high
+                        summoner.storage.fire_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_fire_mid
+                        summoner.storage.fire_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_fire_low
+                        summoner.storage.water_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_water_high
+                        summoner.storage.water_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_water_mid
+                        summoner.storage.water_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_water_low
+                        summoner.storage.wind_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_wind_high
+                        summoner.storage.wind_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_wind_mid
+                        summoner.storage.wind_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_wind_low
+                        summoner.storage.dark_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_dark_high
+                        summoner.storage.dark_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_dark_mid
+                        summoner.storage.dark_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_dark_low
+                        summoner.storage.light_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_light_high
+                        summoner.storage.light_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_light_mid
+                        summoner.storage.light_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_light_low
 
-                context = {
-                    'awaken_form': form,
-                    'available_essences': available_essences,
-                    'instance': monster,
-                }
-                context.update(csrf(request))
+                        summoner.storage.save()
 
-                response_data = {
-                    'code': 'error',
-                    'html': template.render(context)
-                }
+                    # Perform the awakening by instance's monster source ID
+                    monster.monster = monster.monster.awakens_to
+                    monster.save()
+
+                    response_data = {
+                        'code': 'success',
+                        'removeElement': '#awakenMonsterButton',
+                    }
+                else:
+                    storage = summoner.storage.get_storage()
+                    available_essences = OrderedDict()
+
+                    for element, essences in monster.monster.get_awakening_materials().items():
+                        available_essences[element] = OrderedDict()
+                        for size, cost in essences.items():
+                            if cost > 0:
+                                available_essences[element][size] = {
+                                    'qty': storage[element][size],
+                                    'sufficient': storage[element][size] >= cost,
+                                }
+
+                    context = {
+                        'code': 'confirm',
+                        'awaken_form': form,
+                        'available_essences': available_essences,
+                        'instance': monster,
+                    }
+                    context.update(csrf(request))
+
+                    response_data = {
+                        'code': 'error',
+                        'html': template.render(context)
+                    }
         else:
             error_template = loader.get_template('herders/profile/monster_already_awakened.html')
             response_data = {

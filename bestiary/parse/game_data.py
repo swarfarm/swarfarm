@@ -1,5 +1,6 @@
 import base64
 import binascii
+import csv
 import json
 import zlib
 
@@ -181,7 +182,7 @@ class _LocalValueData:
             _LocalValueData._tables[key] = {}
             for row_string in entire_table[1:]:
                 row = row_string.split('\t')
-                row_key = json.loads(row[0])
+                row_key = try_json(row[0])
                 _LocalValueData._tables[key][row_key] = {
                     column_headers[col]: try_json(value) for col, value in enumerate(row)
                     # column_headers[col]: json.loads(value) for col, value in enumerate(row)
@@ -230,7 +231,6 @@ class _Strings:
     filename = 'bestiary/parse/com2us_data/text_eng.dat'
     version = None
     _tables = []
-    _num_tables = 0
 
     def __init__(self, *args, **kwargs):
         if not _Strings._tables:
@@ -263,7 +263,7 @@ class _Strings:
         return _Strings._tables[key]
 
     def __len__(self):
-        return _Strings._num_tables
+        return len(_Strings._tables)
 
     @staticmethod
     def _get_file():
@@ -272,3 +272,21 @@ class _Strings:
 
 tables = _LocalValueData()
 strings = _Strings()
+
+
+def save_to_disk():
+    for x in range(1, len(tables) + 1):
+        tbl = tables[x]
+        with open(f'bestiary/parse/com2us_data/localvalue_{x}.csv', 'w', encoding='utf-8', newline='') as f:
+            keys = tbl[list(tbl.keys())[0]].keys()
+            writer = csv.DictWriter(f, fieldnames=keys)
+            writer.writeheader()
+            for row in tbl.values():
+                writer.writerow(row)
+
+    with open('bestiary/parse/com2us_data/text_eng.csv', 'w', encoding='utf-8', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['table_num', 'id', 'text'])
+        for table_idx in range(len(strings)):
+            for key, text in strings[table_idx].items():
+                writer.writerow([table_idx, key, text.strip()])

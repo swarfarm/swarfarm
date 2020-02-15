@@ -37,6 +37,47 @@ def scenarios():
             print(f'Added new level for {dungeon} - {level}')
 
 
+def dimensional_hole():
+    for dungeon_id, raw in game_data.tables.DIMENSIONAL_HOLE_DUNGEONS.items():
+        dungeon_name = game_data.strings.DIMENSIONAL_HOLE_DUNGEON_NAMES[raw['dimension id'] * 10 + raw['dungeon type']]
+        if raw['dungeon type'] == 2:
+            # 2A dungeon - append monster name to dungeon name
+            monster = Monster.objects.get(com2us_id=raw['limit text unitid'])
+            dungeon_name += f' - {monster.name}'
+
+        dungeon, created = Dungeon.objects.update_or_create(
+            com2us_id=dungeon_id,
+            category=Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+            defaults={
+                'name': dungeon_name,
+                'enabled': bool(raw['enable']),
+                'icon': Monster.objects.get(com2us_id=raw['thumbnail iid']).image_filename,
+            }
+        )
+
+        if created:
+            print(f'Added new dungeon {dungeon}')
+
+        level_ids = []
+        for difficulty in range(len(raw['boss unit id'])):
+            level, created = Level.objects.update_or_create(
+                dungeon=dungeon,
+                floor=difficulty + 1,
+                defaults={
+                    'energy_cost': 1,
+                    'frontline_slots': 4,
+                    'backline_slots': None,
+                    'total_slots': 4,
+                }
+            )
+            level_ids.append(level.pk)
+
+            if created:
+                print(f'Added new level for {dungeon} - {level}')
+
+        Level.objects.filter(dungeon=dungeon).exclude(pk__in=level_ids).delete()
+
+
 def rift_raids():
     for master_id, raw in game_data.tables.RIFT_RAIDS.items():
         dungeon, created = Dungeon.objects.update_or_create(

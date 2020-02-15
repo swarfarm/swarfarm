@@ -178,6 +178,7 @@ class LevelInline(admin.TabularInline):
 @admin.register(Dungeon)
 class DungeonAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'com2us_id')
+    list_filter = ('enabled', 'category')
     readonly_fields = ('slug', )
     inlines = (
         LevelInline,

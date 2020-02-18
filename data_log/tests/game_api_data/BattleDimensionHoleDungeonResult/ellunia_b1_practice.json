@@ -1,0 +1,153 @@
+{
+  "data": {
+    "request": {
+      "command": "BattleDimensionHoleDungeonResult",
+      "wizard_id": 123,
+      "session_key": "abc123",
+      "proto_ver": 11601,
+      "infocsv": "4.01.70",
+      "channel_uid": 144237507,
+      "ts_val": 1113803117,
+      "battle_key": 1582059429,
+      "win_lose": 1,
+      "unit_id_list": [
+        {
+          "unit_id": 5091057153,
+          "is_leader": 1
+        },
+        {
+          "unit_id": 3788196826,
+          "is_leader": 0
+        },
+        {
+          "unit_id": 7247872051,
+          "is_leader": 0
+        },
+        {
+          "unit_id": 3068447167,
+          "is_leader": 0
+        }
+      ],
+      "dungeon_units_status": [
+        {
+          "unit_id": 1,
+          "result": 2
+        },
+        {
+          "unit_id": 2,
+          "result": 2
+        },
+        {
+          "unit_id": 3,
+          "result": 2
+        },
+        {
+          "unit_id": 4,
+          "result": 2
+        },
+        {
+          "unit_id": 5,
+          "result": 2
+        },
+        {
+          "unit_id": 6,
+          "result": 2
+        },
+        {
+          "unit_id": 7,
+          "result": 2
+        },
+        {
+          "unit_id": 8,
+          "result": 2
+        },
+        {
+          "unit_id": 9,
+          "result": 2
+        },
+        {
+          "unit_id": 10,
+          "result": 2
+        },
+        {
+          "unit_id": 11,
+          "result": 2
+        },
+        {
+          "unit_id": 12,
+          "result": 2
+        }
+      ],
+      "island_id": 3,
+      "pos_x": 10,
+      "pos_y": 19,
+      "clear_time": 65038,
+      "auto_clear": 1,
+      "play_speed": 3,
+      "retry": 0,
+      "leader_exist": 1,
+      "is_rooting": 0
+    },
+    "response": {
+      "command": "BattleDimensionHoleDungeonResult",
+      "ret_code": 0,
+      "wizard_info": {
+        "wizard_id": 123,
+        "wizard_name": "fakeuser",
+        "wizard_mana": 10314598,
+        "wizard_crystal": 4855,
+        "wizard_crystal_paid": 0,
+        "wizard_last_login": "2020-02-19 05:55:57",
+        "wizard_last_country": "US",
+        "wizard_last_lang": "en",
+        "wizard_level": 50,
+        "experience": 3800000,
+        "wizard_energy": 3283,
+        "energy_max": 90,
+        "energy_per_min": 0.26,
+        "next_energy_gain": 0,
+        "arena_energy": 15,
+        "arena_energy_max": 10,
+        "arena_energy_next_gain": 0,
+        "unit_slots": {
+          "number": 120
+        },
+        "rep_unit_id": 3788196826,
+        "rep_assigned": 1,
+        "pvp_event": 0,
+        "mail_box_event": 0,
+        "social_point_current": 880,
+        "social_point_max": 3000,
+        "honor_point": 280,
+        "guild_point": 2714,
+        "darkportal_energy": 10,
+        "darkportal_energy_max": 10,
+        "costume_point": 157,
+        "costume_point_max": 9999,
+        "honor_medal": 0,
+        "honor_mark": 0,
+        "event_coin": 0,
+        "lobby_master_id": 1001,
+        "emblem_master_id": 0,
+        "period_energy_max": 0
+      },
+      "dungeon_id": 1202,
+      "difficulty": 1,
+      "win_lose": 1,
+      "clear_time": {
+        "is_new_record": 0,
+        "current_time": 65038,
+        "best_time": 0
+      },
+      "first_clear": 0,
+      "unit_list": [],
+      "reward": [],
+      "clear_bonus": [],
+      "practice_mode": 1,
+      "ts_val": 1113803127,
+      "tvalue": 1582059519,
+      "tvaluelocal": 1581998319,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

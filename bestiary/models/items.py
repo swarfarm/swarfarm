@@ -39,7 +39,7 @@ class GameItem(models.Model):
     category = models.IntegerField(choices=CATEGORY_CHOICES, help_text='Typically corresponds to `item_master_id` field')
     name = models.CharField(max_length=200)
     icon = models.CharField(max_length=200, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, default='')
     slug = models.CharField(max_length=200)
     sell_value = models.IntegerField(blank=True, null=True)
 

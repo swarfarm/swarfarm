@@ -38,8 +38,9 @@ com2us_decrypt_values = [
 ]
 
 
-def decrypt_images():
-    for im_path in iglob('herders/static/herders/images/**/*.png', recursive=True):
+def decrypt_images(**kwargs):
+    path = kwargs.pop('path', 'herders/static/herders/images')
+    for im_path in iglob(f'{path}/**/*.png', recursive=True):
         encrypted = BitStream(filename=im_path)
 
         # Check if it is 'encrypted'. 8th byte is 0x0B instead of the correct signature 0x0A
@@ -73,5 +74,8 @@ def decrypt_images():
             del encrypted[0:16 * 8]
 
             # Open it as a jpg and resave to disk
-            new_imfile = Image.open(io.BytesIO(encrypted.tobytes()))
-            new_imfile.save(im_path)
+            try:
+                new_imfile = Image.open(io.BytesIO(encrypted.tobytes()))
+                new_imfile.save(im_path)
+            except IOError:
+                print(f'Unable to open {im_path}')

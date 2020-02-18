@@ -342,13 +342,7 @@ def parse_rune_data(rune_data, owner):
         rune.ancient = True
     rune.stars = stars
     rune.level = rune_data.get('upgrade_curr')
-    original_quality = rune_data.get('extra')
-
-    if original_quality:
-        if original_quality > 10:
-            original_quality -= 10
-
-        rune.original_quality = RuneInstance.COM2US_QUALITY_MAP[original_quality]
+    rune.original_quality = RuneInstance.COM2US_QUALITY_MAP.get(rune_data.get('extra'))
 
     # Rune stats
     main_stat = rune_data.get('pri_eff')

@@ -177,6 +177,13 @@ class RuneDrop(Rune):
 
     @classmethod
     def parse(cls, **rune_data):
+        if rune_data['class'] > 10:
+            stars = rune_data['class'] - 10
+            ancient = True
+        else:
+            stars = rune_data['class']
+            ancient = False
+
         rune_set = cls.COM2US_TYPE_MAP[rune_data['set_id']]
         original_quality = cls.COM2US_QUALITY_MAP[rune_data['extra']]
         main_stat = cls.COM2US_STAT_MAP[rune_data['pri_eff'][0]]
@@ -193,7 +200,8 @@ class RuneDrop(Rune):
 
         return cls(
             type=rune_set,
-            stars=rune_data['class'],
+            stars=stars,
+            ancient=ancient,
             level=rune_data['upgrade_curr'],
             slot=rune_data['slot_no'],
             original_quality=original_quality,
@@ -687,38 +695,93 @@ class DungeonLog(LogEntry):
             sd_reward.log = log_entry
             sd_reward.save()
 
-    def parse_rewards(self, rewards):
-        for key, val in rewards.items():
-            reward = None
+    @classmethod
+    def parse_dimension_hole_result(cls, summoner, log_data):
+        if log_data['response']['practice_mode']:
+            # Don't parse practice modes
+            return
 
+        dungeon_id = log_data['response']['dungeon_id']
+        floor = log_data['response']['difficulty']
+
+        log_entry = cls(summoner=summoner)
+        log_entry.parse_common_log_data(log_data)
+        try:
+            log_entry.level = Level.objects.get(
+                dungeon__category=Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+                dungeon__com2us_id=dungeon_id,
+                floor=floor,
+            )
+        except Level.DoesNotExist:
+            # Create a placeholder level for later updating
+            try:
+                d = Dungeon.objects.get(category=Dungeon.CATEGORY_CAIROS, com2us_id=dungeon_id)
+            except Dungeon.DoesNotExist:
+                # Create the dungeon
+                d = Dungeon.objects.create(
+                    com2us_id=dungeon_id,
+                    enabled=False,
+                    name='UNKNOWN DUNGEON',
+                    category=Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+                )
+
+            # Create the level
+            log_entry.level = Level.objects.create(
+                dungeon=d,
+                floor=floor,
+            )
+            mail_admins('New Level Created', f'New level {floor} created in dungeon com2us ID {dungeon_id}.')
+
+        log_entry.success = log_data['request']['win_lose'] == 1
+        log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
+        log_entry.save()
+        log_entry.parse_rewards(log_data['response']['reward'])
+
+    def parse_rewards(self, rewards):
+        if not rewards:
+            # If there are no rewards, it's an empty list. Exit early since later code assumes rewards is a dict
+            return
+
+        # Parse each reward
+        reward_objs = []
+        for key, val in rewards.items():
             if key == 'crate':
                 # Recurse with crate contents
                 self.parse_rewards(val)
+            elif key in DungeonItemDrop.PARSE_KEYS:
+                reward_objs.append(DungeonItemDrop.parse(key=key, val=val))
             elif isinstance(val, dict):
                 if 'item_master_type' in val:
                     # Parse by master type
                     if val['item_master_type'] in DungeonItemDrop.PARSE_ITEM_TYPES:
-                        reward = DungeonItemDrop.parse(**val)
+                        reward_objs.append(DungeonItemDrop.parse(**val))
                 elif key == 'rune':
-                    reward = DungeonRuneDrop.parse(**val)
+                    reward_objs.append(DungeonRuneDrop.parse(**val))
                 elif key == 'unit_info':
-                    reward = DungeonMonsterDrop.parse(**val)
+                    reward_objs.append(DungeonMonsterDrop.parse(**val))
                 elif key == 'material':
-                    reward = DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_ESSENCE, **val})
+                    reward_objs.append(DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_ESSENCE, **val}))
                 elif key == 'random_scroll':
-                    reward = DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_SUMMON_SCROLL, **val})
+                    reward_objs.append(DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_SUMMON_SCROLL, **val}))
+                elif key == 'changestones':
+                    reward_objs.append(DungeonRuneCraftDrop.parse(**val))
                 else:
                     raise ValueError(f"don't know how to parse {key} reward in {self.__class__.__name__}")
-
-            elif key in DungeonItemDrop.PARSE_KEYS:
-                reward = DungeonItemDrop.parse(key=key, val=val)
-            elif key == 'event_crate':
-                # Don't care, skip it
-                continue
+            elif isinstance(val, list):
+                if key == 'changestones':
+                    for craft_data in val:
+                        reward_objs.append(DungeonRuneCraftDrop.parse(**craft_data))
+                elif key == 'event_crate':
+                    # Don't care, skip it
+                    continue
+                else:
+                    raise ValueError(f"don't know how to parse array of {key} reward in {self.__class__.__name__}")
             else:
                 ValueError(f"don't know how to parse {key} reward in {self.__class__.__name__}")
 
-            if reward:
+        # Save parsed rewards
+        for reward in reward_objs:
+            if reward is not None:
                 reward.log = self
                 reward.save()
 
@@ -737,6 +800,10 @@ class DungeonMonsterPieceDrop(MonsterPieceDrop):
 
 class DungeonRuneDrop(RuneDrop):
     log = models.ForeignKey(DungeonLog, on_delete=models.CASCADE, related_name=RuneDrop.RELATED_NAME)
+
+
+class DungeonRuneCraftDrop(RuneCraftDrop):
+    log = models.ForeignKey(DungeonLog, on_delete=models.CASCADE, related_name=RuneCraftDrop.RELATED_NAME)
 
 
 class DungeonSecretDungeonDropManager(models.Manager):

@@ -26,4 +26,19 @@ class Command(BaseCommand):
         self.stdout.write('Parsing monster crafting data...')
         parse.monster_crafting()
 
+        self.stdout.write('Parsing scenario data...')
+        parse.scenarios()
+
+        self.stdout.write('Parsing rift raid data...')
+        parse.rift_raids()
+
+        self.stdout.write('Parsing elemental rift beast data...')
+        parse.elemental_rifts()
+
+        self.stdout.write('Parsing secret dungeon data...')
+        parse.secret_dungeons()
+
+        self.stdout.writ('Parsing craft materials...')
+        parse.craft_materials()
+
         self.stdout.write(self.style.SUCCESS('Done!'))

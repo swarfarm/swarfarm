@@ -135,4 +135,11 @@ class Quality:
         3: QUALITY_RARE,
         4: QUALITY_HERO,
         5: QUALITY_LEGEND,
+
+        # Original quality values
+        11: QUALITY_NORMAL,
+        12: QUALITY_MAGIC,
+        13: QUALITY_RARE,
+        14: QUALITY_HERO,
+        15: QUALITY_LEGEND,
     }

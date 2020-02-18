@@ -1,8 +1,7 @@
 import json
 import random
 
-from bestiary.com2us_mapping import building_id_map
-from herders.models import MonsterInstance, BuildingInstance, RuneInstance, RuneCraftInstance
+from herders.models import MonsterInstance, BuildingInstance
 from .rune_optimizer_mapping import *
 
 
@@ -11,7 +10,7 @@ def export_win10(summoner):
     storage_bldg_id = 1234567890
     buildings = [
         {
-            'building_master_id': building_id_map['monster_storage'],
+            'building_master_id': 25,
             'building_id': storage_bldg_id,
         }
     ]

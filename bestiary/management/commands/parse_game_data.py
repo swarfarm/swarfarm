@@ -38,7 +38,7 @@ class Command(BaseCommand):
         self.stdout.write('Parsing secret dungeon data...')
         parse.secret_dungeons()
 
-        self.stdout.writ('Parsing craft materials...')
+        self.stdout.write('Parsing craft materials...')
         parse.craft_materials()
 
         self.stdout.write(self.style.SUCCESS('Done!'))

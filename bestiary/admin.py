@@ -189,3 +189,4 @@ class DungeonAdmin(admin.ModelAdmin):
 @admin.register(GameItem)
 class GameItemAdmin(admin.ModelAdmin):
     list_display = ('image_tag', 'com2us_id', 'category', 'name', 'sell_value')
+    list_filter = ('category', )

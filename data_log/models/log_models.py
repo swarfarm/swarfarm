@@ -177,6 +177,13 @@ class RuneDrop(Rune):
 
     @classmethod
     def parse(cls, **rune_data):
+        if rune_data['class'] > 10:
+            stars = rune_data['class'] - 10
+            ancient = True
+        else:
+            stars = rune_data['class']
+            ancient = False
+
         rune_set = cls.COM2US_TYPE_MAP[rune_data['set_id']]
         original_quality = cls.COM2US_QUALITY_MAP[rune_data['extra']]
         main_stat = cls.COM2US_STAT_MAP[rune_data['pri_eff'][0]]
@@ -193,7 +200,8 @@ class RuneDrop(Rune):
 
         return cls(
             type=rune_set,
-            stars=rune_data['class'],
+            stars=stars,
+            ancient=ancient,
             level=rune_data['upgrade_curr'],
             slot=rune_data['slot_no'],
             original_quality=original_quality,
@@ -686,6 +694,48 @@ class DungeonLog(LogEntry):
             sd_reward = DungeonSecretDungeonDrop.parse(sd_info)
             sd_reward.log = log_entry
             sd_reward.save()
+
+    @classmethod
+    def parse_dimension_hole_result(cls, summoner, log_data):
+        if log_data['response']['practice_mode']:
+            # Don't parse practice modes
+            return
+
+        dungeon_id = log_data['response']['dungeon_id']
+        floor = log_data['response']['difficulty']
+
+        log_entry = cls(summoner=summoner)
+        log_entry.parse_common_log_data(log_data)
+        try:
+            log_entry.level = Level.objects.get(
+                dungeon__category=Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+                dungeon__com2us_id=dungeon_id,
+                floor=floor,
+            )
+        except Level.DoesNotExist:
+            # Create a placeholder level for later updating
+            try:
+                d = Dungeon.objects.get(category=Dungeon.CATEGORY_CAIROS, com2us_id=dungeon_id)
+            except Dungeon.DoesNotExist:
+                # Create the dungeon
+                d = Dungeon.objects.create(
+                    com2us_id=dungeon_id,
+                    enabled=False,
+                    name='UNKNOWN DUNGEON',
+                    category=Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+                )
+
+            # Create the level
+            log_entry.level = Level.objects.create(
+                dungeon=d,
+                floor=floor,
+            )
+            mail_admins('New Level Created', f'New level {floor} created in dungeon com2us ID {dungeon_id}.')
+
+        log_entry.success = log_data['request']['win_lose'] == 1
+        log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
+        log_entry.save()
+        log_entry.parse_rewards(log_data['response']['reward'])
 
     def parse_rewards(self, rewards):
         for key, val in rewards.items():

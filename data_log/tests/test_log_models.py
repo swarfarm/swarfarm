@@ -90,7 +90,7 @@ class ItemDropTests(TestCase):
         })
         self.assertEqual(
             log.item,
-            GameItem.objects.get(category=GameItem.CATEGORY_CRAFT_STUFF, name='Cloth')
+            GameItem.objects.get(category=GameItem.CATEGORY_CRAFT_STUFF, com2us_id=1006)
         )
         self.assertEqual(log.quantity, 2)
 
@@ -172,6 +172,44 @@ class RuneDropTests(TestCase):
         self.assertEqual(log.innate_stat, models.DungeonRuneDrop.STAT_ATK)
         self.assertEqual(log.innate_stat_value, 15)
         self.assertEqual(log.substats, [models.DungeonRuneDrop.STAT_RESIST_PCT, models.DungeonRuneDrop.STAT_ACCURACY_PCT])
+        self.assertEqual(log.substat_values, [4, 3])
+
+    def test_ancient_rune_drop(self):
+        log = models.DungeonRuneDrop.parse(**{
+            'rune_id': 25190515048,
+            'wizard_id': 12234369,
+            'occupied_type': 2,
+            'occupied_id': 0,
+            'slot_no': 2,
+            'rank': 3,
+            'class': 15,
+            'set_id': 8,
+            'upgrade_limit': 15,
+            'upgrade_curr': 3,  # No, runes do not drop at lvl 3 normally
+            'base_value': 137700,
+            'sell_value': 11027,
+            'pri_eff': [6, 8],
+            'prefix_eff': [3, 15],
+            'sec_eff': [[11, 4], [12, 3]],
+            'extra': 3
+        })
+
+        # Only check fields that are set by parsing
+        self.assertEqual(log.type, models.DungeonRuneDrop.TYPE_FATAL)
+        self.assertEqual(log.stars, 5)
+        self.assertEqual(log.level, 3)
+        self.assertTrue(log.ancient)
+        self.assertEqual(log.slot, 2)
+        self.assertEqual(log.original_quality, models.DungeonRuneDrop.QUALITY_RARE)
+        self.assertEqual(log.value, 11027)
+        self.assertEqual(log.main_stat, models.DungeonRuneDrop.STAT_DEF_PCT)
+        self.assertEqual(log.main_stat_value, 8)
+        self.assertEqual(log.innate_stat, models.DungeonRuneDrop.STAT_ATK)
+        self.assertEqual(log.innate_stat_value, 15)
+        self.assertEqual(log.substats, [
+            models.DungeonRuneDrop.STAT_RESIST_PCT,
+            models.DungeonRuneDrop.STAT_ACCURACY_PCT
+        ])
         self.assertEqual(log.substat_values, [4, 3])
 
 

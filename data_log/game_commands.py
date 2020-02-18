@@ -85,12 +85,16 @@ active_log_commands = {
         schemas.battle_rift_of_worlds_raid_result,
         models.RiftRaidLog.parse_rift_raid_result
     ),
+    'BattleDimensionHoleDungeonResult': GameApiCommand(
+        schemas.battle_dimension_hole_result,
+        models.DungeonLog.parse_dimension_hole_result
+    )
 }
 
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
-accepted_api_params['__version'] = 5
+accepted_api_params['__version'] = 6
 
 
 # Utility functions

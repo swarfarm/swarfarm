@@ -738,37 +738,50 @@ class DungeonLog(LogEntry):
         log_entry.parse_rewards(log_data['response']['reward'])
 
     def parse_rewards(self, rewards):
-        for key, val in rewards.items():
-            reward = None
+        if not rewards:
+            # If there are no rewards, it's an empty list. Exit early since later code assumes rewards is a dict
+            return
 
+        # Parse each reward
+        reward_objs = []
+        for key, val in rewards.items():
             if key == 'crate':
                 # Recurse with crate contents
                 self.parse_rewards(val)
+            elif key in DungeonItemDrop.PARSE_KEYS:
+                reward_objs.append(DungeonItemDrop.parse(key=key, val=val))
             elif isinstance(val, dict):
                 if 'item_master_type' in val:
                     # Parse by master type
                     if val['item_master_type'] in DungeonItemDrop.PARSE_ITEM_TYPES:
-                        reward = DungeonItemDrop.parse(**val)
+                        reward_objs.append(DungeonItemDrop.parse(**val))
                 elif key == 'rune':
-                    reward = DungeonRuneDrop.parse(**val)
+                    reward_objs.append(DungeonRuneDrop.parse(**val))
                 elif key == 'unit_info':
-                    reward = DungeonMonsterDrop.parse(**val)
+                    reward_objs.append(DungeonMonsterDrop.parse(**val))
                 elif key == 'material':
-                    reward = DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_ESSENCE, **val})
+                    reward_objs.append(DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_ESSENCE, **val}))
                 elif key == 'random_scroll':
-                    reward = DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_SUMMON_SCROLL, **val})
+                    reward_objs.append(DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_SUMMON_SCROLL, **val}))
+                elif key == 'changestones':
+                    reward_objs.append(DungeonRuneCraftDrop.parse(**val))
                 else:
                     raise ValueError(f"don't know how to parse {key} reward in {self.__class__.__name__}")
-
-            elif key in DungeonItemDrop.PARSE_KEYS:
-                reward = DungeonItemDrop.parse(key=key, val=val)
-            elif key == 'event_crate':
-                # Don't care, skip it
-                continue
+            elif isinstance(val, list):
+                if key == 'changestones':
+                    for craft_data in val:
+                        reward_objs.append(DungeonRuneCraftDrop.parse(**craft_data))
+                elif key == 'event_crate':
+                    # Don't care, skip it
+                    continue
+                else:
+                    raise ValueError(f"don't know how to parse array of {key} reward in {self.__class__.__name__}")
             else:
                 ValueError(f"don't know how to parse {key} reward in {self.__class__.__name__}")
 
-            if reward:
+        # Save parsed rewards
+        for reward in reward_objs:
+            if reward is not None:
                 reward.log = self
                 reward.save()
 
@@ -787,6 +800,10 @@ class DungeonMonsterPieceDrop(MonsterPieceDrop):
 
 class DungeonRuneDrop(RuneDrop):
     log = models.ForeignKey(DungeonLog, on_delete=models.CASCADE, related_name=RuneDrop.RELATED_NAME)
+
+
+class DungeonRuneCraftDrop(RuneCraftDrop):
+    log = models.ForeignKey(DungeonLog, on_delete=models.CASCADE, related_name=RuneCraftDrop.RELATED_NAME)
 
 
 class DungeonSecretDungeonDropManager(models.Manager):

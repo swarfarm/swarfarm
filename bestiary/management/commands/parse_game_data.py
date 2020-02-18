@@ -38,6 +38,9 @@ class Command(BaseCommand):
         self.stdout.write('Parsing secret dungeon data...')
         parse.secret_dungeons()
 
+        self.stdout.write('Parsing dimensional hole data...')
+        parse.dimensional_hole()
+
         self.stdout.write('Parsing craft materials...')
         parse.craft_materials()
 

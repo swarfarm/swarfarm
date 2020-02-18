@@ -23,7 +23,7 @@ class MonsterDropInline(admin.TabularInline):
 
 
 class RuneDropInline(admin.TabularInline):
-    fields = ('type', 'stars', 'level', 'slot', 'quality', 'value', 'main_stat', 'main_stat_value')
+    fields = ('type', 'stars', 'ancient', 'level', 'slot', 'quality', 'value', 'main_stat', 'main_stat_value')
     extra = 0
 
 

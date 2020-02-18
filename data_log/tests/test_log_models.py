@@ -164,6 +164,7 @@ class RuneDropTests(TestCase):
         self.assertEqual(log.type, models.DungeonRuneDrop.TYPE_FATAL)
         self.assertEqual(log.stars, 5)
         self.assertEqual(log.level, 3)
+        self.assertFalse(log.ancient)
         self.assertEqual(log.slot, 2)
         self.assertEqual(log.original_quality, models.DungeonRuneDrop.QUALITY_RARE)
         self.assertEqual(log.value, 11027)

@@ -259,9 +259,38 @@ class DungeonSerializer(serializers.ModelSerializer):
         return instance.get_category_display()
 
 
+class EnemySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Enemy
+        fields = [
+            'id',
+            'monster',
+            'stars',
+            'level',
+            'hp',
+            'attack',
+            'defense',
+            'speed',
+            'resist',
+            'crit_bonus',
+            'crit_damage_reduction',
+            'accuracy_bonus',
+        ]
+
+
+class WaveSerializer(serializers.ModelSerializer):
+    enemies = EnemySerializer(source='enemy_set', many=True, read_only=True)
+
+    class Meta:
+        model = models.Wave
+        fields = [
+            'enemies',
+        ]
+
 class LevelSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='bestiary/levels-detail')
     difficulty = serializers.SerializerMethodField()
+    waves = WaveSerializer(source='wave_set', many=True, read_only=True)
 
     class Meta:
         model = models.Level
@@ -276,6 +305,7 @@ class LevelSerializer(serializers.ModelSerializer):
             'frontline_slots',
             'backline_slots',
             'total_slots',
+            'waves',
         ]
 
     def get_difficulty(self, instance):

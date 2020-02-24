@@ -1,7 +1,11 @@
-from bestiary.models import Dungeon, SecretDungeon, Level, Monster
+from celery import shared_task
+from django.core.cache import cache
+
+from bestiary.models import Dungeon, SecretDungeon, Level, Monster, Wave, Enemy
 from bestiary.parse import game_data
 
 
+# Game data parsing
 def scenarios():
     # Extract names from world map strings by filtering out names that are not for scenarios
     scenario_names = {
@@ -171,3 +175,110 @@ def secret_dungeons():
 
         if created:
             print(f'Added new level for {dungeon.name} - {level.get_difficulty_display() if level.difficulty is not None else ""} B{1}')
+
+
+# Scenario/dungeon enemy information from game API responses
+def _parse_wave_data(level, data):
+    waves = []
+    for wave_idx, wave_data in enumerate(data):
+        wave, _ = Wave.objects.update_or_create(
+            order=wave_idx,
+            level=level
+        )
+        waves.append(wave.pk)
+
+        # Parse each enemy in the wave
+        enemies = []
+        for enemy_idx, enemy_data in enumerate(wave_data):
+            enemy, _ = Enemy.objects.update_or_create(
+                wave=wave,
+                com2us_id=enemy_data.get('unit_id'),
+                defaults={
+                    'order': enemy_idx,
+                    'monster': Monster.objects.get(com2us_id=enemy_data['unit_master_id']),
+                    'stars': enemy_data['class'],
+                    'level': enemy_data['unit_level'],
+                    'hp': enemy_data['con'] * 15,
+                    'attack': enemy_data['atk'],
+                    'defense': enemy_data['def'],
+                    'speed': enemy_data['spd'],
+                    'resist': enemy_data['resist'],
+                    'boss': bool(enemy_data.get('boss', False)),
+                    'crit_bonus': enemy_data.get('critical_bonus', 0),
+                    'crit_damage_reduction': enemy_data.get('crit_damage_reduction', 0),
+                    'accuracy_bonus': enemy_data.get('hit_bonus', 0),
+                }
+            )
+            enemies.append(enemy.pk)
+
+        # Delete previously existing enemies for this wave that were not updated/created
+        Enemy.objects.filter(wave=wave).exclude(pk__in=enemies).delete()
+
+    # Delete previously existing waves for this level that were not updated/created
+    Wave.objects.filter(level=level).exclude(pk__in=waves).delete()
+
+
+@shared_task
+def scenario_waves(log_data):
+    level = Level.objects.get(
+        dungeon__category=Dungeon.CATEGORY_SCENARIO,
+        dungeon__com2us_id=log_data['request']['region_id'],
+        floor=log_data['request']['stage_no'],
+        difficulty=log_data['request']['difficulty'],
+    )
+    _parse_wave_data(level, log_data['response']['opp_unit_list'])
+
+
+@shared_task
+def dungeon_waves(log_data):
+    level = Level.objects.get(
+        dungeon__category=Dungeon.CATEGORY_CAIROS,
+        dungeon__com2us_id=log_data['request']['dungeon_id'],
+        floor=log_data['request']['stage_id'],
+    )
+    _parse_wave_data(level, log_data['response']['dungeon_unit_list'])
+
+
+command_map = {
+    'BattleScenarioStart': {
+        'fn': scenario_waves,
+        'cache keys': [
+            'region_id',
+            'stage_no',
+            'difficulty',
+        ],
+    },
+    'BattleDungeonStart': {
+        'fn': dungeon_waves,
+        'cache keys': [
+            'dungeon_id',
+            'stage_id',
+        ],
+    },
+}
+
+
+def _get_command_cache_key(log_data):
+    command = log_data['request']['command']
+    keys = command_map[command]['cache keys']
+    cache_key_elements = [command] + [
+        str(log_data['request'][key]) for key in keys
+    ]
+    return '-'.join(cache_key_elements)
+
+
+def _is_update_required(log_data):
+    k = _get_command_cache_key(log_data)
+    return
+
+
+UPDATE_INTERVAL = 24 * 60 * 60  # One day
+
+
+def dispatch_dungeon_wave_parse(summoner, log_data):
+    k = _get_command_cache_key(log_data)
+    if not cache.get(k):
+        command = log_data['request']['command']
+        command_map[command]['fn'].delay(log_data)
+        cache.set(k, True, UPDATE_INTERVAL)
+

@@ -11,7 +11,7 @@ from . import base
 from .items import GameItem, ItemQuantity
 
 
-class Monster(models.Model, base.Elements):
+class Monster(models.Model, base.Elements, base.Stars):
     TYPE_ATTACK = 'attack'
     TYPE_HP = 'hp'
     TYPE_SUPPORT = 'support'
@@ -26,15 +26,6 @@ class Monster(models.Model, base.Elements):
         (TYPE_SUPPORT, 'Support'),
         (TYPE_DEFENSE, 'Defense'),
         (TYPE_MATERIAL, 'Material'),
-    )
-
-    STAR_CHOICES = (
-        (1, '1⭐'),
-        (2, '2⭐'),
-        (3, '3⭐'),
-        (4, '4⭐'),
-        (5, '5⭐'),
-        (6, '6⭐'),
     )
 
     AWAKEN_LEVEL_INCOMPLETE = -1  # Japan fusion
@@ -72,8 +63,8 @@ class Monster(models.Model, base.Elements):
     image_filename = models.CharField(max_length=250, null=True, blank=True)
     element = models.CharField(max_length=6, choices=base.Elements.ELEMENT_CHOICES, default=base.Elements.ELEMENT_FIRE)
     archetype = models.CharField(max_length=10, choices=TYPE_CHOICES, default=TYPE_ATTACK)
-    base_stars = models.IntegerField(choices=STAR_CHOICES, help_text='Display stars in game')
-    natural_stars = models.IntegerField(choices=STAR_CHOICES, help_text="Stars of the monster's lowest awakened form")
+    base_stars = models.IntegerField(choices=base.Stars.STAR_CHOICES, help_text='Display stars in game')
+    natural_stars = models.IntegerField(choices=base.Stars.STAR_CHOICES, help_text="Stars of the monster's lowest awakened form")
     obtainable = models.BooleanField(default=True, help_text='Is available for players to acquire')
     can_awaken = models.BooleanField(default=True, help_text='Has an awakened form')
     is_awakened = models.BooleanField(default=False, help_text='Is the awakened form')

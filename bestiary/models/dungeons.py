@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
+from . import base
 from .monsters import Monster
 
 
@@ -109,3 +110,32 @@ class Level(models.Model):
             level_char = 'B'
 
         return f'{self.dungeon.name} {difficulty} {level_char}{self.floor}'
+
+
+class Wave(base.Orderable):
+    level = models.ForeignKey(Level, on_delete=models.CASCADE)
+
+    class Meta(base.Orderable.Meta):
+        pass
+
+
+class Enemy(base.Orderable, base.Stars):
+    wave = models.ForeignKey(Wave, on_delete=models.CASCADE)
+    monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
+    com2us_id = models.IntegerField()
+
+    boss = models.BooleanField(default=False)
+    stars = models.IntegerField(choices=base.Stars.STAR_CHOICES)
+    level = models.IntegerField()
+
+    hp = models.IntegerField()
+    attack = models.IntegerField()
+    defense = models.IntegerField()
+    speed = models.IntegerField()
+    resist = models.IntegerField()
+    accuracy_bonus = models.IntegerField()
+    crit_bonus = models.IntegerField()
+    crit_damage_reduction = models.IntegerField()
+
+    class Meta(base.Orderable.Meta):
+        pass

@@ -2,20 +2,24 @@ import json
 
 from jsonschema import Draft4Validator
 
+from bestiary.parse.dungeons import dispatch_dungeon_wave_parse
 from . import models
 from . import schemas
 
 
 class GameApiCommand:
-    def __init__(self, schema, parse_fn):
+    def __init__(self, schema, parse_fns):
         self.validator = Draft4Validator(schema)
         self.accepted_commands = {
             key: schema['properties'][key]['properties'].keys() for key in schema['required']
         }
-        self.parser = parse_fn
+        if not isinstance(parse_fns, list):
+            parse_fns = [parse_fns]
+        self.parsers = parse_fns
 
     def parse(self, *args, **kwargs):
-        return self.parser(*args, **kwargs)
+        for fn in self.parsers:
+            fn(*args, **kwargs)
 
     def validate(self, log_data):
         return self.validator.is_valid(log_data)
@@ -55,11 +59,15 @@ active_log_commands = {
     ),
     'BattleScenarioStart': GameApiCommand(
         schemas.battle_scenario_start,
-        models.DungeonLog.parse_scenario_start
+        [models.DungeonLog.parse_scenario_start, dispatch_dungeon_wave_parse]
     ),
     'BattleScenarioResult': GameApiCommand(
         schemas.battle_scenario_result,
         models.DungeonLog.parse_scenario_result
+    ),
+    'BattleDungeonStart': GameApiCommand(
+        schemas.battle_dungeon_start,
+        dispatch_dungeon_wave_parse
     ),
     'BattleDungeonResult': GameApiCommand(
         schemas.battle_dungeon_result,

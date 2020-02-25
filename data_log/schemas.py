@@ -197,6 +197,7 @@ battle_scenario_start = {
             'type': 'object',
             'properties': {
                 'battle_key': {'type': 'number'},
+                'opp_unit_list': {'type': 'array'},
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
             },
@@ -244,6 +245,44 @@ battle_scenario_result = {
                 'tzone',
                 'tvalue',
                 'reward',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+battle_dungeon_start = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/battle_dungeon_start.json',
+    'title': 'battle_dungeon_start',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'dungeon_id': {'type': 'number'},
+                'stage_id': {'type': 'number'},
+            },
+            'required': [
+                'wizard_id',
+                'command',
+                'dungeon_id',
+                'stage_id',
+            ],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'dungeon_unit_list': {'type': 'array'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'dungeon_unit_list',
             ]
         }
     },

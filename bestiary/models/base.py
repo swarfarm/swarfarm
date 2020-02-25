@@ -1,6 +1,15 @@
+from django.db import models
+
+
+class Orderable(models.Model):
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        abstract = True
+        ordering = ('order', )
+
+
 # Definitions of commonly reused elements in the game
-
-
 class Elements:
     ELEMENT_PURE = 'pure'
     ELEMENT_FIRE = 'fire'
@@ -143,3 +152,14 @@ class Quality:
         14: QUALITY_HERO,
         15: QUALITY_LEGEND,
     }
+
+
+class Stars:
+    STAR_CHOICES = (
+        (1, '1⭐'),
+        (2, '2⭐'),
+        (3, '3⭐'),
+        (4, '4⭐'),
+        (5, '5⭐'),
+        (6, '6⭐'),
+    )

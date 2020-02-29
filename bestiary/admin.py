@@ -33,6 +33,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'image_filename',
                 'homunculus',
                 'transforms_to',
+                'bestiary_slug',
             ),
         }),
         ('Awakening', {
@@ -80,14 +81,39 @@ class MonsterAdmin(admin.ModelAdmin):
         }),
     ]
 
-    list_display = ('image_url', 'name', 'element', 'archetype', 'base_stars', 'natural_stars', 'awakens_from', 'awakens_to')
-    list_filter = ('element', 'archetype', 'base_stars', 'natural_stars', 'awaken_level', 'homunculus', 'obtainable')
+    list_display = (
+        'image_url',
+        'name',
+        'obtainable',
+        'element',
+        'archetype',
+        'base_stars',
+        'natural_stars',
+        'awaken_level',
+    )
+    list_filter = (
+        'element',
+        'archetype',
+        'base_stars',
+        'natural_stars',
+        'awaken_level',
+        'homunculus',
+        'obtainable'
+    )
     list_per_page = 100
-    filter_vertical = ('skills',)
-    filter_horizontal = ('source',)
-    inlines = (MonsterAwakeningCostInline, MonsterCraftCostInline,)
-    readonly_fields = ('bestiary_slug', 'base_hp', 'base_attack', 'base_defense', 'max_lvl_hp', 'max_lvl_defense', 'max_lvl_attack',)
-    search_fields = ['name', 'com2us_id']
+    filter_vertical = ('skills', )
+    filter_horizontal = ('source', )
+    inlines = (MonsterAwakeningCostInline, MonsterCraftCostInline, )
+    readonly_fields = (
+        'bestiary_slug',
+        'base_hp',
+        'base_attack',
+        'base_defense',
+        'max_lvl_hp',
+        'max_lvl_defense',
+        'max_lvl_attack',
+    )
+    search_fields = ('name', 'com2us_id', )
     save_as = True
 
 

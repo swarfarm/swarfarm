@@ -1,6 +1,5 @@
 import uuid
 from collections import OrderedDict
-from itertools import zip_longest
 from math import floor, ceil
 
 from django.contrib.auth.models import User
@@ -744,9 +743,17 @@ class RuneCraftInstance(RuneCraft):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
+    quantity = models.IntegerField(default=1)
 
     class Meta:
         ordering = ['type', 'rune']
+
+    def clean(self):
+        if self.quantity < 1:
+            raise ValidationError({'quantity': ValidationError(
+                'Quantity must be 1 or more',
+                code='invalid_quantity'
+            )})
 
 
 class TeamGroup(models.Model):

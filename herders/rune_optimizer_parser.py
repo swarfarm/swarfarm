@@ -129,6 +129,7 @@ def _convert_rune_craft_to_win10_json(craft):
         'craft_type_id': int('{:d}{:02d}{:02d}'.format(rune_set, stat, quality)),
         'craft_type': craft_type_map[craft.type],
         'craft_item_id': craft.com2us_id if craft.com2us_id else random.randint(1, 999999999),
+        'amount': craft.quantity,
     }
 
 

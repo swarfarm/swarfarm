@@ -287,6 +287,7 @@ class WaveSerializer(serializers.ModelSerializer):
             'enemies',
         ]
 
+
 class LevelSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='bestiary/levels-detail')
     difficulty = serializers.SerializerMethodField()

@@ -1373,6 +1373,7 @@ class AddRuneCraftInstanceForm(ModelForm):
                 Field('type'),
                 Field('stat'),
                 Field('quality'),
+                Field('quantity'),
                 css_class='col-md-8',
             ),
             Div(css_class='clearfix'),
@@ -1388,6 +1389,7 @@ class AddRuneCraftInstanceForm(ModelForm):
             'rune',
             'stat',
             'quality',
+            'quantity',
         )
 
 

@@ -398,6 +398,7 @@ def parse_rune_craft_data(craft_data, owner):
     craft.quality = RuneCraftInstance.COM2US_QUALITY_MAP.get(quality)
     craft.stat = RuneCraftInstance.COM2US_STAT_MAP.get(stat)
     craft.rune = RuneCraftInstance.COM2US_TYPE_MAP.get(rune_set)
+    craft.quantity = craft_data.get('amount', 1)
     craft.value = craft_data['sell_value']
 
     return craft

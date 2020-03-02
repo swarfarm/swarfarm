@@ -39,7 +39,17 @@ class RuneCraftInstanceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RuneCraftInstance
-        fields = ['id', 'url', 'com2us_id', 'type', 'rune', 'stat', 'quality', 'value']
+        fields = (
+            'id',
+            'url',
+            'com2us_id',
+            'type',
+            'rune',
+            'stat',
+            'quality',
+            'value',
+            'quantity',
+        )
 
     def create(self, validated_data):
         validated_data['owner'] = self.context['request'].user.summoner

@@ -299,10 +299,6 @@ span.rune-set-bonus {
 .rune-craft.ancient-grindstone.legend {
     background-image: url(/static/herders/images/runes/grindstone_legend.png);
 }
-.rune-craft.enchant-gem.legend,
-.rune-craft.ancient-grindstone.legend {
-    background-image: url(/static/herders/images/runes/enchant_gem_legend.png);
-}
 .rune-craft.enchant-gem.normal,
 .rune-craft.ancient-gem.normal {
     background-image: url(/static/herders/images/runes/enchant_gem_common.png);

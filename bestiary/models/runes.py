@@ -1088,12 +1088,168 @@ class RuneCraft(models.Model, RuneObjectBase):
                 RuneObjectBase.QUALITY_HERO: {'min': 6, 'max': 9},
                 RuneObjectBase.QUALITY_LEGEND: {'min': 8, 'max': 11},
             },
-        }
+        },
+        CRAFT_ANCIENT_GRINDSTONE: {
+            RuneObjectBase.STAT_HP: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 80, 'max': 180},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 100, 'max': 260},
+                RuneObjectBase.QUALITY_RARE: {'min': 180, 'max': 310},
+                RuneObjectBase.QUALITY_HERO: {'min': 230, 'max': 510},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 430, 'max': 610},
+            },
+            RuneObjectBase.STAT_HP_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 5},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 7},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 8},
+                RuneObjectBase.QUALITY_HERO: {'min': 4, 'max': 9},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 5, 'max': 12},
+            },
+            RuneObjectBase.STAT_ATK: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 4, 'max': 12},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 6, 'max': 16},
+                RuneObjectBase.QUALITY_RARE: {'min': 10, 'max': 22},
+                RuneObjectBase.QUALITY_HERO: {'min': 12, 'max': 26},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 18, 'max': 34},
+            },
+            RuneObjectBase.STAT_ATK_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 5},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 7},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 8},
+                RuneObjectBase.QUALITY_HERO: {'min': 4, 'max': 9},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 5, 'max': 12},
+            },
+            RuneObjectBase.STAT_DEF: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 4, 'max': 12},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 6, 'max': 16},
+                RuneObjectBase.QUALITY_RARE: {'min': 10, 'max': 22},
+                RuneObjectBase.QUALITY_HERO: {'min': 12, 'max': 26},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 18, 'max': 34},
+            },
+            RuneObjectBase.STAT_DEF_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 5},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 7},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 8},
+                RuneObjectBase.QUALITY_HERO: {'min': 4, 'max': 9},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 5, 'max': 12},
+            },
+            RuneObjectBase.STAT_SPD: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 6},
+            },
+            RuneObjectBase.STAT_CRIT_RATE_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 2},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 6},
+            },
+            RuneObjectBase.STAT_CRIT_DMG_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 5},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 7},
+            },
+            RuneObjectBase.STAT_RESIST_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
+            RuneObjectBase.STAT_ACCURACY_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 3},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 4},
+                RuneObjectBase.QUALITY_RARE: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_HERO: {'min': 3, 'max': 7},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 4, 'max': 8},
+            },
+        },
+        CRAFT_ANCIENT_GEM: {
+            RuneObjectBase.STAT_HP: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 100, 'max': 210},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 130, 'max': 280},
+                RuneObjectBase.QUALITY_RARE: {'min': 200, 'max': 370},
+                RuneObjectBase.QUALITY_HERO: {'min': 290, 'max': 480},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 400, 'max': 640},
+            },
+            RuneObjectBase.STAT_HP_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 6},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 9},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 11},
+                RuneObjectBase.QUALITY_HERO: {'min': 7, 'max': 13},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 9, 'max': 15},
+            },
+            RuneObjectBase.STAT_ATK: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 8, 'max': 16},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 10, 'max': 20},
+                RuneObjectBase.QUALITY_RARE: {'min': 15, 'max': 27},
+                RuneObjectBase.QUALITY_HERO: {'min': 20, 'max': 34},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 28, 'max': 44},
+            },
+            RuneObjectBase.STAT_ATK_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 6},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 9},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 11},
+                RuneObjectBase.QUALITY_HERO: {'min': 7, 'max': 13},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 9, 'max': 15},
+            },
+            RuneObjectBase.STAT_DEF: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 8, 'max': 16},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 10, 'max': 20},
+                RuneObjectBase.QUALITY_RARE: {'min': 15, 'max': 27},
+                RuneObjectBase.QUALITY_HERO: {'min': 20, 'max': 34},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 28, 'max': 44},
+            },
+            RuneObjectBase.STAT_DEF_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 6},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 9},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 11},
+                RuneObjectBase.QUALITY_HERO: {'min': 7, 'max': 13},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 9, 'max': 15},
+            },
+            RuneObjectBase.STAT_SPD: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 4},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 7},
+                RuneObjectBase.QUALITY_HERO: {'min': 5, 'max': 9},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 7, 'max': 11},
+            },
+            RuneObjectBase.STAT_CRIT_RATE_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 1, 'max': 4},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 2, 'max': 5},
+                RuneObjectBase.QUALITY_RARE: {'min': 3, 'max': 6},
+                RuneObjectBase.QUALITY_HERO: {'min': 4, 'max': 8},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 6, 'max': 10},
+            },
+            RuneObjectBase.STAT_CRIT_DMG_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 6},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 7},
+                RuneObjectBase.QUALITY_RARE: {'min': 4, 'max': 8},
+                RuneObjectBase.QUALITY_HERO: {'min': 5, 'max': 10},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 7, 'max': 12},
+            },
+            RuneObjectBase.STAT_RESIST_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 6},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 8},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 10},
+                RuneObjectBase.QUALITY_HERO: {'min': 6, 'max': 11},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 8, 'max': 13},
+            },
+            RuneObjectBase.STAT_ACCURACY_PCT: {
+                RuneObjectBase.QUALITY_NORMAL: {'min': 2, 'max': 6},
+                RuneObjectBase.QUALITY_MAGIC: {'min': 3, 'max': 8},
+                RuneObjectBase.QUALITY_RARE: {'min': 5, 'max': 10},
+                RuneObjectBase.QUALITY_HERO: {'min': 6, 'max': 11},
+                RuneObjectBase.QUALITY_LEGEND: {'min': 8, 'max': 13},
+            },
+        },
     }
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GEM] = CRAFT_VALUE_RANGES[CRAFT_ENCHANT_GEM]
     CRAFT_VALUE_RANGES[CRAFT_IMMEMORIAL_GRINDSTONE] = CRAFT_VALUE_RANGES[CRAFT_GRINDSTONE]
-    CRAFT_VALUE_RANGES[CRAFT_ANCIENT_GEM] = CRAFT_VALUE_RANGES[CRAFT_ENCHANT_GEM]  # TODO: Update with Ancient values
-    CRAFT_VALUE_RANGES[CRAFT_ANCIENT_GRINDSTONE] = CRAFT_VALUE_RANGES[CRAFT_GRINDSTONE]  # TODO: Update with Ancient values
 
     # Mappings from com2us' API data to model defined values
     COM2US_CRAFT_TYPE_MAP = {

@@ -736,6 +736,7 @@ class DungeonLog(LogEntry):
         log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
         log_entry.save()
         log_entry.parse_rewards(log_data['response']['reward'])
+        log_entry.parse_changed_item_list(log_data['response']['changed_item_list'])
 
         # Parse secret dungeon drop
         sd_info = log_data['response'].get('instance_info')
@@ -830,6 +831,35 @@ class DungeonLog(LogEntry):
 
         # Save parsed rewards
         for reward in reward_objs:
+            if reward is not None:
+                reward.log = self
+                reward.save()
+
+    def parse_changed_item_list(self, changed_item_list):
+        if not changed_item_list:
+            # If there are changed items, it's an empty list. Exit early since later code assumes a dict
+            return
+
+        # Parse each reward
+        changed_items_object = []
+        for obj in changed_item_list:
+            item_type = obj["type"]
+            info = obj["info"]
+            view = obj["view"]
+
+            if item_type in ItemDrop.PARSE_ITEM_TYPES:
+                changed_items_object.append(DungeonItemDrop.parse(
+                    item_master_type=view["item_master_type"],
+                    item_master_id=view["item_master_id"],
+                    item_quantity=view["item_quantity"],
+                ))
+            elif item_type == GameItem.CATEGORY_RUNE:
+                changed_items_object.append(DungeonRuneDrop.parse(**info))
+            else:
+                raise ValueError(f"don't know how to parse {item_type} changed item in {self.__class__.__name__}")
+
+        # Save parsed rewards
+        for reward in changed_items_object:
             if reward is not None:
                 reward.log = self
                 reward.save()

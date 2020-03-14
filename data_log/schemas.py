@@ -363,6 +363,7 @@ battle_dungeon_result_v2 = {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
                 'reward': {'type': 'object'},
+                'changed_item_list': {'type': 'array'},
                 'instance_info': {'type': ['null', 'object']}
             },
             'required': [

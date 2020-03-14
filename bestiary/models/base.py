@@ -97,6 +97,12 @@ class Stats:
         STAT_SPD,
     )
 
+    CONVERTS_TO_FLAT_STAT = {
+        STAT_HP_PCT: STAT_HP,
+        STAT_ATK_PCT: STAT_ATK,
+        STAT_DEF_PCT: STAT_DEF,
+    }
+
     COM2US_STAT_MAP = {
         1: STAT_HP,
         2: STAT_HP_PCT,

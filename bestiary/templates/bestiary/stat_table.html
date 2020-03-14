@@ -5,7 +5,7 @@
         <p class="panel-title"><strong>Stats</strong></p>
     </div>
     <div class="table-responsive">
-        {% with monster.get_stats as stats %}
+        {% with monster.get_stats_for_all_stars as stats %}
             <table class="table table-hover">
                 <thead>
                     <tr>

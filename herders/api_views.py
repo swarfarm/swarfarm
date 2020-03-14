@@ -138,7 +138,7 @@ class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'rune_resistance',
         'base_accuracy',
         'rune_accuracy',
-        'avg_rune_efficiency',
+        'avg_efficiency',
         'fodder',
         'in_storage',
         'ignore_for_fusion',

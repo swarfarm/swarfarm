@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
 from .models import Summoner, MonsterInstance, MonsterTag, Team, TeamGroup, RuneInstance, RuneCraftInstance, \
-    BuildingInstance
+    BuildingInstance, RuneBuild
 
 
 # User management stuff
@@ -23,12 +23,41 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
 
+class RuneInstanceInline(admin.TabularInline):
+    model = RuneInstance
+    fields = (
+        'stars',
+        'level',
+        'slot',
+        'quality',
+        'ancient',
+        'main_stat',
+        'main_stat_value',
+        'innate_stat',
+        'innate_stat_value',
+        'substats',
+        'substat_values',
+        'efficiency',
+    )
+    extra = 0
+    show_change_link = True
+
+
+class RuneBuildInline(admin.TabularInline):
+    model = RuneBuild
+    exclude = ('owner', 'runes', )
+    extra = 0
+    show_change_link = True
+
+
 @admin.register(MonsterInstance)
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'owner')
     filter_vertical = ('tags',)
     exclude = ('owner',)
-    search_fields = ['id',]
+    search_fields = ('id', )
+    readonly_fields = ('default_build', 'rta_build', )
+    inlines = (RuneInstanceInline, RuneBuildInline,)
 
 
 admin.site.register(MonsterTag)
@@ -51,6 +80,22 @@ class RuneInstanceAdmin(admin.ModelAdmin):
     search_fields = ('id',)
     exclude = ('owner', 'assigned_to')
     readonly_fields = ('quality', 'has_hp', 'has_atk', 'has_def', 'has_crit_rate', 'has_crit_dmg', 'has_speed', 'has_resist', 'has_accuracy')
+
+
+@admin.register(RuneBuild)
+class RuneBuildAdmin(admin.ModelAdmin):
+    list_display = (
+        '__str__',
+        'owner',
+        'monster',
+    )
+    readonly_fields = ('owner', 'monster', 'runes', )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'monster',
+            'monster__monster'
+        )
 
 
 @admin.register(RuneCraftInstance)

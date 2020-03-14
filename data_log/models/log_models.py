@@ -843,6 +843,11 @@ class DungeonLog(LogEntry):
         # Parse each reward
         changed_items_object = []
         for obj in changed_item_list:
+            # check if all required keys exist in the dict
+            for k in ("type", "info", "view"):
+                if k not in obj:
+                    raise ValueError(f"missing key {k} in {self.__class__.__name__}")
+
             item_type = obj["type"]
             info = obj["info"]
             view = obj["view"]
@@ -856,7 +861,7 @@ class DungeonLog(LogEntry):
             elif item_type == GameItem.CATEGORY_RUNE:
                 changed_items_object.append(DungeonRuneDrop.parse(**info))
             else:
-                raise ValueError(f"don't know how to parse {item_type} changed item in {self.__class__.__name__}")
+                raise ValueError(f"don't know how to parse changed item type {item_type} in {self.__class__.__name__}")
 
         # Save parsed rewards
         for reward in changed_items_object:

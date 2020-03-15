@@ -69,10 +69,6 @@ active_log_commands = {
         schemas.battle_dungeon_start,
         dispatch_dungeon_wave_parse
     ),
-    'BattleDungeonResult': GameApiCommand(
-        schemas.battle_dungeon_result,
-        models.DungeonLog.parse_dungeon_result
-    ),
     'BattleDungeonResult_V2': GameApiCommand(
         schemas.battle_dungeon_result_v2,
         models.DungeonLog.parse_dungeon_result_v2

@@ -289,49 +289,6 @@ battle_dungeon_start = {
     'required': ['request', 'response'],
 }
 
-battle_dungeon_result = {
-    '$schema': 'http://json-schema.org/draft-04/schema#',
-    'id': 'http://swarfarm.com/schemas/battle_dungeon_result.json',
-    'title': 'battle_dungeon_result',
-    'type': 'object',
-    'properties': {
-        'request': {
-            'type': 'object',
-            'properties': {
-                'wizard_id': {'type': 'number'},
-                'command': {'type': 'string'},
-                'dungeon_id': {'type': 'number'},
-                'stage_id': {'type': 'number'},
-                'win_lose': {'type': 'number'},
-                'clear_time': {'type': 'number'},
-            },
-            'required': [
-                'wizard_id',
-                'command',
-                'dungeon_id',
-                'stage_id',
-                'win_lose',
-                'clear_time',
-            ],
-        },
-        'response': {
-            'type': 'object',
-            'properties': {
-                'tzone': {'type': 'string'},
-                'tvalue': {'type': 'number'},
-                'reward': {'type': 'object'},
-                'instance_info': {'type': ['null', 'object']},
-            },
-            'required': [
-                'tzone',
-                'tvalue',
-                'reward',
-            ]
-        }
-    },
-    'required': ['request', 'response'],
-}
-
 battle_dungeon_result_v2 = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
     'id': 'http://swarfarm.com/schemas/battle_dungeon_result_v2.json',

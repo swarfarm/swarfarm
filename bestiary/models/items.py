@@ -19,6 +19,7 @@ class GameItem(models.Model):
     CATEGORY_RAINBOWMON = 25
     CATEGORY_RUNE_CRAFT = 27
     CATEGORY_CRAFT_STUFF = 29
+    CATEGORY_SECRET_DUNGEON = 30
     CATEGORY_MATERIAL_MONSTER = 61
 
     CATEGORY_CHOICES = (
@@ -32,6 +33,7 @@ class GameItem(models.Model):
         (CATEGORY_RAINBOWMON, 'Rainbowmon'),
         (CATEGORY_RUNE_CRAFT, 'Rune Craft'),
         (CATEGORY_CRAFT_STUFF, 'Craft Material'),
+        (CATEGORY_SECRET_DUNGEON, 'Secret Dungeon'),
         (CATEGORY_MATERIAL_MONSTER, 'Enhancing Monster'),
     )
 

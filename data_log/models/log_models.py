@@ -814,11 +814,9 @@ class DungeonLog(LogEntry):
             elif item_type == GameItem.CATEGORY_RUNE:
                 changed_items_object.append(DungeonRuneDrop.parse(**info))
             # parse secret dungeon drop
-            elif item_type == 30:
+            elif item_type == GameItem.CATEGORY_SECRET_DUNGEON:
                 # Parse secret dungeon drop
-                sd_reward = DungeonSecretDungeonDrop.parse(info)
-                sd_reward.log = self  # TODO: Make sure this works
-                sd_reward.save()
+                changed_items_object.append(DungeonSecretDungeonDrop.parse(info))
             else:
                 raise ValueError(f"don't know how to parse changed item type {item_type} in {self.__class__.__name__}")
 

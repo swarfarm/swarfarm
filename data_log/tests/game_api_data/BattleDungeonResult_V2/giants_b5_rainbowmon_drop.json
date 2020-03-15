@@ -1889,7 +1889,7 @@
             "pos_x": 10,
             "pos_y": 21,
             "building_id": 0,
-            "unit_master_id": 14314,
+            "unit_master_id": 14202,
             "unit_level": 20,
             "class": 2,
             "con": 3,
@@ -1921,7 +1921,7 @@
           },
           "view": {
             "item_master_type": 1,
-            "item_master_id": 14314,
+            "item_master_id": 14202,
             "item_quantity": 1,
             "unit_class": 2,
             "unit_level": 20,

@@ -7,7 +7,7 @@ class CairosLogTests(BaseLogTest):
     fixtures = ['test_game_items', 'test_levels', 'test_summon_monsters']
 
     def test_dungeon_result(self):
-        self._do_log('BattleDungeonResult/giants_b10_rune_drop.json')
+        self._do_log('BattleDungeonResult_V2/giants_b10_rune_drop.json')
 
         self.assertEqual(models.DungeonLog.objects.count(), 1)
 
@@ -16,81 +16,77 @@ class CairosLogTests(BaseLogTest):
         self.assertIsNotNone(log.clear_time)
 
     def test_level_parsed_correctly(self):
-        self._do_log('BattleDungeonResult/giants_b10_rune_drop.json')
+        self._do_log('BattleDungeonResult_V2/giants_b5_unknown_scroll.json')
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.level.dungeon.com2us_id, 8001)
-        self.assertEqual(log.level.floor, 10)
-
-        self._do_log('BattleDungeonResult/necro_b2_rune_drop.json')
-        log = models.DungeonLog.objects.first()
-        self.assertEqual(log.level.dungeon.com2us_id, 6001)
-        self.assertEqual(log.level.floor, 2)
-
-        self._do_log('BattleDungeonResult/dragon_b5_transcendance_x1_drop.json')
-        log = models.DungeonLog.objects.first()
-        self.assertEqual(log.level.dungeon.com2us_id, 9001)
         self.assertEqual(log.level.floor, 5)
 
+        self._do_log('BattleDungeonResult_V2/dragon_b10_rune_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.level.dungeon.com2us_id, 9001)
+        self.assertEqual(log.level.floor, 10)
+
+        self._do_log('BattleDungeonResult_V2/hall_of_dark_small_essence_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.level.dungeon.com2us_id, 1001)
+        self.assertEqual(log.level.floor, 10)
+
     def test_dungeon_failed(self):
-        self._do_log('BattleDungeonResult/giants_b10_failed.json')
+        self._do_log('BattleDungeonResult_V2/giants_b10_failed.json')
         log = models.DungeonLog.objects.first()
         self.assertFalse(log.success)
 
     def test_dungeon_success(self):
-        self._do_log('BattleDungeonResult/giants_b10_rune_drop.json')
+        self._do_log('BattleDungeonResult_V2/giants_b10_rune_drop.json')
         log = models.DungeonLog.objects.first()
         self.assertTrue(log.success)
 
     def test_dungeon_rune_drop(self):
-        self._do_log('BattleDungeonResult/giants_b10_rune_drop.json')
+        self._do_log('BattleDungeonResult_V2/giants_b10_rune_drop.json')
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.runes.count(), 1)
 
     def test_dungeon_item_drop(self):
-        self._do_log('BattleDungeonResult/dragon_b5_transcendance_x1_drop.json')
+        self._do_log('BattleDungeonResult_V2/giants_b10_harmony_drop.json')
         log = models.DungeonLog.objects.first()
-        # Expect Mana, Energy, and Craft Item
-        self.assertEqual(log.items.count(), 3)
+        # Expect Mana, Energy, Crystal, and Craft Item
+        self.assertEqual(log.items.count(), 4)
+        self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=1).exists())
         self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=102).exists())
         self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=103).exists())
-        self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CRAFT_STUFF, item__com2us_id=4002).exists())
+        self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CRAFT_STUFF, item__com2us_id=4001).exists())
 
     def test_hoh_ignored(self):
-        self._do_log('BattleDungeonResult/hoh_b1_monster_pieces_drop.json')
+        self._do_log('BattleDungeonResult_V2/hoh_light_rakshasa.json')
         log = models.DungeonLog.objects.first()
         self.assertIsNone(log)
 
-    def test_parse_rune_with_grind_data(self):
-        # Occasionally see runes with grind values specified as 0s for some reason.
-        self._do_log('BattleDungeonResult/giants_b10_rune_drop2.json')
-        log = models.DungeonLog.objects.first()
-        self.assertEqual(log.runes.count(), 1)
-
     def test_essence_drop(self):
-        self._do_log('BattleDungeonResult/hall_of_fire_5_low_essence.json')
+        self._do_log('BattleDungeonResult_V2/hall_of_dark_small_essence_drop.json')
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.items.filter(item__category=GameItem.CATEGORY_ESSENCE).count(), 1)
         item_drop = log.items.filter(item__category=GameItem.CATEGORY_ESSENCE).first()
-        self.assertEqual(item_drop.item.com2us_id, 11002)
+        self.assertEqual(item_drop.item.com2us_id, 11005)
         self.assertEqual(item_drop.quantity, 5)
 
     def test_summon_scroll_drop(self):
-        self._do_log('BattleDungeonResult/giants_b5_unknown_scroll_x7_drop.json')
+        self._do_log('BattleDungeonResult_V2/giants_b5_unknown_scroll.json')
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.items.filter(item__category=GameItem.CATEGORY_SUMMON_SCROLL).count(), 1)
         item_drop = log.items.filter(item__category=GameItem.CATEGORY_SUMMON_SCROLL).first()
         self.assertEqual(item_drop.item.com2us_id, 1)
         self.assertEqual(item_drop.quantity, 7)
 
-    def test_secret_dungeon_drop(self):
-        self._do_log('BattleDungeonResult/hall_of_fire_secret_dungeon.json')
-        log = models.DungeonLog.objects.first()
-        self.assertEqual(log.secret_dungeons.count(), 1)
-        sd_drop = log.secret_dungeons.first()
-        self.assertEqual(sd_drop.level.dungeon.com2us_id, 2033)
+    # TODO: Get secret dungeon log
+    # def test_secret_dungeon_drop(self):
+        # self._do_log('BattleDungeonResult_V2/.json')
+        # log = models.DungeonLog.objects.first()
+        # self.assertEqual(log.secret_dungeons.count(), 1)
+        # sd_drop = log.secret_dungeons.first()
+        # self.assertEqual(sd_drop.level.dungeon.com2us_id, 2033)
 
     def test_monster_drop(self):
-        self._do_log('BattleDungeonResult/hall_of_fire_angelmon.json')
+        self._do_log('BattleDungeonResult_V2/giants_b5_rainbowmon_drop.json')
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.monsters.count(), 1)
 
@@ -203,7 +199,7 @@ class DimensionHoleTests(BaseLogTest):
         self.assertTrue(log.success)
 
     def test_dungeon_failed(self):
-        self._do_log('BattleDungeonResult/giants_b10_failed.json')
+        self._do_log('BattleDungeonResult_V2/giants_b10_failed.json')
         log = models.DungeonLog.objects.first()
         self.assertFalse(log.success)
 

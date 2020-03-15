@@ -738,13 +738,6 @@ class DungeonLog(LogEntry):
         log_entry.parse_rewards(log_data['response']['reward'])
         log_entry.parse_changed_item_list(log_data['response']['changed_item_list'])
 
-        # Parse secret dungeon drop
-        sd_info = log_data['response'].get('instance_info')
-        if sd_info:
-            sd_reward = DungeonSecretDungeonDrop.parse(sd_info)
-            sd_reward.log = log_entry
-            sd_reward.save()
-
     @classmethod
     def parse_dimension_hole_result(cls, summoner, log_data):
         if log_data['response']['practice_mode']:
@@ -852,14 +845,29 @@ class DungeonLog(LogEntry):
             info = obj["info"]
             view = obj["view"]
 
+            # parse common item drop
             if item_type in ItemDrop.PARSE_ITEM_TYPES:
                 changed_items_object.append(DungeonItemDrop.parse(
                     item_master_type=view["item_master_type"],
                     item_master_id=view["item_master_id"],
                     item_quantity=view["item_quantity"],
                 ))
+            # parse unit monster drop
+            elif item_type == GameItem.CATEGORY_MONSTER:
+                changed_items_object.append(DungeonMonsterDrop.parse(
+                    unit_master_id=view["item_master_id"],
+                    unit_class=view["unit_class"],
+                    unit_level=view["unit_level"],
+                ))
+            # parse rune drop
             elif item_type == GameItem.CATEGORY_RUNE:
                 changed_items_object.append(DungeonRuneDrop.parse(**info))
+            # parse secret dungeon drop
+            elif item_type == 30:
+                # Parse secret dungeon drop
+                sd_reward = DungeonSecretDungeonDrop.parse(info)
+                sd_reward.log = self  # TODO: Make sure this works
+                sd_reward.save()
             else:
                 raise ValueError(f"don't know how to parse changed item type {item_type} in {self.__class__.__name__}")
 

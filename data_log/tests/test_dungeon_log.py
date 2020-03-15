@@ -77,13 +77,12 @@ class CairosLogTests(BaseLogTest):
         self.assertEqual(item_drop.item.com2us_id, 1)
         self.assertEqual(item_drop.quantity, 7)
 
-    # TODO: Get secret dungeon log
-    # def test_secret_dungeon_drop(self):
-        # self._do_log('BattleDungeonResult_V2/.json')
-        # log = models.DungeonLog.objects.first()
-        # self.assertEqual(log.secret_dungeons.count(), 1)
-        # sd_drop = log.secret_dungeons.first()
-        # self.assertEqual(sd_drop.level.dungeon.com2us_id, 2033)
+    def test_secret_dungeon_drop(self):
+        self._do_log('BattleDungeonResult_V2/hall_of_light_b1_howl_secret_dungeon_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.secret_dungeons.count(), 1)
+        sd_drop = log.secret_dungeons.first()
+        self.assertEqual(sd_drop.level.dungeon.com2us_id, 1051)
 
     def test_monster_drop(self):
         self._do_log('BattleDungeonResult_V2/giants_b5_rainbowmon_drop.json')

@@ -4,7 +4,7 @@ from rest_framework.validators import UniqueValidator
 from rest_framework_nested.relations import NestedHyperlinkedIdentityField
 
 from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, \
-    RuneCraftInstance, TeamGroup, Team
+    RuneCraftInstance, TeamGroup, Team, RuneBuild
 
 
 class RuneInstanceSerializer(serializers.ModelSerializer):
@@ -29,6 +29,24 @@ class RuneInstanceSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['owner'] = self.context['request'].user.summoner
         return super(RuneInstanceSerializer, self).create(validated_data)
+
+
+class RuneBuildSerializer(serializers.ModelSerializer):
+    # url = NestedHyperlinkedIdentityField(
+    #     view_name='profile/rune-builds-detail',
+    #     parent_lookup_kwargs={'user_pk': 'owner__user__username'},
+    # )
+    runes = RuneInstanceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = RuneBuild
+        fields = [
+            'id',
+            # 'url',
+            'name',
+            'monster',
+            'runes',
+        ]
 
 
 class RuneCraftInstanceSerializer(serializers.ModelSerializer):
@@ -63,7 +81,8 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
     )
     # owner = serializers.HyperlinkedRelatedField(view_name='profiles-detail', source='owner.user.username', read_only=True)
     # TODO: Fix owner field so as not to cause a query explosion
-    runes = RuneInstanceSerializer(many=True, read_only=True, source='runeinstance_set')
+    default_build = RuneBuildSerializer(read_only=True)
+    rta_build = RuneBuildSerializer(read_only=True)
 
     class Meta:
         model = MonsterInstance
@@ -72,7 +91,8 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
             'stars', 'level', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
             'base_hp', 'base_attack', 'base_defense', 'base_speed', 'base_crit_rate', 'base_crit_damage', 'base_resistance', 'base_accuracy',
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
-            'avg_rune_efficiency', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes', 'runes',
+            'default_build', 'rta_build', 'avg_rune_efficiency',
+            'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes',
         ]
 
     def create(self, validated_data):

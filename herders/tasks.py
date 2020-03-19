@@ -19,6 +19,9 @@ def com2us_data_import(data, user_id, import_options):
     imported_crafts = []
     imported_pieces = []
 
+    if not current_task.request.called_directly:
+        current_task.update_state(state=states.STARTED, meta={'step': 'preprocessing'})
+
     # Import the new objects
     with transaction.atomic():
         if import_options['clear_profile']:
@@ -134,6 +137,23 @@ def com2us_data_import(data, user_id, import_options):
             rune.assigned_to = rune.assigned_to
             rune.save()
             imported_runes.append(rune.pk)
+
+    if not current_task.request.called_directly:
+        current_task.update_state(state=states.STARTED, meta={'step': 'rta_builds'})
+
+    with transaction.atomic():
+        # Set RTA rune builds assignments
+        # Group by assignee first
+        assignments = {}
+        for assignment in results['rta_assignments']:
+            mon_com2us_id = assignment['occupied_id']
+            if mon_com2us_id not in assignments:
+                assignments[mon_com2us_id] = []
+            assignments[mon_com2us_id].append(assignment['rune_id'])
+
+        for mon_id, rune_ids in assignments.items():
+            mon = MonsterInstance.objects.get(com2us_id=mon_id)
+            mon.rta_build.runes.set(RuneInstance.objects.filter(com2us_id__in=rune_ids))
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'crafts'})

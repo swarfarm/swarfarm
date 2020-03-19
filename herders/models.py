@@ -284,6 +284,9 @@ class MonsterInstance(models.Model, base.Stars):
     class Meta:
         ordering = ['-stars', '-level', 'monster__name']
 
+    def __str__(self):
+        return f'{self.get_stars_display()} {self.monster} Lv. {self.level}'
+
     def is_max_level(self):
         return self.level == self.monster.max_level_from_stars(self.stars)
 
@@ -390,7 +393,7 @@ class MonsterInstance(models.Model, base.Stars):
 
     # Stat bonuses from default rune set
     @cached_property
-    def get_rune_stats(self):
+    def rune_stats(self):
         return self._calc_rune_stats(self.base_stats.copy())
 
     @cached_property
@@ -413,35 +416,35 @@ class MonsterInstance(models.Model, base.Stars):
 
     @property
     def rune_hp(self):
-        return self.get_rune_stats.get(base.Stats.STAT_HP, 0.0)
+        return self.rune_stats.get(base.Stats.STAT_HP, 0.0)
 
     @property
     def rune_attack(self):
-        return self.get_rune_stats.get(base.Stats.STAT_ATK, 0.0)
+        return self.rune_stats.get(base.Stats.STAT_ATK, 0.0)
 
     @property
     def rune_defense(self):
-        return self.get_rune_stats.get(base.Stats.STAT_DEF, 0.0)
+        return self.rune_stats.get(base.Stats.STAT_DEF, 0.0)
 
     @property
     def rune_speed(self):
-        return self.get_rune_stats.get(base.Stats.STAT_SPD, 0.0)
+        return self.rune_stats.get(base.Stats.STAT_SPD, 0.0)
 
     @property
     def rune_crit_rate(self):
-        return self.get_rune_stats.get(base.Stats.STAT_CRIT_RATE_PCT, 0.0)
+        return self.rune_stats.get(base.Stats.STAT_CRIT_RATE_PCT, 0.0)
 
     @property
     def rune_crit_damage(self):
-        return self.get_rune_stats.get(base.Stats.STAT_CRIT_DMG_PCT, 0.0)
+        return self.rune_stats.get(base.Stats.STAT_CRIT_DMG_PCT, 0.0)
 
     @property
     def rune_resistance(self):
-        return self.get_rune_stats.get(base.Stats.STAT_RESIST_PCT, 0.0)
+        return self.rune_stats.get(base.Stats.STAT_RESIST_PCT, 0.0)
 
     @property
     def rune_accuracy(self):
-        return self.get_rune_stats.get(base.Stats.STAT_ACCURACY_PCT, 0.0)
+        return self.rune_stats.get(base.Stats.STAT_ACCURACY_PCT, 0.0)
 
     @property
     def avg_rune_efficiency(self):
@@ -616,8 +619,6 @@ class MonsterInstance(models.Model, base.Stars):
         if self.default_build is None or self.rta_build is None:
             self._initialize_rune_builds()
 
-        self.update_rune_builds()
-
     def _initialize_rune_builds(self):
         # Create empty rune builds if none exists
         added_rune_build = False
@@ -643,13 +644,6 @@ class MonsterInstance(models.Model, base.Stars):
         # Update default rune build from reverse relationship with RuneInstance assigned_to
         # TODO: Remove this once rune builds are default method of working with equipped runes
         self.default_build.runes.set(self.runeinstance_set.all())
-
-    def update_rune_builds(self):
-        self.default_build.save()
-        self.rta_build.save()
-
-    def __str__(self):
-        return f'{self.get_stars_display()} {self.monster} Lv. {self.level}'
 
 
 class MonsterPiece(models.Model):
@@ -835,6 +829,8 @@ class RuneBuild(models.Model):
         return stats
 
     def save(self, *args, **kwargs):
+        # Only if it already exists in the database, since runes m2m
+        # is not useable until RuneBuild object is saved first
         if self.pk:
             # Sum all stats on the runes
             stat_bonuses = {}

@@ -177,10 +177,27 @@ HubUserLoginSchema = {
             'type': 'array',
             'items': {'$ref': '#/definitions/monster'},
         },
+        'world_arena_rune_equip_list': {
+            'type': 'array',
+            'items': {
+                'rune_id': {'type': 'number'},
+                'occupied_id': {'type': 'number'},
+            }
+        },
         'wizard_id': {'type': 'number'},
         'command': {'type': 'string'},
     },
-    'required': ['unit_lock_list', 'building_list', 'rune_craft_item_list', 'deco_list', 'inventory_info', 'runes', 'wizard_info', 'unit_list'],
+    'required': [
+        'unit_lock_list',
+        'building_list',
+        'rune_craft_item_list',
+        'deco_list',
+        'inventory_info',
+        'runes',
+        'world_arena_rune_equip_list',
+        'wizard_info',
+        'unit_list'
+    ],
 }
 
 VisitFriendSchema = {

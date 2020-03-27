@@ -7,13 +7,16 @@ from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance,
     RuneCraftInstance, TeamGroup, Team, RuneBuild
 
 
-class RuneInstanceSerializer(serializers.ModelSerializer):
+class AddOwnerOnCreate:
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user.summoner
+
+
+class RuneInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/runes-detail',
         parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
-    # owner = serializers.HyperlinkedRelatedField(view_name='profiles-detail', source='owner.user.username', read_only=True)
-    # TODO: Fix owner field so as not to cause a query explosion
 
     class Meta:
         model = RuneInstance
@@ -26,40 +29,25 @@ class RuneInstanceSerializer(serializers.ModelSerializer):
             'substats', 'substat_values', 'substats_enchanted', 'substats_grind_value',
         ]
 
-    def create(self, validated_data):
-        validated_data['owner'] = self.context['request'].user.summoner
-        return super(RuneInstanceSerializer, self).create(validated_data)
 
-
-class RuneBuildSerializer(serializers.ModelSerializer):
-    # url = NestedHyperlinkedIdentityField(
-    #     view_name='profile/rune-builds-detail',
-    #     parent_lookup_kwargs={'user_pk': 'owner__user__username'},
-    # )
+class RuneBuildSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     runes = RuneInstanceSerializer(many=True, read_only=True)
 
     class Meta:
         model = RuneBuild
         fields = [
             'id',
-            # 'url',
             'name',
             'monster',
             'runes',
         ]
 
 
-class RuneCraftInstanceSerializer(serializers.ModelSerializer):
-    url = NestedHyperlinkedIdentityField(
-        view_name='profile/rune-crafts-detail',
-        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
-    )
-
+class RuneCraftInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     class Meta:
         model = RuneCraftInstance
         fields = (
             'id',
-            'url',
             'com2us_id',
             'type',
             'rune',
@@ -69,25 +57,15 @@ class RuneCraftInstanceSerializer(serializers.ModelSerializer):
             'quantity',
         )
 
-    def create(self, validated_data):
-        validated_data['owner'] = self.context['request'].user.summoner
-        return super(RuneCraftInstanceSerializer, self).create(validated_data)
 
-
-class MonsterInstanceSerializer(serializers.ModelSerializer):
-    url = NestedHyperlinkedIdentityField(
-        view_name='profile/monsters-detail',
-        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
-    )
-    # owner = serializers.HyperlinkedRelatedField(view_name='profiles-detail', source='owner.user.username', read_only=True)
-    # TODO: Fix owner field so as not to cause a query explosion
-    default_build = RuneBuildSerializer(read_only=True)
-    rta_build = RuneBuildSerializer(read_only=True)
+class MonsterInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
+    # default_build = RuneBuildSerializer(read_only=True)
+    # rta_build = RuneBuildSerializer(read_only=True)
 
     class Meta:
         model = MonsterInstance
         fields = [
-            'id', 'url', 'com2us_id', 'created', 'monster', 'custom_name',
+            'id', 'com2us_id', 'created', 'monster', 'custom_name',
             'stars', 'level', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
             'base_hp', 'base_attack', 'base_defense', 'base_speed', 'base_crit_rate', 'base_crit_damage', 'base_resistance', 'base_accuracy',
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
@@ -95,12 +73,8 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
             'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes',
         ]
 
-    def create(self, validated_data):
-        validated_data['owner'] = self.context['request'].user.summoner
-        return super(MonsterInstanceSerializer, self).create(validated_data)
 
-
-class MonsterPieceSerializer(serializers.ModelSerializer):
+class MonsterPieceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/monster-pieces-detail',
         parent_lookup_kwargs={'user_pk': 'owner__user__username'},
@@ -109,10 +83,6 @@ class MonsterPieceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonsterPiece
         fields = ['id', 'url', 'monster', 'pieces']
-
-    def create(self, validated_data):
-        validated_data['owner'] = self.context['request'].user.summoner
-        return super(MonsterPieceSerializer, self).create(validated_data)
 
 
 class StorageSerializer(serializers.ModelSerializer):
@@ -130,7 +100,7 @@ class StorageSerializer(serializers.ModelSerializer):
         ]
 
 
-class BuildingInstanceSerializer(serializers.ModelSerializer):
+class BuildingInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/buildings-detail',
         parent_lookup_kwargs={'user_pk': 'owner__user__username'},
@@ -139,10 +109,6 @@ class BuildingInstanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuildingInstance
         fields = ['id', 'url', 'building', 'level']
-
-    def create(self, validated_data):
-        validated_data['owner'] = self.context['request'].user.summoner
-        return super(BuildingInstanceSerializer, self).create(validated_data)
 
 
 class SummonerSerializer(serializers.ModelSerializer):
@@ -209,7 +175,7 @@ class FullUserSerializer(SummonerSerializer):
             super(FullUserSerializer, self).update(summoner, summoner_data)
 
 
-class TeamGroupSerializer(serializers.ModelSerializer):
+class TeamGroupSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/team-groups-detail',
         parent_lookup_kwargs={'user_pk': 'owner__user__username'},
@@ -225,12 +191,8 @@ class TeamGroupSerializer(serializers.ModelSerializer):
         model = TeamGroup
         fields = ['id', 'url', 'name', 'teams']
 
-    def create(self, validated_data):
-        validated_data['owner'] = self.context['request'].user.summoner
-        return super(TeamGroupSerializer, self).create(validated_data)
 
-
-class TeamSerializer(serializers.ModelSerializer):
+class TeamSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/teams-detail',
         parent_lookup_kwargs={

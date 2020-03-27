@@ -113,14 +113,12 @@ class StorageViewSet(ProfileItemMixin, viewsets.ModelViewSet):
 
 
 class RuneBuildViewSet(ProfileItemMixin, viewsets.ModelViewSet):
-    queryset = RuneBuild.objects.all().select_related('owner__user').prefetch_related('runes')
+    queryset = RuneBuild.objects.all().prefetch_related('runes')
     serializer_class = RuneBuildSerializer
 
 
 class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = MonsterInstance.objects.all().select_related(
-        'owner',
-        'owner__user',
         'monster',
         'default_build',
         'rta_build'

@@ -77,9 +77,16 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     if view_mode == 'list':
         monster_queryset = monster_queryset.select_related(
-            'monster__leader_skill', 'monster__awakens_to', 'default_build',
+            'monster__leader_skill',
+            'monster__awakens_to',
+            'default_build',
         ).prefetch_related(
-            'monster__skills', 'runeinstance_set', 'team_set', 'team_leader', 'tags'
+            'monster__skills',
+            'default_build__runes',
+            'runeinstance_set',
+            'team_set',
+            'team_leader',
+            'tags'
         )
 
     form = FilterMonsterInstanceForm(request.POST or None, auto_id='id_filter_%s')

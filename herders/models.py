@@ -13,6 +13,7 @@ from timezone_field import TimeZoneField
 
 from bestiary.models import base, Monster, Building, Level, Rune, RuneCraft
 
+from django.db import connection
 
 # Individual user/monster collection models
 class Summoner(models.Model):
@@ -394,29 +395,42 @@ class MonsterInstance(models.Model, base.Stars):
     # Stat bonuses from default rune set
     @cached_property
     def rune_stats(self):
-        return self._calc_rune_stats(self.base_stats.copy())
+        print(f'rune_stats() prior to call: {len(connection.queries)}')
+        val = self._calc_rune_stats(self.base_stats.copy())
+        print(f'rune_stats() after to call: {len(connection.queries)}')
+        return val
 
     @cached_property
     def max_rune_stats(self):
         return self._calc_rune_stats(self.max_base_stats.copy())
 
     def _calc_rune_stats(self, base_stats):
+        print(f'_calc_rune_stats() prior to call: {len(connection.queries)}')
         if self.default_build is None:
             # TODO: Remove this once all monsters have a default build
             self._initialize_rune_builds()
 
+        print(f'_calc_rune_stats() after _initialize_rune_builds(): {len(connection.queries)}')
+
         rune_stats = self.default_build.rune_stats.copy()
+
+        print(f'_calc_rune_stats() after rune_stats = : {len(connection.queries)}')
 
         # Convert HP/ATK/DEF percentage bonuses to flat bonuses based on the base stats
         for stat, converts_to in base.Stats.CONVERTS_TO_FLAT_STAT.items():
             rune_stats[converts_to] += int(ceil(round(base_stats.get(converts_to, 0.0) * (rune_stats[stat] / 100.0), 3)))
             del rune_stats[stat]
 
+        print(f'_calc_rune_stats() after call: {len(connection.queries)}')
+
         return rune_stats
 
     @property
     def rune_hp(self):
-        return self.rune_stats.get(base.Stats.STAT_HP, 0.0)
+        print(f'rune_hp() prior to call: {len(connection.queries)}')
+        val = self.rune_stats.get(base.Stats.STAT_HP, 0.0)
+        print(f'rune_hp() after call: {len(connection.queries)}')
+        return val
 
     @property
     def rune_attack(self):
@@ -456,7 +470,10 @@ class MonsterInstance(models.Model, base.Stars):
 
     # Totals for stats including rune bonuses
     def hp(self):
-        return self.base_hp + self.rune_hp
+        print(f'hp() prior to call: {len(connection.queries)}')
+        val = self.base_hp + self.rune_hp
+        print(f'hp() after to call: {len(connection.queries)}')
+        return val
 
     def attack(self):
         return self.base_attack + self.rune_attack
@@ -621,29 +638,39 @@ class MonsterInstance(models.Model, base.Stars):
 
     def _initialize_rune_builds(self):
         # Create empty rune builds if none exists
+        print(f'_initialize_rune_builds() prior to call: {len(connection.queries)}')
         added_rune_build = False
         if self.default_build is None:
+            print(f'_initialize_rune_builds() prior to create default_build: {len(connection.queries)}')
             self.default_build = RuneBuild.objects.create(
-                owner=self.owner,
-                monster=self,
+                owner_id=self.owner.pk,
+                monster_id=self.pk,
                 name='Equipped Runes',
             )
             added_rune_build = True
 
+        print(f'_initialize_rune_builds() after added default build: {len(connection.queries)}')
+
         if self.rta_build is None:
             self.rta_build = RuneBuild.objects.create(
-                owner=self.owner,
-                monster=self,
+                owner_id=self.owner.pk,
+                monster_id=self.pk,
                 name='RTA Runes',
             )
             added_rune_build = True
 
+        print(f'_initialize_rune_builds() after added rta build: {len(connection.queries)}')
+
         if added_rune_build:
             self.save()
+
+        print(f'_initialize_rune_builds() after save: {len(connection.queries)}')
 
         # Update default rune build from reverse relationship with RuneInstance assigned_to
         # TODO: Remove this once rune builds are default method of working with equipped runes
         self.default_build.runes.set(self.runeinstance_set.all())
+
+        print(f'_initialize_rune_builds() after runes.set(): {len(connection.queries)}')
 
 
 class MonsterPiece(models.Model):
@@ -738,7 +765,7 @@ class RuneInstance(Rune):
 
 
 class RuneBuild(models.Model):
-    models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, default='')
     runes = models.ManyToManyField(RuneInstance)
@@ -761,8 +788,8 @@ class RuneBuild(models.Model):
     # TODO: Tagging
 
     def __str__(self):
-        # return f'{self.name} - {self.rune_set_summary}'
-        return f'{self.name}'
+        return f'{self.name} - {self.rune_set_summary}'
+        # return f'{self.name}'
 
     @cached_property
     def rune_set_summary(self):
@@ -831,7 +858,12 @@ class RuneBuild(models.Model):
     def save(self, *args, **kwargs):
         # Only if it already exists in the database, since runes m2m
         # is not useable until RuneBuild object is saved first
-        if self.pk:
+
+        print(f'RuneBuild.save() prior to call: {len(connection.queries)}')
+
+        if not self._state.adding:
+            print(f'self.pk exists')
+
             # Sum all stats on the runes
             stat_bonuses = {}
             for stat, _ in RuneInstance.STAT_CHOICES:
@@ -841,11 +873,15 @@ class RuneBuild(models.Model):
                 for rune in self.runes.all():
                     stat_bonuses[stat] += rune.get_stat(stat)
 
+            print(f'RuneBuild.save() after summing stats: {len(connection.queries)}')
+
             # Add in any active set bonuses
             for active_set in self.active_rune_sets:
                 stat = RuneInstance.RUNE_SET_BONUSES[active_set]['stat']
                 if stat:
                     stat_bonuses[stat] += RuneInstance.RUNE_SET_BONUSES[active_set]['value']
+
+            print(f'RuneBuild.save() after getting active set bonuses: {len(connection.queries)}')
 
             self.hp = stat_bonuses.get(base.Stats.STAT_HP, 0)
             self.hp_pct = stat_bonuses.get(base.Stats.STAT_HP_PCT, 0)
@@ -860,7 +896,10 @@ class RuneBuild(models.Model):
             self.accuracy = stat_bonuses.get(base.Stats.STAT_ACCURACY_PCT, 0)
             self.avg_efficiency = self.runes.aggregate(Avg('efficiency'))['efficiency__avg'] or 0.0
 
+        print(f'RuneBuild.save() prior to super() call: {len(connection.queries)}')
+
         super().save(*args, **kwargs)
+        print(f'RuneBuild.save() after super() call: {len(connection.queries)}')
 
 
 class RuneCraftInstance(RuneCraft):

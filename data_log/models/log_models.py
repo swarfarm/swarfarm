@@ -709,7 +709,7 @@ class DungeonLog(LogEntry):
         except Level.DoesNotExist:
             # Create a placeholder level for later updating
             try:
-                d = Dungeon.objects.get(category=Dungeon.CATEGORY_CAIROS, com2us_id=dungeon_id)
+                d = Dungeon.objects.get(category=Dungeon.CATEGORY_DIMENSIONAL_HOLE, com2us_id=dungeon_id)
             except Dungeon.DoesNotExist:
                 # Create the dungeon
                 d = Dungeon.objects.create(

@@ -722,7 +722,6 @@ class MonsterInstance(models.Model, base.Stars):
                 monster_id=self.pk,
                 name='Equipped Runes',
             )
-            self.default_build.runes.set(self.runeinstance_set.all())
 
         if self.rta_build is None:
             self.rta_build = RuneBuild.objects.create(
@@ -734,6 +733,8 @@ class MonsterInstance(models.Model, base.Stars):
 
         if added:
             self.save()
+
+        self.default_build.runes.set(self.runeinstance_set.all())
 
 
 class MonsterPiece(models.Model):

@@ -172,7 +172,7 @@ def com2us_data_import(data, user_id, import_options):
 
 
 @shared_task
-def resave_monsters():
+def resave_monsters_with_no_rune_build():
     mons = MonsterInstance.objects.filter(default_build__isnull=True)[:1000]
     for m in mons:
         m.save()

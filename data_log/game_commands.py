@@ -69,9 +69,9 @@ active_log_commands = {
         schemas.battle_dungeon_start,
         dispatch_dungeon_wave_parse
     ),
-    'BattleDungeonResult': GameApiCommand(
-        schemas.battle_dungeon_result,
-        models.DungeonLog.parse_dungeon_result
+    'BattleDungeonResult_V2': GameApiCommand(
+        schemas.battle_dungeon_result_v2,
+        models.DungeonLog.parse_dungeon_result_v2
     ),
     'BattleRiftDungeonResult': GameApiCommand(
         schemas.battle_rift_dungeon_result,
@@ -102,7 +102,7 @@ active_log_commands = {
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
-accepted_api_params['__version'] = 7
+accepted_api_params['__version'] = 8
 
 
 # Utility functions

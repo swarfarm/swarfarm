@@ -647,7 +647,7 @@ class DungeonLog(LogEntry):
         log_entry.parse_rewards(log_data['response']['reward'])
 
     @classmethod
-    def parse_dungeon_result(cls, summoner, log_data):
+    def parse_dungeon_result_v2(cls, summoner, log_data):
         dungeon_id = log_data['request']['dungeon_id']
         floor = log_data['request']['stage_id']
 
@@ -687,13 +687,7 @@ class DungeonLog(LogEntry):
         log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
         log_entry.save()
         log_entry.parse_rewards(log_data['response']['reward'])
-
-        # Parse secret dungeon drop
-        sd_info = log_data['response'].get('instance_info')
-        if sd_info:
-            sd_reward = DungeonSecretDungeonDrop.parse(sd_info)
-            sd_reward.log = log_entry
-            sd_reward.save()
+        log_entry.parse_changed_item_list(log_data['response']['changed_item_list'])
 
     @classmethod
     def parse_dimension_hole_result(cls, summoner, log_data):
@@ -715,7 +709,7 @@ class DungeonLog(LogEntry):
         except Level.DoesNotExist:
             # Create a placeholder level for later updating
             try:
-                d = Dungeon.objects.get(category=Dungeon.CATEGORY_CAIROS, com2us_id=dungeon_id)
+                d = Dungeon.objects.get(category=Dungeon.CATEGORY_DIMENSIONAL_HOLE, com2us_id=dungeon_id)
             except Dungeon.DoesNotExist:
                 # Create the dungeon
                 d = Dungeon.objects.create(
@@ -781,6 +775,53 @@ class DungeonLog(LogEntry):
 
         # Save parsed rewards
         for reward in reward_objs:
+            if reward is not None:
+                reward.log = self
+                reward.save()
+
+    def parse_changed_item_list(self, changed_item_list):
+        if not changed_item_list:
+            # If there are changed items, it's an empty list. Exit early since later code assumes a dict
+            return
+
+        # Parse each reward
+        changed_items_object = []
+        for obj in changed_item_list:
+            # check if all required keys exist in the dict
+            for k in ("type", "info", "view"):
+                if k not in obj:
+                    raise ValueError(f"missing key {k} in {self.__class__.__name__}")
+
+            item_type = obj["type"]
+            info = obj["info"]
+            view = obj["view"]
+
+            # parse common item drop
+            if item_type in ItemDrop.PARSE_ITEM_TYPES:
+                changed_items_object.append(DungeonItemDrop.parse(
+                    item_master_type=view["item_master_type"],
+                    item_master_id=view["item_master_id"],
+                    item_quantity=view["item_quantity"],
+                ))
+            # parse unit monster drop
+            elif item_type == GameItem.CATEGORY_MONSTER:
+                changed_items_object.append(DungeonMonsterDrop.parse(
+                    unit_master_id=view["item_master_id"],
+                    unit_class=view["unit_class"],
+                    unit_level=view["unit_level"],
+                ))
+            # parse rune drop
+            elif item_type == GameItem.CATEGORY_RUNE:
+                changed_items_object.append(DungeonRuneDrop.parse(**info))
+            # parse secret dungeon drop
+            elif item_type == GameItem.CATEGORY_SECRET_DUNGEON:
+                # Parse secret dungeon drop
+                changed_items_object.append(DungeonSecretDungeonDrop.parse(info))
+            else:
+                raise ValueError(f"don't know how to parse changed item type {item_type} in {self.__class__.__name__}")
+
+        # Save parsed rewards
+        for reward in changed_items_object:
             if reward is not None:
                 reward.log = self
                 reward.save()

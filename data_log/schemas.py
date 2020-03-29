@@ -289,10 +289,10 @@ battle_dungeon_start = {
     'required': ['request', 'response'],
 }
 
-battle_dungeon_result = {
+battle_dungeon_result_v2 = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
-    'id': 'http://swarfarm.com/schemas/battle_dungeon_result.json',
-    'title': 'battle_dungeon_result',
+    'id': 'http://swarfarm.com/schemas/battle_dungeon_result_v2.json',
+    'title': 'battle_dungeon_result_v2',
     'type': 'object',
     'properties': {
         'request': {
@@ -320,12 +320,13 @@ battle_dungeon_result = {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
                 'reward': {'type': 'object'},
-                'instance_info': {'type': ['null', 'object']},
+                'changed_item_list': {'type': 'array'},
             },
             'required': [
                 'tzone',
                 'tvalue',
                 'reward',
+                'changed_item_list',
             ]
         }
     },

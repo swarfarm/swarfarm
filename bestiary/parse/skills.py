@@ -108,10 +108,11 @@ def skills():
         raw = preprocess_errata(master_id, raw)
 
         # Parse basic skill information from game data
-        level_up_text = ''
+        level_up_bonuses = []
         for upgrade_id, amount in raw['level']:
             upgrade = SkillUpgrade.COM2US_UPGRADE_MAP[upgrade_id]
-            level_up_text += SkillUpgrade.UPGRADE_CHOICES[upgrade][1].format(amount) + '\n'
+            level_up_bonuses.append(SkillUpgrade.UPGRADE_CHOICES[upgrade][1].format(amount))
+        level_up_text = '\n'.join(level_up_bonuses)
 
         multiplier_formula = _simplify_multiplier(raw['fun data'])
         scaling_stats, multiplier_formula = _extract_scaling_stats(multiplier_formula)

@@ -1,3 +1,5 @@
+from django.db.models import Sum
+
 from bestiary.models import Monster, AwakenCost, MonsterCraftCost, Skill, LeaderSkill, Elements, GameItem, Stats
 from bestiary.models.monsters import AwakenBonusType
 from bestiary.parse import game_data
@@ -97,6 +99,13 @@ def monsters():
             # Already awakened monsters do not store the description
             awaken_bonus_desc = ''
 
+        skill_set = Skill.objects.filter(com2us_id__in=raw['base skill'])
+        skill_max_sum = skill_set.aggregate(skill_max_sum=Sum('max_level'))['skill_max_sum']
+        if skill_max_sum:
+            skill_ups_to_max = skill_max_sum - skill_set.count()
+        else:
+            skill_ups_to_max = None
+
         defaults = {
             'name': game_data.strings.MONSTER_NAMES.get(master_id, raw['unit name']),
             'image_filename': 'unit_icon_{0:04d}_{1}_{2}.png'.format(*raw['thumbnail']),
@@ -138,12 +147,13 @@ def monsters():
             'awaken_mats_magic_mid': awaken_materials.get(12006, 0),
             'awaken_mats_magic_high': awaken_materials.get(13006, 0),
             'leader_skill': _get_leader_skill(master_id),
+            'skill_ups_to_max': skill_ups_to_max,
         }
 
         monster = update_bestiary_obj(Monster, master_id, defaults)
 
         # Update related fields
-        monster.skills.set(Skill.objects.filter(com2us_id__in=raw['base skill']))
+        monster.skills.set(skill_set)
 
         # Awaken cost
         awaken_obj_ids = []

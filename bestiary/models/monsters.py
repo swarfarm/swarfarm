@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from enum import IntEnum
+from math import log, exp
 
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db import models
@@ -163,7 +164,21 @@ class Monster(models.Model, base.Elements, base.Stars):
         else:
             return 10 + self.base_stars * 5
 
-    def get_stats(self):
+    def get_stats(self, grade, level):
+        all_stats = {
+            base.Stats.STAT_HP: self._calculate_actual_stat(self.raw_hp, grade, level) * 15,
+            base.Stats.STAT_DEF: self._calculate_actual_stat(self.raw_defense, grade, level),
+            base.Stats.STAT_ATK: self._calculate_actual_stat(self.raw_attack, grade, level),
+            base.Stats.STAT_SPD: self.speed,
+            base.Stats.STAT_CRIT_RATE_PCT: self.crit_rate,
+            base.Stats.STAT_CRIT_DMG_PCT: self.crit_damage,
+            base.Stats.STAT_RESIST_PCT: self.resistance,
+            base.Stats.STAT_ACCURACY_PCT: self.accuracy,
+        }
+
+        return all_stats
+
+    def get_stats_for_all_stars(self):
         from collections import OrderedDict
 
         start_grade = self.base_stars
@@ -207,6 +222,9 @@ class Monster(models.Model, base.Elements, base.Stars):
 
     @staticmethod
     def _calculate_actual_stat(stat, grade, level):
+        if stat is None:
+            return None
+
         # Magic multipliers taken from summoner's war wikia calculator. Used to calculate stats for lvl 1 and lvl MAX
         magic_multipliers = [
             {'1': 1.0, 'max': 1.9958},
@@ -228,7 +246,6 @@ class Monster(models.Model, base.Elements, base.Stars):
         else:
             # Use exponential function in format value=ae^(bx)
             # a=stat_lvl_1*e^(-b)
-            from math import log, exp
             b_coeff = log(stat_lvl_max / stat_lvl_1) / (max_lvl - 1)
 
             return int(round((stat_lvl_1 * exp(-b_coeff)) * exp(b_coeff * level)))

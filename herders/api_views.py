@@ -112,10 +112,19 @@ class StorageViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         return obj
 
 
+class RuneBuildViewSet(ProfileItemMixin, viewsets.ModelViewSet):
+    queryset = RuneBuild.objects.all().prefetch_related('runes')
+    serializer_class = RuneBuildSerializer
+
+
 class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
-    queryset = MonsterInstance.objects.all().select_related('owner', 'owner__user').prefetch_related(
-        'runeinstance_set',
-        'runeinstance_set__owner__user',
+    queryset = MonsterInstance.objects.all().select_related(
+        'monster',
+        'default_build',
+        'rta_build'
+    ).prefetch_related(
+        'default_build__runes',
+        'rta_build__runes',
     )
     serializer_class = MonsterInstanceSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
@@ -138,7 +147,7 @@ class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'rune_resistance',
         'base_accuracy',
         'rune_accuracy',
-        'avg_rune_efficiency',
+        'avg_efficiency',
         'fodder',
         'in_storage',
         'ignore_for_fusion',

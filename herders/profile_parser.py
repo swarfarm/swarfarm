@@ -309,6 +309,7 @@ def parse_sw_json(data, owner, options):
         'crafts': parsed_rune_crafts,
         'inventory': parsed_inventory,
         'buildings': parsed_buildings,
+        'rta_assignments': data['world_arena_rune_equip_list']
     }
 
     return import_results

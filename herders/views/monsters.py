@@ -77,9 +77,16 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
     if view_mode == 'list':
         monster_queryset = monster_queryset.select_related(
-            'monster__leader_skill', 'monster__awakens_to'
+            'monster__leader_skill',
+            'monster__awakens_to',
+            'default_build',
         ).prefetch_related(
-            'monster__skills', 'runeinstance_set', 'team_set', 'team_leader', 'tags'
+            'monster__skills',
+            'default_build__runes',
+            'runeinstance_set',
+            'team_set',
+            'team_leader',
+            'tags'
         )
 
     form = FilterMonsterInstanceForm(request.POST or None, auto_id='id_filter_%s')
@@ -382,7 +389,7 @@ def monster_instance_view_runes(request, profile_name, instance_id):
 @username_case_redirect
 def monster_instance_view_stats(request, profile_name, instance_id):
     try:
-        instance = MonsterInstance.objects.select_related('monster').get(pk=instance_id)
+        instance = MonsterInstance.objects.select_related('monster', 'default_build').get(pk=instance_id)
     except ObjectDoesNotExist:
         return HttpResponseBadRequest()
 

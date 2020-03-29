@@ -6,12 +6,14 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Avg
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from timezone_field import TimeZoneField
 
-from bestiary.models import Monster, Building, Level, Rune, RuneCraft
+from bestiary.models import base, Monster, Building, Level, Rune, RuneCraft
 
+from django.db import connection
 
 # Individual user/monster collection models
 class Summoner(models.Model):
@@ -247,7 +249,7 @@ class MonsterTag(models.Model):
         return mark_safe(self.name)
 
 
-class MonsterInstance(models.Model):
+class MonsterInstance(models.Model, base.Stars):
     PRIORITY_DONE = 0
     PRIORITY_LOW = 1
     PRIORITY_MED = 2
@@ -264,7 +266,7 @@ class MonsterInstance(models.Model):
     monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     created = models.DateTimeField(blank=True, null=True)
-    stars = models.IntegerField()
+    stars = models.IntegerField(choices=base.Stars.STAR_CHOICES)
     level = models.IntegerField()
     skill_1_level = models.IntegerField(blank=True, default=1)
     skill_2_level = models.IntegerField(blank=True, default=1)
@@ -277,28 +279,25 @@ class MonsterInstance(models.Model):
     tags = models.ManyToManyField(MonsterTag, blank=True)
     notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
     custom_name = models.CharField(default='', max_length=20, blank=True)
+    default_build = models.ForeignKey('RuneBuild', null=True, on_delete=models.SET_NULL, related_name='default_build')
+    rta_build = models.ForeignKey('RuneBuild', null=True, on_delete=models.SET_NULL, related_name='rta_build')
 
     # Calculated fields (on save)
-    base_hp = models.IntegerField(blank=True, default=0)
     rune_hp = models.IntegerField(blank=True, default=0)
-    base_attack = models.IntegerField(blank=True, default=0)
     rune_attack = models.IntegerField(blank=True, default=0)
-    base_defense = models.IntegerField(blank=True, default=0)
     rune_defense = models.IntegerField(blank=True, default=0)
-    base_speed = models.IntegerField(blank=True, default=0)
     rune_speed = models.IntegerField(blank=True, default=0)
-    base_crit_rate = models.IntegerField(blank=True, default=0)
     rune_crit_rate = models.IntegerField(blank=True, default=0)
-    base_crit_damage = models.IntegerField(blank=True, default=0)
     rune_crit_damage = models.IntegerField(blank=True, default=0)
-    base_resistance = models.IntegerField(blank=True, default=0)
     rune_resistance = models.IntegerField(blank=True, default=0)
-    base_accuracy = models.IntegerField(blank=True, default=0)
     rune_accuracy = models.IntegerField(blank=True, default=0)
     avg_rune_efficiency = models.FloatField(blank=True, null=True)
 
     class Meta:
         ordering = ['-stars', '-level', 'monster__name']
+
+    def __str__(self):
+        return f'{self.get_stars_display()} {self.monster} Lv. {self.level}'
 
     def is_max_level(self):
         return self.level == self.monster.max_level_from_stars(self.stars)
@@ -351,159 +350,146 @@ class MonsterInstance(models.Model):
         rune_bonuses = []
 
         for rune_count in rune_counts:
-            type_name = RuneInstance.TYPE_CHOICES[rune_count['type'] - 1][1]
             required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[rune_count['type']]
             present = rune_count['count']
             bonus_text = RuneInstance.RUNE_SET_BONUSES[rune_count['type']]['description']
 
             if present >= required:
-                rune_bonuses.extend([type_name + ' ' + bonus_text] * (present // required))
+                rune_bonuses.extend([bonus_text] * (present // required))
 
         return rune_bonuses
 
     def get_avg_rune_efficiency(self):
-        efficiencies = sum(self.runeinstance_set.filter(efficiency__isnull=False).values_list('efficiency', flat=True))
-        return efficiencies / 6
+        # TODO: Switch after switching to rune builds
+        # return self.default_build.avg_efficiency
+        return self.runeinstance_set.aggregate(Avg('efficiency'))['efficiency__avg'] or 0.0
 
-    # Stat callables. Base = monster's own stat. Rune = amount gained from runes. Stat by itself is combined total
-    def calc_base_hp(self):
-        return self.monster.actual_hp(self.stars, self.level)
+    # Stat values for current monster grade/level
+    @cached_property
+    def base_stats(self):
+        return self.monster.get_stats(self.stars, self.level)
 
+    @cached_property
+    def max_base_stats(self):
+        return self.monster.get_stats(6, 40)
+
+    @property
+    def base_hp(self):
+        return self.base_stats[base.Stats.STAT_HP]
+
+    @property
+    def base_attack(self):
+        return self.base_stats[base.Stats.STAT_ATK]
+
+    @property
+    def base_defense(self):
+        return self.base_stats[base.Stats.STAT_DEF]
+
+    @property
+    def base_speed(self):
+        return self.base_stats[base.Stats.STAT_SPD]
+
+    @property
+    def base_crit_rate(self):
+        return self.base_stats[base.Stats.STAT_CRIT_RATE_PCT]
+
+    @property
+    def base_crit_damage(self):
+        return self.base_stats[base.Stats.STAT_CRIT_DMG_PCT]
+
+    @property
+    def base_resistance(self):
+        return self.base_stats[base.Stats.STAT_RESIST_PCT]
+
+    @property
+    def base_accuracy(self):
+        return self.base_stats[base.Stats.STAT_ACCURACY_PCT]
+
+    # Stat bonuses from default rune set
+    # TODO: Use this code after switching to rune builds
+    # @cached_property
+    # def rune_stats(self):
+    #     val = self._calc_rune_stats(self.base_stats.copy())
+    #     return val
+    #
+    # @cached_property
+    # def max_rune_stats(self):
+    #     return self._calc_rune_stats(self.max_base_stats.copy())
+    #
+    # def _calc_rune_stats(self, base_stats):
+    #     rune_stats = self.default_build.rune_stats.copy()
+    #
+    #     # Convert HP/ATK/DEF percentage bonuses to flat bonuses based on the base stats
+    #     for stat, converts_to in base.Stats.CONVERTS_TO_FLAT_STAT.items():
+    #         rune_stats[converts_to] += int(ceil(round(base_stats.get(converts_to, 0.0) * (rune_stats[stat] / 100.0), 3)))
+    #         del rune_stats[stat]
+    #
+    #     return rune_stats
+    #
+    # @property
+    # def rune_hp(self):
+    #     val = self.rune_stats.get(base.Stats.STAT_HP, 0.0)
+    #     return val
+    #
+    # @property
+    # def rune_attack(self):
+    #     return self.rune_stats.get(base.Stats.STAT_ATK, 0.0)
+    #
+    # @property
+    # def rune_defense(self):
+    #     return self.rune_stats.get(base.Stats.STAT_DEF, 0.0)
+    #
+    # @property
+    # def rune_speed(self):
+    #     return self.rune_stats.get(base.Stats.STAT_SPD, 0.0)
+    #
+    # @property
+    # def rune_crit_rate(self):
+    #     return self.rune_stats.get(base.Stats.STAT_CRIT_RATE_PCT, 0.0)
+    #
+    # @property
+    # def rune_crit_damage(self):
+    #     return self.rune_stats.get(base.Stats.STAT_CRIT_DMG_PCT, 0.0)
+    #
+    # @property
+    # def rune_resistance(self):
+    #     return self.rune_stats.get(base.Stats.STAT_RESIST_PCT, 0.0)
+    #
+    # @property
+    # def rune_accuracy(self):
+    #     return self.rune_stats.get(base.Stats.STAT_ACCURACY_PCT, 0.0)
+    #
+    # @property
+    # def avg_rune_efficiency(self):
+    #     return self.default_build.avg_efficiency
+
+    # Totals for stats including rune bonuses
     def hp(self):
         return self.base_hp + self.rune_hp
-
-    def calc_base_attack(self):
-        return self.monster.actual_attack(self.stars, self.level)
 
     def attack(self):
         return self.base_attack + self.rune_attack
 
-    def calc_base_defense(self):
-        return self.monster.actual_defense(self.stars, self.level)
-
     def defense(self):
         return self.base_defense + self.rune_defense
-
-    def calc_base_speed(self):
-        return self.monster.speed
 
     def speed(self):
         return self.base_speed + self.rune_speed
 
-    def calc_base_crit_rate(self):
-        return self.monster.crit_rate
-
     def crit_rate(self):
         return self.base_crit_rate + self.rune_crit_rate
-
-    def calc_base_crit_damage(self):
-        return self.monster.crit_damage
 
     def crit_damage(self):
         return self.base_crit_damage + self.rune_crit_damage
 
-    def calc_base_resistance(self):
-        return self.monster.resistance
-
     def resistance(self):
         return self.base_resistance + self.rune_resistance
-
-    def calc_base_accuracy(self):
-        return self.monster.accuracy
 
     def accuracy(self):
         return self.base_accuracy + self.rune_accuracy
 
-    def get_base_stats(self):
-        return {
-            RuneInstance.STAT_HP: self.base_hp,
-            RuneInstance.STAT_HP_PCT: self.base_hp,
-            RuneInstance.STAT_DEF: self.base_defense,
-            RuneInstance.STAT_DEF_PCT: self.base_defense,
-            RuneInstance.STAT_SPD: self.base_speed,
-            RuneInstance.STAT_CRIT_RATE_PCT: self.base_crit_rate,
-            RuneInstance.STAT_CRIT_DMG_PCT: self.base_crit_damage,
-            RuneInstance.STAT_RESIST_PCT: self.base_resistance,
-            RuneInstance.STAT_ACCURACY_PCT: self.base_accuracy,
-        }
-
-    def get_max_level_stats(self):
-        max_base_hp = self.monster.actual_hp(6, 40)
-        max_base_atk = self.monster.actual_attack(6, 40)
-        max_base_def = self.monster.actual_defense(6, 40)
-
-        max_rune_stats = self.get_rune_stats(at_max_level=True)
-
-        stats = {
-            'base': {
-                'hp': max_base_hp,
-                'attack': max_base_atk,
-                'defense': max_base_def,
-            },
-            'rune': {
-                'hp': max_rune_stats[RuneInstance.STAT_HP] + max_rune_stats[RuneInstance.STAT_HP_PCT],
-                'attack': max_rune_stats[RuneInstance.STAT_ATK] + max_rune_stats[RuneInstance.STAT_ATK_PCT],
-                'defense': max_rune_stats[RuneInstance.STAT_DEF] + max_rune_stats[RuneInstance.STAT_DEF_PCT],
-            },
-        }
-
-        stats['deltas'] = {
-            'hp': int(round(float(stats['base']['hp'] + stats['rune']['hp']) / self.hp() * 100 - 100)),
-            'attack': int(round(float(stats['base']['attack'] + stats['rune']['attack']) / self.attack() * 100 - 100)),
-            'defense': int(round(float(stats['base']['defense'] + stats['rune']['defense']) / self.defense() * 100 - 100)),
-        }
-
-        return stats
-
-    def get_building_stats(self, area=Building.AREA_GENERAL):
-        owned_bldgs = BuildingInstance.objects.filter(
-            Q(building__element__isnull=True) | Q(building__element=self.monster.element),
-            owner=self.owner,
-            building__area=area,
-        ).select_related('building')
-
-        bonuses = {
-            Building.STAT_HP: 0,
-            Building.STAT_ATK: 0,
-            Building.STAT_DEF: 0,
-            Building.STAT_SPD: 0,
-            Building.STAT_CRIT_RATE_PCT: 0,
-            Building.STAT_CRIT_DMG_PCT: 0,
-            Building.STAT_RESIST_PCT: 0,
-            Building.STAT_ACCURACY_PCT: 0,
-        }
-
-        for b in owned_bldgs:
-            if b.building.affected_stat in bonuses.keys() and b.level > 0:
-                bonuses[b.building.affected_stat] += b.building.stat_bonus[b.level - 1]
-
-        return {
-            'hp': int(ceil(round(self.base_hp * (bonuses[Building.STAT_HP] / 100.0), 3))),
-            'attack': int(ceil(round(self.base_attack * (bonuses[Building.STAT_ATK] / 100.0), 3))),
-            'defense': int(ceil(round(self.base_defense * (bonuses[Building.STAT_DEF] / 100.0), 3))),
-            'speed': int(ceil(round(self.base_speed * (bonuses[Building.STAT_SPD] / 100.0), 3))),
-            'crit_rate': bonuses[Building.STAT_CRIT_RATE_PCT],
-            'crit_damage': bonuses[Building.STAT_CRIT_DMG_PCT],
-            'resistance': bonuses[Building.STAT_RESIST_PCT],
-            'accuracy': bonuses[Building.STAT_ACCURACY_PCT],
-        }
-
-    def get_guild_stats(self):
-        return self.get_building_stats(Building.AREA_GUILD)
-
-    def get_possible_skillups(self):
-        devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count()
-        family = MonsterInstance.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id).exclude(pk=self.pk).order_by('ignore_for_fusion')
-        pieces = MonsterPiece.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id)
-
-        return {
-            'devilmon': devilmon,
-            'family': family,
-            'pieces': pieces,
-            'none': devilmon + family.count() + pieces.count() == 0,
-        }
-
     def get_rune_stats(self, at_max_level=False):
+        # TODO: Delete after switching to rune builds
         if at_max_level:
             base_stats = {
                 RuneInstance.STAT_HP: self.monster.actual_hp(6, 40),
@@ -573,49 +559,81 @@ class MonsterInstance(models.Model):
 
         return stat_bonuses
 
-    def update_fields(self):
-        # Remove custom name if not a homunculus
-        if not self.monster.homunculus:
-            self.custom_name = ''
+    def get_max_level_stats(self):
+        max_base_hp = self.monster.actual_hp(6, 40)
+        max_base_atk = self.monster.actual_attack(6, 40)
+        max_base_def = self.monster.actual_defense(6, 40)
 
-        # Update base stats based on level
-        self.base_hp = self.calc_base_hp()
-        self.base_attack = self.calc_base_attack()
-        self.base_defense = self.calc_base_defense()
-        self.base_speed = self.calc_base_speed()
-        self.base_crit_rate = self.calc_base_crit_rate()
-        self.base_crit_damage = self.calc_base_crit_damage()
-        self.base_resistance = self.calc_base_resistance()
-        self.base_accuracy = self.calc_base_accuracy()
+        max_rune_stats = self.get_rune_stats(at_max_level=True)
 
-        stat_bonuses = self.get_rune_stats()
+        stats = {
+            'base': {
+                'hp': max_base_hp,
+                'attack': max_base_atk,
+                'defense': max_base_def,
+            },
+            'rune': {
+                'hp': max_rune_stats.get(RuneInstance.STAT_HP, 0.0),
+                'attack': max_rune_stats.get(RuneInstance.STAT_ATK, 0.0),
+                'defense': max_rune_stats.get(RuneInstance.STAT_DEF, 0.0),
+            },
+        }
 
-        # Add all the bonuses together to get final values.
-        self.rune_hp = stat_bonuses[RuneInstance.STAT_HP] + stat_bonuses[RuneInstance.STAT_HP_PCT]
-        self.rune_attack = stat_bonuses[RuneInstance.STAT_ATK] + stat_bonuses[RuneInstance.STAT_ATK_PCT]
-        self.rune_defense = stat_bonuses[RuneInstance.STAT_DEF] + stat_bonuses[RuneInstance.STAT_DEF_PCT]
-        self.rune_speed = stat_bonuses[RuneInstance.STAT_SPD]
-        self.rune_crit_rate = stat_bonuses[RuneInstance.STAT_CRIT_RATE_PCT]
-        self.rune_crit_damage = stat_bonuses[RuneInstance.STAT_CRIT_DMG_PCT]
-        self.rune_resistance = stat_bonuses[RuneInstance.STAT_RESIST_PCT]
-        self.rune_accuracy = stat_bonuses[RuneInstance.STAT_ACCURACY_PCT]
+        stats['deltas'] = {
+            'hp': int(round(float(stats['base']['hp'] + stats['rune']['hp']) / self.hp() * 100 - 100)),
+            'attack': int(round(float(stats['base']['attack'] + stats['rune']['attack']) / self.attack() * 100 - 100)),
+            'defense': int(round(float(stats['base']['defense'] + stats['rune']['defense']) / self.defense() * 100 - 100)),
+        }
 
-        self.avg_rune_efficiency = self.get_avg_rune_efficiency()
+        return stats
 
-        # Limit skill levels to the max level of the skill
-        skills = self.monster.skills.all()
+    def get_building_stats(self, area=Building.AREA_GENERAL):
+        owned_bldgs = BuildingInstance.objects.filter(
+            Q(building__element__isnull=True) | Q(building__element=self.monster.element),
+            owner=self.owner,
+            building__area=area,
+        ).select_related('building')
 
-        if len(skills) >= 1 and self.skill_1_level > skills[0].max_level:
-            self.skill_1_level = skills[0].max_level
+        bonuses = {
+            Building.STAT_HP: 0,
+            Building.STAT_ATK: 0,
+            Building.STAT_DEF: 0,
+            Building.STAT_SPD: 0,
+            Building.STAT_CRIT_RATE_PCT: 0,
+            Building.STAT_CRIT_DMG_PCT: 0,
+            Building.STAT_RESIST_PCT: 0,
+            Building.STAT_ACCURACY_PCT: 0,
+        }
 
-        if len(skills) >= 2 and self.skill_2_level > skills[1].max_level:
-            self.skill_2_level = skills[1].max_level
+        for b in owned_bldgs:
+            if b.building.affected_stat in bonuses.keys() and b.level > 0:
+                bonuses[b.building.affected_stat] += b.building.stat_bonus[b.level - 1]
 
-        if len(skills) >= 3 and self.skill_3_level > skills[2].max_level:
-            self.skill_3_level = skills[2].max_level
+        return {
+            'hp': int(ceil(round(self.base_hp * (bonuses[Building.STAT_HP] / 100.0), 3))),
+            'attack': int(ceil(round(self.base_attack * (bonuses[Building.STAT_ATK] / 100.0), 3))),
+            'defense': int(ceil(round(self.base_defense * (bonuses[Building.STAT_DEF] / 100.0), 3))),
+            'speed': int(ceil(round(self.base_speed * (bonuses[Building.STAT_SPD] / 100.0), 3))),
+            'crit_rate': bonuses[Building.STAT_CRIT_RATE_PCT],
+            'crit_damage': bonuses[Building.STAT_CRIT_DMG_PCT],
+            'resistance': bonuses[Building.STAT_RESIST_PCT],
+            'accuracy': bonuses[Building.STAT_ACCURACY_PCT],
+        }
 
-        if len(skills) >= 4 and self.skill_4_level > skills[3].max_level:
-            self.skill_4_level = skills[3].max_level
+    def get_guild_stats(self):
+        return self.get_building_stats(Building.AREA_GUILD)
+
+    def get_possible_skillups(self):
+        devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count()
+        family = MonsterInstance.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id).exclude(pk=self.pk).order_by('ignore_for_fusion')
+        pieces = MonsterPiece.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id)
+
+        return {
+            'devilmon': devilmon,
+            'family': family,
+            'pieces': pieces,
+            'none': devilmon + family.count() + pieces.count() == 0,
+        }
 
     def clean(self):
         from django.core.exceptions import ValidationError
@@ -656,11 +674,67 @@ class MonsterInstance(models.Model):
         super(MonsterInstance, self).clean()
 
     def save(self, *args, **kwargs):
-        self.update_fields()
+        # Remove custom name if not a homunculus
+        if not self.monster.homunculus:
+            self.custom_name = ''
+
+        # Update rune stats based on level
+        stat_bonuses = self.get_rune_stats()
+
+        # Add all the bonuses together to get final values.
+        self.rune_hp = stat_bonuses[RuneInstance.STAT_HP] + stat_bonuses[RuneInstance.STAT_HP_PCT]
+        self.rune_attack = stat_bonuses[RuneInstance.STAT_ATK] + stat_bonuses[RuneInstance.STAT_ATK_PCT]
+        self.rune_defense = stat_bonuses[RuneInstance.STAT_DEF] + stat_bonuses[RuneInstance.STAT_DEF_PCT]
+        self.rune_speed = stat_bonuses[RuneInstance.STAT_SPD]
+        self.rune_crit_rate = stat_bonuses[RuneInstance.STAT_CRIT_RATE_PCT]
+        self.rune_crit_damage = stat_bonuses[RuneInstance.STAT_CRIT_DMG_PCT]
+        self.rune_resistance = stat_bonuses[RuneInstance.STAT_RESIST_PCT]
+        self.rune_accuracy = stat_bonuses[RuneInstance.STAT_ACCURACY_PCT]
+
+        self.avg_rune_efficiency = self.get_avg_rune_efficiency()
+
+        # Limit skill levels to the max level of the skill
+        skills = self.monster.skills.all()
+
+        if len(skills) >= 1 and self.skill_1_level > skills[0].max_level:
+            self.skill_1_level = skills[0].max_level
+
+        if len(skills) >= 2 and self.skill_2_level > skills[1].max_level:
+            self.skill_2_level = skills[1].max_level
+
+        if len(skills) >= 3 and self.skill_3_level > skills[2].max_level:
+            self.skill_3_level = skills[2].max_level
+
+        if len(skills) >= 4 and self.skill_4_level > skills[3].max_level:
+            self.skill_4_level = skills[3].max_level
+
+        if self.default_build is None or self.rta_build is None:
+            self._initialize_rune_build()
+
         super(MonsterInstance, self).save(*args, **kwargs)
 
-    def __str__(self):
-        return str(self.monster) + ', ' + str(self.stars) + '*, Lvl ' + str(self.level)
+    def _initialize_rune_build(self):
+        # Create empty rune builds if none exists
+        added = False
+        if self.default_build is None:
+            self.default_build = RuneBuild.objects.create(
+                owner_id=self.owner.pk,
+                monster_id=self.pk,
+                name='Equipped Runes',
+            )
+
+        if self.rta_build is None:
+            self.rta_build = RuneBuild.objects.create(
+                owner_id=self.owner.pk,
+                monster_id=self.pk,
+                name='Real-Time Arena',
+            )
+            added = True
+
+        if added:
+            self.save()
+
+        self.default_build.runes.set(self.runeinstance_set.all())
 
 
 class MonsterPiece(models.Model):
@@ -697,6 +771,8 @@ class RuneInstance(Rune):
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
 
+    __original_assigned_to_id = None
+
     # Old substat fields to be removed later, but still used
     substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_1_value = models.IntegerField(null=True, blank=True)
@@ -713,6 +789,10 @@ class RuneInstance(Rune):
 
     class Meta:
         ordering = ['slot', 'type', 'level']
+
+    def __init__(self, *args, **kwargs):
+        super(RuneInstance, self).__init__(*args, **kwargs)
+        self.__original_assigned_to_id = self.assigned_to_id
 
     def clean(self):
         super().clean()
@@ -737,6 +817,137 @@ class RuneInstance(Rune):
 
             # Trigger stat calc update on the assigned monster
             self.assigned_to.save()
+
+            # Update default rune build on that monster
+            # TODO: Remove this once rune builds are default method of working with equipped runes
+            self.assigned_to._initialize_rune_build()
+        else:
+            # TODO: Remove this once rune builds are default method of working with equipped runes
+            if self.__original_assigned_to_id is not None and self.assigned_to is None:
+                # Rune was removed, update rune build on that monster
+                MonsterInstance.objects.get(pk=self.__original_assigned_to_id)._initialize_rune_build()
+
+
+class RuneBuild(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200, default='')
+    runes = models.ManyToManyField(RuneInstance)
+    avg_efficiency = models.FloatField(default=0)
+    monster = models.ForeignKey(MonsterInstance, on_delete=models.CASCADE)
+
+    # Stat bonuses
+    hp = models.IntegerField(default=0)
+    hp_pct = models.IntegerField(default=0)
+    attack = models.IntegerField(default=0)
+    attack_pct = models.IntegerField(default=0)
+    defense = models.IntegerField(default=0)
+    defense_pct = models.IntegerField(default=0)
+    speed = models.IntegerField(default=0)
+    crit_rate = models.IntegerField(default=0)
+    crit_damage = models.IntegerField(default=0)
+    resistance = models.IntegerField(default=0)
+    accuracy = models.IntegerField(default=0)
+
+    # TODO: Tagging
+
+    def __str__(self):
+        return f'{self.name} - {self.rune_set_summary}'
+        # return f'{self.name}'
+
+    @cached_property
+    def rune_set_summary(self):
+        num_equipped = self.runes.count()
+
+        if not num_equipped:
+            return 'Empty'
+
+        # Build list of set names
+        active_set_names = [
+            RuneInstance.TYPE_CHOICES[rune_type - 1][1] for rune_type in self.active_rune_sets
+        ]
+
+        # Check if broken set present
+        active_set_required_count = sum([
+            RuneInstance.RUNE_SET_BONUSES[rune_set]['count'] for rune_set in self.active_rune_sets
+        ])
+
+        if num_equipped > active_set_required_count:
+            active_set_names.append('Broken')
+
+        set_summary = '/'.join(active_set_names)
+
+        # Build main stat list for even slots
+        main_stat_summary = '/'.join([
+            rune.get_main_stat_display() for rune in self.runes.filter(slot__in=[2, 4, 6])
+        ])
+
+        return f'{set_summary} - {main_stat_summary}'
+
+    @cached_property
+    def rune_set_bonus_text(self):
+        return [
+            f'{RuneInstance.RUNE_SET_BONUSES[active_set]["description"]}' for active_set in self.active_rune_sets
+        ]
+
+    @cached_property
+    def active_rune_sets(self):
+        completed_sets = []
+
+        for set_counts in self.runes.values('type').order_by().annotate(count=Count('type')):
+            required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[set_counts['type']]
+            present = set_counts['count']
+            completed_sets.extend([set_counts['type']] * (present // required))
+
+        return completed_sets
+
+    @cached_property
+    def rune_stats(self):
+        stats = {
+            base.Stats.STAT_HP: self.hp,
+            base.Stats.STAT_HP_PCT: self.hp_pct,
+            base.Stats.STAT_ATK: self.attack,
+            base.Stats.STAT_ATK_PCT: self.attack_pct,
+            base.Stats.STAT_DEF: self.defense,
+            base.Stats.STAT_DEF_PCT: self.defense_pct,
+            base.Stats.STAT_SPD: self.speed,
+            base.Stats.STAT_CRIT_RATE_PCT: self.crit_rate,
+            base.Stats.STAT_CRIT_DMG_PCT: self.crit_damage,
+            base.Stats.STAT_RESIST_PCT: self.resistance,
+            base.Stats.STAT_ACCURACY_PCT: self.accuracy,
+        }
+
+        return stats
+
+    def update_stats(self):
+        # Sum all stats on the runes
+        stat_bonuses = {}
+        runes = self.runes.all()
+        for stat, _ in RuneInstance.STAT_CHOICES:
+            if stat not in stat_bonuses:
+                stat_bonuses[stat] = 0
+
+            for rune in runes:
+                stat_bonuses[stat] += rune.get_stat(stat)
+
+        # Add in any active set bonuses
+        for active_set in self.active_rune_sets:
+            stat = RuneInstance.RUNE_SET_BONUSES[active_set]['stat']
+            if stat:
+                stat_bonuses[stat] += RuneInstance.RUNE_SET_BONUSES[active_set]['value']
+
+        self.hp = stat_bonuses.get(base.Stats.STAT_HP, 0)
+        self.hp_pct = stat_bonuses.get(base.Stats.STAT_HP_PCT, 0)
+        self.attack = stat_bonuses.get(base.Stats.STAT_ATK, 0)
+        self.attack_pct = stat_bonuses.get(base.Stats.STAT_ATK_PCT, 0)
+        self.defense = stat_bonuses.get(base.Stats.STAT_DEF, 0)
+        self.defense_pct = stat_bonuses.get(base.Stats.STAT_DEF_PCT, 0)
+        self.speed = stat_bonuses.get(base.Stats.STAT_SPD, 0)
+        self.crit_rate = stat_bonuses.get(base.Stats.STAT_CRIT_RATE_PCT, 0)
+        self.crit_damage = stat_bonuses.get(base.Stats.STAT_CRIT_DMG_PCT, 0)
+        self.resistance = stat_bonuses.get(base.Stats.STAT_RESIST_PCT, 0)
+        self.accuracy = stat_bonuses.get(base.Stats.STAT_ACCURACY_PCT, 0)
+        self.avg_efficiency = self.runes.aggregate(Avg('efficiency'))['efficiency__avg'] or 0.0
 
 
 class RuneCraftInstance(RuneCraft):

@@ -125,6 +125,8 @@ class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     ).prefetch_related(
         'default_build__runes',
         'rta_build__runes',
+        'runeinstance_set',
+        'runeinstance_set__owner__user',
     )
     serializer_class = MonsterInstanceSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)

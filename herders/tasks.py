@@ -1,4 +1,5 @@
 from celery import shared_task, current_task, states
+from django.core.mail import mail_admins
 from django.db import transaction
 from django.db.models.signals import post_save
 
@@ -175,4 +176,7 @@ def com2us_data_import(data, user_id, import_options):
 def resave_monsters_with_no_rune_build():
     mons = MonsterInstance.objects.filter(default_build__isnull=True).order_by()[:1000]
     for m in mons:
-        m.save()
+        try:
+            m.save()
+        except:
+            mail_admins('TASK FAILURE: Resave Monsters With No Rune Build', f'Failed to save monster {m.pk}')

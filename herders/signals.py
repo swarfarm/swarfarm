@@ -46,4 +46,5 @@ def update_rune_build_stats(sender, instance, action, **kwargs):
     if action not in ['post_add', 'post_clear', 'post_remove']:
         return
 
+    instance.update_stats()
     instance.save()

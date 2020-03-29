@@ -708,10 +708,10 @@ class MonsterInstance(models.Model, base.Stars):
         if len(skills) >= 4 and self.skill_4_level > skills[3].max_level:
             self.skill_4_level = skills[3].max_level
 
+        super(MonsterInstance, self).save(*args, **kwargs)
+
         if self.default_build is None or self.rta_build is None:
             self._initialize_rune_build()
-
-        super(MonsterInstance, self).save(*args, **kwargs)
 
     def _initialize_rune_build(self):
         # Create empty rune builds if none exists

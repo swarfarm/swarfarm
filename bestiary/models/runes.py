@@ -597,7 +597,7 @@ class Rune(models.Model, RuneObjectBase):
         else:
             for idx, substat in enumerate(self.substats):
                 if substat == stat_type:
-                    if len(self.substats_grind_value) < idx:
+                    if len(self.substats_grind_value) < idx + 1:
                         sub_grind_val = 0
                     else:
                         sub_grind_val = self.substats_grind_value[idx]

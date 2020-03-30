@@ -573,9 +573,9 @@ class MonsterInstance(models.Model, base.Stars):
                 'defense': max_base_def,
             },
             'rune': {
-                'hp': max_rune_stats.get(RuneInstance.STAT_HP, 0.0),
-                'attack': max_rune_stats.get(RuneInstance.STAT_ATK, 0.0),
-                'defense': max_rune_stats.get(RuneInstance.STAT_DEF, 0.0),
+                'hp': self.max_rune_stats.get(RuneInstance.STAT_HP, 0),
+                'attack': self.max_rune_stats.get(RuneInstance.STAT_ATK, 0),
+                'defense': self.max_rune_stats.get(RuneInstance.STAT_DEF, 0),
             },
         }
 
@@ -624,8 +624,19 @@ class MonsterInstance(models.Model, base.Stars):
         return self.get_building_stats(Building.AREA_GUILD)
 
     def get_possible_skillups(self):
+        same_family = Q(monster__family_id=self.monster.family_id)
+
+        # Handle a few special cases for skillups outside of own family
+        # Vampire Lord
+        if self.monster.family_id == 23000:
+            same_family |= Q(monster__family_id=14700)
+
+        # Fairy Queen
+        if self.monster.family_id == 19100:
+            same_family |= Q(monster__family_id=10100)
+
         devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count()
-        family = MonsterInstance.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id).exclude(pk=self.pk).order_by('ignore_for_fusion')
+        family = MonsterInstance.objects.filter(owner=self.owner).filter(same_family).exclude(pk=self.pk).order_by('ignore_for_fusion')
         pieces = MonsterPiece.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id)
 
         return {

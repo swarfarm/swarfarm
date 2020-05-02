@@ -195,9 +195,10 @@ class DungeonMixin(SuccessMixin):
     form_class = FilterDungeonLogForm
 
     def get_queryset(self):
-        # Do not include incomplete logs
         qs = super().get_queryset()
-        return qs.filter(success__isnull=False)
+
+        # Do not include incomplete logs or disabled dungeons
+        return qs.filter(success__isnull=False).exclude(level__dungeon__enabled=False)
 
 
 class DungeonDashboard(DashboardMixin, DungeonMixin, DataLogView):

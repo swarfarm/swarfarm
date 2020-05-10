@@ -1,4 +1,5 @@
 from celery import shared_task, current_task, states
+from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins
 from django.db import transaction
 from django.db.models.signals import post_save
@@ -150,7 +151,15 @@ def com2us_data_import(data, user_id, import_options):
 
         for mon_id, rune_ids in assignments.items():
             mon = MonsterInstance.objects.get(com2us_id=mon_id)
-            mon.rta_build.runes.set(RuneInstance.objects.filter(com2us_id__in=rune_ids))
+            runes = RuneInstance.objects.filter(com2us_id__in=rune_ids)
+            try:
+                mon.rta_build.runes.set(runes)
+            except ValidationError:
+                slots = runes.values_list('slot', flat=True)
+                mail_admins('Rune Build Validation Error', f'monster: {mon.id}\r\nrunes: {rune_ids}\r\nslots: {slots}')
+
+                # Continue with import so it doesn't fail
+                continue
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'crafts'})

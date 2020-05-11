@@ -150,8 +150,8 @@ def com2us_data_import(data, user_id, import_options):
             assignments[mon_com2us_id].append(assignment['rune_id'])
 
         for mon_id, rune_ids in assignments.items():
-            mon = MonsterInstance.objects.get(com2us_id=mon_id)
-            runes = RuneInstance.objects.filter(com2us_id__in=rune_ids)
+            mon = MonsterInstance.objects.filter(owner=summoner).get(com2us_id=mon_id)
+            runes = RuneInstance.objects.filter(owner=summoner, com2us_id__in=rune_ids)
             try:
                 mon.rta_build.runes.set(runes)
             except ValidationError:

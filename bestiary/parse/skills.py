@@ -88,13 +88,10 @@ def _simplify_multiplier(raw_multiplier):
     return formula
 
 
-_all_scaling_stats = ScalingStat.objects.all()
-
-
 def _extract_scaling_stats(mult_formula):
     # Extract/refine the scaling stats used in the formula
     scaling_stats = []
-    for stat in _all_scaling_stats:
+    for stat in ScalingStat.objects.all():
         if re.search(f'{stat.com2us_desc}\\b', mult_formula):
             mult_formula = mult_formula.replace(stat.com2us_desc, f'{{{stat.stat}}}')
             scaling_stats.append(stat)
@@ -167,23 +164,18 @@ def fix_holy_light_multiplier(raw):
     return raw
 
 
-_defense = ScalingStat.objects.get(com2us_desc='DEF')
-_target_hp = ScalingStat.objects.get(com2us_desc='TARGET_TOT_HP')
-_max_hp = ScalingStat.objects.get(com2us_desc='ATTACK_TOT_HP')
-
-
 def add_scales_with_def(obj, raw):
-    obj.scaling_stats.add(_defense)
+    obj.scaling_stats.add(ScalingStat.objects.get(com2us_desc='DEF'))
     return obj
 
 
 def add_scales_with_max_hp(obj, raw):
-    obj.scaling_stats.add(_max_hp)
+    obj.scaling_stats.add(ScalingStat.objects.get(com2us_desc='ATTACK_TOT_HP'))
     return obj
 
 
 def add_scales_with_target_hp(obj, raw):
-    obj.scaling_stats.add(_target_hp)
+    obj.scaling_stats.add(ScalingStat.objects.get(com2us_desc='TARGET_TOT_HP'))
     return obj
 
 

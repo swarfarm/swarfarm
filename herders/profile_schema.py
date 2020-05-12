@@ -188,7 +188,6 @@ HubUserLoginSchema = {
         'command': {'type': 'string'},
     },
     'required': [
-        'unit_lock_list',
         'building_list',
         'rune_craft_item_list',
         'deco_list',

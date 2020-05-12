@@ -179,13 +179,3 @@ def com2us_data_import(data, user_id, import_options):
         if import_options['delete_missing_runes']:
             RuneInstance.objects.filter(owner=summoner).exclude(pk__in=imported_runes).delete()
             RuneCraftInstance.objects.filter(owner=summoner).exclude(pk__in=imported_crafts).delete()
-
-
-@shared_task
-def resave_monsters_with_no_rune_build():
-    mons = MonsterInstance.objects.filter(default_build__isnull=True).order_by()[:1000]
-    for m in mons:
-        try:
-            m.save()
-        except:
-            mail_admins('TASK FAILURE: Resave Monsters With No Rune Build', f'Failed to save monster {m.pk}')

@@ -31,12 +31,17 @@ class RuneInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
 
 
 class RuneBuildSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
+    url = NestedHyperlinkedIdentityField(
+        view_name='profile/rune-builds-detail',
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
+    )
     runes = RuneInstanceSerializer(many=True, read_only=True)
 
     class Meta:
         model = RuneBuild
         fields = [
             'id',
+            'url',
             'name',
             'monster',
             'runes',

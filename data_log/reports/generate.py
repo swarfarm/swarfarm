@@ -130,7 +130,7 @@ def get_report_summary(drops, total_log_count, **kwargs):
                             element=F('monster__element'),
                             can_awaken=F('monster__can_awaken'),
                             is_awakened=F('monster__is_awakened'),
-                            stars=F('monster__base_stars'),
+                            stars=F('monster__natural_stars'),
                             count=Count('pk'),
                             min=Min('quantity'),
                             max=Max('quantity'),
@@ -174,7 +174,7 @@ def get_report_summary(drops, total_log_count, **kwargs):
                             element=F('level__dungeon__secretdungeon__monster__element'),
                             can_awaken=F('level__dungeon__secretdungeon__monster__can_awaken'),
                             is_awakened=F('level__dungeon__secretdungeon__monster__is_awakened'),
-                            stars=F('level__dungeon__secretdungeon__monster__base_stars'),
+                            stars=F('level__dungeon__secretdungeon__monster__natural_stars'),
                         ).annotate(
                             count=Count('pk'),
                             drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
@@ -267,10 +267,10 @@ def get_monster_report(qs, total_log_count, **kwargs):
             'data': transform_to_dict(
                 list(
                     qs.values(
-                        nat_stars=F('monster__base_stars'),
+                        nat_stars=F('monster__natural_stars'),
                     ).annotate(
-                        grade=Concat(Cast('monster__base_stars', CharField()), Value('⭐')),
-                        count=Count('monster__base_stars'),
+                        grade=Concat(Cast('monster__natural_stars', CharField()), Value('⭐')),
+                        count=Count('monster__natural_stars'),
                     ).filter(count__gt=min_count).order_by('-count')
                 ),
                 name_key='grade'
@@ -635,7 +635,7 @@ def grade_summary_report(qs, grade_choices):
                 'type': 'monster',
                 'name': monster.name,
                 'icon': monster.image_filename,
-                'stars': monster.base_stars,
+                'stars': monster.natural_stars,
                 **result,
             })
 

@@ -879,10 +879,10 @@ class Rune(models.Model, RuneObjectBase):
                         )
                     })
 
-            if self.level < 12 and (enchanted or grind_value):
+            if self.level < 12 and enchanted:
                 raise ValidationError({
                     'level': ValidationError(
-                        'Level must be 12 or higher when grind/enchant is applied',
+                        'Level must be 12 or higher when Enchant Gem is applied',
                         code='level_invalid'
                     )
                 })

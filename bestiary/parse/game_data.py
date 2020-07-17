@@ -161,7 +161,7 @@ class _LocalValueData:
     @staticmethod
     def _get_num_tables():
         if _LocalValueData._num_tables is None:
-            file = _LocalValueData._get_decrypted_data()
+            file = _LocalValueData._get_raw_data()
             file.pos = _LocalValueData.TABLE_COUNT_POS
             _LocalValueData._num_tables = file.read(f'intle:32') - 1
 
@@ -170,7 +170,7 @@ class _LocalValueData:
     @staticmethod
     def _get_table(key):
         if key not in _LocalValueData._tables:
-            f = _LocalValueData._get_decrypted_data()
+            f = _LocalValueData._get_raw_data()
             start, end = _LocalValueData._get_table_offsets(key)
 
             # Set bitstream to start of table data
@@ -196,25 +196,58 @@ class _LocalValueData:
     def _get_table_offsets(key):
         if not _LocalValueData._table_offsets:
             # Store all table offsets
-            f = _LocalValueData._get_decrypted_data()
-            f.pos = _LocalValueData.TABLE_DEFS_POS
+            raw = _LocalValueData._get_raw_data()
+            raw.pos = _LocalValueData.TABLE_DEFS_POS
 
             for x in range(_LocalValueData._get_num_tables()):
-                table_num, start, end = f.readlist(['intle:32'] * 3)
+                table_num, start, end = raw.readlist(['intle:32'] * 3)
                 _LocalValueData._table_offsets[table_num] = (start, end)
 
-            _LocalValueData.TABLE_START_POS = f.pos
+            _LocalValueData.TABLE_START_POS = raw.pos
 
         return _LocalValueData._table_offsets[key]
 
     @staticmethod
-    def _get_decrypted_data():
+    def _get_raw_data():
         if _LocalValueData._decrypted_data is None:
             with open(_LocalValueData.filename) as f:
                 _LocalValueData._decrypted_data = decrypt_response(f.read().strip('\0'))
 
         return ConstBitStream(_LocalValueData._decrypted_data)
 
+
+class _BinaryLocalValueData(_LocalValueData):
+    filename = 'bestiary/parse/com2us_data/localvalue.bin'
+
+    @staticmethod
+    def _get_table(key):
+        pass
+
+    @staticmethod
+    def _get_table_offsets(key):
+        # Store all table offsets as line numbers
+        raw = _BinaryLocalValueData._get_raw_data()
+
+        num_columns = None
+        start = None
+        table_num = 0
+        for line_num, line in enumerate(raw.split('\n')):
+            if num_columns != len(line.split('\t')):
+                if start is not None:
+                    end = line_num - 1
+                    _BinaryLocalValueData._table_offsets[table_num] = (start, end)
+                    table_num += 1
+
+                start = line_num
+                num_columns = len(line.split('\t'))
+
+        return _BinaryLocalValueData._table_offsets[key]
+
+    @staticmethod
+    def _get_raw_data():
+        with open('bestiary/parse/com2us_data/localvalue.bin', 'r', encoding="utf8") as f:
+            _BinaryLocalValueData._decrypted_data = f.read()
+        return _BinaryLocalValueData._decrypted_data
 
 class _TranslationTables:
     # Known translation table assignments

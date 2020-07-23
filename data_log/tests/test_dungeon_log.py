@@ -173,7 +173,8 @@ class DimensionHoleTests(BaseLogTest):
         self.assertIsNotNone(log.clear_time)
 
     def test_practice_not_logged(self):
-        self._do_log('BattleDimensionHoleDungeonResult/ellunia_b1_practice.json')
+        view = self._do_log('BattleDimensionHoleDungeonResult/ellunia_b1_practice.json')
+        self.assertEqual(view.status_code, 200)
         self.assertEqual(models.DungeonLog.objects.count(), 0)
 
     def test_level_parsed_correctly(self):

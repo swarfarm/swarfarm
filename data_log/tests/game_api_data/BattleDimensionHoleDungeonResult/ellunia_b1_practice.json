@@ -4,11 +4,11 @@
       "command": "BattleDimensionHoleDungeonResult",
       "wizard_id": 123,
       "session_key": "abc123",
-      "proto_ver": 11601,
-      "infocsv": "4.01.70",
+      "proto_ver": 11710,
+      "infocsv": "4.01.98",
       "channel_uid": 144237507,
-      "ts_val": 1113803117,
-      "battle_key": 1582059429,
+      "ts_val": 1127666143,
+      "battle_key": 1595528929,
       "win_lose": 1,
       "unit_id_list": [
         {
@@ -75,13 +75,13 @@
         },
         {
           "unit_id": 12,
-          "result": 2
+          "result": 1
         }
       ],
       "island_id": 3,
-      "pos_x": 10,
-      "pos_y": 19,
-      "clear_time": 65038,
+      "pos_x": 16,
+      "pos_y": 15,
+      "clear_time": 118743,
       "auto_clear": 1,
       "play_speed": 3,
       "retry": 0,
@@ -94,19 +94,19 @@
       "wizard_info": {
         "wizard_id": 123,
         "wizard_name": "fakeuser",
-        "wizard_mana": 10314598,
-        "wizard_crystal": 4855,
+        "wizard_mana": 10442866,
+        "wizard_crystal": 5588,
         "wizard_crystal_paid": 0,
-        "wizard_last_login": "2020-02-19 05:55:57",
+        "wizard_last_login": "2020-07-24 03:12:49",
         "wizard_last_country": "US",
         "wizard_last_lang": "en",
         "wizard_level": 50,
         "experience": 3800000,
-        "wizard_energy": 3283,
+        "wizard_energy": 3394,
         "energy_max": 90,
         "energy_per_min": 0.26,
         "next_energy_gain": 0,
-        "arena_energy": 15,
+        "arena_energy": 10,
         "arena_energy_max": 10,
         "arena_energy_next_gain": 0,
         "unit_slots": {
@@ -116,9 +116,9 @@
         "rep_assigned": 1,
         "pvp_event": 0,
         "mail_box_event": 0,
-        "social_point_current": 880,
+        "social_point_current": 1490,
         "social_point_max": 3000,
-        "honor_point": 280,
+        "honor_point": 352,
         "guild_point": 2714,
         "darkportal_energy": 10,
         "darkportal_energy_max": 10,
@@ -132,11 +132,11 @@
         "period_energy_max": 0
       },
       "dungeon_id": 1202,
-      "difficulty": 1,
+      "difficulty": 3,
       "win_lose": 1,
       "clear_time": {
         "is_new_record": 0,
-        "current_time": 65038,
+        "current_time": 118743,
         "best_time": 0
       },
       "first_clear": 0,
@@ -144,9 +144,9 @@
       "reward": [],
       "clear_bonus": [],
       "practice_mode": 1,
-      "ts_val": 1113803127,
-      "tvalue": 1582059519,
-      "tvaluelocal": 1581998319,
+      "ts_val": 1127666132,
+      "tvalue": 1595529052,
+      "tvaluelocal": 1595471452,
       "tzone": "America/Los_Angeles"
     }
   }

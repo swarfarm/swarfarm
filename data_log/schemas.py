@@ -556,7 +556,7 @@ battle_dimension_hole_result = {
             'properties': {
                 'dungeon_id': {'type': 'number'},
                 'difficulty': {'type': 'number'},
-                'reward': {'type': 'object'},
+                'reward': {'type': ['object', 'array']},
                 'practice_mode': {'type': 'number'},
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
@@ -564,7 +564,6 @@ battle_dimension_hole_result = {
             'required': [
                 'dungeon_id',
                 'difficulty',
-                'reward',
                 'practice_mode',
                 'tzone',
                 'tvalue',

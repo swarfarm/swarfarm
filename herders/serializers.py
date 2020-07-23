@@ -45,6 +45,18 @@ class RuneBuildSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
             'name',
             'monster',
             'runes',
+            'hp',
+            'hp_pct',
+            'attack',
+            'attack_pct',
+            'defense',
+            'defense_pct',
+            'speed',
+            'crit_rate',
+            'crit_damage',
+            'resistance',
+            'accuracy',
+            'avg_efficiency',
         ]
 
 

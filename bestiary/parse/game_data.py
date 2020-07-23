@@ -161,7 +161,7 @@ class _LocalValueData:
     @staticmethod
     def _get_num_tables():
         if _LocalValueData._num_tables is None:
-            file = _LocalValueData._get_decrypted_data()
+            file = _LocalValueData._get_raw_data()
             file.pos = _LocalValueData.TABLE_COUNT_POS
             _LocalValueData._num_tables = file.read(f'intle:32') - 1
 
@@ -170,50 +170,150 @@ class _LocalValueData:
     @staticmethod
     def _get_table(key):
         if key not in _LocalValueData._tables:
-            f = _LocalValueData._get_decrypted_data()
             start, end = _LocalValueData._get_table_offsets(key)
-
-            # Set bitstream to start of table data
-            f.pos = _LocalValueData.TABLE_START_POS + start * 8
-
-            # Read in the table. It's a tab-delimited text format.
-            entire_table = f.read(f'bytes:{end - start}').decode('utf-8').strip().split('\r\n')
-            column_headers = entire_table[0].split('\t')
-
-            # Store table data
-            _LocalValueData._tables[key] = {}
-            for row_string in entire_table[1:]:
-                row = row_string.split('\t')
-                row_key = try_json(row[0])
-                _LocalValueData._tables[key][row_key] = {
-                    column_headers[col]: try_json(value) for col, value in enumerate(row)
-                    # column_headers[col]: json.loads(value) for col, value in enumerate(row)
-                }
+            entire_table = _LocalValueData._get_table_string(start, end)
+            _LocalValueData._tables[key] = _LocalValueData._parse_table(entire_table)
 
         return _LocalValueData._tables[key]
+
+    @staticmethod
+    def _get_table_string(start, end):
+        f = _LocalValueData._get_raw_data()
+        f.pos = _LocalValueData.TABLE_START_POS + start * 8
+        return f.read(f'bytes:{end - start}').decode('utf-8').strip().split('\r\n')
+
+    @staticmethod
+    def _parse_table(table_string):
+        table = {}
+        column_headers = table_string[0].split('\t')
+        for row_string in table_string[1:]:
+            row = row_string.split('\t')
+            row_key = try_json(row[0])
+            table[row_key] = {
+                column_headers[col]: try_json(value) for col, value in enumerate(row)
+            }
+        return table
 
     @staticmethod
     def _get_table_offsets(key):
         if not _LocalValueData._table_offsets:
             # Store all table offsets
-            f = _LocalValueData._get_decrypted_data()
-            f.pos = _LocalValueData.TABLE_DEFS_POS
+            raw = _LocalValueData._get_raw_data()
+            raw.pos = _LocalValueData.TABLE_DEFS_POS
 
             for x in range(_LocalValueData._get_num_tables()):
-                table_num, start, end = f.readlist(['intle:32'] * 3)
+                table_num, start, end = raw.readlist(['intle:32'] * 3)
                 _LocalValueData._table_offsets[table_num] = (start, end)
 
-            _LocalValueData.TABLE_START_POS = f.pos
+            _LocalValueData.TABLE_START_POS = raw.pos
 
         return _LocalValueData._table_offsets[key]
 
     @staticmethod
-    def _get_decrypted_data():
+    def _get_raw_data():
         if _LocalValueData._decrypted_data is None:
             with open(_LocalValueData.filename) as f:
                 _LocalValueData._decrypted_data = decrypt_response(f.read().strip('\0'))
 
         return ConstBitStream(_LocalValueData._decrypted_data)
+
+
+class _BinaryLocalValueData(_LocalValueData):
+    filename = 'bestiary/parse/com2us_data/localvalue.bin'
+
+    @property
+    def MONSTERS(self):
+        return self._get_table(0)
+
+    @property
+    def SKILLS(self):
+        return self._get_table(1)
+
+    @property
+    def HOMUNCULUS_SKILL_TREES(self):
+        return self._get_table(2)
+
+    @property
+    def HOMUNCULUS_CRAFT_COSTS(self):
+        return self._get_table(3)
+
+    @property
+    def CRAFT_MATERIALS(self):
+        return self._get_table(4)
+
+    @property
+    def SCENARIO_LEVELS(self):
+        return self._get_table(5)
+
+    @property
+    def ELEMENTAL_RIFT_DUNGEONS(self):
+        return self._get_table(6)
+
+    @property
+    def DIMENSIONAL_HOLE_DUNGEONS(self):
+        return self._get_table(7)
+
+    @property
+    def RIFT_RAIDS(self):
+        return self._get_table(8)
+
+    @property
+    def SECRET_DUNGEONS(self):
+        return self._get_table(9)
+
+    @property
+    def WORLD_MAP(self):
+        return self._get_table(10)
+
+
+    @staticmethod
+    def _get_num_tables():
+        if _BinaryLocalValueData._num_tables is None:
+            # Num tables set when parsing table offsets
+            _BinaryLocalValueData._get_table_offsets(0)
+
+        return _BinaryLocalValueData._num_tables
+
+    @staticmethod
+    def _get_table(key):
+        if key not in _BinaryLocalValueData._tables:
+            start, end = _BinaryLocalValueData._get_table_offsets(key)
+            entire_table = _BinaryLocalValueData._get_table_string(start, end+1)
+            _BinaryLocalValueData._tables[key] = _BinaryLocalValueData._parse_table(entire_table)
+
+        return _BinaryLocalValueData._tables[key]
+
+    @staticmethod
+    def _get_table_string(start, end):
+        return _BinaryLocalValueData._get_raw_data().split('\n')[start:end]
+
+    @staticmethod
+    def _get_table_offsets(key):
+        # Store all table offsets as line numbers
+        raw = _BinaryLocalValueData._get_raw_data()
+
+        num_columns = None
+        start = None
+        table_num = 0
+        for line_num, line in enumerate(raw.split('\n')):
+            if num_columns != len(line.split('\t')):
+                if start is not None:
+                    end = line_num - 1
+                    _BinaryLocalValueData._table_offsets[table_num] = (start, end)
+                    table_num += 1
+
+                start = line_num
+                num_columns = len(line.split('\t'))
+
+        _BinaryLocalValueData._num_tables = table_num
+
+        return _BinaryLocalValueData._table_offsets[key]
+
+    @staticmethod
+    def _get_raw_data():
+        with open('bestiary/parse/com2us_data/localvalue.bin', 'r', encoding="utf8") as f:
+            _BinaryLocalValueData._decrypted_data = f.read()
+        return _BinaryLocalValueData._decrypted_data
 
 
 class _TranslationTables:
@@ -275,7 +375,7 @@ class _Strings:
         return ConstBitStream(filename=_Strings.filename)
 
 
-tables = _LocalValueData()
+tables = _BinaryLocalValueData()
 strings = _Strings()
 
 

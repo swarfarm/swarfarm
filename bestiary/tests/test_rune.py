@@ -105,18 +105,6 @@ class Attributes(TestCase):
         self.assertIn('slot', cm.exception.error_dict)
         self.assertEqual(cm.exception.error_dict['slot'][0].code, 'slot_missing')
 
-    def test_level_too_low_when_grind_applied(self):
-        rune = Rune.stub(
-            level=11,
-            substats=[Rune.STAT_RESIST_PCT, Rune.STAT_ACCURACY_PCT, Rune.STAT_HP, Rune.STAT_ATK],
-            substat_values=[4, 4, 4, 4],
-            substats_grind_value=[4, 0, 0, 0],
-        )
-        with self.assertRaises(ValidationError) as cm:
-            rune.clean()
-        self.assertIn('level', cm.exception.error_dict)
-        self.assertEqual(cm.exception.error_dict['level'][0].code, 'level_invalid')
-
     def test_level_too_low_when_enchant_applied(self):
         rune = Rune.stub(
             level=11,

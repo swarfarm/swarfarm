@@ -550,6 +550,7 @@ class MonsterInstance(models.Model, base.Stars):
                 if set == RuneInstance.TYPE_SWIFT:
                     # Swift set is special because it adds a percentage to a normally flat stat
                     bonus_value = int(ceil(round(base_stats[RuneInstance.STAT_SPD] * (bonus_value / 100.0), 3)))
+                    stat = RuneInstance.STAT_SPD
 
                 stat_bonuses[stat] += bonus_value * num_sets_equipped
 
@@ -855,6 +856,7 @@ class RuneBuild(models.Model):
     defense = models.IntegerField(default=0)
     defense_pct = models.IntegerField(default=0)
     speed = models.IntegerField(default=0)
+    speed_pct = models.IntegerField(default=0)
     crit_rate = models.IntegerField(default=0)
     crit_damage = models.IntegerField(default=0)
     resistance = models.IntegerField(default=0)
@@ -864,7 +866,6 @@ class RuneBuild(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.rune_set_summary}'
-        # return f'{self.name}'
 
     @cached_property
     def rune_set_summary(self):
@@ -942,6 +943,7 @@ class RuneBuild(models.Model):
                 stat_bonuses[stat] += rune.get_stat(stat)
 
         # Add in any active set bonuses
+        stat_bonuses[RuneInstance.STAT_SPD_PCT] = 0
         for active_set in self.active_rune_sets:
             stat = RuneInstance.RUNE_SET_BONUSES[active_set]['stat']
             if stat:
@@ -954,6 +956,7 @@ class RuneBuild(models.Model):
         self.defense = stat_bonuses.get(base.Stats.STAT_DEF, 0)
         self.defense_pct = stat_bonuses.get(base.Stats.STAT_DEF_PCT, 0)
         self.speed = stat_bonuses.get(base.Stats.STAT_SPD, 0)
+        self.speed_pct = stat_bonuses.get(base.Stats.STAT_SPD_PCT, 0)
         self.crit_rate = stat_bonuses.get(base.Stats.STAT_CRIT_RATE_PCT, 0)
         self.crit_damage = stat_bonuses.get(base.Stats.STAT_CRIT_DMG_PCT, 0)
         self.resistance = stat_bonuses.get(base.Stats.STAT_RESIST_PCT, 0)

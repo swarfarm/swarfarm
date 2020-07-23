@@ -50,6 +50,7 @@ class Stats:
     STAT_CRIT_DMG_PCT = 9
     STAT_RESIST_PCT = 10
     STAT_ACCURACY_PCT = 11
+    STAT_SPD_PCT = 12  # Swift rune set bonus only
 
     # Used for selecting type of stat in form
     STAT_CHOICES = (

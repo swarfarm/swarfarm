@@ -52,6 +52,7 @@ class RuneBuildSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
             'defense',
             'defense_pct',
             'speed',
+            'speed_pct',
             'crit_rate',
             'crit_damage',
             'resistance',

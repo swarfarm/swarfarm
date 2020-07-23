@@ -396,7 +396,7 @@ class Rune(models.Model, RuneObjectBase):
         },
         RuneObjectBase.TYPE_SWIFT: {
             'count': 4,
-            'stat': RuneObjectBase.STAT_SPD,
+            'stat': RuneObjectBase.STAT_SPD_PCT,
             'value': 25.0,
             'team': False,
             'description': 'Swift 4 Set: Attack Speed +25%',

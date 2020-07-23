@@ -170,23 +170,22 @@ class _LocalValueData:
     @staticmethod
     def _get_table(key):
         if key not in _LocalValueData._tables:
-            f = _LocalValueData._get_raw_data()
             start, end = _LocalValueData._get_table_offsets(key)
-
-            # Set bitstream to start of table data
-            f.pos = _LocalValueData.TABLE_START_POS + start * 8
-
-            # Read in the table. It's a tab-delimited text format.
-            entire_table = f.read(f'bytes:{end - start}').decode('utf-8').strip().split('\r\n')
+            entire_table = _LocalValueData._get_table_string(start, end)
             _LocalValueData._tables[key] = _LocalValueData._parse_table(entire_table)
 
         return _LocalValueData._tables[key]
 
     @staticmethod
+    def _get_table_string(start, end):
+        f = _LocalValueData._get_raw_data()
+        f.pos = _LocalValueData.TABLE_START_POS + start * 8
+        return f.read(f'bytes:{end - start}').decode('utf-8').strip().split('\r\n')
+
+    @staticmethod
     def _parse_table(table_string):
         table = {}
         column_headers = table_string[0].split('\t')
-        print(column_headers)
         for row_string in table_string[1:]:
             row = row_string.split('\t')
             row_key = try_json(row[0])
@@ -223,36 +222,49 @@ class _BinaryLocalValueData(_LocalValueData):
     filename = 'bestiary/parse/com2us_data/localvalue.bin'
 
     @property
-    def SKY_ISLANDS(self):
-        return self._get_table(1)
-
-    @property
-    def BUILDINGS(self):
-        return self._get_table(2)
-
-    @property
-    def DECORATIONS(self):
-        return self._get_table(3)
-
-    @property
     def MONSTERS(self):
-        return self._get_table(5)
+        return self._get_table(0)
 
     @property
     def SKILLS(self):
-        return self._get_table(9)
+        return self._get_table(1)
+
+    @property
+    def HOMUNCULUS_SKILL_TREES(self):
+        return self._get_table(2)
+
+    @property
+    def HOMUNCULUS_CRAFT_COSTS(self):
+        return self._get_table(3)
+
+    @property
+    def CRAFT_MATERIALS(self):
+        return self._get_table(4)
 
     @property
     def SCENARIO_LEVELS(self):
-        return self._get_table(16)
+        return self._get_table(5)
 
     @property
-    def WORLD_MAP(self):
-        return self._get_table(19)
+    def ELEMENTAL_RIFT_DUNGEONS(self):
+        return self._get_table(6)
+
+    @property
+    def DIMENSIONAL_HOLE_DUNGEONS(self):
+        return self._get_table(7)
+
+    @property
+    def RIFT_RAIDS(self):
+        return self._get_table(8)
 
     @property
     def SECRET_DUNGEONS(self):
-        return self._get_table(30)
+        return self._get_table(9)
+
+    @property
+    def WORLD_MAP(self):
+        return self._get_table(10)
+
 
     @staticmethod
     def _get_num_tables():
@@ -266,10 +278,14 @@ class _BinaryLocalValueData(_LocalValueData):
     def _get_table(key):
         if key not in _BinaryLocalValueData._tables:
             start, end = _BinaryLocalValueData._get_table_offsets(key)
-            entire_table = _BinaryLocalValueData._get_raw_data().split('\n')[start:end]
+            entire_table = _BinaryLocalValueData._get_table_string(start, end+1)
             _BinaryLocalValueData._tables[key] = _BinaryLocalValueData._parse_table(entire_table)
 
         return _BinaryLocalValueData._tables[key]
+
+    @staticmethod
+    def _get_table_string(start, end):
+        return _BinaryLocalValueData._get_raw_data().split('\n')[start:end]
 
     @staticmethod
     def _get_table_offsets(key):
@@ -357,6 +373,7 @@ class _Strings:
     @staticmethod
     def _get_file():
         return ConstBitStream(filename=_Strings.filename)
+
 
 tables = _BinaryLocalValueData()
 strings = _Strings()

@@ -1618,7 +1618,12 @@ class FilterLogTimestamp(FilterLogTimeRangeMixin):
 class FilterDungeonLogForm(FilterLogTimeRangeMixin):
     level__dungeon__in = forms.ModelMultipleChoiceField(
         label='Specific Dungeon',
-        queryset=Dungeon.objects.filter(category__in=[Dungeon.CATEGORY_SCENARIO, Dungeon.CATEGORY_CAIROS]),
+        queryset=Dungeon.objects.filter(category__in=[
+            Dungeon.CATEGORY_SCENARIO,
+            Dungeon.CATEGORY_CAIROS,
+            Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+            Dungeon.CATEGORY_SECRET,
+        ], enabled=True),
         required=False,
     )
     level__dungeon__category__in = forms.MultipleChoiceField(

@@ -178,19 +178,22 @@ class _LocalValueData:
 
             # Read in the table. It's a tab-delimited text format.
             entire_table = f.read(f'bytes:{end - start}').decode('utf-8').strip().split('\r\n')
-            column_headers = entire_table[0].split('\t')
-
-            # Store table data
-            _LocalValueData._tables[key] = {}
-            for row_string in entire_table[1:]:
-                row = row_string.split('\t')
-                row_key = try_json(row[0])
-                _LocalValueData._tables[key][row_key] = {
-                    column_headers[col]: try_json(value) for col, value in enumerate(row)
-                    # column_headers[col]: json.loads(value) for col, value in enumerate(row)
-                }
+            _LocalValueData._tables[key] = _LocalValueData._parse_table(entire_table)
 
         return _LocalValueData._tables[key]
+
+    @staticmethod
+    def _parse_table(table_string):
+        table = {}
+        column_headers = table_string[0].split('\t')
+        print(column_headers)
+        for row_string in table_string[1:]:
+            row = row_string.split('\t')
+            row_key = try_json(row[0])
+            table[row_key] = {
+                column_headers[col]: try_json(value) for col, value in enumerate(row)
+            }
+        return table
 
     @staticmethod
     def _get_table_offsets(key):
@@ -219,9 +222,54 @@ class _LocalValueData:
 class _BinaryLocalValueData(_LocalValueData):
     filename = 'bestiary/parse/com2us_data/localvalue.bin'
 
+    @property
+    def SKY_ISLANDS(self):
+        return self._get_table(1)
+
+    @property
+    def BUILDINGS(self):
+        return self._get_table(2)
+
+    @property
+    def DECORATIONS(self):
+        return self._get_table(3)
+
+    @property
+    def MONSTERS(self):
+        return self._get_table(5)
+
+    @property
+    def SKILLS(self):
+        return self._get_table(9)
+
+    @property
+    def SCENARIO_LEVELS(self):
+        return self._get_table(16)
+
+    @property
+    def WORLD_MAP(self):
+        return self._get_table(19)
+
+    @property
+    def SECRET_DUNGEONS(self):
+        return self._get_table(30)
+
+    @staticmethod
+    def _get_num_tables():
+        if _BinaryLocalValueData._num_tables is None:
+            # Num tables set when parsing table offsets
+            _BinaryLocalValueData._get_table_offsets(0)
+
+        return _BinaryLocalValueData._num_tables
+
     @staticmethod
     def _get_table(key):
-        pass
+        if key not in _BinaryLocalValueData._tables:
+            start, end = _BinaryLocalValueData._get_table_offsets(key)
+            entire_table = _BinaryLocalValueData._get_raw_data().split('\n')[start:end]
+            _BinaryLocalValueData._tables[key] = _BinaryLocalValueData._parse_table(entire_table)
+
+        return _BinaryLocalValueData._tables[key]
 
     @staticmethod
     def _get_table_offsets(key):
@@ -241,6 +289,8 @@ class _BinaryLocalValueData(_LocalValueData):
                 start = line_num
                 num_columns = len(line.split('\t'))
 
+        _BinaryLocalValueData._num_tables = table_num
+
         return _BinaryLocalValueData._table_offsets[key]
 
     @staticmethod
@@ -248,6 +298,7 @@ class _BinaryLocalValueData(_LocalValueData):
         with open('bestiary/parse/com2us_data/localvalue.bin', 'r', encoding="utf8") as f:
             _BinaryLocalValueData._decrypted_data = f.read()
         return _BinaryLocalValueData._decrypted_data
+
 
 class _TranslationTables:
     # Known translation table assignments
@@ -307,8 +358,7 @@ class _Strings:
     def _get_file():
         return ConstBitStream(filename=_Strings.filename)
 
-
-tables = _LocalValueData()
+tables = _BinaryLocalValueData()
 strings = _Strings()
 
 

@@ -150,15 +150,18 @@ def com2us_data_import(data, user_id, import_options):
             assignments[mon_com2us_id].append(assignment['rune_id'])
 
         for mon_id, rune_ids in assignments.items():
-            mon = MonsterInstance.objects.filter(owner=summoner).get(com2us_id=mon_id)
-            runes = RuneInstance.objects.filter(owner=summoner, com2us_id__in=rune_ids)
             try:
-                mon.rta_build.runes.set(runes)
+                mon = MonsterInstance.objects.filter(owner=summoner).get(com2us_id=mon_id)
+                runes = RuneInstance.objects.filter(owner=summoner, com2us_id__in=rune_ids)
+                mon.rta_build.runes.set(runes, clear=True)
+            except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
+                # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
+                continue
             except ValidationError:
                 slots = runes.values_list('slot', flat=True)
                 mail_admins('Rune Build Validation Error', f'monster: {mon.id}\r\nrunes: {rune_ids}\r\nslots: {slots}')
 
-                # Continue with import so it doesn't fail
+                # Continue with import
                 continue
 
     if not current_task.request.called_directly:

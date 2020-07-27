@@ -746,7 +746,7 @@ class MonsterInstance(models.Model, base.Stars):
         if added:
             self.save()
 
-        self.default_build.runes.set(self.runeinstance_set.all())
+        self.default_build.runes.set(self.runeinstance_set.all(), clear=True)
 
 
 class MonsterPiece(models.Model):

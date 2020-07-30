@@ -22,7 +22,8 @@ class JokerCipher:
 
     @staticmethod
     def _unpad(s):
-        return s.decode().rstrip('\0').encode()
+        # Strip null data padded during encryption
+        return s.rstrip(b'\x00')
 
 
 class DefaultCipher:
@@ -34,12 +35,7 @@ class DefaultCipher:
 
     @staticmethod
     def decrypt(enc):
-        dec = DefaultCipher.cipher.decrypt(enc)
-        return DefaultCipher._unpad(dec)
-
-    @staticmethod
-    def _unpad(s):
-        return s[0:-s[-1]]
+        return DefaultCipher.cipher.decrypt(enc)
 
 
 class JokerContainerFile:

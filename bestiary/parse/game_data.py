@@ -348,11 +348,12 @@ def save_to_disk():
     for x in range(1, len(tables) + 1):
         tbl = tables[x]
         with open(f'bestiary/parse/com2us_data/localvalue_{x}.csv', 'w', encoding='utf-8', newline='') as f:
-            keys = tbl[list(tbl.keys())[0]].keys()
-            writer = csv.DictWriter(f, fieldnames=keys)
-            writer.writeheader()
-            for row in tbl.values():
-                writer.writerow(row)
+            if len(tbl):
+                keys = tbl[list(tbl.keys())[0]].keys()
+                writer = csv.DictWriter(f, fieldnames=keys)
+                writer.writeheader()
+                for row in tbl.values():
+                    writer.writerow(row)
 
     with open('bestiary/parse/com2us_data/text_eng.csv', 'w', encoding='utf-8', newline='') as f:
         writer = csv.writer(f)

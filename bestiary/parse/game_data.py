@@ -200,6 +200,8 @@ class _LocalValueData:
     _decrypted_data = None
 
     # Byte offsets for key locations in file
+    VERSION_POS = 0x0
+    VERSION_LEN = 0x18 * 8
     TABLE_COUNT_POS = 0x24 * 8
     TABLE_DEFS_POS = 0x34 * 8
     TABLE_START_POS = None  # Must be processed after loading table definitions
@@ -217,6 +219,11 @@ class _LocalValueData:
 
     def __len__(self):
         return _LocalValueData._get_num_tables()
+
+    @property
+    def version(self):
+        v_bytes = self._get_raw_data()[self.VERSION_POS:self.VERSION_POS + self.VERSION_LEN].tobytes()
+        return v_bytes.strip(b'\x00').decode('ascii')
 
     @staticmethod
     def _get_num_tables():

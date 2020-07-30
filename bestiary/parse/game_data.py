@@ -9,23 +9,83 @@ from bitstring import ConstBitStream, ReadError
 from django.conf import settings
 
 
-def _decrypt(msg):
-    obj = AES.new(
-        bytes(settings.SUMMONERS_WAR_SECRET_KEY, encoding='latin-1'),
+class JokerCipher:
+    cipher = AES.new(
+        bytes.fromhex(settings.JOKER_CONTAINER_KEY),
         AES.MODE_CBC,
-        b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        bytes.fromhex(settings.JOKER_CONTAINER_IV),
     )
-    decrypted = obj.decrypt(base64.b64decode(msg))
-    return decrypted[:-decrypted[-1]]
+
+    @staticmethod
+    def decrypt(enc):
+        return JokerCipher._unpad(JokerCipher.cipher.decrypt(enc))
+
+    @staticmethod
+    def _unpad(s):
+        return s.decode().rstrip('\0').encode()
 
 
-def decrypt_request(msg):
-    return _decrypt(msg)
+class DefaultCipher:
+    cipher = AES.new(
+        bytes.fromhex(settings.SUMMONERS_WAR_KEY),
+        AES.MODE_CBC,
+        bytes.fromhex(settings.SUMMONERS_WAR_IV),
+    )
+
+    @staticmethod
+    def decrypt(enc):
+        dec = DefaultCipher.cipher.decrypt(enc)
+        return DefaultCipher._unpad(dec)
+
+    @staticmethod
+    def _unpad(s):
+        return s[0:-s[-1]]
 
 
-def decrypt_response(msg):
-    # Responses are compressed with zlib
-    return zlib.decompress(_decrypt(msg))
+class JokerContainerFile:
+    file = None
+
+    # Offset/sizes in bytes
+    identifier_offset = 0
+    identifier_size = 5
+    mode_offset = identifier_offset + identifier_size
+    mode_size = 2
+    data_offset = mode_offset + mode_size + 1  # Skips unknown byte 0x01 between mode and data
+
+    def __init__(self, f):
+        self.file = ConstBitStream(f.read())
+        self.file.pos = self.identifier_offset
+        identifier = self.file.peek(f'bytes:{self.identifier_size}')
+        if identifier != b'Joker':
+            raise ValueError('Input not a Joker container file')
+
+    @property
+    def mode(self):
+        self.file.pos = self.mode_offset * 8
+        return self.file.peek(f'uintle:{self.mode_size * 8}')
+
+    @property
+    def _data(self):
+        return self.file[self.data_offset * 8:]
+
+    @property
+    def data(self):
+        decompressed = zlib.decompress(self._data.tobytes())[:-1]
+        decoded = bytes.fromhex(base64.b64decode(decompressed, validate=True).decode())
+        data = JokerCipher.decrypt(decoded)
+
+        if self.mode == 0x300:
+            data = self._process_mode_300(data)
+
+        return data
+
+    @staticmethod
+    def _process_mode_300(data):
+        decoded = base64.decodebytes(data)
+        decrypted = DefaultCipher.decrypt(decoded)
+        decompressed = zlib.decompress(decrypted)
+
+        return decompressed
 
 
 def try_json(value):
@@ -212,108 +272,10 @@ class _LocalValueData:
     @staticmethod
     def _get_raw_data():
         if _LocalValueData._decrypted_data is None:
-            with open(_LocalValueData.filename) as f:
-                _LocalValueData._decrypted_data = decrypt_response(f.read().strip('\0'))
+            with open(_LocalValueData.filename, 'rb') as f:
+                _LocalValueData._decrypted_data = JokerContainerFile(f).data
 
         return ConstBitStream(_LocalValueData._decrypted_data)
-
-
-class _BinaryLocalValueData(_LocalValueData):
-    filename = 'bestiary/parse/com2us_data/localvalue.bin'
-
-    @property
-    def MONSTERS(self):
-        return self._get_table(0)
-
-    @property
-    def SKILLS(self):
-        return self._get_table(1)
-
-    @property
-    def HOMUNCULUS_SKILL_TREES(self):
-        return self._get_table(2)
-
-    @property
-    def HOMUNCULUS_CRAFT_COSTS(self):
-        return self._get_table(3)
-
-    @property
-    def CRAFT_MATERIALS(self):
-        return self._get_table(4)
-
-    @property
-    def SCENARIO_LEVELS(self):
-        return self._get_table(5)
-
-    @property
-    def ELEMENTAL_RIFT_DUNGEONS(self):
-        return self._get_table(6)
-
-    @property
-    def DIMENSIONAL_HOLE_DUNGEONS(self):
-        return self._get_table(7)
-
-    @property
-    def RIFT_RAIDS(self):
-        return self._get_table(8)
-
-    @property
-    def SECRET_DUNGEONS(self):
-        return self._get_table(9)
-
-    @property
-    def WORLD_MAP(self):
-        return self._get_table(10)
-
-
-    @staticmethod
-    def _get_num_tables():
-        if _BinaryLocalValueData._num_tables is None:
-            # Num tables set when parsing table offsets
-            _BinaryLocalValueData._get_table_offsets(0)
-
-        return _BinaryLocalValueData._num_tables
-
-    @staticmethod
-    def _get_table(key):
-        if key not in _BinaryLocalValueData._tables:
-            start, end = _BinaryLocalValueData._get_table_offsets(key)
-            entire_table = _BinaryLocalValueData._get_table_string(start, end+1)
-            _BinaryLocalValueData._tables[key] = _BinaryLocalValueData._parse_table(entire_table)
-
-        return _BinaryLocalValueData._tables[key]
-
-    @staticmethod
-    def _get_table_string(start, end):
-        return _BinaryLocalValueData._get_raw_data().split('\n')[start:end]
-
-    @staticmethod
-    def _get_table_offsets(key):
-        # Store all table offsets as line numbers
-        raw = _BinaryLocalValueData._get_raw_data()
-
-        num_columns = None
-        start = None
-        table_num = 0
-        for line_num, line in enumerate(raw.split('\n')):
-            if num_columns != len(line.split('\t')):
-                if start is not None:
-                    end = line_num - 1
-                    _BinaryLocalValueData._table_offsets[table_num] = (start, end)
-                    table_num += 1
-
-                start = line_num
-                num_columns = len(line.split('\t'))
-
-        _BinaryLocalValueData._num_tables = table_num
-
-        return _BinaryLocalValueData._table_offsets[key]
-
-    @staticmethod
-    def _get_raw_data():
-        with open('bestiary/parse/com2us_data/localvalue.bin', 'r', encoding="utf8") as f:
-            _BinaryLocalValueData._decrypted_data = f.read()
-        return _BinaryLocalValueData._decrypted_data
 
 
 class _TranslationTables:
@@ -375,7 +337,7 @@ class _Strings:
         return ConstBitStream(filename=_Strings.filename)
 
 
-tables = _BinaryLocalValueData()
+tables = _LocalValueData()
 strings = _Strings()
 
 

@@ -19,16 +19,24 @@ env = environ.Env(
     CACHE_LOCATION=(str, None),
     RECAPTCHA_PUBLIC_KEY=(str, None),
     RECAPTCHA_PRIVATE_KEY=(str, None),
-    SUMMONERS_WAR_SECRET_KEY=(str, ''),
+    SUMMONERS_WAR_KEY=(str, ''),
+    SUMMONERS_WAR_IV=(str, ''),
+    JOKER_CONTAINER_KEY=(str, ''),
+    JOKER_CONTAINER_IV=(str, ''),
     BUGSNAG_API_KEY=(str, None),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SITE_ID = env('SITE_ID')
 SECRET_KEY = env('SECRET_KEY')
-SUMMONERS_WAR_SECRET_KEY = env('SUMMONERS_WAR_SECRET_KEY')
 DEBUG = env('DEBUG')
 WSGI_APPLICATION = 'swarfarm.wsgi.application'
+
+# Game application keys
+SUMMONERS_WAR_KEY = env('SUMMONERS_WAR_KEY')
+SUMMONERS_WAR_IV = env('SUMMONERS_WAR_IV')
+JOKER_CONTAINER_KEY = env('JOKER_CONTAINER_KEY')
+JOKER_CONTAINER_IV = env('JOKER_CONTAINER_IV')
 
 # Security settings
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')

@@ -243,7 +243,7 @@ class _LocalValueData:
     def _get_table_string(start, end):
         f = _LocalValueData._get_raw_data()
         f.pos = _LocalValueData.TABLE_START_POS + start * 8
-        return f.read(f'bytes:{end - start}').decode('utf-8').strip().split('\r\n')
+        return f.read(f'bytes:{end - start}').decode('utf-8').strip().splitlines()
 
     @staticmethod
     def _parse_table(table_string):

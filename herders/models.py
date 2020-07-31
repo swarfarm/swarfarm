@@ -152,6 +152,7 @@ class Storage(models.Model):
     crystal_dark = models.IntegerField(default=0, help_text='Pitch-black Dark Crystal')
     crystal_magic = models.IntegerField(default=0, help_text='Condensed Magic Crystal')
     crystal_pure = models.IntegerField(default=0, help_text='Pure Magic Crystal')
+    conversion_stone = models.IntegerField(default=0, help_text='Conversion Stone')
 
     # Material monsters
     fire_angelmon = models.IntegerField(default=0, help_text='Fire Angelmon')

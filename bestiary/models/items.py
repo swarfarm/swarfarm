@@ -21,6 +21,8 @@ class GameItem(models.Model):
     CATEGORY_CRAFT_STUFF = 29
     CATEGORY_SECRET_DUNGEON = 30
     CATEGORY_MATERIAL_MONSTER = 61
+    CATEGORY_ARTIFACT = 73
+    CATEGORY_ARTIFACT_CRAFT = 75
 
     CATEGORY_CHOICES = (
         (CATEGORY_MONSTER, 'Monster'),
@@ -35,6 +37,8 @@ class GameItem(models.Model):
         (CATEGORY_CRAFT_STUFF, 'Craft Material'),
         (CATEGORY_SECRET_DUNGEON, 'Secret Dungeon'),
         (CATEGORY_MATERIAL_MONSTER, 'Enhancing Monster'),
+        (CATEGORY_ARTIFACT, 'Artifact'),
+        (CATEGORY_ARTIFACT_CRAFT, 'Artifact Craft Material'),
     )
 
     com2us_id = models.IntegerField()

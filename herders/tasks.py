@@ -81,6 +81,7 @@ def com2us_data_import(data, user_id, import_options):
         summoner.storage.crystal_dark = results['inventory'].get('crystal_dark', 0)
         summoner.storage.crystal_magic = results['inventory'].get('crystal_magic', 0)
         summoner.storage.crystal_pure = results['inventory'].get('crystal_pure', 0)
+        summoner.storage.conversion_stone = results['inventory'].get('conversion_stone', 0)
 
         summoner.storage.fire_angelmon = results['inventory'].get('fire_angelmon', 0)
         summoner.storage.water_angelmon = results['inventory'].get('water_angelmon', 0)

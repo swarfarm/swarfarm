@@ -189,6 +189,10 @@ def parse_sw_json(data, owner, options):
 
                 if monster and quantity:
                     parsed_inventory[monster] = quantity
+            elif item['item_master_type'] == GameItem.CATEGORY_CONVERSION_STONE:
+                quantity = item.get('item_quantity')
+                if quantity:
+                    parsed_inventory['conversion_stone'] = quantity
 
     # Extract Rune Inventory (unequipped runes)
     if runes_info:

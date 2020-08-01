@@ -6,7 +6,7 @@ from django.db.models import Count, Min, Max, Avg, Sum, Func, F, Func, Q, CharFi
 from django.db.models.functions import Cast, Concat, Extract
 from django_pivot.histogram import histogram
 
-from bestiary.models import Monster, Rune, Level, GameItem, Dungeon
+from bestiary.models import Monster, Rune, Level, GameItem, Dungeon, Artifact, ArtifactCraft
 from data_log import models
 from data_log.util import slice_records, floor_to_nearest, ceil_to_nearest, replace_value_with_choice, \
     transform_to_dict, round_timedelta
@@ -27,7 +27,7 @@ def get_report_summary(drops, total_log_count, **kwargs):
     # Table data: dict (by drop type) of lists of items which drop, with stats. 'count' is only required stat.
     for drop_type, qs in drops.items():
         # Remove very low frequency occurrences from dataset
-        qs = qs.annotate(count=Count('pk')).filter(count__gt=min_count)
+        qs = qs.annotate(count=Count('pk')).filter(count__gte=min_count)
 
         if drop_type == models.ItemDrop.RELATED_NAME:
             if kwargs.get('exclude_social_points'):
@@ -164,6 +164,21 @@ def get_report_summary(drops, total_log_count, **kwargs):
                     ),
                     {'type': Rune.TYPE_CHOICES, 'quality': Rune.QUALITY_CHOICES}
                 )
+            elif drop_type == models.ArtifactDrop.RELATED_NAME:
+                table_data = {
+                    'element': replace_value_with_choice(
+                        list(qs.filter(slot=Artifact.SLOT_ELEMENTAL).values('element').annotate(count=Count('pk')).order_by('element')),
+                        {'type': Artifact.ELEMENT_CHOICES}
+                    ),
+                    'archetype': replace_value_with_choice(
+                        list(qs.filter(slot=Artifact.SLOT_ARCHETYPE).values('archetype').annotate(count=Count('pk')).order_by('archetype')),
+                        {'type': Artifact.ARCHETYPE_CHOICES}
+                    ),
+                    'quality': replace_value_with_choice(
+                        list(qs.values('quality').annotate(count=Count('pk')).order_by('quality')),
+                        {'quality': Artifact.QUALITY_CHOICES}
+                    ),
+                }
             elif drop_type == models.DungeonSecretDungeonDrop.RELATED_NAME:
                 table_data = replace_value_with_choice(
                     list(
@@ -449,6 +464,79 @@ def get_rune_report(qs, total_log_count, **kwargs):
     }
 
 
+def get_artifact_report(qs, total_log_count, **kwargs):
+    if qs.count() == 0:
+        return None
+
+    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
+    # Secondary effect distribution
+    # Unable to use database aggregation on an ArrayField without ORM gymnastics, so post-process data in python
+    all_effects = qs.annotate(
+        flat_effects=Func(F('effects'), function='unnest')
+    ).values_list('flat_effects', flat=True)
+    effect_counts = Counter(all_effects)
+
+    return {
+        'element': {
+            'type': 'occurrences',
+            'total': qs.filter(slot=Artifact.SLOT_ELEMENTAL).count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.filter(slot=Artifact.SLOT_ELEMENTAL).values('element').annotate(count=Count('pk')).filter(count__gt=min_count).order_by(
+                        '-count')),
+                    {'element': qs.model.ELEMENT_CHOICES}
+                )
+            ),
+        },
+        'archetype': {
+            'type': 'occurrences',
+            'total': qs.filter(slot=Artifact.SLOT_ARCHETYPE).count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.filter(slot=Artifact.SLOT_ARCHETYPE).values('archetype').annotate(count=Count('pk')).filter(count__gt=min_count).order_by(
+                        '-count')),
+                    {'archetype': qs.model.ARCHETYPE_CHOICES}
+                )
+            ),
+        },
+        'quality': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('quality').annotate(count=Count('pk')).filter(count__gt=min_count).order_by(
+                        '-count')),
+                    {'quality': qs.model.QUALITY_CHOICES}
+                )
+            ),
+        },
+        'main_stat': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    list(qs.values('main_stat').annotate(count=Count('main_stat')).filter(count__gt=min_count).order_by(
+                        'main_stat')),
+                    {'main_stat': qs.model.STAT_CHOICES}
+                )
+            )
+        },
+        'effects': {
+            'type': 'occurrences',
+            'total': len(all_effects),
+            'data': transform_to_dict(
+                replace_value_with_choice(
+                    sorted(
+                        [{'effect': k, 'count': v} for k, v in effect_counts.items()],
+                        key=lambda count: count['effect']
+                    ),
+                    {'effect': qs.model.EFFECT_CHOICES}
+                ),
+            )
+        },
+    }
+
+
 def _rune_craft_report_data(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
@@ -512,6 +600,7 @@ DROP_TYPES = {
     models.MonsterPieceDrop.RELATED_NAME: None,
     models.RuneDrop.RELATED_NAME: get_rune_report,
     models.RuneCraftDrop.RELATED_NAME: get_rune_craft_report,
+    models.ArtifactDrop.RELATED_NAME: get_artifact_report,
     models.DungeonSecretDungeonDrop.RELATED_NAME: None,
 }
 

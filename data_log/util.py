@@ -22,15 +22,16 @@ def slice_records(qs, *args, **kwargs):
     if minimum_count or maximum_count:
         num_records = result.count()
 
-        if minimum_count and num_records < minimum_count:
-            temp_slice = qs[:minimum_count]
-            earliest_record = temp_slice[temp_slice.count() - 1]
-            result = qs.filter(timestamp__gte=earliest_record.timestamp)
+        if num_records > 0:
+            if minimum_count and num_records < minimum_count:
+                temp_slice = qs[:minimum_count]
+                earliest_record = temp_slice[temp_slice.count() - 1]
+                result = qs.filter(timestamp__gte=earliest_record.timestamp)
 
-        if maximum_count and num_records > maximum_count:
-            temp_slice = qs[:maximum_count]
-            earliest_record = temp_slice[temp_slice.count() - 1]
-            result = qs.filter(timestamp__gte=earliest_record.timestamp)
+            if maximum_count and num_records > maximum_count:
+                temp_slice = qs[:maximum_count]
+                earliest_record = temp_slice[temp_slice.count() - 1]
+                result = qs.filter(timestamp__gte=earliest_record.timestamp)
 
     return result
 

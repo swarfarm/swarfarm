@@ -445,7 +445,7 @@ def parse_artifact_data(artifact_data, owner):
     artifact = ArtifactInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
 
     if not artifact:
-        artifact = ArtifactInstance(owner=owner)
+        artifact = ArtifactInstance(com2us_id=com2us_id, owner=owner)
 
     # Basic artifact data
     artifact.slot = artifact.COM2US_SLOT_MAP[artifact_data['type']]
@@ -470,10 +470,15 @@ def parse_artifact_data(artifact_data, owner):
     artifact.effects_upgrade_count = []
     artifact.effects_reroll_count = []
     for sec_eff in artifact_data['sec_effects']:
-        artifact.effects.append(sec_eff[0])
-        artifact.effects_value.append(sec_eff[1])
-        artifact.effects_upgrade_count.append(sec_eff[2])
-        artifact.effects_reroll_count.append(sec_eff[4])
+        effect = artifact.COM2US_EFFECT_MAP[sec_eff[0]]
+        value = sec_eff[1]
+        upgrade_count = sec_eff[2]
+        reroll_count = sec_eff[4]
+
+        artifact.effects.append(effect)
+        artifact.effects_value.append(value)
+        artifact.effects_upgrade_count.append(upgrade_count)
+        artifact.effects_reroll_count.append(reroll_count)
 
     return artifact
 

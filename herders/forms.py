@@ -475,7 +475,7 @@ class FilterMonsterInstanceForm(forms.Form):
     )
     monster__archetype = forms.MultipleChoiceField(
         label='Archetype',
-        choices=Monster.TYPE_CHOICES,
+        choices=Monster.ARCHETYPE_CHOICES,
         required=False,
     )
     priority = forms.MultipleChoiceField(

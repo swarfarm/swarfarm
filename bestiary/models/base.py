@@ -38,6 +38,33 @@ class Elements:
     }
 
 
+class Archetype:
+    ARCHETYPE_ATTACK = 'attack'
+    ARCHETYPE_HP = 'hp'
+    ARCHETYPE_SUPPORT = 'support'
+    ARCHETYPE_DEFENSE = 'defense'
+    ARCHETYPE_MATERIAL = 'material'
+    ARCHETYPE_NONE = 'none'
+
+    ARCHETYPE_CHOICES = (
+        (ARCHETYPE_NONE, 'None'),
+        (ARCHETYPE_ATTACK, 'Attack'),
+        (ARCHETYPE_HP, 'HP'),
+        (ARCHETYPE_SUPPORT, 'Support'),
+        (ARCHETYPE_DEFENSE, 'Defense'),
+        (ARCHETYPE_MATERIAL, 'Material'),
+    )
+
+    COM2US_ARCHETYPE_MAP = {
+        0: ARCHETYPE_NONE,
+        1: ARCHETYPE_ATTACK,
+        2: ARCHETYPE_DEFENSE,
+        3: ARCHETYPE_HP,
+        4: ARCHETYPE_SUPPORT,
+        5: ARCHETYPE_MATERIAL
+    }
+
+
 class Stats:
     STAT_HP = 1
     STAT_HP_PCT = 2

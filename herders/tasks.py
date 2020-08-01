@@ -4,7 +4,7 @@ from django.core.mail import mail_admins
 from django.db import transaction
 from django.db.models.signals import post_save
 
-from .models import Summoner, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, BuildingInstance
+from .models import Summoner, Storage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactCraftInstance, ArtifactInstance
 from .profile_parser import parse_sw_json
 from .signals import update_profile_date
 
@@ -15,6 +15,8 @@ def com2us_data_import(data, user_id, import_options):
     imported_monsters = []
     imported_runes = []
     imported_crafts = []
+    imported_artifacts = []
+    imported_artifact_crafts = []
     imported_pieces = []
 
     if not current_task.request.called_directly:
@@ -81,6 +83,7 @@ def com2us_data_import(data, user_id, import_options):
         summoner.storage.crystal_dark = results['inventory'].get('crystal_dark', 0)
         summoner.storage.crystal_magic = results['inventory'].get('crystal_magic', 0)
         summoner.storage.crystal_pure = results['inventory'].get('crystal_pure', 0)
+        summoner.storage.conversion_stone = results['inventory'].get('conversion_stone', 0)
 
         summoner.storage.fire_angelmon = results['inventory'].get('fire_angelmon', 0)
         summoner.storage.water_angelmon = results['inventory'].get('water_angelmon', 0)
@@ -115,7 +118,7 @@ def com2us_data_import(data, user_id, import_options):
 
     with transaction.atomic():
         # Save the imported monsters
-        for idx, mon in enumerate(results['monsters']):
+        for mon in results['monsters']:
             mon.save()
             imported_monsters.append(mon.pk)
 
@@ -129,7 +132,7 @@ def com2us_data_import(data, user_id, import_options):
 
     with transaction.atomic():
         # Save imported runes
-        for idx, rune in enumerate(results['runes']):
+        for rune in results['runes']:
             # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
             # relationship was previously set.
             rune.assigned_to = rune.assigned_to
@@ -165,13 +168,31 @@ def com2us_data_import(data, user_id, import_options):
                 continue
 
     if not current_task.request.called_directly:
-        current_task.update_state(state=states.STARTED, meta={'step': 'crafts'})
+        current_task.update_state(state=states.STARTED, meta={'step': 'rune_crafts'})
 
     with transaction.atomic():
         # Save imported rune crafts
-        for idx, craft in enumerate(results['crafts']):
+        for craft in results['rune_crafts']:
             craft.save()
             imported_crafts.append(craft.pk)
+
+    if not current_task.request.called_directly:
+        current_task.update_state(state=states.STARTED, meta={'step': 'artifacts'})
+
+    with transaction.atomic():
+        # Save imported artifacts
+        for artifact in results['artifacts']:
+            artifact.save()
+            imported_artifacts.append(artifact.pk)
+
+    if not current_task.request.called_directly:
+        current_task.update_state(state=states.STARTED, meta={'step': 'artifact_crafts'})
+
+    with transaction.atomic():
+        # Save imported artifacts
+        for craft in results['artifact_crafts']:
+            craft.save()
+            imported_artifact_crafts.append(craft.pk)
 
     with transaction.atomic():
         # Delete objects missing from import
@@ -182,3 +203,5 @@ def com2us_data_import(data, user_id, import_options):
         if import_options['delete_missing_runes']:
             RuneInstance.objects.filter(owner=summoner).exclude(pk__in=imported_runes).delete()
             RuneCraftInstance.objects.filter(owner=summoner).exclude(pk__in=imported_crafts).delete()
+            ArtifactInstance.objects.filter(owner=summoner).exclude(pk__in=imported_artifacts).delete()
+            ArtifactCraftInstance.objects.filter(owner=summoner).exclude(pk__in=imported_artifact_crafts).delete()

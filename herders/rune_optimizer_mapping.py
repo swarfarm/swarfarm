@@ -1,5 +1,5 @@
 from bestiary.models import Monster
-from herders.models import RuneInstance, RuneCraftInstance
+from herders.models import base, RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance
 
 type_encode_dict = {
     RuneInstance.TYPE_ENERGY: 'Energy',
@@ -123,12 +123,12 @@ rune_stat_type_map = {
     RuneInstance.STAT_ACCURACY_PCT: 12,
 }
 
-rune_quality_map = {
-    RuneInstance.QUALITY_NORMAL: 1,
-    RuneInstance.QUALITY_MAGIC: 2,
-    RuneInstance.QUALITY_RARE: 3,
-    RuneInstance.QUALITY_HERO: 4,
-    RuneInstance.QUALITY_LEGEND: 5,
+quality_map = {
+    base.Quality.QUALITY_NORMAL: 1,
+    base.Quality.QUALITY_MAGIC: 2,
+    base.Quality.QUALITY_RARE: 3,
+    base.Quality.QUALITY_HERO: 4,
+    base.Quality.QUALITY_LEGEND: 5,
 }
 
 craft_type_map = {
@@ -140,10 +140,67 @@ craft_type_map = {
     RuneCraftInstance.CRAFT_ANCIENT_GRINDSTONE: 6,
 }
 
-craft_quality_map = {
-    RuneCraftInstance.QUALITY_NORMAL: 1,
-    RuneCraftInstance.QUALITY_MAGIC: 2,
-    RuneCraftInstance.QUALITY_RARE: 3,
-    RuneCraftInstance.QUALITY_HERO: 4,
-    RuneCraftInstance.QUALITY_LEGEND: 5,
+artifact_type_map = {
+    ArtifactInstance.SLOT_ELEMENTAL: 1,
+    ArtifactInstance.SLOT_ARCHETYPE: 2,
 }
+
+artifact_main_stat_map = {
+    ArtifactInstance.STAT_HP: 101,
+    ArtifactInstance.STAT_ATK: 102,
+    ArtifactInstance.STAT_DEF: 103,
+}
+
+artifact_effect_map = {
+    ArtifactInstance.EFFECT_ATK_LOST_HP: 200,
+    ArtifactInstance.EFFECT_DEF_LOST_HP: 201,
+    ArtifactInstance.EFFECT_SPD_LOST_HP: 202,
+    ArtifactInstance.EFFECT_SPD_INABILITY: 203,
+    ArtifactInstance.EFFECT_ATK: 204,
+    ArtifactInstance.EFFECT_DEF: 205,
+    ArtifactInstance.EFFECT_SPD: 206,
+    ArtifactInstance.EFFECT_CRIT_RATE: 207,
+    ArtifactInstance.EFFECT_COUNTER_DMG: 208,
+    ArtifactInstance.EFFECT_COOP_ATTACK_DMG: 209,
+    ArtifactInstance.EFFECT_BOMB_DMG: 210,
+    ArtifactInstance.EFFECT_REFLECT_DMG: 211,
+    ArtifactInstance.EFFECT_CRUSHING_HIT_DMG: 212,
+    ArtifactInstance.EFFECT_DMG_RECEIVED_INABILITY: 213,
+    ArtifactInstance.EFFECT_CRIT_DMG_RECEIVED: 214,
+    ArtifactInstance.EFFECT_LIFE_DRAIN: 215,
+    ArtifactInstance.EFFECT_HP_REVIVE: 216,
+    ArtifactInstance.EFFECT_ATB_REVIVE: 217,
+    ArtifactInstance.EFFECT_DMG_PCT_OF_HP: 218,
+    ArtifactInstance.EFFECT_DMG_PCT_OF_ATK: 219,
+    ArtifactInstance.EFFECT_DMG_PCT_OF_DEF: 220,
+    ArtifactInstance.EFFECT_DMG_PCT_OF_SPD: 221,
+    ArtifactInstance.EFFECT_DMG_TO_FIRE: 300,
+    ArtifactInstance.EFFECT_DMG_TO_WATER: 301,
+    ArtifactInstance.EFFECT_DMG_TO_WIND: 302,
+    ArtifactInstance.EFFECT_DMG_TO_LIGHT: 303,
+    ArtifactInstance.EFFECT_DMG_TO_DARK: 304,
+    ArtifactInstance.EFFECT_DMG_FROM_FIRE: 305,
+    ArtifactInstance.EFFECT_DMG_FROM_WATER: 306,
+    ArtifactInstance.EFFECT_DMG_FROM_WIND: 307,
+    ArtifactInstance.EFFECT_DMG_FROM_LIGHT: 308,
+    ArtifactInstance.EFFECT_DMG_FROM_DARK: 309,
+    ArtifactInstance.EFFECT_SK1_CRIT_DMG: 400,
+    ArtifactInstance.EFFECT_SK2_CRIT_DMG: 401,
+    ArtifactInstance.EFFECT_SK3_CRIT_DMG: 402,
+    ArtifactInstance.EFFECT_SK4_CRIT_DMG: 403,
+    ArtifactInstance.EFFECT_SK1_RECOVERY: 404,
+    ArtifactInstance.EFFECT_SK2_RECOVERY: 405,
+    ArtifactInstance.EFFECT_SK3_RECOVERY: 406,
+    ArtifactInstance.EFFECT_SK1_ACCURACY: 407,
+    ArtifactInstance.EFFECT_SK2_ACCURACY: 408,
+    ArtifactInstance.EFFECT_SK3_ACCURACY: 409,
+}
+
+archetype_map = {
+    base.Archetype.ARCHETYPE_ATTACK: 1,
+    base.Archetype.ARCHETYPE_DEFENSE: 2,
+    base.Archetype.ARCHETYPE_HP: 3,
+    base.Archetype.ARCHETYPE_SUPPORT: 4,
+    base.Archetype.ARCHETYPE_MATERIAL: 5,
+}
+

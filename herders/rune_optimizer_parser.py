@@ -30,6 +30,16 @@ def export_win10(summoner):
     for c in RuneCraftInstance.objects.filter(owner=summoner):
         rune_craft_item_list.append(_convert_rune_craft_to_win10_json(c))
 
+    # Build the artifact list
+    artifact_list = []
+    for a in ArtifactInstance.objects.filter(owner=summoner):
+        artifact_list.append(_convert_artifact_to_win10_json(a))
+
+    # Build the artifact craft list
+    artifact_craft_list = []
+    for c in ArtifactCraftInstance.objects.filter(owner=summoner):
+        artifact_craft_list.append(_convert_artifact_craft_to_win10_json(c))
+
     # Build the decoration list
     deco_list = []
     for d in BuildingInstance.objects.filter(owner=summoner):
@@ -40,6 +50,8 @@ def export_win10(summoner):
         'unit_list': unit_list,
         'runes': runes,
         'rune_craft_item_list': rune_craft_item_list,
+        'artifacts': artifact_list,
+        'artifact_crafts': artifact_craft_list,
         'deco_list': deco_list,
         'wizard_id': summoner.com2us_id if summoner.com2us_id else 0,
     })
@@ -60,7 +72,7 @@ def _convert_rune_to_win10_json(rune):
         'set_id': rune_set_map[rune.type],
         'upgrade_limit': 15,
         'rune_id': rune.com2us_id if rune.com2us_id else random.randint(1, 999999999),
-        'extra': rune_quality_map.get(rune.original_quality, 0),
+        'extra': quality_map.get(rune.original_quality, 0),
     }
 
     if rune.ancient:
@@ -98,6 +110,7 @@ def _convert_monster_to_win10_json(monster):
         'resist': monster.base_resistance,
         'skills': [],
         'runes': [],
+        'artifacts': [],
     }
 
     # Fill in skills
@@ -113,15 +126,18 @@ def _convert_monster_to_win10_json(monster):
             skill_levels[idx]
         ])
 
-    # Fill in runes
+    # Fill in runes and artifacts
     for rune in monster.runeinstance_set.all():
         mon_json['runes'].append(_convert_rune_to_win10_json(rune))
+
+    for artifact in monster.artifactinstance_set.all():
+        mon_json['artifacts'].append(_convert_artifact_to_win10_json(artifact))
 
     return mon_json
 
 
 def _convert_rune_craft_to_win10_json(craft):
-    quality = craft_quality_map[craft.quality]
+    quality = quality_map[craft.quality]
     stat = rune_stat_type_map[craft.stat]
     rune_set = rune_set_map.get(craft.rune, 99)
 
@@ -130,6 +146,53 @@ def _convert_rune_craft_to_win10_json(craft):
         'craft_type': craft_type_map[craft.type],
         'craft_item_id': craft.com2us_id if craft.com2us_id else random.randint(1, 999999999),
         'amount': craft.quantity,
+    }
+
+
+def _convert_artifact_to_win10_json(artifact):
+    effects_data = zip(
+        artifact.effects,
+        artifact.effects_value,
+        artifact.effects_upgrade_count,
+        [0] * len(artifact.effects),
+        artifact.effects_reroll_count,
+    )
+
+    sec_eff = []
+    for effect in effects_data:
+        sec_eff.append(list(effect))
+
+    return {
+        'occupied_id': artifact.assigned_to.com2us_id if artifact.assigned_to else 0,
+        'slot': 0,
+        'type': artifact_type_map[artifact.slot],
+        'attribute': element_map[artifact.element] if artifact.element else 0,
+        'unit_style': archetype_map[artifact.archetype] if artifact.archetype else 0,
+        'natural_rank': quality_map[artifact.original_quality],
+        'rank': quality_map[artifact.quality],
+        'level': artifact.level,
+        'pri_effect': [
+            artifact_main_stat_map[artifact.main_stat],
+            artifact.main_stat_value,
+            artifact.level,
+            0,
+            0,
+        ],
+        'sec_effects': sec_eff,
+    }
+
+
+def _convert_artifact_craft_to_win10_json(craft):
+    craft_type = artifact_type_map[craft.slot]
+    element = element_map[craft.element] if craft.element else 0
+    archetype = archetype_map[craft.archetype] if craft.archetype else 0
+    quality = quality_map[craft.quality]
+    effect = artifact_effect_map[craft.effect]
+
+    return {
+        'master_id': int(f'1{craft_type:02d}{element:02d}{archetype:02d}{quality:02d}{effect:03d}'),
+        'type': craft_type,
+        'quantity': craft.quantity,
     }
 
 

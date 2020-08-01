@@ -100,6 +100,7 @@ class Storage(models.Model):
         'crystal_dark',
         'crystal_magic',
         'crystal_pure',
+        'conversion_stone',
     ]
     MONSTER_FIELDS = [
         'fire_angelmon',

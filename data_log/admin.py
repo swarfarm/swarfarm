@@ -27,8 +27,13 @@ class RuneDropInline(admin.TabularInline):
     extra = 0
 
 
-class RuneCraftDropinline(admin.TabularInline):
+class RuneCraftDropInline(admin.TabularInline):
     fields = ('type', 'rune', 'stat', 'quality', 'value')
+    extra = 0
+
+
+class ArtifactDropInline(admin.TabularInline):
+    fields = ('slot', 'element', 'archetype', 'quality', 'main_stat')
     extra = 0
 
 
@@ -100,7 +105,7 @@ class MagicBoxCraftRuneDropInline(RuneDropInline):
     model = models.MagicBoxCraftRuneDrop
 
 
-class MagicBoxCraftRuneCraftDropInline(RuneCraftDropinline):
+class MagicBoxCraftRuneCraftDropInline(RuneCraftDropInline):
     model = models.MagicBoxCraftRuneCraftDrop
 
 
@@ -143,6 +148,10 @@ class DungeonRuneDropInline(RuneDropInline):
     model = models.DungeonRuneDrop
 
 
+class DungeonArtifactDropInline(ArtifactDropInline):
+    model = models.DungeonArtifactDrop
+
+
 class DungeonSecretDungeonDropInline(admin.TabularInline):
     model = models.DungeonSecretDungeonDrop
     readonly_fields = ('level', )
@@ -161,6 +170,7 @@ class DungeonLogAdmin(admin.ModelAdmin):
         DungeonMonsterPieceDropInline,
         DungeonRuneDropInline,
         DungeonSecretDungeonDropInline,
+        DungeonArtifactDropInline,
     )
 
 
@@ -176,7 +186,7 @@ class RiftDungeonRuneDropInline(RuneDropInline):
     model = models.RiftDungeonRuneDrop
 
 
-class RiftDungeonRuneCraftDropInline(RuneCraftDropinline):
+class RiftDungeonRuneCraftDropInline(RuneCraftDropInline):
     model = models.RiftDungeonRuneCraftDrop
 
 
@@ -199,7 +209,7 @@ class RiftRaidItemDropInline(ItemDropInline):
     model = models.RiftRaidItemDrop
 
 
-class RiftRaidRuneCraftDropInline(RuneCraftDropinline):
+class RiftRaidRuneCraftDropInline(RuneCraftDropInline):
     model = models.RiftRaidRuneCraftDrop
 
 

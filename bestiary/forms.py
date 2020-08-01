@@ -73,7 +73,7 @@ class FilterMonsterForm(forms.Form):
     )
     archetype = forms.MultipleChoiceField(
         label='Archetype',
-        choices=Monster.TYPE_CHOICES,
+        choices=Monster.ARCHETYPE_CHOICES,
         required=False,
     )
     awaken_level = forms.MultipleChoiceField(

@@ -7,7 +7,7 @@ from .models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat
 class MonsterFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(method='filter_name')
     element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
-    archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
+    archetype = django_filters.MultipleChoiceFilter(choices=Monster.ARCHETYPE_CHOICES)
     awaken_level = django_filters.MultipleChoiceFilter(choices=Monster.AWAKEN_CHOICES)
     leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
     leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)

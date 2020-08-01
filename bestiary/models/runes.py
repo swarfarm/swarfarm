@@ -10,7 +10,7 @@ from django.db import models
 from . import base
 
 
-class RuneObjectBase(base.Stats, base.Quality):
+class RuneObjectBase(base.Stats, base.Quality, base.Stars):
     # Provides basic rune related constants
     TYPE_ENERGY = 1
     TYPE_FATAL = 2
@@ -56,15 +56,6 @@ class RuneObjectBase(base.Stats, base.Quality):
         (TYPE_ENHANCE, 'Enhance'),
         (TYPE_ACCURACY, 'Accuracy'),
         (TYPE_TOLERANCE, 'Tolerance'),
-    )
-
-    STAR_CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4),
-        (5, 5),
-        (6, 6),
     )
 
     # Mappings from com2us' API data to model defined values

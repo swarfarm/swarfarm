@@ -12,23 +12,7 @@ from . import base
 from .items import GameItem, ItemQuantity
 
 
-class Monster(models.Model, base.Elements, base.Stars):
-    TYPE_ATTACK = 'attack'
-    TYPE_HP = 'hp'
-    TYPE_SUPPORT = 'support'
-    TYPE_DEFENSE = 'defense'
-    TYPE_MATERIAL = 'material'
-    TYPE_NONE = 'none'
-
-    TYPE_CHOICES = (
-        (TYPE_NONE, 'None'),
-        (TYPE_ATTACK, 'Attack'),
-        (TYPE_HP, 'HP'),
-        (TYPE_SUPPORT, 'Support'),
-        (TYPE_DEFENSE, 'Defense'),
-        (TYPE_MATERIAL, 'Material'),
-    )
-
+class Monster(models.Model, base.Elements, base.Stars, base.Archetype):
     AWAKEN_LEVEL_INCOMPLETE = -1  # Japan fusion
     AWAKEN_LEVEL_UNAWAKENED = 0
     AWAKEN_LEVEL_AWAKENED = 1
@@ -40,16 +24,6 @@ class Monster(models.Model, base.Elements, base.Stars):
         (AWAKEN_LEVEL_SECOND, 'Second Awakening'),
         (AWAKEN_LEVEL_INCOMPLETE, 'Incomplete'),
     )
-
-    # Mappings from com2us' API data to model defined values
-    COM2US_ARCHETYPE_MAP = {
-        0: TYPE_NONE,
-        1: TYPE_ATTACK,
-        2: TYPE_DEFENSE,
-        3: TYPE_HP,
-        4: TYPE_SUPPORT,
-        5: TYPE_MATERIAL
-    }
 
     COM2US_AWAKEN_MAP = {
         -1: AWAKEN_LEVEL_INCOMPLETE,
@@ -63,7 +37,7 @@ class Monster(models.Model, base.Elements, base.Stars):
     family_id = models.IntegerField(blank=True, null=True, help_text='Identifier that matches same family monsters')
     image_filename = models.CharField(max_length=250, null=True, blank=True)
     element = models.CharField(max_length=6, choices=base.Elements.ELEMENT_CHOICES, default=base.Elements.ELEMENT_FIRE)
-    archetype = models.CharField(max_length=10, choices=TYPE_CHOICES, default=TYPE_ATTACK)
+    archetype = models.CharField(max_length=10, choices=base.Archetype.ARCHETYPE_CHOICES, default=base.Archetype.ARCHETYPE_ATTACK)
     base_stars = models.IntegerField(choices=base.Stars.STAR_CHOICES, help_text='Display stars in game')
     natural_stars = models.IntegerField(choices=base.Stars.STAR_CHOICES, help_text="Stars of the monster's lowest awakened form")
     obtainable = models.BooleanField(default=True, help_text='Is available for players to acquire')

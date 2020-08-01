@@ -237,3 +237,57 @@ class RuneCraftDropTests(TestCase):
         self.assertEqual(log.rune, models.RuneCraftDrop.TYPE_SHIELD)
         self.assertEqual(log.quality, models.RuneCraftDrop.QUALITY_NORMAL)
         self.assertEqual(log.stat, models.RuneCraftDrop.STAT_ATK)
+
+
+class ArtifactDropTests(TestCase):
+    def test_parse_artifact_drop(self):
+        log = models.ArtifactDrop.parse(**{
+            "rid": 1509482,
+            "wizard_id": 123,
+            "occupied_id": 0,
+            "slot": 0,
+            "type": 2,
+            "attribute": 0,
+            "unit_style": 2,
+            "natural_rank": 2,
+            "rank": 2,
+            "level": 0,
+            "pri_effect": [
+                100,
+                160,
+                0,
+                0,
+                0
+            ],
+            "sec_effects": [
+                [
+                    204,
+                    4,
+                    0,
+                    0,
+                    0
+                ]
+            ],
+            "locked": 0,
+            "source": 50001,
+            "extra": [],
+            "date_add": "2020-08-01 09:04:01",
+            "date_mod": "2020-08-01 09:04:01"
+        })
+
+        self.assertEqual(log.slot, models.ArtifactDrop.SLOT_ARCHETYPE)
+        self.assertIsNone(log.element)
+        self.assertEqual(log.archetype, models.ArtifactDrop.ARCHETYPE_DEFENSE)
+        self.assertEqual(log.original_quality, models.ArtifactDrop.QUALITY_MAGIC)
+        self.assertEqual(log.quality, models.ArtifactDrop.QUALITY_MAGIC)
+        self.assertEqual(log.level, 0)
+        self.assertEqual(log.main_stat, models.ArtifactDrop.STAT_HP)
+        self.assertEqual(log.main_stat_value, 160)
+        self.assertEqual(len(log.effects), 1)
+        self.assertEqual(log.effects[0], models.ArtifactDrop.EFFECT_ATK)
+        self.assertEqual(len(log.effects_value), 1)
+        self.assertEqual(log.effects_value[0], 4)
+        self.assertEqual(len(log.effects_upgrade_count), 1)
+        self.assertEqual(log.effects_upgrade_count[0], 0)
+        self.assertEqual(len(log.effects_reroll_count), 1)
+        self.assertEqual(log.effects_reroll_count[0], 0)

@@ -89,6 +89,18 @@ class CairosLogTests(BaseLogTest):
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.monsters.count(), 1)
 
+    def test_artifact_drop(self):
+        self._do_log('BattleDungeonResult_V2/punisher_b5_artifact_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.artifacts.count(), 1)
+
+    def test_conversion_stone_drop(self):
+        self._do_log('BattleDungeonResult_V2/punisher_b5_conversion_stone_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.items.count(), 2)
+        item_drop = log.items.get(item__category=GameItem.CATEGORY_ARTIFACT_CRAFT)
+        self.assertEqual(item_drop.quantity, 8)
+
 
 class ScenarioLogTests(BaseLogTest):
     fixtures = ['test_game_items', 'test_levels', 'test_summon_monsters']

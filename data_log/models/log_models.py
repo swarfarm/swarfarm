@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.mail import mail_admins
 from django.db import models
 
-from bestiary.models import Monster, Dungeon, Level, GameItem, Rune, RuneCraft
+from bestiary.models import Monster, Dungeon, Level, GameItem, Rune, RuneCraft, Artifact, ArtifactCraft
 from herders.models import Summoner
 
 
@@ -56,6 +56,7 @@ class ItemDrop(models.Model):
         GameItem.CATEGORY_SUMMON_SCROLL,
         GameItem.CATEGORY_ESSENCE,
         GameItem.CATEGORY_CRAFT_STUFF,
+        GameItem.CATEGORY_ARTIFACT_CRAFT,
     )
 
     RELATED_NAME = 'items'
@@ -236,6 +237,63 @@ class RuneCraftDrop(RuneCraft):
             rune=cls.COM2US_TYPE_MAP[int(craft_type_id[:-4])],
             quality=cls.COM2US_QUALITY_MAP[int(craft_type_id[-1:])],
             stat=cls.COM2US_STAT_MAP[int(craft_type_id[-4:-2])],
+        )
+
+
+class ArtifactDrop(Artifact):
+    PARSE_ITEM_TYPES = (
+        GameItem.CATEGORY_ARTIFACT,
+    )
+
+    RELATED_NAME = 'artifacts'
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def parse(cls, **artifact_data):
+        slot = cls.COM2US_SLOT_MAP[artifact_data['type']]
+        if slot == cls.SLOT_ELEMENTAL:
+            archetype = None
+            element = cls.COM2US_ELEMENT_MAP[artifact_data['attribute']]
+        else:
+            element = None
+            archetype = cls.COM2US_ARCHETYPE_MAP[artifact_data['unit_style']]
+        quality = cls.COM2US_QUALITY_MAP[artifact_data['rank']]
+        original_quality = cls.COM2US_QUALITY_MAP[artifact_data['natural_rank']]
+        level = artifact_data['level']
+        main_eff = artifact_data['pri_effect']
+        main_stat = cls.COM2US_MAIN_STAT_MAP[main_eff[0]]
+        main_stat_value = main_eff[1]
+
+        effects = []
+        effects_value = []
+        effects_upgrade_count = []
+        effects_reroll_count = []
+        for sec_eff in artifact_data['sec_effects']:
+            effect = cls.COM2US_EFFECT_MAP[sec_eff[0]]
+            value = sec_eff[1]
+            upgrade_count = sec_eff[2]
+            reroll_count = sec_eff[4]
+
+            effects.append(effect)
+            effects_value.append(value)
+            effects_upgrade_count.append(upgrade_count)
+            effects_reroll_count.append(reroll_count)
+
+        return cls(
+            slot=slot,
+            archetype=archetype,
+            element=element,
+            quality=quality,
+            original_quality=original_quality,
+            level=level,
+            main_stat=main_stat,
+            main_stat_value=main_stat_value,
+            effects=effects,
+            effects_value=effects_value,
+            effects_upgrade_count=effects_upgrade_count,
+            effects_reroll_count=effects_reroll_count,
         )
 
 
@@ -813,6 +871,9 @@ class DungeonLog(LogEntry):
             # parse rune drop
             elif item_type == GameItem.CATEGORY_RUNE:
                 changed_items_object.append(DungeonRuneDrop.parse(**info))
+            # parse artifact drop
+            elif item_type == GameItem.CATEGORY_ARTIFACT:
+                changed_items_object.append(DungeonArtifactDrop.parse(**info))
             # parse secret dungeon drop
             elif item_type == GameItem.CATEGORY_SECRET_DUNGEON:
                 # Parse secret dungeon drop
@@ -845,6 +906,10 @@ class DungeonRuneDrop(RuneDrop):
 
 class DungeonRuneCraftDrop(RuneCraftDrop):
     log = models.ForeignKey(DungeonLog, on_delete=models.CASCADE, related_name=RuneCraftDrop.RELATED_NAME)
+
+
+class DungeonArtifactDrop(ArtifactDrop):
+    log = models.ForeignKey(DungeonLog, on_delete=models.CASCADE, related_name=ArtifactDrop.RELATED_NAME)
 
 
 class DungeonSecretDungeonDropManager(models.Manager):

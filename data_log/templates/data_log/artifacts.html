@@ -1,0 +1,52 @@
+{% load report_charts %}
+
+<h2>Artifact Drops</h2>
+<h3>Type/Slot</h3>
+<div class="row">
+    {% if artifacts.element.total > 0 %}
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="report-chart"
+            data-chart="{% chart artifacts.element type='pie' title="Element Type" sorted='element' colors='element' %}"
+            style="height: 300px"
+        ></div>
+    </div>
+    {% endif %}
+
+    {% if artifacts.archetype.total > 0 %}
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="report-chart"
+            data-chart="{% chart artifacts.archetype type='pie' title="Archetype" sorted='key' %}"
+            style="height: 300px"
+        ></div>
+    </div>
+    {% endif %}
+
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="report-chart"
+            data-chart="{% chart artifacts.quality type='pie' title="Quality" sorted='quality' colors='quality' %}"
+            style="height: 300px"
+        ></div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div
+            class="report-chart"
+            data-chart="{% chart artifacts.main_stat type='pie' title="Main Stat" sorted='key' %}"
+            style="height: 300px"
+        ></div>
+    </div>
+</div>
+
+<h3>Secondary Effects</h3>
+<div class="row">
+    <div class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3">
+        <div
+            class="report-chart"
+            data-chart="{% chart artifacts.effects title="Secondary Effects" percentage=True sorted='value' reverse=True %}"
+            style="height: 550px"
+        ></div>
+    </div>
+</div>

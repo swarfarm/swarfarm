@@ -20,7 +20,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__name = django_filters.CharFilter(method='filter_monster__name')
     tags__pk = django_filters.ModelMultipleChoiceFilter(queryset=MonsterTag.objects.all(), to_field_name='pk', conjoined=True)
     monster__element = django_filters.MultipleChoiceFilter(choices=Monster.ELEMENT_CHOICES)
-    monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.TYPE_CHOICES)
+    monster__archetype = django_filters.MultipleChoiceFilter(choices=Monster.ARCHETYPE_CHOICES)
     monster__awaken_level = django_filters.MultipleChoiceFilter(choices=Monster.AWAKEN_CHOICES)
     priority = django_filters.MultipleChoiceFilter(choices=MonsterInstance.PRIORITY_CHOICES)
     monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)

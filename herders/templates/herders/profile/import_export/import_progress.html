@@ -91,6 +91,26 @@
                         </div>
                     </div>
                 </div>
+                <div id="artifacts" class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-2 text-center">
+                            <h4 id="artifacts_indicator">...</h4>
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Parsing artifacts</h4>
+                        </div>
+                    </div>
+                </div>
+                <div id="artifact_crafts" class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-2 text-center">
+                            <h4 id="artifact_crafts_indicator">...</h4>
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Parsing artifact conversion stones</h4>
+                        </div>
+                    </div>
+                </div>
                 <div id="success" class="list-group-item">
                     <div class="row">
                         <div class="col-sm-2 text-center">
@@ -117,7 +137,16 @@ function updateImportProgress() {
     var complete_status = '<span class="glyphicon glyphicon-check"></span>';
     var status_url = '/profile/' + PROFILE_NAME + '/import/progress/';
     var progression = [
-        'queue', 'preprocessing', 'storage', 'monsters', 'runes', 'rta_builds', 'crafts', 'success'
+        'queue',
+        'preprocessing',
+        'storage',
+        'monsters',
+        'runes',
+        'rta_builds',
+        'crafts',
+        'artifacts',
+        'artifact_crafts',
+        'success'
     ];
 
     $.ajax({

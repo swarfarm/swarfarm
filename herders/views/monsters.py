@@ -134,12 +134,12 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 monster_stable['light'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_LIGHT).order_by('-stars', '-level', 'monster__name')
                 monster_stable['dark'] = monster_filter.qs.filter(monster__element=Monster.ELEMENT_DARK).order_by('-stars', '-level', 'monster__name')
             elif box_grouping == 'archetype':
-                monster_stable['attack'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_ATTACK).order_by('-stars', '-level', 'monster__name')
-                monster_stable['hp'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_HP).order_by('-stars', '-level', 'monster__name')
-                monster_stable['support'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_SUPPORT).order_by('-stars', '-level', 'monster__name')
-                monster_stable['defense'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_DEFENSE).order_by('-stars', '-level', 'monster__name')
-                monster_stable['material'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_MATERIAL).order_by('-stars', '-level', 'monster__name')
-                monster_stable['other'] = monster_filter.qs.filter(monster__archetype=Monster.TYPE_NONE).order_by('-stars', '-level', 'monster__name')
+                monster_stable['attack'] = monster_filter.qs.filter(monster__archetype=Monster.ARCHETYPE_ATTACK).order_by('-stars', '-level', 'monster__name')
+                monster_stable['hp'] = monster_filter.qs.filter(monster__archetype=Monster.ARCHETYPE_HP).order_by('-stars', '-level', 'monster__name')
+                monster_stable['support'] = monster_filter.qs.filter(monster__archetype=Monster.ARCHETYPE_SUPPORT).order_by('-stars', '-level', 'monster__name')
+                monster_stable['defense'] = monster_filter.qs.filter(monster__archetype=Monster.ARCHETYPE_DEFENSE).order_by('-stars', '-level', 'monster__name')
+                monster_stable['material'] = monster_filter.qs.filter(monster__archetype=Monster.ARCHETYPE_MATERIAL).order_by('-stars', '-level', 'monster__name')
+                monster_stable['other'] = monster_filter.qs.filter(monster__archetype=Monster.ARCHETYPE_NONE).order_by('-stars', '-level', 'monster__name')
             elif box_grouping == 'priority':
                 monster_stable['High'] = monster_filter.qs.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_HIGH).order_by('-level', 'monster__element', 'monster__name')
                 monster_stable['Medium'] = monster_filter.qs.select_related('monster').filter(owner=summoner, priority=MonsterInstance.PRIORITY_MED).order_by('-level', 'monster__element', 'monster__name')
@@ -304,7 +304,7 @@ def monster_instance_bulk_add(request, profile_name):
                         if new_instance.monster:
                             new_instance.owner = summoner
 
-                            if new_instance.monster.archetype == Monster.TYPE_MATERIAL:
+                            if new_instance.monster.archetype == Monster.ARCHETYPE_MATERIAL:
                                 new_instance.priority = MonsterInstance.PRIORITY_DONE
 
                             new_instance.save()

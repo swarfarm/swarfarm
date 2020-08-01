@@ -2,13 +2,12 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Summoner, MonsterInstance, MonsterTag, Team, TeamGroup, RuneInstance, RuneCraftInstance, \
-    BuildingInstance, RuneBuild
+from . import models
 
 
 # User management stuff
 class SummonerInline(admin.StackedInline):
-    model = Summoner
+    model = models.Summoner
     can_delete = False
     verbose_name_plural = 'summoners'
     exclude = ('following',)
@@ -24,7 +23,7 @@ admin.site.register(User, CustomUserAdmin)
 
 
 class RuneInstanceInline(admin.TabularInline):
-    model = RuneInstance
+    model = models.RuneInstance
     fields = (
         'stars',
         'level',
@@ -44,13 +43,13 @@ class RuneInstanceInline(admin.TabularInline):
 
 
 class RuneBuildInline(admin.TabularInline):
-    model = RuneBuild
+    model = models.RuneBuild
     exclude = ('owner', 'runes', )
     extra = 0
     show_change_link = True
 
 
-@admin.register(MonsterInstance)
+@admin.register(models.MonsterInstance)
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'owner')
     filter_vertical = ('tags',)
@@ -60,21 +59,21 @@ class MonsterInstanceAdmin(admin.ModelAdmin):
     inlines = (RuneInstanceInline, RuneBuildInline,)
 
 
-admin.site.register(MonsterTag)
+admin.site.register(models.MonsterTag)
 
 
-@admin.register(Team)
+@admin.register(models.Team)
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'group', 'owner')
     filter_horizontal = ('roster',)
 
 
-@admin.register(TeamGroup)
+@admin.register(models.TeamGroup)
 class TeamGroupAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'owner')
 
 
-@admin.register(RuneInstance)
+@admin.register(models.RuneInstance)
 class RuneInstanceAdmin(admin.ModelAdmin):
     list_display = ('type', 'stars', 'level', 'slot', 'owner', 'main_stat')
     search_fields = ('id',)
@@ -82,7 +81,7 @@ class RuneInstanceAdmin(admin.ModelAdmin):
     readonly_fields = ('quality', 'has_hp', 'has_atk', 'has_def', 'has_crit_rate', 'has_crit_dmg', 'has_speed', 'has_resist', 'has_accuracy')
 
 
-@admin.register(RuneBuild)
+@admin.register(models.RuneBuild)
 class RuneBuildAdmin(admin.ModelAdmin):
     list_display = (
         '__str__',
@@ -98,9 +97,19 @@ class RuneBuildAdmin(admin.ModelAdmin):
         )
 
 
-@admin.register(RuneCraftInstance)
+@admin.register(models.RuneCraftInstance)
 class RuneCraftInstanceAdmin(admin.ModelAdmin):
     exclude = ('owner',)
 
 
-admin.site.register(BuildingInstance)
+@admin.register(models.ArtifactInstance)
+class ArtifactInstanceAdmin(admin.ModelAdmin):
+    readonly_fields = ('owner', 'assigned_to')
+
+
+@admin.register(models.ArtifactCraftInstance)
+class ArtifactCraftInstanceAdmin(admin.ModelAdmin):
+    readonly_fields = ('owner', )
+
+
+admin.site.register(models.BuildingInstance)

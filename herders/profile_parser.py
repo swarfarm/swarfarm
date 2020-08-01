@@ -3,7 +3,7 @@ from django.utils.timezone import get_current_timezone
 from jsonschema.exceptions import best_match
 
 from bestiary.models import Monster, Building, GameItem
-from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance
+from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance, ArtifactInstance, ArtifactCraftInstance
 from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
 # Game ID to field mappings
@@ -107,6 +107,8 @@ def parse_sw_json(data, owner, options):
     wizard_id = None
     parsed_runes = []
     parsed_rune_crafts = []
+    parsed_artifacts = []
+    parsed_artifact_crafts = []
     parsed_mons = []
     parsed_inventory = {}
     parsed_monster_pieces = []
@@ -126,6 +128,8 @@ def parse_sw_json(data, owner, options):
     runes_info = data.get('runes')  # Optional
     locked_mons = data.get('unit_lock_list')  # Optional
     craft_info = data.get('rune_craft_item_list')  # Optional
+    artifact_info = data.get('artifacts')  # Optional
+    artifact_craft_info = data.get('artifact_crafts')  # Optional
 
     # Buildings
     storage_building_id = None
@@ -189,7 +193,7 @@ def parse_sw_json(data, owner, options):
 
                 if monster and quantity:
                     parsed_inventory[monster] = quantity
-            elif item['item_master_type'] == GameItem.CATEGORY_CONVERSION_STONE:
+            elif item['item_master_type'] == GameItem.CATEGORY_ARTIFACT_CRAFT:
                 quantity = item.get('item_quantity')
                 if quantity:
                     parsed_inventory['conversion_stone'] = quantity
@@ -254,7 +258,7 @@ def parse_sw_json(data, owner, options):
         if options['default_priority'] and is_new:
             mon.priority = options['default_priority']
 
-        if mon.monster.archetype == Monster.TYPE_MATERIAL:
+        if mon.monster.archetype == Monster.ARCHETYPE_MATERIAL:
             mon.fodder = True
             mon.priority = MonsterInstance.PRIORITY_DONE
 
@@ -262,15 +266,16 @@ def parse_sw_json(data, owner, options):
         if options['lock_monsters']:
             mon.ignore_for_fusion = locked_mons is not None and mon.com2us_id in locked_mons
 
-        # Equipped runes
+        # Equipped runes and artifacts
         equipped_runes = unit_info.get('runes')
+        equipped_artifacts = unit_info.get('artifacts')
 
         # Check import options to determine if monster should be saved
         level_ignored = mon.stars < options['minimum_stars']
         silver_ignored = options['ignore_silver'] and not mon.monster.can_awaken
-        material_ignored = options['ignore_material'] and mon.monster.archetype == Monster.TYPE_MATERIAL
-        allow_due_to_runes = options['except_with_runes'] and len(equipped_runes) > 0
-        allow_due_to_ld = options['except_light_and_dark'] and mon.monster.element in [Monster.ELEMENT_DARK, Monster.ELEMENT_LIGHT] and mon.monster.archetype != Monster.TYPE_MATERIAL
+        material_ignored = options['ignore_material'] and mon.monster.archetype == Monster.ARCHETYPE_MATERIAL
+        allow_due_to_runes = options['except_with_runes'] and (len(equipped_runes) > 0 or len(equipped_artifacts) > 0)
+        allow_due_to_ld = options['except_light_and_dark'] and mon.monster.element in [Monster.ELEMENT_DARK, Monster.ELEMENT_LIGHT] and mon.monster.archetype != Monster.ARCHETYPE_MATERIAL
         allow_due_to_fusion = options['except_fusion_ingredient'] and mon.monster.fusion_food
 
         should_be_skipped = any([level_ignored, silver_ignored, material_ignored])
@@ -297,6 +302,13 @@ def parse_sw_json(data, owner, options):
                 rune.assigned_to = mon
                 parsed_runes.append(rune)
 
+        for artifact_data in equipped_artifacts:
+            artifact = parse_artifact_data(artifact_data, owner)
+            if artifact:
+                artifact.owner = owner
+                artifact.assigned_to = mon
+                parsed_artifacts.append(artifact)
+
     # Extract grindstones/enchant gems
     if craft_info:
         for craft_data in craft_info:
@@ -305,12 +317,30 @@ def parse_sw_json(data, owner, options):
                 craft.owner = owner
                 parsed_rune_crafts.append(craft)
 
+    # Extract artifact inventory
+    if artifact_info:
+        for artifact_data in artifact_info:
+            artifact = parse_artifact_data(artifact_data, owner)
+            if artifact:
+                artifact.owner = owner
+                artifact.assigned_to = None
+                parsed_artifacts.append(artifact)
+
+    if artifact_craft_info:
+        for craft_data in artifact_craft_info:
+            craft = parse_artifact_craft_data(craft_data, owner)
+            if craft:
+                craft.owner = owner
+                parsed_artifact_crafts.append(craft)
+
     import_results = {
         'wizard_id': wizard_id,
         'monsters': parsed_mons,
         'monster_pieces': parsed_monster_pieces,
         'runes': parsed_runes,
-        'crafts': parsed_rune_crafts,
+        'rune_crafts': parsed_rune_crafts,
+        'artifacts': parsed_artifacts,
+        'artifact_crafts': parsed_artifact_crafts,
         'inventory': parsed_inventory,
         'buildings': parsed_buildings,
         'rta_assignments': data['world_arena_rune_equip_list']
@@ -383,7 +413,7 @@ def parse_rune_data(rune_data, owner):
 def parse_rune_craft_data(craft_data, owner):
     # craft_type_id = 5 digit number
     # Work backwards to figure it out
-    # [:-1] = quality
+    # [-1:] = quality
     # [-4:-2] = stat
     # [:-4] = rune set
 
@@ -405,5 +435,77 @@ def parse_rune_craft_data(craft_data, owner):
     craft.rune = RuneCraftInstance.COM2US_TYPE_MAP.get(rune_set)
     craft.quantity = craft_data.get('amount', 1)
     craft.value = craft_data['sell_value']
+
+    return craft
+
+
+def parse_artifact_data(artifact_data, owner):
+    com2us_id = artifact_data.get('rid')
+
+    artifact = ArtifactInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
+
+    if not artifact:
+        artifact = ArtifactInstance(owner=owner)
+
+    # Basic artifact data
+    artifact.slot = artifact.COM2US_SLOT_MAP[artifact_data['type']]
+    if artifact.slot == artifact.SLOT_ELEMENTAL:
+        artifact.archetype = None
+        artifact.element = artifact.COM2US_ELEMENT_MAP[artifact_data['attribute']]
+    else:
+        artifact.element = None
+        artifact.archetype = artifact.COM2US_ARCHETYPE_MAP[artifact_data['unit_style']]
+
+    artifact.quality = artifact.COM2US_QUALITY_MAP[artifact_data['rank']]
+    artifact.original_quality = artifact.COM2US_QUALITY_MAP[artifact_data['natural_rank']]
+    artifact.level = artifact_data['level']
+
+    # Stats and effects
+    main_eff = artifact_data['pri_effect']
+    artifact.main_stat = artifact.COM2US_MAIN_STAT_MAP[main_eff[0]]
+    artifact.main_stat_value = main_eff[1]
+
+    artifact.effects = []
+    artifact.effects_value = []
+    artifact.effects_upgrade_count = []
+    artifact.effects_reroll_count = []
+    for sec_eff in artifact_data['sec_effects']:
+        artifact.effects.append(sec_eff[0])
+        artifact.effects_value.append(sec_eff[1])
+        artifact.effects_upgrade_count.append(sec_eff[2])
+        artifact.effects_reroll_count.append(sec_eff[4])
+
+    return artifact
+
+
+def parse_artifact_craft_data(craft_data, owner):
+    # master_id = 12 digit number
+    # Digits:
+    #   [0] = always 1, skip
+    #   [1:3] = artifact type
+    #   [3:5] = element
+    #   [5:7] = unit archetype
+    #   [7:9] = quality
+    #   [9:] = effect
+
+    com2us_id = craft_data['rid']
+    craft = ArtifactCraftInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
+
+    if not craft:
+        craft = ArtifactCraftInstance(com2us_id=com2us_id, owner=owner)
+
+    craft_type_id = str(craft_data['master_id'])
+    artifact_type = int(craft_type_id[1:3])
+    unit_element = int(craft_type_id[3:5])
+    unit_archetype = int(craft_type_id[5:7])
+    quality = int(craft_type_id[7:9])
+    effect = int(craft_type_id[9:])
+
+    craft.slot = ArtifactCraftInstance.COM2US_SLOT_MAP.get(artifact_type)
+    craft.element = ArtifactCraftInstance.COM2US_ELEMENT_MAP.get(unit_element) if unit_element else None
+    craft.archetype = ArtifactCraftInstance.COM2US_ARCHETYPE_MAP.get(unit_archetype) if unit_archetype else None
+    craft.quality = ArtifactCraftInstance.COM2US_QUALITY_MAP.get(quality)
+    craft.effect = ArtifactCraftInstance.COM2US_EFFECT_MAP.get(effect)
+    craft.quantity = craft_data.get('amount', 1)
 
     return craft

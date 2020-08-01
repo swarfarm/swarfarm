@@ -11,9 +11,8 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from timezone_field import TimeZoneField
 
-from bestiary.models import base, Monster, Building, Level, Rune, RuneCraft
+from bestiary.models import base, Monster, Building, Level, Rune, RuneCraft, Artifact, ArtifactCraft
 
-from django.db import connection
 
 # Individual user/monster collection models
 class Summoner(models.Model):
@@ -975,11 +974,27 @@ class RuneCraftInstance(RuneCraft):
         ordering = ['type', 'rune']
 
     def clean(self):
+        super().clean()
+
         if self.quantity < 1:
             raise ValidationError({'quantity': ValidationError(
                 'Quantity must be 1 or more',
                 code='invalid_quantity'
             )})
+
+
+class ArtifactInstance(Artifact):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    com2us_id = models.BigIntegerField(blank=True, null=True)
+    assigned_to = models.ForeignKey(MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
+
+
+class ArtifactCraftInstance(ArtifactCraft):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    com2us_id = models.BigIntegerField(blank=True, null=True)
+    quantity = models.IntegerField(default=1)
 
 
 class TeamGroup(models.Model):

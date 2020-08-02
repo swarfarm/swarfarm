@@ -3,4 +3,5 @@
 {% if log.monster_pieces is not None %}{% include './monster_piece_drops.html' with drops=log.monster_pieces.all only %}{% endif %}
 {% if log.items is not None %}{% include './item_drops.html' with drops=log.items.all only %}{% endif %}
 {% if log.rune_crafts is not None %}{% include './rune_craft_drops.html' with drops=log.rune_crafts.all only %}{% endif %}
+{% if log.artifacts is not None %}{% include './artifact_drops.html' with drops=log.artifacts.all only %}{% endif %}
 {% if log.secret_dungeons is not None %}{% include './secret_dungeon_drops.html' with drops=log.secret_dungeons.all only%}{% endif %}

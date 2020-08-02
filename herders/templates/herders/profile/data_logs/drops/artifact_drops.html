@@ -3,28 +3,22 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 {% for drop in drops %}
-<div class="rune-image drop-popover" style="margin-right:0!important;" data-popover-content="#rune{{ drop.pk }}">
-    <div class="rune-bg {{ drop.get_quality_display|lower }}">
-        <div class="rune slot{{ drop.slot }}">
-            <div class="rune-symbol {{ drop.get_type_display|lower }}"></div>
+<div class="rune-image drop-popover" style="margin-right:0!important;" data-popover-content="#artifact{{ drop.pk }}">
+    <div class="artifact-bg {{ drop.get_quality_display|lower }}">
+        <div class="artifact {{ drop.get_quality_display|lower }} {{ drop.get_slot_display|lower }}">
+            <div class="artifact-symbol {{ drop.get_precise_slot_display|lower }}"></div>
         </div>
-        {% for x in drop.stars|get_range %}
-            {% if drop.level == 15 %}
-            <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-awakened.png" />
-            {% else %}
-            <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
-            {% endif %}
-        {% endfor %}
         <span class="image-plus image-plus-right">{{ drop.get_main_stat_display }}</span >
     </div>
 </div>
 
-<div class="hidden" id="rune{{ drop.pk }}">
+<div class="hidden" id="artifact{{ drop.pk }}">
     <div class="popover-heading">
         {{ drop }}
     </div>
     <div class="popover-body">
-        {% include 'herders/profile/data_logs/drops/rune_popover.html' %}
+        {% include 'herders/profile/data_logs/drops/artifact_popover.html' %}
     </div>
+
 </div>
 {% endfor %}

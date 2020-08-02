@@ -492,3 +492,102 @@ span.rune-set-bonus {
 .rune-button-enhance { background-image: url(/static/herders/images/runes/enhance.png)!important;}
 .rune-button-accuracy { background-image: url(/static/herders/images/runes/accuracy.png)!important;}
 .rune-button-tolerance { background-image: url(/static/herders/images/runes/tolerance.png)!important;}
+
+.artifact-bg {
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    background-size: 50px 50px;
+}
+
+.artifact-bg.normal {
+    background: url(/static/herders/images/artifacts/bg_normal.png) no-repeat center;
+}
+.artifact-bg.magic {
+    background: url(/static/herders/images/artifacts/bg_magic.png) no-repeat center;
+}
+.artifact-bg.rare {
+    background: url(/static/herders/images/artifacts/bg_rare.png) no-repeat center;
+}
+.artifact-bg.hero {
+    background: url(/static/herders/images/artifacts/bg_hero.png) no-repeat center;
+}
+.artifact-bg.legend {
+    background: url(/static/herders/images/artifacts/bg_legend.png) no-repeat center;
+}
+
+.artifact {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: center no-repeat;
+    background-size: 50px 50px;
+}
+
+.artifact.archetype.normal {
+    background-image: url(/static/herders/images/artifacts/archetype_normal.png);
+}
+.artifact.archetype.magic {
+    background-image: url(/static/herders/images/artifacts/archetype_magic.png);
+}
+.artifact.archetype.rare {
+    background-image: url(/static/herders/images/artifacts/archetype_rare.png);
+}
+.artifact.archetype.hero {
+    background-image: url(/static/herders/images/artifacts/archetype_hero.png);
+}
+.artifact.archetype.legend {
+    background-image: url(/static/herders/images/artifacts/archetype_legend.png);
+}
+.artifact.element.normal {
+    background-image: url(/static/herders/images/artifacts/element_normal.png);
+}
+.artifact.element.magic {
+    background-image: url(/static/herders/images/artifacts/element_magic.png);
+}
+.artifact.element.rare {
+    background-image: url(/static/herders/images/artifacts/element_rare.png);
+}
+.artifact.element.hero {
+    background-image: url(/static/herders/images/artifacts/element_hero.png);
+}
+.artifact.element.legend {
+    background-image: url(/static/herders/images/artifacts/element_legend.png);
+}
+
+.artifact-symbol {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+    background-position: center;
+}
+
+.artifact-symbol.hp {
+    background-image: url(/static/herders/images/artifacts/hp.png);
+}
+.artifact-symbol.attack {
+    background-image: url(/static/herders/images/artifacts/attack.png);
+}
+.artifact-symbol.defense {
+    background-image: url(/static/herders/images/artifacts/defense.png);
+}
+.artifact-symbol.support {
+    background-image: url(/static/herders/images/artifacts/support.png);
+}
+.artifact-symbol.water {
+    background-image: url(/static/herders/images/artifacts/water.png);
+}
+.artifact-symbol.fire {
+    background-image: url(/static/herders/images/artifacts/fire.png);
+}
+.artifact-symbol.wind {
+    background-image: url(/static/herders/images/artifacts/wind.png);
+}
+.artifact-symbol.light {
+    background-image: url(/static/herders/images/artifacts/light.png);
+}
+.artifact-symbol.dark {
+    background-image: url(/static/herders/images/artifacts/dark.png);
+}

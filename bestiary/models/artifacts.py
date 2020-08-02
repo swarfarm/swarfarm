@@ -328,7 +328,8 @@ class Artifact(ArtifactObjectBase, base.Stars):
         abstract = True
 
     def __str__(self):
-        return f'{self.get_quality_display()} Artifact lv.{self.level} {self.get_main_stat_display()}'
+        level = f'+{self.level} ' if self.level else ''
+        return f'{level}{self.get_main_stat_display()} Artifact'
 
     def clean(self):
         super().clean()
@@ -345,8 +346,13 @@ class Artifact(ArtifactObjectBase, base.Stars):
 
         # TODO: Effect value validation based on number of upgrades
 
-    def get_main_stat_display(self):
-        return f'{self.STAT_DISPLAY[self.main_stat]} +{self.main_stat_value}'
+    def get_precise_slot_display(self):
+        return self.get_archetype_display() or self.get_element_display()
+
+    def get_effects_display(self):
+        return [
+            self.EFFECT_STRINGS[eff].format(self.effects_value[idx]) for idx, eff in enumerate(self.effects)
+        ]
 
     @property
     def substat_upgrades_received(self):

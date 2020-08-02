@@ -5,7 +5,6 @@ from bestiary import models
 
 
 class Rune(models.Rune):
-    # Add an easy to use stub function
     class Meta:
         abstract = True
         

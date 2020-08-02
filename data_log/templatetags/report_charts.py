@@ -127,12 +127,13 @@ _series_colors = {
 
 
 # All _sort_by_x functions assume the input data is a list of tuples which are key:value pairs
+# None values assigned value of 0 for sorting
 def _sort_by_key(data):
-    return sorted(data, key=lambda x: x[0])
+    return sorted(data, key=lambda x: x[0] or 0)
 
 
 def _sort_by_value(data):
-    return sorted(data, key=lambda x: x[1])
+    return sorted(data, key=lambda x: x[1] or 0)
 
 
 def _sort_by_rune_set(data):
@@ -209,7 +210,7 @@ def bar(**kwargs):
     chart_data['xAxis']['categories'] = kwargs.get('categories', [v[0] for v in data])
     chart_data['series'] = [{
         'name': kwargs.get('series_name'),
-        'data': [float(v[1]) / total for v in data],
+        'data': [float(v[1] or 0) / total for v in data],
     }]
 
     chart_data = color_series(chart_data, kwargs.get('colors'))

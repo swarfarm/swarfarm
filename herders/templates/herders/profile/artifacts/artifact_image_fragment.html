@@ -1,0 +1,15 @@
+{% load staticfiles %}
+{% load utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="rune-image pull-left{% if popover %} artifact-popover{% endif %}" data-artifact-id="{{ artifact.pk.hex }}" title="{{ artifact }}">
+    <div class="artifact-bg {{ artifact.get_quality_display|lower }}">
+        <div class="artifact {{ artifact.get_quality_display|lower }} {{ artifact.get_slot_display|lower }}">
+            <div class="artifact-symbol {{ artifact.get_precise_slot_display|lower }}"></div>
+        </div>
+        <span class="image-plus image-plus-right">+{{ artifact.level }}</span>
+        {% if artifact.original_quality and not hide_original_quality %}
+            <span class="image-plus image-plus-left rune-text-{{ artifact.get_original_quality_display|lower }}">⬤</span>
+        {% endif %}
+    </div>
+</div>

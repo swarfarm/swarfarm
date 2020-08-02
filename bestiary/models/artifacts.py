@@ -1,3 +1,5 @@
+from math import floor
+
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -242,7 +244,11 @@ class Artifact(ArtifactObjectBase, base.Stars):
         102: ArtifactObjectBase.STAT_DEF,
     }
 
-    # TODO: Main stat values
+    MAIN_STAT_VALUES = {
+        ArtifactObjectBase.STAT_HP: [160, 220, 280, 340, 400, 460, 520, 580, 640, 700, 760, 820, 880, 940, 1000, 1500],
+        ArtifactObjectBase.STAT_ATK: [10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 58, 62, 66, 100],
+        ArtifactObjectBase.STAT_DEF: [10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 58, 62, 66, 100],
+    }
 
     EFFECT_VALUES = {
         ArtifactObjectBase.EFFECT_ATK_LOST_HP: {'min': 3, 'max': 6},
@@ -322,7 +328,8 @@ class Artifact(ArtifactObjectBase, base.Stars):
         abstract = True
 
     def __str__(self):
-        return f'{self.get_quality_display()} Artifact lv.{self.level} {self.get_main_stat_display()}'
+        level = f'+{self.level} ' if self.level else ''
+        return f'{level}{self.get_main_stat_display()} Artifact'
 
     def clean(self):
         super().clean()
@@ -334,8 +341,22 @@ class Artifact(ArtifactObjectBase, base.Stars):
         elif self.level < 0 or self.level > 15:
             raise ValidationError({'level': ValidationError(level_message, code='level_invalid')})
 
-    def get_main_stat_display(self):
-        return f'{self.STAT_DISPLAY[self.main_stat]} +{self.main_stat_value}'
+        # Main stat
+        self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.level]
+
+        # TODO: Effect value validation based on number of upgrades
+
+    def get_precise_slot_display(self):
+        return self.get_archetype_display() or self.get_element_display()
+
+    def get_effects_display(self):
+        return [
+            self.EFFECT_STRINGS[eff].format(self.effects_value[idx]) for idx, eff in enumerate(self.effects)
+        ]
+
+    @property
+    def substat_upgrades_received(self):
+        return int(floor(min(self.level, 12) / 3))
 
 
 class ArtifactCraft(ArtifactObjectBase):
@@ -553,6 +574,7 @@ class ArtifactCraft(ArtifactObjectBase):
             ArtifactObjectBase.QUALITY_LEGEND: {'min': 7, 'max': 9},
         },
     }
+
     effect = models.IntegerField(choices=ArtifactObjectBase.EFFECT_CHOICES)
 
     class Meta:

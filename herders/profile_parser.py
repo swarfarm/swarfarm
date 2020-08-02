@@ -268,7 +268,7 @@ def parse_sw_json(data, owner, options):
 
         # Equipped runes and artifacts
         equipped_runes = unit_info.get('runes')
-        equipped_artifacts = unit_info.get('artifacts')
+        equipped_artifacts = unit_info.get('artifacts', [])
 
         # Check import options to determine if monster should be saved
         level_ignored = mon.stars < options['minimum_stars']

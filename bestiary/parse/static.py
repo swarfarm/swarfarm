@@ -4,6 +4,8 @@ from glob import iglob
 from PIL import Image
 from bitstring import Bits, BitStream, ReadError
 
+from .game_data import JokerContainerFile
+
 
 # Functions to work with static files
 def crop_images():
@@ -70,12 +72,13 @@ def decrypt_images(**kwargs):
         # Check for weird jpeg format with extra header junk. Convert to png.
         encrypted.pos = 0
         if encrypted.peek('bytes:5') == b'Joker':
-            print(f'Trimming and converting weird JPEG to PNG {im_path}')
-            del encrypted[0:16 * 8]
+            print(f'Converting Joker container JPEG to PNG {im_path}')
+            with open(im_path, 'rb') as f:
+                img = JokerContainerFile(f)
 
             # Open it as a jpg and resave to disk
             try:
-                new_imfile = Image.open(io.BytesIO(encrypted.tobytes()))
+                new_imfile = Image.open(io.BytesIO(img.data.tobytes()))
                 new_imfile.save(im_path)
             except IOError:
                 print(f'Unable to open {im_path}')

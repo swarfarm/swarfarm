@@ -47,6 +47,7 @@ class JokerContainerFile:
     mode_offset = identifier_offset + identifier_size
     mode_size = 2
     data_offset = mode_offset + mode_size + 1  # Skips unknown byte 0x01 between mode and data
+    mode_f100_offset = data_offset + (7 * 8)
 
     def __init__(self, f):
         self.file = ConstBitStream(f.read())
@@ -66,12 +67,18 @@ class JokerContainerFile:
 
     @property
     def data(self):
-        decompressed = zlib.decompress(self._data.tobytes())[:-1]
-        decoded = bytes.fromhex(base64.b64decode(decompressed, validate=True).decode())
-        data = JokerCipher.decrypt(decoded)
+        data = self._data
+        if self.mode == 0x0300 or self.mode == 0x0200:
+            # Compressed/encrypted
+            decompressed = zlib.decompress(data.tobytes())[:-1]
+            decoded = bytes.fromhex(base64.b64decode(decompressed, validate=True).decode())
+            data = JokerCipher.decrypt(decoded)
 
-        if self.mode == 0x300:
-            data = self._process_mode_300(data)
+            if self.mode == 0x300:
+                data = self._process_mode_300(data)
+
+        elif self.mode == 0xF100:
+            return data[self.mode_f100_offset:]
 
         return data
 

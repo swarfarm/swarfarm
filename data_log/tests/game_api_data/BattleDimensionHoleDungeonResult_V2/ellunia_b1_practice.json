@@ -1,14 +1,14 @@
 {
   "data": {
     "request": {
-      "command": "BattleDimensionHoleDungeonResult",
+      "command": "BattleDimensionHoleDungeonResult_v2",
       "wizard_id": 123,
       "session_key": "abc123",
-      "proto_ver": 11710,
-      "infocsv": "4.01.98",
+      "proto_ver": 11720,
+      "infocsv": "4.02.01",
       "channel_uid": 144237507,
-      "ts_val": 1127666143,
-      "battle_key": 1595528929,
+      "ts_val": 1124569850,
+      "battle_key": 123123,
       "win_lose": 1,
       "unit_id_list": [
         {
@@ -75,13 +75,13 @@
         },
         {
           "unit_id": 12,
-          "result": 1
+          "result": 2
         }
       ],
       "island_id": 3,
-      "pos_x": 16,
-      "pos_y": 15,
-      "clear_time": 118743,
+      "pos_x": 10,
+      "pos_y": 17,
+      "clear_time": 48621,
       "auto_clear": 1,
       "play_speed": 3,
       "retry": 0,
@@ -89,20 +89,20 @@
       "is_rooting": 0
     },
     "response": {
-      "command": "BattleDimensionHoleDungeonResult",
+      "command": "BattleDimensionHoleDungeonResult_v2",
       "ret_code": 0,
       "wizard_info": {
         "wizard_id": 123,
         "wizard_name": "fakeuser",
-        "wizard_mana": 10442866,
-        "wizard_crystal": 5588,
+        "wizard_mana": 10883207,
+        "wizard_crystal": 6082,
         "wizard_crystal_paid": 0,
-        "wizard_last_login": "2020-07-24 03:12:49",
+        "wizard_last_login": "2020-08-04 06:09:09",
         "wizard_last_country": "US",
         "wizard_last_lang": "en",
         "wizard_level": 50,
         "experience": 3800000,
-        "wizard_energy": 3394,
+        "wizard_energy": 2969,
         "energy_max": 90,
         "energy_per_min": 0.26,
         "next_energy_gain": 0,
@@ -116,7 +116,7 @@
         "rep_assigned": 1,
         "pvp_event": 0,
         "mail_box_event": 0,
-        "social_point_current": 1490,
+        "social_point_current": 2210,
         "social_point_max": 3000,
         "honor_point": 352,
         "guild_point": 2714,
@@ -132,11 +132,11 @@
         "period_energy_max": 0
       },
       "dungeon_id": 1202,
-      "difficulty": 3,
+      "difficulty": 1,
       "win_lose": 1,
       "clear_time": {
         "is_new_record": 0,
-        "current_time": 118743,
+        "current_time": 48621,
         "best_time": 0
       },
       "first_clear": 0,
@@ -144,9 +144,9 @@
       "reward": [],
       "clear_bonus": [],
       "practice_mode": 1,
-      "ts_val": 1127666132,
-      "tvalue": 1595529052,
-      "tvaluelocal": 1595471452,
+      "ts_val": 1124569854,
+      "tvalue": 1596494966,
+      "tvaluelocal": 1596437366,
       "tzone": "America/Los_Angeles"
     }
   }

@@ -178,72 +178,68 @@ class DimensionHoleTests(BaseLogTest):
     fixtures = ['test_game_items', 'test_levels']
 
     def test_dungeon_result(self):
-        self._do_log('BattleDimensionHoleDungeonResult/beast_men_b1_rune_drop.json')
+        self._do_log('BattleDimensionHoleDungeonResult_V2/beast_men_b1_rune_drop.json')
         self.assertEqual(models.DungeonLog.objects.count(), 1)
         log = models.DungeonLog.objects.first()
         self.assertIsNotNone(log.success)
         self.assertIsNotNone(log.clear_time)
 
     def test_practice_not_logged(self):
-        view = self._do_log('BattleDimensionHoleDungeonResult/ellunia_b1_practice.json')
+        view = self._do_log('BattleDimensionHoleDungeonResult_V2/ellunia_b1_practice.json')
         self.assertEqual(view.status_code, 200)
         self.assertEqual(models.DungeonLog.objects.count(), 0)
 
     def test_level_parsed_correctly(self):
-        self._do_log('BattleDimensionHoleDungeonResult/beast_men_b1_rune_drop.json')
-        log = models.DungeonLog.objects.first()
+        self._do_log('BattleDimensionHoleDungeonResult_V2/beast_men_b1_rune_drop.json')
+        log = models.DungeonLog.objects.latest()
         self.assertEqual(log.level.dungeon.com2us_id, 3101)
         self.assertEqual(log.level.floor, 1)
 
-        self._do_log('BattleDimensionHoleDungeonResult/ellunia_b3_rune_ore_drop.json')
-        log = models.DungeonLog.objects.first()
+        self._do_log('BattleDimensionHoleDungeonResult_V2/ellunia_b3_rune_ore_drop.json')
+        log = models.DungeonLog.objects.latest()
         self.assertEqual(log.level.dungeon.com2us_id, 1202)
         self.assertEqual(log.level.floor, 3)
 
-        self._do_log('BattleDimensionHoleDungeonResult/sanctuary_b2_rune_drop.json')
-        log = models.DungeonLog.objects.first()
+        self._do_log('BattleDimensionHoleDungeonResult_V2/sanctuary_b3_rune_drop.json')
+        log = models.DungeonLog.objects.latest()
         self.assertEqual(log.level.dungeon.com2us_id, 1101)
-        self.assertEqual(log.level.floor, 2)
+        self.assertEqual(log.level.floor, 3)
 
     def test_success(self):
-        self._do_log('BattleDimensionHoleDungeonResult/ellunia_b3_rune_ore_drop.json')
-        log = models.DungeonLog.objects.first()
+        self._do_log('BattleDimensionHoleDungeonResult_V2/ellunia_b3_rune_ore_drop.json')
+        log = models.DungeonLog.objects.latest()
         self.assertTrue(log.success)
 
-    def test_dungeon_failed(self):
-        self._do_log('BattleDungeonResult_V2/giants_b10_failed.json')
-        log = models.DungeonLog.objects.first()
-        self.assertFalse(log.success)
-
     def test_failed(self):
-        self._do_log('BattleDimensionHoleDungeonResult/sanctuary_b4_failed.json')
-        log = models.DungeonLog.objects.first()
+        self._do_log('BattleDimensionHoleDungeonResult_V2/sanctuary_b4_failed.json')
+        log = models.DungeonLog.objects.latest()
         self.assertFalse(log.success)
 
     def test_ancient_rune_drop(self):
-        self._do_log('BattleDimensionHoleDungeonResult/beast_men_b1_rune_drop.json')
+        self._do_log('BattleDimensionHoleDungeonResult_V2/beast_men_b1_rune_drop.json')
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.runes.count(), 1)
         rune = log.runes.first()
         self.assertTrue(rune.ancient)
 
     def test_item_drop(self):
-        self._do_log('BattleDimensionHoleDungeonResult/ellunia_b3_rune_ore_drop.json')
+        self._do_log('BattleDimensionHoleDungeonResult_V2/ellunia_b3_rune_ore_drop.json')
         log = models.DungeonLog.objects.first()
         self.assertEqual(log.items.count(), 2)
         self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=102).exists())
         self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CRAFT_STUFF, item__com2us_id=9002).exists())
 
-    def test_ancient_enchant_gem_drop(self):
-        self._do_log('BattleDimensionHoleDungeonResult/sanctuary_b5_gem_drop.json')
-        log = models.DungeonLog.objects.first()
-        self.assertEqual(log.rune_crafts.count(), 1)
-        craft = log.rune_crafts.first()
-        self.assertEqual(craft.type, models.DungeonRuneCraftDrop.CRAFT_ANCIENT_GEM)
-
-    def test_ancient_grindstone_drop(self):
-        self._do_log('BattleDimensionHoleDungeonResult/sanctuary_b5_grind_drop.json')
-        log = models.DungeonLog.objects.first()
-        self.assertEqual(log.rune_crafts.count(), 1)
-        craft = log.rune_crafts.first()
-        self.assertEqual(craft.type, models.DungeonRuneCraftDrop.CRAFT_ANCIENT_GRINDSTONE)
+    # TODO: Get test data examples for gem and grind drops
+    # def test_ancient_enchant_gem_drop(self):
+    #     self._do_log('BattleDimensionHoleDungeonResult_V2/sanctuary_b5_gem_drop.json')
+    #     log = models.DungeonLog.objects.first()
+    #     self.assertEqual(log.rune_crafts.count(), 1)
+    #     craft = log.rune_crafts.first()
+    #     self.assertEqual(craft.type, models.DungeonRuneCraftDrop.CRAFT_ANCIENT_GEM)
+    #
+    # def test_ancient_grindstone_drop(self):
+    #     self._do_log('BattleDimensionHoleDungeonResult_V2/sanctuary_b5_grind_drop.json')
+    #     log = models.DungeonLog.objects.first()
+    #     self.assertEqual(log.rune_crafts.count(), 1)
+    #     craft = log.rune_crafts.first()
+    #     self.assertEqual(craft.type, models.DungeonRuneCraftDrop.CRAFT_ANCIENT_GRINDSTONE)

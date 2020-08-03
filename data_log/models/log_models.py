@@ -748,7 +748,7 @@ class DungeonLog(LogEntry):
         log_entry.parse_changed_item_list(log_data['response']['changed_item_list'])
 
     @classmethod
-    def parse_dimension_hole_result(cls, summoner, log_data):
+    def parse_dimension_hole_result_v2(cls, summoner, log_data):
         if log_data['response']['practice_mode']:
             # Don't parse practice modes
             return
@@ -788,6 +788,7 @@ class DungeonLog(LogEntry):
         log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
         log_entry.save()
         log_entry.parse_rewards(log_data['response']['reward'])
+        log_entry.parse_changed_item_list(log_data['response']['changed_item_list'])
 
     def parse_rewards(self, rewards):
         if not rewards:
@@ -871,6 +872,10 @@ class DungeonLog(LogEntry):
             # parse rune drop
             elif item_type == GameItem.CATEGORY_RUNE:
                 changed_items_object.append(DungeonRuneDrop.parse(**info))
+            # parse rune craft drop
+            # UNTESTED
+            elif item_type == GameItem.CATEGORY_RUNE_CRAFT:
+                changed_items_object.append(DungeonRuneCraftDrop.parse(**info))
             # parse artifact drop
             elif item_type == GameItem.CATEGORY_ARTIFACT:
                 changed_items_object.append(DungeonArtifactDrop.parse(**info))

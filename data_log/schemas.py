@@ -530,7 +530,7 @@ battle_rift_of_worlds_raid_result = {
     'required': ['request', 'response'],
 }
 
-battle_dimension_hole_result = {
+battle_dimension_hole_result_v2 = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
     'id': 'http://swarfarm.com/schemas/battle_dimension_hole_result.json',
     'title': 'battle_dimension_hole_result',
@@ -557,6 +557,7 @@ battle_dimension_hole_result = {
                 'dungeon_id': {'type': 'number'},
                 'difficulty': {'type': 'number'},
                 'reward': {'type': ['object', 'array']},
+                'changed_item_list': {'type': ['null', 'array']},
                 'practice_mode': {'type': 'number'},
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},

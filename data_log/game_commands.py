@@ -93,9 +93,9 @@ active_log_commands = {
         schemas.battle_rift_of_worlds_raid_result,
         models.RiftRaidLog.parse_rift_raid_result
     ),
-    'BattleDimensionHoleDungeonResult': GameApiCommand(
-        schemas.battle_dimension_hole_result,
-        models.DungeonLog.parse_dimension_hole_result
+    'BattleDimensionHoleDungeonResult_v2': GameApiCommand(
+        schemas.battle_dimension_hole_result_v2,
+        models.DungeonLog.parse_dimension_hole_result_v2
     )
 }
 

@@ -148,6 +148,10 @@ class DungeonRuneDropInline(RuneDropInline):
     model = models.DungeonRuneDrop
 
 
+class DungeonRuneCraftDropInline(RuneCraftDropInline):
+    model = models.DungeonRuneCraftDrop
+
+
 class DungeonArtifactDropInline(ArtifactDropInline):
     model = models.DungeonArtifactDrop
 
@@ -169,6 +173,7 @@ class DungeonLogAdmin(admin.ModelAdmin):
         DungeonMonsterDropInline,
         DungeonMonsterPieceDropInline,
         DungeonRuneDropInline,
+        DungeonRuneCraftDropInline,
         DungeonSecretDungeonDropInline,
         DungeonArtifactDropInline,
     )

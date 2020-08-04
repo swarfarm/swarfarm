@@ -161,7 +161,7 @@ class DungeonSecretDungeonDropInline(admin.TabularInline):
 @admin.register(models.DungeonLog)
 class DungeonLogAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'wizard_id', 'summoner', 'level', 'success', 'clear_time')
-    list_filter = ('level__dungeon__name', 'success')
+    list_filter = ('level__dungeon__category', 'level__dungeon__name', 'success')
     search_fields = ('wizard_id', 'summoner__user__username')
     readonly_fields = ('summoner', 'level')
     inlines = (

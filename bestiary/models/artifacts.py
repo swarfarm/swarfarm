@@ -1,3 +1,4 @@
+from itertools import zip_longest
 from math import floor
 
 from django.contrib.postgres.fields import ArrayField
@@ -250,6 +251,8 @@ class Artifact(ArtifactObjectBase, base.Stars):
         ArtifactObjectBase.STAT_DEF: [10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 58, 62, 66, 100],
     }
 
+    MAX_NUMBER_OF_EFFECTS = 4
+
     EFFECT_VALUES = {
         ArtifactObjectBase.EFFECT_ATK_LOST_HP: {'min': 3, 'max': 6},
         ArtifactObjectBase.EFFECT_DEF_LOST_HP: {'min': 3, 'max': 6},
@@ -259,7 +262,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
         ArtifactObjectBase.EFFECT_DEF: {'min': 2, 'max': 4},
         ArtifactObjectBase.EFFECT_SPD: {'min': 3, 'max': 6},
         ArtifactObjectBase.EFFECT_CRIT_RATE: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_COUNTER_DMG: {'min':1 , 'max': 3},
+        ArtifactObjectBase.EFFECT_COUNTER_DMG: {'min': 1, 'max': 3},
         ArtifactObjectBase.EFFECT_COOP_ATTACK_DMG: {'min': 1, 'max': 3},
         ArtifactObjectBase.EFFECT_BOMB_DMG: {'min': 1, 'max': 3},
         ArtifactObjectBase.EFFECT_REFLECT_DMG: {'min': 1, 'max': 3},
@@ -303,26 +306,31 @@ class Artifact(ArtifactObjectBase, base.Stars):
         models.IntegerField(choices=ArtifactObjectBase.EFFECT_CHOICES, null=True, blank=True),
         size=4,
         default=list,
+        blank=True,
         help_text='Bonus effect type'
     )
     effects_value = ArrayField(
         models.IntegerField(blank=True, null=True),
         size=4,
         default=list,
+        blank=True,
         help_text='Bonus value of this effect'
     )
     effects_upgrade_count = ArrayField(
         models.IntegerField(blank=True, null=True),
         size=4,
         default=list,
+        blank=True,
         help_text='Number of upgrades this effect received when leveling artifact'
     )
     effects_reroll_count = ArrayField(
         models.IntegerField(blank=True, null=True),
         size=4,
         default=list,
+        blank=True,
         help_text='Number times this upgrades was rerolled with conversion stone'
     )
+    # TODO: Add efficiency and max_efficiency
 
     class Meta:
         abstract = True
@@ -341,10 +349,80 @@ class Artifact(ArtifactObjectBase, base.Stars):
         elif self.level < 0 or self.level > 15:
             raise ValidationError({'level': ValidationError(level_message, code='level_invalid')})
 
-        # Main stat
+        # Set fields that can be automated
         self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.level]
 
-        # TODO: Effect value validation based on number of upgrades
+        # Effects
+        # Check for duplicates
+        num_effects = len(self.effects)
+        if num_effects != len(set(self.effects)):
+            raise ValidationError({
+                'effects': ValidationError('All secondary effects must be unique', code='effects_duplicate')
+            })
+
+        # More than the maxmimum allowed number of effects
+        if num_effects > Artifact.MAX_NUMBER_OF_EFFECTS:
+            raise ValidationError({
+                'effects': ValidationError(
+                    'Must have %(num)s or fewer effects.',
+                    params={
+                        'num': Artifact.MAX_NUMBER_OF_EFFECTS,
+                    },
+                    code='effects_too_many'
+                )
+            })
+
+        # Minimum required count based on level
+        if num_effects < self.substat_upgrades_received:
+            raise ValidationError({
+                'effects': ValidationError(
+                    'A lv. %(level)s rune requires at least %(upgrade)s effect(s)',
+                    params={
+                        'level': self.level,
+                        'upgrades': self.substat_upgrades_received,
+                    },
+                    code='effects_not_enough'
+                )
+            })
+
+        # Truncate other effect info arrays if longer than number of effects
+        self.effects_value = self.effects_value[0:num_effects]
+        self.effects_upgrade_count = self.effects_upgrade_count[0:num_effects]
+        self.effects_reroll_count = self.effects_reroll_count[0:num_effects]
+
+        # Pad with 0 if too short
+        self.effects_value += [0] * (num_effects - len(self.effects_value))
+        self.effects_upgrade_count += [0] * (num_effects - len(self.effects_upgrade_count))
+        self.effects_reroll_count += [0] * (num_effects - len(self.effects_reroll_count))
+
+        for index, (effect, value) in enumerate(zip(
+            self.effects,
+            self.effects_value,
+        )):
+            max_possible_value = self.EFFECT_VALUES[effect]['max'] * (self.substat_upgrades_received + 1)
+            min_possible_value = self.EFFECT_VALUES[effect]['min']
+
+            if value < min_possible_value or value > max_possible_value:
+                raise ValidationError({
+                    'effects_value': ValidationError(
+                        'Effect %(nth)s: Must be between %(min_val) and %(max_val).',
+                        params={
+                            'nth': index + 1,
+                            'min_val': min_possible_value,
+                            'max_val': max_possible_value,
+                        },
+                        code='effects_value_invalid'
+                    )
+                })
+
+        # Set quality based on effects now that they have been fully validated
+        self.quality = len([eff for eff in self.effects if eff])
+
+
+
+
+
+
 
     def get_precise_slot_display(self):
         return self.get_archetype_display() or self.get_element_display()

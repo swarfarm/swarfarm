@@ -823,10 +823,14 @@ class Rune(models.Model, RuneObjectBase):
         self.substats_enchanted = self.substats_enchanted[0:num_substats]
         self.substats_grind_value = self.substats_grind_value[0:num_substats]
 
-        for index, (substat, value, enchanted, grind_value) in enumerate(zip_longest(
+        # Pad with 0 if too short
+        self.substat_values += [0] * (num_substats - len(self.substat_values))
+        self.substats_enchanted += [0] * (num_substats - len(self.substats_enchanted))
+        self.substats_grind_value += [0] * (num_substats - len(self.substats_grind_value))
+
+        for index, (substat, value, grind_value) in enumerate(zip(
                 self.substats,
                 self.substat_values,
-                self.substats_enchanted,
                 self.substats_grind_value
         )):
             if value is None or value <= 0:
@@ -843,40 +847,34 @@ class Rune(models.Model, RuneObjectBase):
             if value > max_sub_value and not self.ancient:
                 raise ValidationError({
                     'substat_values': ValidationError(
-                        f'Substat %(nth)s: Must be less than or equal to {max_sub_value}.',
-                        params={'nth': index + 1},
+                        'Substat %(nth)s: Must be less than or equal to %(max_val)s.',
+                        params={
+                            'nth': index + 1,
+                            'max_val': max_sub_value,
+                        },
                         code=f'substat_too_high'
                     )
                 })
 
-            # Ensure the optional substat arrays are equal length to number of substats
-            if enchanted is None:
-                if len(self.substats_grind_value) < len(self.substats):
-                    self.substats_enchanted.append(False)
-
-            if grind_value is None:
-                if len(self.substats_grind_value) < len(self.substats):
-                    self.substats_grind_value.append(0)
-                grind_value = 0
-
-                # Validate grind value
-                max_grind_value = RuneCraft.CRAFT_VALUE_RANGES[RuneCraft.CRAFT_ANCIENT_GRINDSTONE][substat][RuneCraft.QUALITY_LEGEND]['max']
-                if grind_value > max_grind_value:
-                    raise ValidationError({
-                        'substats_grind_value': ValidationError(
-                            f'Substat Grind %(nth)s: Must be less than or equal to {max_grind_value}.',
-                            params={'nth': index + 1},
-                            code=f'grind_too_high'
-                        )
-                    })
-
-            if self.level < 12 and enchanted:
+            # Validate grind value
+            max_grind_value = RuneCraft.CRAFT_VALUE_RANGES[RuneCraft.CRAFT_ANCIENT_GRINDSTONE][substat][RuneCraft.QUALITY_LEGEND]['max']
+            if grind_value > max_grind_value:
                 raise ValidationError({
-                    'level': ValidationError(
-                        'Level must be 12 or higher when Enchant Gem is applied',
-                        code='level_invalid'
+                    'substats_grind_value': ValidationError(
+                        f'Substat Grind %(nth)s: Must be less than or equal to {max_grind_value}.',
+                        params={'nth': index + 1},
+                        code=f'grind_too_high'
                     )
                 })
+
+        # Validate minimum level if enchant gem is applied
+        if self.level < 12 and any(self.substats_enchanted):
+            raise ValidationError({
+                'level': ValidationError(
+                    'Level must be 12 or higher when Enchant Gem is applied',
+                    code='level_invalid'
+                )
+            })
 
         # Validate number of gems applied
         if sum(self.substats_enchanted) > 1:

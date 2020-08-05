@@ -38,28 +38,29 @@ class Artifact(models.Artifact):
 
 
 class Attributes(TestCase):
-    def test_level_range(self):
+    def test_level_too_low(self):
         artifact = Artifact.stub(level=-1)
         with self.assertRaises(ValidationError) as cm:
-            artifact.clean()
+            artifact.full_clean()
         self.assertIn('level', cm.exception.error_dict)
-        self.assertEqual(cm.exception.error_dict['level'][0].code, 'level_invalid')
+        self.assertEqual(cm.exception.error_dict['level'][0].code, 'min_value')
 
+    def test_level_too_high(self):
         artifact = Artifact.stub(level=16)
         with self.assertRaises(ValidationError) as cm:
-            artifact.clean()
+            artifact.full_clean()
         self.assertIn('level', cm.exception.error_dict)
-        self.assertEqual(cm.exception.error_dict['level'][0].code, 'level_invalid')
+        self.assertEqual(cm.exception.error_dict['level'][0].code, 'max_value')
 
     def test_quality_normal(self):
         artifact = Artifact.stub(effects=[])
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(artifact.quality, artifact.QUALITY_NORMAL)
 
     def test_quality_magic(self):
         artifact = Artifact.stub(effects=[Artifact.EFFECT_ATK])
         artifact.force_valid_effect_values()
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(artifact.quality, artifact.QUALITY_MAGIC)
 
     def test_quality_rare(self):
@@ -70,7 +71,7 @@ class Attributes(TestCase):
             ]
         )
         artifact.force_valid_effect_values()
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(artifact.quality, artifact.QUALITY_RARE)
 
     def test_quality_hero(self):
@@ -82,7 +83,7 @@ class Attributes(TestCase):
             ]
         )
         artifact.force_valid_effect_values()
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(artifact.quality, artifact.QUALITY_HERO)
 
     def test_quality_legend(self):
@@ -95,7 +96,7 @@ class Attributes(TestCase):
             ]
         )
         artifact.force_valid_effect_values()
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(artifact.quality, artifact.QUALITY_LEGEND)
 
 
@@ -114,7 +115,7 @@ class Effects(TestCase):
         )
 
         with self.assertRaises(ValidationError) as cm:
-            artifact.clean()
+            artifact.full_clean()
 
         self.assertIn('effects', cm.exception.error_dict)
         self.assertEqual(cm.exception.error_dict['effects'][0].code, 'effects_duplicate')
@@ -130,7 +131,7 @@ class Effects(TestCase):
         )
 
         with self.assertRaises(ValidationError) as cm:
-            artifact.clean()
+            artifact.full_clean()
 
         self.assertIn('effects', cm.exception.error_dict)
         self.assertEqual(cm.exception.error_dict['effects'][0].code, 'effects_not_enough')
@@ -144,7 +145,7 @@ class Effects(TestCase):
             ]
         )
         with self.assertRaises(ValidationError) as cm:
-            artifact.clean()
+            artifact.full_clean()
 
         self.assertIn('effects', cm.exception.error_dict)
         self.assertEqual(cm.exception.error_dict['effects'][0].code, 'effects_not_enough')
@@ -156,7 +157,7 @@ class Effects(TestCase):
         )
 
         with self.assertRaises(ValidationError) as cm:
-            artifact.clean()
+            artifact.full_clean()
 
         self.assertIn('effects', cm.exception.error_dict)
         self.assertEqual(cm.exception.error_dict['effects'][0].code, 'effects_not_enough')
@@ -168,7 +169,7 @@ class Effects(TestCase):
         )
 
         with self.assertRaises(ValidationError) as cm:
-            artifact.clean()
+            artifact.full_clean()
 
         self.assertIn('effects', cm.exception.error_dict)
         self.assertEqual(cm.exception.error_dict['effects'][0].code, 'effects_not_enough')
@@ -185,10 +186,10 @@ class Effects(TestCase):
         )
 
         with self.assertRaises(ValidationError) as cm:
-            artifact.clean()
+            artifact.full_clean()
 
         self.assertIn('effects', cm.exception.error_dict)
-        self.assertEqual(cm.exception.error_dict['effects'][0].code, 'effects_too_many')
+        self.assertEqual(cm.exception.error_dict['effects'][0].code, 'max_length')
 
     def test_too_many_values_truncated(self):
         artifact = Artifact.stub(
@@ -199,7 +200,7 @@ class Effects(TestCase):
             ]
 
         )
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(len(artifact.effects_value), len(artifact.effects))
 
     def test_missing_effect_values(self):
@@ -211,7 +212,7 @@ class Effects(TestCase):
         )
 
         with self.assertRaises(ValidationError) as cm:
-            artifact.clean()
+            artifact.full_clean()
 
         self.assertIn('effects_value', cm.exception.error_dict)
         self.assertEqual(cm.exception.error_dict['effects_value'][0].code, 'effects_value_invalid')
@@ -222,7 +223,7 @@ class Effects(TestCase):
             effects_value=[Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['max']],
             effects_upgrade_count=[1, 2, 3],
         )
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(len(artifact.effects_upgrade_count), len(artifact.effects))
 
     def test_not_enough_upgrade_count_padded(self):
@@ -232,7 +233,7 @@ class Effects(TestCase):
             effects_upgrade_count=[],
             effects_reroll_count=[0],
         )
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(len(artifact.effects_upgrade_count), len(artifact.effects))
         self.assertEqual(artifact.effects_upgrade_count[0], 0)
 
@@ -243,7 +244,7 @@ class Effects(TestCase):
             effects_upgrade_count=[0],
             effects_reroll_count=[1, 2, 3],
         )
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(len(artifact.effects_reroll_count), len(artifact.effects))
 
     def test_not_enough_reroll_count_padded(self):
@@ -253,6 +254,6 @@ class Effects(TestCase):
             effects_upgrade_count=[0],
             effects_reroll_count=[],
         )
-        artifact.clean()
+        artifact.full_clean()
         self.assertEqual(len(artifact.effects_reroll_count), len(artifact.effects))
         self.assertEqual(artifact.effects_reroll_count[0], 0)

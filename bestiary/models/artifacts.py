@@ -1,8 +1,8 @@
-from itertools import zip_longest
 from math import floor
 
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from . import base
@@ -298,10 +298,10 @@ class Artifact(ArtifactObjectBase, base.Stars):
         ArtifactObjectBase.EFFECT_SK3_ACCURACY: {'min': 3, 'max': 6},
     }
 
-    level = models.IntegerField()
+    level = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(15)])
     original_quality = models.IntegerField(choices=ArtifactObjectBase.QUALITY_CHOICES)
     main_stat = models.IntegerField(choices=MAIN_STAT_CHOICES)
-    main_stat_value = models.IntegerField()
+    main_stat_value = models.IntegerField(editable=False, blank=True)
     effects = ArrayField(
         models.IntegerField(choices=ArtifactObjectBase.EFFECT_CHOICES, null=True, blank=True),
         size=4,
@@ -342,34 +342,12 @@ class Artifact(ArtifactObjectBase, base.Stars):
     def clean(self):
         super().clean()
 
-        # Level validation
-        level_message = 'Must be between 0 and 15'
-        if self.level is None:
-            raise ValidationError({'level': ValidationError(level_message, code='level_missing')})
-        elif self.level < 0 or self.level > 15:
-            raise ValidationError({'level': ValidationError(level_message, code='level_invalid')})
-
-        # Set fields that can be automated
-        self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.level]
-
         # Effects
         # Check for duplicates
         num_effects = len(self.effects)
         if num_effects != len(set(self.effects)):
             raise ValidationError({
                 'effects': ValidationError('All secondary effects must be unique', code='effects_duplicate')
-            })
-
-        # More than the maxmimum allowed number of effects
-        if num_effects > Artifact.MAX_NUMBER_OF_EFFECTS:
-            raise ValidationError({
-                'effects': ValidationError(
-                    'Must have %(num)s or fewer effects.',
-                    params={
-                        'num': Artifact.MAX_NUMBER_OF_EFFECTS,
-                    },
-                    code='effects_too_many'
-                )
             })
 
         # Minimum required count based on level
@@ -415,14 +393,15 @@ class Artifact(ArtifactObjectBase, base.Stars):
                     )
                 })
 
-        # Set quality based on effects now that they have been fully validated
+        # Set derived field values after all cleaning is done
+        self._update_values()
+
+    def _update_values(self):
+        # Main stat value based on stat/level
+        self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.level]
+
+        # Quality based on number of secondary effects
         self.quality = len([eff for eff in self.effects if eff])
-
-
-
-
-
-
 
     def get_precise_slot_display(self):
         return self.get_archetype_display() or self.get_element_display()

@@ -81,7 +81,11 @@ class FilterMonsterForm(forms.Form):
         choices=Monster.AWAKEN_CHOICES[:3],  # Excluding 'incomplete'
         required=False,
     )
-    fusion_food = forms.NullBooleanField(label='Fusion Food', required=False, widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))))
+    fusion_food = forms.NullBooleanField(
+        label='Fusion Food',
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
     leader_skill__attribute = forms.MultipleChoiceField(
         label='Leader Skill Stat',
         choices=LeaderSkill.ATTRIBUTE_CHOICES,
@@ -104,6 +108,11 @@ class FilterMonsterForm(forms.Form):
     skills__hits = forms.CharField(
         label="Number of Hits",
         required=False,
+    )
+    skills__passive = forms.NullBooleanField(
+        label="Passive",
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
     )
     buffs = AdvancedSelectMultiple(
         label='Buffs',
@@ -187,6 +196,7 @@ class FilterMonsterForm(forms.Form):
                     ),
                     Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                     Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('skills__passive', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                     Field(
                         'skills__cooltime',
                         data_provide='slider',

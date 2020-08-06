@@ -15,6 +15,7 @@ class MonsterFilter(django_filters.FilterSet):
     skills__cooltime = django_filters.CharFilter(method='filter_skills_cooltime')
     effects_logic = django_filters.BooleanFilter(method='filter_effects_logic')
     skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_skill_effects')
+    skills__passive = django_filters.BooleanFilter(method='filter_skills_passive')
 
     class Meta:
         model = Monster
@@ -34,6 +35,7 @@ class MonsterFilter(django_filters.FilterSet):
             'skills__scaling_stats__pk': ['exact'],
             'skills__cooltime': ['lte', 'gte'],
             'skills__hits': ['lte', 'gte'],
+            'skills__passive': ['exact'],
             'effects_logic': ['exact'],
             'fusion_food': ['exact'],
         }
@@ -50,6 +52,7 @@ class MonsterFilter(django_filters.FilterSet):
         cooltimes = self.form.cleaned_data.get('skills__cooltime', '')
         max_num_hits = self.form.cleaned_data.get('skills__hits__lte', 99)
         min_num_hits = self.form.cleaned_data.get('skills__hits__gte', 0)
+        passive = self.form.cleaned_data.get('skills__passive', None)
 
         try:
             cooltimes = cooltimes.split(',')
@@ -71,7 +74,16 @@ class MonsterFilter(django_filters.FilterSet):
             if min_cooltime == 0 or max_cooltime == 0:
                 cooltime_filter = Q(skills__cooltime__isnull=True) | cooltime_filter
 
-            queryset = queryset.filter(cooltime_filter, skills__hits__lte=max_num_hits, skills__hits__gte=min_num_hits)
+            queryset = queryset.filter(
+                cooltime_filter,
+                skills__hits__lte=max_num_hits,
+                skills__hits__gte=min_num_hits,
+            )
+
+            if passive is not None:
+                queryset = queryset.filter(
+                    skills__passive=passive,
+                )
 
             return queryset.distinct()
 
@@ -90,7 +102,16 @@ class MonsterFilter(django_filters.FilterSet):
             if min_cooltime == 0 or max_cooltime == 0:
                 cooltime_filter = Q(cooltime__isnull=True) | cooltime_filter
 
-            skills = skills.filter(cooltime_filter, hits__lte=max_num_hits, hits__gte=min_num_hits)
+            skills = skills.filter(
+                cooltime_filter,
+                hits__lte=max_num_hits,
+                hits__gte=min_num_hits,
+            )
+
+            if passive is not None:
+                queryset = queryset.filter(
+                    passive=passive,
+                )
 
             return queryset.filter(skills__in=skills).distinct()
 
@@ -107,5 +128,9 @@ class MonsterFilter(django_filters.FilterSet):
         return queryset
 
     def filter_skills_hits(self, queryset, name, value):
+        # This field is handled in filter_skill_effects()
+        return queryset
+
+    def filter_skills_passive(self, queryset, name, value):
         # This field is handled in filter_skill_effects()
         return queryset

@@ -109,7 +109,7 @@ class MonsterFilter(django_filters.FilterSet):
             )
 
             if passive is not None:
-                queryset = queryset.filter(
+                skills = skills.filter(
                     passive=passive,
                 )
 

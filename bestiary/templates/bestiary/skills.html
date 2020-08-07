@@ -54,6 +54,11 @@
                 <li class="list-group-item">
                     <p class="list-group-item-heading"><strong>Skill Effects:</strong></p>
                     <p>
+                    {% if skill.aoe %}
+                        <span class="skill-effect skill-effect-buff">
+                            <span>AOE</span>
+                        </span>
+                    {% endif %}
                     {% for effect in skill.skill_effect.all %}
                         {% if effect.icon_filename %}
                         <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"

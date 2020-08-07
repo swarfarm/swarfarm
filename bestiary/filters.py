@@ -12,10 +12,11 @@ class MonsterFilter(django_filters.FilterSet):
     leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
     leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
     skills__scaling_stats__pk = django_filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
-    skills__cooltime = django_filters.CharFilter(method='filter_skills_cooltime')
-    effects_logic = django_filters.BooleanFilter(method='filter_effects_logic')
+    skills__cooltime = django_filters.CharFilter(method='filter_bypass')
+    effects_logic = django_filters.BooleanFilter(method='filter_bypass')
     skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_skill_effects')
-    skills__passive = django_filters.BooleanFilter(method='filter_skills_passive')
+    skills__passive = django_filters.BooleanFilter(method='filter_bypass')
+    skills__aoe = django_filters.BooleanFilter(method='filter_bypass')
 
     class Meta:
         model = Monster
@@ -36,6 +37,7 @@ class MonsterFilter(django_filters.FilterSet):
             'skills__cooltime': ['lte', 'gte'],
             'skills__hits': ['lte', 'gte'],
             'skills__passive': ['exact'],
+            'skills__aoe': ['exact'],
             'effects_logic': ['exact'],
             'fusion_food': ['exact'],
         }
@@ -53,6 +55,7 @@ class MonsterFilter(django_filters.FilterSet):
         max_num_hits = self.form.cleaned_data.get('skills__hits__lte', 99)
         min_num_hits = self.form.cleaned_data.get('skills__hits__gte', 0)
         passive = self.form.cleaned_data.get('skills__passive', None)
+        aoe = self.form.cleaned_data.get('skills__aoe', None)
 
         try:
             cooltimes = cooltimes.split(',')
@@ -81,9 +84,10 @@ class MonsterFilter(django_filters.FilterSet):
             )
 
             if passive is not None:
-                queryset = queryset.filter(
-                    skills__passive=passive,
-                )
+                queryset = queryset.filter(skills__passive=passive)
+
+            if aoe is not None:
+                queryset = queryset.filter(skills__aoe=aoe)
 
             return queryset.distinct()
 
@@ -109,28 +113,13 @@ class MonsterFilter(django_filters.FilterSet):
             )
 
             if passive is not None:
-                skills = skills.filter(
-                    passive=passive,
-                )
+                skills = skills.filter(passive=passive)
+
+            if aoe is not None:
+                skills = skills.filter(aoe=aoe)
 
             return queryset.filter(skills__in=skills).distinct()
 
-    def filter_effects_logic(self, queryset, name, value):
-        # This field is just used to alter the logic of skill effect filter
-        return queryset
-
-    def filter_skills_cooltime(self, queryset, name, value):
-        # This field is handled in filter_skill_effects()
-        return queryset
-
-    def filter_skills_slot(self, queryset, name, value):
-        # This field is handled in filter_skill_effects()
-        return queryset
-
-    def filter_skills_hits(self, queryset, name, value):
-        # This field is handled in filter_skill_effects()
-        return queryset
-
-    def filter_skills_passive(self, queryset, name, value):
-        # This field is handled in filter_skill_effects()
+    def filter_bypass(self, queryset, name, value):
+        # This field's logic is applied in filter_skill_effects()
         return queryset

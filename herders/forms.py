@@ -534,6 +534,11 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
         widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
     )
+    monster__skills__aoe = forms.NullBooleanField(
+        label="AOE",
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
     buff_debuff_effects = AdvancedSelectMultiple(
         label='Buffs/Debuffs',
         queryset=SkillEffect.objects.exclude(icon_filename=''),
@@ -640,6 +645,7 @@ class FilterMonsterInstanceForm(forms.Form):
                         Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('monster__skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field('monster__skills__passive', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field('monster__skills__aoe', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
                         Field(
                             'monster__skills__cooltime',
                             data_provide='slider',

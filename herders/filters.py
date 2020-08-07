@@ -16,9 +16,10 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
     monster__skills__scaling_stats__pk = django_filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
     monster__skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_monster__skills__skill_effect__pk')
-    monster__skills__cooltime = django_filters.CharFilter(method='filter_monster_skills_cooltime')
-    monster__skills__passive = django_filters.BooleanFilter(method='filter_monster_skills_passive')
-    effects_logic = django_filters.BooleanFilter(method='filter_effects_logic')
+    monster__skills__cooltime = django_filters.CharFilter(method='filter_bypass')
+    monster__skills__passive = django_filters.BooleanFilter(method='filter_bypass')
+    monster__skills__aoe = django_filters.BooleanFilter(method='filter_bypass')
+    effects_logic = django_filters.BooleanFilter(method='filter_bypass')
     monster__fusion_food = django_filters.BooleanFilter(method='filter_monster__fusion_food')
 
     class Meta:
@@ -39,6 +40,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__skills__scaling_stats__pk': ['exact'],
             'monster__skills__hits': ['gte', 'lte'],
             'monster__skills__passive': ['exact'],
+            'monster__skills__aoe': ['exact'],
             'effects_logic': ['exact'],
             'fodder': ['exact'],
             'in_storage': ['exact'],
@@ -64,6 +66,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
         max_num_hits = self.form.cleaned_data.get('monster__skills__hits__lte', 99)
         min_num_hits = self.form.cleaned_data.get('monster__skills__hits__gte', 0)
         passive = self.form.cleaned_data.get('monster__skills__passive', None)
+        aoe = self.form.cleaned_data.get('monster__skills__aoe', None)
 
         try:
             cooltimes = cooltimes.split(',')
@@ -92,9 +95,10 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             )
 
             if passive is not None:
-                queryset = queryset.filter(
-                    monster__skills__passive=passive,
-                )
+                queryset = queryset.filter(monster__skills__passive=passive)
+
+            if aoe is not None:
+                queryset = queryset.filter(monster__skills__aoe=aoe)
 
             return queryset.distinct()
 
@@ -120,22 +124,15 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             )
 
             if passive is not None:
-                skills = skills.filter(
-                    passive=passive,
-                )
+                skills = skills.filter(passive=passive)
+
+            if aoe is not None:
+                skills = skills.filter(aoe=aoe)
 
             return queryset.filter(monster__skills__in=skills).distinct()
 
-    def filter_effects_logic(self, queryset, name, value):
-        # This field is just used to alter the logic of skill effect filter and is used in filter_monster__skills__skill_effect__pk()
-        return queryset
-
-    def filter_monster_skills_cooltime(self, queryset, name, value):
-        # This field is handled in filter_monster__skills__skill_effect__pk()
-        return queryset
-
-    def filter_monster_skills_passive(self, queryset, name, value):
-        # This field is handled in filter_skill_effects()
+    def filter_bypass(self, queryset, name, value):
+        # This field's logic is applied in filter_skill_effects()
         return queryset
 
 

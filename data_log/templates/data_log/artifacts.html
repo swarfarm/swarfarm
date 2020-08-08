@@ -42,11 +42,22 @@
 
 <h3>Secondary Effects</h3>
 <div class="row">
-    <div class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3">
+    <div class="col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
         <div
             class="report-chart"
             data-chart="{% chart artifacts.effects title="Secondary Effects" percentage=True sorted='value' reverse=True %}"
             style="height: 550px"
+        ></div>
+    </div>
+</div>
+
+<h3>Other</h3>
+<div class="row">
+    <div class="col-sm-12 col-md-6 col-lg-6">
+        <div
+            class="report-chart"
+            data-chart="{% chart artifacts.max_efficiency title="Maximum Efficiency Distribution" legend=True colors='quality' sorted='quality' %}"
+            style="height: 300px"
         ></div>
     </div>
 </div>

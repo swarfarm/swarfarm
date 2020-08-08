@@ -438,6 +438,22 @@ class Stats(TestCase):
         rune.clean()
         self.assertEqual(sum(rune.substats_grind_value), 0)
 
+    def test_substat_grind_value_maximum_enforced(self):
+        rune = Rune.stub(
+            substats=[
+                Rune.STAT_HP,
+                Rune.STAT_ATK,
+                Rune.STAT_CRIT_DMG_PCT,
+            ],
+            substat_values=[4, 4, 4],
+            substats_grind_value=[4, 99, 4],
+        )
+        with self.assertRaises(ValidationError) as cm:
+            rune.clean()
+
+        self.assertIn('substats_grind_value', cm.exception.error_dict)
+        self.assertEqual(cm.exception.error_dict['substats_grind_value'][0].code, 'grind_too_high')
+
     def test_no_substat_upgrades_received(self):
         rune = Rune.stub(level=0)
         self.assertEqual(rune.substat_upgrades_received, 0)

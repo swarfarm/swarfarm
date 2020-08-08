@@ -2,6 +2,7 @@ from math import floor
 
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from . import base
@@ -250,6 +251,8 @@ class Artifact(ArtifactObjectBase, base.Stars):
         ArtifactObjectBase.STAT_DEF: [10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 58, 62, 66, 100],
     }
 
+    MAX_NUMBER_OF_EFFECTS = 4
+
     EFFECT_VALUES = {
         ArtifactObjectBase.EFFECT_ATK_LOST_HP: {'min': 3, 'max': 6},
         ArtifactObjectBase.EFFECT_DEF_LOST_HP: {'min': 3, 'max': 6},
@@ -259,7 +262,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
         ArtifactObjectBase.EFFECT_DEF: {'min': 2, 'max': 4},
         ArtifactObjectBase.EFFECT_SPD: {'min': 3, 'max': 6},
         ArtifactObjectBase.EFFECT_CRIT_RATE: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_COUNTER_DMG: {'min':1 , 'max': 3},
+        ArtifactObjectBase.EFFECT_COUNTER_DMG: {'min': 1, 'max': 3},
         ArtifactObjectBase.EFFECT_COOP_ATTACK_DMG: {'min': 1, 'max': 3},
         ArtifactObjectBase.EFFECT_BOMB_DMG: {'min': 1, 'max': 3},
         ArtifactObjectBase.EFFECT_REFLECT_DMG: {'min': 1, 'max': 3},
@@ -295,34 +298,40 @@ class Artifact(ArtifactObjectBase, base.Stars):
         ArtifactObjectBase.EFFECT_SK3_ACCURACY: {'min': 3, 'max': 6},
     }
 
-    level = models.IntegerField()
+    level = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(15)])
     original_quality = models.IntegerField(choices=ArtifactObjectBase.QUALITY_CHOICES)
     main_stat = models.IntegerField(choices=MAIN_STAT_CHOICES)
-    main_stat_value = models.IntegerField()
+    main_stat_value = models.IntegerField(editable=False, blank=True)
     effects = ArrayField(
         models.IntegerField(choices=ArtifactObjectBase.EFFECT_CHOICES, null=True, blank=True),
         size=4,
         default=list,
+        blank=True,
         help_text='Bonus effect type'
     )
     effects_value = ArrayField(
         models.IntegerField(blank=True, null=True),
         size=4,
         default=list,
+        blank=True,
         help_text='Bonus value of this effect'
     )
     effects_upgrade_count = ArrayField(
         models.IntegerField(blank=True, null=True),
         size=4,
         default=list,
+        blank=True,
         help_text='Number of upgrades this effect received when leveling artifact'
     )
     effects_reroll_count = ArrayField(
         models.IntegerField(blank=True, null=True),
         size=4,
         default=list,
+        blank=True,
         help_text='Number times this upgrades was rerolled with conversion stone'
     )
+    efficiency = models.FloatField(blank=True)
+    max_efficiency = models.FloatField(blank=True)
 
     class Meta:
         abstract = True
@@ -334,17 +343,83 @@ class Artifact(ArtifactObjectBase, base.Stars):
     def clean(self):
         super().clean()
 
-        # Level validation
-        level_message = 'Must be between 0 and 15'
-        if self.level is None:
-            raise ValidationError({'level': ValidationError(level_message, code='level_missing')})
-        elif self.level < 0 or self.level > 15:
-            raise ValidationError({'level': ValidationError(level_message, code='level_invalid')})
+        # Effects
+        # Check for duplicates
+        num_effects = len(self.effects)
+        if num_effects != len(set(self.effects)):
+            raise ValidationError({
+                'effects': ValidationError('All secondary effects must be unique', code='effects_duplicate')
+            })
 
-        # Main stat
+        # Minimum required count based on level
+        if num_effects < self.effect_upgrades_received:
+            raise ValidationError({
+                'effects': ValidationError(
+                    'A lv. %(level)s rune requires at least %(upgrade)s effect(s)',
+                    params={
+                        'level': self.level,
+                        'upgrades': self.effect_upgrades_received,
+                    },
+                    code='effects_not_enough'
+                )
+            })
+
+        # Truncate other effect info arrays if longer than number of effects
+        self.effects_value = self.effects_value[0:num_effects]
+        self.effects_upgrade_count = self.effects_upgrade_count[0:num_effects]
+        self.effects_reroll_count = self.effects_reroll_count[0:num_effects]
+
+        # Pad with 0 if too short
+        self.effects_value += [0] * (num_effects - len(self.effects_value))
+        self.effects_upgrade_count += [0] * (num_effects - len(self.effects_upgrade_count))
+        self.effects_reroll_count += [0] * (num_effects - len(self.effects_reroll_count))
+
+        for index, (effect, value) in enumerate(zip(
+            self.effects,
+            self.effects_value,
+        )):
+            max_possible_value = self.EFFECT_VALUES[effect]['max'] * (self.effect_upgrades_received + 1)
+            min_possible_value = self.EFFECT_VALUES[effect]['min']
+
+            if value < min_possible_value or value > max_possible_value:
+                raise ValidationError({
+                    'effects_value': ValidationError(
+                        'Effect %(nth)s: Must be between %(min_val) and %(max_val).',
+                        params={
+                            'nth': index + 1,
+                            'min_val': min_possible_value,
+                            'max_val': max_possible_value,
+                        },
+                        code='effects_value_invalid'
+                    )
+                })
+
+        # Set derived field values after all cleaning is done
+        self._update_values()
+
+    def save(self, *args, **kwargs):
+        self._update_values()
+        super().save(*args, **kwargs)
+
+    def _update_values(self):
+        # Main stat value based on stat/level
         self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.level]
 
-        # TODO: Effect value validation based on number of upgrades
+        # Quality based on number of secondary effects
+        self.quality = len([eff for eff in self.effects if eff])
+
+        # Efficiency
+        # Compare effect values against a perfectly upgraded legendary artifact with the same effects
+        total_roll_rating = sum([
+            val / float(self.EFFECT_VALUES[eff]['max'])
+            for eff, val in zip(self.effects, self.effects_value)
+        ])
+        self.efficiency = total_roll_rating / 8 * 100
+
+        # Max Efficiency
+        # The maximum potential assuming all future rolls are perfect
+        rolls_remaining = 4 - self.effect_upgrades_received
+        self.max_efficiency = (total_roll_rating + rolls_remaining) / 8 * 100
 
     def get_precise_slot_display(self):
         return self.get_archetype_display() or self.get_element_display()
@@ -355,7 +430,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
         ]
 
     @property
-    def substat_upgrades_received(self):
+    def effect_upgrades_received(self):
         return int(floor(min(self.level, 12) / 3))
 
 

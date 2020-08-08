@@ -534,6 +534,11 @@ def get_artifact_report(qs, total_log_count, **kwargs):
                 ),
             )
         },
+        'max_efficiency': {
+            'type': 'histogram',
+            'width': 5,
+            'data': histogram(qs, 'max_efficiency', range(0, 100, 5), slice_on='quality'),
+        },
     }
 
 

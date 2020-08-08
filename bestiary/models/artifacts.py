@@ -83,7 +83,7 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         (EFFECT_CRIT_DMG_RECEIVED, 'Crit Damage Received Decreased'),
         (EFFECT_LIFE_DRAIN, 'Life Drain Increased'),
         (EFFECT_HP_REVIVE, 'HP When Revived Increased'),
-        (EFFECT_ATB_REVIVE, 'ATB When Revived Increased'),
+        (EFFECT_ATB_REVIVE, 'Attack Bar When Revived Increased'),
         (EFFECT_DMG_PCT_OF_HP, 'Damage Increased By % of HP'),
         (EFFECT_DMG_PCT_OF_ATK, 'Damage Increased By % of ATK'),
         (EFFECT_DMG_PCT_OF_DEF, 'Damage Increased By % of DEF'),
@@ -106,8 +106,8 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         (EFFECT_SK2_RECOVERY, 'Skill 2 Recovery Increased'),
         (EFFECT_SK3_RECOVERY, 'Skill 3 Recovery Increased'),
         (EFFECT_SK1_ACCURACY, 'Skill 1 Accuracy Increased'),
-        (EFFECT_SK2_ACCURACY, 'Skill 1 Accuracy Increased'),
-        (EFFECT_SK3_ACCURACY, 'Skill 1 Accuracy Increased'),
+        (EFFECT_SK2_ACCURACY, 'Skill 2 Accuracy Increased'),
+        (EFFECT_SK3_ACCURACY, 'Skill 3 Accuracy Increased'),
     )
 
     EFFECT_STRINGS = {
@@ -201,7 +201,7 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
     }
 
     slot = models.IntegerField(choices=SLOT_CHOICES)
-    element = models.CharField(max_length=6, choices=base.Elements.ELEMENT_CHOICES, blank=True, null=True)
+    element = models.CharField(max_length=6, choices=base.Elements.NORMAL_ELEMENT_CHOICES, blank=True, null=True)
     archetype = models.CharField(max_length=10, choices=base.Archetype.ARCHETYPE_CHOICES, blank=True, null=True)
     quality = models.IntegerField(default=0, choices=base.Quality.QUALITY_CHOICES)
 
@@ -338,7 +338,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
 
     def __str__(self):
         level = f'+{self.level} ' if self.level else ''
-        return f'{level}{self.get_main_stat_display()} Artifact'
+        return f'{level}{self.get_precise_slot_display()} {self.get_main_stat_display()} Artifact'
 
     def clean(self):
         super().clean()
@@ -355,7 +355,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
         if num_effects < self.effect_upgrades_received:
             raise ValidationError({
                 'effects': ValidationError(
-                    'A lv. %(level)s rune requires at least %(upgrade)s effect(s)',
+                    'A lv. %(level)s artifact requires at least %(upgrades)s effect(s)',
                     params={
                         'level': self.level,
                         'upgrades': self.effect_upgrades_received,
@@ -384,7 +384,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
             if value < min_possible_value or value > max_possible_value:
                 raise ValidationError({
                     'effects_value': ValidationError(
-                        'Effect %(nth)s: Must be between %(min_val) and %(max_val).',
+                        'Effect %(nth)s: Must be between %(min_val)s and %(max_val)s.',
                         params={
                             'nth': index + 1,
                             'min_val': min_possible_value,

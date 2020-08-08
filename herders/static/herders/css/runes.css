@@ -16,6 +16,12 @@
     position: relative;
 }
 
+.artifact-panel {
+    width: 300px;
+    height: auto;
+    position: relative;
+}
+
 .craft-panel {
     min-width: 250px;
     height: auto;

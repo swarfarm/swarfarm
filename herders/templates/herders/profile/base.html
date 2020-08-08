@@ -42,6 +42,12 @@
                 </a>
                 {% block rune_menu %}{% endblock rune_menu %}
             </li>
+            <li {% if view == 'artifacts' and is_owner %}class="dropdown open"{% endif %}>
+                <a href="{% url 'herders:artifacts' profile_name=profile_name %}">
+                    <img src="{% static 'herders/images/icons/artifact.png' %}" /> Artifacts
+                </a>
+                {% block artifact_menu %}{% endblock artifact_menu %}
+            </li>
             <li {% if view == 'fusion' %}class="dropdown open"{% endif %}>
                 <a href="{% url 'herders:fusion' profile_name=profile_name %}">
                     <img src="{% static 'herders/images/icons/fusion.png' %}" /> Fusion

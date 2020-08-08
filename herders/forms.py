@@ -9,7 +9,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 from django.contrib.postgres.forms import SplitArrayField
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, ValidationError
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.forms import ModelForm
 from django.forms.models import BaseModelFormSet
@@ -1394,35 +1394,85 @@ class AddRuneCraftInstanceForm(ModelForm):
 
 
 # Artifact forms
-class FilterArtifactForm(forms.Form):
-    main_stat = forms.MultipleChoiceField(
-        choices=ArtifactInstance.MAIN_STAT_CHOICES,
+class ArtifactInstanceForm(ModelForm):
+    effects = SplitArrayField(
+        forms.TypedChoiceField(
+            choices=((None, '---------'), ) + ArtifactInstance.EFFECT_CHOICES,
+            coerce=int,
+            empty_value=None,
+        ),
+        size=4,
+        remove_trailing_nulls=True,
+        label='Effect',
         required=False,
     )
 
-    effects = forms.MultipleChoiceField(
-        label='Effects',
-        choices=ArtifactInstance.EFFECT_CHOICES,
+    effects_value = SplitArrayField(
+        forms.IntegerField(required=False),
+        size=4,
+        remove_trailing_nulls=True,
+        label='Value',
         required=False,
     )
-    effects_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+
+    class Meta:
+        model = ArtifactInstance
+        fields = (
+            'level', 'slot', 'element', 'archetype', 'original_quality',
+            'main_stat',
+            'effects', 'effects_value',
+            'assigned_to',
+        )
+        widgets = {
+            'assigned_to': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'addArtifactForm'
+        self.helper.form_class = 'ajax-form'
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Field('slot', wrapper_class='col-md-4 inline-horizontal'),
+                    Field('element', wrapper_class='col-md-4 inline-horizontal hidden'),
+                    Field('archetype', wrapper_class='col-md-4 inline-horizontal hidden'),
+                    Field('original_quality', wrapper_class='col-md-4 inline-horizontal'),
+                    css_class='row'
+                ),
+                Div(
+                    Field('main_stat', wrapper_class='col-md-4 inline-horizontal'),
+                    Field('level', placeholder='0-15', min=0, max=15, wrapper_class='col-md-4 inline-horizontal'),
+                    css_class='row',
+                ),
+                Div(
+                    Field('effects', wrapper_class='col-sm-6'),
+                    Field('effects_value', wrapper_class='col-sm-6'),
+                    css_class='row'
+                ),
+                Div(
+                    Field('assigned_to', wrapper_class='col-md-4', data_placeholder='Start typing...'),
+                    css_class='row',
+                ),
+            ),
+            Div(css_class='clearfix'),
+            FormActions(
+                Submit('save', 'Save'),
+            ),
+        )
+
+
+class FilterArtifactForm(forms.Form):
+    slot = forms.MultipleChoiceField(
+        choices=ArtifactInstance.NORMAL_ELEMENT_CHOICES + ArtifactInstance.ARCHETYPE_CHOICES,
         required=False,
     )
     level = forms.CharField(
         label='Level',
-        required=False,
-    )
-    slot = forms.MultipleChoiceField(
-        choices=ArtifactInstance.SLOT_CHOICES,
-        required=False,
-    )
-    element = forms.MultipleChoiceField(
-        choices=ArtifactInstance.ELEMENT_CHOICES,
-        required=False,
-    )
-    archetype = forms.MultipleChoiceField(
-        choices=ArtifactInstance.ARCHETYPE_CHOICES,
         required=False,
     )
     quality = forms.MultipleChoiceField(
@@ -1437,6 +1487,19 @@ class FilterArtifactForm(forms.Form):
         label='Is Assigned',
         required=False,
         widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
+    main_stat = forms.MultipleChoiceField(
+        choices=ArtifactInstance.MAIN_STAT_CHOICES,
+        required=False,
+    )
+    effects = forms.MultipleChoiceField(
+        label='Effects',
+        choices=ArtifactInstance.EFFECT_CHOICES,
+        required=False,
+    )
+    effects_logic = forms.BooleanField(
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+        required=False,
     )
 
     helper = FormHelper()
@@ -1460,11 +1523,16 @@ class FilterArtifactForm(forms.Form):
                 css_class='col-md-4 col-sm-6',
             ),
             Div(
+                Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('original_quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('assigned', wrapper_class='form-group-sm form-group-condensed'),
+                css_class='col-md-4 col-sm-6'
+            ),
+            Div(
                 Field('main_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
                 Field(
-                    'substat_logic',
+                    'effects_logic',
                     data_toggle='toggle',
                     data_on='One or More',
                     data_onstyle='primary',
@@ -1473,26 +1541,7 @@ class FilterArtifactForm(forms.Form):
                     data_width='125px',
                     wrapper_class='form-group-sm form-group-condensed',
                 ),
-                Field(
-                    'has_grind',
-                    data_provide='slider',
-                    data_slider_min='0',
-                    data_slider_max='4',
-                    data_slider_value='[0, 4]',
-                    data_slider_step='1',
-                    data_slider_ticks='[0, 4]',
-                    data_slider_ticks_labels='["0", "4"]',
-                    wrapper_class='form-group-sm form-group-condensed'
-                ),
-                css_class='col-md-4 col-sm-6'
-            ),
-            Div(
-                Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                Field('original_quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                Field('ancient', wrapper_class='form-group-sm form-group-condensed'),
-                Field('has_gem', wrapper_class='form-group-sm form-group-condensed'),
-                Field('assigned_to', wrapper_class='form-group-sm form-group-condensed'),
-                Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed'),
+
                 css_class='col-md-4 col-sm-6'
             ),
             css_class='row',
@@ -1511,20 +1560,7 @@ class FilterArtifactForm(forms.Form):
     )
 
     def clean(self):
-        super(FilterRuneForm, self).clean()
-
-        # Process x-slot shortcuts for rune set
-        if '2-slot' in self.cleaned_data['type']:
-            self.cleaned_data['type'].remove('2-slot')
-            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
-                if count == 2:
-                    self.cleaned_data['type'].append(rune_set)
-
-        if '4-slot' in self.cleaned_data['type']:
-            self.cleaned_data['type'].remove('4-slot')
-            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
-                if count == 4:
-                    self.cleaned_data['type'].append(rune_set)
+        super().clean()
 
         # Split the slider ranges into two min/max fields for the filters
         try:
@@ -1535,33 +1571,6 @@ class FilterArtifactForm(forms.Form):
 
         self.cleaned_data['level__gte'] = int(min_lv)
         self.cleaned_data['level__lte'] = int(max_lv)
-
-        try:
-            [min_stars, max_stars] = self.cleaned_data['stars'].split(',')
-        except:
-            min_stars = 1
-            max_stars = 6
-
-        self.cleaned_data['stars__gte'] = int(min_stars)
-        self.cleaned_data['stars__lte'] = int(max_stars)
-
-        try:
-            [min_grinds, max_grinds] = self.cleaned_data['has_grind'].split(',')
-        except:
-            min_grinds = 0
-            max_grinds = 4
-
-        self.cleaned_data['has_grind__gte'] = int(min_grinds)
-        self.cleaned_data['has_grind__lte'] = int(max_grinds)
-
-        # Process even/odd slot shortcuts for rune slot
-        if 'even' in self.cleaned_data['slot']:
-            self.cleaned_data['slot'].remove('even')
-            self.cleaned_data['slot'] += [2, 4, 6]
-
-        if 'odd' in self.cleaned_data['slot']:
-            self.cleaned_data['slot'].remove('odd')
-            self.cleaned_data['slot'] += [1, 3, 5]
 
 
 # Profile import/export

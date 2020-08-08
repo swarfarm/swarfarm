@@ -4,4 +4,5 @@ from . import fusion
 from . import monsters
 from . import profile
 from . import runes
+from . import artifacts
 from . import teams

@@ -1,0 +1,39 @@
+{% extends 'herders/profile/base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load utils %}
+
+{% block title %}
+    {% if is_owner %}
+        My Runes - {{ block.super }}
+    {% else %}
+        {{ summoner.user.username }}'s Runes - {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block artifact_menu %}
+    {% if is_owner %}
+        <ul class="dropdown-menu navmenu-nav">
+            <li><a class="artifact-add"><span class="glyphicon glyphicon-plus"></span> Add Artifact</a></li>
+            {# <li><a class="artifact-add"><span class="glyphicon glyphicon-plus"></span> Add Conversion Stone</a></li> #}
+        </ul>
+    {% endif %}
+{% endblock artifact_menu %}
+
+{% block profile %}
+    <div class="filters">
+        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#runeFilterCollapse">
+            <span class="glyphicon glyphicon-filter"></span> Filters
+        </button>
+        <div class="collapse" id="runeFilterCollapse">
+            {% crispy filter_form %}
+        </div>
+    </div>
+
+    <div id="rune-inventory"></div>
+{% endblock profile %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static 'herders/js/artifacts.js' %}"></script>
+{% endblock javascript_compressed %}

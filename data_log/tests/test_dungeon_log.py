@@ -236,10 +236,10 @@ class DimensionHoleTests(BaseLogTest):
     #     self.assertEqual(log.rune_crafts.count(), 1)
     #     craft = log.rune_crafts.first()
     #     self.assertEqual(craft.type, models.DungeonRuneCraftDrop.CRAFT_ANCIENT_GEM)
-    #
-    # def test_ancient_grindstone_drop(self):
-    #     self._do_log('BattleDimensionHoleDungeonResult_V2/sanctuary_b5_grind_drop.json')
-    #     log = models.DungeonLog.objects.first()
-    #     self.assertEqual(log.rune_crafts.count(), 1)
-    #     craft = log.rune_crafts.first()
-    #     self.assertEqual(craft.type, models.DungeonRuneCraftDrop.CRAFT_ANCIENT_GRINDSTONE)
+
+    def test_ancient_grindstone_drop(self):
+        self._do_log('BattleDimensionHoleDungeonResult_V2/forest_b5_grind_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.rune_crafts.count(), 1)
+        craft = log.rune_crafts.first()
+        self.assertEqual(craft.type, models.DungeonRuneCraftDrop.CRAFT_ANCIENT_GRINDSTONE)

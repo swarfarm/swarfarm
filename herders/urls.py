@@ -81,6 +81,14 @@ urlpatterns = [
                 url(r'^delete/(?P<craft_id>[0-9a-f]{32})/$', views.runes.rune_craft_delete, name='rune_craft_delete'),
             ])),
         ])),
+        path('artifacts/', include([
+            path('', views.artifacts.artifacts, name='artifacts'),
+            path('inventory/', views.artifacts.inventory, name='artifact_inventory'),
+            path('inventory/box/<box_grouping>/', views.artifacts.inventory, name='artifact_inventory_view_mode_sorted'),
+            path('add/', views.artifacts.add, name='artifact_add'),
+            path('edit/<artifact_id>/', views.artifacts.edit, name='artifact_edit'),
+            path('delete/<artifact_id>/', views.artifacts.delete, name='artifact_delete'),
+        ])),
         url(r'^buildings/', include([
             url(r'^$', views.profile.buildings, name='buildings'),
             url(r'^inventory/$', views.profile.buildings_inventory, name='buildings_inventory'),

@@ -1,0 +1,72 @@
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div id="rune-inventory">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            {% comment %}
+            <div class="btn-group">
+                <button class="btn btn-default rune-view-mode" data-mode="list">
+                    <span class="glyphicon glyphicon-th-list"></span> List
+                </button>
+                <button class="btn btn-default rune-view-mode active" data-mode="box">
+                    <span class="glyphicon glyphicon-th-large"></span> Box
+                </button>
+                <button class="btn btn-default rune-view-mode" data-mode="grid">
+                    <span class="glyphicon glyphicon-th"></span> Grid
+                </button>
+                <button class="btn btn-default rune-view-mode" data-mode="crafts">
+                    <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" />
+                </button>
+            </div>
+            {% endcomment %}
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Grouped By {{ box_grouping|title }} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    {% if not box_grouping == 'slot' %}<li><a class="box-group-mode" data-mode="slot">Slot</a></li>{% endif %}
+                    {% if not box_grouping == 'quality' %}<li><a class="box-group-mode" data-mode="quality">Quality</a></li>{% endif %}
+                    {% if not box_grouping == 'orig. quality' %}<li><a class="box-group-mode" data-mode="orig. quality">Orig. Quality</a></li>{% endif %}
+                    {% if not box_grouping == 'equipped' %}<li><a class="box-group-mode" data-mode="equipped">Equipped</a></li>{% endif %}
+                </ul>
+            </div>
+
+            <span class="pull-right">{{ filtered_count }} of {{ total_count }} artifact{{ total_count|pluralize }}</span>
+        </div>
+        <div class="panel-body">
+            {% if not total_count %}
+                <div class="alert alert-warning">You don't have any artifacts!</div>
+            {% elif not filtered_count %}
+                <div class="alert alert-warning">All artifacts were filtered out.</div>
+            {% else %}
+                {% for group in artifacts %}
+                    {% if group.artifacts|length %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading collapsible">
+                                <a role="button" data-toggle="collapse" data-target="#runegroup{{ forloop.counter }}">
+                                    <strong>{{ group.name }}</strong>
+                                </a>
+                                <span class="pull-right">{% with num_runes=group.runes|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
+                            </div>
+                            <div id="runegroup{{ forloop.counter }}" class="collapse in">
+                                <div class="panel-body">
+                                    <div class="flex">
+                                    {% for artifact in group.artifacts %}
+                                        <div data-artifact-instance="{{ artifact.pk.hex }}">
+                                            {% include 'herders/profile/artifacts/artifact_panel_fragment.html' with artifact=artifact profile_name=profile_name is_owner=is_owner only %}
+                                        </div>
+                                    {% empty %}
+                                        <div class="alert alert-warning">Your search returned no results or you have no artifacts!</div>
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>

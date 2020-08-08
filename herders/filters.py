@@ -2,7 +2,7 @@ import django_filters
 from django.db.models import Q
 
 from bestiary.models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat
-from .models import MonsterInstance, MonsterTag, RuneInstance
+from .models import MonsterInstance, MonsterTag, RuneInstance, ArtifactInstance
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):
@@ -182,3 +182,57 @@ class RuneInstanceFilter(django_filters.FilterSet):
 
     def filter_assigned_to(self, queryset, name, value):
         return queryset.filter(assigned_to__isnull=not value)
+
+
+class ArtifactInstanceFilter(django_filters.FilterSet):
+    slot = django_filters.MultipleChoiceFilter(
+        method='filter_slot',
+        choices=ArtifactInstance.NORMAL_ELEMENT_CHOICES + ArtifactInstance.ARCHETYPE_CHOICES
+    )
+    main_stat = django_filters.MultipleChoiceFilter(choices=ArtifactInstance.MAIN_STAT_CHOICES)
+    quality = django_filters.MultipleChoiceFilter(choices=ArtifactInstance.QUALITY_CHOICES)
+    original_quality = django_filters.MultipleChoiceFilter(choices=ArtifactInstance.QUALITY_CHOICES)
+    assigned = django_filters.BooleanFilter(method='filter_assigned_to')
+    effects = django_filters.MultipleChoiceFilter(method='filter_effects', choices=ArtifactInstance.EFFECT_CHOICES)
+    effects_logic = django_filters.BooleanFilter(method='filter_bypass')
+
+    class Meta:
+        model = ArtifactInstance
+        fields = {
+            'level': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'quality': ['exact', 'in'],
+            'original_quality': ['exact', 'in'],
+            'efficiency': ['exact', 'lt', 'gt', 'lte', 'gte'],
+        }
+
+    def filter_slot(self, queryset, name, value):
+        # Split slot filter value into element/archetype fields and filter on both
+        all_elements = [choice[0] for choice in ArtifactInstance.NORMAL_ELEMENT_CHOICES]
+        all_archetypes = [choice[0] for choice in ArtifactInstance.ARCHETYPE_CHOICES]
+
+        elements = []
+        archetypes = []
+        for s in value:
+            if s in all_elements:
+                elements.append(s)
+            elif s in all_archetypes:
+                archetypes.append(s)
+
+        return queryset.filter(Q(element__in=elements) | Q(archetype__in=archetypes))
+
+    def filter_effects(self, queryset, name, value):
+        any_effect = self.form.cleaned_data.get('effects_logic', False)
+
+        if len(value):
+            if any_effect:
+                return queryset.filter(effects__overlap=value)
+            else:
+                return queryset.filter(effects__contains=value)
+        else:
+            return queryset
+
+    def filter_assigned_to(self, queryset, name, value):
+        return queryset.filter(assigned_to__isnull=not value)
+
+    def filter_bypass(self, queryset, name, value):
+        return queryset

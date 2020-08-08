@@ -1,0 +1,71 @@
+{% load utils %}
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<div class="panel panel-default artifact-panel">
+    <div class="panel-heading condensed">
+        {% if is_owner %}
+        <div class="btn-group pull-right">
+            <button class="btn btn-default btn-xs artifact-edit" data-artifact-id="{{ artifact.pk.hex }}">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </button>
+            <button class="btn btn-default btn-xs artifact-delete" data-artifact-id="{{ artifact.pk.hex }}">
+                <span class="glyphicon glyphicon-trash text-danger"></span>
+            </button>
+        </div>
+        {% endif %}
+        <p class="panel-title rune-text rune-text-{{ artifact.get_quality_display|lower }}">{{ artifact }}</p>
+    </div>
+
+    <div class="panel-body condensed">
+        {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact hide_original_quality=True only %}
+        <ul class="list-unstyled">
+            <li class="rune-main-stat">{{ artifact.get_main_stat_display }} +{{ artifact.main_stat_value }}</li>
+            </ul>
+        <div class="clearfix"></div>
+        <ul class="list-unstyled">
+            {% for disp in artifact.get_effects_display %}
+                <li>{{ disp }}</li>
+            {% endfor %}
+        </ul>
+
+        <div class="clearfix"></div>
+
+        {% if artifact.assigned_to %}
+            <div class="rune-assigned-to">
+                <div class="monster-image">
+                    <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=artifact.assigned_to.pk.hex %}" target="_blank">
+                        <img src="{{ img_url_prefix }}monsters/{{ artifact.assigned_to.monster.image_filename }}" class="monster-thumb"/>
+                        <span>
+                            {% for x in artifact.assigned_to.stars|get_range %}
+                                {% if artifact.assigned_to.monster.is_awakened %}
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% elif artifact.assigned_to.monster.can_awaken %}
+                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% else %}
+                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span class="image-plus image-plus-right">{{ artifact.assigned_to.level }}</span>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        <ul class="top-right list-unstyled">
+            {% if artifact.original_quality is not None %}
+                <li>
+                    Orig: <span class="label rune-label-{{ artifact.get_original_quality_display|lower }}">
+                        {{ artifact.get_original_quality_display }}
+                    </span>
+                </li>
+            {% endif %}
+
+            {% if artifact.efficiency is not None %}
+                <li {% if artifact.max_efficiency is not None and artifact.level < 12 %}data-toggle="tooltip" title="Max Eff: {{ artifact.max_efficiency|floatformat:1 }}%"{% endif %}>
+                    Eff: {{ artifact.efficiency|floatformat:1 }}%
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>

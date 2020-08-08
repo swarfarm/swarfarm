@@ -9,7 +9,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 from django.contrib.postgres.forms import SplitArrayField
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, ValidationError
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.forms import ModelForm
 from django.forms.models import BaseModelFormSet
@@ -21,7 +21,7 @@ from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dung
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from data_log.models import RiftDungeonLog, WorldBossLog, CraftRuneLog, MagicBoxCraft
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
-    RuneInstance, RuneCraftInstance, BuildingInstance
+    RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactInstance
 
 STATIC_URL_PREFIX = static('herders/images/')
 
@@ -1403,6 +1403,186 @@ class AddRuneCraftInstanceForm(ModelForm):
             'quality',
             'quantity',
         )
+
+
+# Artifact forms
+class ArtifactInstanceForm(ModelForm):
+    effects = SplitArrayField(
+        forms.TypedChoiceField(
+            choices=((None, '---------'), ) + ArtifactInstance.EFFECT_CHOICES,
+            coerce=int,
+            empty_value=None,
+        ),
+        size=4,
+        remove_trailing_nulls=True,
+        label='Effect',
+        required=False,
+    )
+
+    effects_value = SplitArrayField(
+        forms.IntegerField(required=False),
+        size=4,
+        remove_trailing_nulls=True,
+        label='Value',
+        required=False,
+    )
+
+    class Meta:
+        model = ArtifactInstance
+        fields = (
+            'level', 'slot', 'element', 'archetype', 'original_quality',
+            'main_stat',
+            'effects', 'effects_value',
+            'assigned_to',
+        )
+        widgets = {
+            'assigned_to': autocomplete.ModelSelect2(url='monster-instance-autocomplete'),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'addArtifactForm'
+        self.helper.form_class = 'ajax-form'
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Field('slot', wrapper_class='col-md-4 inline-horizontal'),
+                    Field('element', wrapper_class='col-md-4 inline-horizontal hidden'),
+                    Field('archetype', wrapper_class='col-md-4 inline-horizontal hidden'),
+                    Field('original_quality', wrapper_class='col-md-4 inline-horizontal'),
+                    css_class='row'
+                ),
+                Div(
+                    Field('main_stat', wrapper_class='col-md-4 inline-horizontal'),
+                    Field('level', placeholder='0-15', min=0, max=15, wrapper_class='col-md-4 inline-horizontal'),
+                    css_class='row',
+                ),
+                Div(
+                    Field('effects', wrapper_class='col-sm-6'),
+                    Field('effects_value', wrapper_class='col-sm-6'),
+                    css_class='row'
+                ),
+                Div(
+                    Field('assigned_to', wrapper_class='col-md-4', data_placeholder='Start typing...'),
+                    css_class='row',
+                ),
+            ),
+            Div(css_class='clearfix'),
+            FormActions(
+                Submit('save', 'Save'),
+            ),
+        )
+
+
+class FilterArtifactForm(forms.Form):
+    slot = forms.MultipleChoiceField(
+        choices=ArtifactInstance.NORMAL_ELEMENT_CHOICES + ArtifactInstance.ARCHETYPE_CHOICES,
+        required=False,
+    )
+    level = forms.CharField(
+        label='Level',
+        required=False,
+    )
+    quality = forms.MultipleChoiceField(
+        choices=ArtifactInstance.QUALITY_CHOICES,
+        required=False,
+    )
+    original_quality = forms.MultipleChoiceField(
+        choices=ArtifactInstance.QUALITY_CHOICES,
+        required=False,
+    )
+    assigned = forms.NullBooleanField(
+        label='Is Assigned',
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
+    main_stat = forms.MultipleChoiceField(
+        choices=ArtifactInstance.MAIN_STAT_CHOICES,
+        required=False,
+    )
+    effects = forms.MultipleChoiceField(
+        label='Effects',
+        choices=ArtifactInstance.EFFECT_CHOICES,
+        required=False,
+    )
+    effects_logic = forms.BooleanField(
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+        required=False,
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_id = 'FilterInventoryForm'
+    helper.layout = Layout(
+        Div(
+            Div(
+                Field('slot', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field(
+                    'level',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='15',
+                    data_slider_value='[0, 15]',
+                    data_slider_step='1',
+                    data_slider_ticks='[0, 15]',
+                    data_slider_ticks_labels='["0", "15"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                css_class='col-md-4 col-sm-6',
+            ),
+            Div(
+                Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('original_quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('assigned', wrapper_class='form-group-sm form-group-condensed'),
+                css_class='col-md-4 col-sm-6'
+            ),
+            Div(
+                Field('main_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field(
+                    'effects_logic',
+                    data_toggle='toggle',
+                    data_on='One or More',
+                    data_onstyle='primary',
+                    data_off='All',
+                    data_offstyle='primary',
+                    data_width='125px',
+                    wrapper_class='form-group-sm form-group-condensed',
+                ),
+
+                css_class='col-md-4 col-sm-6'
+            ),
+            css_class='row',
+        ),
+        Div(
+            Div(
+                Submit('apply', 'Apply', css_class='btn-success '),
+                css_class='btn-group'
+            ),
+            Div(
+                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
+                css_class='btn-group'
+            ),
+            css_class='btn-group btn-group-justified'
+        ),
+    )
+
+    def clean(self):
+        super().clean()
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_lv, max_lv] = self.cleaned_data['level'].split(',')
+        except:
+            min_lv = 0
+            max_lv = 15
+
+        self.cleaned_data['level__gte'] = int(min_lv)
+        self.cleaned_data['level__lte'] = int(max_lv)
 
 
 # Profile import/export

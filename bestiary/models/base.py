@@ -27,6 +27,14 @@ class Elements:
         (ELEMENT_DARK, 'Dark'),
     )
 
+    NORMAL_ELEMENT_CHOICES = (
+        (ELEMENT_FIRE, 'Fire'),
+        (ELEMENT_WIND, 'Wind'),
+        (ELEMENT_WATER, 'Water'),
+        (ELEMENT_LIGHT, 'Light'),
+        (ELEMENT_DARK, 'Dark'),
+    )
+
     # Mappings from com2us' API data to model defined values
     COM2US_ELEMENT_MAP = {
         1: ELEMENT_WATER,
@@ -47,7 +55,6 @@ class Archetype:
     ARCHETYPE_NONE = 'none'
 
     ARCHETYPE_CHOICES = (
-        (ARCHETYPE_NONE, 'None'),
         (ARCHETYPE_ATTACK, 'Attack'),
         (ARCHETYPE_HP, 'HP'),
         (ARCHETYPE_SUPPORT, 'Support'),

@@ -21,7 +21,7 @@ from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dung
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from data_log.models import RiftDungeonLog, WorldBossLog, CraftRuneLog, MagicBoxCraft
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
-    RuneInstance, RuneCraftInstance, BuildingInstance
+    RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactInstance
 
 STATIC_URL_PREFIX = static('herders/images/')
 
@@ -1391,6 +1391,177 @@ class AddRuneCraftInstanceForm(ModelForm):
             'quality',
             'quantity',
         )
+
+
+# Artifact forms
+class FilterArtifactForm(forms.Form):
+    main_stat = forms.MultipleChoiceField(
+        choices=ArtifactInstance.MAIN_STAT_CHOICES,
+        required=False,
+    )
+
+    effects = forms.MultipleChoiceField(
+        label='Effects',
+        choices=ArtifactInstance.EFFECT_CHOICES,
+        required=False,
+    )
+    effects_logic = forms.BooleanField(
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+        required=False,
+    )
+    level = forms.CharField(
+        label='Level',
+        required=False,
+    )
+    slot = forms.MultipleChoiceField(
+        choices=ArtifactInstance.SLOT_CHOICES,
+        required=False,
+    )
+    element = forms.MultipleChoiceField(
+        choices=ArtifactInstance.ELEMENT_CHOICES,
+        required=False,
+    )
+    archetype = forms.MultipleChoiceField(
+        choices=ArtifactInstance.ARCHETYPE_CHOICES,
+        required=False,
+    )
+    quality = forms.MultipleChoiceField(
+        choices=ArtifactInstance.QUALITY_CHOICES,
+        required=False,
+    )
+    original_quality = forms.MultipleChoiceField(
+        choices=ArtifactInstance.QUALITY_CHOICES,
+        required=False,
+    )
+    assigned = forms.NullBooleanField(
+        label='Is Assigned',
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_id = 'FilterInventoryForm'
+    helper.layout = Layout(
+        Div(
+            Div(
+                Field('slot', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field(
+                    'level',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='15',
+                    data_slider_value='[0, 15]',
+                    data_slider_step='1',
+                    data_slider_ticks='[0, 15]',
+                    data_slider_ticks_labels='["0", "15"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                css_class='col-md-4 col-sm-6',
+            ),
+            Div(
+                Field('main_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field(
+                    'substat_logic',
+                    data_toggle='toggle',
+                    data_on='One or More',
+                    data_onstyle='primary',
+                    data_off='All',
+                    data_offstyle='primary',
+                    data_width='125px',
+                    wrapper_class='form-group-sm form-group-condensed',
+                ),
+                Field(
+                    'has_grind',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='4',
+                    data_slider_value='[0, 4]',
+                    data_slider_step='1',
+                    data_slider_ticks='[0, 4]',
+                    data_slider_ticks_labels='["0", "4"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                css_class='col-md-4 col-sm-6'
+            ),
+            Div(
+                Field('quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('original_quality', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('ancient', wrapper_class='form-group-sm form-group-condensed'),
+                Field('has_gem', wrapper_class='form-group-sm form-group-condensed'),
+                Field('assigned_to', wrapper_class='form-group-sm form-group-condensed'),
+                Field('marked_for_sale', wrapper_class='form-group-sm form-group-condensed'),
+                css_class='col-md-4 col-sm-6'
+            ),
+            css_class='row',
+        ),
+        Div(
+            Div(
+                Submit('apply', 'Apply', css_class='btn-success '),
+                css_class='btn-group'
+            ),
+            Div(
+                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
+                css_class='btn-group'
+            ),
+            css_class='btn-group btn-group-justified'
+        ),
+    )
+
+    def clean(self):
+        super(FilterRuneForm, self).clean()
+
+        # Process x-slot shortcuts for rune set
+        if '2-slot' in self.cleaned_data['type']:
+            self.cleaned_data['type'].remove('2-slot')
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
+                if count == 2:
+                    self.cleaned_data['type'].append(rune_set)
+
+        if '4-slot' in self.cleaned_data['type']:
+            self.cleaned_data['type'].remove('4-slot')
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
+                if count == 4:
+                    self.cleaned_data['type'].append(rune_set)
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_lv, max_lv] = self.cleaned_data['level'].split(',')
+        except:
+            min_lv = 0
+            max_lv = 15
+
+        self.cleaned_data['level__gte'] = int(min_lv)
+        self.cleaned_data['level__lte'] = int(max_lv)
+
+        try:
+            [min_stars, max_stars] = self.cleaned_data['stars'].split(',')
+        except:
+            min_stars = 1
+            max_stars = 6
+
+        self.cleaned_data['stars__gte'] = int(min_stars)
+        self.cleaned_data['stars__lte'] = int(max_stars)
+
+        try:
+            [min_grinds, max_grinds] = self.cleaned_data['has_grind'].split(',')
+        except:
+            min_grinds = 0
+            max_grinds = 4
+
+        self.cleaned_data['has_grind__gte'] = int(min_grinds)
+        self.cleaned_data['has_grind__lte'] = int(max_grinds)
+
+        # Process even/odd slot shortcuts for rune slot
+        if 'even' in self.cleaned_data['slot']:
+            self.cleaned_data['slot'].remove('even')
+            self.cleaned_data['slot'] += [2, 4, 6]
+
+        if 'odd' in self.cleaned_data['slot']:
+            self.cleaned_data['slot'].remove('odd')
+            self.cleaned_data['slot'] += [1, 3, 5]
 
 
 # Profile import/export

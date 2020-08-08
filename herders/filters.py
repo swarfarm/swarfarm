@@ -2,7 +2,7 @@ import django_filters
 from django.db.models import Q
 
 from bestiary.models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat
-from .models import MonsterInstance, MonsterTag, RuneInstance
+from .models import MonsterInstance, MonsterTag, RuneInstance, ArtifactInstance
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):
@@ -159,4 +159,25 @@ class RuneInstanceFilter(django_filters.FilterSet):
         return queryset
 
     def filter_assigned_to(self, queryset, name, value):
+        return queryset.filter(assigned_to__isnull=not value)
+
+
+class ArtifactInstanceFilter(django_filters.FilterSet):
+    assigned = django_filters.BooleanFilter(method='filter_assigned_to')
+
+    class Meta:
+        model = ArtifactInstance
+        fields = {
+            'level': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'quality': ['exact', 'in'],
+            'original_quality': ['exact', 'in'],
+            'slot': ['exact'],
+            'element': ['exact', 'in'],
+            'archetype': ['exact', 'in'],
+            'main_stat': ['exact', 'in'],
+            'effects': ['contains', 'overlap'],
+            'efficiency': ['exact', 'lt', 'gt', 'lte', 'gte'],
+        }
+
+    def filter_assigned(self, queryset, name, value):
         return queryset.filter(assigned_to__isnull=not value)

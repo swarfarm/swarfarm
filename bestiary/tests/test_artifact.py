@@ -34,7 +34,7 @@ class Artifact(models.Artifact):
         self.effects_value = [self.EFFECT_VALUES[eff]['max'] for eff in self.effects]
 
         # Upgrades are always applied to first effect
-        self.effects_value[0] += self.EFFECT_VALUES[self.effects[0]]['max'] * self.substat_upgrades_received
+        self.effects_value[0] += self.EFFECT_VALUES[self.effects[0]]['max'] * self.effect_upgrades_received
 
 
 class Attributes(TestCase):
@@ -100,9 +100,147 @@ class Attributes(TestCase):
         self.assertEqual(artifact.quality, artifact.QUALITY_LEGEND)
 
 
+class Efficiency(TestCase):
+    def test_efficiency_normal_level_0(self):
+        """Zero effects = 0% efficiency"""
+        artifact = Artifact.stub()
+        artifact.full_clean()
+        self.assertAlmostEqual(0, artifact.efficiency)
+
+    def test_max_efficiency_normal_level_0(self):
+        """No initial rolls, 4 possible rolls on upgrade = 4/8 rolls or 50% max eff"""
+        artifact = Artifact.stub()
+        artifact.full_clean()
+        self.assertAlmostEqual(50, artifact.max_efficiency)
+
+    def test_efficiency_perfect_legend_level_0(self):
+        """Received half of possible rolls perfectly so 50% """
+        artifact = Artifact.stub(
+            effects=[
+                Artifact.EFFECT_ATK,
+                Artifact.EFFECT_DEF,
+                Artifact.EFFECT_SPD,
+                Artifact.EFFECT_BOMB_DMG,
+            ],
+            effects_value=[
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['max'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_DEF]['max'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_SPD]['max'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_BOMB_DMG]['max'],
+            ]
+        )
+        artifact.full_clean()
+        self.assertAlmostEqual(50, artifact.efficiency)
+
+    def test_max_efficiency_perfect_legend_level_0(self):
+        """Perfect initial rolls, legendary at drop, but no upgrades received"""
+        artifact = Artifact.stub(
+            effects=[
+                Artifact.EFFECT_ATK,
+                Artifact.EFFECT_DEF,
+                Artifact.EFFECT_SPD,
+                Artifact.EFFECT_BOMB_DMG,
+            ],
+            effects_value=[
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['max'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_DEF]['max'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_SPD]['max'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_BOMB_DMG]['max'],
+            ]
+        )
+        artifact.full_clean()
+        self.assertAlmostEqual(100, artifact.max_efficiency)
+
+    def test_efficiency_perfect_legend_lv15(self):
+        artifact = Artifact.stub(
+            level=15,
+            effects=[
+                Artifact.EFFECT_ATK,
+                Artifact.EFFECT_DEF,
+                Artifact.EFFECT_SPD,
+                Artifact.EFFECT_BOMB_DMG,
+            ],
+            effects_value=[
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['max'] * 5,  # All upgrades into this eff
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_DEF]['max'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_SPD]['max'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_BOMB_DMG]['max'],
+            ]
+        )
+        artifact.full_clean()
+        self.assertAlmostEqual(100, artifact.efficiency)
+        self.assertAlmostEqual(100, artifact.max_efficiency)
+
+    def test_efficiency_middling_lv15(self):
+        atk_upgrades = (Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['min'] +
+                        Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['max']) / 2
+        def_upgrades = (Artifact.EFFECT_VALUES[Artifact.EFFECT_DEF]['min'] +
+                        Artifact.EFFECT_VALUES[Artifact.EFFECT_DEF]['max']) / 2
+        crushing_upgrades = (Artifact.EFFECT_VALUES[Artifact.EFFECT_CRUSHING_HIT_DMG]['min'] +
+                             Artifact.EFFECT_VALUES[Artifact.EFFECT_CRUSHING_HIT_DMG]['max']) / 2
+        pct_atk_upgrades = (Artifact.EFFECT_VALUES[Artifact.EFFECT_DMG_PCT_OF_ATK]['min'] +
+                            Artifact.EFFECT_VALUES[Artifact.EFFECT_DMG_PCT_OF_ATK]['max']) / 2
+
+        artifact = Artifact.stub(
+            level=15,
+            effects=[
+                Artifact.EFFECT_ATK,
+                Artifact.EFFECT_DEF,
+                Artifact.EFFECT_CRUSHING_HIT_DMG,
+                Artifact.EFFECT_DMG_PCT_OF_ATK,
+            ],
+            effects_value=[
+                atk_upgrades * 5,  # All upgrades into this effect
+                def_upgrades,
+                crushing_upgrades,
+                pct_atk_upgrades,
+            ]
+        )
+        artifact.full_clean()
+        self.assertAlmostEqual(75, artifact.efficiency)
+        self.assertAlmostEqual(75, artifact.max_efficiency)
+
+
 class Stats(TestCase):
-    # TODO: Main stat testing
-    pass
+    def test_value_set_automatically_lv0(self):
+        artifact = Artifact.stub(
+            level=0,
+            main_stat=Artifact.STAT_HP,
+        )
+        artifact.full_clean()
+        self.assertEqual(artifact.main_stat_value, Artifact.MAIN_STAT_VALUES[Artifact.STAT_HP][0])
+
+    def test_value_set_automatically_lv3(self):
+        artifact = Artifact.stub(
+            level=3,
+            main_stat=Artifact.STAT_HP,
+            effects=[Artifact.EFFECT_ATK],
+            effects_value=[
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['min']
+            ]
+        )
+        artifact.full_clean()
+        self.assertEqual(artifact.main_stat_value, Artifact.MAIN_STAT_VALUES[Artifact.STAT_HP][3])
+
+    def test_value_set_automatically_lv15(self):
+        artifact = Artifact.stub(
+            level=15,
+            main_stat=Artifact.STAT_HP,
+            effects=[
+                Artifact.EFFECT_ATK,
+                Artifact.EFFECT_BOMB_DMG,
+                Artifact.EFFECT_DEF,
+                Artifact.EFFECT_SPD,
+            ],
+            effects_value=[
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['min'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_BOMB_DMG]['min'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_DEF]['min'],
+                Artifact.EFFECT_VALUES[Artifact.EFFECT_SPD]['min'],
+            ]
+        )
+        artifact.full_clean()
+        self.assertEqual(artifact.main_stat_value, Artifact.MAIN_STAT_VALUES[Artifact.STAT_HP][15])
 
 
 class Effects(TestCase):
@@ -217,6 +355,48 @@ class Effects(TestCase):
         self.assertIn('effects_value', cm.exception.error_dict)
         self.assertEqual(cm.exception.error_dict['effects_value'][0].code, 'effects_value_invalid')
 
+    def test_effect_value_too_small(self):
+        artifact = Artifact.stub(
+            effects=[Artifact.EFFECT_ATK],
+            effects_value=[1],
+            effects_upgrade_count=[0],
+            effects_reroll_count=[0],
+            level=3,
+        )
+
+        with self.assertRaises(ValidationError) as cm:
+            artifact.full_clean()
+
+        self.assertIn('effects_value', cm.exception.error_dict)
+        self.assertEqual(cm.exception.error_dict['effects_value'][0].code, 'effects_value_invalid')
+
+    def test_effect_value_too_big(self):
+        artifact = Artifact.stub(
+            effects=[Artifact.EFFECT_ATK],
+            effects_value=[99],
+            effects_upgrade_count=[0],
+            effects_reroll_count=[0],
+            level=3,
+        )
+
+        with self.assertRaises(ValidationError) as cm:
+            artifact.full_clean()
+
+        self.assertIn('effects_value', cm.exception.error_dict)
+        self.assertEqual(cm.exception.error_dict['effects_value'][0].code, 'effects_value_invalid')
+
+    def test_effect_value_just_right(self):
+        artifact = Artifact.stub(
+            effects=[Artifact.EFFECT_ATK],
+            effects_value=[8],
+            effects_upgrade_count=[0],
+            effects_reroll_count=[0],
+            level=3,
+        )
+        # Should not raise any exception
+        artifact.full_clean()
+        self.assertEqual(artifact.effects_value[0], artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['max'] * 2)
+
     def test_too_many_upgrade_count_truncated(self):
         artifact = Artifact.stub(
             effects=[Artifact.EFFECT_ATK],
@@ -257,3 +437,4 @@ class Effects(TestCase):
         artifact.full_clean()
         self.assertEqual(len(artifact.effects_reroll_count), len(artifact.effects))
         self.assertEqual(artifact.effects_reroll_count[0], 0)
+

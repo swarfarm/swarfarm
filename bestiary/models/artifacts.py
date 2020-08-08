@@ -330,7 +330,8 @@ class Artifact(ArtifactObjectBase, base.Stars):
         blank=True,
         help_text='Number times this upgrades was rerolled with conversion stone'
     )
-    # TODO: Add efficiency and max_efficiency
+    efficiency = models.FloatField(blank=True)
+    max_efficiency = models.FloatField(blank=True)
 
     class Meta:
         abstract = True
@@ -351,13 +352,13 @@ class Artifact(ArtifactObjectBase, base.Stars):
             })
 
         # Minimum required count based on level
-        if num_effects < self.substat_upgrades_received:
+        if num_effects < self.effect_upgrades_received:
             raise ValidationError({
                 'effects': ValidationError(
                     'A lv. %(level)s rune requires at least %(upgrade)s effect(s)',
                     params={
                         'level': self.level,
-                        'upgrades': self.substat_upgrades_received,
+                        'upgrades': self.effect_upgrades_received,
                     },
                     code='effects_not_enough'
                 )
@@ -377,7 +378,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
             self.effects,
             self.effects_value,
         )):
-            max_possible_value = self.EFFECT_VALUES[effect]['max'] * (self.substat_upgrades_received + 1)
+            max_possible_value = self.EFFECT_VALUES[effect]['max'] * (self.effect_upgrades_received + 1)
             min_possible_value = self.EFFECT_VALUES[effect]['min']
 
             if value < min_possible_value or value > max_possible_value:
@@ -396,12 +397,29 @@ class Artifact(ArtifactObjectBase, base.Stars):
         # Set derived field values after all cleaning is done
         self._update_values()
 
+    def save(self, *args, **kwargs):
+        self._update_values()
+        super().save(*args, **kwargs)
+
     def _update_values(self):
         # Main stat value based on stat/level
         self.main_stat_value = self.MAIN_STAT_VALUES[self.main_stat][self.level]
 
         # Quality based on number of secondary effects
         self.quality = len([eff for eff in self.effects if eff])
+
+        # Efficiency
+        # Compare effect values against a perfectly upgraded legendary artifact with the same effects
+        total_roll_rating = sum([
+            val / float(self.EFFECT_VALUES[eff]['max'])
+            for eff, val in zip(self.effects, self.effects_value)
+        ])
+        self.efficiency = total_roll_rating / 8 * 100
+
+        # Max Efficiency
+        # The maximum potential assuming all future rolls are perfect
+        rolls_remaining = 4 - self.effect_upgrades_received
+        self.max_efficiency = (total_roll_rating + rolls_remaining) / 8 * 100
 
     def get_precise_slot_display(self):
         return self.get_archetype_display() or self.get_element_display()
@@ -412,7 +430,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
         ]
 
     @property
-    def substat_upgrades_received(self):
+    def effect_upgrades_received(self):
         return int(floor(min(self.level, 12) / 3))
 
 

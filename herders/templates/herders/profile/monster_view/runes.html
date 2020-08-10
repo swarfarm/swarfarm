@@ -1,3 +1,6 @@
+{% load static %}
+{% static 'herders/images/' as img_url_prefix %}
+
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
         <h3 class="panel-title pull-left">Runes</h3>
@@ -56,4 +59,20 @@
             {% endif %}
         </div>
     </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <h3 class="panel-title pull-left">Artifacts</h3>
+    </div>
+
+    <table class="table table-condensed" style="table-layout:fixed">
+        {% with artifact=artifacts.element slot=instance.monster.get_element_display|lower slot_type='element' %}
+            {% include 'herders/profile/monster_view/runes_artifact_row.html' %}
+        {% endwith %}
+
+        {% with artifact=artifacts.archetype slot=instance.monster.get_archetype_display|lower slot_type='archetype'  %}
+            {% include 'herders/profile/monster_view/runes_artifact_row.html' %}
+        {% endwith %}
+    </table>
 </div>

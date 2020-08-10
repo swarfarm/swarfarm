@@ -1,0 +1,29 @@
+<tr {% if artifact %}class="artifact-popover" data-artifact-id="{{ artifact.pk.hex }}"{% endif %}>
+    <td style="vertical-align:middle;width:115px">
+        <img src="{{ img_url_prefix }}artifacts/{{ slot }}.png" alt="{{ slot }} icon">
+        {{ slot|capfirst }}
+    </td>
+    <td>
+        {% if artifact %}
+            {% if is_owner %}
+            <div class="btn-group pull-right ">
+                <button class="btn btn-default btn-xs artifact-edit" data-artifact-id="{{ artifact.pk.hex }}">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </button>
+                <button class="btn btn-default btn-xs artifact-unassign" data-artifact-id="{{ artifact.pk.hex }}">
+                    <span class="glyphicon glyphicon-remove text-danger"></span>
+                </button>
+            </div>
+            {% endif %}
+            {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact only %}
+            <ul class="list-unstyled">
+                <li>{{ artifact }}</li>
+                <li>{{ artifact.get_main_stat_artifact_display }}</li>
+            </ul>
+        {% elif is_owner %}
+            <div class="btn btn-default btn-xs artifact-assign pull-right" data-artifact-slot="{{ slot }}">
+                <span class="glyphicon glyphicon-plus"></span>
+            </div>
+        {% endif %}
+    </td>
+</tr>

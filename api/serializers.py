@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from bestiary.models import Monster, Skill, LeaderSkill, SkillEffect, ScalingStat, Source, \
     HomunculusSkillCraftCost, HomunculusSkill
-from herders.models import MonsterTag, RuneInstance, TeamGroup, Team, MonsterInstance, Summoner
+from herders.models import MonsterTag, RuneInstance, TeamGroup, Team, MonsterInstance, Summoner, ArtifactInstance
 
 
 # Read-only monster database stuff.
@@ -154,6 +154,18 @@ class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
             'substats', 'substat_rune_display',
             'substat_values', 'substats_enchanted', 'substats_grind_value',
             'PERCENT_STATS',
+        )
+
+
+class ArtifactInstanceSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ArtifactInstance
+        fields = (
+            'pk', 'element', 'get_element_display', 'assigned_to', 'efficiency', 'max_efficiency',
+            'quality', 'get_quality_display', 'original_quality', 'get_original_quality_display',
+            'slot', 'get_slot_display', 'element', 'archetype',
+            'level', 'main_stat', 'get_main_stat_display', 'main_stat_value',
+            'get_effects_display'
         )
 
 

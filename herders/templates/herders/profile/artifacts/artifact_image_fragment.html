@@ -1,6 +1,5 @@
 {% load staticfiles %}
 {% load utils %}
-{% static 'herders/images/' as img_url_prefix %}
 
 <div class="rune-image pull-left{% if popover %} artifact-popover{% endif %}" data-artifact-id="{{ artifact.pk.hex }}" title="{{ artifact }}">
     <div class="artifact-bg {{ artifact.get_quality_display|lower }}">

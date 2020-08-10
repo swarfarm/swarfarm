@@ -1,0 +1,16 @@
+{% load crispy_forms_tags %}
+<div class="row">
+    <div class="col-md-6">
+        {% crispy form %}
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p class="panel-title">Results</p>
+            </div>
+            <div class="panel-body">
+                {% include 'herders/profile/artifacts/assign_results.html' %}
+            </div>
+        </div>
+    </div>
+</div>

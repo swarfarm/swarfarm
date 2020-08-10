@@ -424,6 +424,9 @@ class Artifact(ArtifactObjectBase, base.Stars):
     def get_precise_slot_display(self):
         return self.get_archetype_display() or self.get_element_display()
 
+    def get_main_stat_artifact_display(self):
+        return f'{self.get_main_stat_display()} +{self.main_stat_value}'
+
     def get_effects_display(self):
         return [
             self.EFFECT_STRINGS[eff].format(self.effects_value[idx]) for idx, eff in enumerate(self.effects)

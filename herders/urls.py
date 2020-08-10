@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
@@ -84,10 +84,14 @@ urlpatterns = [
         path('artifacts/', include([
             path('', views.artifacts.artifacts, name='artifacts'),
             path('inventory/', views.artifacts.inventory, name='artifact_inventory'),
-            path('inventory/box/<box_grouping>/', views.artifacts.inventory, name='artifact_inventory_view_mode_sorted'),
+            path('inventory/box/<str:box_grouping>/', views.artifacts.inventory, name='artifact_inventory_view_mode_sorted'),
             path('add/', views.artifacts.add, name='artifact_add'),
-            path('edit/<artifact_id>/', views.artifacts.edit, name='artifact_edit'),
-            path('delete/<artifact_id>/', views.artifacts.delete, name='artifact_delete'),
+            re_path(r'^edit/(?P<artifact_id>[0-9a-f]{32})/$', views.artifacts.edit, name='artifact_edit'),
+            re_path(r'^delete/(?P<artifact_id>[0-9a-f]{32})/$', views.artifacts.delete, name='artifact_delete'),
+            re_path(r'^assign/(?P<instance_id>[0-9a-f]{32})/$', views.artifacts.assign, name='artifact_assign'),
+            re_path(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<artifact_id>[0-9a-f]{32})/$', views.artifacts.assign_choice, name='artifact_assign_choice'),
+            re_path(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<slot>[a-z]*)/', views.artifacts.assign, name='artifact_assign_with_slot'),
+            re_path(r'^unassign/(?P<artifact_id>[0-9a-f]{32})/$', views.artifacts.unassign, name='artifact_unassign'),
         ])),
         url(r'^buildings/', include([
             url(r'^$', views.profile.buildings, name='buildings'),

@@ -6,12 +6,6 @@ function update_artifact_inventory() {
     $('#FilterInventoryForm').submit();
 }
 
-function update_slot_visibility() {
-    const is_element = $('#id_slot').val() === "1";
-    $('#div_id_element').toggleClass('hidden', !is_element);
-    $('#div_id_archetype').toggleClass('hidden', is_element);
-}
-
 $('body')
     .on('click', '#FilterInventoryForm :submit', function() {
         var $form = $(this).closest('form');
@@ -45,7 +39,7 @@ $('body')
                 html:true,
                 viewport: {selector: 'body', padding: 2}
             });
-            update_slot_visibility();
+            update_artifact_slot_visibility();
         });
 
         return false;  //cancel default on submit action.
@@ -77,7 +71,7 @@ $('body')
                 size: "large",
                 message: data.html
             });
-            update_slot_visibility();
+            update_artifact_slot_visibility();
         });
     })
     .on('click', '.artifact-delete', function() {
@@ -106,7 +100,7 @@ $('body')
         });
     })
     .on('change', '#id_slot', function() {
-        update_slot_visibility();
+        update_artifact_slot_visibility();
     })
     .on('submit', '#FilterInventoryForm', function() {
         ToggleLoading($('body'), true);

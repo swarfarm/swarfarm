@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from herders.decorators import username_case_redirect
 from herders.filters import ArtifactInstanceFilter
-from herders.forms import FilterArtifactForm, ArtifactInstanceForm#, #AssignArtifactInstanceForm
+from herders.forms import FilterArtifactForm, ArtifactInstanceForm, AssignArtifactForm
 from herders.models import Summoner, MonsterInstance, ArtifactInstance, ArtifactCraftInstance
 
 
@@ -263,8 +263,69 @@ def edit(request, profile_name, artifact_id):
 
 @username_case_redirect
 @login_required
-def delete(request, profile_name, artifact_id):
+def assign(request, profile_name, instance_id, slot=None):
+    qs = ArtifactInstance.objects.filter(owner=request.user.summoner, assigned_to=None)
+    filter_form = AssignArtifactForm(request.POST or None, initial={'slot': [slot]}, prefix='assign')
+    filter_form.helper.form_action = reverse('herders:artifact_assign', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
+    # instance = get_object_or_404(MonsterInstance, pk=instance_id)
+    # qs = qs.filter(Q(archetype=instance.monster.archetype) | Q(element=instance.monster.element))
+
+    if request.method == 'POST' and filter_form.is_valid():
+        filter = ArtifactInstanceFilter(filter_form.cleaned_data, queryset=qs)
+        template = loader.get_template('herders/profile/artifacts/assign_results.html')
+
+        context = {
+            'filter': filter.qs,
+            'profile_name': profile_name,
+            'instance_id': instance_id,
+        }
+        context.update(csrf(request))
+
+        response_data = {
+            'code': 'results',
+            'html': template.render(context)
+        }
+    else:
+        filter = ArtifactInstanceFilter({'slot': [slot]}, queryset=qs)
+        template = loader.get_template('herders/profile/artifacts/assign_form.html')
+
+        context = {
+            'filter': filter.qs,
+            'form': filter_form,
+            'profile_name': profile_name,
+            'instance_id': instance_id,
+        }
+        context.update(csrf(request))
+
+        response_data = {
+            'code': 'success',
+            'html': template.render(context)
+        }
+
+    return JsonResponse(response_data)
+
+
+@username_case_redirect
+@login_required
+def assign_choice(request, profile_name, instance_id, artifact_id):
+    monster = get_object_or_404(MonsterInstance, pk=instance_id)
     artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
+
+    # Clear existing artifacts assigned here
+    monster.artifactinstance_set.filter(slot=artifact.slot).update(assigned_to=False)
+
+    artifact.assigned_to = monster
+    artifact.save()
+
+    response_data = {
+        'code': 'success',
+    }
+
+    return JsonResponse(response_data)
+
+@username_case_redirect
+@login_required
+def unassign(request, profile_name, artifact_id):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
@@ -273,11 +334,33 @@ def delete(request, profile_name, artifact_id):
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     if is_owner:
-        mon = artifact.assigned_to
-        messages.warning(request, 'Deleted ' + str(artifact))
+        artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
+        artifact.assigned_to = None
+        artifact.save()
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@username_case_redirect
+@login_required
+def delete(request, profile_name, artifact_id):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if is_owner:
+        artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
         artifact.delete()
-        if mon:
-            mon.save()
+        messages.warning(request, 'Deleted ' + str(artifact))
 
         response_data = {
             'code': 'success',

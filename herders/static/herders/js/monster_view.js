@@ -153,6 +153,108 @@ function EditRune(rune_id) {
     });
 }
 
+// Artifact functions
+function AssignArtifact(slot) {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/artifacts/assign/' + INSTANCE_ID + '/' + slot.toString() + '/'
+    }).done(function (response) {
+        rune_dialog = bootbox.dialog({
+            title: "Assign Artifact",
+            size: "large",
+            message: response.html
+        });
+
+        //Init form elements
+        $("[data-toggle='toggle']").bootstrapToggle();
+        $("[data-provide='slider']").slider();
+        initSelect();
+        $('[data-toggle="tooltip"]').tooltip({
+            container: 'body'
+        });
+        $('[data-toggle="popover"]').popover({
+            html:true,
+            viewport: {selector: 'body', padding: 2}
+        });
+    });
+}
+
+function AssignArtifactChoice(artifact_id, monster_id) {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/artifacts/assign/' + monster_id + '/' + artifact_id + '/'
+    }).done(function (response) {
+        if (response.code === 'success') {
+            $('.modal.in').modal('hide');
+            UpdateRunes();
+        }
+        else {
+            alert('Something went wrong assigning the artifact :(');
+        }
+    })
+}
+
+function EditArtifact(artifact_id) {
+    //Pull in edit form on modal show
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/artifacts/edit/' + artifact_id + '/'
+    }).done(function(result) {
+        bootbox.dialog({
+            title: "Edit artifact",
+            size: "large",
+            message: result.html
+        });
+        update_artifact_slot_visibility();
+    });
+}
+
+function UnassignArtifact(artifact_id) {
+    bootbox.dialog({
+        message: 'Remove from slot or delete completely?',
+        title: 'Remove Artifact',
+        size: 'small',
+        buttons: {
+            unassign: {
+                label: 'Remove from Slot',
+                className: 'btn-default pull-left',
+                callback: function () {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/artifacts/unassign/' + artifact_id + '/',
+                        global: false
+                    }).done(function (response) {
+                        if (response.code === 'success') {
+                            $('tr[data-rune-id]').popover('hide');
+                            UpdateRunes();
+                        }
+                    });
+                }
+            },
+            delete: {
+                label: 'Delete',
+                className: 'btn-danger',
+                callback: function () {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/artifacts/delete/' + artifact_id + '/',
+                        global: false,
+                        data: {
+                            "delete": "delete",
+                            "artifact_id": artifact_id
+                        }
+                    }).done(function () {
+                        $('tr[data-rune-id]').popover('hide');
+                        UpdateRunes();
+                    }).fail(function () {
+                        alert("Something went wrong! Server admin has been notified.");
+                    });
+                }
+            }
+        }
+    });
+}
+
 // Monster edit functions
 function EditMonster(instance_id) {
     $.ajax({
@@ -296,6 +398,11 @@ $('body')
     .on('click', '.rune-assign', function() { AssignRune($(this).data('rune-slot')) })
     .on('click', '.rune-assign-choice', function() { AssignRuneChoice($(this).data('rune-id'), $(this).data('instance-id')) })
     .on('click', '.rune-remove-all', function() { RemoveAllRunes($(this).data('instance-id'))})
+    .on('click', '.artifact-edit', function() { EditArtifact($(this).data('artifact-id')) })
+    .on('click', '.artifact-unassign', function() { UnassignArtifact($(this).data('artifact-id')) })
+    .on('click', '.artifact-assign', function() { AssignArtifact($(this).data('artifact-slot')) })
+    .on('click', '.artifact-assign-choice', function() { AssignArtifactChoice($(this).data('artifact-id'), $(this).data('instance-id')) })
+    .on('click', '.artifact-remove-all', function() { RemoveAllArtifacts($(this).data('instance-id'))})
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-copy', function() { CopyMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
@@ -311,6 +418,23 @@ $('body')
         }).done(function (data) {
             if (data.code === 'results') {
                 $('#assign_rune_results').replaceWith(data.html)
+            }
+            else {
+                alert('Unable to retrieve search results :(')
+            }
+        });
+
+        return false;  //cancel default on submit action.
+    })
+    .on('submit', '#AssignArtifactForm', function() {
+        var $form = $(this);
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: $form.serialize()
+        }).done(function (data) {
+            if (data.code === 'results') {
+                $('#assign_artifact_results').replaceWith(data.html)
             }
             else {
                 alert('Unable to retrieve search results :(')

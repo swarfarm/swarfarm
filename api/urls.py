@@ -12,6 +12,7 @@ router.register(r'source', views.MonsterSourceViewSet)
 
 router.register(r'instance', views.MonsterInstanceViewSet)
 router.register(r'runes', views.RuneInstanceViewSet)
+router.register(r'artifacts', views.ArtifactInstanceViewSet)
 router.register(r'group', views.TeamGroupViewSet)
 router.register(r'team', views.TeamViewSet)
 

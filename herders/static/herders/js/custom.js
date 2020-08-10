@@ -258,6 +258,34 @@ $('body')
             }
         }, 250);
     })
+    .on('mouseenter', '.artifact-popover', function() {
+        var el = $(this);
+        popoverDelay = setTimeout(function () {
+            var rune_id = el.data('artifact-id');
+
+            if (rune_id.length > 0) {
+                $.ajax({
+                    url: API_URL + 'artifacts/' + el.data('artifact-id') + '.html',
+                    type: 'get',
+                    global: false
+                }).done(function (d) {
+                    el.popover({
+                        trigger: 'manual',
+                        content: d,
+                        placement: popoverPlacement(el),
+                        html: true,
+                        viewport: {selector: '#wrap', padding: 2},
+                        container: '#wrap',
+                        template: '<div class="rune-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                    });
+
+                    if (el.is(":hover")) {
+                        el.popover('show');
+                    }
+                });
+            }
+        }, 250);
+    })
     .on('mouseenter', '.monster-popover', function() {
         var el = $(this);
         popoverDelay = setTimeout(function () {
@@ -308,7 +336,7 @@ $('body')
 
         }, 250);
     })
-    .on('mouseleave', '.skill-popover, .monster-popover, .rune-popover', function(event) {
+    .on('mouseleave', '.skill-popover, .monster-popover, .rune-popover, .artifact-popover', function(event) {
         $(this).popover('hide');
         clearTimeout(popoverDelay);
     })
@@ -489,6 +517,13 @@ function update_craft_stat_options(craft, stat_input) {
             }
         }
     });
+}
+
+// Artifact form common functions
+function update_artifact_slot_visibility() {
+    const is_element = $('#id_slot').val() === "1";
+    $('#div_id_element').toggleClass('hidden', !is_element);
+    $('#div_id_archetype').toggleClass('hidden', is_element);
 }
 
 var RUNE_MAIN_STAT_VALUES = {

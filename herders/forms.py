@@ -1573,6 +1573,80 @@ class FilterArtifactForm(forms.Form):
         self.cleaned_data['level__lte'] = int(max_lv)
 
 
+class AssignArtifactForm(forms.Form):
+    slot = forms.MultipleChoiceField(
+        choices=ArtifactInstance.NORMAL_ELEMENT_CHOICES + ArtifactInstance.ARCHETYPE_CHOICES,
+        required=False,
+    )
+    level = forms.CharField(
+        label='Level',
+        required=False,
+    )
+    quality = forms.MultipleChoiceField(
+        choices=ArtifactInstance.QUALITY_CHOICES,
+        required=False,
+    )
+    original_quality = forms.MultipleChoiceField(
+        choices=ArtifactInstance.QUALITY_CHOICES,
+        required=False,
+    )
+    main_stat = forms.MultipleChoiceField(
+        choices=ArtifactInstance.MAIN_STAT_CHOICES,
+        required=False,
+    )
+    effects = forms.MultipleChoiceField(
+        label='Effects',
+        choices=ArtifactInstance.EFFECT_CHOICES,
+        required=False,
+    )
+    effects_logic = forms.BooleanField(
+        label=mark_safe(
+            '<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+        required=False,
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'post'
+    helper.form_id = 'AssignArtifactForm'
+    helper.layout = Layout(
+        FormActions(
+            StrictButton('Create New', id='addNewArtifact', css_class='btn btn-primary btn-block'),
+            Reset('Reset Form', 'Reset Filters', css_class='btn btn-danger btn-block'),
+        ),
+        Field('quality', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('original_quality', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field(
+            'level',
+            data_provide='slider',
+            data_slider_min='0',
+            data_slider_max='15',
+            data_slider_value='[0, 15]',
+            data_slider_step='1',
+            data_slider_ticks='[0, 15]',
+            data_slider_ticks_labels='["0", "15"]',
+            css_class='auto-submit',
+            wrapper_class='form-group-sm form-group-condensed'
+        ),
+        Field('main_stat', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('effects', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('effects_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
+        Field('slot', wrapper_class='hidden'),
+    )
+
+    def clean(self):
+        super().clean()
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_lv, max_lv] = self.cleaned_data['level'].split(',')
+        except:
+            min_lv = 0
+            max_lv = 15
+
+        self.cleaned_data['level__gte'] = int(min_lv)
+        self.cleaned_data['level__lte'] = int(max_lv)
+
+
 # Profile import/export
 class MonsterImportOptionsMixin(forms.Form):
     missing_choices = (

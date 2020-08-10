@@ -8,10 +8,10 @@ from rest_framework.response import Response
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from bestiary.models import Monster, Skill, LeaderSkill, SkillEffect, Source
-from herders.models import RuneCraftInstance, MonsterInstance, RuneInstance, TeamGroup, Team, Summoner
+from herders.models import RuneCraftInstance, MonsterInstance, RuneInstance, TeamGroup, Team, Summoner, ArtifactInstance
 from .serializers import MonsterSerializer, MonsterSummarySerializer, MonsterSkillSerializer, \
     MonsterLeaderSkillSerializer, MonsterSkillEffectSerializer, MonsterSourceSerializer, MonsterInstanceSerializer, \
-    RuneInstanceSerializer, TeamGroupSerializer, TeamSerializer
+    RuneInstanceSerializer, TeamGroupSerializer, TeamSerializer, ArtifactInstanceSerializer
 
 
 # Pagination classes
@@ -117,6 +117,29 @@ class RuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
         if request.accepted_renderer.format == 'html':
             return Response({'rune': response.data}, template_name='api/rune_instance/popover.html')
+        return response
+
+
+class ArtifactInstanceViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ArtifactInstance.objects.none()
+    serializer_class = ArtifactInstanceSerializer
+    pagination_class = PersonalCollectionSetPagination
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer, renderers.TemplateHTMLRenderer)
+
+    def get_queryset(self):
+        # We do not want to allow retrieving all instances
+        instance_id = self.kwargs.get('pk', None)
+
+        if instance_id:
+            return ArtifactInstance.objects.filter(pk=instance_id)
+        else:
+            return ArtifactInstance.objects.none()
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+
+        if request.accepted_renderer.format == 'html':
+            return Response({'artifact': response.data}, template_name='api/artifact_instance/popover.html')
         return response
 
 

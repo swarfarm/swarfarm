@@ -19,7 +19,7 @@ from herders.forms import FilterMonsterInstanceForm, \
     AddMonsterInstanceForm, BulkAddMonsterInstanceForm, \
     BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
     MonsterPieceForm
-from herders.models import Summoner, MonsterInstance, MonsterPiece, Storage
+from herders.models import Summoner, MonsterInstance, MonsterPiece, Storage, ArtifactInstance
 
 DEFAULT_VIEW_MODE = 'box'
 
@@ -367,17 +367,16 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     except ObjectDoesNotExist:
         return HttpResponseBadRequest()
 
-    instance_runes = [
-        instance.runeinstance_set.filter(slot=1).first(),
-        instance.runeinstance_set.filter(slot=2).first(),
-        instance.runeinstance_set.filter(slot=3).first(),
-        instance.runeinstance_set.filter(slot=4).first(),
-        instance.runeinstance_set.filter(slot=5).first(),
-        instance.runeinstance_set.filter(slot=6).first(),
-    ]
+    # Get all slotted runes and artifacts, with None in place of empty slots
+    runes = [instance.runeinstance_set.filter(slot=slot + 1).first() for slot in range(6)]
+    artifacts = {
+        desc.lower(): instance.artifactinstance_set.filter(slot=slot).first()
+        for slot, desc in ArtifactInstance.SLOT_CHOICES
+    }
 
     context = {
-        'runes': instance_runes,
+        'runes': runes,
+        'artifacts': artifacts,
         'instance': instance,
         'profile_name': profile_name,
         'is_owner': is_owner,

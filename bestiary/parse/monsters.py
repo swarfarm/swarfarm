@@ -93,6 +93,8 @@ def monsters():
                 awaken_bonus_desc = f'Strengthen Skill: {new_skill.name}'
             elif awakening_type == AwakenBonusType.SECONDARY_AWAKENING:
                 awaken_bonus_desc = 'Secondary Awakening'
+            elif awakening_type == AwakenBonusType.ONLY_AWAKENED:
+                awaken_bonus_desc = 'Only available as awakened'
             else:
                 raise ValueError(f'Unhandled Awakening Type: {awakening_type}')
         else:

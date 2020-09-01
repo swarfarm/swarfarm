@@ -43,7 +43,12 @@ def scenarios():
 
 def dimensional_hole():
     for dungeon_id, raw in game_data.tables.DIMENSIONAL_HOLE_DUNGEONS.items():
-        dungeon_name = game_data.strings.DIMENSIONAL_HOLE_DUNGEON_NAMES[raw['dimension id'] * 10 + raw['dungeon type']]
+        try:
+            dungeon_name = game_data.strings.DIMENSIONAL_HOLE_DUNGEON_NAMES[raw['dimension id'] * 10 + raw['dungeon type']]
+        except KeyError:
+            # Use the korean string
+            dungeon_name = raw['desc']
+
         if raw['dungeon type'] == 2:
             # 2A dungeon - append monster name to dungeon name
             monster = Monster.objects.get(com2us_id=raw['limit text unitid'])

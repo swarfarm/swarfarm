@@ -9,7 +9,7 @@ from .monsters import Monster
 
 class Skill(models.Model):
     com2us_id = models.IntegerField(blank=True, null=True, help_text='ID given in game data files')
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=60)
     description = models.TextField()
     slot = models.IntegerField(default=1, help_text='Which button position the skill is in during battle')
     skill_effect = models.ManyToManyField('SkillEffect', blank=True)

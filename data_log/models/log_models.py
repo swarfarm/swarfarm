@@ -629,10 +629,18 @@ class SummonLog(LogEntry, MonsterDrop):
         if len(log_data['response'].get('item_list', [])) > 0:
             item_info = log_data['response']['item_list'][0]
 
-            self.item = GameItem.objects.get(
-                category=item_info['item_master_type'],
-                com2us_id=item_info['item_master_id']
-            )
+            try:
+                self.item = GameItem.objects.get(
+                    category=item_info['item_master_type'],
+                    com2us_id=item_info['item_master_id'],
+                )
+            except GameItem.DoesNotExist:
+                self.item = GameItem.objects.create(
+                    category=item_info['item_master_type'],
+                    com2us_id=item_info['item_master_id'],
+                    name='UNKNOWN ITEM',
+                )
+                mail_admins('New GameItem created', f'Added new GameItem w/ data `{item_info}`')
         else:
             mode = log_data['request']['mode']
             if mode == 3:

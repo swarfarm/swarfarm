@@ -229,13 +229,12 @@ class DimensionHoleTests(BaseLogTest):
         self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CURRENCY, item__com2us_id=102).exists())
         self.assertTrue(log.items.filter(item__category=GameItem.CATEGORY_CRAFT_STUFF, item__com2us_id=9002).exists())
 
-    # TODO: Get test data examples for gem and grind drops
-    # def test_ancient_enchant_gem_drop(self):
-    #     self._do_log('BattleDimensionHoleDungeonResult_V2/sanctuary_b5_gem_drop.json')
-    #     log = models.DungeonLog.objects.first()
-    #     self.assertEqual(log.rune_crafts.count(), 1)
-    #     craft = log.rune_crafts.first()
-    #     self.assertEqual(craft.type, models.DungeonRuneCraftDrop.CRAFT_ANCIENT_GEM)
+    def test_ancient_enchant_gem_drop(self):
+        self._do_log('BattleDimensionHoleDungeonResult_V2/sanctuary_b5_gem_drop.json')
+        log = models.DungeonLog.objects.first()
+        self.assertEqual(log.rune_crafts.count(), 1)
+        craft = log.rune_crafts.first()
+        self.assertEqual(craft.type, models.DungeonRuneCraftDrop.CRAFT_ANCIENT_GEM)
 
     def test_ancient_grindstone_drop(self):
         self._do_log('BattleDimensionHoleDungeonResult_V2/forest_b5_grind_drop.json')

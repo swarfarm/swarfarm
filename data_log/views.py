@@ -1,5 +1,6 @@
 import json
 
+from django.core.mail import mail_admins
 from rest_framework import viewsets, permissions, versioning, exceptions, parsers
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -61,7 +62,12 @@ class LogData(viewsets.ViewSet):
             raise InvalidLogException(detail='Log data failed validation')
 
         # Parse the log
-        active_log_commands[api_command].parse(summoner, log_data)
+        try:
+            active_log_commands[api_command].parse(summoner, log_data)
+        except Exception as e:
+            mail_admins('Log server error', f'Request body:\n\n{log_data}')
+            raise e
+
         response = {'detail': 'Log OK'}
 
         # Check if accepted API params version matches the active version

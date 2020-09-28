@@ -6,7 +6,7 @@ amqp
 bcrypt
 bitstring
 bugsnag
-celery
+celery==4.3.1
 coreapi
 dpkt
 jsonschema

@@ -941,13 +941,17 @@ class DungeonSecretDungeonDrop(models.Model):
 
     @classmethod
     def parse(cls, instance_info):
-        return cls(
-            level=Level.objects.get(
-                dungeon__category=Dungeon.CATEGORY_SECRET,
-                dungeon__com2us_id=instance_info['instance_id'],
-                floor=1,
+        try:
+            return cls(
+                level=Level.objects.get(
+                    dungeon__category=Dungeon.CATEGORY_SECRET,
+                    dungeon__com2us_id=instance_info['instance_id'],
+                    floor=1,
+                )
             )
-        )
+        except Level.DoesNotExist:
+            # Unknown or event dungeon. Do not log.
+            return
 
 
 # Rift dungeon

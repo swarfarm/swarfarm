@@ -59,6 +59,19 @@ class Skill(models.Model):
         verbose_name = 'Skill'
         verbose_name_plural = 'Skills'
 
+    def copy_effects_from(self, other_skill):
+        # Copy all the effects from another skill
+        # Old skill effects
+        self.skill_effect.set(other_skill.skill_effect.all())
+
+        # Detailed skill effects
+        self.effect.clear()
+        for eff in SkillEffectDetail.objects.filter(skill=other_skill):
+            # Save as a new instance pointing at self
+            eff.pk = None
+            eff.skill = self
+            eff.save()
+
 
 class SkillUpgrade(models.Model):
     UPGRADE_EFFECT_RATE = 0

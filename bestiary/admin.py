@@ -122,7 +122,7 @@ class SkillUpgradeInline(admin.TabularInline):
     extra = 0
 
 
-class EffectDetailInline(admin.StackedInline):
+class EffectDetailInline(admin.TabularInline):
     model = SkillEffectDetail
     extra = 3
     formfield_overrides = {

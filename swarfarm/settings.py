@@ -19,10 +19,10 @@ env = environ.Env(
     CACHE_LOCATION=(str, None),
     RECAPTCHA_PUBLIC_KEY=(str, None),
     RECAPTCHA_PRIVATE_KEY=(str, None),
-    SUMMONERS_WAR_KEY=(str, ''),
-    SUMMONERS_WAR_IV=(str, ''),
-    JOKER_CONTAINER_KEY=(str, ''),
-    JOKER_CONTAINER_IV=(str, ''),
+    SUMMONERS_WAR_KEY=(str, '0' * 32),
+    SUMMONERS_WAR_IV=(str, '0' * 32),
+    JOKER_CONTAINER_KEY=(str, '0' * 64),
+    JOKER_CONTAINER_IV=(str, '0' * 32),
     BUGSNAG_API_KEY=(str, None),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))

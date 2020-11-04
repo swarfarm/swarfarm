@@ -9,10 +9,7 @@ Some of that rust is still in the code today, so if you see something ugly it ca
 
 ## Next steps for SWARFARM
 
-Work is ongoing to fully flesh out the REST API and recreate the frontend with the latest and greatest web development technologies.
-This opens the door to third-party clients and mobile apps.
-Any new features or major refinements are on hold until the new frontend is ready.
-The exceptions to that rule are bug fixes, data logging/report generation, and any minor effort improvements.
+SWARFARM needs contributors! I'd really love to get a small core group of people who can continue to develop SWARFARM into the future. If you're interested in taking on this role, please [join our Discord server](https://discord.gg/EuJyvTGkxQ) and send a message to porksmash.
 
 ## Contributing
 

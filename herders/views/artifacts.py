@@ -88,12 +88,12 @@ def inventory(request, profile_name, box_grouping=None):
             for slot_val, slot_desc in ArtifactInstance.NORMAL_ELEMENT_CHOICES:
                 artifact_box.append({
                     'name': slot_desc,
-                    'artifacts': artifact_filter.qs.filter(element=slot_val)
+                    'artifacts': artifact_filter.qs.filter(element=slot_val).order_by('main_stat', '-level')
                 })
             for slot_val, slot_desc in ArtifactInstance.ARCHETYPE_CHOICES:
                 artifact_box.append({
                     'name': slot_desc,
-                    'artifacts': artifact_filter.qs.filter(archetype=slot_val)
+                    'artifacts': artifact_filter.qs.filter(archetype=slot_val).order_by('main_stat', '-level')
                 })
         elif box_grouping == 'quality':
             for qual_val, qual_desc in reversed(ArtifactInstance.QUALITY_CHOICES):

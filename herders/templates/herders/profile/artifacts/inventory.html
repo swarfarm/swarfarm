@@ -52,15 +52,45 @@
                             </div>
                             <div id="runegroup{{ forloop.counter }}" class="collapse in">
                                 <div class="panel-body">
-                                    <div class="flex">
-                                    {% for artifact in group.artifacts %}
-                                        <div data-artifact-instance="{{ artifact.pk.hex }}">
-                                            {% include 'herders/profile/artifacts/artifact_panel_fragment.html' with artifact=artifact profile_name=profile_name is_owner=is_owner only %}
-                                        </div>
-                                    {% empty %}
-                                        <div class="alert alert-warning">Your search returned no results or you have no artifacts!</div>
-                                    {% endfor %}
+                                    <!-- If groupped by slot, then group them internally by main stat -->
+                                    {% if box_grouping == 'slot' %}
+                                    <div class="panel-body">
+                                        {% regroup group.artifacts by get_main_stat_display as nested_groups %}
+                                        {% for nested_group in nested_groups %}
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading collapsible">
+                                                    <a role="button" data-toggle="collapse" data-target="#runegroup{{ forloop.counter }}nested{{ group.name|lower }}">
+                                                        <strong>{{ nested_group.grouper }}</strong>
+                                                    </a>
+                                                    <span class="pull-right">{% with num_runes=nested_group.list|length %}{{ num_runes }} artifact{{ num_runes|pluralize }}{% endwith %}</span>
+                                                </div>
+                                                <div id="runegroup{{ forloop.counter }}nested{{ group.name|lower }}" class="collapse in">
+                                                    <div class="panel-body">
+                                                        <div class="flex">
+                                                            {% for artifact in nested_group.list %}
+                                                                <div data-artifact-instance="{{ artifact.pk.hex }}">
+                                                                    {% include 'herders/profile/artifacts/artifact_panel_fragment.html' with artifact=artifact profile_name=profile_name is_owner=is_owner only %}
+                                                                </div>
+                                                            {% empty %}
+                                                                <div class="alert alert-warning">Your search returned no results or you have no artifacts!</div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
                                     </div>
+                                    {% else %}
+                                    <div class="flex">
+                                        {% for artifact in group.artifacts %}
+                                            <div data-artifact-instance="{{ artifact.pk.hex }}">
+                                                {% include 'herders/profile/artifacts/artifact_panel_fragment.html' with artifact=artifact profile_name=profile_name is_owner=is_owner only %}
+                                            </div>
+                                        {% empty %}
+                                            <div class="alert alert-warning">Your search returned no results or you have no artifacts!</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

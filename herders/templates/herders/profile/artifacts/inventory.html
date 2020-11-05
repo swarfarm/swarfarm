@@ -48,7 +48,7 @@
                                 <a role="button" data-toggle="collapse" data-target="#runegroup{{ forloop.counter }}">
                                     <strong>{{ group.name }}</strong>
                                 </a>
-                                <span class="pull-right">{% with num_runes=group.runes|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
+                                <span class="pull-right">{% with num_runes=group.artifacts|length %}{{ num_runes }} artifact{{ num_runes|pluralize }}{% endwith %}</span>
                             </div>
                             <div id="runegroup{{ forloop.counter }}" class="collapse in">
                                 <div class="panel-body">

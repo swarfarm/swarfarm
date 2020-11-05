@@ -521,6 +521,10 @@ span.rune-set-bonus {
 .artifact-bg.legend {
     background: url(/static/herders/images/artifacts/bg_legend.png) no-repeat center;
 }
+.artifact-bg.unknown {
+    background: url(/static/herders/images/icons/unknown.png) no-repeat center;
+    background-size: contain;
+}
 
 .artifact {
     position: relative;

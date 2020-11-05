@@ -97,6 +97,19 @@
         {% endfor %}
     </td>
     <td>{% if instance.avg_rune_efficiency %}{{ instance.avg_rune_efficiency|floatformat:-2 }}%{% endif %}</td>
+    <td>
+        {% with num_artifacts=instance.artifactinstance_set.all|length %}
+            {% if num_artifacts == 1 and not instance.artifactinstance_set.all.0.element %}
+                <div class="rune-image pull-left">
+                    <div class="artifact-bg unknown">
+                    </div>
+                </div>
+            {% endif %}
+            {% for artifact in instance.artifactinstance_set.all %}
+                {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact popover=True only %}
+            {% endfor %}
+        {% endwith %}
+    </td>
     <td>{{ instance.hp }}</td>
     <td>{{ instance.defense }}</td>
     <td>{{ instance.attack }}</td>

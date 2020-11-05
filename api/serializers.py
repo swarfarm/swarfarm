@@ -165,7 +165,7 @@ class ArtifactInstanceSerializer(serializers.HyperlinkedModelSerializer):
             'quality', 'get_quality_display', 'original_quality', 'get_original_quality_display',
             'slot', 'get_slot_display', 'element', 'archetype',
             'level', 'main_stat', 'get_main_stat_display', 'main_stat_value',
-            'get_effects_display'
+            'get_effects_display', 'get_precise_slot_display'
         )
 
 
@@ -202,6 +202,7 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
     team_leader = TeamSerializer(many=True)
     team_set = TeamSerializer(many=True)
     runeinstance_set = RuneInstanceSerializer(many=True)
+    artifactinstance_set = ArtifactInstanceSerializer(many=True)
     tags = MonsterTagSerializer(many=True)
 
     class Meta:
@@ -213,8 +214,7 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
             'base_hp', 'base_attack', 'base_defense', 'base_speed', 'base_crit_rate', 'base_crit_damage', 'base_resistance', 'base_accuracy',
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
             'hp', 'attack', 'defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
-            'team_leader', 'team_set',
-            'runeinstance_set', 'tags'
+            'team_leader', 'team_set', 'runeinstance_set', 'artifactinstance_set', 'tags'
         )
         depth = 1
 

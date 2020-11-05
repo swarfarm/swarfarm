@@ -84,6 +84,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             'monster__skills',
             'default_build__runes',
             'runeinstance_set',
+            'artifactinstance_set',
             'team_set',
             'team_leader',
             'tags'

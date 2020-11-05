@@ -93,6 +93,15 @@
         </td>
     </tr>
     {% endif %}
+    {% if instance.artifactinstance_set|length > 0 %}
+    <tr>
+        <td colspan="4" class="rune-popover-row">
+            {% for artifact in instance.artifactinstance_set %}
+                {% include 'api/artifact_instance/thumbnail.html' with artifact=artifact only %}
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
 
     {% if instance.team_leader or instance.team_set %}
     <tr>

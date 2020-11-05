@@ -49,7 +49,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
 
     def filter_monster__name(self, queryset, name, value):
         if value:
-            return queryset.filter(Q(monster__name__icontains=value) | Q(monster__awakens_from__name__icontains=value))
+            return queryset.filter(Q(monster__name__icontains=value) | Q(monster__awakens_from__name__icontains=value) | Q(monster__awakens_from__awakens_from__name__icontains=value))
         else:
             return queryset
 

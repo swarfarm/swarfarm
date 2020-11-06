@@ -118,6 +118,13 @@ class Wave(base.Orderable):
     class Meta(base.Orderable.Meta):
         pass
 
+    def __str__(self):
+        dungeon = self.level.dungeon.name
+        difficulty = f' {self.level.get_difficulty_display()}' if self.level.difficulty else ''
+        floor = self.level.floor
+
+        return f'{dungeon}{difficulty} B{floor} Wave {self.order}'
+
 
 class Enemy(base.Orderable, base.Stars):
     wave = models.ForeignKey(Wave, on_delete=models.CASCADE)
@@ -138,4 +145,11 @@ class Enemy(base.Orderable, base.Stars):
     crit_damage_reduction = models.IntegerField()
 
     class Meta(base.Orderable.Meta):
-        pass
+        verbose_name_plural = 'Enemies'
+
+    def __str__(self):
+        dungeon = self.wave.level.dungeon.name
+        difficulty = f' {self.wave.level.get_difficulty_display()}' if self.wave.level.difficulty else ''
+        floor = self.wave.level.floor
+
+        return f'{self.monster} - {dungeon}{difficulty} B{floor} Wave {self.order}'

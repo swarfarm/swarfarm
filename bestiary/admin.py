@@ -3,22 +3,20 @@ from django.db.models import TextField, ForeignKey
 from django.forms.widgets import TextInput
 from django_select2.forms import Select2Widget
 
-from .models import Monster, Skill, SkillUpgrade, SkillEffectDetail, MonsterCraftCost, Dungeon, Level, \
-    HomunculusSkillCraftCost, HomunculusSkill, LeaderSkill, SkillEffect, ScalingStat, \
-    Source, Fusion, Building, GameItem, AwakenCost
+from . import models
 
 
 class MonsterCraftCostInline(admin.TabularInline):
-    model = MonsterCraftCost
+    model = models.MonsterCraftCost
     extra = 0
 
 
 class MonsterAwakeningCostInline(admin.TabularInline):
-    model = AwakenCost
+    model = models.AwakenCost
     extra = 0
 
 
-@admin.register(Monster)
+@admin.register(models.Monster)
 class MonsterAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Basic Information', {
@@ -118,19 +116,19 @@ class MonsterAdmin(admin.ModelAdmin):
 
 
 class SkillUpgradeInline(admin.TabularInline):
-    model = SkillUpgrade
+    model = models.SkillUpgrade
     extra = 0
 
 
 class EffectDetailInline(admin.TabularInline):
-    model = SkillEffectDetail
+    model = models.SkillEffectDetail
     extra = 3
     formfield_overrides = {
         TextField: {'widget': TextInput},
     }
 
 
-@admin.register(Skill)
+@admin.register(models.Skill)
 class SkillAdmin(admin.ModelAdmin):
     readonly_fields = ('used_on',)
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
@@ -145,11 +143,11 @@ class SkillAdmin(admin.ModelAdmin):
 
 
 class HomunculusSkillCraftCostInline(admin.TabularInline):
-    model = HomunculusSkillCraftCost
+    model = models.HomunculusSkillCraftCost
     extra = 4
 
 
-@admin.register(HomunculusSkill)
+@admin.register(models.HomunculusSkill)
 class HomunculusSkillAdmin(admin.ModelAdmin):
     list_display = ['skill']
     filter_horizontal = ['monsters', 'prerequisites']
@@ -160,59 +158,138 @@ class HomunculusSkillAdmin(admin.ModelAdmin):
     }
 
 
-@admin.register(LeaderSkill)
+@admin.register(models.LeaderSkill)
 class LeaderSkillAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'attribute', 'amount', 'skill_string', 'area',)
     list_filter = ('attribute', 'area',)
 
 
-@admin.register(SkillEffect)
+@admin.register(models.SkillEffect)
 class EffectAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'is_buff')
 
 
-@admin.register(ScalingStat)
+@admin.register(models.ScalingStat)
 class ScalingStatAdmin(admin.ModelAdmin):
     list_display = ['stat', 'com2us_desc', 'description']
     search_fields = ['stat', 'com2us_desc']
     save_as = True
 
 
-@admin.register(Source)
+@admin.register(models.Source)
 class SourceAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'meta_order',)
 
 
-@admin.register(Fusion)
+@admin.register(models.Fusion)
 class FusionAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'cost', 'meta_order')
     filter_horizontal = ('ingredients',)
 
 
-@admin.register(Building)
+@admin.register(models.Building)
 class BuildingAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'com2us_id', 'affected_stat', 'area')
     save_as = True
 
 
 # Dungeons and levels
+@admin.register(models.Enemy)
+class EnemyAdmin(admin.ModelAdmin):
+    readonly_fields = ('wave', )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'monster',
+            'wave__level',
+            'wave__level__dungeon',
+        )
+
+
+class EnemyInline(admin.TabularInline):
+    model = models.Enemy
+    extra = 0
+    show_change_link = True
+    fields = (
+        'order',
+        'monster',
+        'com2us_id',
+        'boss',
+        'stars',
+        'level',
+        'hp',
+        'attack',
+        'defense',
+        'speed',
+        'resist',
+        'accuracy_bonus',
+        'crit_bonus',
+        'crit_damage_reduction',
+
+    )
+    readonly_fields = ('order', 'monster')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'monster',
+            'wave__level',
+            'wave__level__dungeon',
+        )
+
+
+@admin.register(models.Wave)
+class WaveAdmin(admin.ModelAdmin):
+    readonly_fields = ('level', )
+    ordering = (
+        'level__dungeon',
+        'level__difficulty',
+        'level__floor',
+        'order',
+    )
+    inlines = (EnemyInline, )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'level',
+            'level__dungeon',
+        )
+
+
+class WaveInline(admin.TabularInline):
+    model = models.Wave
+    extra = 0
+    show_change_link = True
+    readonly_fields = ('order', )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'level',
+            'level__dungeon',
+        )
+
+
+@admin.register(models.Level)
+class LevelAdmin(admin.ModelAdmin):
+    list_display = ('dungeon', 'difficulty', 'floor')
+    inlines = (WaveInline, )
+
+
 class LevelInline(admin.TabularInline):
-    model = Level
-    extra = 1
+    model = models.Level
+    extra = 0
+    show_change_link = True
 
 
-@admin.register(Dungeon)
+@admin.register(models.Dungeon)
 class DungeonAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'com2us_id')
     list_filter = ('enabled', 'category')
     readonly_fields = ('slug', )
-    inlines = (
-        LevelInline,
-    )
+    inlines = (LevelInline, )
 
 
 # Items and currency
-@admin.register(GameItem)
+@admin.register(models.GameItem)
 class GameItemAdmin(admin.ModelAdmin):
     list_display = ('image_tag', 'com2us_id', 'category', 'name', 'sell_value')
     list_filter = ('category', )

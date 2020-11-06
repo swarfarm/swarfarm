@@ -1,0 +1,51 @@
+{% load staticfiles utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+<h2>Waves</h2>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Monster</th>
+                <th scope="col">Stars</th>
+                <th scope="col">Level</th>
+                <th scope="col">HP</th>
+                <th scope="col">Attack</th>
+                <th scope="col">Defense</th>
+                <th scope="col">Speed</th>
+                <th scope="col">Resistance</th>
+                <th scope="col">Accuracy</th>
+                <th scope="col">Critical Rate</th>
+                <th scope="col">Critical Damage Reduction</th>
+            </tr>
+        </thead>
+        <tbody class=" align-middle">
+            {% for wave in waves %}
+                {% with forloop.counter as wave_number %}
+                    {% for enemy in wave.enemy_set.all %}
+                        <tr>
+                            {% if forloop.counter == 1 %}<th rowspan="{{ wave.enemy_set.all|length }}" style="vertical-align: middle;">Wave {{ wave_number}}</th>{% endif %}
+                            {% comment %} <td class="monster-info-icons-column">
+                                <div class="monster-image">
+                                    <img src="{{ img_url_prefix }}monsters/{{ enemy.monster.image_filename }}" alt="{{ enemy.monster.name }}" class="monster-thumb"/>
+                                </div>
+                            </td> {% endcomment %}
+                            <td>{% if enemy.boss %}<span class="badge">Boss</span> {% endif %}{{ enemy.monster.com2us_id }}</td>
+                            <td>{{ enemy.stars }}<span class="glyphicon glyphicon-star"></span></td>
+                            <td>{{ enemy.level }}</td>
+                            <td>{{ enemy.hp }}</td>
+                            <td>{{ enemy.attack }}</td>
+                            <td>{{ enemy.defense }}</td>
+                            <td>{{ enemy.speed }}</td>
+                            <td>{{ enemy.resist }}</td>
+                            <td>{{ enemy.accuracy_bonus }}</td>
+                            <td>{{ enemy.crit_bonus }}</td>
+                            <td>{{ enemy.crit_damage_reduction }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

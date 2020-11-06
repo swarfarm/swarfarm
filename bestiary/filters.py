@@ -44,7 +44,12 @@ class MonsterFilter(django_filters.FilterSet):
 
     def filter_name(self, queryset, name, value):
         if value:
-            return queryset.filter(Q(name__icontains=value) | Q(awakens_from__name__icontains=value) | Q(awakens_to__name__icontains=value))
+            return queryset.filter(
+                Q(name__icontains=value)
+                | Q(awakens_from__name__icontains=value)
+                | Q(awakens_from__awakens_from__name__icontains=value)
+                | Q(awakens_to__name__icontains=value)
+            )
         else:
             return queryset
 

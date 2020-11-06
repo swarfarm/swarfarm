@@ -40,7 +40,7 @@ class Summoner(models.Model):
     public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
-    preferences = JSONField(default=dict)
+    preferences = JSONField(default=dict, blank=True)
     last_update = models.DateTimeField(auto_now=True)
 
     def get_rune_counts(self):

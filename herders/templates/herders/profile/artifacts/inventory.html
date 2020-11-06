@@ -54,7 +54,6 @@
                                 <div class="panel-body">
                                     <!-- If groupped by slot, then group them internally by main stat -->
                                     {% if box_grouping == 'slot' %}
-                                    <div class="panel-body">
                                         {% regroup group.artifacts by get_main_stat_display as nested_groups %}
                                         {% for nested_group in nested_groups %}
                                             <div class="panel panel-default">
@@ -79,7 +78,6 @@
                                                 </div>
                                             </div>
                                         {% endfor %}
-                                    </div>
                                     {% else %}
                                     <div class="flex">
                                         {% for artifact in group.artifacts %}

@@ -530,6 +530,44 @@ battle_rift_of_worlds_raid_result = {
     'required': ['request', 'response'],
 }
 
+battle_dimension_hole_dungeon_start = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/Battle_dimension_hole_dungeon_start.json',
+    'title': 'Battle_dimension_hole_dungeon_start',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'dungeon_id': {'type': 'number'},
+                'difficulty': {'type': 'number'},
+            },
+            'required': [
+                'wizard_id',
+                'command',
+                'dungeon_id',
+                'difficulty',
+            ],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'dungeon_units': {'type': 'array'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'dungeon_units',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
 battle_dimension_hole_result_v2 = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
     'id': 'http://swarfarm.com/schemas/battle_dimension_hole_result.json',

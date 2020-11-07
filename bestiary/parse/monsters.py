@@ -6,6 +6,8 @@ from bestiary.parse import game_data
 
 from .util import update_bestiary_obj
 
+import math
+
 
 def _which_stat_increases(raw, awakens_to_id):
     awakens_raw = game_data.tables.MONSTERS[awakens_to_id]
@@ -182,32 +184,8 @@ def definitely_obtainable(obj, raw):
     return obj
 
 
-def replace_monster_image(raw):
-    MONSTER_IMAGES_MAP = {
-        210106: [8, 0, 3], # crystal water
-        210206: [8, 1, 3], # crystal fire
-        210306: [8, 2, 3], # crystal wind
-        210406: [8, 3, 3], # crystal light
-        210506: [8, 4, 3], # crystal dark
-        210606: [8, 0, 3], # crystal water
-        210706: [8, 1, 3], # crystal fire
-        210806: [8, 2, 3], # crystal wind
-        210906: [8, 3, 3], # crystal light
-        211006: [8, 4, 3], # crystal dark
-
-        200103: [8, 2, 3], # crystal eye wind
-        200113: [8, 2, 3], # crystal eye wind
-        200204: [8, 3, 3], # crystal eye light
-        200214: [8, 3, 3], # crystal eye light
-        112023: [8, 2, 3], # crystal tower eye wind
-        112033: [8, 2, 3], # crystal tower eye wind
-        112124: [8, 3, 3], # crystal tower eye light
-        112134: [8, 3, 3], # crystal tower eye light
-    }
-
-    if raw['unit master id'] in MONSTER_IMAGES_MAP:
-        raw['thumbnail'] = MONSTER_IMAGES_MAP[raw['unit master id']]
-
+def replace_crystal_image(raw):
+    raw['thumbnail'] = [8, raw['attribute'] - 1, 3]
     return raw
 
 
@@ -231,22 +209,36 @@ def rename_monster_midboss(raw):
     return raw
 
 
+def rename_boss_dimension_hole(raw):
+    BOSS_NAMES = {
+        1: "Fairy 2A",
+        2: "Pixie 2A",
+        3: "Warbear 2A",
+        4: "Griffon 2A",
+        5: "Werewolf 2A",
+        6: "Martial Cat 2A",
+        7: "Inugami 2A",
+    }
+    raw['unit name'] = BOSS_NAMES[math.floor(raw['unit master id'] / 100) % 10]
+    return raw
+
+
 _preprocess_erratum = {
     # region Caiross Crystals [21xxxx]
     # Missing name and image
     # xx01xx ... xx05xx - small, number says which attribute dungeon (i.e. xx01xx - water)
     # xx06xx ... xx10xx - medium, number + 5 says which attribute dungeon (i.e. xx06xx - water)
     # xxxx06 - pure element
-    210106: [rename_monster_crystal_small, replace_monster_image],
-    210206: [rename_monster_crystal_small, replace_monster_image],
-    210306: [rename_monster_crystal_small, replace_monster_image],
-    210406: [rename_monster_crystal_small, replace_monster_image],
-    210506: [rename_monster_crystal_small, replace_monster_image],
-    210606: [rename_monster_crystal_medium, replace_monster_image],
-    210706: [rename_monster_crystal_medium, replace_monster_image],
-    210806: [rename_monster_crystal_medium, replace_monster_image],
-    210906: [rename_monster_crystal_medium, replace_monster_image],
-    211006: [rename_monster_crystal_medium, replace_monster_image],
+    210106: [rename_monster_crystal_small, replace_crystal_image],
+    210206: [rename_monster_crystal_small, replace_crystal_image],
+    210306: [rename_monster_crystal_small, replace_crystal_image],
+    210406: [rename_monster_crystal_small, replace_crystal_image],
+    210506: [rename_monster_crystal_small, replace_crystal_image],
+    210606: [rename_monster_crystal_medium, replace_crystal_image],
+    210706: [rename_monster_crystal_medium, replace_crystal_image],
+    210806: [rename_monster_crystal_medium, replace_crystal_image],
+    210906: [rename_monster_crystal_medium, replace_crystal_image],
+    211006: [rename_monster_crystal_medium, replace_crystal_image],
     # endregion
     
     # region Caiross Towers [10xxxx]
@@ -369,10 +361,156 @@ _preprocess_erratum = {
     # 1120xx, 1121xx - family
     # xxxx2x, xxxx3x - order (2 - left, 3 - right)
     # xxxxx3, xxxxx4 - attribute (i.e. 3 - wind, steel fortress)
-    112023: [rename_monster_tower, replace_monster_image],
-    112033: [rename_monster_tower, replace_monster_image],
-    112124: [rename_monster_tower, replace_monster_image],
-    112134: [rename_monster_tower, replace_monster_image],
+    112023: [rename_monster_tower, replace_crystal_image],
+    112033: [rename_monster_tower, replace_crystal_image],
+    112124: [rename_monster_tower, replace_crystal_image],
+    112134: [rename_monster_tower, replace_crystal_image],
+    # endregion
+
+    # region Dimension Hole Crystals [2200xx]
+    # Missing name and image
+    # xxxx01 ... xxxx05 - small, number says which attribute dungeon
+    # xxxx11 ... xxxx15 - medium, number says which attribute dungeon
+    # endregion
+    220001: [rename_monster_crystal_small, replace_crystal_image],
+    220002: [rename_monster_crystal_small, replace_crystal_image],
+    220003: [rename_monster_crystal_small, replace_crystal_image],
+    220004: [rename_monster_crystal_small, replace_crystal_image],
+    220005: [rename_monster_crystal_small, replace_crystal_image],
+
+    220011: [rename_monster_crystal_medium, replace_crystal_image],
+    220012: [rename_monster_crystal_medium, replace_crystal_image],
+    220013: [rename_monster_crystal_medium, replace_crystal_image],
+    220014: [rename_monster_crystal_medium, replace_crystal_image],
+    220015: [rename_monster_crystal_medium, replace_crystal_image],
+
+    # region Dimension Hole Towers [120xxx]
+    # Missing name and image
+    # xxxx01 ... xxxx05 - left tower, number says which attribute dungeon
+    # xxxx11 ... xxxx15 - right tower, number says which attribute dungeon
+    120101: [rename_monster_tower, replace_crystal_image],
+    120102: [rename_monster_tower, replace_crystal_image],
+    120103: [rename_monster_tower, replace_crystal_image],
+    120104: [rename_monster_tower, replace_crystal_image],
+    120105: [rename_monster_tower, replace_crystal_image],
+    120111: [rename_monster_tower, replace_crystal_image],
+    120112: [rename_monster_tower, replace_crystal_image],
+    120113: [rename_monster_tower, replace_crystal_image],
+    120114: [rename_monster_tower, replace_crystal_image],
+    120115: [rename_monster_tower, replace_crystal_image],
+
+    120201: [rename_monster_tower, replace_crystal_image],
+    120202: [rename_monster_tower, replace_crystal_image],
+    120203: [rename_monster_tower, replace_crystal_image],
+    120204: [rename_monster_tower, replace_crystal_image],
+    120205: [rename_monster_tower, replace_crystal_image],
+    120211: [rename_monster_tower, replace_crystal_image],
+    120212: [rename_monster_tower, replace_crystal_image],
+    120213: [rename_monster_tower, replace_crystal_image],
+    120214: [rename_monster_tower, replace_crystal_image],
+    120215: [rename_monster_tower, replace_crystal_image],
+
+    120301: [rename_monster_tower, replace_crystal_image],
+    120302: [rename_monster_tower, replace_crystal_image],
+    120303: [rename_monster_tower, replace_crystal_image],
+    120304: [rename_monster_tower, replace_crystal_image],
+    120305: [rename_monster_tower, replace_crystal_image],
+    120311: [rename_monster_tower, replace_crystal_image],
+    120312: [rename_monster_tower, replace_crystal_image],
+    120313: [rename_monster_tower, replace_crystal_image],
+    120314: [rename_monster_tower, replace_crystal_image],
+    120315: [rename_monster_tower, replace_crystal_image],
+    
+    120401: [rename_monster_tower, replace_crystal_image],
+    120402: [rename_monster_tower, replace_crystal_image],
+    120403: [rename_monster_tower, replace_crystal_image],
+    120404: [rename_monster_tower, replace_crystal_image],
+    120405: [rename_monster_tower, replace_crystal_image],
+    120411: [rename_monster_tower, replace_crystal_image],
+    120412: [rename_monster_tower, replace_crystal_image],
+    120413: [rename_monster_tower, replace_crystal_image],
+    120414: [rename_monster_tower, replace_crystal_image],
+    120415: [rename_monster_tower, replace_crystal_image],
+
+    120501: [rename_monster_tower, replace_crystal_image],
+    120502: [rename_monster_tower, replace_crystal_image],
+    120503: [rename_monster_tower, replace_crystal_image],
+    120504: [rename_monster_tower, replace_crystal_image],
+    120505: [rename_monster_tower, replace_crystal_image],
+    120511: [rename_monster_tower, replace_crystal_image],
+    120512: [rename_monster_tower, replace_crystal_image],
+    120513: [rename_monster_tower, replace_crystal_image],
+    120514: [rename_monster_tower, replace_crystal_image],
+    120515: [rename_monster_tower, replace_crystal_image],
+
+    120601: [rename_monster_tower, replace_crystal_image],
+    120602: [rename_monster_tower, replace_crystal_image],
+    120603: [rename_monster_tower, replace_crystal_image],
+    120604: [rename_monster_tower, replace_crystal_image],
+    120605: [rename_monster_tower, replace_crystal_image],
+    120611: [rename_monster_tower, replace_crystal_image],
+    120612: [rename_monster_tower, replace_crystal_image],
+    120613: [rename_monster_tower, replace_crystal_image],
+    120614: [rename_monster_tower, replace_crystal_image],
+    120615: [rename_monster_tower, replace_crystal_image],
+    
+    120701: [rename_monster_tower, replace_crystal_image],
+    120702: [rename_monster_tower, replace_crystal_image],
+    120703: [rename_monster_tower, replace_crystal_image],
+    120704: [rename_monster_tower, replace_crystal_image],
+    120705: [rename_monster_tower, replace_crystal_image],
+    120711: [rename_monster_tower, replace_crystal_image],
+    120712: [rename_monster_tower, replace_crystal_image],
+    120713: [rename_monster_tower, replace_crystal_image],
+    120714: [rename_monster_tower, replace_crystal_image],
+    120715: [rename_monster_tower, replace_crystal_image],
+    # endregion
+
+    # region Dimension Hole Boss [dunno yet]
+    # Missing name
+    # xxxx01 ... xxxx05 - small, number says which attribute dungeon
+    # xxxx11 ... xxxx15 - medium, number + 5 says which attribute dungeon
+    47101: [rename_boss_dimension_hole], # 2A Fairy Boss
+    47102: [rename_boss_dimension_hole],
+    47103: [rename_boss_dimension_hole],
+    47104: [rename_boss_dimension_hole],
+    47105: [rename_boss_dimension_hole],
+
+    47201: [rename_boss_dimension_hole], # 2A Pixie Boss
+    47202: [rename_boss_dimension_hole],
+    47203: [rename_boss_dimension_hole],
+    47204: [rename_boss_dimension_hole],
+    47205: [rename_boss_dimension_hole],
+
+    47301: [rename_boss_dimension_hole], # 2A Warbear Boss
+    47302: [rename_boss_dimension_hole],
+    47303: [rename_boss_dimension_hole],
+    47304: [rename_boss_dimension_hole],
+    47305: [rename_boss_dimension_hole],
+
+    47401: [rename_boss_dimension_hole], # 2A Griffon Boss
+    47402: [rename_boss_dimension_hole],
+    47403: [rename_boss_dimension_hole],
+    47404: [rename_boss_dimension_hole],
+    47405: [rename_boss_dimension_hole],
+
+    47501: [rename_boss_dimension_hole], # 2A Werewolf Boss
+    47502: [rename_boss_dimension_hole],
+    47503: [rename_boss_dimension_hole],
+    47504: [rename_boss_dimension_hole],
+    47505: [rename_boss_dimension_hole],
+
+    47601: [rename_boss_dimension_hole], # 2A Martial Cat Boss
+    47602: [rename_boss_dimension_hole],
+    47603: [rename_boss_dimension_hole],
+    47604: [rename_boss_dimension_hole],
+    47605: [rename_boss_dimension_hole],
+
+    47701: [rename_boss_dimension_hole], # 2A Inugami Boss
+    47702: [rename_boss_dimension_hole],
+    47703: [rename_boss_dimension_hole],
+    47704: [rename_boss_dimension_hole],
+    47705: [rename_boss_dimension_hole],
     # endregion
 }
 

@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -137,7 +137,7 @@ def dungeons(request):
             category=cat_id,
             enabled=True
         ).exclude(
-            category=Dungeon.CATEGORY_SECRET
+            Q(category=Dungeon.CATEGORY_SECRET) | Q(slug='dimension-predator')
         ).prefetch_related(
             'level_set',
             # Prefetch('level_set', queryset=Level.objects.normal(), to_attr='normal'),

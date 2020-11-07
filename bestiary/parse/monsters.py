@@ -214,10 +214,10 @@ def rename_boss_dimension_hole(raw):
         1: "Fairy 2A",
         2: "Pixie 2A",
         3: "Warbear 2A",
-        4: "Griffon 2A",
+        4: "Inugami 2A",
         5: "Werewolf 2A",
         6: "Martial Cat 2A",
-        7: "Inugami 2A",
+        7: "Griffon 2A",
     }
     raw['unit name'] = BOSS_NAMES[math.floor(raw['unit master id'] / 100) % 10]
     return raw
@@ -371,7 +371,6 @@ _preprocess_erratum = {
     # Missing name and image
     # xxxx01 ... xxxx05 - small, number says which attribute dungeon
     # xxxx11 ... xxxx15 - medium, number says which attribute dungeon
-    # endregion
     220001: [rename_monster_crystal_small, replace_crystal_image],
     220002: [rename_monster_crystal_small, replace_crystal_image],
     220003: [rename_monster_crystal_small, replace_crystal_image],
@@ -383,12 +382,13 @@ _preprocess_erratum = {
     220013: [rename_monster_crystal_medium, replace_crystal_image],
     220014: [rename_monster_crystal_medium, replace_crystal_image],
     220015: [rename_monster_crystal_medium, replace_crystal_image],
+    # endregion
 
     # region Dimension Hole Towers [120xxx]
     # Missing name and image
     # xxxx01 ... xxxx05 - left tower, number says which attribute dungeon
     # xxxx11 ... xxxx15 - right tower, number says which attribute dungeon
-    120101: [rename_monster_tower, replace_crystal_image],
+    120101: [rename_monster_tower, replace_crystal_image], # 2A Fairy
     120102: [rename_monster_tower, replace_crystal_image],
     120103: [rename_monster_tower, replace_crystal_image],
     120104: [rename_monster_tower, replace_crystal_image],
@@ -399,7 +399,7 @@ _preprocess_erratum = {
     120114: [rename_monster_tower, replace_crystal_image],
     120115: [rename_monster_tower, replace_crystal_image],
 
-    120201: [rename_monster_tower, replace_crystal_image],
+    120201: [rename_monster_tower, replace_crystal_image], # 2A Pixie
     120202: [rename_monster_tower, replace_crystal_image],
     120203: [rename_monster_tower, replace_crystal_image],
     120204: [rename_monster_tower, replace_crystal_image],
@@ -410,7 +410,7 @@ _preprocess_erratum = {
     120214: [rename_monster_tower, replace_crystal_image],
     120215: [rename_monster_tower, replace_crystal_image],
 
-    120301: [rename_monster_tower, replace_crystal_image],
+    120301: [rename_monster_tower, replace_crystal_image], # 2A Warbear
     120302: [rename_monster_tower, replace_crystal_image],
     120303: [rename_monster_tower, replace_crystal_image],
     120304: [rename_monster_tower, replace_crystal_image],
@@ -421,7 +421,7 @@ _preprocess_erratum = {
     120314: [rename_monster_tower, replace_crystal_image],
     120315: [rename_monster_tower, replace_crystal_image],
     
-    120401: [rename_monster_tower, replace_crystal_image],
+    120401: [rename_monster_tower, replace_crystal_image], # 2A Inugami
     120402: [rename_monster_tower, replace_crystal_image],
     120403: [rename_monster_tower, replace_crystal_image],
     120404: [rename_monster_tower, replace_crystal_image],
@@ -432,7 +432,7 @@ _preprocess_erratum = {
     120414: [rename_monster_tower, replace_crystal_image],
     120415: [rename_monster_tower, replace_crystal_image],
 
-    120501: [rename_monster_tower, replace_crystal_image],
+    120501: [rename_monster_tower, replace_crystal_image], # 2A Werewolf
     120502: [rename_monster_tower, replace_crystal_image],
     120503: [rename_monster_tower, replace_crystal_image],
     120504: [rename_monster_tower, replace_crystal_image],
@@ -443,7 +443,7 @@ _preprocess_erratum = {
     120514: [rename_monster_tower, replace_crystal_image],
     120515: [rename_monster_tower, replace_crystal_image],
 
-    120601: [rename_monster_tower, replace_crystal_image],
+    120601: [rename_monster_tower, replace_crystal_image], # 2A Martial Cat
     120602: [rename_monster_tower, replace_crystal_image],
     120603: [rename_monster_tower, replace_crystal_image],
     120604: [rename_monster_tower, replace_crystal_image],
@@ -454,7 +454,7 @@ _preprocess_erratum = {
     120614: [rename_monster_tower, replace_crystal_image],
     120615: [rename_monster_tower, replace_crystal_image],
     
-    120701: [rename_monster_tower, replace_crystal_image],
+    120701: [rename_monster_tower, replace_crystal_image], # 2A Griffon
     120702: [rename_monster_tower, replace_crystal_image],
     120703: [rename_monster_tower, replace_crystal_image],
     120704: [rename_monster_tower, replace_crystal_image],
@@ -488,7 +488,7 @@ _preprocess_erratum = {
     47304: [rename_boss_dimension_hole],
     47305: [rename_boss_dimension_hole],
 
-    47401: [rename_boss_dimension_hole], # 2A Griffon Boss
+    47401: [rename_boss_dimension_hole], # 2A Inugami Boss
     47402: [rename_boss_dimension_hole],
     47403: [rename_boss_dimension_hole],
     47404: [rename_boss_dimension_hole],
@@ -506,7 +506,7 @@ _preprocess_erratum = {
     47604: [rename_boss_dimension_hole],
     47605: [rename_boss_dimension_hole],
 
-    47701: [rename_boss_dimension_hole], # 2A Inugami Boss
+    47701: [rename_boss_dimension_hole], # 2A Griffon Boss
     47702: [rename_boss_dimension_hole],
     47703: [rename_boss_dimension_hole],
     47704: [rename_boss_dimension_hole],

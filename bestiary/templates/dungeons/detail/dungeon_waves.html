@@ -26,12 +26,7 @@
                     {% for enemy in wave.enemy_set.all %}
                         <tr>
                             {% if forloop.counter == 1 %}<th rowspan="{{ wave.enemy_set.all|length }}" style="vertical-align: middle;">Wave {{ wave_number}}</th>{% endif %}
-                            {% comment %} <td class="monster-info-icons-column">
-                                <div class="monster-image">
-                                    <img src="{{ img_url_prefix }}monsters/{{ enemy.monster.image_filename }}" alt="{{ enemy.monster.name }}" class="monster-thumb"/>
-                                </div>
-                            </td> {% endcomment %}
-                            <td>{% if enemy.boss %}<span class="badge">Boss</span> {% endif %}{{ enemy.monster.com2us_id }}</td>
+                            <td>{% if enemy.boss %}<span class="badge">Boss</span> {% endif %}{{ enemy.monster.name }}</td>
                             <td>{{ enemy.stars }}<span class="glyphicon glyphicon-star"></span></td>
                             <td>{{ enemy.level }}</td>
                             <td>{{ enemy.hp }}</td>

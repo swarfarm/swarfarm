@@ -182,8 +182,198 @@ def definitely_obtainable(obj, raw):
     return obj
 
 
-_preprocess_erratum = {
+def replace_monster_image(raw):
+    MONSTER_IMAGES_MAP = {
+        210106: [8, 0, 3], # crystal water
+        210206: [8, 1, 3], # crystal fire
+        210306: [8, 2, 3], # crystal wind
+        210406: [8, 3, 3], # crystal light
+        210506: [8, 4, 3], # crystal dark
+        210606: [8, 0, 3], # crystal water
+        210706: [8, 1, 3], # crystal fire
+        210806: [8, 2, 3], # crystal wind
+        210906: [8, 3, 3], # crystal light
+        211006: [8, 4, 3], # crystal dark
 
+        200103: [8, 2, 3], # crystal eye wind
+        200113: [8, 2, 3], # crystal eye wind
+        200204: [8, 3, 3], # crystal eye light
+        200214: [8, 3, 3], # crystal eye light
+        112023: [8, 2, 3], # crystal tower eye wind
+        112033: [8, 2, 3], # crystal tower eye wind
+        112124: [8, 3, 3], # crystal tower eye light
+        112134: [8, 3, 3], # crystal tower eye light
+    }
+
+    if raw['unit master id'] in MONSTER_IMAGES_MAP:
+        raw['thumbnail'] = MONSTER_IMAGES_MAP[raw['unit master id']]
+
+    return raw
+
+
+def rename_monster_tower(raw):
+    raw['unit name'] = "Tower"
+    return raw
+
+
+def rename_monster_crystal_small(raw):
+    raw['unit name'] = "Small Crystal"
+    return raw
+
+
+def rename_monster_crystal_medium(raw):
+    raw['unit name'] = "Medium Crystal"
+    return raw
+
+
+def rename_monster_midboss(raw):
+    raw['unit name'] = "Ancient Intercessor"
+    return raw
+
+
+_preprocess_erratum = {
+    # region Caiross Crystals [21xxxx]
+    # Missing name and image
+    # xx01xx ... xx05xx - small, number says which attribute dungeon (i.e. xx01xx - water)
+    # xx06xx ... xx10xx - medium, number + 5 says which attribute dungeon (i.e. xx06xx - water)
+    # xxxx06 - pure element
+    210106: [rename_monster_crystal_small, replace_monster_image],
+    210206: [rename_monster_crystal_small, replace_monster_image],
+    210306: [rename_monster_crystal_small, replace_monster_image],
+    210406: [rename_monster_crystal_small, replace_monster_image],
+    210506: [rename_monster_crystal_small, replace_monster_image],
+    210606: [rename_monster_crystal_medium, replace_monster_image],
+    210706: [rename_monster_crystal_medium, replace_monster_image],
+    210806: [rename_monster_crystal_medium, replace_monster_image],
+    210906: [rename_monster_crystal_medium, replace_monster_image],
+    211006: [rename_monster_crystal_medium, replace_monster_image],
+    # endregion
+    
+    # region Caiross Towers [10xxxx]
+    # Missing name
+    # 10008xx, 1011xx, 1014xx, 1015xx, ... - family
+    # xxxx1x, xxxx2x - number says which attribute dungeon (i.e. xxxx1x - water, giants)
+    # xxxxx6 - pure element
+    100116: [rename_monster_tower],
+    100126: [rename_monster_tower],
+    100136: [rename_monster_tower],
+    100146: [rename_monster_tower],
+    100156: [rename_monster_tower],
+
+    100216: [rename_monster_tower],
+    100226: [rename_monster_tower],
+    100236: [rename_monster_tower],
+    100246: [rename_monster_tower],
+    100256: [rename_monster_tower],
+
+    100316: [rename_monster_tower],
+    100326: [rename_monster_tower],
+    100336: [rename_monster_tower],
+    100346: [rename_monster_tower],
+    100356: [rename_monster_tower],
+
+    100416: [rename_monster_tower],
+    100426: [rename_monster_tower],
+    100436: [rename_monster_tower],
+    100446: [rename_monster_tower],
+    100456: [rename_monster_tower],
+
+    100516: [rename_monster_tower],
+    100526: [rename_monster_tower],
+    100536: [rename_monster_tower],
+    100546: [rename_monster_tower],
+    100556: [rename_monster_tower],
+
+    100616: [rename_monster_tower],
+    100626: [rename_monster_tower],
+    100636: [rename_monster_tower],
+    100646: [rename_monster_tower],
+    100656: [rename_monster_tower],
+    
+    100716: [rename_monster_tower],
+    100726: [rename_monster_tower],
+    100736: [rename_monster_tower],
+    100746: [rename_monster_tower],
+    100756: [rename_monster_tower],
+
+    100816: [rename_monster_tower],
+    100826: [rename_monster_tower],
+    100836: [rename_monster_tower],
+    100846: [rename_monster_tower],
+    100856: [rename_monster_tower],
+
+    100916: [rename_monster_tower],
+    100926: [rename_monster_tower],
+    100936: [rename_monster_tower],
+    100946: [rename_monster_tower],
+    100956: [rename_monster_tower],
+
+    101016: [rename_monster_tower],
+    101026: [rename_monster_tower],
+    101036: [rename_monster_tower],
+    101046: [rename_monster_tower],
+    101056: [rename_monster_tower],
+
+    101116: [rename_monster_tower],
+    101126: [rename_monster_tower],
+    101136: [rename_monster_tower],
+    101146: [rename_monster_tower],
+    101156: [rename_monster_tower],
+
+    101216: [rename_monster_tower],
+    101226: [rename_monster_tower],
+    101236: [rename_monster_tower],
+    101246: [rename_monster_tower],
+    101256: [rename_monster_tower],
+
+    101316: [rename_monster_tower],
+    101326: [rename_monster_tower],
+    101336: [rename_monster_tower],
+    101346: [rename_monster_tower],
+    101356: [rename_monster_tower],
+
+    101416: [rename_monster_tower],
+    101426: [rename_monster_tower],
+    101436: [rename_monster_tower],
+    101446: [rename_monster_tower],
+    101456: [rename_monster_tower],
+
+    101516: [rename_monster_tower],
+    101526: [rename_monster_tower],
+    101536: [rename_monster_tower],
+    101546: [rename_monster_tower],
+    101556: [rename_monster_tower],
+    # endregion
+    
+    # region Caiross Crystal Eyes [200xxx]
+    # Missing name
+    # 2001xx, 2002xx - family
+    # xxxx03, xxxx04 - small, number says which attribute dungeon (i.e. 03 - wind, steel fortress)
+    # xxxx13, xxxx14 - medium, number % 10 says which attribute dungeon (i.e. 3 - wind, steel fortress)
+    200103: [rename_monster_crystal_small],
+    200113: [rename_monster_crystal_medium],
+    200204: [rename_monster_crystal_small],
+    200214: [rename_monster_crystal_medium],
+    # endregion
+    
+    # region Caiross Mid Bosses [62xxx]
+    # Missing name
+    # 623xx, 625xx - family
+    # xxx03, xxx04 - attribute (i.e. 03 - wind, steel fortress)
+    62303: [rename_monster_midboss],
+    62504: [rename_monster_midboss],
+    # endregion
+
+    # region Caiross Tower Eyes [112xxx]
+    # Missing name, boss wave
+    # 1120xx, 1121xx - family
+    # xxxx2x, xxxx3x - order (2 - left, 3 - right)
+    # xxxxx3, xxxxx4 - attribute (i.e. 3 - wind, steel fortress)
+    112023: [rename_monster_tower, replace_monster_image],
+    112033: [rename_monster_tower, replace_monster_image],
+    112124: [rename_monster_tower, replace_monster_image],
+    112134: [rename_monster_tower, replace_monster_image],
+    # endregion
 }
 
 _postprocess_erratum = {

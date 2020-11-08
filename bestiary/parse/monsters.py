@@ -243,7 +243,6 @@ _preprocess_erratum = {
     
     # region Caiross Towers [10xxxx]
     # Missing name
-    # 10008xx, 1011xx, 1014xx, 1015xx, ... - family
     # xxxx1x, xxxx2x - number says which attribute dungeon (i.e. xxxx1x - water, giants)
     # xxxxx6 - pure element
     100116: [rename_monster_tower],
@@ -339,7 +338,6 @@ _preprocess_erratum = {
     
     # region Caiross Crystal Eyes [200xxx]
     # Missing name
-    # 2001xx, 2002xx - family
     # xxxx03, xxxx04 - small, number says which attribute dungeon (i.e. 03 - wind, steel fortress)
     # xxxx13, xxxx14 - medium, number % 10 says which attribute dungeon (i.e. 3 - wind, steel fortress)
     200103: [rename_monster_crystal_small],
@@ -350,7 +348,6 @@ _preprocess_erratum = {
     
     # region Caiross Mid Bosses [62xxx]
     # Missing name
-    # 623xx, 625xx - family
     # xxx03, xxx04 - attribute (i.e. 03 - wind, steel fortress)
     62303: [rename_monster_midboss],
     62504: [rename_monster_midboss],
@@ -466,7 +463,7 @@ _preprocess_erratum = {
     120715: [rename_monster_tower, replace_crystal_image],
     # endregion
 
-    # region Dimension Hole Boss [dunno yet]
+    # region Dimension Hole Boss [47xxx]
     # Missing name
     # xxxx01 ... xxxx05 - small, number says which attribute dungeon
     # xxxx11 ... xxxx15 - medium, number + 5 says which attribute dungeon

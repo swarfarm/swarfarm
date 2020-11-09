@@ -1,14 +1,17 @@
 # SWARFARM
-SWARFARM needs contributors! I'd really love to get a small core group of people who can continue to develop SWARFARM 
-into the future. If you're interested in taking on this role, please [join our Discord server](https://discord.gg/EuJyvTGkxQ)
-and send a message to porksmash.
+An assistant website for Summoner's War. 
 
 ## Contributing
-Any ideas should be raised as an issue first.
-If you want to contribute code for an idea, fork the repository and create a pull request.
-Any changes in data models that affects the database structure will be highly scrutinized and may be delayed in 
-deployment if accepted. Base your work on the current master branch, which will represent what is running on the live 
-site. Any other branches that might exist are either under development or experimental. 
+You don't need to code to contribute ideas. If you have a feature request, notice a bug, inaccuracies in the monster/
+skill data, or anything else, submit an issue here on github or in the 
+[feedback section](https://swarfarm.com/feedback/) of the site. For UI ideas, chop together a quick example in paint 
+to help communicate your thoughts.
+
+Pull requests are always welcome, but first create an issue so the change can be discussed. Coding can begin after there
+is an agreement with the maintainers if and how the change should be implemented. 
+
+If you want to talk about the site or have questions about the code base, 
+[join the developer Discord server](https://discord.gg/EuJyvTGkxQ). 
 
 ## Setting up for Development
 1. Copy `.env.example` to `.env`. No modifications are necessary to work with the default Vagrant config.

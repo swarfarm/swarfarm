@@ -10,7 +10,7 @@ Any changes in data models that affects the database structure will be highly sc
 deployment if accepted. Base your work on the current master branch, which will represent what is running on the live 
 site. Any other branches that might exist are either under development or experimental. 
 
-### Setting up for Development
+## Setting up for Development
 1. Copy `.env.example` to `.env`. No modifications are necessary to work with the default Vagrant config.
     * Vagrant provisioning **will fail** if you do not have a .env file present.
 2. Install [Vagrant](https://www.vagrantup.com/downloads.html) and perform any required setup per Vagrant documentation
@@ -37,22 +37,22 @@ forwarded to your host machine so they are accessible from localhost. The Vagran
 
 A full list of available environment variables is available at the top of `swarfarm/settings.py`.
 
-#### Vagrant and Hyper-V
+### Vagrant and Hyper-V
 The default VM provider VirtualBox is incompatible with Windows Hyper-V. If you want to keep Hyper-V enabled (if you use 
 Docker, for example), you will want to use the `hyperv` Vagrant provider. There are a few potential issues:
 
-##### Not available at 10.243.243.10 after provisioning
+#### Not available at 10.243.243.10 after provisioning
 Check the output of the `vagrant up` command for the correct IP address. This is a 
 [known limitation](https://www.vagrantup.com/docs/providers/hyperv/limitations.html#limited-networking) with Vagrant and 
 Hyper-V.
 
-##### Shared folders (SBM) throws errors:
+#### Shared folders (SBM) throws errors
 Turn on SBM 1.x and SBM Direct from Windows Features (the same place where you can turn on Hyper-V)
  
-##### Shared folders (SBM) asking for password:
+#### Shared folders (SBM) asking for password
 If you don't have password for your Windows account, then you need to set one
 
-##### `pyenv` can't change directory to /vargant and/or SSH working really slow*:
+#### `pyenv` can't change directory to /vargant and/or SSH working really slow
 Your Network Sharing doesn't allow Vargant to access your files. To fix this:
 
 1. Go to Network and Internet -> Network and Sharing Center -> Advanced sharing settings
@@ -61,8 +61,7 @@ Your Network Sharing doesn't allow Vargant to access your files. To fix this:
 
 This can open up some security holes; a better solution is welcome.
 
-
-#### Creating your admin user
+### Creating your admin user
 Run `python manage.py createsuperuser` and follow the prompts.
 
 This admin user functions with the Django admin, but not the rest of the SWARFARM site. If you want the same account to 
@@ -77,7 +76,7 @@ Summoner.objects.create(user=User.objects.first())
 
 **Note:** Adjust the `User` queryset to pick the account you want to be admin if necessary.
 
-## Running the tests
+### Running the tests
 Run `python manage.py test --settings=swarfarm.settings_test`. It is also recommended to use the `--keepdb` argument to reduce the amount of time spend creating the database.
 
 ## Built With

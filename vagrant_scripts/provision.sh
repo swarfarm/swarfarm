@@ -47,17 +47,19 @@ eval "$(pyenv virtualenv-init -)"
 # Install python + init virtualenv
 pyenv install 3.6.8
 pyenv virtualenv 3.6.8 swarfarm-3.6.8
-pyenv activate swarfarm-3.6.8
 
 echo "Setting up python environment..."
 pip install -qq -r /vagrant/requirements_dev.txt
 
 # Set up Django project
 echo "Running database migrations..."
-cd /vagrant
 python manage.py migrate
-echo "Loading initial bestiary data..."
-python manage.py loaddata bestiary_data.json
+echo "Loading initial data..."
+python manage.py loaddata bestiary_data
+python manage.py loaddata initial_auth_groups
+
+# Reset SQL table sequences after loading fixtures
+sudo -u postgres psql swarfarm_dev -f ~/reset_sequences.sql > /dev/null
 
 # Configure upstart and start python processes
 sudo mv ~/swarfarm.socket /etc/systemd/system/swarfarm.socket

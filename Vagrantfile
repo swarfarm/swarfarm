@@ -19,5 +19,6 @@ Vagrant.configure("2") do |config|
     config.vm.provision "file", source: "./vagrant_scripts/celery.service", destination: "celery.service"
     config.vm.provision "file", source: "./vagrant_scripts/celery_beat.service", destination: "celery_beat.service"
     config.vm.provision "file", source: "./vagrant_scripts/nginx_config", destination: "nginx_config"
+    config.vm.provision "file", source: "./vagrant_scripts/reset_sequences.sql", destination: "reset_sequences.sql"
     config.vm.provision "shell", privileged: false, path: './vagrant_scripts/provision.sh'
 end

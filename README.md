@@ -1,6 +1,41 @@
 # SWARFARM
 An assistant website for Summoner's War. 
 
+## API
+SWARFARM exposes an API that contains detailed game data (most notably monster and skill data), in addition to public 
+user profiles. The root endpoint is [https://swarfarm.com/api/v2/](https://swarfarm.com/api/v2/). Documentation of all
+endpoints is available [here](https://swarfarm.com/api/v2/docs/). This API is free and public but subject to rate 
+limits, and any abuse or abnormal use of server resources will see restrictions applied. The API powers tools like 
+[SW Optimizer](https://tool.swop.one/) and the [SWOP Discord bot](https://top.gg/bot/417128270950170624).
+
+The API schema is not finalized and may change at any time.
+
+### Can I use it to power my own website?
+Yes - but you *must* proxy requests through your own server. CORS restrictions are in place. Your server will be subject
+to rate limits just like any other client.
+
+### API Authentication
+Authentication is required to perform actions that change your account data or to view your own profile (if private).  
+
+#### Basic Token Authentication
+You can get or generate a basic token from your edit profile page on swarfarm.com via the dropdown menu on your
+username. The token is equivalent to your password so **do not share it**. Tokens never expire, but you can change yours
+at any time by generating a new one. This authentication method is ideal to allow a tool to perform actions on your
+account's behalf such as the SWARFARM plugin for SW-Exporter.
+
+#### JWT Authentication
+JSON Web Tokens are ideal for temporary authentication, since they expire automatically after a time.
+
+Generating a token:
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{"username":"myaccount","password":"password123"}' https://swarfarm.com/api/v2/auth/get-token/
+```
+
+Using the token in a request:
+```bash
+$ curl -H "Authorization: JWT <your_token>" https://swarfarm.com/api/v2/<endpoint>/
+```
+
 ## Contributing
 You don't need to code to contribute ideas. If you have a feature request, notice a bug, inaccuracies in the monster/
 skill data, or anything else, submit an issue here on github or in the 

@@ -8,22 +8,25 @@ os.environ['LANG'] = 'en_US.UTF-8'
 
 env = environ.Env(
     DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, []),
+    ALLOWED_HOSTS=(list, ['127.0.0.1']),
     SITE_ID=(int, 1),
     COMPRESS_ENABLED=(bool, False),
+    CACHE_BACKEND=(str, 'django.core.cache.backends.dummy.DummyCache'),
+    CACHE_LOCATION=(str, 'swarfarm'),
     EMAIL_HOST=(str, ''),
     EMAIL_PORT=(int, 587),
     EMAIL_HOST_USER=(str, ''),
     EMAIL_HOST_PASSWORD=(str, ''),
     EMAIL_FROM=(str, ''),
-    CACHE_LOCATION=(str, None),
-    RECAPTCHA_PUBLIC_KEY=(str, None),
-    RECAPTCHA_PRIVATE_KEY=(str, None),
+    CELERY_BROKER=(str, 'amqp://'),
+    GOOGLE_API_KEY=(str, ''),
+    RECAPTCHA_PUBLIC_KEY=(str, ''),
+    RECAPTCHA_PRIVATE_KEY=(str, ''),
+    BUGSNAG_API_KEY=(str, ''),
     SUMMONERS_WAR_KEY=(str, '0' * 32),
     SUMMONERS_WAR_IV=(str, '0' * 32),
     JOKER_CONTAINER_KEY=(str, '0' * 64),
     JOKER_CONTAINER_IV=(str, '0' * 32),
-    BUGSNAG_API_KEY=(str, None),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 

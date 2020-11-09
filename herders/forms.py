@@ -1420,7 +1420,7 @@ class ArtifactInstanceForm(ModelForm):
     )
 
     effects_value = SplitArrayField(
-        forms.IntegerField(required=False),
+        forms.FloatField(required=False),
         size=4,
         remove_trailing_nulls=True,
         label='Value',

@@ -381,6 +381,20 @@ class Artifact(ArtifactObjectBase, base.Stars):
             max_possible_value = self.EFFECT_VALUES[effect]['max'] * (self.effect_upgrades_received + 1)
             min_possible_value = self.EFFECT_VALUES[effect]['min']
 
+            print(value)
+            if value is None:
+                raise ValidationError({
+                    'effects_value': ValidationError(
+                        'Effect %(nth)s: Cannot be empty, must be between %(min_val)s and %(max_val)s.',
+                        params={
+                            'nth': index + 1,
+                            'min_val': min_possible_value,
+                            'max_val': max_possible_value,
+                        },
+                        code='effects_value_invalid'
+                    )
+                })
+
             if value < min_possible_value or value > max_possible_value:
                 raise ValidationError({
                     'effects_value': ValidationError(

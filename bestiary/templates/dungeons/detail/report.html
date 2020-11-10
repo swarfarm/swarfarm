@@ -2,6 +2,11 @@
 {% load cache %}
 
 {% block report %}
+    {% if waves %}
+    {% include 'dungeons/detail/dungeon_waves.html' with waves=waves %}
+    <hr />
+    {% endif %}
+    
     {% if report %}
     {% cache 86400 dungeon_report dungeon.pk level.difficulty level.floor %}
         <ul class="list-unstyled">

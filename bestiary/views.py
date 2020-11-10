@@ -1,12 +1,12 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
 from .filters import MonsterFilter
 from .forms import FilterMonsterForm
-from .models import Monster, Dungeon, Level
+from .models import Monster, Dungeon, Level, Wave, Enemy
 
 
 def bestiary(request):
@@ -137,7 +137,7 @@ def dungeons(request):
             category=cat_id,
             enabled=True
         ).exclude(
-            category=Dungeon.CATEGORY_SECRET
+            Q(category=Dungeon.CATEGORY_SECRET) | Q(slug='dimension-predator')
         ).prefetch_related(
             'level_set',
             # Prefetch('level_set', queryset=Level.objects.normal(), to_attr='normal'),
@@ -201,12 +201,13 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
         'floor_range': floor_range,
         'is_scenario': dung.category == Dungeon.CATEGORY_SCENARIO,
         'level': lvl,
-        'report': report
+        'report': report,
+        'waves': Wave.objects.filter(level=lvl).prefetch_related('enemy_set', 'enemy_set__monster'),
     }
 
     by_grade = dung.category in [Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS, Dungeon.CATEGORY_WORLD_BOSS]
 
-    if by_grade and hasattr(report.content_type.model_class(), 'GRADE_CHOICES'):
+    if by_grade and report and hasattr(report.content_type.model_class(), 'GRADE_CHOICES'):
         return render(request, 'dungeons/detail/report_by_grade.html', context)
     else:
         return render(request, 'dungeons/detail/report.html', context)

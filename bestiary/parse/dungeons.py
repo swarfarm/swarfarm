@@ -244,6 +244,18 @@ def dungeon_waves(log_data):
     _parse_wave_data(level, log_data['response']['dungeon_unit_list'])
 
 
+@shared_task
+def dimensional_hole_waves(log_data):
+    if (log_data['request']['dungeon_id'] / 100) % 10 == 3:
+        return # Predator
+    level = Level.objects.get(
+        dungeon__category=Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+        dungeon__com2us_id=log_data['request']['dungeon_id'],
+        floor=log_data['request']['difficulty'],
+    )
+    _parse_wave_data(level, log_data['response']['dungeon_units'])
+
+
 command_map = {
     'BattleScenarioStart': {
         'fn': scenario_waves,
@@ -258,6 +270,13 @@ command_map = {
         'cache keys': [
             'dungeon_id',
             'stage_id',
+        ],
+    },
+    'BattleDimensionHoleDungeonStart': {
+        'fn': dimensional_hole_waves,
+        'cache keys': [
+            'dungeon_id',
+            'difficulty',
         ],
     },
 }

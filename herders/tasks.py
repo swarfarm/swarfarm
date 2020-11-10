@@ -27,6 +27,8 @@ def com2us_data_import(data, user_id, import_options):
         if import_options['clear_profile']:
             RuneInstance.objects.filter(owner=summoner).delete()
             RuneCraftInstance.objects.filter(owner=summoner).delete()
+            ArtifactInstance.objects.filter(owner=summoner).delete()
+            ArtifactCraftInstance.objects.filter(owner=summoner).delete()
             MonsterInstance.objects.filter(owner=summoner).delete()
             MonsterPiece.objects.filter(owner=summoner).delete()
 
@@ -182,6 +184,9 @@ def com2us_data_import(data, user_id, import_options):
     with transaction.atomic():
         # Save imported artifacts
         for artifact in results['artifacts']:
+            # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
+            # relationship was previously set.
+            artifact.assigned_to = artifact.assigned_to
             artifact.save()
             imported_artifacts.append(artifact.pk)
 
@@ -189,7 +194,7 @@ def com2us_data_import(data, user_id, import_options):
         current_task.update_state(state=states.STARTED, meta={'step': 'artifact_crafts'})
 
     with transaction.atomic():
-        # Save imported artifacts
+        # Save imported artifact crafts
         for craft in results['artifact_crafts']:
             craft.save()
             imported_artifact_crafts.append(craft.pk)

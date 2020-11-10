@@ -999,6 +999,18 @@ class ArtifactInstance(Artifact):
     com2us_id = models.BigIntegerField(blank=True, null=True)
     assigned_to = models.ForeignKey(MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.assigned_to:
+            # Check no other artifacts are in this slot
+            for artifact in ArtifactInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot).exclude(pk=self.pk):
+                artifact.assigned_to = None
+                artifact.save()
+
+            # Trigger stat calc update on the assigned monster
+            self.assigned_to.save()
+
 
 class ArtifactCraftInstance(ArtifactCraft):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

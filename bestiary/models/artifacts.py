@@ -381,7 +381,6 @@ class Artifact(ArtifactObjectBase, base.Stars):
             max_possible_value = self.EFFECT_VALUES[effect]['max'] * (self.effect_upgrades_received + 1)
             min_possible_value = self.EFFECT_VALUES[effect]['min']
 
-            print(value)
             if value is None:
                 raise ValidationError({
                     'effects_value': ValidationError(

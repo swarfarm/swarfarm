@@ -335,8 +335,12 @@ def unassign(request, profile_name, artifact_id):
 
     if is_owner:
         artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
+        mon = artifact.assigned_to
         artifact.assigned_to = None
         artifact.save()
+
+        if mon:
+            mon.save()
 
         response_data = {
             'code': 'success',
@@ -359,8 +363,12 @@ def delete(request, profile_name, artifact_id):
 
     if is_owner:
         artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
+        mon = artifact.assigned_to
         artifact.delete()
         messages.warning(request, 'Deleted ' + str(artifact))
+
+        if mon:
+            mon.save()
 
         response_data = {
             'code': 'success',

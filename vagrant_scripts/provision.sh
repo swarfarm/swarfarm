@@ -47,6 +47,8 @@ eval "$(pyenv virtualenv-init -)"
 # Install python + init virtualenv
 pyenv install 3.6.8
 pyenv virtualenv 3.6.8 swarfarm-3.6.8
+cd /vagrant
+pyenv local swarfarm-3.6.8
 
 echo "Setting up python environment..."
 pip install -qq -r /vagrant/requirements_dev.txt
@@ -75,5 +77,4 @@ sudo service swarfarm start
 sudo service celery start
 sudo service celery_beat start
 
-pyenv deactivate
 echo "Done! Check the console for any errors."

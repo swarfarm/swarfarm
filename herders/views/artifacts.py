@@ -88,12 +88,12 @@ def inventory(request, profile_name, box_grouping=None):
             for slot_val, slot_desc in ArtifactInstance.NORMAL_ELEMENT_CHOICES:
                 artifact_box.append({
                     'name': slot_desc,
-                    'artifacts': artifact_filter.qs.filter(element=slot_val)
+                    'artifacts': artifact_filter.qs.filter(element=slot_val).order_by('main_stat', '-level')
                 })
             for slot_val, slot_desc in ArtifactInstance.ARCHETYPE_CHOICES:
                 artifact_box.append({
                     'name': slot_desc,
-                    'artifacts': artifact_filter.qs.filter(archetype=slot_val)
+                    'artifacts': artifact_filter.qs.filter(archetype=slot_val).order_by('main_stat', '-level')
                 })
         elif box_grouping == 'quality':
             for qual_val, qual_desc in reversed(ArtifactInstance.QUALITY_CHOICES):
@@ -335,8 +335,12 @@ def unassign(request, profile_name, artifact_id):
 
     if is_owner:
         artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
+        mon = artifact.assigned_to
         artifact.assigned_to = None
         artifact.save()
+
+        if mon:
+            mon.save()
 
         response_data = {
             'code': 'success',
@@ -359,8 +363,12 @@ def delete(request, profile_name, artifact_id):
 
     if is_owner:
         artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
+        mon = artifact.assigned_to
         artifact.delete()
         messages.warning(request, 'Deleted ' + str(artifact))
+
+        if mon:
+            mon.save()
 
         response_data = {
             'code': 'success',

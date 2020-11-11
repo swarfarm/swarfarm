@@ -187,6 +187,7 @@ function AssignArtifactChoice(artifact_id, monster_id) {
         if (response.code === 'success') {
             $('.modal.in').modal('hide');
             UpdateRunes();
+            UpdateStats();
         }
         else {
             alert('Something went wrong assigning the artifact :(');
@@ -227,6 +228,7 @@ function UnassignArtifact(artifact_id) {
                         if (response.code === 'success') {
                             $('tr[data-rune-id]').popover('hide');
                             UpdateRunes();
+                            UpdateStats();
                         }
                     });
                 }
@@ -246,6 +248,7 @@ function UnassignArtifact(artifact_id) {
                     }).done(function () {
                         $('tr[data-rune-id]').popover('hide');
                         UpdateRunes();
+                        UpdateStats();
                     }).fail(function () {
                         alert("Something went wrong! Server admin has been notified.");
                     });

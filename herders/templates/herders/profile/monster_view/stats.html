@@ -24,21 +24,27 @@
                 <tr>
                     <td>HP</td>
                     <td>{{ instance.base_hp }}</td>
-                    <td class="text-success">{% if instance.rune_hp > 0 %}<span>+{{ instance.rune_hp }}</span>{% endif %}</td>
+                    {% with rune_artifact_hp=instance.rune_hp|add:instance.artifact_hp %}
+                        <td class="text-success">{% if rune_artifact_hp > 0 %}<span>+{{ rune_artifact_hp }}</span>{% endif %}</td>
+                    {% endwith %}
                     <td>{{ instance.hp }}</td>
                     {% if instance.level < 40 %}<td>{{ max_stats.base.hp|add:max_stats.rune.hp }} <span class="text-success">(+{{ max_stats.deltas.hp }}%)</span></td>{% endif %}
                 </tr>
                 <tr>
                     <td>ATK</td>
                     <td>{{ instance.base_attack }}</td>
-                    <td class="text-success">{% if instance.rune_attack > 0 %}<span>+{{ instance.rune_attack }}</span>{% endif %}</td>
+                    {% with rune_artifact_attack=instance.rune_attack|add:instance.artifact_attack %}
+                        <td class="text-success">{% if rune_artifact_attack > 0 %}<span>+{{ rune_artifact_attack }}</span>{% endif %}</td>
+                    {% endwith %}
                     <td>{{ instance.attack }}</td>
                     {% if instance.level < 40 %}<td>{{ max_stats.base.attack|add:max_stats.rune.attack }} <span class="text-success">(+{{ max_stats.deltas.attack }}%)</span></td>{% endif %}
                 </tr>
                 <tr>
                     <td>DEF</td>
                     <td>{{ instance.base_defense }}</td>
-                    <td class="text-success">{% if instance.rune_defense > 0 %}<span>+{{ instance.rune_defense }}</span>{% endif %}</td>
+                    {% with rune_artifact_defense=instance.rune_defense|add:instance.artifact_defense %}
+                        <td class="text-success">{% if rune_artifact_defense > 0 %}<span>+{{ rune_artifact_defense }}</span>{% endif %}</td>
+                    {% endwith %}
                     <td>{{ instance.defense }}</td>
                     {% if instance.level < 40 %}<td>{{ max_stats.base.defense|add:max_stats.rune.defense }} <span class="text-success">(+{{ max_stats.deltas.defense }}%)</span></td>{% endif %}
                 </tr>

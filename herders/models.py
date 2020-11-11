@@ -293,6 +293,9 @@ class MonsterInstance(models.Model, base.Stars):
     rune_resistance = models.IntegerField(blank=True, default=0)
     rune_accuracy = models.IntegerField(blank=True, default=0)
     avg_rune_efficiency = models.FloatField(blank=True, null=True)
+    artifact_hp = models.IntegerField(blank=True, default=0)
+    artifact_attack = models.IntegerField(blank=True, default=0)
+    artifact_defense = models.IntegerField(blank=True, default=0)
 
     class Meta:
         ordering = ['-stars', '-level', 'monster__name']
@@ -466,13 +469,13 @@ class MonsterInstance(models.Model, base.Stars):
 
     # Totals for stats including rune bonuses
     def hp(self):
-        return self.base_hp + self.rune_hp
+        return self.base_hp + self.rune_hp + self.artifact_hp
 
     def attack(self):
-        return self.base_attack + self.rune_attack
+        return self.base_attack + self.rune_attack + self.artifact_attack
 
     def defense(self):
-        return self.base_defense + self.rune_defense
+        return self.base_defense + self.rune_defense + self.artifact_defense
 
     def speed(self):
         return self.base_speed + self.rune_speed
@@ -705,6 +708,12 @@ class MonsterInstance(models.Model, base.Stars):
         self.rune_accuracy = stat_bonuses[RuneInstance.STAT_ACCURACY_PCT]
 
         self.avg_rune_efficiency = self.get_avg_rune_efficiency()
+
+        # save artifacts main stat bonuses
+        artifacts = self.artifactinstance_set.all()
+        self.artifact_hp = sum([artifact.main_stat_value for artifact in artifacts if artifact.main_stat == artifact.STAT_HP])
+        self.artifact_attack = sum([artifact.main_stat_value for artifact in artifacts if artifact.main_stat == artifact.STAT_ATK])
+        self.artifact_defense = sum([artifact.main_stat_value for artifact in artifacts if artifact.main_stat == artifact.STAT_DEF])
 
         # Limit skill levels to the max level of the skill
         skills = self.monster.skills.all()
@@ -989,6 +998,18 @@ class ArtifactInstance(Artifact):
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     assigned_to = models.ForeignKey(MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.assigned_to:
+            # Check no other artifacts are in this slot
+            for artifact in ArtifactInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot).exclude(pk=self.pk):
+                artifact.assigned_to = None
+                artifact.save()
+
+            # Trigger stat calc update on the assigned monster
+            self.assigned_to.save()
 
 
 class ArtifactCraftInstance(ArtifactCraft):

@@ -6,9 +6,9 @@
 
 {% block title %}
     {% if is_owner %}
-        My Runes - {{ block.super }}
+        My Artifacts - {{ block.super }}
     {% else %}
-        {{ summoner.user.username }}'s Runes - {{ block.super }}
+        {{ summoner.user.username }}'s Artifacts - {{ block.super }}
     {% endif %}
 {% endblock %}
 

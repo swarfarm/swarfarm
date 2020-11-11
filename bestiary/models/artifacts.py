@@ -111,48 +111,48 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
     )
 
     EFFECT_STRINGS = {
-        EFFECT_ATK_LOST_HP: 'ATK+ Proportional to Lost HP up to {}%',
-        EFFECT_DEF_LOST_HP: 'DEF+ Proportional to Lost HP up to {}%',
-        EFFECT_SPD_LOST_HP: 'SPD+ Proportional to Lost HP up to {}%',
-        EFFECT_SPD_INABILITY: 'SPD Under Inability +{}%',
-        EFFECT_ATK: 'ATK Increasing Effect +{}%',
-        EFFECT_DEF: 'DEF Increasing Effect +{}%',
-        EFFECT_SPD: 'SPD Increasing Effect +{}%',
-        EFFECT_CRIT_RATE: 'CRIT Rate Increasing Effect +{}%',
-        EFFECT_COUNTER_DMG: 'Damage Dealt by Counterattack +{}%',
-        EFFECT_COOP_ATTACK_DMG: 'Damage Dealt by Attacking Together +{}%',
-        EFFECT_BOMB_DMG: 'Bomb Damage +{}%',
-        EFFECT_REFLECT_DMG: 'Damage Dealt by Reflect DMG +{}%',
-        EFFECT_CRUSHING_HIT_DMG: 'Crushing Hit DMG +{}%',
-        EFFECT_DMG_RECEIVED_INABILITY: 'Damage Received Under Inability -{}%',
-        EFFECT_CRIT_DMG_RECEIVED: 'CRIT DMG Received -{}%',
-        EFFECT_LIFE_DRAIN: 'Life Drain +{}%',
-        EFFECT_HP_REVIVE: 'HP when Revived +{}%',
-        EFFECT_ATB_REVIVE: 'Attack Bar when Revived +{}%',
-        EFFECT_DMG_PCT_OF_HP: 'Additional Damage by {}% of HP',
-        EFFECT_DMG_PCT_OF_ATK: 'Additional Damage by {}% of ATK',
-        EFFECT_DMG_PCT_OF_DEF: 'Additional Damage by {}% of DEF',
-        EFFECT_DMG_PCT_OF_SPD: 'Additional Damage by {}% of SPD',
-        EFFECT_DMG_TO_FIRE: 'Damage Dealt on Fire +{}%',
-        EFFECT_DMG_TO_WATER: 'Damage Dealt on Water +{}%',
-        EFFECT_DMG_TO_WIND: 'Damage Dealt on Wind +{}%',
-        EFFECT_DMG_TO_LIGHT: 'Damage Dealt on Light +{}%',
-        EFFECT_DMG_TO_DARK: 'Damage Dealt on Dark +{}%',
-        EFFECT_DMG_FROM_FIRE: 'Damage Received from Fire -{}%',
-        EFFECT_DMG_FROM_WATER: 'Damage Received from Water -{}%',
-        EFFECT_DMG_FROM_WIND: 'Damage Received from Wind -{}%',
-        EFFECT_DMG_FROM_LIGHT: 'Damage Received from Light -{}%',
-        EFFECT_DMG_FROM_DARK: 'Damage Received from Dark -{}%',
-        EFFECT_SK1_CRIT_DMG: '[Skill 1] CRIT DMG +{}%',
-        EFFECT_SK2_CRIT_DMG: '[Skill 2] CRIT DMG +{}%',
-        EFFECT_SK3_CRIT_DMG: '[Skill 3] CRIT DMG +{}%',
-        EFFECT_SK4_CRIT_DMG: '[Skill 4] CRIT DMG +{}%',
-        EFFECT_SK1_RECOVERY: '[Skill 1] Recovery +{}%',
-        EFFECT_SK2_RECOVERY: '[Skill 2] Recovery +{}%',
-        EFFECT_SK3_RECOVERY: '[Skill 3] Recovery +{}%',
-        EFFECT_SK1_ACCURACY: '[Skill 1] Accuracy +{}%',
-        EFFECT_SK2_ACCURACY: '[Skill 2] Accuracy +{}%',
-        EFFECT_SK3_ACCURACY: '[Skill 3] Accuracy +{}%',
+        EFFECT_ATK_LOST_HP: 'ATK+ Proportional to Lost HP up to {:g}%',
+        EFFECT_DEF_LOST_HP: 'DEF+ Proportional to Lost HP up to {:g}%',
+        EFFECT_SPD_LOST_HP: 'SPD+ Proportional to Lost HP up to {:g}%',
+        EFFECT_SPD_INABILITY: 'SPD Under Inability +{:g}%',
+        EFFECT_ATK: 'ATK Increasing Effect +{:g}%',
+        EFFECT_DEF: 'DEF Increasing Effect +{:g}%',
+        EFFECT_SPD: 'SPD Increasing Effect +{:g}%',
+        EFFECT_CRIT_RATE: 'CRIT Rate Increasing Effect +{:g}%',
+        EFFECT_COUNTER_DMG: 'Damage Dealt by Counterattack +{:g}%',
+        EFFECT_COOP_ATTACK_DMG: 'Damage Dealt by Attacking Together +{:g}%',
+        EFFECT_BOMB_DMG: 'Bomb Damage +{:g}%',
+        EFFECT_REFLECT_DMG: 'Damage Dealt by Reflect DMG +{:g}%',
+        EFFECT_CRUSHING_HIT_DMG: 'Crushing Hit DMG +{:g}%',
+        EFFECT_DMG_RECEIVED_INABILITY: 'Damage Received Under Inability -{:g}%',
+        EFFECT_CRIT_DMG_RECEIVED: 'CRIT DMG Received -{:g}%',
+        EFFECT_LIFE_DRAIN: 'Life Drain +{:g}%',
+        EFFECT_HP_REVIVE: 'HP when Revived +{:g}%',
+        EFFECT_ATB_REVIVE: 'Attack Bar when Revived +{:g}%',
+        EFFECT_DMG_PCT_OF_HP: 'Additional Damage by {:g}% of HP',
+        EFFECT_DMG_PCT_OF_ATK: 'Additional Damage by {:g}% of ATK',
+        EFFECT_DMG_PCT_OF_DEF: 'Additional Damage by {:g}% of DEF',
+        EFFECT_DMG_PCT_OF_SPD: 'Additional Damage by {:g}% of SPD',
+        EFFECT_DMG_TO_FIRE: 'Damage Dealt on Fire +{:g}%',
+        EFFECT_DMG_TO_WATER: 'Damage Dealt on Water +{:g}%',
+        EFFECT_DMG_TO_WIND: 'Damage Dealt on Wind +{:g}%',
+        EFFECT_DMG_TO_LIGHT: 'Damage Dealt on Light +{:g}%',
+        EFFECT_DMG_TO_DARK: 'Damage Dealt on Dark +{:g}%',
+        EFFECT_DMG_FROM_FIRE: 'Damage Received from Fire -{:g}%',
+        EFFECT_DMG_FROM_WATER: 'Damage Received from Water -{:g}%',
+        EFFECT_DMG_FROM_WIND: 'Damage Received from Wind -{:g}%',
+        EFFECT_DMG_FROM_LIGHT: 'Damage Received from Light -{:g}%',
+        EFFECT_DMG_FROM_DARK: 'Damage Received from Dark -{:g}%',
+        EFFECT_SK1_CRIT_DMG: '[Skill 1] CRIT DMG +{:g}%',
+        EFFECT_SK2_CRIT_DMG: '[Skill 2] CRIT DMG +{:g}%',
+        EFFECT_SK3_CRIT_DMG: '[Skill 3] CRIT DMG +{:g}%',
+        EFFECT_SK4_CRIT_DMG: '[Skill 4] CRIT DMG +{:g}%',
+        EFFECT_SK1_RECOVERY: '[Skill 1] Recovery +{:g}%',
+        EFFECT_SK2_RECOVERY: '[Skill 2] Recovery +{:g}%',
+        EFFECT_SK3_RECOVERY: '[Skill 3] Recovery +{:g}%',
+        EFFECT_SK1_ACCURACY: '[Skill 1] Accuracy +{:g}%',
+        EFFECT_SK2_ACCURACY: '[Skill 2] Accuracy +{:g}%',
+        EFFECT_SK3_ACCURACY: '[Skill 3] Accuracy +{:g}%',
     }
 
     COM2US_EFFECT_MAP = {
@@ -310,7 +310,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
         help_text='Bonus effect type'
     )
     effects_value = ArrayField(
-        models.IntegerField(blank=True, null=True),
+        models.FloatField(blank=True, null=True),
         size=4,
         default=list,
         blank=True,
@@ -380,6 +380,19 @@ class Artifact(ArtifactObjectBase, base.Stars):
         )):
             max_possible_value = self.EFFECT_VALUES[effect]['max'] * (self.effect_upgrades_received + 1)
             min_possible_value = self.EFFECT_VALUES[effect]['min']
+
+            if value is None:
+                raise ValidationError({
+                    'effects_value': ValidationError(
+                        'Effect %(nth)s: Cannot be empty, must be between %(min_val)s and %(max_val)s.',
+                        params={
+                            'nth': index + 1,
+                            'min_val': min_possible_value,
+                            'max_val': max_possible_value,
+                        },
+                        code='effects_value_invalid'
+                    )
+                })
 
             if value < min_possible_value or value > max_possible_value:
                 raise ValidationError({

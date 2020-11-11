@@ -15,7 +15,7 @@
 
                 {{ issue.get_status_html }}
 
-                {% if request.user.is_superuser %}
+                {% if perms.feedback.edit_issue %}
                     <a class="btn btn-link pull-right" href="{% url 'admin:feedback_issue_change' issue.pk %}"><span class="glyphicon glyphicon-edit"></span> Edit Issue</a>
                 {% endif %}
             </p>

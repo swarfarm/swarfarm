@@ -1,4 +1,6 @@
 from collections import OrderedDict
+import itertools
+from operator import getitem 
 
 from crispy_forms.bootstrap import FieldWithButtons, StrictButton, Field, Div
 from django.contrib import messages
@@ -112,6 +114,70 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             template = 'herders/profile/monster_inventory/summoning_pieces.html'
         elif view_mode == 'list':
             template = 'herders/profile/monster_inventory/list.html'
+        elif view_mode == 'collection':
+            monster_stable = {}
+
+            # filters
+            material = (Q(archetype=Monster.ARCHETYPE_MATERIAL) | Q(archetype=Monster.ARCHETYPE_NONE))
+            obtainable = Q(obtainable=True)
+            unawakened = Q(awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED)
+
+            base_material = (Q(monster__archetype=Monster.ARCHETYPE_MATERIAL) | Q(monster__archetype=Monster.ARCHETYPE_NONE))
+            awakened = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_AWAKENED)
+            awakened_second = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_SECOND)
+            base_unawakened = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED)
+            #
+
+            base_monsters = Monster.objects.filter(obtainable & unawakened).exclude(material).order_by('skill_group_id', 'com2us_id').values('name', 'com2us_id', 'element', 'skill_group_id', 'skill_ups_to_max')
+            # USE MATERIAL STORAGE DEVILMONS TOO
+            devilmons_count = monster_filter.qs.filter(monster__com2us_id=61105).count() # devilmon
+
+            # CHECK IF EVERYTHING WORKS PROPERLY
+            skill_groups = itertools.groupby(base_monsters, lambda mon: mon['skill_group_id'])
+            for skill_group_id, records in skill_groups:
+                if skill_group_id == -10000:
+                    continue # devilmon
+                records = list(records)
+                data = {
+                    'name': records[0]['name'],
+                    'elements': {},
+                    'possible_skillups': None,
+                }
+                elements = itertools.groupby(records, lambda mon: mon['element'])
+                for element, records_element in elements:
+                    records_element = list(records_element)
+                    data['elements'][element] = {
+                        'owned': False,
+                        'skilled_up': False,
+                        'skill_ups': None,
+                        'skill_ups_to_max': records_element[0]['skill_ups_to_max'],
+                    }
+                monster_stable[skill_group_id] = data
+
+            # CHECK IF EVERYTHING WORKS PROPERLY
+            for mon in monster_filter.qs.filter(awakened).exclude(base_material):
+                data = monster_stable[mon.monster.skill_group_id]['elements'][mon.monster.element]
+                if data['skilled_up']:
+                    continue # don't care about other units, if at least one is already fully skilled up
+                if not data['owned']:
+                    data['owned'] = True
+
+                actual_skillups = sum([mon.skill_1_level, mon.skill_2_level, mon.skill_3_level, mon.skill_4_level]) - 4
+                if actual_skillups == mon.monster.skill_ups_to_max:
+                    data['skilled_up'] = True
+                    continue
+
+                if not data['skill_ups'] or actual_skillups > data['skill_ups']:
+                    data['skill_ups'] = actual_skillups
+
+            # SHOULD BE FIXED
+            skill_up_mons = monster_filter.qs.filter(base_unawakened).exclude(base_material).order_by('monster__skill_group_id').values_list('monster__skill_group_id', flat=True)
+            for skill_group_id, records in itertools.groupby(skill_up_mons):
+                monster_stable[skill_group_id]['possible_skillups'] = devilmons_count + len(list(records))
+
+            monster_stable = sorted(monster_stable.values(), key=lambda x: x['name'])
+            context['monster_stable'] = monster_stable
+            template = 'herders/profile/monster_inventory/collection.html'
         else:
             # Group up the filtered monsters
             monster_stable = OrderedDict()

@@ -629,26 +629,17 @@ class MonsterInstance(models.Model, base.Stars):
         return self.get_building_stats(Building.AREA_GUILD)
 
     def get_possible_skillups(self):
-        same_family = Q(monster__family_id=self.monster.family_id)
-
-        # Handle a few special cases for skillups outside of own family
-        # Vampire Lord
-        if self.monster.family_id == 23000:
-            same_family |= Q(monster__family_id=14700)
-
-        # Fairy Queen
-        if self.monster.family_id == 19100:
-            same_family |= Q(monster__family_id=10100)
+        same_skill_group = Q(monster__skill_group_id=self.monster.skill_group_id)
 
         devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count()
-        family = MonsterInstance.objects.filter(owner=self.owner).filter(same_family).exclude(pk=self.pk).order_by('ignore_for_fusion')
-        pieces = MonsterPiece.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id)
+        skill_group = MonsterInstance.objects.filter(owner=self.owner).filter(same_skill_group).exclude(pk=self.pk).order_by('ignore_for_fusion')
+        pieces = MonsterPiece.objects.filter(owner=self.owner, monster__skill_group_id=self.monster.skill_group_id)
 
         return {
             'devilmon': devilmon,
-            'family': family,
+            'skill_group': skill_group,
             'pieces': pieces,
-            'none': devilmon + family.count() + pieces.count() == 0,
+            'none': devilmon + skill_group.count() + pieces.count() == 0,
         }
 
     def clean(self):

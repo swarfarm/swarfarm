@@ -203,8 +203,8 @@
                         <span class="image-plus image-plus-main">{{ skillups.devilmon }}</span>
                     </div>
                     {% endif %}
-                    {% if skillups.family %}
-                        {% for food_mon in skillups.family %}
+                    {% if skillups.skill_group %}
+                        {% for food_mon in skillups.skill_group %}
                             <div class="monster-image pull-left monster-popover" data-instance-id="{{ food_mon.pk.hex }}" title="{{ food_mon.monster.name }} - {{ food_mon.monster.get_element_display }} {% if food_mon.monster.awakens_from %}{{ food_mon.monster.awakens_from.name }}{% endif %}">
                                 <div>
                                     <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=food_mon.pk.hex %}?next={{ return_path }}#edit">

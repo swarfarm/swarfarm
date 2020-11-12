@@ -1,0 +1,66 @@
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load utils %}
+
+<div id="monster-inventory">
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="btn-group">
+                <button class="btn btn-default profile-view-mode" data-mode="list">
+                    <span class="glyphicon glyphicon-th-list"></span> List
+                </button>
+                <button class="btn btn-default profile-view-mode" data-mode="box">
+                    <span class="glyphicon glyphicon-th-large"></span> Box
+                </button>
+                <button class="btn btn-default profile-view-mode" data-mode="pieces">
+                    <span class="fa fa-puzzle-piece"></span> Pieces
+                </button>
+                <button class="btn btn-default profile-view-mode active" data-mode="collection">
+                    <span class="fa fa-users"></span> Collection
+                </button>
+            </div>
+
+        </div>
+        <div class="panel-body">
+            {% if monster_stable %}
+                <div class="row">
+                    <div class="col-12 col-sm-8">
+                        <table class="table table-responsive">
+                            <thead>
+                                <th scope="col"></th>
+                                <th scope="col">Fire</th>
+                                <th scope="col">Water</th>
+                                <th scope="col">Wind</th>
+                                <th scope="col">Light</th>
+                                <th scope="col">Dark</th>
+                                <th scope="col">Possible skillups</th>
+                            </thead>
+                            <tbody>
+                                {% for mon in monster_stable %}
+                                    <tr>
+                                        <td>{{ mon.name }}</td>
+
+                                        {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.fire %}
+                                        {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.water %}
+                                        {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.wind %}
+                                        {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.light %}
+                                        {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.dark %}
+
+                                        <td>{% if mon.possible_skillups %}{{ mon.possible_skillups }}{% endif %}</td>
+                                   </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                        Legend here
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">Your search returned no results or you have no monsters!</div>
+            {% endif %}
+        </div>
+    </div>
+</div>

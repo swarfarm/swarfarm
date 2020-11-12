@@ -1,0 +1,5 @@
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load utils %}
+
+<td class="monster-collection cell {% if not data.owned %}not-{% endif%}owned {% if data.skilled_up %}full{% endif %}">{# {{ data }} #}</td>

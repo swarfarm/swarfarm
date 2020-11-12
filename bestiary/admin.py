@@ -24,6 +24,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'name',
                 'com2us_id',
                 'family_id',
+                'skill_group_id',
                 'element',
                 'archetype',
                 'fusion_food',

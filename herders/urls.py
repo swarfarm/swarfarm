@@ -21,8 +21,8 @@ urlpatterns = [
         url(r'^buildings/$', views.profile.buildings, name='profile_buildings'),
         url(r'^monster/', include([
             url(r'^inventory/$', views.monsters.monster_inventory, name='monster_inventory'),
-            url(r'^inventory/(?P<view_mode>(list|box|pieces))/$', views.monsters.monster_inventory, name='monster_inventory_view_mode'),
-            url(r'^inventory/(?P<view_mode>(list|box|pieces))/(?P<box_grouping>[a-zA-Z_]+)/$', views.monsters.monster_inventory, name='monster_inventory_view_mode_sorted'),
+            url(r'^inventory/(?P<view_mode>(list|box|pieces|collection))/$', views.monsters.monster_inventory, name='monster_inventory_view_mode'),
+            url(r'^inventory/(?P<view_mode>(list|box|pieces|collection))/(?P<box_grouping>[a-zA-Z_]+)/$', views.monsters.monster_inventory, name='monster_inventory_view_mode_sorted'),
             url(r'^add/$', views.monsters.monster_instance_add, name='monster_instance_add'),
             url(r'^quick_add/(?P<monster_id>[0-9]+)/(?P<stars>[0-9])/(?P<level>[0-9]+)/$', views.monsters.monster_instance_quick_add, name='monster_instance_quick_add'),
             url(r'^quick_fodder/$', views.monsters.quick_fodder_menu, name='quick_fodder_menu'),

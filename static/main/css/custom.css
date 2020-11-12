@@ -1167,12 +1167,24 @@ button.rune-assign-choice {
   height: 100px;
 }
 
-.monster-collection.cell.not-owned {
-  background-color: #111111;
+.monster-collection.cell.not-owned,
+.monster-collection.cell.not-owned.legend {
+  background-color: #2f2f2f;
   color: #ededed;
 }
 
-.monster-collection.cell.owned.full {
-  background-color: #22ff44;
+.monster-collection.cell.owned.legend {
+  background: rgb(118, 255, 86);
+  background: linear-gradient(
+    90deg,
+    rgba(118, 255, 86, 1) 0%,
+    rgba(255, 226, 128, 1) 50%,
+    rgba(255, 115, 115, 1) 100%
+  );
+}
+
+.monster-collection.cell.owned.full,
+.monster-collection.cell.owned.full.legend {
+  background: rgba(118, 255, 86, 1);
   color: #111111;
 }

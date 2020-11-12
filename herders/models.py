@@ -631,7 +631,7 @@ class MonsterInstance(models.Model, base.Stars):
     def get_possible_skillups(self):
         same_skill_group = Q(monster__skill_group_id=self.monster.skill_group_id)
 
-        devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count()
+        devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count() + self.owner.storage.devilmon
         skill_group = MonsterInstance.objects.filter(owner=self.owner).filter(same_skill_group).exclude(pk=self.pk).order_by('ignore_for_fusion')
         pieces = MonsterPiece.objects.filter(owner=self.owner, monster__skill_group_id=self.monster.skill_group_id)
 

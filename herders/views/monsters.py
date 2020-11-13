@@ -90,7 +90,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             'tags'
         )
 
-    form = FilterMonsterInstanceForm(request.POST or None, auto_id='id_filter_%s')
+    form = FilterMonsterInstanceForm(request.GET or None, auto_id='id_filter_%s')
     if form.is_valid():
         monster_filter = MonsterInstanceFilter(form.cleaned_data, queryset=monster_queryset)
     else:

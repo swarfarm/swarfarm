@@ -8,11 +8,13 @@ os.environ['LANG'] = 'en_US.UTF-8'
 
 env = environ.Env(
     DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, ['127.0.0.1']),
+    ALLOWED_HOSTS=(list, ['127.0.0.1', 'localhost', '10.243.243.10']),
+    CORS_ALLOWED_ORIGINS=(list, []),
     SITE_ID=(int, 1),
     COMPRESS_ENABLED=(bool, False),
     CACHE_BACKEND=(str, 'django.core.cache.backends.dummy.DummyCache'),
     CACHE_LOCATION=(str, 'swarfarm'),
+    EMAIL_BACKEND=(str, 'django.core.mail.backends.console.EmailBackend'),
     EMAIL_HOST=(str, ''),
     EMAIL_PORT=(int, 587),
     EMAIL_HOST_USER=(str, ''),
@@ -43,10 +45,7 @@ JOKER_CONTAINER_IV = env('JOKER_CONTAINER_IV')
 
 # Security settings
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
-INTERNAL_IPS = ['127.0.0.1', '10.0.2.2']
-
-if DEBUG:
-    ALLOWED_HOSTS += ['10.0.2.2', '10.243.243.10']
+INTERNAL_IPS = ['127.0.0.1']
 
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
@@ -70,11 +69,12 @@ SECURE_HSTS_SECONDS = 31556926  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
 
+# CORS settings
+CORS_ALLOWED_ORIGINS = env('CORS_ALLOWED_ORIGINS')
+CORS_URLS_REGEX = r'^/api(v\d+)?/.*$'
+
 # Email settings
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = env('EMAIL_BACKEND')
 EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
@@ -245,10 +245,6 @@ COMPRESS_CSS_FILTERS = ['compressor.filters.cssmin.rCSSMinFilter']
 
 # crispyforms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
-# django_cors
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r'^/api(v\d+)?/.*$'
 
 # Google APIs
 RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')

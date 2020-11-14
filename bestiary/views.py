@@ -36,8 +36,8 @@ def bestiary_inventory(request):
 
 
 def _bestiary_inventory(request):
-    name_search = request.POST.get('name-autocomplete')
-    post_data = request.POST.copy()
+    name_search = request.GET.get('name-autocomplete')
+    post_data = request.GET.copy()
 
     if name_search:
         post_data.update({'name': name_search})
@@ -46,7 +46,7 @@ def _bestiary_inventory(request):
     form = FilterMonsterForm(post_data or None)
 
     # Get queryset sort options
-    sort_options = request.POST.get('sort')
+    sort_options = request.GET.get('sort')
     if sort_options:
         sort_col_match = {
             'name': 'name',
@@ -83,7 +83,7 @@ def _bestiary_inventory(request):
         monster_filter = MonsterFilter(queryset=monster_queryset)
 
     paginator = Paginator(monster_filter.qs, 100)
-    page = request.POST.get('page')
+    page = request.GET.get('page')
 
     try:
         monsters = paginator.page(page)

@@ -1232,7 +1232,7 @@ class FilterRuneForm(forms.Form):
     )
 
     helper = FormHelper()
-    helper.form_method = 'post'
+    helper.form_method = 'get'
     helper.form_id = 'FilterInventoryForm'
     helper.layout = Layout(
         Div(

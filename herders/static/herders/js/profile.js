@@ -1,11 +1,11 @@
 var quickFodderAdded = false;
 
 $(document).ready(function() {
-    update_form_with_query();
+    update_monster_form_with_query();
     update_monster_inventory();
 });
 
-function update_form_with_query(){
+function update_monster_form_with_query(){
     var params = new URLSearchParams(location.search)
 
     update_form_text_from_query(params, 'monster__name');
@@ -35,53 +35,6 @@ function update_form_with_query(){
     update_form_radio_from_query(params, 'monster__fusion_food');
 
     update_form_toggle_from_query(params, 'effects_logic');
-}
-
-function update_form_text_from_query(params, element_id){
-    if(params.has(element_id)) $("input[name='" + element_id + "']").val(params.get(element_id));
-}
-
-function update_form_multiselect_from_query(params, element_id){
-    if(params.has(element_id)) $("select[name='" + element_id + "']").val(params.getAll(element_id));
-}
-
-function update_form_select_from_query(params, element_id){
-    if(params.has(element_id)) $("select[name='" + element_id + "']").val(params.get(element_id));
-}
-
-function update_form_radio_from_query(params, element_id){
-    if(params.has(element_id)) $("input[name='" + element_id + "']:radio[value='" + params.get(element_id) + "']").prop("checked", true);
-}
-
-function update_form_toggle_from_query(params, element_id){
-    if(params.has(element_id)){
-        $("input[name='" + element_id + "']").prop("checked", true);
-        $("input[name='" + element_id + "']").parent().removeClass('off');
-    }
-    else {
-        $("input[name='" + element_id + "']").prop("checked", false);
-        $("input[name='" + element_id + "']").parent().addClass('off');
-    };
-}
-
-function update_form_multislider_from_query(params, element_id){
-    if(params.has(element_id)){
-        var new_val = params.get(element_id).split(',');
-        new_val = [parseInt(new_val[0]), parseInt(new_val[1])]
-        $("input[name='" + element_id + "']").slider('setValue', new_val)
-    }    
-}
-
-function clean_query_params(part_url){
-    var params = new URLSearchParams(part_url)
-    for (let p of params) {
-        if (p[1] === ""){
-            params.delete(p[0]);
-        }
-    }
-    if(params.has('apply')) params.delete('apply');
-
-    return params.toString()
 }
 
 function update_monster_inventory() {
@@ -419,5 +372,6 @@ $('body')
         // Toggle button
         $("input[name='effects_logic']").prop("checked", true);
         $("input[name='effects_logic']").parent().removeClass('off');
+        
         update_monster_inventory();
     });

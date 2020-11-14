@@ -1,6 +1,34 @@
 $(document).ready(function() {
+    update_rune_form_with_query();
     update_rune_inventory();
 });
+
+function update_rune_form_with_query(){
+    var params = new URLSearchParams(location.search)
+    
+    update_form_multislider_from_query(params, 'stars');
+    update_form_multislider_from_query(params, 'has_grind');
+    update_form_multislider_from_query(params, 'level');
+
+    update_form_multiselect_from_query(params, 'type');
+    update_form_multiselect_from_query(params, 'slot');
+    update_form_multiselect_from_query(params, 'main_stat');
+    update_form_multiselect_from_query(params, 'innate_stat');
+    update_form_multiselect_from_query(params, 'substats');
+    update_form_multiselect_from_query(params, 'quality');
+    update_form_multiselect_from_query(params, 'original_quality');
+
+    update_form_select_from_query(params, 'ancient');
+    update_form_select_from_query(params, 'has_gem');
+    update_form_select_from_query(params, 'assigned_to');
+    update_form_select_from_query(params, 'marked_for_sale');
+
+    update_form_radio_from_query(params, 'fodder');
+    update_form_radio_from_query(params, 'in_storage');
+    update_form_radio_from_query(params, 'monster__fusion_food');
+
+    update_form_toggle_from_query(params, 'substat_logic');
+}
 
 function update_rune_inventory() {
     $('#FilterInventoryForm').submit();
@@ -301,6 +329,16 @@ $('body')
             url: $form.attr('action'),
             data: $form.serialize()
         }).done(function (data) {
+            // Create URL with Filter fields
+            var params_start = this.url.lastIndexOf('/?')
+            if (params_start > -1){
+                var index_start = Math.min(params_start + 2, this.url.length - 1) // +2 because /? are 2 symbols
+                var params = clean_query_params(this.url.substring(index_start))
+                $("#idapply").remove() // Apply button adds something to data :/
+                history.pushState({}, "", this.url.substring(0, this.url.indexOf('/inventory/')) + '/?' + params)
+            }
+            //
+
             ToggleLoading($('body'), false);
             $('#rune-inventory').replaceWith(data);
             $('#runeInventoryTable').tablesorter({
@@ -336,6 +374,10 @@ $('body')
                 max = $el.data('slider-max');
             $(this).slider('setValue', [min, max]);
         });
+
+        // Toggle button
+        $("input[name='substat_logic']").prop("checked", false);
+        $("input[name='substat_logic']").parent().addClass('off');
 
         update_rune_inventory();
     })

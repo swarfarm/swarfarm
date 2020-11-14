@@ -314,7 +314,7 @@ $('body')
                 var index_start = Math.min(params_start + 2, this.url.length - 1) // +2 because /? are 2 symbols
                 var params = clean_query_params(this.url.substring(index_start))
                 $("#idapply").remove() // Apply button adds something to data :/
-                history.pushState({}, "", this.url.substring(0, this.url.indexOf('/monster/inventory/')) + '/?' + params)
+                history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/monster/inventory/')) + '/?' + params)
             }
             //
 

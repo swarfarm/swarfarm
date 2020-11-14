@@ -49,6 +49,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 
 class MonsterSkillViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Skill.objects.all().prefetch_related(
+        'upgrades',
         'scaling_stats',
         'monster_set',
         'skilleffectdetail_set',

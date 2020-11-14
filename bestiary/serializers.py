@@ -97,6 +97,7 @@ class SkillSerializer(serializers.HyperlinkedModelSerializer):
             return []
 
     def get_scales_with(self, instance):
+        # TODO: Fix N+1 query in API response caused by this
         return instance.scaling_stats.values_list('stat', flat=True)
 
 

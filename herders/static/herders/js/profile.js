@@ -20,7 +20,7 @@ function update_form_with_query(){
     update_form_multiselect_from_query(params, 'priority');
     update_form_multiselect_from_query(params, 'monster__archetype');
     update_form_multiselect_from_query(params, 'monster__element');
-    update_form_multiselect_from_query(params, 'monster__awaken_leven');
+    update_form_multiselect_from_query(params, 'monster__awaken_level');
     update_form_multiselect_from_query(params, 'buff_debuff_effects');
     update_form_multiselect_from_query(params, 'other_effects');
     update_form_multiselect_from_query(params, 'monster__skills__scaling_stats__pk');
@@ -56,6 +56,7 @@ function update_form_radio_from_query(params, element_id){
 function update_form_toggle_from_query(params, element_id){
     if(params.has(element_id)){
         $("input[name='" + element_id + "']").prop("checked", true);
+        $("input[name='" + element_id + "']").parent().removeClass('off');
     }
     else {
         $("input[name='" + element_id + "']").prop("checked", false);
@@ -67,10 +68,7 @@ function update_form_multislider_from_query(params, element_id){
     if(params.has(element_id)){
         var new_val = params.get(element_id).split(',');
         new_val = [parseInt(new_val[0]), parseInt(new_val[1])]
-        var slider = $("input[name='" + element_id + "']").bootstrapSlider()
-        slider.bootstrapSlider('setValue', new_val);
-
-        $("#div_id_filter_" + element_id + " .slider")[0].remove()
+        $("input[name='" + element_id + "']").slider('setValue', new_val)
     }    
 }
 
@@ -81,6 +79,7 @@ function clean_query_params(part_url){
             params.delete(p[0]);
         }
     }
+    if(params.has('apply')) params.delete('apply');
 
     return params.toString()
 }
@@ -416,5 +415,9 @@ $('body')
                 max = $el.data('slider-max');
             $(this).slider('setValue', [min, max]);
         });
+
+        // Toggle button
+        $("input[name='effects_logic']").prop("checked", true);
+        $("input[name='effects_logic']").parent().removeClass('off');
         update_monster_inventory();
     });

@@ -1,6 +1,9 @@
-update_bestiary_form_with_query();
-initialize_table();
-initialize_charts();
+$(document).ready(function() {
+    update_bestiary_form_with_query();
+    update_inventory();
+    initialize_table();
+    initialize_charts();
+})
 
 function update_bestiary_form_with_query(){
     var params = new URLSearchParams(location.search)

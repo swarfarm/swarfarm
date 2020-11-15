@@ -10,8 +10,8 @@ from .models import Monster, Dungeon, Level, Wave, Enemy
 
 
 def bestiary(request):
-    name_search = request.POST.get('name-autocomplete')
-    post_data = request.POST.copy()
+    name_search = request.GET.get('name-autocomplete')
+    post_data = request.GET.copy()
     if name_search:
         post_data.update({'name': name_search})
 
@@ -21,8 +21,8 @@ def bestiary(request):
     context = {
         'view': 'bestiary',
         'bestiary_filter_form': bestiary_filter_form,
+        'init_load': True,
     }
-    context.update(_bestiary_inventory(request))
 
     if request.user.is_authenticated:
         context['profile_name'] = request.user.username

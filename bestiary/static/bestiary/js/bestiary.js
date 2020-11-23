@@ -1,5 +1,35 @@
-initialize_table();
-initialize_charts();
+$(document).ready(function() {
+    update_bestiary_form_with_query();
+    update_inventory();
+    initialize_table();
+    initialize_charts();
+})
+
+function update_bestiary_form_with_query(){
+    var params = new URLSearchParams(location.search)
+
+    update_form_text_from_query(params, 'name');
+
+    update_form_multislider_from_query(params, 'natural_stars');
+    update_form_multislider_from_query(params, 'skills__cooltime');
+    update_form_multislider_from_query(params, 'skills__hits');
+
+    update_form_multiselect_from_query(params, 'awaken_level');
+    update_form_multiselect_from_query(params, 'element');
+    update_form_multiselect_from_query(params, 'archetype');
+    update_form_multiselect_from_query(params, 'buffs');
+    update_form_multiselect_from_query(params, 'debuffs');
+    update_form_multiselect_from_query(params, 'other_effects');
+    update_form_multiselect_from_query(params, 'skills__scaling_stats__pk');
+    update_form_multiselect_from_query(params, 'leader_skill__attribute');
+    update_form_multiselect_from_query(params, 'leader_skill__area');
+
+    update_form_select_from_query(params, 'skills__passive');
+    update_form_select_from_query(params, 'skills__aoe');
+    update_form_select_from_query(params, 'fusion_food');
+
+    update_form_toggle_from_query(params, 'effects_logic');
+}
 
 function update_inventory() {
     $('#FilterBestiaryForm').submit();
@@ -76,6 +106,16 @@ $('body')
             url: $form.attr('action'),
             data: $form.serialize()
         }).done(function (data) {
+            // Create URL with Filter fields
+            var params_start = this.url.lastIndexOf('/?')
+            if (params_start > -1){
+                var index_start = Math.min(params_start + 2, this.url.length - 1) // +2 because /? are 2 symbols
+                var params = clean_query_params(this.url.substring(index_start))
+                $("#idapply").remove() // Apply button adds something to data :/
+                history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/inventory/')) + '/?' + params)
+            }
+            //
+
             ToggleLoading($('body'), false);
             $('#bestiary-inventory').replaceWith(data);
 
@@ -100,6 +140,23 @@ $('body')
             $(this).val(null).trigger("change");
         });
         $('#id_sort').val('');
+
+        //Select2 inputs
+        $form.find('select').each(function() {
+            $(this).val(null).trigger("change");
+        });
+
+        //Sliders
+        $form.find("[data-provide='slider']").each(function() {
+            var $el = $(this),
+                min = $el.data('slider-min'),
+                max = $el.data('slider-max');
+            $(this).slider('setValue', [min, max]);
+        });
+
+        // Toggle button
+        $("input[name='effects_logic']").prop("checked", false);
+        $("input[name='effects_logic']").parent().addClass('off');
 
         update_inventory();
     })

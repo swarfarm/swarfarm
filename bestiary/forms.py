@@ -145,7 +145,7 @@ class FilterMonsterForm(forms.Form):
     sort = forms.CharField(required=False)
 
     helper = FormHelper()
-    helper.form_method = 'post'
+    helper.form_method = 'get'
     helper.form_id = 'FilterBestiaryForm'
     helper.layout = Layout(
         Div(

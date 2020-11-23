@@ -63,7 +63,7 @@ def inventory(request, profile_name, box_grouping=None):
         'assigned_to', 'assigned_to__monster'
     ).order_by('-quality', '-level')
     total_count = artifact_queryset.count()
-    form = FilterArtifactForm(request.POST or None)
+    form = FilterArtifactForm(request.GET or None)
 
     if form.is_valid():
         artifact_filter = ArtifactInstanceFilter(form.cleaned_data, queryset=artifact_queryset)

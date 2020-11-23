@@ -68,7 +68,7 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
     rune_queryset = RuneInstance.objects.filter(owner=summoner).select_related('assigned_to', 'assigned_to__monster')
     total_count = rune_queryset.count()
-    form = FilterRuneForm(request.POST or None)
+    form = FilterRuneForm(request.GET or None)
 
     if form.is_valid():
         rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)

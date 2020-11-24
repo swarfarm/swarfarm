@@ -1,0 +1,89 @@
+version: '3.7'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    restart: on-failure
+
+  redis:
+    image: redis:6-alpine
+    restart: on-failure
+    volumes:
+      - redis_data:/data
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:13-alpine
+    restart: on-failure
+    volumes:
+      - ./deployment_assets/reset_sequences.sql:/reset_sequences.sql:ro
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=md5
+      - POSTGRES_DB=${SQL_DB:-swarfarm_dev}
+      - POSTGRES_USER=${SQL_USER:-swarfarmer_dev}
+      - POSTGRES_PASSWORD=${SQL_PASS:-intentionallyweak}
+
+  swarfarm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PRODUCTION=${IS_PRODUCTION:-False}
+    image: swarfarm
+    restart: on-failure
+    depends_on:
+      - postgres
+    env_file:
+      .env
+    environment:
+      - DATABASE_URL=psql://${SQL_USER:-swarfarmer_dev}:${SQL_PASS:-intentionallyweak}@postgres:5432/${SQL_DB:-swarfarm_dev}
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+    command: ["gunicorn", "--workers", "2", "--worker-class", "eventlet", "--timeout", "120", "--bind", "0.0.0.0:8000", "--reload", "swarfarm.wsgi:application"]
+
+  celery_worker:
+    image: swarfarm
+    restart: on-failure
+    depends_on:
+      - swarfarm
+      - postgres
+      - rabbitmq
+    env_file:
+      .env
+    environment:
+      - DATABASE_URL=psql://${SQL_USER:-swarfarmer_dev}:${SQL_PASS:-intentionallyweak}@postgres:5432/${SQL_DB:-swarfarm_dev}
+    command: sh -c "/app/deployment_assets/wait-for rabbitmq:5672 && /app/deployment_assets/wait-for swarfarm:8000 -- celery --workdir=/app -A swarfarm.celery worker --loglevel=info"
+
+  celery_beat:
+    image: swarfarm
+    restart: on-failure
+    depends_on:
+      - swarfarm
+      - postgres
+      - rabbitmq
+    env_file:
+      .env
+    environment:
+      - DATABASE_URL=psql://${SQL_USER:-swarfarmer_dev}:${SQL_PASS:-intentionallyweak}@postgres:5432/${SQL_DB:-swarfarm_dev}
+    command: sh -c "/app/deployment_assets/wait-for rabbitmq:5672 && /app/deployment_assets/wait-for swarfarm:8000 -- celery --workdir=/app -A swarfarm.celery beat --loglevel=info -S django"
+
+  nginx:
+    image: nginx:alpine
+    restart: on-failure
+    depends_on:
+      - swarfarm
+    volumes:
+      - static_volume:/app/static:ro
+      - ./deployment_assets/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+
+volumes:
+  redis_data:
+  postgres_data:
+  static_volume:

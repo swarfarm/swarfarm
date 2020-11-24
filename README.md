@@ -99,6 +99,9 @@ Your Network Sharing doesn't allow Vargant to access your files. To fix this:
 
 This can open up some security holes; a better solution is welcome.
 
+### Using docker instead of Vagrant
+The documentation for the setup using Docker can be found under [docs/docker_environment.md](docs/docker_environment.md).
+
 ### Creating your admin user
 Run `python manage.py createsuperuser` and follow the prompts.
 

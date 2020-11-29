@@ -46,6 +46,7 @@ def parse_sw_json(data, owner, options):
     parsed_artifact_crafts = []
     parsed_mons = []
     parsed_inventory = {}
+    parsed_monster_shrine = {}
     parsed_monster_pieces = []
     parsed_buildings = []
 
@@ -65,6 +66,7 @@ def parse_sw_json(data, owner, options):
     craft_info = data.get('rune_craft_item_list')  # Optional
     artifact_info = data.get('artifacts')  # Optional
     artifact_craft_info = data.get('artifact_crafts')  # Optional
+    monster_shrine_info = data.get('unit_storage_list')  # Optional
 
     # Buildings
     storage_building_id = None
@@ -117,6 +119,10 @@ def parse_sw_json(data, owner, options):
                             pieces=quantity,
                             owner=owner,
                         ))
+    if monster_shrine_info:
+        for item in monster_shrine_info:
+            parsed_monster_shrine[item['unit_master_id']] = item['quantity']
+
 
     # Extract Rune Inventory (unequipped runes)
     if runes_info:
@@ -262,6 +268,7 @@ def parse_sw_json(data, owner, options):
         'artifacts': parsed_artifacts,
         'artifact_crafts': parsed_artifact_crafts,
         'inventory': parsed_inventory,
+        'monster_shrine': parsed_monster_shrine,
         'buildings': parsed_buildings,
         'rta_assignments': data['world_arena_rune_equip_list']
     }

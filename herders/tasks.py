@@ -8,7 +8,7 @@ from .models import Summoner, MaterialStorage, MonsterShrineStorage, MonsterInst
 from .profile_parser import parse_sw_json
 from .signals import update_profile_date
 
-from bestiary.models import GameItem
+from bestiary.models import GameItem, Monster
 
 
 @shared_task
@@ -50,12 +50,14 @@ def com2us_data_import(data, user_id, import_options):
             summoner.com2us_id = results['wizard_id']
             summoner.save()
 
-        # bulk update or create
+        # inventory bulk update or create
         all_inv_items = {gi.com2us_id: gi for gi in GameItem.objects.all()}
         summoner_inv_items = {ms.item_id: ms for ms in MaterialStorage.objects.filter(owner=summoner)}
         summoner_new_inv_items = []
         summoner_old_inv_items = []
         for key, val in results['inventory'].items():
+            if key not in all_inv_items:
+                continue # GameItem doesn't exist
             if key in summoner_inv_items:
                 summoner_old_inv_items.append(summoner_inv_items[key])
                 summoner_old_inv_items[-1].quantity = val
@@ -65,10 +67,38 @@ def com2us_data_import(data, user_id, import_options):
                     item=all_inv_items[key], 
                     quantity=val)
                 )
+        
+        # inventory remove old records if no update for them
+        for key, val in summoner_inv_items.items():
+            if key not in results['inventory']:
+                val.delete()
         MaterialStorage.objects.bulk_create(summoner_new_inv_items)
         MaterialStorage.objects.bulk_update(summoner_old_inv_items, ['quantity'])
 
-        # TODO: add summoner MonsterShrineStorage records
+        # monster shrine bulk update or create
+        all_monsters = {m.com2us_id: m for m in Monster.objects.all()}
+        summoner_mon_shrine = {mss.item_id: mss for mss in MonsterShrineStorage.objects.filter(owner=summoner)}
+        summoner_new_mon_shrine = []
+        summoner_old_mon_shrine = []
+        for key, val in results['monster_shrine'].items():
+            if key not in all_monsters:
+                continue # Monster doesn't exist
+            if key in summoner_mon_shrine:
+                summoner_old_mon_shrine.append(summoner_mon_shrine[key])
+                summoner_old_mon_shrine[-1].quantity = val
+            else:
+                summoner_new_mon_shrine.append(MonsterShrineStorage(
+                    owner=summoner, 
+                    item=all_monsters[key], 
+                    quantity=val)
+                )
+        
+        # monster shrine remove old records if no update for them
+        for key, val in summoner_mon_shrine.items():
+            if key not in results['monster_shrine']:
+                val.delete()
+        MonsterShrineStorage.objects.bulk_create(summoner_new_mon_shrine)
+        MonsterShrineStorage.objects.bulk_update(summoner_old_mon_shrine, ['quantity'])
 
         # Save imported buildings
         for bldg in results['buildings']:

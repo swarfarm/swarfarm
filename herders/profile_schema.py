@@ -162,6 +162,15 @@ HubUserLoginSchema = {
             },
             'required': ['item_master_type', 'item_quantity', 'item_master_id']
         },
+        'unit_storage_list': {
+            'type': 'array',
+            'items': {
+                'quantity': {'type': 'number'},
+                'unit_master_id': {'type': 'number'},
+                'class': {'type': 'number'},
+            },
+            'required': ['unit_master_id', 'quantity']
+        },
         'runes': {
             'type': 'array',
             'items': {'$ref': '#/definitions/rune'},

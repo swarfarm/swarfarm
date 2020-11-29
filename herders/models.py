@@ -54,20 +54,13 @@ class Summoner(models.Model):
     def save(self, *args, **kwargs):
         super(Summoner, self).save(*args, **kwargs)
 
-        # TODO: update Storage to new db 
-        # Update new storage model
-        # if not hasattr(self, 'storage'):
-        #     new_storage = Storage.objects.create(
-        #         owner=self,
-        #     )
-        #     new_storage.save()
-
     def __str__(self):
         return self.user.username
 
 
 def _default_storage_data():
     return [0, 0, 0]
+
 
 class MaterialStorage(models.Model):
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
@@ -81,7 +74,8 @@ class MaterialStorage(models.Model):
 
     def save(self, *args, **kwargs):
         self.quantity = map(self._min_zero, self.quantity)
-        super(Storage, self).save(*args, **kwargs)
+        super(MaterialStorage, self).save(*args, **kwargs)
+
 
 class MonsterShrineStorage(models.Model):
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
@@ -94,7 +88,7 @@ class MonsterShrineStorage(models.Model):
 
     def save(self, *args, **kwargs):
         self.quantity = map(self._min_zero, self.quantity)
-        super(Storage, self).save(*args, **kwargs)
+        super(MonsterShrineStorage, self).save(*args, **kwargs)
 
 
 class MonsterTag(models.Model):

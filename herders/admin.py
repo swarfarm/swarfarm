@@ -115,4 +115,8 @@ class ArtifactCraftInstanceAdmin(admin.ModelAdmin):
 class MaterialStorageAdmin(admin.ModelAdmin):
     readonly_fields = ('owner', )
 
+@admin.register(models.MonsterShrineStorage)
+class MonsterShrineStorageAdmin(admin.ModelAdmin):
+    readonly_fields = ('owner', )
+
 admin.site.register(models.BuildingInstance)

@@ -21,7 +21,7 @@ from django.utils.html import mark_safe
 from herders.decorators import username_case_redirect
 from herders.forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, EditUserForm, \
     EditSummonerForm, EditBuildingForm, ImportSWParserJSONForm
-from herders.models import Summoner, Storage, Building, BuildingInstance
+from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, Building, BuildingInstance
 from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
@@ -261,31 +261,32 @@ def storage(request, profile_name):
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     if is_owner:
+        # TODO: update Storage to new db 
         craft_mats = []
         essence_mats = []
         monster_mats = []
 
-        for field_name in Storage.ESSENCE_FIELDS:
-            essence_mats.append({
-                'name': summoner.storage._meta.get_field(field_name).help_text,
-                'field_name': field_name,
-                'element': field_name.split('_')[0],
-                'qty': getattr(summoner.storage, field_name)
-            })
+        # for field_name in Storage.ESSENCE_FIELDS:
+        #     essence_mats.append({
+        #         'name': summoner.storage._meta.get_field(field_name).help_text,
+        #         'field_name': field_name,
+        #         'element': field_name.split('_')[0],
+        #         'qty': getattr(summoner.storage, field_name)
+        #     })
 
-        for field_name in Storage.CRAFT_FIELDS:
-            craft_mats.append({
-                'name': summoner.storage._meta.get_field(field_name).help_text,
-                'field_name': field_name,
-                'qty': getattr(summoner.storage, field_name)
-            })
+        # for field_name in Storage.CRAFT_FIELDS:
+        #     craft_mats.append({
+        #         'name': summoner.storage._meta.get_field(field_name).help_text,
+        #         'field_name': field_name,
+        #         'qty': getattr(summoner.storage, field_name)
+        #     })
 
-        for field_name in Storage.MONSTER_FIELDS:
-            monster_mats.append({
-                'name': summoner.storage._meta.get_field(field_name).help_text,
-                'field_name': field_name if not field_name.startswith('rainbowmon') else 'rainbowmon',
-                'qty': getattr(summoner.storage, field_name)
-            })
+        # for field_name in Storage.MONSTER_FIELDS:
+        #     monster_mats.append({
+        #         'name': summoner.storage._meta.get_field(field_name).help_text,
+        #         'field_name': field_name if not field_name.startswith('rainbowmon') else 'rainbowmon',
+        #         'qty': getattr(summoner.storage, field_name)
+        #     })
 
         context = {
             'is_owner': is_owner,
@@ -312,40 +313,41 @@ def storage_update(request, profile_name):
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     if is_owner and request.POST:
-        field_name = request.POST.get('name')
-        try:
-            new_value = int(request.POST.get('value'))
-        except ValueError:
-            return HttpResponseBadRequest('Invalid Entry')
+        # TODO: update Storage to new db 
+        # field_name = request.POST.get('name')
+        # try:
+        #     new_value = int(request.POST.get('value'))
+        # except ValueError:
+        #     return HttpResponseBadRequest('Invalid Entry')
 
-        essence_size = None
+        # essence_size = None
 
-        if 'essence' in field_name:
-            # Split the actual field name off from the size
-            try:
-                field_name, essence_size = field_name.split('.')
-                size_map = {
-                    'low': Storage.ESSENCE_LOW,
-                    'mid': Storage.ESSENCE_MID,
-                    'high': Storage.ESSENCE_HIGH,
-                }
-                essence_size = size_map[essence_size]
-            except (ValueError, KeyError):
-                return HttpResponseBadRequest()
+        # if 'essence' in field_name:
+        #     # Split the actual field name off from the size
+        #     try:
+        #         field_name, essence_size = field_name.split('.')
+        #         size_map = {
+        #             'low': Storage.ESSENCE_LOW,
+        #             'mid': Storage.ESSENCE_MID,
+        #             'high': Storage.ESSENCE_HIGH,
+        #         }
+        #         essence_size = size_map[essence_size]
+        #     except (ValueError, KeyError):
+        #         return HttpResponseBadRequest()
 
-        try:
-            Storage._meta.get_field(field_name)
-        except FieldDoesNotExist:
-            return HttpResponseBadRequest()
-        else:
-            if essence_size is not None:
-                # Get a copy of the size array and set the correct index to new value
-                essence_list = getattr(summoner.storage, field_name)
-                essence_list[essence_size] = new_value
-                new_value = essence_list
+        # try:
+        #     Storage._meta.get_field(field_name)
+        # except FieldDoesNotExist:
+        #     return HttpResponseBadRequest()
+        # else:
+        #     if essence_size is not None:
+        #         # Get a copy of the size array and set the correct index to new value
+        #         essence_list = getattr(summoner.storage, field_name)
+        #         essence_list[essence_size] = new_value
+        #         new_value = essence_list
 
-            setattr(summoner.storage, field_name, new_value)
-            summoner.storage.save()
+        #     setattr(summoner.storage, field_name, new_value)
+        #     summoner.storage.save()
             return HttpResponse()
     else:
         return HttpResponseForbidden()

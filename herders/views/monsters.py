@@ -19,7 +19,7 @@ from herders.forms import FilterMonsterInstanceForm, \
     AddMonsterInstanceForm, BulkAddMonsterInstanceForm, \
     BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
     MonsterPieceForm
-from herders.models import Summoner, MonsterInstance, MonsterPiece, Storage, ArtifactInstance
+from herders.models import Summoner, MonsterInstance, MonsterPiece, MaterialStorage, MonsterShrineStorage, ArtifactInstance
 
 DEFAULT_VIEW_MODE = 'box'
 
@@ -762,26 +762,27 @@ def monster_instance_awaken(request, profile_name, instance_id):
                     if form.cleaned_data['subtract_materials']:
                         summoner = Summoner.objects.get(user=request.user)
 
-                        summoner.storage.magic_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_magic_high
-                        summoner.storage.magic_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_magic_mid
-                        summoner.storage.magic_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_magic_low
-                        summoner.storage.fire_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_fire_high
-                        summoner.storage.fire_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_fire_mid
-                        summoner.storage.fire_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_fire_low
-                        summoner.storage.water_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_water_high
-                        summoner.storage.water_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_water_mid
-                        summoner.storage.water_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_water_low
-                        summoner.storage.wind_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_wind_high
-                        summoner.storage.wind_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_wind_mid
-                        summoner.storage.wind_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_wind_low
-                        summoner.storage.dark_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_dark_high
-                        summoner.storage.dark_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_dark_mid
-                        summoner.storage.dark_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_dark_low
-                        summoner.storage.light_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_light_high
-                        summoner.storage.light_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_light_mid
-                        summoner.storage.light_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_light_low
+                        # TODO: update Storage to new db 
+                        # summoner.storage.magic_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_magic_high
+                        # summoner.storage.magic_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_magic_mid
+                        # summoner.storage.magic_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_magic_low
+                        # summoner.storage.fire_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_fire_high
+                        # summoner.storage.fire_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_fire_mid
+                        # summoner.storage.fire_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_fire_low
+                        # summoner.storage.water_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_water_high
+                        # summoner.storage.water_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_water_mid
+                        # summoner.storage.water_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_water_low
+                        # summoner.storage.wind_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_wind_high
+                        # summoner.storage.wind_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_wind_mid
+                        # summoner.storage.wind_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_wind_low
+                        # summoner.storage.dark_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_dark_high
+                        # summoner.storage.dark_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_dark_mid
+                        # summoner.storage.dark_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_dark_low
+                        # summoner.storage.light_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_light_high
+                        # summoner.storage.light_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_light_mid
+                        # summoner.storage.light_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_light_low
 
-                        summoner.storage.save()
+                        # summoner.storage.save()
 
                     # Perform the awakening by instance's monster source ID
                     monster.monster = monster.monster.awakens_to
@@ -792,22 +793,24 @@ def monster_instance_awaken(request, profile_name, instance_id):
                         'removeElement': '#awakenMonsterButton',
                     }
                 else:
-                    storage = summoner.storage.get_storage()
-                    available_essences = OrderedDict()
+                    # TODO: update Storage to new db 
+                    # storage = summoner.storage.get_storage()
+                    # available_essences = OrderedDict()
 
-                    for element, essences in monster.monster.get_awakening_materials().items():
-                        available_essences[element] = OrderedDict()
-                        for size, cost in essences.items():
-                            if cost > 0:
-                                available_essences[element][size] = {
-                                    'qty': storage[element][size],
-                                    'sufficient': storage[element][size] >= cost,
-                                }
+                    # for element, essences in monster.monster.get_awakening_materials().items():
+                    #     available_essences[element] = OrderedDict()
+                    #     for size, cost in essences.items():
+                    #         if cost > 0:
+                    #             available_essences[element][size] = {
+                    #                 'qty': storage[element][size],
+                    #                 'sufficient': storage[element][size] >= cost,
+                    #             }
 
                     context = {
                         'code': 'confirm',
                         'awaken_form': form,
-                        'available_essences': available_essences,
+                        # 'available_essences': available_essences,
+                        'available_essences': {},
                         'instance': monster,
                     }
                     context.update(csrf(request))

@@ -11,7 +11,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from timezone_field import TimeZoneField
 
-from bestiary.models import base, Monster, Building, Level, Rune, RuneCraft, Artifact, ArtifactCraft
+from bestiary.models import base, Monster, Building, Level, Rune, RuneCraft, Artifact, ArtifactCraft, GameItem
 
 
 # Individual user/monster collection models
@@ -54,12 +54,13 @@ class Summoner(models.Model):
     def save(self, *args, **kwargs):
         super(Summoner, self).save(*args, **kwargs)
 
+        # TODO: update Storage to new db 
         # Update new storage model
-        if not hasattr(self, 'storage'):
-            new_storage = Storage.objects.create(
-                owner=self,
-            )
-            new_storage.save()
+        # if not hasattr(self, 'storage'):
+        #     new_storage = Storage.objects.create(
+        #         owner=self,
+        #     )
+        #     new_storage.save()
 
     def __str__(self):
         return self.user.username
@@ -68,175 +69,31 @@ class Summoner(models.Model):
 def _default_storage_data():
     return [0, 0, 0]
 
+class MaterialStorage(models.Model):
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    item = models.ForeignKey(GameItem, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
 
-class Storage(models.Model):
-    ESSENCE_LOW = 0
-    ESSENCE_MID = 1
-    ESSENCE_HIGH = 2
-
-    ESSENCE_SIZES = [
-        (ESSENCE_LOW, 'Low'),
-        (ESSENCE_MID, 'Mid'),
-        (ESSENCE_HIGH, 'High'),
-    ]
-
-    ESSENCE_FIELDS = ['magic_essence', 'fire_essence', 'water_essence', 'wind_essence', 'light_essence', 'dark_essence']
-    CRAFT_FIELDS = [
-        'wood',
-        'leather',
-        'rock',
-        'ore',
-        'mithril',
-        'cloth',
-        'rune_piece',
-        'dust',
-        'symbol_harmony',
-        'symbol_transcendance',
-        'symbol_chaos',
-        'crystal_water',
-        'crystal_fire',
-        'crystal_wind',
-        'crystal_light',
-        'crystal_dark',
-        'crystal_magic',
-        'crystal_pure',
-        'conversion_stone',
-    ]
-    MONSTER_FIELDS = [
-        'fire_angelmon',
-        'water_angelmon',
-        'wind_angelmon',
-        'light_angelmon',
-        'dark_angelmon',
-        'fire_king_angelmon',
-        'water_king_angelmon',
-        'wind_king_angelmon',
-        'light_king_angelmon',
-        'dark_king_angelmon',
-        'rainbowmon_2_20',
-        'rainbowmon_3_1',
-        'rainbowmon_3_25',
-        'rainbowmon_4_1',
-        'rainbowmon_4_30',
-        'rainbowmon_5_1',
-        'super_angelmon',
-        'devilmon',
-    ]
-
-    owner = models.OneToOneField(Summoner, on_delete=models.CASCADE)
-
-    # Elemental Essences
-    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Magic Essence')
-    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Fire Essence')
-    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Water Essence')
-    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Wind Essence')
-    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Light Essence')
-    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Dark Essence')
-
-    # Crafting materials
-    wood = models.IntegerField(default=0, help_text='Hard Wood')
-    leather = models.IntegerField(default=0, help_text='Tough Leather')
-    rock = models.IntegerField(default=0, help_text='Solid Rock')
-    ore = models.IntegerField(default=0, help_text='Solid Iron Ore')
-    mithril = models.IntegerField(default=0, help_text='Shining Mythril')
-    cloth = models.IntegerField(default=0, help_text='Thick Cloth')
-    rune_piece = models.IntegerField(default=0, help_text='Rune Piece')
-    dust = models.IntegerField(default=0, help_text='Magic Dust')
-    symbol_harmony = models.IntegerField(default=0, help_text='Symbol of Harmony')
-    symbol_transcendance = models.IntegerField(default=0, help_text='Symbol of Transcendance')
-    symbol_chaos = models.IntegerField(default=0, help_text='Symbol of Chaos')
-    crystal_water = models.IntegerField(default=0, help_text='Frozen Water Crystal')
-    crystal_fire = models.IntegerField(default=0, help_text='Flaming Fire Crystal')
-    crystal_wind = models.IntegerField(default=0, help_text='Whirling Wind Crystal')
-    crystal_light = models.IntegerField(default=0, help_text='Shiny Light Crystal')
-    crystal_dark = models.IntegerField(default=0, help_text='Pitch-black Dark Crystal')
-    crystal_magic = models.IntegerField(default=0, help_text='Condensed Magic Crystal')
-    crystal_pure = models.IntegerField(default=0, help_text='Pure Magic Crystal')
-    conversion_stone = models.IntegerField(default=0, help_text='Conversion Stone')
-
-    # Material monsters
-    fire_angelmon = models.IntegerField(default=0, help_text='Fire Angelmon')
-    water_angelmon = models.IntegerField(default=0, help_text='Water Angelmon')
-    wind_angelmon = models.IntegerField(default=0, help_text='Wind Angelmon')
-    light_angelmon = models.IntegerField(default=0, help_text='Light Angelmon')
-    dark_angelmon = models.IntegerField(default=0, help_text='Dark Angelmon')
-
-    fire_king_angelmon = models.IntegerField(default=0, help_text='Fire King Angelmon')
-    water_king_angelmon = models.IntegerField(default=0, help_text='Water King Angelmon')
-    wind_king_angelmon = models.IntegerField(default=0, help_text='Wind King Angelmon')
-    light_king_angelmon = models.IntegerField(default=0, help_text='Light King Angelmon')
-    dark_king_angelmon = models.IntegerField(default=0, help_text='Dark King Angelmon')
-
-    super_angelmon = models.IntegerField(default=0, help_text='Super Angelmon')
-    devilmon = models.IntegerField(default=0, help_text='Devilmon')
-
-    rainbowmon_2_20 = models.IntegerField(default=0, help_text='Rainbowmon 2⭐ lv.20')
-    rainbowmon_3_1 = models.IntegerField(default=0, help_text='Rainbowmon 3⭐ lv.1')
-    rainbowmon_3_25 = models.IntegerField(default=0, help_text='Rainbowmon 3⭐ lv.25')
-    rainbowmon_4_1 = models.IntegerField(default=0, help_text='Rainbowmon 4⭐ lv.1')
-    rainbowmon_4_30 = models.IntegerField(default=0, help_text='Rainbowmon 4⭐ lv.30')
-    rainbowmon_5_1 = models.IntegerField(default=0, help_text='Rainbowmon 5⭐ lv.1')
-
-    def get_storage(self):
-        storage = OrderedDict()
-        storage['magic'] = OrderedDict()
-        storage['magic']['low'] = self.magic_essence[Storage.ESSENCE_LOW]
-        storage['magic']['mid'] = self.magic_essence[Storage.ESSENCE_MID]
-        storage['magic']['high'] = self.magic_essence[Storage.ESSENCE_HIGH]
-        storage['fire'] = OrderedDict()
-        storage['fire']['low'] = self.fire_essence[Storage.ESSENCE_LOW]
-        storage['fire']['mid'] = self.fire_essence[Storage.ESSENCE_MID]
-        storage['fire']['high'] = self.fire_essence[Storage.ESSENCE_HIGH]
-        storage['water'] = OrderedDict()
-        storage['water']['low'] = self.water_essence[Storage.ESSENCE_LOW]
-        storage['water']['mid'] = self.water_essence[Storage.ESSENCE_MID]
-        storage['water']['high'] = self.water_essence[Storage.ESSENCE_HIGH]
-        storage['wind'] = OrderedDict()
-        storage['wind']['low'] = self.wind_essence[Storage.ESSENCE_LOW]
-        storage['wind']['mid'] = self.wind_essence[Storage.ESSENCE_MID]
-        storage['wind']['high'] = self.wind_essence[Storage.ESSENCE_HIGH]
-        storage['light'] = OrderedDict()
-        storage['light']['low'] = self.light_essence[Storage.ESSENCE_LOW]
-        storage['light']['mid'] = self.light_essence[Storage.ESSENCE_MID]
-        storage['light']['high'] = self.light_essence[Storage.ESSENCE_HIGH]
-        storage['dark'] = OrderedDict()
-        storage['dark']['low'] = self.dark_essence[Storage.ESSENCE_LOW]
-        storage['dark']['mid'] = self.dark_essence[Storage.ESSENCE_MID]
-        storage['dark']['high'] = self.dark_essence[Storage.ESSENCE_HIGH]
-
-        return storage
 
     @staticmethod
     def _min_zero(x):
         return max(x, 0)
 
     def save(self, *args, **kwargs):
-        # Ensure all are at 0 or higher
-        self.magic_essence = list(map(self._min_zero, self.magic_essence))
-        self.fire_essence = list(map(self._min_zero, self.fire_essence))
-        self.wind_essence = list(map(self._min_zero, self.wind_essence))
-        self.light_essence = list(map(self._min_zero, self.light_essence))
-        self.dark_essence = list(map(self._min_zero, self.dark_essence))
+        self.quantity = map(self._min_zero, self.quantity)
+        super(Storage, self).save(*args, **kwargs)
 
-        self.wood = max(self.wood, 0)
-        self.leather = max(self.leather, 0)
-        self.rock = max(self.rock, 0)
-        self.ore = max(self.ore, 0)
-        self.mithril = max(self.mithril, 0)
-        self.cloth = max(self.cloth, 0)
-        self.rune_piece = max(self.rune_piece, 0)
-        self.dust = max(self.dust, 0)
-        self.symbol_harmony = max(self.symbol_harmony, 0)
-        self.symbol_transcendance = max(self.symbol_transcendance, 0)
-        self.symbol_chaos = max(self.symbol_chaos, 0)
-        self.crystal_water = max(self.crystal_water, 0)
-        self.crystal_fire = max(self.crystal_fire, 0)
-        self.crystal_wind = max(self.crystal_wind, 0)
-        self.crystal_light = max(self.crystal_light, 0)
-        self.crystal_dark = max(self.crystal_dark, 0)
-        self.crystal_magic = max(self.crystal_magic, 0)
-        self.crystal_pure = max(self.crystal_pure, 0)
+class MonsterShrineStorage(models.Model):
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    item = models.ForeignKey(Monster, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
 
+    @staticmethod
+    def _min_zero(x):
+        return max(x, 0)
+
+    def save(self, *args, **kwargs):
+        self.quantity = map(self._min_zero, self.quantity)
         super(Storage, self).save(*args, **kwargs)
 
 

@@ -52,7 +52,7 @@ def com2us_data_import(data, user_id, import_options):
 
         # inventory bulk update or create
         all_inv_items = {gi.com2us_id: gi for gi in GameItem.objects.all()}
-        summoner_inv_items = {ms.item_id: ms for ms in MaterialStorage.objects.filter(owner=summoner)}
+        summoner_inv_items = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
         summoner_new_inv_items = []
         summoner_old_inv_items = []
         for key, val in results['inventory'].items():
@@ -77,7 +77,7 @@ def com2us_data_import(data, user_id, import_options):
 
         # monster shrine bulk update or create
         all_monsters = {m.com2us_id: m for m in Monster.objects.all()}
-        summoner_mon_shrine = {mss.item_id: mss for mss in MonsterShrineStorage.objects.filter(owner=summoner)}
+        summoner_mon_shrine = {mss.item.com2us_id: mss for mss in MonsterShrineStorage.objects.select_related('item').filter(owner=summoner)}
         summoner_new_mon_shrine = []
         summoner_old_mon_shrine = []
         for key, val in results['monster_shrine'].items():

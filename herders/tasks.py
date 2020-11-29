@@ -8,6 +8,8 @@ from .models import Summoner, MaterialStorage, MonsterShrineStorage, MonsterInst
 from .profile_parser import parse_sw_json
 from .signals import update_profile_date
 
+from bestiary.models import GameItem
+
 
 @shared_task
 def com2us_data_import(data, user_id, import_options):
@@ -48,66 +50,25 @@ def com2us_data_import(data, user_id, import_options):
             summoner.com2us_id = results['wizard_id']
             summoner.save()
 
-        # TODO: update Storage to new db 
-        # summoner.storage.magic_essence[Storage.ESSENCE_LOW] = results['inventory'].get('storage_magic_low', 0)
-        # summoner.storage.magic_essence[Storage.ESSENCE_MID] = results['inventory'].get('storage_magic_mid', 0)
-        # summoner.storage.magic_essence[Storage.ESSENCE_HIGH] = results['inventory'].get('storage_magic_high', 0)
-        # summoner.storage.fire_essence[Storage.ESSENCE_LOW] = results['inventory'].get('storage_fire_low', 0)
-        # summoner.storage.fire_essence[Storage.ESSENCE_MID] = results['inventory'].get('storage_fire_mid', 0)
-        # summoner.storage.fire_essence[Storage.ESSENCE_HIGH] = results['inventory'].get('storage_fire_high', 0)
-        # summoner.storage.water_essence[Storage.ESSENCE_LOW] = results['inventory'].get('storage_water_low', 0)
-        # summoner.storage.water_essence[Storage.ESSENCE_MID] = results['inventory'].get('storage_water_mid', 0)
-        # summoner.storage.water_essence[Storage.ESSENCE_HIGH] = results['inventory'].get('storage_water_high', 0)
-        # summoner.storage.wind_essence[Storage.ESSENCE_LOW] = results['inventory'].get('storage_wind_low', 0)
-        # summoner.storage.wind_essence[Storage.ESSENCE_MID] = results['inventory'].get('storage_wind_mid', 0)
-        # summoner.storage.wind_essence[Storage.ESSENCE_HIGH] = results['inventory'].get('storage_wind_high', 0)
-        # summoner.storage.light_essence[Storage.ESSENCE_LOW] = results['inventory'].get('storage_light_low', 0)
-        # summoner.storage.light_essence[Storage.ESSENCE_MID] = results['inventory'].get('storage_light_mid', 0)
-        # summoner.storage.light_essence[Storage.ESSENCE_HIGH] = results['inventory'].get('storage_light_high', 0)
-        # summoner.storage.dark_essence[Storage.ESSENCE_LOW] = results['inventory'].get('storage_dark_low', 0)
-        # summoner.storage.dark_essence[Storage.ESSENCE_MID] = results['inventory'].get('storage_dark_mid', 0)
-        # summoner.storage.dark_essence[Storage.ESSENCE_HIGH] = results['inventory'].get('storage_dark_high', 0)
+        # bulk update or create
+        all_inv_items = {gi.com2us_id: gi for gi in GameItem.objects.all()}
+        summoner_inv_items = {ms.item_id: ms for ms in MaterialStorage.objects.filter(owner=summoner)}
+        summoner_new_inv_items = []
+        summoner_old_inv_items = []
+        for key, val in results['inventory'].items():
+            if key in summoner_inv_items:
+                summoner_old_inv_items.append(summoner_inv_items[key])
+                summoner_old_inv_items[-1].quantity = val
+            else:
+                summoner_new_inv_items.append(MaterialStorage(
+                    owner=summoner, 
+                    item=all_inv_items[key], 
+                    quantity=val)
+                )
+        MaterialStorage.objects.bulk_create(summoner_new_inv_items)
+        MaterialStorage.objects.bulk_update(summoner_old_inv_items, ['quantity'])
 
-        # summoner.storage.wood = results['inventory'].get('wood', 0)
-        # summoner.storage.leather = results['inventory'].get('leather', 0)
-        # summoner.storage.rock = results['inventory'].get('rock', 0)
-        # summoner.storage.ore = results['inventory'].get('ore', 0)
-        # summoner.storage.mithril = results['inventory'].get('mithril', 0)
-        # summoner.storage.cloth = results['inventory'].get('cloth', 0)
-        # summoner.storage.rune_piece = results['inventory'].get('rune_piece', 0)
-        # summoner.storage.dust = results['inventory'].get('powder', 0)
-        # summoner.storage.symbol_harmony = results['inventory'].get('symbol_harmony', 0)
-        # summoner.storage.symbol_transcendance = results['inventory'].get('symbol_transcendance', 0)
-        # summoner.storage.symbol_chaos = results['inventory'].get('symbol_chaos', 0)
-        # summoner.storage.crystal_water = results['inventory'].get('crystal_water', 0)
-        # summoner.storage.crystal_fire = results['inventory'].get('crystal_fire', 0)
-        # summoner.storage.crystal_wind = results['inventory'].get('crystal_wind', 0)
-        # summoner.storage.crystal_light = results['inventory'].get('crystal_light', 0)
-        # summoner.storage.crystal_dark = results['inventory'].get('crystal_dark', 0)
-        # summoner.storage.crystal_magic = results['inventory'].get('crystal_magic', 0)
-        # summoner.storage.crystal_pure = results['inventory'].get('crystal_pure', 0)
-        # summoner.storage.conversion_stone = results['inventory'].get('conversion_stone', 0)
-
-        # summoner.storage.fire_angelmon = results['inventory'].get('fire_angelmon', 0)
-        # summoner.storage.water_angelmon = results['inventory'].get('water_angelmon', 0)
-        # summoner.storage.wind_angelmon = results['inventory'].get('wind_angelmon', 0)
-        # summoner.storage.light_angelmon = results['inventory'].get('light_angelmon', 0)
-        # summoner.storage.dark_angelmon = results['inventory'].get('dark_angelmon', 0)
-        # summoner.storage.fire_king_angelmon = results['inventory'].get('fire_king_angelmon', 0)
-        # summoner.storage.water_king_angelmon = results['inventory'].get('water_king_angelmon', 0)
-        # summoner.storage.wind_king_angelmon = results['inventory'].get('wind_king_angelmon', 0)
-        # summoner.storage.light_king_angelmon = results['inventory'].get('light_king_angelmon', 0)
-        # summoner.storage.dark_king_angelmon = results['inventory'].get('dark_king_angelmon', 0)
-        # summoner.storage.super_angelmon = results['inventory'].get('super_angelmon', 0)
-        # summoner.storage.devilmon = results['inventory'].get('devilmon', 0)
-        # summoner.storage.rainbowmon_2_20 = results['inventory'].get('rainbowmon_2_20', 0)
-        # summoner.storage.rainbowmon_3_1 = results['inventory'].get('rainbowmon_3_1', 0)
-        # summoner.storage.rainbowmon_3_25 = results['inventory'].get('rainbowmon_3_25', 0)
-        # summoner.storage.rainbowmon_4_1 = results['inventory'].get('rainbowmon_4_1', 0)
-        # summoner.storage.rainbowmon_4_30 = results['inventory'].get('rainbowmon_4_30', 0)
-        # summoner.storage.rainbowmon_5_1 = results['inventory'].get('rainbowmon_5_1', 0)
-
-        # summoner.storage.save()
+        # TODO: add summoner MonsterShrineStorage records
 
         # Save imported buildings
         for bldg in results['buildings']:

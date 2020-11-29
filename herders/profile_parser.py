@@ -6,71 +6,6 @@ from bestiary.models import Monster, Building, GameItem
 from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance, ArtifactInstance, ArtifactCraftInstance
 from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
-# Game ID to field mappings
-inventory_enhance_monster_map = {
-    142110115: 'water_angelmon',
-    142120115: 'fire_angelmon',
-    142130115: 'wind_angelmon',
-    142140115: 'light_angelmon',
-    142150115: 'dark_angelmon',
-    182110115: 'water_king_angelmon',
-    182120115: 'fire_king_angelmon',
-    182130115: 'wind_king_angelmon',
-    182140115: 'light_king_angelmon',
-    182150115: 'dark_king_angelmon',
-    143140220: 'rainbowmon_2_20',
-    143140301: 'rainbowmon_3_1',
-    143140325: 'rainbowmon_3_25',
-    143140401: 'rainbowmon_4_1',
-    143140430: 'rainbowmon_4_30',
-    143140501: 'rainbowmon_5_1',
-    151050101: 'devilmon',
-    217140115: 'super_angelmon,'
-}
-
-
-inventory_essence_map = {
-    11006: "storage_magic_low",
-    12006: "storage_magic_mid",
-    13006: "storage_magic_high",
-    11001: "storage_water_low",
-    12001: "storage_water_mid",
-    13001: "storage_water_high",
-    11002: "storage_fire_low",
-    12002: "storage_fire_mid",
-    13002: "storage_fire_high",
-    11003: "storage_wind_low",
-    12003: "storage_wind_mid",
-    13003: "storage_wind_high",
-    11004: "storage_light_low",
-    12004: "storage_light_mid",
-    13004: "storage_light_high",
-    11005: "storage_dark_low",
-    12005: "storage_dark_mid",
-    13005: "storage_dark_high",
-}
-
-inventory_craft_map = {
-    1001: 'wood',
-    1002: 'leather',
-    1003: 'rock',
-    1004: 'ore',
-    1005: 'mithril',
-    1006: 'cloth',
-    2001: 'rune_piece',
-    3001: 'powder',
-    4001: 'symbol_harmony',
-    4002: 'symbol_transcendance',
-    4003: 'symbol_chaos',
-    5001: 'crystal_water',
-    5002: 'crystal_fire',
-    5003: 'crystal_wind',
-    5004: 'crystal_light',
-    5005: 'crystal_dark',
-    6001: 'crystal_magic',
-    7001: 'crystal_pure',
-}
-
 
 def validate_sw_json(data, summoner):
     validation_errors = []
@@ -164,18 +99,13 @@ def parse_sw_json(data, owner, options):
     if inventory_info:
         for item in inventory_info:
             # Essence Inventory
-            if item['item_master_type'] == GameItem.CATEGORY_ESSENCE:
-                essence = inventory_essence_map.get(item['item_master_id'])
-                quantity = item.get('item_quantity')
-
-                if essence and quantity:
-                    parsed_inventory[essence] = quantity
-            elif item['item_master_type'] == GameItem.CATEGORY_CRAFT_STUFF:
-                craft = inventory_craft_map.get(item['item_master_id'])
-                quantity = item.get('item_quantity')
-
-                if craft and quantity:
-                    parsed_inventory[craft] = quantity
+            if (
+                item['item_master_type'] == GameItem.CATEGORY_ESSENCE
+                or item['item_master_type'] == GameItem.CATEGORY_CRAFT_STUFF
+                or item['item_master_type'] == GameItem.CATEGORY_MATERIAL_MONSTER
+                or item['item_master_type'] == GameItem.CATEGORY_ARTIFACT_CRAFT
+            ):
+               parsed_inventory[item['item_master_id']] = item['item_quantity']
             elif item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
                 quantity = item.get('item_quantity')
                 if quantity > 0:
@@ -187,16 +117,6 @@ def parse_sw_json(data, owner, options):
                             pieces=quantity,
                             owner=owner,
                         ))
-            elif item['item_master_type'] == GameItem.CATEGORY_MATERIAL_MONSTER:
-                monster = inventory_enhance_monster_map.get(item['item_master_id'])
-                quantity = item.get('item_quantity')
-
-                if monster and quantity:
-                    parsed_inventory[monster] = quantity
-            elif item['item_master_type'] == GameItem.CATEGORY_ARTIFACT_CRAFT:
-                quantity = item.get('item_quantity')
-                if quantity:
-                    parsed_inventory['conversion_stone'] = quantity
 
     # Extract Rune Inventory (unequipped runes)
     if runes_info:

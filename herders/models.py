@@ -489,25 +489,35 @@ class MonsterInstance(models.Model, base.Stars):
 
     def get_possible_skillups(self):
         same_family = Q(monster__family_id=self.monster.family_id)
+        same_family_shrine = Q(item__com2us_id__gte=self.monster.family_id) & Q(item__com2us_id__lt=(self.monster.family_id - 100))
 
         # Handle a few special cases for skillups outside of own family
         # Vampire Lord
         if self.monster.family_id == 23000:
             same_family |= Q(monster__family_id=14700)
+            same_family_shrine |= Q(item__com2us_id__gte=14700) & Q(item__com2us_id__lt=14800)
 
         # Fairy Queen
         if self.monster.family_id == 19100:
             same_family |= Q(monster__family_id=10100)
+            same_family_shrine |= Q(item__com2us_id__gte=10100) & Q(item__com2us_id__lt=10200)
 
         devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count()
         family = MonsterInstance.objects.filter(owner=self.owner).filter(same_family).exclude(pk=self.pk).order_by('ignore_for_fusion')
         pieces = MonsterPiece.objects.filter(owner=self.owner, monster__family_id=self.monster.family_id)
 
+        devilmon_material_storage = MaterialStorage.objects.select_related('item').filter(owner=self.owner, item__name__icontains='devilmon')
+        if devilmon_material_storage.count():
+            devilmon += devilmon_material_storage.first().quantity
+        
+        family_shrine = MonsterShrineStorage.objects.filter(owner=self.owner).filter(same_family_shrine).count()
+
         return {
             'devilmon': devilmon,
             'family': family,
             'pieces': pieces,
-            'none': devilmon + family.count() + pieces.count() == 0,
+            'family_shrine': family_shrine,
+            'none': devilmon + family.count() + pieces.count() + family_shrine == 0,
         }
 
     def clean(self):

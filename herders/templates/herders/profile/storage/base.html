@@ -105,7 +105,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <p>{{ monster.name }}</p>
-                            <img src="{{ img_url_prefix }}items/monster_{{ monster.field_name }}.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}items/monster_{% if 'rainbowmon' in monster.field_name %}rainbowmon{% else %}{{ monster.field_name }}{% endif %}.png" class="monster-inline pull-left" />
                             <div id="craft_{{ monster.field_name }}"
                                  class="inline-editable essence-input"
                                  data-type="number"

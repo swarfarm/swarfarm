@@ -263,7 +263,6 @@ def storage(request, profile_name):
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     if is_owner:
-        # TODO: update Storage to new db 
         craft_mats = []
         essence_mats = []
         monster_mats = []
@@ -310,7 +309,7 @@ def storage(request, profile_name):
         for key, material_monster in material_monsters.items():
             monster_mats.append({
                 'name': material_monster.name.replace('White', 'Light').replace('Red', 'Fire').replace('Blue', 'Water').replace('Gold', 'Wind'),
-                'field_name': material_monster.slug.replace('-', '_').replace('white', 'light').replace('red', 'fire').replace('blue', 'water').replace('gold', 'wind') if not material_monster.slug.startswith('rainbowmon') else 'rainbowmon',
+                'field_name': material_monster.slug.replace('-', '_').replace('white', 'light').replace('red', 'fire').replace('blue', 'water').replace('gold', 'wind'),
                 'qty': summoner_material_storage[key].quantity if key in summoner_material_storage else 0,
             })
 
@@ -339,42 +338,36 @@ def storage_update(request, profile_name):
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     if is_owner and request.POST:
-        # TODO: update Storage to new db 
-        # field_name = request.POST.get('name')
-        # try:
-        #     new_value = int(request.POST.get('value'))
-        # except ValueError:
-        #     return HttpResponseBadRequest('Invalid Entry')
+        field_name = request.POST.get('name')
+        try:
+            new_value = int(request.POST.get('value'))
+        except ValueError:
+            return HttpResponseBadRequest('Invalid Entry')
 
-        # essence_size = None
+        essence_size = None
+        if 'essence' in field_name:
+            field_name, essence_size = field_name.split('.')
+        
+        field_name = field_name.split('_')
+        if essence_size:
+            field_name.insert(1, essence_size)
+        field_name = '-'.join(field_name) # slug
 
-        # if 'essence' in field_name:
-        #     # Split the actual field name off from the size
-        #     try:
-        #         field_name, essence_size = field_name.split('.')
-        #         size_map = {
-        #             'low': Storage.ESSENCE_LOW,
-        #             'mid': Storage.ESSENCE_MID,
-        #             'high': Storage.ESSENCE_HIGH,
-        #         }
-        #         essence_size = size_map[essence_size]
-        #     except (ValueError, KeyError):
-        #         return HttpResponseBadRequest()
+        if 'angelmon' in field_name:
+            field_name = field_name.replace('light', 'white').replace('fire', 'red').replace('water', 'blue').replace('wind', 'gold')
 
-        # try:
-        #     Storage._meta.get_field(field_name)
-        # except FieldDoesNotExist:
-        #     return HttpResponseBadRequest()
-        # else:
-        #     if essence_size is not None:
-        #         # Get a copy of the size array and set the correct index to new value
-        #         essence_list = getattr(summoner.storage, field_name)
-        #         essence_list[essence_size] = new_value
-        #         new_value = essence_list
+        try:
+            item = MaterialStorage.objects.select_related('item').get(owner=summoner, item__slug=field_name)
+            item.quantity = new_value
+            item.save()
+        except MaterialStorage.DoesNotExist:
+            game_item = GameItem.objects.get(slug=field_name)
+            item = MaterialStorage.objects.create(owner=summoner, item=game_item, quantity=new_value)
+            item.save()
+        except GameItem.DoesNotExist:
+            return HttpResponseForbidden()
 
-        #     setattr(summoner.storage, field_name, new_value)
-        #     summoner.storage.save()
-            return HttpResponse()
+        return HttpResponse()
     else:
         return HttpResponseForbidden()
 

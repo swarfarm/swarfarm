@@ -73,7 +73,7 @@ class MaterialStorage(models.Model):
         return max(x, 0)
 
     def save(self, *args, **kwargs):
-        self.quantity = map(self._min_zero, self.quantity)
+        self.quantity = self._min_zero(self.quantity)
         super(MaterialStorage, self).save(*args, **kwargs)
 
 
@@ -87,7 +87,7 @@ class MonsterShrineStorage(models.Model):
         return max(x, 0)
 
     def save(self, *args, **kwargs):
-        self.quantity = map(self._min_zero, self.quantity)
+        self.quantity = self._min_zero(self.quantity)
         super(MonsterShrineStorage, self).save(*args, **kwargs)
 
 

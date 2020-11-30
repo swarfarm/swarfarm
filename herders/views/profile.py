@@ -26,6 +26,8 @@ from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
 
+from bestiary.models import GameItem, Monster
+
 
 def register(request):
     form = RegisterUserForm(request.POST or None)
@@ -265,28 +267,52 @@ def storage(request, profile_name):
         craft_mats = []
         essence_mats = []
         monster_mats = []
+        summoner_material_storage = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
 
-        # for field_name in Storage.ESSENCE_FIELDS:
-        #     essence_mats.append({
-        #         'name': summoner.storage._meta.get_field(field_name).help_text,
-        #         'field_name': field_name,
-        #         'element': field_name.split('_')[0],
-        #         'qty': getattr(summoner.storage, field_name)
-        #     })
+        essences = {gi.com2us_id: gi for gi in GameItem.objects.filter(category=GameItem.CATEGORY_ESSENCE)}
+        essence_elements = {
+            key: {
+                'name': None,
+                'field_name': None,
+                'element': None,
+                'qty': [0, 0, 0],
+            } for key in ['magic', 'fire', 'water', 'wind', 'light', 'dark']
+        }
+        essence_lvl = ['low', 'mid', 'high']
 
-        # for field_name in Storage.CRAFT_FIELDS:
-        #     craft_mats.append({
-        #         'name': summoner.storage._meta.get_field(field_name).help_text,
-        #         'field_name': field_name,
-        #         'qty': getattr(summoner.storage, field_name)
-        #     })
+        for key, essence in essences.items():
+            slug_split = essence.slug.split('-')
+            element = slug_split[0]
+            if not essence_elements[element]['name']:
+                essence_elements[element]['name'] = ' '.join(essence.name.split(' ')[::2]) # drop `low`, `mid`, `high`
+            if not essence_elements[element]['field_name']:
+                essence_elements[element]['field_name'] = '_'.join(slug_split[::2]) # drop `low`, `mid`, `high`, connect with `_`
+            if not essence_elements[element]['element']:
+                essence_elements[element]['element'] = element # only element
+            
+            essence_elements[element]['qty'][essence_lvl.index(slug_split[1])] = summoner_material_storage[key].quantity if key in summoner_material_storage else 0
+        essence_mats = list(essence_elements.values())
 
-        # for field_name in Storage.MONSTER_FIELDS:
-        #     monster_mats.append({
-        #         'name': summoner.storage._meta.get_field(field_name).help_text,
-        #         'field_name': field_name if not field_name.startswith('rainbowmon') else 'rainbowmon',
-        #         'qty': getattr(summoner.storage, field_name)
-        #     })
+        craft_categories = [
+            GameItem.CATEGORY_CRAFT_STUFF,
+            GameItem.CATEGORY_RUNE_CRAFT,
+            GameItem.CATEGORY_ARTIFACT_CRAFT,
+        ]
+        crafts = {gi.com2us_id: gi for gi in GameItem.objects.filter(category__in=craft_categories).order_by('com2us_id')}
+        for key, craft in crafts.items():
+            craft_mats.append({
+                'name': craft.name,
+                'field_name': craft.slug.replace('-', '_'),
+                'qty': summoner_material_storage[key].quantity if key in summoner_material_storage else 0,
+            })
+
+        material_monsters = {gi.com2us_id: gi for gi in GameItem.objects.filter(category=GameItem.CATEGORY_MATERIAL_MONSTER).order_by('category')}
+        for key, material_monster in material_monsters.items():
+            monster_mats.append({
+                'name': material_monster.name.replace('White', 'Light').replace('Red', 'Fire').replace('Blue', 'Water').replace('Gold', 'Wind'),
+                'field_name': material_monster.slug.replace('-', '_').replace('white', 'light').replace('red', 'fire').replace('blue', 'water').replace('gold', 'wind') if not material_monster.slug.startswith('rainbowmon') else 'rainbowmon',
+                'qty': summoner_material_storage[key].quantity if key in summoner_material_storage else 0,
+            })
 
         context = {
             'is_owner': is_owner,

@@ -63,6 +63,7 @@ def _default_storage_data():
 
 
 class MaterialStorage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     item = models.ForeignKey(GameItem, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
@@ -75,9 +76,13 @@ class MaterialStorage(models.Model):
     def save(self, *args, **kwargs):
         self.quantity = self._min_zero(self.quantity)
         super(MaterialStorage, self).save(*args, **kwargs)
+    
+    class Meta:
+        ordering = ['item']
 
 
 class MonsterShrineStorage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     item = models.ForeignKey(Monster, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
@@ -89,6 +94,9 @@ class MonsterShrineStorage(models.Model):
     def save(self, *args, **kwargs):
         self.quantity = self._min_zero(self.quantity)
         super(MonsterShrineStorage, self).save(*args, **kwargs)
+    
+    class Meta:
+        ordering = ['item']
 
 
 class MonsterTag(models.Model):

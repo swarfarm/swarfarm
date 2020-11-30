@@ -6,8 +6,6 @@ from rest_framework_nested.relations import NestedHyperlinkedIdentityField
 from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, \
     RuneCraftInstance, TeamGroup, Team, RuneBuild
 
-from bestiary.serializers import GameItemSerializer
-
 
 class AddOwnerOnCreate:
     def create(self, validated_data):
@@ -107,21 +105,28 @@ class MonsterPieceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
         fields = ['id', 'url', 'monster', 'pieces']
 
 
-class MaterialStorageSerializer(serializers.ModelSerializer):
-    item = GameItemSerializer()
+class MaterialStorageSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
+    url = NestedHyperlinkedIdentityField(
+        view_name='profile/storage-detail',
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
+    )
+    item = serializers.IntegerField(source='item.com2us_id')
 
     class Meta:
         model = MaterialStorage
-        fields = [
-            'item', 'quantity'
-        ]
+        fields = ['id', 'url', 'item', 'quantity']
 
-class MonsterShrineStorageSerializer(serializers.ModelSerializer):
+
+class MonsterShrineStorageSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
+    url = NestedHyperlinkedIdentityField(
+        view_name='profile/monster-shrine-detail',
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
+    )
+    item = serializers.IntegerField(source='item.com2us_id')
+
     class Meta:
         model = MonsterShrineStorage
-        fields = [
-            'item', 'quantity'
-        ]
+        fields = ['id', 'url', 'item', 'quantity']
 
 
 class BuildingInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):

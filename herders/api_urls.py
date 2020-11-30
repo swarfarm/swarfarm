@@ -48,5 +48,5 @@ profile_router.register(r'buildings', BuildingViewSet, base_name='profile/buildi
 profile_router.register(r'team-groups', TeamGroupViewSet, base_name='profile/team-groups')
 profile_router.register(r'teams', TeamViewSet, base_name='profile/teams')
 profile_router.register(r'upload', ProfileJsonUpload, base_name='profile/upload_legacy')
-storage_router = NestedStorageRouter(router, r'profiles', lookup='user')
-storage_router.register(r'storage', StorageViewSet, base_name='profile/storage')
+profile_router.register(r'storage', StorageViewSet, base_name='profile/storage')
+profile_router.register(r'monster-shrine', MonsterShrineStorageViewSet, base_name='profile/monster-shrine')

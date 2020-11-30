@@ -251,6 +251,9 @@ def profile_edit(request, profile_name):
     else:
         return HttpResponseForbidden()
 
+# TODO:
+# ADD MONSTER SHRINE STORAGE
+# ADD MONSTER SHRINE EDIT INLINE (OPTIONAL)
 
 @username_case_redirect
 @login_required
@@ -361,7 +364,7 @@ def storage_update(request, profile_name):
             item.quantity = new_value
             item.save()
         except MaterialStorage.DoesNotExist:
-            game_item = GameItem.objects.get(slug=field_name)
+            game_item = GameItem.objects.get(slug=field_name, category__isnull=False) # delete some strange 'UNKNOWN ITEM'
             item = MaterialStorage.objects.create(owner=summoner, item=game_item, quantity=new_value)
             item.save()
         except GameItem.DoesNotExist:

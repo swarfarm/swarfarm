@@ -123,4 +123,27 @@
             </div>
         </div>
     </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <p class="panel-title">Monster Shrine</p>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                {% for monster in monster_shrine_mats %}
+                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
+                    <div class="panel panel-default">
+                        <div class="panel-body condensed">
+                            <p>{{ monster.name }}</p>
+                            <img src="{{ img_url_prefix }}monsters/{{ monster.img }}" class="monster-inline pull-left" />
+                            <div id="monster_{{ monster.field_name }}" class="essence-input">
+                                {{ monster.qty }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock profile %}

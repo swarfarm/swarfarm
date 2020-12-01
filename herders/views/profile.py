@@ -251,9 +251,6 @@ def profile_edit(request, profile_name):
     else:
         return HttpResponseForbidden()
 
-# TODO:
-# ADD MONSTER SHRINE STORAGE
-# ADD MONSTER SHRINE EDIT INLINE (OPTIONAL)
 
 @username_case_redirect
 @login_required
@@ -269,6 +266,7 @@ def storage(request, profile_name):
         craft_mats = []
         essence_mats = []
         monster_mats = []
+        monster_shrine_mats = []
         summoner_material_storage = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
 
         essences = {gi.com2us_id: gi for gi in GameItem.objects.filter(category=GameItem.CATEGORY_ESSENCE)}
@@ -316,6 +314,15 @@ def storage(request, profile_name):
                 'qty': summoner_material_storage[key].quantity if key in summoner_material_storage else 0,
             })
 
+        # Monster Shrine, may be moved to other page
+        for monster_shrine in MonsterShrineStorage.objects.select_related('item').filter(owner=summoner).order_by('item__awaken_level', 'item__name'):
+            monster_shrine_mats.append({
+                'name': monster_shrine.item.name,
+                'img': monster_shrine.item.image_filename,
+                'field_name': f'shrine_{monster_shrine.item.com2us_id}',
+                'qty': monster_shrine.quantity,
+            })
+
         context = {
             'is_owner': is_owner,
             'profile_name': profile_name,
@@ -323,6 +330,7 @@ def storage(request, profile_name):
             'essence_mats': essence_mats,
             'craft_mats': craft_mats,
             'monster_mats': monster_mats,
+            'monster_shrine_mats': monster_shrine_mats,
         }
 
         return render(request, 'herders/profile/storage/base.html', context=context)

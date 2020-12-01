@@ -118,14 +118,18 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             monster_stable = {}
 
             # filters
-            mon_name = form.cleaned_data['monster__name']
-            filter_monster_name = (Q(name__icontains=mon_name)
-                | Q(awakens_from__name__icontains=mon_name)
-                | Q(awakens_from__awakens_from__name__icontains=mon_name)
-                | Q(awakens_to__name__icontains=mon_name))
-            mon_stars = form.cleaned_data['monster__natural_stars'].split(',')
-            filter_nat_stars = (Q(natural_stars__gte=mon_stars[0]) & Q(natural_stars__lte=mon_stars[1]))
-
+            if form.is_valid():
+                mon_name = form.cleaned_data['monster__name']
+                filter_monster_name = (Q(name__icontains=mon_name)
+                    | Q(awakens_from__name__icontains=mon_name)
+                    | Q(awakens_from__awakens_from__name__icontains=mon_name)
+                    | Q(awakens_to__name__icontains=mon_name))
+                mon_stars = form.cleaned_data['monster__natural_stars'].split(',')
+                filter_nat_stars = (Q(natural_stars__gte=mon_stars[0]) & Q(natural_stars__lte=mon_stars[1]))
+            else:
+                filter_monster_name = None
+                filter_nat_stars = None
+            
             material = (Q(archetype=Monster.ARCHETYPE_MATERIAL) | Q(archetype=Monster.ARCHETYPE_NONE))
             obtainable = Q(obtainable=True)
             unawakened = Q(awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED)
@@ -134,9 +138,15 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             awakened = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_AWAKENED)
             awakened_second = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_SECOND)
             base_unawakened = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED)
+
+            base_monster_filters = obtainable & unawakened
+            if filter_monster_name: 
+                base_monster_filters &= filter_monster_name
+            if filter_nat_stars: 
+                base_monster_filters &= filter_nat_stars
             #
 
-            base_monsters = Monster.objects.filter(obtainable & unawakened & filter_monster_name & filter_nat_stars).exclude(material).order_by('skill_group_id', 'com2us_id').values('name', 'com2us_id', 'element', 'skill_group_id', 'skill_ups_to_max')
+            base_monsters = Monster.objects.filter(base_monster_filters).exclude(material).order_by('skill_group_id', 'com2us_id').values('name', 'com2us_id', 'element', 'skill_group_id', 'skill_ups_to_max')
             devilmons_count = monster_filter.qs.filter(monster__com2us_id=61105).count() + summoner.storage.devilmon
 
             skill_groups = itertools.groupby(base_monsters, lambda mon: mon['skill_group_id'])
@@ -161,7 +171,12 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 monster_stable[skill_group_id] = data
 
             for mon in monster_filter.qs.filter(awakened).exclude(base_material):
-                data = monster_stable[mon.monster.skill_group_id]['elements'][mon.monster.element]
+                mon_skill_group = monster_stable.get(mon.monster.skill_group_id)
+                if not mon_skill_group:
+                    continue # if skill group doesnt exist, don't care
+                data = monster_stable[mon.monster.skill_group_id]['elements'].get(mon.monster.element)
+                if not data:
+                    continue # if base monster doesn't exist, continue (i.e. Varis)
                 if data['skilled_up']:
                     continue # don't care about other units, if at least one is already fully skilled up
                 if not data['owned']:

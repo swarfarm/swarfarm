@@ -51,7 +51,7 @@ def com2us_data_import(data, user_id, import_options):
             summoner.save()
 
         # inventory bulk update or create
-        all_inv_items = {gi.com2us_id: gi for gi in GameItem.objects.all()}
+        all_inv_items = {gi.com2us_id: gi for gi in GameItem.objects.filter(category__isnull=False)} # to handle some `UNKNOWN ITEM` records
         summoner_inv_items = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
         summoner_new_inv_items = []
         summoner_old_inv_items = []

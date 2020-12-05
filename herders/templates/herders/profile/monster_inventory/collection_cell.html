@@ -1,0 +1,5 @@
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load utils %}
+
+<td data-max="{{ data.skillups_max }}" data-left="{{ data.skill_ups_to_max }}" {% if data.owned and not data.skilled_up %}id="monster-collection-cell-{{ name }}-{{ element }}"{% endif %} class="monster-collection cell {% if not data.owned %}not-{% endif%}owned {% if data.skilled_up %}full{% endif %}">{% if not data.skilled_up %}{% if not data.owned %}{{ data.skillups_max }}{% else %}{{ data.skill_ups_to_max }}{% endif %}{% endif %}</td>

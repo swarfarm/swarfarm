@@ -114,6 +114,7 @@ def monsters():
             'name': game_data.strings.MONSTER_NAMES.get(master_id, raw['unit name']),
             'image_filename': 'unit_icon_{0:04d}_{1}_{2}.png'.format(*raw['thumbnail']),
             'family_id': raw['group id'],
+            'skill_group_id': raw['skill group id'],
             'archetype': Monster.COM2US_ARCHETYPE_MAP[raw['style type']],
             'element': Monster.COM2US_ELEMENT_MAP[raw['attribute']],
             'obtainable': sum(raw['collection view']) > 0,

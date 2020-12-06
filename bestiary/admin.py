@@ -24,6 +24,7 @@ class MonsterAdmin(admin.ModelAdmin):
                 'name',
                 'com2us_id',
                 'family_id',
+                'skill_group_id',
                 'element',
                 'archetype',
                 'fusion_food',
@@ -111,7 +112,7 @@ class MonsterAdmin(admin.ModelAdmin):
         'max_lvl_defense',
         'max_lvl_attack',
     )
-    search_fields = ('name', 'com2us_id', )
+    search_fields = ('name', 'com2us_id', 'skill_group_id', 'family_id')
     save_as = True
 
 

@@ -1,10 +1,12 @@
 from collections import OrderedDict
+import itertools
+from operator import getitem 
 
 from crispy_forms.bootstrap import FieldWithButtons, StrictButton, Field, Div
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
@@ -112,6 +114,90 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             template = 'herders/profile/monster_inventory/summoning_pieces.html'
         elif view_mode == 'list':
             template = 'herders/profile/monster_inventory/list.html'
+        elif view_mode == 'collection':
+            monster_stable = {}
+
+            # filters
+            if form.is_valid():
+                mon_name = form.cleaned_data['monster__name']
+                filter_monster_name = (Q(name__icontains=mon_name)
+                    | Q(awakens_from__name__icontains=mon_name)
+                    | Q(awakens_from__awakens_from__name__icontains=mon_name)
+                    | Q(awakens_to__name__icontains=mon_name))
+                mon_stars = form.cleaned_data['monster__natural_stars'].split(',')
+                filter_nat_stars = (Q(natural_stars__gte=mon_stars[0]) & Q(natural_stars__lte=mon_stars[1]))
+            else:
+                filter_monster_name = None
+                filter_nat_stars = None
+            
+            material = (Q(archetype=Monster.ARCHETYPE_MATERIAL) | Q(archetype=Monster.ARCHETYPE_NONE))
+            obtainable = Q(obtainable=True)
+            unawakened = Q(awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED)
+
+            base_material = (Q(monster__archetype=Monster.ARCHETYPE_MATERIAL) | Q(monster__archetype=Monster.ARCHETYPE_NONE))
+            awakened = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_AWAKENED)
+            awakened_second = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_SECOND)
+            base_unawakened = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED)
+
+            base_monster_filters = obtainable & unawakened
+            if filter_monster_name: 
+                base_monster_filters &= filter_monster_name
+            if filter_nat_stars: 
+                base_monster_filters &= filter_nat_stars
+            #
+
+            base_monsters = Monster.objects.filter(base_monster_filters).exclude(material).order_by('skill_group_id', 'com2us_id').values('name', 'com2us_id', 'element', 'skill_group_id', 'skill_ups_to_max')
+            devilmons_count = monster_filter.qs.filter(monster__com2us_id=61105).count() + summoner.storage.devilmon
+
+            skill_groups = itertools.groupby(base_monsters, lambda mon: mon['skill_group_id'])
+            for skill_group_id, records in skill_groups:
+                if skill_group_id == -10000:
+                    continue # devilmon, somehow didn't get excluded
+                records = list(records)
+                data = {
+                    'name': records[0]['name'],
+                    'elements': {},
+                    'possible_skillups': devilmons_count,
+                }
+                elements = itertools.groupby(records, lambda mon: mon['element'])
+                for element, records_element in elements:
+                    records_element = list(records_element)
+                    data['elements'][element] = {
+                        'owned': False,
+                        'skilled_up': False,
+                        'skill_ups_to_max': None,
+                        'skillups_max': records_element[0]['skill_ups_to_max'],
+                    }
+                monster_stable[skill_group_id] = data
+
+            for mon in monster_filter.qs.filter(awakened).exclude(base_material):
+                mon_skill_group = monster_stable.get(mon.monster.skill_group_id)
+                if not mon_skill_group:
+                    continue # if skill group doesnt exist, don't care
+                data = monster_stable[mon.monster.skill_group_id]['elements'].get(mon.monster.element)
+                if not data:
+                    continue # if base monster doesn't exist, continue (i.e. Varis)
+                if data['skilled_up']:
+                    continue # don't care about other units, if at least one is already fully skilled up
+                if not data['owned']:
+                    data['owned'] = True
+
+                skill_ups_to_max = mon.skill_ups_to_max()
+                if not skill_ups_to_max:
+                    data['skilled_up'] = True
+                    continue
+
+                if not data['skill_ups_to_max'] or skill_ups_to_max < data['skill_ups_to_max']:
+                    data['skill_ups_to_max'] = skill_ups_to_max
+
+            # some other field than `monster__skill_group_id` is needed, so all records are saved, not only unique ones
+            skill_up_mons = monster_filter.qs.filter(base_unawakened).exclude(base_material).values('id', 'monster__skill_group_id')
+            for skill_group_id, records in itertools.groupby(skill_up_mons, lambda x: x['monster__skill_group_id']):
+                monster_stable[skill_group_id]['possible_skillups'] += len(list(records))
+            
+            monster_stable = sorted(monster_stable.values(), key=lambda x: x['name'])
+            context['monster_stable'] = monster_stable
+            template = 'herders/profile/monster_inventory/collection.html'
         else:
             # Group up the filtered monsters
             monster_stable = OrderedDict()

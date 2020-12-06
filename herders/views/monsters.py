@@ -14,7 +14,7 @@ from django.template import loader
 from django.template.context_processors import csrf
 from django.urls import reverse
 
-from bestiary.models import Monster, Building, Fusion, ESSENCE_MAP
+from bestiary.models import Monster, Building, Fusion, ESSENCE_MAP, GameItem
 from herders.decorators import username_case_redirect
 from herders.filters import MonsterInstanceFilter
 from herders.forms import FilterMonsterInstanceForm, \
@@ -863,13 +863,21 @@ def monster_instance_awaken(request, profile_name, instance_id):
 
                         # bulk_update doesn't use `save()` method inside Model, so we need to take care of negative numbers
                         material_storage_edited = []
+                        material_storage_created = []
                         for element, essences in monster_awakening_materials.items():
                             for essence, needed in essences.items():
                                 if needed > 0:
+                                    if ESSENCE_MAP[element][essence] not in summoner_material_storage:
+                                        material_storage_created.append(MaterialStorage(
+                                            owner=summoner,
+                                            quantity=0,
+                                            item=GameItem.objects.get(com2us_id=ESSENCE_MAP[element][essence])
+                                        ))
+                                        continue
                                     material_storage_edited.append(summoner_material_storage[ESSENCE_MAP[element][essence]])
                                     material_storage_edited[-1].quantity = max(material_storage_edited[-1].quantity - needed, 0)
+                        MaterialStorage.objects.bulk_create(material_storage_created)
                         MaterialStorage.objects.bulk_update(material_storage_edited, ['quantity'])
-
                     # Perform the awakening by instance's monster source ID
                     monster.monster = monster.monster.awakens_to
                     monster.save()
@@ -885,7 +893,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
                         available_essences[element] = OrderedDict()
                         for size, cost in essences.items():
                             if cost > 0:
-                                qty = summoner_material_storage[ESSENCE_MAP[element][size]].quantity
+                                qty = summoner_material_storage[ESSENCE_MAP[element][size]].quantity if ESSENCE_MAP[element][size] in summoner_material_storage else 0
                                 available_essences[element][size] = {
                                     'qty': qty,
                                     'sufficient': qty >= cost,

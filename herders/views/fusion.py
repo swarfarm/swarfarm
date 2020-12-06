@@ -152,7 +152,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
             summoner_storage = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
             essence_storage = {
                 element: { 
-                    size: summoner_storage[ESSENCE_MAP[element][size]].quantity
+                    size: summoner_storage[ESSENCE_MAP[element][size]].quantity if ESSENCE_MAP[element][size] in summoner_storage else 0
                     for size, _ in element_sizes.items()
                 }
                 for element, element_sizes in ESSENCE_MAP.items()

@@ -530,7 +530,7 @@ class MonsterInstance(models.Model, base.Stars):
         try:
             devilmon_material_storage = MaterialStorage.objects.select_related(
                 'item').get(owner=self.owner, item__name__icontains='devilmon')
-            devilmon += devilmon_material_storage.first().quantity
+            devilmon += devilmon_material_storage.quantity
         except MaterialStorage.DoesNotExist:
             pass
         except MultipleObjectsReturned:

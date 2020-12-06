@@ -62,10 +62,6 @@ class Summoner(models.Model):
         return self.user.username
 
 
-def _default_storage_data():
-    return [0, 0, 0]
-
-
 class MaterialStorage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)

@@ -520,6 +520,8 @@ class MonsterInstance(models.Model, base.Stars):
         same_skill_group_shrine = Q(
             item__skill_group_id=self.monster.skill_group_id)
 
+        devilmon = MonsterInstance.objects.filter(
+            owner=self.owner, monster__name='Devilmon').count()
         skill_group = MonsterInstance.objects.filter(owner=self.owner).filter(
             same_skill_group).exclude(pk=self.pk).order_by('ignore_for_fusion')
         pieces = MonsterPiece.objects.filter(

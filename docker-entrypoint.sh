@@ -4,7 +4,7 @@ if [ "$DATABASE" = "postgres" ]
 then
     echo "Waiting for postgres..."
 
-    /app/wait-for/wait-for ${SQL_HOST}:${SQL_PORT}
+    /app/deployment_assets/wait-for ${SQL_HOST}:${SQL_PORT}
 
     echo "PostgreSQL started"
 fi

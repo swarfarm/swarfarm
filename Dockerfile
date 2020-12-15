@@ -24,6 +24,15 @@ RUN apt-get update \
 
 COPY . .
 
+COPY ./docker-entrypoint.sh /scripts/docker-entrypoint.sh
+COPY ./deployment_assets/run_initial_setup.sh /scripts/run_initial_setup.sh
+COPY ./deployment_assets/wait-for /scripts/wait-for
+
+RUN sed -i 's/\x0D$//' /scripts/docker-entrypoint.sh && \
+    sed -i 's/\x0D$//' /scripts/run_initial_setup.sh && \
+    sed -i 's/\x0D$//' /scripts/wait-for
+
+
 EXPOSE 8000
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+ENTRYPOINT ["/scripts/docker-entrypoint.sh"]

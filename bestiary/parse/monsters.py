@@ -219,6 +219,8 @@ def rename_boss_dimension_hole(raw):
         5: "Werewolf 2A",
         6: "Martial Cat 2A",
         7: "Griffon 2A",
+        8: "Howl 2A",
+        9: "Grim Reaper 2A",
     }
     raw['unit name'] = BOSS_NAMES[math.floor(raw['unit master id'] / 100) % 10]
     return raw
@@ -462,6 +464,28 @@ _preprocess_erratum = {
     120713: [rename_monster_tower, replace_crystal_image],
     120714: [rename_monster_tower, replace_crystal_image],
     120715: [rename_monster_tower, replace_crystal_image],
+
+    120801: [rename_monster_tower, replace_crystal_image], # 2A Grim Reaper
+    120802: [rename_monster_tower, replace_crystal_image],
+    120803: [rename_monster_tower, replace_crystal_image],
+    120804: [rename_monster_tower, replace_crystal_image],
+    120805: [rename_monster_tower, replace_crystal_image],
+    120811: [rename_monster_tower, replace_crystal_image],
+    120812: [rename_monster_tower, replace_crystal_image],
+    120813: [rename_monster_tower, replace_crystal_image],
+    120814: [rename_monster_tower, replace_crystal_image],
+    120815: [rename_monster_tower, replace_crystal_image],
+
+    120901: [rename_monster_tower, replace_crystal_image], # 2A Howl
+    120902: [rename_monster_tower, replace_crystal_image],
+    120903: [rename_monster_tower, replace_crystal_image],
+    120904: [rename_monster_tower, replace_crystal_image],
+    120905: [rename_monster_tower, replace_crystal_image],
+    120911: [rename_monster_tower, replace_crystal_image],
+    120912: [rename_monster_tower, replace_crystal_image],
+    120913: [rename_monster_tower, replace_crystal_image],
+    120914: [rename_monster_tower, replace_crystal_image],
+    120915: [rename_monster_tower, replace_crystal_image],
     # endregion
 
     # region Dimension Hole Boss [47xxx]
@@ -509,6 +533,18 @@ _preprocess_erratum = {
     47703: [rename_boss_dimension_hole],
     47704: [rename_boss_dimension_hole],
     47705: [rename_boss_dimension_hole],
+
+    47801: [rename_boss_dimension_hole], # 2A Howl
+    47802: [rename_boss_dimension_hole],
+    47803: [rename_boss_dimension_hole],
+    47804: [rename_boss_dimension_hole],
+    47805: [rename_boss_dimension_hole],
+
+    47901: [rename_boss_dimension_hole], # 2A Grim Reaper
+    47902: [rename_boss_dimension_hole],
+    47903: [rename_boss_dimension_hole],
+    47904: [rename_boss_dimension_hole],
+    47905: [rename_boss_dimension_hole],
     # endregion
 }
 

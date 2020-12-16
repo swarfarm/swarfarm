@@ -21,7 +21,7 @@
         {{ skill.level_progress_description|linebreaks }}
     </li>
     {% endif %}
-    {% if skill.skill_effect|length > 0 %}
+    {% if skill.skill_effect|length > 0 or skill.aoe %}
     <li>
         <p class="list-group-item-heading"><strong>Skill Effects:</strong></p>
         <p>

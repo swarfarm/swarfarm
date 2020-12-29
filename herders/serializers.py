@@ -110,7 +110,6 @@ class MaterialStorageSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
         view_name='profile/storage-detail',
         parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
-    item = serializers.IntegerField(source='item.com2us_id')
 
     class Meta:
         model = MaterialStorage
@@ -122,7 +121,6 @@ class MonsterShrineStorageSerializer(serializers.ModelSerializer, AddOwnerOnCrea
         view_name='profile/monster-shrine-detail',
         parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
-    item = serializers.IntegerField(source='item.com2us_id')
 
     class Meta:
         model = MonsterShrineStorage

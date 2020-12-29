@@ -264,7 +264,6 @@ def storage(request, profile_name):
 
     if is_owner:
         craft_mats = []
-        essence_mats = []
         monster_mats = []
         monster_shrine_mats = []
         summoner_material_storage = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
@@ -372,11 +371,11 @@ def storage_update(request, profile_name):
             item.quantity = new_value
             item.save()
         except MaterialStorage.DoesNotExist:
-            game_item = GameItem.objects.get(slug=field_name, category__isnull=False) # delete some strange 'UNKNOWN ITEM'
+            game_item = GameItem.objects.get(slug=field_name, category__isnull=False)  # ignore some strange 'UNKNOWN ITEM'
             item = MaterialStorage.objects.create(owner=summoner, item=game_item, quantity=new_value)
             item.save()
         except GameItem.DoesNotExist:
-            return HttpResponseForbidden()
+            return HttpResponseBadRequest('No such item exists')
 
         return HttpResponse()
     else:

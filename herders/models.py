@@ -62,40 +62,36 @@ class Summoner(models.Model):
         return self.user.username
 
 
-class MaterialStorage(models.Model):
+class Storage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
+
+    @staticmethod
+    def _min_zero(x):
+        return max(x, 0)
+
+    def save(self, *args, **kwargs):
+        self.quantity = self._min_zero(self.quantity)
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+        ordering = ['item']
+
+
+class MaterialStorage(Storage):
     item = models.ForeignKey(GameItem, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=0)
 
-    @staticmethod
-    def _min_zero(x):
-        return max(x, 0)
-
-    def save(self, *args, **kwargs):
-        self.quantity = self._min_zero(self.quantity)
-        super(MaterialStorage, self).save(*args, **kwargs)
-
-    class Meta:
-        ordering = ['item']
+    class Meta(Storage.Meta):
+        pass
 
 
-class MonsterShrineStorage(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+class MonsterShrineStorage(Storage):
     item = models.ForeignKey(Monster, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=0)
 
-    @staticmethod
-    def _min_zero(x):
-        return max(x, 0)
-
-    def save(self, *args, **kwargs):
-        self.quantity = self._min_zero(self.quantity)
-        super(MonsterShrineStorage, self).save(*args, **kwargs)
-
-    class Meta:
-        ordering = ['item']
+    class Meta(Storage.Meta):
+        pass
 
 
 class MonsterTag(models.Model):

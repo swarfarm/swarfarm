@@ -21,10 +21,12 @@ from django.utils.html import mark_safe
 from herders.decorators import username_case_redirect
 from herders.forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, EditUserForm, \
     EditSummonerForm, EditBuildingForm, ImportSWParserJSONForm
-from herders.models import Summoner, Storage, Building, BuildingInstance
+from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, Building, BuildingInstance
 from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
+
+from bestiary.models import GameItem, Monster
 
 
 def register(request):
@@ -262,29 +264,62 @@ def storage(request, profile_name):
 
     if is_owner:
         craft_mats = []
-        essence_mats = []
         monster_mats = []
+        monster_shrine_mats = []
+        summoner_material_storage = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
 
-        for field_name in Storage.ESSENCE_FIELDS:
-            essence_mats.append({
-                'name': summoner.storage._meta.get_field(field_name).help_text,
-                'field_name': field_name,
-                'element': field_name.split('_')[0],
-                'qty': getattr(summoner.storage, field_name)
-            })
+        essences = {gi.com2us_id: gi for gi in GameItem.objects.filter(category=GameItem.CATEGORY_ESSENCE)}
+        essence_elements = {
+            key: {
+                'name': None,
+                'field_name': None,
+                'element': None,
+                'qty': [0, 0, 0],
+            } for key in ['magic', 'fire', 'water', 'wind', 'light', 'dark']
+        }
+        essence_lvl = ['low', 'mid', 'high']
 
-        for field_name in Storage.CRAFT_FIELDS:
+        for key, essence in essences.items():
+            slug_split = essence.slug.split('-')
+            element = slug_split[0]
+            if not essence_elements[element]['name']:
+                essence_elements[element]['name'] = ' '.join(essence.name.split(' ')[::2]) # drop `low`, `mid`, `high`
+            if not essence_elements[element]['field_name']:
+                essence_elements[element]['field_name'] = '_'.join(slug_split[::2]) # drop `low`, `mid`, `high`, connect with `_`
+            if not essence_elements[element]['element']:
+                essence_elements[element]['element'] = element # only element
+            
+            essence_elements[element]['qty'][essence_lvl.index(slug_split[1])] = summoner_material_storage[key].quantity if key in summoner_material_storage else 0
+        essence_mats = list(essence_elements.values())
+
+        craft_categories = [
+            GameItem.CATEGORY_CRAFT_STUFF,
+            GameItem.CATEGORY_RUNE_CRAFT,
+            GameItem.CATEGORY_ARTIFACT_CRAFT,
+        ]
+        crafts = {gi.com2us_id: gi for gi in GameItem.objects.filter(category__in=craft_categories).order_by('com2us_id')}
+        for key, craft in crafts.items():
             craft_mats.append({
-                'name': summoner.storage._meta.get_field(field_name).help_text,
-                'field_name': field_name,
-                'qty': getattr(summoner.storage, field_name)
+                'name': craft.name,
+                'field_name': craft.slug.replace('-', '_'),
+                'qty': summoner_material_storage[key].quantity if key in summoner_material_storage else 0,
             })
 
-        for field_name in Storage.MONSTER_FIELDS:
+        material_monsters = {gi.com2us_id: gi for gi in GameItem.objects.filter(category=GameItem.CATEGORY_MATERIAL_MONSTER).order_by('category')}
+        for key, material_monster in material_monsters.items():
             monster_mats.append({
-                'name': summoner.storage._meta.get_field(field_name).help_text,
-                'field_name': field_name if not field_name.startswith('rainbowmon') else 'rainbowmon',
-                'qty': getattr(summoner.storage, field_name)
+                'name': material_monster.name.replace('White', 'Light').replace('Red', 'Fire').replace('Blue', 'Water').replace('Gold', 'Wind'),
+                'field_name': material_monster.slug.replace('-', '_').replace('white', 'light').replace('red', 'fire').replace('blue', 'water').replace('gold', 'wind'),
+                'qty': summoner_material_storage[key].quantity if key in summoner_material_storage else 0,
+            })
+
+        # Monster Shrine, may be moved to other page
+        for monster_shrine in MonsterShrineStorage.objects.select_related('item').filter(owner=summoner).order_by('item__awaken_level', 'item__name'):
+            monster_shrine_mats.append({
+                'name': monster_shrine.item.name,
+                'img': monster_shrine.item.image_filename,
+                'field_name': f'shrine_{monster_shrine.item.com2us_id}',
+                'qty': monster_shrine.quantity,
             })
 
         context = {
@@ -294,6 +329,7 @@ def storage(request, profile_name):
             'essence_mats': essence_mats,
             'craft_mats': craft_mats,
             'monster_mats': monster_mats,
+            'monster_shrine_mats': monster_shrine_mats,
         }
 
         return render(request, 'herders/profile/storage/base.html', context=context)
@@ -319,34 +355,29 @@ def storage_update(request, profile_name):
             return HttpResponseBadRequest('Invalid Entry')
 
         essence_size = None
-
         if 'essence' in field_name:
-            # Split the actual field name off from the size
-            try:
-                field_name, essence_size = field_name.split('.')
-                size_map = {
-                    'low': Storage.ESSENCE_LOW,
-                    'mid': Storage.ESSENCE_MID,
-                    'high': Storage.ESSENCE_HIGH,
-                }
-                essence_size = size_map[essence_size]
-            except (ValueError, KeyError):
-                return HttpResponseBadRequest()
+            field_name, essence_size = field_name.split('.')
+        
+        field_name = field_name.split('_')
+        if essence_size:
+            field_name.insert(1, essence_size)
+        field_name = '-'.join(field_name) # slug
+
+        if 'angelmon' in field_name:
+            field_name = field_name.replace('light', 'white').replace('fire', 'red').replace('water', 'blue').replace('wind', 'gold')
 
         try:
-            Storage._meta.get_field(field_name)
-        except FieldDoesNotExist:
-            return HttpResponseBadRequest()
-        else:
-            if essence_size is not None:
-                # Get a copy of the size array and set the correct index to new value
-                essence_list = getattr(summoner.storage, field_name)
-                essence_list[essence_size] = new_value
-                new_value = essence_list
+            item = MaterialStorage.objects.select_related('item').get(owner=summoner, item__slug=field_name)
+            item.quantity = new_value
+            item.save()
+        except MaterialStorage.DoesNotExist:
+            game_item = GameItem.objects.get(slug=field_name, category__isnull=False)  # ignore some strange 'UNKNOWN ITEM'
+            item = MaterialStorage.objects.create(owner=summoner, item=game_item, quantity=new_value)
+            item.save()
+        except GameItem.DoesNotExist:
+            return HttpResponseBadRequest('No such item exists')
 
-            setattr(summoner.storage, field_name, new_value)
-            summoner.storage.save()
-            return HttpResponse()
+        return HttpResponse()
     else:
         return HttpResponseForbidden()
 

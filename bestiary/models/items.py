@@ -6,6 +6,38 @@ from django.utils.text import slugify
 
 from . import base
 
+ESSENCE_MAP = {
+    'magic': {
+        'low': 11006,
+        'mid': 12006,
+        'high': 13006,
+    },
+    'water': {
+        'low': 11001,
+        'mid': 12001,
+        'high': 13001,
+    },
+    'fire': {
+        'low': 11002,
+        'mid': 12002,
+        'high': 13002,
+    },
+    'wind': {
+        'low': 11003,
+        'mid': 12003,
+        'high': 13003,
+    },
+    'light': {
+        'low': 11004,
+        'mid': 12004,
+        'high': 13004,
+    },
+    'dark': {
+        'low': 11005,
+        'mid': 12005,
+        'high': 13005,
+    },
+}
 
 class GameItem(models.Model):
     CATEGORY_MONSTER = 1

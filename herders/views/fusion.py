@@ -4,9 +4,9 @@ from django.db.models import Q
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render
 
-from bestiary.models import Fusion
+from bestiary.models import Fusion, ESSENCE_MAP, Monster
 from herders.decorators import username_case_redirect
-from herders.models import Summoner, MonsterInstance, MonsterPiece
+from herders.models import Summoner, MonsterInstance, MonsterPiece, MaterialStorage, MonsterShrineStorage
 
 
 def fusion_progress(request, profile_name):
@@ -77,6 +77,8 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                     Q(monster=ingredient) | Q(monster=ingredient.awakens_from),
                 ).first()
 
+                owned_shrines = MonsterShrineStorage.objects.select_related('item').filter(Q(owner=summoner),Q(item=ingredient) | Q(item=ingredient.awakens_from),)
+
                 # Determine if each individual requirement is met using highest evolved/leveled monster that is not ignored for fusion
                 for owned_ingredient in owned_ingredients:
                     if not owned_ingredient.ignore_for_fusion:
@@ -96,6 +98,14 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                     leveled = False
                     awakened = False
                     complete = False
+                
+                for owned_shrine in owned_shrines:
+                    # never evolved so never completed
+                    acquired = True
+                    if owned_shrine.item.awaken_level == Monster.AWAKEN_LEVEL_AWAKENED:
+                        # the best possible outcome, awakened monster in Shrine - no point checking others
+                        awakened = True
+                        break
 
                 if not complete:
                     fusion_ready = False
@@ -120,6 +130,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                     'instance': ingredient,
                     'owned': owned_ingredients,
                     'pieces': owned_ingredient_pieces,
+                    'shrine': sum(o.quantity for o in owned_shrines),
                     'complete': complete,
                     'acquired': acquired,
                     'evolved': evolved,
@@ -138,7 +149,14 @@ def fusion_progress_detail(request, profile_name, monster_slug):
             total_cost = fusion.total_awakening_cost(awakened_owned_ingredients)
 
             # Calculate fulfilled/missing essences
-            essence_storage = summoner.storage.get_storage()
+            summoner_storage = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
+            essence_storage = {
+                element: { 
+                    size: summoner_storage[ESSENCE_MAP[element][size]].quantity if ESSENCE_MAP[element][size] in summoner_storage else 0
+                    for size, _ in element_sizes.items()
+                }
+                for element, element_sizes in ESSENCE_MAP.items()
+            }
 
             total_missing = {
                 element: {
@@ -165,11 +183,9 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                                 total_sub_fusion_cost[element][size] += ingredient['sub_fusion_cost'][element][size]
 
                 # Now determine what's missing based on owner's storage
-                storage = summoner.storage.get_storage()
-
                 sub_fusion_total_missing = {
                     element: {
-                            size: total_sub_fusion_cost[element][size] - storage[element][size] if total_sub_fusion_cost[element][size] > storage[element][size] else 0
+                            size: total_sub_fusion_cost[element][size] - essence_storage[element][size] if total_sub_fusion_cost[element][size] > essence_storage[element][size] else 0
                             for size, qty in element_sizes.items()
                         }
                     for element, element_sizes in total_sub_fusion_cost.items()
@@ -191,6 +207,7 @@ def fusion_progress_detail(request, profile_name, monster_slug):
                 'level': level,
                 'cost': fusion.cost,
                 'ingredients': ingredients,
+                'awakening_mats': essence_storage,
                 'awakening_mats_cost': total_cost,
                 'awakening_mats_sufficient': essences_satisfied,
                 'awakening_mats_missing': total_missing,

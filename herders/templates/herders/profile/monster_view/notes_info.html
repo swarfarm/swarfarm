@@ -240,6 +240,12 @@
                             </div>
                         {% endfor %}
                     {% endif %}
+                    {% if skillups.family_shrine %}
+                    <div class="monster-image">
+                        <img src="{{ img_url_prefix }}buildings/monster_shrine.png" class="monster-thumb"/>
+                        <span class="image-plus image-plus-main">{{ skillups.family_shrine }}</span>
+                    </div>
+                    {% endif %}
                 {% endif %}
             </td>
         </tr>

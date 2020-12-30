@@ -2,6 +2,7 @@ import uuid
 from collections import OrderedDict
 from math import floor, ceil
 
+from django.core.exceptions import MultipleObjectsReturned
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.exceptions import ValidationError
@@ -11,7 +12,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from timezone_field import TimeZoneField
 
-from bestiary.models import base, Monster, Building, Level, Rune, RuneCraft, Artifact, ArtifactCraft
+from bestiary.models import base, Monster, Building, Level, Rune, RuneCraft, Artifact, ArtifactCraft, GameItem
 
 
 # Individual user/monster collection models
@@ -35,8 +36,10 @@ class Summoner(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     summoner_name = models.CharField(max_length=256, null=True, blank=True)
     com2us_id = models.BigIntegerField(default=None, null=True, blank=True)
-    server = models.IntegerField(choices=SERVER_CHOICES, default=SERVER_GLOBAL, null=True, blank=True)
-    following = models.ManyToManyField("self", related_name='followed_by', symmetrical=False)
+    server = models.IntegerField(
+        choices=SERVER_CHOICES, default=SERVER_GLOBAL, null=True, blank=True)
+    following = models.ManyToManyField(
+        "self", related_name='followed_by', symmetrical=False)
     public = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
@@ -47,197 +50,47 @@ class Summoner(models.Model):
         counts = {}
 
         for rune_type in RuneInstance.TYPE_CHOICES:
-            counts[rune_type[1]] = RuneInstance.objects.filter(owner=self, type=rune_type[0]).count()
+            counts[rune_type[1]] = RuneInstance.objects.filter(
+                owner=self, type=rune_type[0]).count()
 
         return counts
 
     def save(self, *args, **kwargs):
         super(Summoner, self).save(*args, **kwargs)
 
-        # Update new storage model
-        if not hasattr(self, 'storage'):
-            new_storage = Storage.objects.create(
-                owner=self,
-            )
-            new_storage.save()
-
     def __str__(self):
         return self.user.username
 
 
-def _default_storage_data():
-    return [0, 0, 0]
-
-
 class Storage(models.Model):
-    ESSENCE_LOW = 0
-    ESSENCE_MID = 1
-    ESSENCE_HIGH = 2
-
-    ESSENCE_SIZES = [
-        (ESSENCE_LOW, 'Low'),
-        (ESSENCE_MID, 'Mid'),
-        (ESSENCE_HIGH, 'High'),
-    ]
-
-    ESSENCE_FIELDS = ['magic_essence', 'fire_essence', 'water_essence', 'wind_essence', 'light_essence', 'dark_essence']
-    CRAFT_FIELDS = [
-        'wood',
-        'leather',
-        'rock',
-        'ore',
-        'mithril',
-        'cloth',
-        'rune_piece',
-        'dust',
-        'symbol_harmony',
-        'symbol_transcendance',
-        'symbol_chaos',
-        'crystal_water',
-        'crystal_fire',
-        'crystal_wind',
-        'crystal_light',
-        'crystal_dark',
-        'crystal_magic',
-        'crystal_pure',
-        'conversion_stone',
-    ]
-    MONSTER_FIELDS = [
-        'fire_angelmon',
-        'water_angelmon',
-        'wind_angelmon',
-        'light_angelmon',
-        'dark_angelmon',
-        'fire_king_angelmon',
-        'water_king_angelmon',
-        'wind_king_angelmon',
-        'light_king_angelmon',
-        'dark_king_angelmon',
-        'rainbowmon_2_20',
-        'rainbowmon_3_1',
-        'rainbowmon_3_25',
-        'rainbowmon_4_1',
-        'rainbowmon_4_30',
-        'rainbowmon_5_1',
-        'super_angelmon',
-        'devilmon',
-    ]
-
-    owner = models.OneToOneField(Summoner, on_delete=models.CASCADE)
-
-    # Elemental Essences
-    magic_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Magic Essence')
-    fire_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Fire Essence')
-    water_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Water Essence')
-    wind_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Wind Essence')
-    light_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Light Essence')
-    dark_essence = ArrayField(models.IntegerField(default=0), size=3, default=_default_storage_data, help_text='Dark Essence')
-
-    # Crafting materials
-    wood = models.IntegerField(default=0, help_text='Hard Wood')
-    leather = models.IntegerField(default=0, help_text='Tough Leather')
-    rock = models.IntegerField(default=0, help_text='Solid Rock')
-    ore = models.IntegerField(default=0, help_text='Solid Iron Ore')
-    mithril = models.IntegerField(default=0, help_text='Shining Mythril')
-    cloth = models.IntegerField(default=0, help_text='Thick Cloth')
-    rune_piece = models.IntegerField(default=0, help_text='Rune Piece')
-    dust = models.IntegerField(default=0, help_text='Magic Dust')
-    symbol_harmony = models.IntegerField(default=0, help_text='Symbol of Harmony')
-    symbol_transcendance = models.IntegerField(default=0, help_text='Symbol of Transcendance')
-    symbol_chaos = models.IntegerField(default=0, help_text='Symbol of Chaos')
-    crystal_water = models.IntegerField(default=0, help_text='Frozen Water Crystal')
-    crystal_fire = models.IntegerField(default=0, help_text='Flaming Fire Crystal')
-    crystal_wind = models.IntegerField(default=0, help_text='Whirling Wind Crystal')
-    crystal_light = models.IntegerField(default=0, help_text='Shiny Light Crystal')
-    crystal_dark = models.IntegerField(default=0, help_text='Pitch-black Dark Crystal')
-    crystal_magic = models.IntegerField(default=0, help_text='Condensed Magic Crystal')
-    crystal_pure = models.IntegerField(default=0, help_text='Pure Magic Crystal')
-    conversion_stone = models.IntegerField(default=0, help_text='Conversion Stone')
-
-    # Material monsters
-    fire_angelmon = models.IntegerField(default=0, help_text='Fire Angelmon')
-    water_angelmon = models.IntegerField(default=0, help_text='Water Angelmon')
-    wind_angelmon = models.IntegerField(default=0, help_text='Wind Angelmon')
-    light_angelmon = models.IntegerField(default=0, help_text='Light Angelmon')
-    dark_angelmon = models.IntegerField(default=0, help_text='Dark Angelmon')
-
-    fire_king_angelmon = models.IntegerField(default=0, help_text='Fire King Angelmon')
-    water_king_angelmon = models.IntegerField(default=0, help_text='Water King Angelmon')
-    wind_king_angelmon = models.IntegerField(default=0, help_text='Wind King Angelmon')
-    light_king_angelmon = models.IntegerField(default=0, help_text='Light King Angelmon')
-    dark_king_angelmon = models.IntegerField(default=0, help_text='Dark King Angelmon')
-
-    super_angelmon = models.IntegerField(default=0, help_text='Super Angelmon')
-    devilmon = models.IntegerField(default=0, help_text='Devilmon')
-
-    rainbowmon_2_20 = models.IntegerField(default=0, help_text='Rainbowmon 2⭐ lv.20')
-    rainbowmon_3_1 = models.IntegerField(default=0, help_text='Rainbowmon 3⭐ lv.1')
-    rainbowmon_3_25 = models.IntegerField(default=0, help_text='Rainbowmon 3⭐ lv.25')
-    rainbowmon_4_1 = models.IntegerField(default=0, help_text='Rainbowmon 4⭐ lv.1')
-    rainbowmon_4_30 = models.IntegerField(default=0, help_text='Rainbowmon 4⭐ lv.30')
-    rainbowmon_5_1 = models.IntegerField(default=0, help_text='Rainbowmon 5⭐ lv.1')
-
-    def get_storage(self):
-        storage = OrderedDict()
-        storage['magic'] = OrderedDict()
-        storage['magic']['low'] = self.magic_essence[Storage.ESSENCE_LOW]
-        storage['magic']['mid'] = self.magic_essence[Storage.ESSENCE_MID]
-        storage['magic']['high'] = self.magic_essence[Storage.ESSENCE_HIGH]
-        storage['fire'] = OrderedDict()
-        storage['fire']['low'] = self.fire_essence[Storage.ESSENCE_LOW]
-        storage['fire']['mid'] = self.fire_essence[Storage.ESSENCE_MID]
-        storage['fire']['high'] = self.fire_essence[Storage.ESSENCE_HIGH]
-        storage['water'] = OrderedDict()
-        storage['water']['low'] = self.water_essence[Storage.ESSENCE_LOW]
-        storage['water']['mid'] = self.water_essence[Storage.ESSENCE_MID]
-        storage['water']['high'] = self.water_essence[Storage.ESSENCE_HIGH]
-        storage['wind'] = OrderedDict()
-        storage['wind']['low'] = self.wind_essence[Storage.ESSENCE_LOW]
-        storage['wind']['mid'] = self.wind_essence[Storage.ESSENCE_MID]
-        storage['wind']['high'] = self.wind_essence[Storage.ESSENCE_HIGH]
-        storage['light'] = OrderedDict()
-        storage['light']['low'] = self.light_essence[Storage.ESSENCE_LOW]
-        storage['light']['mid'] = self.light_essence[Storage.ESSENCE_MID]
-        storage['light']['high'] = self.light_essence[Storage.ESSENCE_HIGH]
-        storage['dark'] = OrderedDict()
-        storage['dark']['low'] = self.dark_essence[Storage.ESSENCE_LOW]
-        storage['dark']['mid'] = self.dark_essence[Storage.ESSENCE_MID]
-        storage['dark']['high'] = self.dark_essence[Storage.ESSENCE_HIGH]
-
-        return storage
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
 
     @staticmethod
     def _min_zero(x):
         return max(x, 0)
 
     def save(self, *args, **kwargs):
-        # Ensure all are at 0 or higher
-        self.magic_essence = list(map(self._min_zero, self.magic_essence))
-        self.fire_essence = list(map(self._min_zero, self.fire_essence))
-        self.wind_essence = list(map(self._min_zero, self.wind_essence))
-        self.light_essence = list(map(self._min_zero, self.light_essence))
-        self.dark_essence = list(map(self._min_zero, self.dark_essence))
+        self.quantity = self._min_zero(self.quantity)
+        super().save(*args, **kwargs)
 
-        self.wood = max(self.wood, 0)
-        self.leather = max(self.leather, 0)
-        self.rock = max(self.rock, 0)
-        self.ore = max(self.ore, 0)
-        self.mithril = max(self.mithril, 0)
-        self.cloth = max(self.cloth, 0)
-        self.rune_piece = max(self.rune_piece, 0)
-        self.dust = max(self.dust, 0)
-        self.symbol_harmony = max(self.symbol_harmony, 0)
-        self.symbol_transcendance = max(self.symbol_transcendance, 0)
-        self.symbol_chaos = max(self.symbol_chaos, 0)
-        self.crystal_water = max(self.crystal_water, 0)
-        self.crystal_fire = max(self.crystal_fire, 0)
-        self.crystal_wind = max(self.crystal_wind, 0)
-        self.crystal_light = max(self.crystal_light, 0)
-        self.crystal_dark = max(self.crystal_dark, 0)
-        self.crystal_magic = max(self.crystal_magic, 0)
-        self.crystal_pure = max(self.crystal_pure, 0)
+    class Meta:
+        abstract = True
 
-        super(Storage, self).save(*args, **kwargs)
+
+class MaterialStorage(Storage):
+    item = models.ForeignKey(GameItem, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['item']
+
+
+class MonsterShrineStorage(Storage):
+    item = models.ForeignKey(Monster, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['item']
 
 
 class MonsterTag(models.Model):
@@ -276,12 +129,16 @@ class MonsterInstance(models.Model, base.Stars):
     fodder = models.BooleanField(default=False)
     in_storage = models.BooleanField(default=False)
     ignore_for_fusion = models.BooleanField(default=False)
-    priority = models.IntegerField(choices=PRIORITY_CHOICES, blank=True, null=True)
+    priority = models.IntegerField(
+        choices=PRIORITY_CHOICES, blank=True, null=True)
     tags = models.ManyToManyField(MonsterTag, blank=True)
-    notes = models.TextField(null=True, blank=True, help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
+    notes = models.TextField(null=True, blank=True, help_text=mark_safe(
+        '<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled'))
     custom_name = models.CharField(default='', max_length=20, blank=True)
-    default_build = models.ForeignKey('RuneBuild', null=True, on_delete=models.SET_NULL, related_name='default_build')
-    rta_build = models.ForeignKey('RuneBuild', null=True, on_delete=models.SET_NULL, related_name='rta_build')
+    default_build = models.ForeignKey(
+        'RuneBuild', null=True, on_delete=models.SET_NULL, related_name='default_build')
+    rta_build = models.ForeignKey(
+        'RuneBuild', null=True, on_delete=models.SET_NULL, related_name='rta_build')
 
     # Calculated fields (on save)
     rune_hp = models.IntegerField(blank=True, default=0)
@@ -311,7 +168,8 @@ class MonsterInstance(models.Model, base.Stars):
 
     def skill_ups_to_max(self):
         skill_ups_remaining = self.monster.skill_ups_to_max or 0
-        skill_levels = [self.skill_1_level, self.skill_2_level, self.skill_3_level, self.skill_4_level]
+        skill_levels = [self.skill_1_level, self.skill_2_level,
+                        self.skill_3_level, self.skill_4_level]
 
         for idx in range(0, self.monster.skills.count()):
             skill_ups_remaining -= skill_levels[idx] - 1
@@ -322,7 +180,8 @@ class MonsterInstance(models.Model, base.Stars):
         sets = []
 
         # Determine rune sets
-        rune_counts = self.runeinstance_set.values('type').order_by().annotate(count=Count('type'))
+        rune_counts = self.runeinstance_set.values(
+            'type').order_by().annotate(count=Count('type'))
         num_equipped = self.runeinstance_set.count()
 
         for rune_count in rune_counts:
@@ -343,20 +202,23 @@ class MonsterInstance(models.Model, base.Stars):
 
         for x in [2, 4, 6]:
             try:
-                stats.append(self.runeinstance_set.get(slot=x).get_main_stat_display())
+                stats.append(self.runeinstance_set.get(
+                    slot=x).get_main_stat_display())
             except:
                 continue
 
         return '/'.join(sets) + ' - ' + '/'.join(stats)
 
     def get_rune_set_bonuses(self):
-        rune_counts = self.runeinstance_set.values('type').order_by().annotate(count=Count('type'))
+        rune_counts = self.runeinstance_set.values(
+            'type').order_by().annotate(count=Count('type'))
         rune_bonuses = []
 
         for rune_count in rune_counts:
             required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[rune_count['type']]
             present = rune_count['count']
-            bonus_text = RuneInstance.RUNE_SET_BONUSES[rune_count['type']]['description']
+            bonus_text = RuneInstance.RUNE_SET_BONUSES[rune_count['type']
+                                                       ]['description']
 
             if present >= required:
                 rune_bonuses.extend([bonus_text] * (present // required))
@@ -526,22 +388,34 @@ class MonsterInstance(models.Model, base.Stars):
         # Update stats based on runes
         rune_set = self.runeinstance_set.all()
         stat_bonuses = {stat_id: 0 for stat_id, _ in RuneInstance.STAT_CHOICES}
-        rune_set_counts = {type_id: 0 for type_id, _ in RuneInstance.TYPE_CHOICES}
+        rune_set_counts = {type_id: 0 for type_id,
+                           _ in RuneInstance.TYPE_CHOICES}
 
         # Sum up all stat bonuses
         for rune in rune_set:
             rune_set_counts[rune.type] += 1
-            stat_bonuses[RuneInstance.STAT_HP] += rune.get_stat(RuneInstance.STAT_HP)
-            stat_bonuses[RuneInstance.STAT_HP_PCT] += rune.get_stat(RuneInstance.STAT_HP_PCT)
-            stat_bonuses[RuneInstance.STAT_ATK] += rune.get_stat(RuneInstance.STAT_ATK)
-            stat_bonuses[RuneInstance.STAT_ATK_PCT] += rune.get_stat(RuneInstance.STAT_ATK_PCT)
-            stat_bonuses[RuneInstance.STAT_DEF] += rune.get_stat(RuneInstance.STAT_DEF)
-            stat_bonuses[RuneInstance.STAT_DEF_PCT] += rune.get_stat(RuneInstance.STAT_DEF_PCT)
-            stat_bonuses[RuneInstance.STAT_SPD] += rune.get_stat(RuneInstance.STAT_SPD)
-            stat_bonuses[RuneInstance.STAT_CRIT_RATE_PCT] += rune.get_stat(RuneInstance.STAT_CRIT_RATE_PCT)
-            stat_bonuses[RuneInstance.STAT_CRIT_DMG_PCT] += rune.get_stat(RuneInstance.STAT_CRIT_DMG_PCT)
-            stat_bonuses[RuneInstance.STAT_RESIST_PCT] += rune.get_stat(RuneInstance.STAT_RESIST_PCT)
-            stat_bonuses[RuneInstance.STAT_ACCURACY_PCT] += rune.get_stat(RuneInstance.STAT_ACCURACY_PCT)
+            stat_bonuses[RuneInstance.STAT_HP] += rune.get_stat(
+                RuneInstance.STAT_HP)
+            stat_bonuses[RuneInstance.STAT_HP_PCT] += rune.get_stat(
+                RuneInstance.STAT_HP_PCT)
+            stat_bonuses[RuneInstance.STAT_ATK] += rune.get_stat(
+                RuneInstance.STAT_ATK)
+            stat_bonuses[RuneInstance.STAT_ATK_PCT] += rune.get_stat(
+                RuneInstance.STAT_ATK_PCT)
+            stat_bonuses[RuneInstance.STAT_DEF] += rune.get_stat(
+                RuneInstance.STAT_DEF)
+            stat_bonuses[RuneInstance.STAT_DEF_PCT] += rune.get_stat(
+                RuneInstance.STAT_DEF_PCT)
+            stat_bonuses[RuneInstance.STAT_SPD] += rune.get_stat(
+                RuneInstance.STAT_SPD)
+            stat_bonuses[RuneInstance.STAT_CRIT_RATE_PCT] += rune.get_stat(
+                RuneInstance.STAT_CRIT_RATE_PCT)
+            stat_bonuses[RuneInstance.STAT_CRIT_DMG_PCT] += rune.get_stat(
+                RuneInstance.STAT_CRIT_DMG_PCT)
+            stat_bonuses[RuneInstance.STAT_RESIST_PCT] += rune.get_stat(
+                RuneInstance.STAT_RESIST_PCT)
+            stat_bonuses[RuneInstance.STAT_ACCURACY_PCT] += rune.get_stat(
+                RuneInstance.STAT_ACCURACY_PCT)
 
         # Add in the set bonuses
         for set, count in rune_set_counts.items():
@@ -553,14 +427,16 @@ class MonsterInstance(models.Model, base.Stars):
 
                 if set == RuneInstance.TYPE_SWIFT:
                     # Swift set is special because it adds a percentage to a normally flat stat
-                    bonus_value = int(ceil(round(base_stats[RuneInstance.STAT_SPD] * (bonus_value / 100.0), 3)))
+                    bonus_value = int(
+                        ceil(round(base_stats[RuneInstance.STAT_SPD] * (bonus_value / 100.0), 3)))
                     stat = RuneInstance.STAT_SPD
 
                 stat_bonuses[stat] += bonus_value * num_sets_equipped
 
         # Convert HP/ATK/DEF percentage bonuses to flat bonuses based on the base stats
         for stat in [RuneInstance.STAT_HP_PCT, RuneInstance.STAT_ATK_PCT, RuneInstance.STAT_DEF_PCT]:
-            stat_bonuses[stat] = int(ceil(round(base_stats[stat] * (stat_bonuses[stat] / 100.0), 3)))
+            stat_bonuses[stat] = int(
+                ceil(round(base_stats[stat] * (stat_bonuses[stat] / 100.0), 3)))
 
         return stat_bonuses
 
@@ -594,7 +470,8 @@ class MonsterInstance(models.Model, base.Stars):
 
     def get_building_stats(self, area=Building.AREA_GENERAL):
         owned_bldgs = BuildingInstance.objects.filter(
-            Q(building__element__isnull=True) | Q(building__element=self.monster.element),
+            Q(building__element__isnull=True) | Q(
+                building__element=self.monster.element),
             owner=self.owner,
             building__area=area,
         ).select_related('building')
@@ -629,17 +506,37 @@ class MonsterInstance(models.Model, base.Stars):
         return self.get_building_stats(Building.AREA_GUILD)
 
     def get_possible_skillups(self):
-        same_skill_group = Q(monster__skill_group_id=self.monster.skill_group_id)
+        same_skill_group = Q(
+            monster__skill_group_id=self.monster.skill_group_id)
+        same_skill_group_shrine = Q(
+            item__skill_group_id=self.monster.skill_group_id)
 
-        devilmon = MonsterInstance.objects.filter(owner=self.owner, monster__name='Devilmon').count() + self.owner.storage.devilmon
-        skill_group = MonsterInstance.objects.filter(owner=self.owner).filter(same_skill_group).exclude(pk=self.pk).order_by('ignore_for_fusion')
-        pieces = MonsterPiece.objects.filter(owner=self.owner, monster__skill_group_id=self.monster.skill_group_id)
+        devilmon = MonsterInstance.objects.filter(
+            owner=self.owner, monster__name='Devilmon').count()
+        skill_group = MonsterInstance.objects.filter(owner=self.owner).filter(
+            same_skill_group).exclude(pk=self.pk).order_by('ignore_for_fusion')
+        pieces = MonsterPiece.objects.filter(
+            owner=self.owner, monster__skill_group_id=self.monster.skill_group_id)
+
+        try:
+            devilmon_material_storage = MaterialStorage.objects.select_related(
+                'item').get(owner=self.owner, item__name__icontains='devilmon')
+            devilmon += devilmon_material_storage.quantity
+        except MaterialStorage.DoesNotExist:
+            pass
+        except MultipleObjectsReturned:
+            # should be better handling for this
+            pass
+
+        family_shrine = MonsterShrineStorage.objects.filter(
+            owner=self.owner).filter(same_skill_group_shrine).count()
 
         return {
             'devilmon': devilmon,
             'skill_group': skill_group,
             'pieces': pieces,
-            'none': devilmon + skill_group.count() + pieces.count() == 0,
+            'family_shrine': family_shrine,
+            'none': devilmon + skill_group.count() + pieces.count() + family_shrine == 0,
         }
 
     def clean(self):
@@ -689,9 +586,12 @@ class MonsterInstance(models.Model, base.Stars):
         stat_bonuses = self.get_rune_stats()
 
         # Add all the bonuses together to get final values.
-        self.rune_hp = stat_bonuses[RuneInstance.STAT_HP] + stat_bonuses[RuneInstance.STAT_HP_PCT]
-        self.rune_attack = stat_bonuses[RuneInstance.STAT_ATK] + stat_bonuses[RuneInstance.STAT_ATK_PCT]
-        self.rune_defense = stat_bonuses[RuneInstance.STAT_DEF] + stat_bonuses[RuneInstance.STAT_DEF_PCT]
+        self.rune_hp = stat_bonuses[RuneInstance.STAT_HP] + \
+            stat_bonuses[RuneInstance.STAT_HP_PCT]
+        self.rune_attack = stat_bonuses[RuneInstance.STAT_ATK] + \
+            stat_bonuses[RuneInstance.STAT_ATK_PCT]
+        self.rune_defense = stat_bonuses[RuneInstance.STAT_DEF] + \
+            stat_bonuses[RuneInstance.STAT_DEF_PCT]
         self.rune_speed = stat_bonuses[RuneInstance.STAT_SPD]
         self.rune_crit_rate = stat_bonuses[RuneInstance.STAT_CRIT_RATE_PCT]
         self.rune_crit_damage = stat_bonuses[RuneInstance.STAT_CRIT_DMG_PCT]
@@ -702,9 +602,12 @@ class MonsterInstance(models.Model, base.Stars):
 
         # save artifacts main stat bonuses
         artifacts = self.artifactinstance_set.all()
-        self.artifact_hp = sum([artifact.main_stat_value for artifact in artifacts if artifact.main_stat == artifact.STAT_HP])
-        self.artifact_attack = sum([artifact.main_stat_value for artifact in artifacts if artifact.main_stat == artifact.STAT_ATK])
-        self.artifact_defense = sum([artifact.main_stat_value for artifact in artifacts if artifact.main_stat == artifact.STAT_DEF])
+        self.artifact_hp = sum(
+            [artifact.main_stat_value for artifact in artifacts if artifact.main_stat == artifact.STAT_HP])
+        self.artifact_attack = sum(
+            [artifact.main_stat_value for artifact in artifacts if artifact.main_stat == artifact.STAT_ATK])
+        self.artifact_defense = sum(
+            [artifact.main_stat_value for artifact in artifacts if artifact.main_stat == artifact.STAT_DEF])
 
         # Limit skill levels to the max level of the skill
         skills = self.monster.skills.all()
@@ -780,25 +683,34 @@ class RuneInstance(Rune):
     type = models.IntegerField(choices=Rune.TYPE_CHOICES)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
-    assigned_to = models.ForeignKey(MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
+    assigned_to = models.ForeignKey(
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
 
     __original_assigned_to_id = None
 
     # Old substat fields to be removed later, but still used
-    substat_1 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    substat_1 = models.IntegerField(
+        choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_1_value = models.IntegerField(null=True, blank=True)
-    substat_1_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    substat_2 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    substat_1_craft = models.IntegerField(
+        choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_2 = models.IntegerField(
+        choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_2_value = models.IntegerField(null=True, blank=True)
-    substat_2_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    substat_3 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    substat_2_craft = models.IntegerField(
+        choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_3 = models.IntegerField(
+        choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_3_value = models.IntegerField(null=True, blank=True)
-    substat_3_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    substat_4 = models.IntegerField(choices=Rune.STAT_CHOICES, null=True, blank=True)
+    substat_3_craft = models.IntegerField(
+        choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_4 = models.IntegerField(
+        choices=Rune.STAT_CHOICES, null=True, blank=True)
     substat_4_value = models.IntegerField(null=True, blank=True)
-    substat_4_craft = models.IntegerField(choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
+    substat_4_craft = models.IntegerField(
+        choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
 
     class Meta:
         ordering = ['slot', 'type', 'level']
@@ -838,7 +750,8 @@ class RuneInstance(Rune):
             # TODO: Remove this once rune builds are default method of working with equipped runes
             if self.__original_assigned_to_id is not None and self.assigned_to is None:
                 # Rune was removed, update rune build on that monster
-                MonsterInstance.objects.get(pk=self.__original_assigned_to_id)._initialize_rune_build()
+                MonsterInstance.objects.get(
+                    pk=self.__original_assigned_to_id)._initialize_rune_build()
 
 
 class RuneBuild(models.Model):
@@ -962,7 +875,8 @@ class RuneBuild(models.Model):
         self.crit_damage = stat_bonuses.get(base.Stats.STAT_CRIT_DMG_PCT, 0)
         self.resistance = stat_bonuses.get(base.Stats.STAT_RESIST_PCT, 0)
         self.accuracy = stat_bonuses.get(base.Stats.STAT_ACCURACY_PCT, 0)
-        self.avg_efficiency = self.runes.aggregate(Avg('efficiency'))['efficiency__avg'] or 0.0
+        self.avg_efficiency = self.runes.aggregate(
+            Avg('efficiency'))['efficiency__avg'] or 0.0
 
 
 class RuneCraftInstance(RuneCraft):
@@ -988,7 +902,8 @@ class ArtifactInstance(Artifact):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
-    assigned_to = models.ForeignKey(MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
+    assigned_to = models.ForeignKey(
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -1024,17 +939,21 @@ class TeamGroup(models.Model):
 
 class Team(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    owner = models.ForeignKey(Summoner, on_delete=models.CASCADE, null=True, blank=True)
-    level = models.ForeignKey(Level, on_delete=models.SET_NULL, null=True, blank=True)
+    owner = models.ForeignKey(
+        Summoner, on_delete=models.CASCADE, null=True, blank=True)
+    level = models.ForeignKey(
+        Level, on_delete=models.SET_NULL, null=True, blank=True)
     group = models.ForeignKey(TeamGroup, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=30)
     favorite = models.BooleanField(default=False, blank=True)
     description = models.TextField(
         null=True,
         blank=True,
-        help_text=mark_safe('<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled')
+        help_text=mark_safe(
+            '<a href="https://daringfireball.net/projects/markdown/syntax" target="_blank">Markdown syntax</a> enabled')
     )
-    leader = models.ForeignKey('MonsterInstance', on_delete=models.SET_NULL, related_name='team_leader', null=True, blank=True)
+    leader = models.ForeignKey('MonsterInstance', on_delete=models.SET_NULL,
+                               related_name='team_leader', null=True, blank=True)
     roster = models.ManyToManyField('MonsterInstance', blank=True)
 
     class Meta:
@@ -1063,11 +982,12 @@ class BuildingInstance(models.Model):
         from django.core.exceptions import ValidationError
         if self.level and self.building and (self.level < 0 or self.level > self.building.max_level):
             raise ValidationError({
-                    'level': ValidationError(
-                        'Level must be between %s and %s' % (0, self.building.max_level),
-                        code='invalid_level',
-                    )
-                })
+                'level': ValidationError(
+                    'Level must be between %s and %s' % (
+                        0, self.building.max_level),
+                    code='invalid_level',
+                )
+            })
 
     def update_fields(self):
         self.level = min(max(0, self.level), self.building.max_level)

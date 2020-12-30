@@ -5,7 +5,7 @@ from operator import getitem
 from crispy_forms.bootstrap import FieldWithButtons, StrictButton, Field, Div
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models import Q, Count
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -14,14 +14,14 @@ from django.template import loader
 from django.template.context_processors import csrf
 from django.urls import reverse
 
-from bestiary.models import Monster, Building, Fusion
+from bestiary.models import Monster, Building, Fusion, ESSENCE_MAP, GameItem
 from herders.decorators import username_case_redirect
 from herders.filters import MonsterInstanceFilter
 from herders.forms import FilterMonsterInstanceForm, \
     AddMonsterInstanceForm, BulkAddMonsterInstanceForm, \
     BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
     MonsterPieceForm
-from herders.models import Summoner, MonsterInstance, MonsterPiece, Storage, ArtifactInstance
+from herders.models import Summoner, MonsterInstance, MonsterPiece, MaterialStorage, MonsterShrineStorage, ArtifactInstance
 
 DEFAULT_VIEW_MODE = 'box'
 
@@ -147,7 +147,17 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             #
 
             base_monsters = Monster.objects.filter(base_monster_filters).exclude(material).order_by('skill_group_id', 'com2us_id').values('name', 'com2us_id', 'element', 'skill_group_id', 'skill_ups_to_max')
-            devilmons_count = monster_filter.qs.filter(monster__com2us_id=61105).count() + summoner.storage.devilmon
+            devilmons_count = monster_filter.qs.filter(monster__com2us_id=61105).count()
+
+            try:
+                devilmon_material_storage = MaterialStorage.objects.select_related(
+                    'item').get(owner=summoner, item__name__icontains='devilmon')
+                devilmons_count += devilmon_material_storage.quantity
+            except MaterialStorage.DoesNotExist:
+                pass
+            except MultipleObjectsReturned:
+                # should be better handling for this
+                pass
 
             skill_groups = itertools.groupby(base_monsters, lambda mon: mon['skill_group_id'])
             for skill_group_id, records in skill_groups:
@@ -842,33 +852,32 @@ def monster_instance_awaken(request, profile_name, instance_id):
                     'removeElement': '#awakenMonsterButton',
                 }
             else:
+                monster_awakening_materials = monster.monster.get_awakening_materials()
+                summoner_material_storage = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
+
                 # Display form confirming essences subtracted
                 if request.method == 'POST' and form.is_valid():
                     # Subtract essences from inventory if requested
                     if form.cleaned_data['subtract_materials']:
                         summoner = Summoner.objects.get(user=request.user)
 
-                        summoner.storage.magic_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_magic_high
-                        summoner.storage.magic_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_magic_mid
-                        summoner.storage.magic_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_magic_low
-                        summoner.storage.fire_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_fire_high
-                        summoner.storage.fire_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_fire_mid
-                        summoner.storage.fire_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_fire_low
-                        summoner.storage.water_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_water_high
-                        summoner.storage.water_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_water_mid
-                        summoner.storage.water_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_water_low
-                        summoner.storage.wind_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_wind_high
-                        summoner.storage.wind_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_wind_mid
-                        summoner.storage.wind_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_wind_low
-                        summoner.storage.dark_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_dark_high
-                        summoner.storage.dark_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_dark_mid
-                        summoner.storage.dark_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_dark_low
-                        summoner.storage.light_essence[Storage.ESSENCE_HIGH] -= monster.monster.awaken_mats_light_high
-                        summoner.storage.light_essence[Storage.ESSENCE_MID] -= monster.monster.awaken_mats_light_mid
-                        summoner.storage.light_essence[Storage.ESSENCE_LOW] -= monster.monster.awaken_mats_light_low
-
-                        summoner.storage.save()
-
+                        # bulk_update doesn't use `save()` method inside Model, so we need to take care of negative numbers
+                        material_storage_edited = []
+                        material_storage_created = []
+                        for element, essences in monster_awakening_materials.items():
+                            for essence, needed in essences.items():
+                                if needed > 0:
+                                    if ESSENCE_MAP[element][essence] not in summoner_material_storage:
+                                        material_storage_created.append(MaterialStorage(
+                                            owner=summoner,
+                                            quantity=0,
+                                            item=GameItem.objects.get(com2us_id=ESSENCE_MAP[element][essence])
+                                        ))
+                                        continue
+                                    material_storage_edited.append(summoner_material_storage[ESSENCE_MAP[element][essence]])
+                                    material_storage_edited[-1].quantity = max(material_storage_edited[-1].quantity - needed, 0)
+                        MaterialStorage.objects.bulk_create(material_storage_created)
+                        MaterialStorage.objects.bulk_update(material_storage_edited, ['quantity'])
                     # Perform the awakening by instance's monster source ID
                     monster.monster = monster.monster.awakens_to
                     monster.save()
@@ -878,16 +887,16 @@ def monster_instance_awaken(request, profile_name, instance_id):
                         'removeElement': '#awakenMonsterButton',
                     }
                 else:
-                    storage = summoner.storage.get_storage()
                     available_essences = OrderedDict()
 
-                    for element, essences in monster.monster.get_awakening_materials().items():
+                    for element, essences in monster_awakening_materials.items():
                         available_essences[element] = OrderedDict()
                         for size, cost in essences.items():
                             if cost > 0:
+                                qty = summoner_material_storage[ESSENCE_MAP[element][size]].quantity if ESSENCE_MAP[element][size] in summoner_material_storage else 0
                                 available_essences[element][size] = {
-                                    'qty': storage[element][size],
-                                    'sufficient': storage[element][size] >= cost,
+                                    'qty': qty,
+                                    'sufficient': qty >= cost,
                                 }
 
                     context = {

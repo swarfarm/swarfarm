@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_nested.relations import NestedHyperlinkedIdentityField
 
-from herders.models import Summoner, Storage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, \
+from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, \
     RuneCraftInstance, TeamGroup, Team, RuneBuild
 
 
@@ -105,19 +105,26 @@ class MonsterPieceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
         fields = ['id', 'url', 'monster', 'pieces']
 
 
-class StorageSerializer(serializers.ModelSerializer):
+class MaterialStorageSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
+    url = NestedHyperlinkedIdentityField(
+        view_name='profile/storage-detail',
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
+    )
+
     class Meta:
-        model = Storage
-        fields = [
-            'magic_essence', 'fire_essence', 'water_essence', 'wind_essence', 'light_essence', 'dark_essence',
-            'wood', 'leather', 'rock', 'ore', 'mithril', 'cloth', 'rune_piece', 'dust',
-            'symbol_harmony',  'symbol_transcendance', 'symbol_chaos',
-            'crystal_water', 'crystal_fire', 'crystal_wind', 'crystal_light', 'crystal_dark', 'crystal_magic', 'crystal_pure',
-            'fire_angelmon', 'water_angelmon', 'wind_angelmon', 'light_angelmon', 'dark_angelmon',
-            'fire_king_angelmon', 'water_king_angelmon', 'wind_king_angelmon', 'light_king_angelmon', 'dark_king_angelmon',
-            'rainbowmon_2_20', 'rainbowmon_3_1', 'rainbowmon_3_25', 'rainbowmon_4_1', 'rainbowmon_4_30', 'rainbowmon_5_1',
-            'super_angelmon', 'devilmon',
-        ]
+        model = MaterialStorage
+        fields = ['id', 'url', 'item', 'quantity']
+
+
+class MonsterShrineStorageSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
+    url = NestedHyperlinkedIdentityField(
+        view_name='profile/monster-shrine-detail',
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
+    )
+
+    class Meta:
+        model = MonsterShrineStorage
+        fields = ['id', 'url', 'item', 'quantity']
 
 
 class BuildingInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):

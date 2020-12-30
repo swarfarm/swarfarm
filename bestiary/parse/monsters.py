@@ -184,6 +184,10 @@ def definitely_obtainable(obj, raw):
     obj.obtainable = True
     return obj
 
+def definitely_2a(obj, raw):
+    obj.awaken_level = Monster.AWAKEN_LEVEL_SECOND
+    return obj
+
 
 def replace_crystal_image(raw):
     raw['thumbnail'] = [8, raw['attribute'] - 1, 3]
@@ -553,6 +557,11 @@ _postprocess_erratum = {
     19315: [definitely_obtainable],
     23005: [definitely_obtainable],  # Dark Vampire Lord
     23015: [definitely_obtainable],
+    16031: [definitely_2a], # Grim Reapers
+    16032: [definitely_2a],
+    16033: [definitely_2a],
+    16034: [definitely_2a],
+    16035: [definitely_2a],
 }
 
 

@@ -100,16 +100,13 @@ class ProfileItemMixin(viewsets.GenericViewSet):
 
 
 class StorageViewSet(ProfileItemMixin, viewsets.ModelViewSet):
-    queryset = Storage.objects.all().select_related('owner', 'owner__user')
-    serializer_class = StorageSerializer
+    queryset = MaterialStorage.objects.all().select_related('owner', 'owner__user', 'item')
+    serializer_class = MaterialStorageSerializer
 
-    def get_object(self):
-        username = self.kwargs.get('user_pk')
-        filter_kwargs = {'owner__user__username': username}
-        queryset = self.filter_queryset(self.get_queryset())
-        obj = get_object_or_404(queryset, **filter_kwargs)
 
-        return obj
+class MonsterShrineStorageViewSet(ProfileItemMixin, viewsets.ModelViewSet):
+    queryset = MonsterShrineStorage.objects.all().select_related('owner', 'owner__user', 'item')
+    serializer_class = MonsterShrineStorageSerializer
 
 
 class RuneBuildViewSet(ProfileItemMixin, viewsets.ModelViewSet):

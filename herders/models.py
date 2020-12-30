@@ -77,21 +77,20 @@ class Storage(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['item']
 
 
 class MaterialStorage(Storage):
     item = models.ForeignKey(GameItem, on_delete=models.CASCADE)
 
-    class Meta(Storage.Meta):
-        pass
+    class Meta:
+        ordering = ['item']
 
 
 class MonsterShrineStorage(Storage):
     item = models.ForeignKey(Monster, on_delete=models.CASCADE)
 
-    class Meta(Storage.Meta):
-        pass
+    class Meta:
+        ordering = ['item']
 
 
 class MonsterTag(models.Model):

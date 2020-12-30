@@ -37,7 +37,4 @@ class Migration(migrations.Migration):
                 'ordering': ['item'],
             },
         ),
-        migrations.DeleteModel(
-            name='Storage',
-        ),
     ]

@@ -528,8 +528,7 @@ class MonsterInstance(models.Model, base.Stars):
             # should be better handling for this
             pass
 
-        family_shrine = MonsterShrineStorage.objects.filter(
-            owner=self.owner).filter(same_skill_group_shrine).count()
+        family_shrine = sum([m.quantity for m in MonsterShrineStorage.objects.filter(owner=self.owner).filter(same_skill_group_shrine)])
 
         return {
             'devilmon': devilmon,

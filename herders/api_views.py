@@ -1,7 +1,8 @@
 from celery.result import AsyncResult
+from django.core.mail import mail_admins
 from django.db.models import Q
 from django_filters import rest_framework as filters
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, parsers, versioning
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,8 +13,12 @@ from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInsta
 from herders.pagination import *
 from herders.permissions import *
 from herders.serializers import *
-from .profile_parser import validate_sw_json
+from .profile_parser import validate_sw_json, default_import_options
+from .profile_commands import accepted_api_params, active_log_commands
 from .tasks import com2us_data_import
+
+from data_log.models import FullLog
+from data_log.views import InvalidLogException
 
 
 class SummonerViewSet(viewsets.ModelViewSet):
@@ -269,20 +274,6 @@ class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
 
 class ProfileJsonUpload(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
-    default_import_options = {
-        'clear_profile': False,
-        'default_priority': '',
-        'lock_monsters': True,
-        'minimum_stars': 1,
-        'ignore_silver': False,
-        'ignore_material': False,
-        'except_with_runes': True,
-        'except_light_and_dark': True,
-        'except_fusion_ingredient': True,
-        'delete_missing_monsters': 1,
-        'delete_missing_runes': 1,
-        'ignore_validation_errors': False
-    }
 
     def create(self, request, *args, **kwargs):
         errors = []
@@ -296,7 +287,7 @@ class ProfileJsonUpload(viewsets.ViewSet):
         if validation_errors:
             validation_failures = "Uploaded data does not match previously imported data. To override, set import preferences to ignore validation errors and import again."
 
-        import_options = request.user.summoner.preferences.get('import_options', self.default_import_options)
+        import_options = request.user.summoner.preferences.get('import_options', default_import_options)
 
         if not errors and (not validation_failures or import_options['ignore_validation_errors']):
             # Queue the import
@@ -322,3 +313,63 @@ class ProfileJsonUpload(viewsets.ViewSet):
                 }, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class SyncData(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+    versioning_class = versioning.QueryParameterVersioning  # Ignore default of namespaced based versioning and use default version defined in settings
+    parser_classes = (parsers.JSONParser, parsers.FormParser)
+
+    def create(self, request):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Unauthorized, make sure that API Key is correct"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        log_data = request.data.get('data')
+
+        if request.content_type == 'application/x-www-form-urlencoded':
+            # log_data will be a string, needs to be parsed as json
+            log_data = json.loads(log_data)
+
+        try:
+            api_command = log_data['request']['command']
+            # HubUserLogin is a special case, it doesn't store `wizard_id` in request since it needs to fetch it first
+            wizard_id = log_data['request']['wizard_id'] if api_command != "HubUserLogin" else log_data['response']['wizard_info']['wizard_id']
+        except (KeyError, TypeError):
+            raise InvalidLogException(detail='Invalid log data format')
+
+        if api_command not in active_log_commands:
+            raise InvalidLogException('Unsupported game command')
+        
+        summoner = request.user.summoner 
+
+        if summoner.com2us_id != wizard_id:
+            return Response({'detail': "Uploaded data does not match previously imported data. Make sure you are trying to synchronize correct account"}, status=status.HTTP_409_CONFLICT)
+
+        # Validate log data format
+        if not active_log_commands[api_command].validate(log_data):
+            FullLog.parse(summoner, log_data)
+            raise InvalidLogException(detail='Log data failed validation')
+
+        # Parse the log
+        try:
+            active_log_commands[api_command].parse(summoner, log_data)
+        except Exception as e:
+            mail_admins('Log server error', f'Request body:\n\n{log_data}')
+            raise e
+
+        response = {'detail': 'Log OK'}
+
+        # Check if accepted API params version matches the active version
+        if log_data.get('__version') != accepted_api_params['__version']:
+            response['reinit'] = True
+
+        return Response(response)
+
+
+class SyncAcceptedCommands(viewsets.ViewSet):
+    permission_classes = [permissions.AllowAny]
+    versioning_class = versioning.QueryParameterVersioning  # Ignore default of namespaced based versioning and use default version defined in settings
+    renderer_classes = (JSONRenderer, )
+
+    def list(self, request):
+        return Response(accepted_api_params)

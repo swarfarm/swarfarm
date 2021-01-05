@@ -34,6 +34,8 @@ Global, for searching and filtering:
 
 router = DefaultRouter()
 router.register(r'profiles/upload', ProfileJsonUpload, base_name='profile/upload')
+router.register(r'profiles/sync', SyncData, base_name='sync-profile')
+router.register(r'profiles/accepted-commands', SyncAcceptedCommands, base_name='sync-accepted-commands')
 router.register(r'profiles', SummonerViewSet, base_name='profiles')
 # router.register(r'monster-instances', GlobalMonsterInstanceViewSet, base_name='monster-instances')
 # router.register(r'rune-instances', GlobalRuneInstanceViewSet, base_name='rune-instances')

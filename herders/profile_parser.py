@@ -6,6 +6,20 @@ from bestiary.models import Monster, Building, GameItem
 from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance, ArtifactInstance, ArtifactCraftInstance
 from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
+default_import_options = {
+    'clear_profile': False,
+    'default_priority': '',
+    'lock_monsters': True,
+    'minimum_stars': 1,
+    'ignore_silver': False,
+    'ignore_material': False,
+    'except_with_runes': True,
+    'except_light_and_dark': True,
+    'except_fusion_ingredient': True,
+    'delete_missing_monsters': 1,
+    'delete_missing_runes': 1,
+    'ignore_validation_errors': False
+}
 
 def validate_sw_json(data, summoner):
     validation_errors = []

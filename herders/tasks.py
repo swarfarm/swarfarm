@@ -202,3 +202,33 @@ def com2us_data_import(data, user_id, import_options):
             RuneCraftInstance.objects.filter(owner=summoner).exclude(pk__in=imported_crafts).delete()
             ArtifactInstance.objects.filter(owner=summoner).exclude(pk__in=imported_artifacts).delete()
             ArtifactCraftInstance.objects.filter(owner=summoner).exclude(pk__in=imported_artifact_crafts).delete()
+
+
+@shared_task
+def swex_sync_monster_shrine(data, user_id):
+    summoner = Summoner.objects.get(pk=user_id)
+
+    all_monsters = {m.com2us_id: m for m in Monster.objects.all()}
+    summoner_mon_shrine = {mss.item.com2us_id: mss for mss in MonsterShrineStorage.objects.select_related('item').filter(owner=summoner)}
+    summoner_new_mon_shrine = []
+    summoner_old_mon_shrine = []
+    for mon in data['unit_storage_list']:
+        key = mon['unit_master_id']
+        if key not in all_monsters:
+            continue # Monster doesn't exist
+        if key in summoner_mon_shrine:
+            summoner_old_mon_shrine.append(summoner_mon_shrine[key])
+            summoner_old_mon_shrine[-1].quantity = mon['quantity']
+        else:
+            summoner_new_mon_shrine.append(MonsterShrineStorage(
+                owner=summoner, 
+                item=all_monsters[key], 
+                quantity=mon['quantity'])
+            )
+    
+    # monster shrine remove old records if no update for them
+    for key, val in summoner_mon_shrine.items():
+        if key not in results['monster_shrine']:
+            val.delete()
+    MonsterShrineStorage.objects.bulk_create(summoner_new_mon_shrine)
+    MonsterShrineStorage.objects.bulk_update(summoner_old_mon_shrine, ['quantity'])

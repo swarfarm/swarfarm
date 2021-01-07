@@ -41,8 +41,14 @@ def com2us_data_import(data, user_id, import_options):
 
     # Disconnect summoner profile last update post-save signal to avoid mass spamming updates
     post_save.disconnect(update_profile_date, sender=MonsterInstance)
+    post_save.disconnect(update_profile_date, sender=MonsterPiece)
     post_save.disconnect(update_profile_date, sender=RuneInstance)
     post_save.disconnect(update_profile_date, sender=RuneCraftInstance)
+    post_save.disconnect(update_profile_date, sender=ArtifactInstance)
+    post_save.disconnect(update_profile_date, sender=ArtifactCraftInstance)
+    post_save.disconnect(update_profile_date, sender=MaterialStorage)
+    post_save.disconnect(update_profile_date, sender=MonsterShrineStorage)
+    post_save.disconnect(update_profile_date, sender=BuildingInstance)
 
     with transaction.atomic():
         # Update summoner and inventory
@@ -59,8 +65,9 @@ def com2us_data_import(data, user_id, import_options):
             if key not in all_inv_items:
                 continue # GameItem doesn't exist
             if key in summoner_inv_items:
-                summoner_old_inv_items.append(summoner_inv_items[key])
-                summoner_old_inv_items[-1].quantity = val
+                if summoner_inv_items[key].quantity != val:
+                    summoner_old_inv_items.append(summoner_inv_items[key])
+                    summoner_old_inv_items[-1].quantity = val
             else:
                 summoner_new_inv_items.append(MaterialStorage(
                     owner=summoner, 
@@ -84,8 +91,9 @@ def com2us_data_import(data, user_id, import_options):
             if key not in all_monsters:
                 continue # Monster doesn't exist
             if key in summoner_mon_shrine:
-                summoner_old_mon_shrine.append(summoner_mon_shrine[key])
-                summoner_old_mon_shrine[-1].quantity = val
+                if summoner_mon_shrine[key].quantity != val:
+                    summoner_old_mon_shrine.append(summoner_mon_shrine[key])
+                    summoner_old_mon_shrine[-1].quantity = val
             else:
                 summoner_new_mon_shrine.append(MonsterShrineStorage(
                     owner=summoner, 
@@ -101,20 +109,22 @@ def com2us_data_import(data, user_id, import_options):
         MonsterShrineStorage.objects.bulk_update(summoner_old_mon_shrine, ['quantity'])
 
         # Save imported buildings
-        for bldg in results['buildings']:
-            bldg.save()
+        for bldg in results['buildings'].values():
+            if bldg['new']:
+                bldg['obj'].save()
 
         # Set missing buildings to level 0
-        BuildingInstance.objects.filter(owner=summoner).exclude(pk__in=[bldg.pk for bldg in results['buildings']]).update(level=0)
+        BuildingInstance.objects.filter(owner=summoner).exclude(pk__in=results['buildings'].keys()).update(level=0)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'monsters'})
 
     with transaction.atomic():
         # Save the imported monsters
-        for mon in results['monsters']:
-            mon.save()
-            imported_monsters.append(mon.pk)
+        for mon in results['monsters'].values():
+            if mon['new']:
+                mon['obj'].save()
+            imported_monsters.append(mon['obj'].pk)
 
         # Update saved monster pieces
         for piece in results['monster_pieces']:
@@ -126,12 +136,13 @@ def com2us_data_import(data, user_id, import_options):
 
     with transaction.atomic():
         # Save imported runes
-        for rune in results['runes']:
+        for rune in results['runes'].values():
             # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
             # relationship was previously set.
-            rune.assigned_to = rune.assigned_to
-            rune.save()
-            imported_runes.append(rune.pk)
+            if rune['new']:
+                rune['obj'].assigned_to = rune['obj'].assigned_to
+                rune['obj'].save()
+            imported_runes.append(rune['obj'].pk)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'rta_builds'})
@@ -166,30 +177,33 @@ def com2us_data_import(data, user_id, import_options):
 
     with transaction.atomic():
         # Save imported rune crafts
-        for craft in results['rune_crafts']:
-            craft.save()
-            imported_crafts.append(craft.pk)
+        for craft in results['rune_crafts'].values():
+            if craft['new']:
+                craft['obj'].save()
+            imported_crafts.append(craft['obj'].pk)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'artifacts'})
 
     with transaction.atomic():
         # Save imported artifacts
-        for artifact in results['artifacts']:
+        for artifact in results['artifacts'].values():
             # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
             # relationship was previously set.
-            artifact.assigned_to = artifact.assigned_to
-            artifact.save()
-            imported_artifacts.append(artifact.pk)
+            if artifact['new']:
+                artifact['obj'].assigned_to = artifact['obj'].assigned_to
+                artifact['obj'].save()
+            imported_artifacts.append(artifact['obj'].pk)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'artifact_crafts'})
 
     with transaction.atomic():
         # Save imported artifact crafts
-        for craft in results['artifact_crafts']:
-            craft.save()
-            imported_artifact_crafts.append(craft.pk)
+        for craft in results['artifact_crafts'].values():
+            if craft['new']:
+                craft['obj'].save()
+            imported_artifact_crafts.append(craft['obj'].pk)
 
     with transaction.atomic():
         # Delete objects missing from import
@@ -217,8 +231,9 @@ def swex_sync_monster_shrine(data, user_id):
         if key not in all_monsters:
             continue # Monster doesn't exist
         if key in summoner_mon_shrine:
-            summoner_old_mon_shrine.append(summoner_mon_shrine[key])
-            summoner_old_mon_shrine[-1].quantity = mon['quantity']
+            if summoner_mon_shrine[key].quantity != mon['quantity']:
+                summoner_old_mon_shrine.append(summoner_mon_shrine[key])
+                summoner_old_mon_shrine[-1].quantity = mon['quantity']
         else:
             summoner_new_mon_shrine.append(MonsterShrineStorage(
                 owner=summoner, 

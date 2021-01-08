@@ -60,3 +60,36 @@ sync_get_unit_storage_list_schema = {
     },
     'required': ['request', 'response'],
 }
+
+sync_battle_instance_result_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_sync_battle_instance_result.json',
+    'title': 'sync_battle_instance_result',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'item_list': {'type': 'array'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'item_list',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}

@@ -186,6 +186,9 @@ def parse_sw_json(data, owner, options):
             # Unable to find a matching monster in the database - either crap data or brand new monster. Don't parse it.
             continue
 
+        # Lock a monster if it's locked in game
+        if options['lock_monsters']:
+            locked = locked_mons is not None and mon.com2us_id in locked_mons
         # Equipped runes and artifacts
         has_changed_runes_or_artifacts = False
         equipped_runes = unit_info.get('runes')
@@ -240,6 +243,7 @@ def parse_sw_json(data, owner, options):
                 mon.stars != unit_info.get('class'), # i.e. from 5* to 6*
                 mon.level != unit_info.get('unit_level'), # has leveled up since last import
                 mon.in_storage != (unit_info.get('building_id') == storage_building_id), # its place has changed (storage/outside)
+                mon.ignore_for_fusion != locked,
             ])
             if not has_changed and not has_different_skillups:
                 parsed_mons[mon.pk] = {
@@ -277,11 +281,6 @@ def parse_sw_json(data, owner, options):
         if mon.monster.archetype == Monster.ARCHETYPE_MATERIAL:
             mon.fodder = True
             mon.priority = MonsterInstance.PRIORITY_DONE
-
-        # Lock a monster if it's locked in game
-        if options['lock_monsters']:
-            mon.ignore_for_fusion = locked_mons is not None and mon.com2us_id in locked_mons
-
 
         # Check import options to determine if monster should be saved
         level_ignored = mon.stars < options['minimum_stars']
@@ -391,8 +390,8 @@ def parse_rune_data(rune_data, owner):
     for substat in substats:
         substat_type = RuneInstance.COM2US_STAT_MAP[substat[0]]
         substat_value = substat[1]
-        enchanted = substat[2] == 1
-        grind_value = substat[3]
+        enchanted = substat[2] == 1 if len(substat) >= 3 else 0
+        grind_value = substat[3] if len(substat) >= 4 else 0
 
         temp_substats.append(substat_type)
         temp_substat_values.append(substat_value)

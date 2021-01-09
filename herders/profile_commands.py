@@ -23,6 +23,14 @@ active_log_commands = {
     'battleInstanceResult': GameApiCommand(
         sync_schemas.sync_battle_instance_result_schema,
         sync_parser.sync_secret_dungeon_result,
+    ),
+    'BattleDimensionHoleDungeonResult_v2': GameApiCommand(
+        data_log_schemas.battle_dimension_hole_result_v2,
+        sync_parser.sync_dungeon_reward,
+    ),
+    'BattleRiftDungeonResult': GameApiCommand(
+        data_log_schemas.battle_rift_dungeon_result,
+        sync_parser.sync_rift_reward,
     )
 }
 

@@ -93,3 +93,40 @@ sync_battle_instance_result_schema = {
     },
     'required': ['request', 'response'],
 }
+
+sync_pick_guild_maze_battle_clear_reward_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_pick_guild_maze_battle_clear_reward.json',
+    'title': 'sync_pick_guild_maze_battle_clear_reward',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'battle_key': {'type': 'number'},
+                'pick_set_id': {'type': 'number'},
+            },
+            'required': ['wizard_id', 'command', 'battle_key', 'pick_set_id'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'pick_rune_list': {'type': 'array'},
+                'pick_changestone_list': {'type': 'array'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'pick_rune_list',
+                'pick_changestone_list',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}

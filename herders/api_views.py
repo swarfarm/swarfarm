@@ -20,6 +20,8 @@ from .tasks import com2us_data_import
 from data_log.models import FullLog
 from data_log.views import InvalidLogException
 
+import json
+
 
 class SummonerViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().select_related('summoner').order_by('pk')
@@ -37,7 +39,8 @@ class SummonerViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_superuser and self.action == 'list':
             if self.request.user.is_authenticated:
                 # Include current user into results whether or not they are public
-                queryset = queryset.filter(Q(summoner__public=True) | Q(pk=self.request.user.pk))
+                queryset = queryset.filter(
+                    Q(summoner__public=True) | Q(pk=self.request.user.pk))
             else:
                 queryset = queryset.filter(summoner__public=True)
 
@@ -97,7 +100,8 @@ class ProfileItemMixin(viewsets.GenericViewSet):
         if not self.request.user.is_superuser and self.action == 'list':
             if self.request.user.is_authenticated:
                 # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(owner__public=True) | Q(owner=self.request.user.summoner))
+                queryset = queryset.filter(Q(owner__public=True) | Q(
+                    owner=self.request.user.summoner))
             else:
                 queryset = queryset.filter(owner__public=True)
 
@@ -105,12 +109,14 @@ class ProfileItemMixin(viewsets.GenericViewSet):
 
 
 class StorageViewSet(ProfileItemMixin, viewsets.ModelViewSet):
-    queryset = MaterialStorage.objects.all().select_related('owner', 'owner__user', 'item')
+    queryset = MaterialStorage.objects.all().select_related(
+        'owner', 'owner__user', 'item')
     serializer_class = MaterialStorageSerializer
 
 
 class MonsterShrineStorageViewSet(ProfileItemMixin, viewsets.ModelViewSet):
-    queryset = MonsterShrineStorage.objects.all().select_related('owner', 'owner__user', 'item')
+    queryset = MonsterShrineStorage.objects.all().select_related('owner',
+                                                                 'owner__user', 'item')
     serializer_class = MonsterShrineStorageSerializer
 
 
@@ -248,9 +254,11 @@ class TeamGroupViewSet(ProfileItemMixin, viewsets.ModelViewSet):
 
 
 class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
-    queryset = Team.objects.all().select_related('group', 'leader').prefetch_related('leader__runeinstance_set', 'roster', 'roster__runeinstance_set')
+    queryset = Team.objects.all().select_related('group', 'leader').prefetch_related(
+        'leader__runeinstance_set', 'roster', 'roster__runeinstance_set')
     serializer_class = TeamSerializer
-    renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
+    # Browseable API causes major query explosion when trying to generate form options.
+    renderer_classes = [JSONRenderer]
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filter_class = TeamFilter
 
@@ -260,12 +268,14 @@ class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         summoner_name = self.kwargs.get('user_pk')
 
         if summoner_name is not None:
-            queryset = queryset.filter(group__owner__user__username=summoner_name)
+            queryset = queryset.filter(
+                group__owner__user__username=summoner_name)
 
         if not self.request.user.is_superuser and self.action == 'list':
             if self.request.user.is_authenticated:
                 # Include active user into results whether or not they are public so they can view themselves
-                queryset = queryset.filter(Q(group__owner__public=True) | Q(group__owner=self.request.user.summoner))
+                queryset = queryset.filter(Q(group__owner__public=True) | Q(
+                    group__owner=self.request.user.summoner))
             else:
                 queryset = queryset.filter(group__owner__public=True)
 
@@ -279,7 +289,8 @@ class ProfileJsonUpload(viewsets.ViewSet):
         errors = []
         validation_failures = []
 
-        schema_errors, validation_errors = validate_sw_json(request.data, request.user.summoner)
+        schema_errors, validation_errors = validate_sw_json(
+            request.data, request.user.summoner)
 
         if schema_errors:
             errors.append(schema_errors)
@@ -287,11 +298,13 @@ class ProfileJsonUpload(viewsets.ViewSet):
         if validation_errors:
             validation_failures = "Uploaded data does not match previously imported data. To override, set import preferences to ignore validation errors and import again."
 
-        import_options = request.user.summoner.preferences.get('import_options', default_import_options)
+        import_options = request.user.summoner.preferences.get(
+            'import_options', default_import_options)
 
         if not errors and (not validation_failures or import_options['ignore_validation_errors']):
             # Queue the import
-            task = com2us_data_import.delay(request.data, request.user.summoner.pk, import_options)
+            task = com2us_data_import.delay(
+                request.data, request.user.summoner.pk, import_options)
             return Response({'job_id': task.task_id})
 
         elif validation_failures:
@@ -317,7 +330,8 @@ class ProfileJsonUpload(viewsets.ViewSet):
 
 class SyncData(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
-    versioning_class = versioning.QueryParameterVersioning  # Ignore default of namespaced based versioning and use default version defined in settings
+    # Ignore default of namespaced based versioning and use default version defined in settings
+    versioning_class = versioning.QueryParameterVersioning
     parser_classes = (parsers.JSONParser, parsers.FormParser)
 
     def create(self, request):
@@ -339,8 +353,8 @@ class SyncData(viewsets.ViewSet):
 
         if api_command not in active_log_commands:
             raise InvalidLogException('Unsupported game command')
-        
-        summoner = request.user.summoner 
+
+        summoner = request.user.summoner
 
         if summoner.com2us_id != wizard_id:
             return Response({'detail': "Uploaded data does not match previously imported data. Make sure you are trying to synchronize correct account"}, status=status.HTTP_409_CONFLICT)
@@ -368,7 +382,8 @@ class SyncData(viewsets.ViewSet):
 
 class SyncAcceptedCommands(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
-    versioning_class = versioning.QueryParameterVersioning  # Ignore default of namespaced based versioning and use default version defined in settings
+    # Ignore default of namespaced based versioning and use default version defined in settings
+    versioning_class = versioning.QueryParameterVersioning
     renderer_classes = (JSONRenderer, )
 
     def list(self, request):

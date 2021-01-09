@@ -40,6 +40,15 @@ active_log_commands = {
         data_log_schemas.battle_scenario_result,
         sync_parser.sync_scenario_reward,
     ),
+    'pickGuildMazeBattleClearReward': GameApiCommand(
+        sync_schemas.sync_pick_guild_maze_battle_clear_reward_schema,
+        sync_parser.sync_labyrinth_reward,
+    ),
+    # crafting runes too
+    'BuyShopItem': GameApiCommand(
+        data_log_schemas.buy_shop_item,
+        sync_parser.sync_buy_item,
+    ),
 }
 
 accepted_api_params = {

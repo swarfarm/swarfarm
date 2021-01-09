@@ -93,6 +93,10 @@ buy_shop_item = {
                 'tvalue': {'type': 'number'},
                 'reward': {'type': ['null', 'object']},
                 'view_item_list': {'type': ['null', 'array']},
+                'item_list': {'type': ['null', 'array']},
+                'source_list': {'type': ['null', 'array']},
+                'unit_storage_list': {'type': ['null', 'array']},
+                'unit_list': {'type': ['null', 'array']},
             },
             'required': [
                 'tzone',

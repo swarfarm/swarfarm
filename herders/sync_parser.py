@@ -3,7 +3,7 @@ from dateutil.parser import *
 
 from .tasks import com2us_data_import, swex_sync_monster_shrine
 from .profile_parser import validate_sw_json, default_import_options, parse_rune_data, parse_rune_craft_data, parse_artifact_data, parse_artifact_craft_data
-from .models import MaterialStorage, MonsterPiece, MonsterInstance
+from .models import MaterialStorage, MonsterPiece, MonsterInstance, MonsterShrineStorage
 from bestiary.models import GameItem, Rune, Monster
 
 
@@ -18,8 +18,23 @@ def sync_profile(summoner, log_data):
     com2us_data_import.delay(log_data['response'], summoner.pk, import_options)
 
 
-def sync_monster_shrine(summoner, log_data):
-    swex_sync_monster_shrine.delay(log_data['response'], summoner.pk)
+def sync_monster_shrine(summoner, log_data, full_sync=True):
+    if full_sync:
+        swex_sync_monster_shrine.delay(log_data['response'], summoner.pk)
+    else:
+        for monster in log_data:
+            try:
+                mon = MonsterShrineStorage.objects.get(
+                    owner=summoner, item__com2us_id=monster['unit_master_id'])
+                mon.quantity = monster['quantity']
+            except MonsterShrineStorage.DoesNotExist:
+                base = Monster.objects.get(com2us_id=monster['unit_master_id'])
+                mon = MonsterShrineStorage(
+                    owner=summoner,
+                    item=base,
+                    quantity=monster['quantity'],
+                )
+            mon.save()
 
 
 def _create_new_monster(unit_info, summoner):
@@ -70,6 +85,84 @@ def _create_new_monster(unit_info, summoner):
     mon.save()
 
 
+def _create_new_rune(rune_info, summoner):
+    reward_rune = parse_rune_data(rune_info, summoner)[0]
+    reward_rune.owner = summoner
+    reward_rune.save()
+
+
+def _create_new_rune_craft(rune_craft_info, summoner):
+    reward_rune_craft = parse_rune_craft_data(rune_craft_info, summoner)[0]
+    reward_rune_craft.owner = summoner
+    reward_rune_craft.save()
+
+
+def _create_new_artifact(artifact_info, summoner):
+    reward_artifact = parse_artifact_data(artifact_info, summoner)[0]
+    reward_artifact.owner = summoner
+    reward_artifact.save()
+
+
+def _create_new_artifact_craft(artifact_craft_info, summoner):
+    reward_artifact_craft = parse_artifact_craft_data(
+        artifact_craft_info, summoner)[0]
+    reward_artifact_craft.owner = summoner
+    reward_artifact_craft.save()
+
+
+def _sync_item(info, summoner):
+    try:
+        reward_item = MaterialStorage.objects.get(
+            owner=summoner, item__com2us_id=info['item_master_id'])
+        reward_item.quantity = info['item_quantity']
+    except MaterialStorage.DoesNotExist:
+        item = GameItem.objects.get(
+            category__isnull=False, com2us_id=info['item_master_id'])
+        reward_item = MaterialStorage(
+            owner=summoner,
+            item=item,
+            quantity=info['item_quantity'],
+        )
+    reward_item.save()
+
+
+def _add_quantity_to_item(info, summoner):
+    idx = info.get('id', info.get('item_master_id', None))
+    quantity = info.get('quantity', info.get('item_quantity', None))
+
+    if idx is None or quantity is None:
+        return
+
+    try:
+        reward_item = MaterialStorage.objects.get(
+            owner=summoner, item__com2us_id=idx)
+        reward_item.quantity += quantity
+    except MaterialStorage.DoesNotExist:
+        item = GameItem.objects.get(
+            category__isnull=False, com2us_id=idx)
+        reward_item = MaterialStorage(
+            owner=summoner,
+            item=item,
+            quantity=quantity,
+        )
+    reward_item.save()
+
+
+def _sync_monster_piece(info, summoner):
+    try:
+        mon_piece = MonsterPiece.objects.get(
+            owner=summoner, monster__com2us_id=info['item_master_id'])
+        mon_piece.pieces = info['item_quantity']
+    except MonsterPiece.DoesNotExist:
+        mon_piece = MonsterPiece(
+            owner=summoner,
+            pieces=info['item_quantity'],
+            monster=Monster.objects.get(
+                com2us_id=info['item_master_id']),
+        )
+    mon_piece.save()
+
+
 def _parse_changed_item_list(changed_item_list, summoner):
     if not changed_item_list:
         # If there are changed items, it's an empty list. Exit early since later code assumes a dict
@@ -87,43 +180,22 @@ def _parse_changed_item_list(changed_item_list, summoner):
 
         # parse common item drop
         if item_type in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
-            try:
-                reward_item = MaterialStorage.objects.get(
-                    owner=summoner, item__com2us_id=info['item_master_id'])
-                reward_item.quantity = info['item_quantity']
-            except MaterialStorage.DoesNotExist:
-                item = GameItem.objects.get(
-                    category__isnull=False, com2us_id=info['item_master_id'])
-                reward_item = MaterialStorage(
-                    owner=summoner,
-                    item=item,
-                    quantity=info['item_quantity'],
-                )
-            reward_item.save()
+            _sync_item(info, summoner)
         # parse unit monster drop
         elif item_type == GameItem.CATEGORY_MONSTER:
             _create_new_monster(info, summoner)
         # parse rune drop
         elif item_type == GameItem.CATEGORY_RUNE:
-            reward_rune = parse_rune_data(info, summoner)[0]
-            reward_rune.owner = summoner
-            reward_rune.save()
+            _create_new_rune(info, summoner)
         # parse rune craft drop - grinds, echants
         elif item_type == GameItem.CATEGORY_RUNE_CRAFT:
-            reward_rune_craft = parse_rune_craft_data(info, summoner)[0]
-            reward_rune_craft.owner = summoner
-            reward_rune_craft.save()
+            _create_new_rune_craft(info, summoner)
         # parse artifact drop
         elif item_type == GameItem.CATEGORY_ARTIFACT:
-            reward_artifact = parse_artifact_data(info, summoner)[0]
-            reward_artifact.owner = summoner
-            reward_artifact.save()
+            _create_new_artifact(info, summoner)
         # parse artifact craft drop - enchants
         elif item_type == GameItem.CATEGORY_ARTIFACT_CRAFT:
-            reward_artifact_craft = parse_artifact_craft_data(info, summoner)[
-                0]
-            reward_artifact_craft.owner = summoner
-            reward_artifact_craft.save()
+            _create_new_artifact_craft(info, summoner)
 
 
 def sync_dungeon_reward(summoner, log_data):
@@ -138,18 +210,7 @@ def sync_secret_dungeon_reward(summoner, log_data):
 
     for reward in rewards:
         if reward['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
-            try:
-                mon_piece = MonsterPiece.objects.get(
-                    owner=summoner, monster__com2us_id=reward['item_master_id'])
-                mon_piece.pieces = reward['item_quantity']
-            except MonsterPiece.DoesNotExist:
-                mon_piece = MonsterPiece(
-                    owner=summoner,
-                    pieces=reward['item_quantity'],
-                    monster=Monster.objects.get(
-                        com2us_id=reward['item_master_id']),
-                )
-            mon_piece.save()
+            _sync_monster_piece(reward, summoner)
 
 
 def sync_rift_reward(summoner, log_data):
@@ -159,19 +220,7 @@ def sync_rift_reward(summoner, log_data):
     for reward in rewards:
         # material storage
         if reward['type'] == GameItem.CATEGORY_CRAFT_STUFF:
-            try:
-                reward_item = MaterialStorage.objects.get(
-                    owner=summoner, item__com2us_id=reward['id'])
-                reward_item.quantity += reward['quantity']
-            except MaterialStorage.DoesNotExist:
-                item = GameItem.objects.get(
-                    category__isnull=False, com2us_id=reward['id'])
-                reward_item = MaterialStorage(
-                    owner=summoner,
-                    item=item,
-                    quantity=reward['quantity'],
-                )
-            reward_item.save()
+            _add_quantity_to_item(reward, summoner)
         else:
             # rune, grind, enchant
             changed_item_list.append(reward)
@@ -186,30 +235,17 @@ def _parse_crate_reward(reward, summoner):
     for key, val in reward['crate'].items():
         # grinds, enchants
         if key == 'changestones':
-            for grind in val:
-                item = parse_rune_craft_data(grind, summoner)[0]
-                item.owner = summoner
-                item.save()
+            for craft in val:
+                _create_new_rune_craft(craft, summoner)
         elif key == 'rune':
-            item = parse_rune_data(val, summoner)[0]
-            item.owner = summoner
-            item.save()
+            _create_new_rune(val, summoner)
+        elif key == 'runes':
+            for rune in val:
+                _create_new_rune(rune, summoner)
         elif key == 'unit_info':
             _create_new_monster(val, summoner)
         elif key == 'craft_stuff' and val['item_master_type'] == GameItem.CATEGORY_CRAFT_STUFF:
-            try:
-                reward_item = MaterialStorage.objects.get(
-                    owner=summoner, item__com2us_id=val['item_master_id'])
-                reward_item.quantity += val['item_quantity']
-            except MaterialStorage.DoesNotExist:
-                item = GameItem.objects.get(
-                    category__isnull=False, com2us_id=val['item_master_id'])
-                reward_item = MaterialStorage(
-                    owner=summoner,
-                    item=item,
-                    quantity=val['item_quantity'],
-                )
-            reward_item.save()
+            _add_quantity_to_item(val, summoner)
 
 
 def sync_raid_reward(summoner, log_data):
@@ -218,3 +254,38 @@ def sync_raid_reward(summoner, log_data):
 
 def sync_scenario_reward(summoner, log_data):
     _parse_crate_reward(log_data['response']['reward'], summoner)
+
+
+def sync_labyrinth_reward(summoner, log_data):
+    for rune in log_data['response']['pick_rune_list']:
+        if rune['item_master_type'] == GameItem.CATEGORY_RUNE:
+            _create_new_rune(rune['after'], summoner)
+    # grinds, enchants
+    for changestone in log_data['response']['pick_changestone_list']:
+        if changestone['item_master_type'] == GameItem.CATEGORY_RUNE_CRAFT:
+            _create_new_rune_craft(changestone['after'], summoner)
+
+
+def sync_buy_item(summoner, log_data):
+    # craft materials, MaterialStorage mostly
+    for item in log_data['response'].get('item_list', []):
+        if item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
+            _sync_item(item, summoner)
+
+    # monsters used to buy/craft something, i.e. Rainbowmons
+    monster_list = log_data['response'].get('source_list', [])
+    if monster_list:
+        # delete all monsters from the list
+        MonsterInstance.objects.filter(owner=summoner, com2us_id__in=[
+                                       m['source_id'] for m in monster_list]).delete()
+
+    # Monsters taken from Monster Shrine
+    sync_monster_shrine(summoner, log_data['response'].get(
+        'unit_storage_list', []), full_sync=False)
+
+    # Bought item
+    _parse_crate_reward(log_data['response'].get('reward', []), summoner)
+
+    # Crafted monsters
+    for mon in log_data['response'].get('unit_list', []):
+        _create_new_monster(mon, summoner)

@@ -246,14 +246,16 @@ def _parse_crate_reward(reward, summoner):
             _create_new_monster(val, summoner)
         elif key == 'craft_stuff' and val['item_master_type'] == GameItem.CATEGORY_CRAFT_STUFF:
             _add_quantity_to_item(val, summoner)
+        elif key == 'material':
+            _add_quantity_to_item(val, summoner)
 
 
 def sync_raid_reward(summoner, log_data):
-    _parse_crate_reward(log_data['response']['reward'], summoner)
+    _parse_crate_reward(log_data['response'].get('reward', {}), summoner)
 
 
 def sync_scenario_reward(summoner, log_data):
-    _parse_crate_reward(log_data['response']['reward'], summoner)
+    _parse_crate_reward(log_data['response'].get('reward', {}), summoner)
 
 
 def sync_labyrinth_reward(summoner, log_data):
@@ -284,8 +286,41 @@ def sync_buy_item(summoner, log_data):
         'unit_storage_list', []), full_sync=False)
 
     # Bought item
-    _parse_crate_reward(log_data['response'].get('reward', []), summoner)
+    _parse_crate_reward(log_data['response'].get('reward', {}), summoner)
 
     # Crafted monsters
     for mon in log_data['response'].get('unit_list', []):
         _create_new_monster(mon, summoner)
+
+
+def sync_toa_reward(summoner, log_data):
+    _parse_changed_item_list(
+        log_data['response']['changed_item_list'], summoner)
+
+
+def sync_worldboss_reward(summoner, log_data):
+    _parse_crate_reward(log_data['response'].get('reward', {}), summoner)
+    for item in log_data['response'].get('item_list', []):
+        if item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
+            _sync_item(item, summoner)
+
+
+def sync_guild_black_market_buy(summoner, log_data):
+    for item in log_data['response'].get('item_list', []):
+        if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
+            _sync_monster_piece(item, summoner)
+        elif item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
+            _sync_item(item, summoner)
+
+    for rune in log_data['response'].get('rune_list', []):
+        _create_new_rune(rune, summoner)
+
+    for rune_craft in log_data['response'].get('runecraft_list', []):
+        _create_new_rune_craft(rune_craft, summoner)
+
+
+def sync_black_market_buy(summoner, log_data):
+    for rune in log_data['response'].get('runes', []):
+        _create_new_rune(rune, summoner)
+
+    _create_new_monster(log_data['response'].get('unit_info', {}), summoner)

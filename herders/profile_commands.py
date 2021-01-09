@@ -44,10 +44,26 @@ active_log_commands = {
         sync_schemas.sync_pick_guild_maze_battle_clear_reward_schema,
         sync_parser.sync_labyrinth_reward,
     ),
-    # crafting runes too
+    # crafting
     'BuyShopItem': GameApiCommand(
         data_log_schemas.buy_shop_item,
         sync_parser.sync_buy_item,
+    ),
+    'BattleTrialTowerResult_v2': GameApiCommand(
+        sync_schemas.sync_battle_trial_tower_result_v2_schema,
+        sync_parser.sync_toa_reward,
+    ),
+    'BattleWorldBossResult': GameApiCommand(
+        data_log_schemas.battle_world_boss_result,
+        sync_parser.sync_worldboss_reward,
+    ),
+    'BuyGuildBlackMarketItem': GameApiCommand(
+        sync_schemas.sync_buy_guild_black_market_item_schema,
+        sync_parser.sync_guild_black_market_buy,
+    ),
+    'BuyBlackMarketItem': GameApiCommand(
+        sync_schemas.sync_buy_black_market_item_schema,
+        sync_parser.sync_black_market_buy,
     ),
 }
 

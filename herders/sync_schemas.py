@@ -130,3 +130,71 @@ sync_pick_guild_maze_battle_clear_reward_schema = {
     },
     'required': ['request', 'response'],
 }
+
+sync_battle_trial_tower_result_v2_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_battle_trial_tower_result_v2.json',
+    'title': 'sync_battle_trial_tower_result_v2',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'reward': {'type': 'object'},
+                'changed_item_list': {'type': 'array'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'reward',
+                'changed_item_list',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_buy_guild_black_market_item_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_buy_guild_black_market_item.json',
+    'title': 'sync_buy_guild_black_market_item',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'runes': {'type': ['array', 'null']},
+                'unit_info': {'type': ['object', 'null']},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}

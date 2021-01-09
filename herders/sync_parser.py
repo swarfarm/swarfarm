@@ -131,7 +131,7 @@ def sync_dungeon_reward(summoner, log_data):
         log_data['response']['changed_item_list'], summoner)
 
 
-def sync_secret_dungeon_result(summoner, log_data):
+def sync_secret_dungeon_reward(summoner, log_data):
     rewards = log_data['response']['item_list']
     if not rewards:
         return
@@ -177,3 +177,44 @@ def sync_rift_reward(summoner, log_data):
             changed_item_list.append(reward)
 
     _parse_changed_item_list(changed_item_list, summoner)
+
+
+def _parse_crate_reward(reward, summoner):
+    if not reward or not reward.get('crate', None):
+        return  # no reward
+
+    for key, val in reward['crate'].items():
+        # grinds, enchants
+        if key == 'changestones':
+            for grind in val:
+                item = parse_rune_craft_data(grind, summoner)[0]
+                item.owner = summoner
+                item.save()
+        elif key == 'rune':
+            item = parse_rune_data(val, summoner)[0]
+            item.owner = summoner
+            item.save()
+        elif key == 'unit_info':
+            _create_new_monster(val, summoner)
+        elif key == 'craft_stuff' and val['item_master_type'] == GameItem.CATEGORY_CRAFT_STUFF:
+            try:
+                reward_item = MaterialStorage.objects.get(
+                    owner=summoner, item__com2us_id=val['item_master_id'])
+                reward_item.quantity += val['item_quantity']
+            except MaterialStorage.DoesNotExist:
+                item = GameItem.objects.get(
+                    category__isnull=False, com2us_id=val['item_master_id'])
+                reward_item = MaterialStorage(
+                    owner=summoner,
+                    item=item,
+                    quantity=val['item_quantity'],
+                )
+            reward_item.save()
+
+
+def sync_raid_reward(summoner, log_data):
+    _parse_crate_reward(log_data['response']['reward'], summoner)
+
+
+def sync_scenario_reward(summoner, log_data):
+    _parse_crate_reward(log_data['response']['reward'], summoner)

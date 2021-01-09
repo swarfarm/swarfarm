@@ -22,7 +22,7 @@ active_log_commands = {
     ),
     'battleInstanceResult': GameApiCommand(
         sync_schemas.sync_battle_instance_result_schema,
-        sync_parser.sync_secret_dungeon_result,
+        sync_parser.sync_secret_dungeon_reward,
     ),
     'BattleDimensionHoleDungeonResult_v2': GameApiCommand(
         data_log_schemas.battle_dimension_hole_result_v2,
@@ -31,7 +31,15 @@ active_log_commands = {
     'BattleRiftDungeonResult': GameApiCommand(
         data_log_schemas.battle_rift_dungeon_result,
         sync_parser.sync_rift_reward,
-    )
+    ),
+    'BattleRiftOfWorldsRaidResult': GameApiCommand(
+        data_log_schemas.battle_rift_of_worlds_raid_result,
+        sync_parser.sync_raid_reward,
+    ),
+    'BattleScenarioResult': GameApiCommand(
+        data_log_schemas.battle_scenario_result,
+        sync_parser.sync_scenario_reward,
+    ),
 }
 
 accepted_api_params = {

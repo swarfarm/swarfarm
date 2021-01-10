@@ -65,6 +65,30 @@ active_log_commands = {
         sync_schemas.sync_buy_black_market_item_schema,
         sync_parser.sync_black_market_buy,
     ),
+    'MoveUnitBuilding': GameApiCommand(
+        sync_schemas.sync_move_unit_building_schema,
+        sync_parser.sync_storage_monster_move,
+    ),
+    # monster shrine storage
+    'ConvertUnitToStorage': GameApiCommand(
+        sync_schemas.sync_convert_unit_to_storage_schema,
+        sync_parser.sync_convert_monster_to_shrine,
+    ),
+    # monster shrine storage
+    'convertStorageToUnit': GameApiCommand(
+        sync_schemas.sync_convert_storage_to_unit_schema,
+        sync_parser.sync_convert_monster_from_shrine,
+    ),
+    # material storage
+    'ConvertUnitToItem': GameApiCommand(
+        sync_schemas.sync_convert_unit_to_item_schema,
+        sync_parser.sync_convert_monster_to_material_storage,
+    ),
+    # material storage
+    'ConvertItemToUnit': GameApiCommand(
+        sync_schemas.sync_convert_item_to_unit_schema,
+        sync_parser.sync_convert_monster_from_material_storage,
+    ),
 }
 
 accepted_api_params = {

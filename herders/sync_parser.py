@@ -1,5 +1,6 @@
 from django.utils.timezone import get_current_timezone
 from dateutil.parser import *
+from django.db import transaction
 
 from .tasks import com2us_data_import, swex_sync_monster_shrine
 from .profile_parser import validate_sw_json, default_import_options, parse_rune_data, parse_rune_craft_data, parse_artifact_data, parse_artifact_craft_data
@@ -34,10 +35,17 @@ def sync_monster_shrine(summoner, log_data, full_sync=True):
                     item=base,
                     quantity=monster['quantity'],
                 )
-            mon.save()
+            # TODO: think about adding it to the Model `save` method or `post_save` signal
+            if mon.quantity == 0:
+                mon.delete()
+            else:
+                mon.save()
 
 
 def _create_new_monster(unit_info, summoner):
+    if not unit_info:
+        return
+
     com2us_id = unit_info.get('unit_id')
     monster_type_id = str(unit_info.get('unit_master_id'))
     mon = MonsterInstance()
@@ -324,3 +332,79 @@ def sync_black_market_buy(summoner, log_data):
         _create_new_rune(rune, summoner)
 
     _create_new_monster(log_data['response'].get('unit_info', {}), summoner)
+
+
+def sync_storage_monster_move(summoner, log_data):
+    mons = log_data['response'].get('unit_list', [])
+    if not mons:
+        return
+
+    mons_ids = [m['unit_id'] for m in mons]
+    mons_to_update = {
+        m.com2us_id: m for m in MonsterInstance.objects.filter(com2us_id__in=mons_ids, owner=summoner)
+    }
+    mons_updated = []
+
+    for mon in mons:
+        mons_updated.append(mons_to_update[mon['unit_id']])
+        # there's no way of checking if it's storage or any other building (i.e. XP), so we assume it's storage
+        # unless we add to Summoner new field, which stores storage `building_id`
+        mons_updated[-1].in_storage = True if mon['building_id'] != 0 else False
+
+    MonsterInstance.objects.bulk_update(mons_updated, ['in_storage'])
+
+
+def sync_convert_monster_to_shrine(summoner, log_data):
+    with transaction.atomic():
+        ids_to_remove = log_data['response'].get('remove_unit_id_list', [])
+
+        if not ids_to_remove:
+            return
+
+        MonsterInstance.objects.filter(
+            owner=summoner,
+            com2us_id__in=ids_to_remove
+        ).delete()
+
+        sync_monster_shrine(
+            summoner,
+            log_data['response'].get('unit_storage_list', []),
+            full_sync=False
+        )
+
+
+def sync_convert_monster_from_shrine(summoner, log_data):
+    with transaction.atomic():
+        for mon in log_data['response'].get('add_unit_list', []):
+            _create_new_monster(mon, summoner)
+
+        sync_monster_shrine(
+            summoner,
+            log_data['response'].get('unit_storage_list', []),
+            full_sync=False
+        )
+
+
+def sync_convert_monster_to_material_storage(summoner, log_data):
+    with transaction.atomic():
+        ids_to_remove = log_data['response'].get('remove_unit_id_list', [])
+
+        if not ids_to_remove:
+            return
+
+        MonsterInstance.objects.filter(
+            owner=summoner,
+            com2us_id__in=ids_to_remove
+        ).delete()
+
+        for item in log_data['response'].get('inventory_item_list', []):
+            _sync_item(item, summoner)
+
+
+def sync_convert_monster_from_material_storage(summoner, log_data):
+    with transaction.atomic():
+        for mon in log_data['response'].get('add_unit_list', []):
+            _create_new_monster(mon, summoner)
+
+        for item in log_data['response'].get('inventory_item_list', []):
+            _sync_item(item, summoner)

@@ -405,3 +405,210 @@ sync_convert_item_to_unit_schema = {
     },
     'required': ['request', 'response'],
 }
+
+sync_sell_inventory_item_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_sell_inventory_item.json',
+    'title': 'sync_sell_inventory_item',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'item_info': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'item_info',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_monster_from_pieces_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_monster_from_pieces.json',
+    'title': 'sync_monster_from_pieces',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'item_list': {'type': 'array'},
+                'unit_info': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'item_list',
+                'unit_info',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_awaken_unit_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_awaken_unit.json',
+    'title': 'sync_awaken_unit',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'item_list': {'type': 'array'},
+                'unit_info': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'item_list',
+                'unit_info',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_sell_unit_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_sell_unit.json',
+    'title': 'sync_sell_unit',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'unit_info': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'unit_info',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_upgrade_unit_v3_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_upgrade_unit_v3.json',
+    'title': 'sync_upgrade_unit_v3',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'source_unit_list': {'type': 'array'},
+            },
+            'required': ['wizard_id', 'command', 'source_unit_list'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'target_unit': {'type': 'object'},
+                'inventory_item_list': {'type': 'array'},
+                'unit_storage_list': {'type': 'array'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'target_unit',
+                'inventory_item_list',
+                'unit_storage_list',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_lock_unlock_unit_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_lock_unlock_unit.json',
+    'title': 'sync_lock_unlock_unit',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command', 'source_unit_list'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'unit_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'unit_id',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}

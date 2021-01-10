@@ -89,6 +89,43 @@ active_log_commands = {
         sync_schemas.sync_convert_item_to_unit_schema,
         sync_parser.sync_convert_monster_from_material_storage,
     ),
+    'sellInventoryItem': GameApiCommand(
+        sync_schemas.sync_sell_inventory_item_schema,
+        sync_parser.sync_sell_inventory,
+    ),
+    'SummonUnit': GameApiCommand(
+        data_log_schemas.summon_unit,
+        sync_parser.sync_summon_unit,
+    ),
+    'AssembleUnit_V2': GameApiCommand(
+        sync_schemas.sync_monster_from_pieces_schema,
+        sync_parser.sync_monster_from_pieces,
+    ),
+    'AwakenUnit': GameApiCommand(
+        sync_schemas.sync_awaken_unit_schema,
+        sync_parser.sync_awaken_unit,
+    ),
+    'SellUnit': GameApiCommand(
+        sync_schemas.sync_sell_unit_schema,
+        sync_parser.sync_sell_unit,
+    ),
+    'SacrificeUnit_V3': GameApiCommand(
+        sync_schemas.sync_upgrade_unit_v3_schema,
+        sync_parser.sync_upgrade_unit,
+    ),
+    'UpgradeUnit_V3': GameApiCommand(
+        sync_schemas.sync_upgrade_unit_v3_schema,
+        sync_parser.sync_upgrade_unit,
+    ),
+    'LockUnit': GameApiCommand(
+        sync_schemas.sync_lock_unlock_unit_schema,
+        sync_parser.sync_lock_unit,
+    ),
+    'UnlockUnit': GameApiCommand(
+        sync_schemas.sync_lock_unlock_unit_schema,
+        sync_parser.sync_unlock_unit,
+    ),
+
 }
 
 accepted_api_params = {

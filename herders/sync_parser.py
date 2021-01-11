@@ -1082,3 +1082,11 @@ def sync_receive_mail(summoner, log_data):
 
     for mon in monsters:
         _create_new_monster(mon, summoner)
+
+
+def sync_wish_reward(summoner, log_data):
+    rune_data = log_data['response'].get('rune', {})
+    monster_data = log_data['response'].get('unit_info', {})
+
+    _create_new_rune(rune_data, summoner)
+    _create_new_monster(monster_data, summoner)

@@ -188,7 +188,11 @@ active_log_commands = {
     'ReceiveMail': GameApiCommand(
         sync_schemas.sync_receive_mail_schema,
         sync_parser.sync_receive_mail,
-    )
+    ),
+    'DoRandomWishItem': GameApiCommand(
+        data_log_schemas.do_random_wish_item,
+        sync_parser.sync_wish_reward,
+    ),
 }
 
 accepted_api_params = {

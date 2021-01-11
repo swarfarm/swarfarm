@@ -194,4 +194,4 @@ active_log_commands = {
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
-accepted_api_params['__version'] = 1
+accepted_api_params['__version'] = 2

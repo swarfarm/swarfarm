@@ -1,6 +1,7 @@
 from celery.result import AsyncResult
 from django.core.mail import mail_admins
 from django.db.models import Q
+from django.db.models.signals import post_save
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, status, parsers, versioning
 from rest_framework.filters import OrderingFilter
@@ -13,9 +14,11 @@ from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInsta
 from herders.pagination import *
 from herders.permissions import *
 from herders.serializers import *
-from .profile_parser import validate_sw_json, default_import_options
-from .profile_commands import accepted_api_params, active_log_commands
-from .tasks import com2us_data_import
+from herders.profile_parser import validate_sw_json, default_import_options
+from herders.profile_commands import accepted_api_params, active_log_commands
+from herders.tasks import com2us_data_import
+from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactCraftInstance, ArtifactInstance
+from herders.signals import update_profile_date
 
 from data_log.models import FullLog
 from data_log.views import InvalidLogException
@@ -364,6 +367,17 @@ class SyncData(viewsets.ViewSet):
             FullLog.parse(summoner, log_data)
             raise InvalidLogException(detail='Log data failed validation')
 
+        # Disconnect summoner profile last update post-save signal to avoid mass spamming updates
+        post_save.disconnect(update_profile_date, sender=MonsterInstance)
+        post_save.disconnect(update_profile_date, sender=MonsterPiece)
+        post_save.disconnect(update_profile_date, sender=RuneInstance)
+        post_save.disconnect(update_profile_date, sender=RuneCraftInstance)
+        post_save.disconnect(update_profile_date, sender=ArtifactInstance)
+        post_save.disconnect(update_profile_date, sender=ArtifactCraftInstance)
+        post_save.disconnect(update_profile_date, sender=MaterialStorage)
+        post_save.disconnect(update_profile_date, sender=MonsterShrineStorage)
+        post_save.disconnect(update_profile_date, sender=BuildingInstance)
+
         # Parse the log
         try:
             active_log_commands[api_command].parse(summoner, log_data)
@@ -371,6 +385,8 @@ class SyncData(viewsets.ViewSet):
             mail_admins('Log server error', f'Request body:\n\n{log_data}')
             raise e
 
+        # update summoner profile last update date
+        summoner.save()
         response = {'detail': 'Log OK'}
 
         # Check if accepted API params version matches the active version

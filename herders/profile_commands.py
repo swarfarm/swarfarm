@@ -181,6 +181,14 @@ active_log_commands = {
         sync_schemas.sync_change_artifact_assignment_schema,
         sync_parser.sync_change_artifact_assignment,
     ),
+    'RewardDailyQuest': GameApiCommand(
+        sync_schemas.sync_reward_daily_quest_schema,
+        sync_parser.sync_daily_reward,
+    ),
+    'ReceiveMail': GameApiCommand(
+        sync_schemas.sync_receive_mail_schema,
+        sync_parser.sync_receive_mail,
+    )
 }
 
 accepted_api_params = {

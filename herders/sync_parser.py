@@ -229,11 +229,11 @@ def _parse_changed_item_list(changed_item_list, summoner):
             _create_new_artifact_craft(info, summoner)
 
 
-def _parse_crate_reward(reward, summoner):
-    if not reward or not reward.get('crate', None):
+def _parse_reward(reward, summoner):
+    if not reward:
         return  # no reward
 
-    for key, val in reward['crate'].items():
+    for key, val in reward.items():
         # grinds, enchants
         if key == 'changestones':
             for craft in val:
@@ -287,13 +287,21 @@ def sync_rift_reward(summoner, log_data):
 
 
 def sync_raid_reward(summoner, log_data):
+    rewards = log_data['response'].get('reward', {})
+    if not rewards:
+        return
+
     with transaction.atomic():
-        _parse_crate_reward(log_data['response'].get('reward', {}), summoner)
+        _parse_reward(rewards.get('crate', {}), summoner)
 
 
 def sync_scenario_reward(summoner, log_data):
+    rewards = log_data['response'].get('reward', {})
+    if not rewards:
+        return
+
     with transaction.atomic():
-        _parse_crate_reward(log_data['response'].get('reward', {}), summoner)
+        _parse_reward(rewards.get('crate', {}), summoner)
 
 
 def sync_labyrinth_reward(summoner, log_data):
@@ -313,6 +321,8 @@ def sync_buy_item(summoner, log_data):
         for item in log_data['response'].get('item_list', []):
             if item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
                 _sync_item(item, summoner)
+            if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
+                _sync_monster_piece(item, summoner)
 
         # monsters used to buy/craft something, i.e. Rainbowmons
         monster_list = log_data['response'].get('source_list', [])
@@ -327,8 +337,13 @@ def sync_buy_item(summoner, log_data):
         sync_monster_shrine(summoner, log_data['response'].get(
             'unit_storage_list', []), full_sync=False)
 
-        # Bought item
-        _parse_crate_reward(log_data['response'].get('reward', {}), summoner)
+        rewards = log_data['response'].get('reward', {})
+        if rewards:
+            # Bought item
+            _parse_reward(rewards.get('crate', {}), summoner)
+
+            # Random box
+            _parse_reward(rewards.get('rune_random_box', {}), summoner)
 
         # Crafted monsters
         for mon in log_data['response'].get('unit_list', []):
@@ -345,7 +360,10 @@ def sync_toa_reward(summoner, log_data):
 
 def sync_worldboss_reward(summoner, log_data):
     with transaction.atomic():
-        _parse_crate_reward(log_data['response'].get('reward', {}), summoner)
+        rewards = log_data['response'].get('reward', {})
+        if rewards:
+            _parse_reward(rewards.get('crate', {}), summoner)
+
         for item in log_data['response'].get('item_list', []):
             if item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
                 _sync_item(item, summoner)
@@ -536,7 +554,7 @@ def sync_upgrade_unit(summoner, log_data):
             full_sync=False
         )
 
-        mon_data = log_data['response']['target_unit']
+        mon_data = log_data['response']['unit_info']
         try:
             mon = MonsterInstance.objects.get(
                 owner=summoner, com2us_id=mon_data['unit_id'])
@@ -638,8 +656,8 @@ def sync_upgrade_rune(summoner, log_data):
             owner=summoner,
             com2us_id=rune_data['rune_id']
         )
-        if rune_data['update_curr'] != rune.level:
-            rune.level = rune_data['update_curr']
+        if rune_data['upgrade_curr'] != rune.level:
+            rune.level = rune_data['upgrade_curr']
             _change_rune_substats(rune, rune_data, summoner)
             rune.save()
     except RuneInstance.DoesNotExist:
@@ -804,7 +822,8 @@ def sync_change_runes_in_rune_management(summoner, log_data):
 
         # omiting `save` method from `RuneInstance` because we'll force save
         # every `MonsterInstance` used in this transaction
-        RuneInstance.objects.bulk_update(runes_to_update, ['assigned_to'])
+        RuneInstance.objects.bulk_update(
+            runes_to_update.values(), ['assigned_to'])
 
         # recalc stats of every monster used in this transaction
         for mon in mons_to_update.values():
@@ -957,3 +976,28 @@ def sync_artifact_post_enchant(summoner, log_data):
         _change_artifact_substats(artifact, artifact_data, summoner)
     except ArtifactInstance.DoesNotExist:
         _create_new_artifact(artifact_data, summoner)
+
+
+def sync_daily_reward(summoner, log_data):
+    items = log_data['response'].get('item_list', [])
+    runes = log_data['response'].get('rune_list', [])
+
+    for item in items:
+        if item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
+            _sync_item(item, summoner)
+        if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
+            _sync_monster_piece(item, summoner)
+
+    for rune in runes:
+        _create_new_rune(rune, summoner)
+
+
+def sync_receive_mail(summoner, log_data):
+    runes = log_data['response'].get('rune_list', [])
+    monsters = log_data['response'].get('unit_list', [])
+
+    for rune in runes:
+        _create_new_rune(rune, summoner)
+
+    for mon in monsters:
+        _create_new_monster(mon, summoner)

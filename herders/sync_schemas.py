@@ -562,7 +562,7 @@ sync_upgrade_unit_v3_schema = {
             'properties': {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
-                'target_unit': {'type': 'object'},
+                'unit_info': {'type': 'object'},
                 'inventory_item_list': {'type': 'array'},
                 'unit_storage_list': {'type': 'array'},
                 'command': {'type': 'string'},
@@ -570,7 +570,7 @@ sync_upgrade_unit_v3_schema = {
             'required': [
                 'tzone',
                 'tvalue',
-                'target_unit',
+                'unit_info',
                 'inventory_item_list',
                 'unit_storage_list',
                 'command',
@@ -1013,6 +1013,72 @@ sync_change_artifact_assignment_schema = {
                 'tzone',
                 'tvalue',
                 'updated_artifacts',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_reward_daily_quest_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_reward_daily_quest.json',
+    'title': 'sync_reward_daily_quest',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'item_list': {'type': ['array', 'null']},
+                'rune_list': {'type': ['array', 'null']},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_receive_mail_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_receive_mail.json',
+    'title': 'sync_receive_mail',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'rune_list': {'type': ['array', 'null']},
+                'unit_list': {'type': ['array', 'null']},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
                 'command',
             ]
         }

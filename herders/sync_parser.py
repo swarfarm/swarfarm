@@ -602,6 +602,29 @@ def sync_unlock_unit(summoner, log_data):
         return
 
 
+def _change_rune_substats(rune, rune_data, summoner):
+    temp_substats = []
+    temp_substat_values = []
+    temp_substats_enchanted = []
+    temp_substats_grind_value = []
+
+    for substat in rune_data['sec_eff']:
+        substat_type = RuneInstance.COM2US_STAT_MAP[substat[0]]
+        substat_value = substat[1]
+        enchanted = substat[2] == 1 if len(substat) >= 3 else 0
+        grind_value = substat[3] if len(substat) >= 4 else 0
+
+        temp_substats.append(substat_type)
+        temp_substat_values.append(substat_value)
+        temp_substats_enchanted.append(enchanted)
+        temp_substats_grind_value.append(grind_value)
+
+    rune.substats = temp_substats
+    rune.substat_values = temp_substat_values
+    rune.substats_enchanted = temp_substats_enchanted
+    rune.substats_grind_value = temp_substats_grind_value
+
+
 def sync_upgrade_rune(summoner, log_data):
     # We could have just check if `upgrade_curr` from `request` and `response` are not equal
     # if that's `True` then there's a need of updating given rune
@@ -617,6 +640,7 @@ def sync_upgrade_rune(summoner, log_data):
         )
         if rune_data['update_curr'] != rune.level:
             rune.level = rune_data['update_curr']
+            _change_rune_substats(rune, rune_data, summoner)
             rune.save()
     except RuneInstance.DoesNotExist:
         _create_new_rune(rune_data, summoner)
@@ -631,47 +655,6 @@ def sync_sell_rune(summoner, log_data):
         owner=summoner,
         com2us_id__in=rune_ids
     ).delete()
-
-
-def _change_rune_substats(rune_data, summoner):
-    try:
-        rune = RuneInstance.objects.get(
-            owner=summoner,
-            com2us_id=rune_data['rune_id'],
-        )
-        temp_substats = []
-        temp_substat_values = []
-        temp_substats_enchanted = []
-        temp_substats_grind_value = []
-
-        for substat in rune_data['sec_eff']:
-            substat_type = RuneInstance.COM2US_STAT_MAP[substat[0]]
-            substat_value = substat[1]
-            enchanted = substat[2] == 1 if len(substat) >= 3 else 0
-            grind_value = substat[3] if len(substat) >= 4 else 0
-
-            temp_substats.append(substat_type)
-            temp_substat_values.append(substat_value)
-            temp_substats_enchanted.append(enchanted)
-            temp_substats_grind_value.append(grind_value)
-
-        if any(
-            len(rune.substats) != len(temp_substats),
-            len(rune.substat_values) != len(temp_substat_values),
-            len(rune.substats_enchanted) != len(temp_substats_enchanted),
-            len(rune.substats_grind_value) != len(
-                temp_substats_grind_value),
-        ):
-            # TODO: 409 Validation or something instead of `do nothing`
-            return
-
-        rune.substats = temp_substats
-        rune.substat_values = temp_substat_values
-        rune.substats_enchanted = temp_substats_enchanted
-        rune.substats_grind_value = temp_substats_grind_value
-        rune.save()
-    except RuneInstance.DoesNotExist:
-        _create_new_rune(rune_data, summoner)
 
 
 def sync_grind_rune(summoner, log_data):
@@ -690,7 +673,15 @@ def sync_grind_rune(summoner, log_data):
                 rune_craft.owner = summoner
             rune_craft.save()
 
-        _change_rune_substats(rune_data, summoner)
+        try:
+            rune = RuneInstance.objects.get(
+                owner=summoner,
+                com2us_id=rune_data['rune_id']
+            )
+            _change_rune_substats(rune, rune_data, summoner)
+            rune.save()
+        except RuneInstance.DoesNotExist:
+            _create_new_rune(rune_data, summoner)
 
 
 def sync_enchant_rune(summoner, log_data):
@@ -709,12 +700,29 @@ def sync_enchant_rune(summoner, log_data):
                 rune_craft.owner = summoner
             rune_craft.save()
 
-        _change_rune_substats(rune_data, summoner)
+        try:
+            rune = RuneInstance.objects.get(
+                owner=summoner,
+                com2us_id=rune_data['rune_id']
+            )
+            _change_rune_substats(rune, rune_data, summoner)
+            rune.save()
+        except RuneInstance.DoesNotExist:
+            _create_new_rune(rune_data, summoner)
 
 
 def sync_reapp_rune(summoner, log_data):
     rune_data = log_data['response'].get('rune', {})
-    _change_rune_substats(rune_data, summoner)
+
+    try:
+        rune = RuneInstance.objects.get(
+            owner=summoner,
+            com2us_id=rune_data['rune_id']
+        )
+        _change_rune_substats(rune, rune_data, summoner)
+        rune.save()
+    except RuneInstance.DoesNotExist:
+        _create_new_rune(rune_data, summoner)
 
 
 def sync_equip_rune(summoner, log_data):
@@ -827,3 +835,125 @@ def sync_unequip_rune(summoner, log_data):
         rune.save()
         # recalculate monster stats after unequipping rune
         mon.save()
+
+
+def _change_artifact_substats(artifact, artifact_data, summoner):
+    temp_effects = []
+    temp_effects_value = []
+    temp_effects_upgrade_count = []
+    temp_effects_reroll_count = []
+    for sec_eff in artifact_data['sec_effects']:
+        effect = artifact.COM2US_EFFECT_MAP[sec_eff[0]]
+        value = sec_eff[1]
+        upgrade_count = sec_eff[2]
+        reroll_count = sec_eff[4]
+
+        temp_effects.append(effect)
+        temp_effects_value.append(value)
+        temp_effects_upgrade_count.append(upgrade_count)
+        temp_effects_reroll_count.append(reroll_count)
+
+    artifact.effects = temp_effects
+    artifact.effects_value = temp_effects_value
+    artifact.effects_upgrade_count = temp_effects_upgrade_count
+    artifact.effects_reroll_count = temp_effects_reroll_count
+
+
+def sync_upgrade_artifact(summoner, log_data):
+    artifact_data = log_data['response'].get('artifact', {})
+
+    if not artifact_data:
+        return
+
+    try:
+        artifact = ArtifactInstance.objects.get(
+            owner=summoner,
+            com2us_id=artifact_data['rid']
+        )
+        if artifact_data['level'] != artifact.level:
+            artifact.level = artifact_data['level']
+            _change_artifact_substats(artifact, artifact_data, summoner)
+            artifact.save()
+    except ArtifactInstance.DoesNotExist:
+        _create_new_artifact(artifact_data, summoner)
+
+
+def sync_change_artifact_assignment(summoner, log_data):
+    artifact_assignments = {}
+    monster_ids = []
+
+    with transaction.atomic():
+        for artifact in log_data['response'].get('updated_artifacts', []):
+            artifact_assignments[artifact['rid']] = artifact['occupied_id']
+            if artifact['occupied_id'] > 0:
+                monster_ids.append(artifact['occupied_id'])
+
+        artifacts = {a.com2us_id for a in ArtifactInstance.objects.select_related('assigned_to').filter(
+            owner=summoner,
+            com2us_id__in=artifact_assignments.keys(),
+        )}
+        monsters = {m.com2us_id for m in MonsterInstance.objects.filter(
+            owner=summoner,
+            com2us_id__in=monster_ids,
+        )}
+
+        mons_updated = dict()
+
+        for artifact_id, artifact_assignment in artifact_assignments.items():
+            artifact = artifacts.get(artifact_id, None)
+            if not artifact:
+                # data not synced
+                # TODO: 409 Validation or create `Artifact` from `log_data['response']['updated_artifacts']`
+                continue
+
+            if artifact.assigned_to is not None and artifact.assigned_to.id not in mons_updated:
+                mons_updated[artifact.assigned_to.id] = artifact.assigned_to
+
+            if artifact_assignment > 0:
+                mon = monsters.get(artifact_assignment, None)
+                if artifact_assignment not in mons_updated and mon:
+                    mons_updated[artifact_assignment] = mon
+                artifact.assigned_to = mon
+            else:
+                artifact.assigned_to = None
+
+        # `bulk_update` to prevent `ArtifactInstance` from calling `save` method and recalc monster stats
+        ArtifactInstance.objects.bulk_update(
+            artifacts.values(), ['assigned_to'])
+
+        # recalc stats for every monster updated
+        for monster in mons_updated.values():
+            monster.save()
+
+
+def sync_sell_artifacts(summoner, log_data):
+    artifact_ids = log_data['response'].get('artifact_ids', [])
+
+    if not artifact_ids:
+        return
+
+    ArtifactInstance.objects.filter(
+        owner=summoner,
+        com2us_id__in=artifact_ids,
+    ).delete()
+
+
+def sync_artifact_pre_enchant(summoner, log_data):
+    for item in log_data['response'].get('inventory_info', []):
+        _create_new_artifact_craft(item, summoner)
+
+
+def sync_artifact_post_enchant(summoner, log_data):
+    artifact_data = log_data['response'].get('artifact', {})
+
+    if not artifact_data:
+        return
+
+    try:
+        artifact = ArtifactInstance.objects.get(
+            owner=summoner,
+            com2us_id=artifact_data['rid'],
+        )
+        _change_artifact_substats(artifact, artifact_data, summoner)
+    except ArtifactInstance.DoesNotExist:
+        _create_new_artifact(artifact_data, summoner)

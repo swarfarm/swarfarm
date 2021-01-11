@@ -531,20 +531,10 @@ def parse_artifact_data(artifact_data, owner):
     artifact.main_stat = artifact.COM2US_MAIN_STAT_MAP[main_eff[0]]
     artifact.main_stat_value = main_eff[1]
 
-    artifact.effects = []
-    artifact.effects_value = []
-    artifact.effects_upgrade_count = []
-    artifact.effects_reroll_count = []
-    for sec_eff in artifact_data['sec_effects']:
-        effect = artifact.COM2US_EFFECT_MAP[sec_eff[0]]
-        value = sec_eff[1]
-        upgrade_count = sec_eff[2]
-        reroll_count = sec_eff[4]
-
-        artifact.effects.append(effect)
-        artifact.effects_value.append(value)
-        artifact.effects_upgrade_count.append(upgrade_count)
-        artifact.effects_reroll_count.append(reroll_count)
+    artifact.effects = temp_effects
+    artifact.effects_value = temp_effects_value
+    artifact.effects_upgrade_count = temp_effects_upgrade_count
+    artifact.effects_reroll_count = temp_effects_reroll_count
 
     return artifact, True # artifact obj, has_changed_or_new
 

@@ -161,6 +161,26 @@ active_log_commands = {
         sync_schemas.sync_unequip_rune_schema,
         sync_parser.sync_unequip_rune,
     ),
+    'UpgradeArtifact': GameApiCommand(
+        sync_schemas.sync_upgrade_artifact_schema,
+        sync_parser.sync_upgrade_artifact,
+    ),
+    'SellArtifacts': GameApiCommand(
+        sync_schemas.sync_sell_artifacts_schema,
+        sync_parser.sync_sell_artifacts,
+    ),
+    'ConvertArtifactByPiece': GameApiCommand(
+        sync_schemas.sync_artifact_pre_enchant_schema,
+        sync_parser.sync_artifact_pre_enchant,
+    ),
+    'ConfirmArtifactConversion': GameApiCommand(
+        sync_schemas.sync_artifact_post_enchant_schema,
+        sync_parser.sync_artifact_post_enchant,
+    ),
+    'UpdateArtifactOccupation': GameApiCommand(
+        sync_schemas.sync_change_artifact_assignment_schema,
+        sync_parser.sync_change_artifact_assignment,
+    ),
 }
 
 accepted_api_params = {

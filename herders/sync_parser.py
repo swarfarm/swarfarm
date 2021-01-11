@@ -888,11 +888,11 @@ def sync_change_artifact_assignment(summoner, log_data):
             if artifact['occupied_id'] > 0:
                 monster_ids.append(artifact['occupied_id'])
 
-        artifacts = {a.com2us_id for a in ArtifactInstance.objects.select_related('assigned_to').filter(
+        artifacts = {a.com2us_id: a for a in ArtifactInstance.objects.select_related('assigned_to').filter(
             owner=summoner,
             com2us_id__in=artifact_assignments.keys(),
         )}
-        monsters = {m.com2us_id for m in MonsterInstance.objects.filter(
+        monsters = {m.com2us_id: m for m in MonsterInstance.objects.filter(
             owner=summoner,
             com2us_id__in=monster_ids,
         )}

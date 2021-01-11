@@ -4,7 +4,7 @@ from django.db import transaction
 
 from .tasks import com2us_data_import, swex_sync_monster_shrine
 from .profile_parser import validate_sw_json, default_import_options, parse_rune_data, parse_rune_craft_data, parse_artifact_data, parse_artifact_craft_data
-from .models import MaterialStorage, MonsterPiece, MonsterInstance, MonsterShrineStorage
+from .models import MaterialStorage, MonsterPiece, MonsterInstance, MonsterShrineStorage, RuneInstance, ArtifactInstance
 from bestiary.models import GameItem, Rune, Monster
 
 
@@ -91,6 +91,8 @@ def _create_new_monster(unit_info, summoner):
         mon.custom_name = custom_name
 
     mon.save()
+
+    return mon
 
 
 def _create_new_rune(rune_info, summoner):
@@ -212,7 +214,7 @@ def _parse_changed_item_list(changed_item_list, summoner):
             _sync_item(info, summoner)
         # parse unit monster drop
         elif item_type == GameItem.CATEGORY_MONSTER:
-            _create_new_monster(info, summoner)
+            _ = _create_new_monster(info, summoner)
         # parse rune drop
         elif item_type == GameItem.CATEGORY_RUNE:
             _create_new_rune(info, summoner)
@@ -242,7 +244,7 @@ def _parse_crate_reward(reward, summoner):
             for rune in val:
                 _create_new_rune(rune, summoner)
         elif key == 'unit_info':
-            _create_new_monster(val, summoner)
+            _ = _create_new_monster(val, summoner)
         elif key == 'craft_stuff' and val['item_master_type'] == GameItem.CATEGORY_CRAFT_STUFF:
             _add_quantity_to_item(val, summoner)
         elif key == 'material':
@@ -330,7 +332,7 @@ def sync_buy_item(summoner, log_data):
 
         # Crafted monsters
         for mon in log_data['response'].get('unit_list', []):
-            _create_new_monster(mon, summoner)
+            _ = _create_new_monster(mon, summoner)
 
 
 def sync_toa_reward(summoner, log_data):
@@ -369,7 +371,7 @@ def sync_black_market_buy(summoner, log_data):
         for rune in log_data['response'].get('runes', []):
             _create_new_rune(rune, summoner)
 
-        _create_new_monster(
+        _ = _create_new_monster(
             log_data['response'].get('unit_info', {}),
             summoner
         )
@@ -417,7 +419,7 @@ def sync_convert_monster_to_shrine(summoner, log_data):
 def sync_convert_monster_from_shrine(summoner, log_data):
     with transaction.atomic():
         for mon in log_data['response'].get('add_unit_list', []):
-            _create_new_monster(mon, summoner)
+            _ = _create_new_monster(mon, summoner)
 
         sync_monster_shrine(
             summoner,
@@ -445,7 +447,7 @@ def sync_convert_monster_to_material_storage(summoner, log_data):
 def sync_convert_monster_from_material_storage(summoner, log_data):
     with transaction.atomic():
         for mon in log_data['response'].get('add_unit_list', []):
-            _create_new_monster(mon, summoner)
+            _ = _create_new_monster(mon, summoner)
 
         for item in log_data['response'].get('inventory_item_list', []):
             _sync_item(item, summoner)
@@ -462,7 +464,7 @@ def sync_summon_unit(summoner, log_data):
                 _sync_item(item, summoner)
 
         for mon in log_data['response'].get('unit_list', []):
-            _create_new_monster(mon, summoner)
+            _ = _create_new_monster(mon, summoner)
 
 
 def sync_monster_from_pieces(summoner, log_data):
@@ -471,7 +473,7 @@ def sync_monster_from_pieces(summoner, log_data):
             if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
                 _sync_monster_piece(item, summoner)
 
-        _create_new_monster(
+        _ = _create_new_monster(
             log_data['response'].get('unit_info', {}),
             summoner
         )
@@ -496,7 +498,7 @@ def sync_awaken_unit(summoner, log_data):
                 mon.save()
         except MonsterInstance.DoesNotExist:
             # probably not synced data
-            _create_new_monster(mon, summoner)
+            _ = _create_new_monster(mon, summoner)
 
 
 def sync_sell_unit(summoner, log_data):
@@ -569,7 +571,7 @@ def sync_upgrade_unit(summoner, log_data):
                 # if nothing has changed, there's no point of doing one more database call
                 mon.save()
         except MonsterInstance.DoesNotExist:
-            _create_new_monster(mon_data, summoner)
+            _ = _create_new_monster(mon_data, summoner)
 
 
 def sync_lock_unit(summoner, log_data):
@@ -598,3 +600,230 @@ def sync_unlock_unit(summoner, log_data):
         # if monster doesn't exist in db, it means profile wasn't synced so do nothing
         # TODO: Add 409 Validation or something instead of `do nothing`
         return
+
+
+def sync_upgrade_rune(summoner, log_data):
+    # We could have just check if `upgrade_curr` from `request` and `response` are not equal
+    # if that's `True` then there's a need of updating given rune
+    # but it's better to check if rune exists in the first place, and then - if needed - create it
+    rune_data = log_data['response'].get('rune', {})
+    if not rune_data:
+        return
+
+    try:
+        rune = RuneInstance.objects.get(
+            owner=summoner,
+            com2us_id=rune_data['rune_id']
+        )
+        if rune_data['update_curr'] != rune.level:
+            rune.level = rune_data['update_curr']
+            rune.save()
+    except RuneInstance.DoesNotExist:
+        _create_new_rune(rune_data, summoner)
+
+
+def sync_sell_rune(summoner, log_data):
+    rune_ids = [r['rune_id'] for r in log_data['response'].get('runes', [])]
+    if not rune_ids:
+        return
+
+    RuneInstance.objects.filter(
+        owner=summoner,
+        com2us_id__in=rune_ids
+    ).delete()
+
+
+def _change_rune_substats(rune_data, summoner):
+    try:
+        rune = RuneInstance.objects.get(
+            owner=summoner,
+            com2us_id=rune_data['rune_id'],
+        )
+        temp_substats = []
+        temp_substat_values = []
+        temp_substats_enchanted = []
+        temp_substats_grind_value = []
+
+        for substat in rune_data['sec_eff']:
+            substat_type = RuneInstance.COM2US_STAT_MAP[substat[0]]
+            substat_value = substat[1]
+            enchanted = substat[2] == 1 if len(substat) >= 3 else 0
+            grind_value = substat[3] if len(substat) >= 4 else 0
+
+            temp_substats.append(substat_type)
+            temp_substat_values.append(substat_value)
+            temp_substats_enchanted.append(enchanted)
+            temp_substats_grind_value.append(grind_value)
+
+        if any(
+            len(rune.substats) != len(temp_substats),
+            len(rune.substat_values) != len(temp_substat_values),
+            len(rune.substats_enchanted) != len(temp_substats_enchanted),
+            len(rune.substats_grind_value) != len(
+                temp_substats_grind_value),
+        ):
+            # TODO: 409 Validation or something instead of `do nothing`
+            return
+
+        rune.substats = temp_substats
+        rune.substat_values = temp_substat_values
+        rune.substats_enchanted = temp_substats_enchanted
+        rune.substats_grind_value = temp_substats_grind_value
+        rune.save()
+    except RuneInstance.DoesNotExist:
+        _create_new_rune(rune_data, summoner)
+
+
+def sync_grind_rune(summoner, log_data):
+    rune_data = log_data['response'].get('rune', {})
+    rune_craft_data = log_data['response'].get('rune_craft_item', {})
+
+    if not rune_data or not rune_craft_data:
+        return
+
+    with transaction.atomic():
+        rune_craft = parse_rune_craft_data(rune_craft_data, summoner)[0]
+        if rune_craft.quantity == 0:
+            rune_craft.delete()
+        else:
+            if not rune_craft.owner:
+                rune_craft.owner = summoner
+            rune_craft.save()
+
+        _change_rune_substats(rune_data, summoner)
+
+
+def sync_enchant_rune(summoner, log_data):
+    rune_data = log_data['response'].get('rune', {})
+    rune_craft_data = log_data['response'].get('rune_craft_item', {})
+
+    if not rune_data or not rune_craft_data:
+        return
+
+    with transaction.atomic():
+        rune_craft = parse_rune_craft_data(rune_craft_data, summoner)[0]
+        if rune_craft.quantity == 0:
+            rune_craft.delete()
+        else:
+            if not rune_craft.owner:
+                rune_craft.owner = summoner
+            rune_craft.save()
+
+        _change_rune_substats(rune_data, summoner)
+
+
+def sync_reapp_rune(summoner, log_data):
+    rune_data = log_data['response'].get('rune', {})
+    _change_rune_substats(rune_data, summoner)
+
+
+def sync_equip_rune(summoner, log_data):
+    removed_rune = log_data['response'].get('removed_rune', {})
+    rune_id = log_data['response'].get('rune_id', 0)
+    mon_data = log_data['response'].get('unit_info', {})
+
+    if not rune_id or not mon_data:
+        return
+
+    with transaction.atomic():
+        if removed_rune:
+            try:
+                RuneInstance.objects.get(
+                    owner=summoner,
+                    com2us_id=removed_rune['rune_id']
+                ).delete()
+            except RuneInstance.DoesNotExist:
+                # rune didn't exist in db, profile probably not sync
+                pass
+
+        # raise an exception if monster doesn't exist in DB and revert all changes
+        # recreating whole monster with its runes and artifacts is too resource-heavy
+        # it's probably better to recreate it during profile import
+        # TODO: consider recreating monster in-place
+        mon = MonsterInstance.objects.get(
+            owner=summoner,
+            com2us_id=mon_data['unit_id'],
+        )
+        rune = RuneInstance.objects.get(
+            owner=summoner,
+            com2us_id=rune_id,
+        )
+        rune.assigned_to = mon
+        # it also recalculates monster stats
+        rune.save()
+
+
+def sync_change_runes_in_rune_management(summoner, log_data):
+    mon_data = log_data['response'].get('unit_info', {})
+    unequip_rune_ids = log_data['response'].get('unequip_rune_id_list', [])
+    equip_rune_ids = log_data['response'].get('equip_rune_id_list', [])
+
+    if not mon_data:
+        return
+
+    with transaction.atomic():
+        # raise an exception if monster doesn't exist in DB and revert all changes
+        # recreating whole monster with its runes and artifacts is too resource-heavy
+        # it's probably better to recreate it during profile import
+        # TODO: consider recreating monster in-place
+        mon = MonsterInstance.objects.get(
+            owner=summoner,
+            com2us_id=mon_data['unit_id'],
+        )
+
+        runes_to_unassign = RuneInstance.objects.select_related('assigned_to').filter(
+            owner=summoner,
+            com2us_id__in=unequip_rune_ids,
+        )
+        runes_to_equip = RuneInstance.objects.select_related('assigned_to').filter(
+            owner=summoner,
+            com2us_id__in=equip_rune_ids,
+        )
+        mons_to_update = {mon.id: mon}
+        runes_to_update = dict()
+
+        for rune in runes_to_unassign:
+            if rune.id not in runes_to_update:
+                runes_to_update[rune.id] = rune
+            if rune.assigned_to is not None and rune.assigned_to.id not in mons_to_update:
+                mons_to_update[rune.assigned_to.id] = rune.assigned_to
+            rune.assigned_to = None
+
+        for rune in runes_to_equip:
+            if rune.id not in runes_to_update:
+                runes_to_update[rune.id] = rune
+            rune.assigned_to = mon
+
+        # omiting `save` method from `RuneInstance` because we'll force save
+        # every `MonsterInstance` used in this transaction
+        RuneInstance.objects.bulk_update(runes_to_update, ['assigned_to'])
+
+        # recalc stats of every monster used in this transaction
+        for mon in mons_to_update.values():
+            mon.save()
+
+
+def sync_unequip_rune(summoner, log_data):
+    rune_data = log_data['response'].get('rune', {})
+    mon_data = log_data['response'].get('unit_info', {})
+
+    if not rune_data or not mon_data:
+        return
+
+    with transaction.atomic():
+        # raise an exception if monster doesn't exist in DB and revert all changes
+        # recreating whole monster with its runes and artifacts is too resource-heavy
+        # it's probably better to recreate it during profile import
+        # TODO: consider recreating monster in-place
+        mon = MonsterInstance.objects.get(
+            owner=summoner,
+            com2us_id=mon_data['unit_id'],
+        )
+        rune = RuneInstance.objects.get(
+            owner=summoner,
+            com2us_id=rune_data['rune_id'],
+        )
+        rune.assigned_to = None
+        rune.save()
+        # recalculate monster stats after unequipping rune
+        mon.save()

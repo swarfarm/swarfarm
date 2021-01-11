@@ -592,7 +592,7 @@ sync_lock_unlock_unit_schema = {
                 'wizard_id': {'type': 'number'},
                 'command': {'type': 'string'},
             },
-            'required': ['wizard_id', 'command', 'source_unit_list'],
+            'required': ['wizard_id', 'command'],
         },
         'response': {
             'type': 'object',
@@ -606,6 +606,250 @@ sync_lock_unlock_unit_schema = {
                 'tzone',
                 'tvalue',
                 'unit_id',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_upgrade_rune_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_upgrade_rune.json',
+    'title': 'sync_upgrade_rune',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'rune': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'rune',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+
+sync_sell_rune_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_sell_rune.json',
+    'title': 'sync_sell_rune',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'runes': {'type': 'array'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'rune',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_grind_enchant_rune_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_grind_enchant_rune.json',
+    'title': 'sync_grind_enchant_rune',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'rune': {'type': 'object'},
+                'rune_craft_item': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'rune',
+                'rune_craft_item',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_reapp_rune_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_reapp_rune.json',
+    'title': 'sync_reapp_rune',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'rune': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'rune',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_equip_rune_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_equip_rune.json',
+    'title': 'sync_equip_rune',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'removed_rune': {'type': ['null', 'object']},
+                'rune_id': {'type': 'number'},
+                'unit_info': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'rune_id',
+                'unit_info',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+
+sync_change_runes_in_rune_management_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_change_runes_in_rune_management.json',
+    'title': 'sync_change_runes_in_rune_management',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'equip_rune_id_list': {'type': 'array'},
+                'unequip_rune_id_list': {'type': 'array'},
+                'unit_info': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'equip_rune_id_list',
+                'unequip_rune_id_list',
+                'unit_info',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_unequip_rune_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_unequip_rune.json',
+    'title': 'sync_unequip_rune',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'rune': {'type': 'object'},
+                'unit_info': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'rune',
+                'unit_info',
                 'command',
             ]
         }

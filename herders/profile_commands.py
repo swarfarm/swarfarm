@@ -125,7 +125,42 @@ active_log_commands = {
         sync_schemas.sync_lock_unlock_unit_schema,
         sync_parser.sync_unlock_unit,
     ),
-
+    'UpgradeRune': GameApiCommand(
+        sync_schemas.sync_upgrade_rune_schema,
+        sync_parser.sync_upgrade_rune,
+    ),
+    'SellRune': GameApiCommand(
+        sync_schemas.sync_sell_rune_schema,
+        sync_parser.sync_sell_rune,
+    ),
+    # grind rune
+    'AmplifyRune_v2': GameApiCommand(
+        sync_schemas.sync_grind_enchant_rune_schema,
+        sync_parser.sync_grind_rune,
+    ),
+    # enchant rune
+    'ConvertRune_v2': GameApiCommand(
+        sync_schemas.sync_grind_enchant_rune_schema,
+        sync_parser.sync_enchant_rune,
+    ),
+    # enchant rune
+    'ConfirmRune': GameApiCommand(
+        sync_schemas.sync_reapp_rune_schema,
+        sync_parser.sync_reapp_rune,
+    ),
+    'EquipRune': GameApiCommand(
+        sync_schemas.sync_equip_rune_schema,
+        sync_parser.sync_equip_rune,
+    ),
+    # rune management interface
+    'EquipRuneList': GameApiCommand(
+        sync_schemas.sync_change_runes_in_rune_management_schema,
+        sync_parser.sync_change_runes_in_rune_management,
+    ),
+    'UnequipRune': GameApiCommand(
+        sync_schemas.sync_unequip_rune_schema,
+        sync_parser.sync_unequip_rune,
+    ),
 }
 
 accepted_api_params = {

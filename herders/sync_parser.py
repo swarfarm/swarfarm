@@ -508,7 +508,7 @@ def sync_monster_from_pieces(summoner, log_data):
 
 
 def sync_awaken_unit(summoner, log_data):
-    mon = log_data['response'].get('unit_info', [])
+    mon = log_data['response'].get('unit_info', {})
     if not mon:
         return
 
@@ -517,7 +517,6 @@ def sync_awaken_unit(summoner, log_data):
             if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
                 _sync_monster_piece(item, summoner)
 
-        # may be better to use .filter(...).first() instead of `try-except` in transaction
         try:
             mon = MonsterInstance.objects.get(
                 owner=summoner, com2us_id=mon['unit_id'])
@@ -538,9 +537,9 @@ def sync_sell_unit(summoner, log_data):
         MonsterInstance.objects.get(
             owner=summoner, com2us_id=mon['unit_id']).delete()
     except MonsterInstance.DoesNotExist:
-        # if monster doesn't exist in db, it means profile wasn't synced so do nothing
-        # TODO: Add 409 Validation or something instead of `do nothing`
-        return
+        # if monster doesn't exist in db, it means profile wasn't synced
+        # even though it's not bad for `SellUnit`, we send a message informing about sync conflict
+        return "monster"
 
 
 def sync_upgrade_unit(summoner, log_data):
@@ -611,9 +610,9 @@ def sync_lock_unit(summoner, log_data):
         mon.ignore_for_fusion = True
         mon.save()
     except MonsterInstance.DoesNotExist:
-        # if monster doesn't exist in db, it means profile wasn't synced so do nothing
-        # TODO: Add 409 Validation or something instead of `do nothing`
-        return
+        # if monster doesn't exist in db, it means profile wasn't synced
+        # we send a message informing about sync conflict
+        return "monster"
 
 
 def sync_unlock_unit(summoner, log_data):
@@ -625,9 +624,9 @@ def sync_unlock_unit(summoner, log_data):
         mon.ignore_for_fusion = False
         mon.save()
     except MonsterInstance.DoesNotExist:
-        # if monster doesn't exist in db, it means profile wasn't synced so do nothing
-        # TODO: Add 409 Validation or something instead of `do nothing`
-        return
+        # if monster doesn't exist in db, it means profile wasn't synced
+        # we send a message informing about sync conflict
+        return "monster"
 
 
 def _change_rune_substats(rune, rune_data, summoner):
@@ -654,9 +653,6 @@ def _change_rune_substats(rune, rune_data, summoner):
 
 
 def sync_upgrade_rune(summoner, log_data):
-    # We could have just check if `upgrade_curr` from `request` and `response` are not equal
-    # if that's `True` then there's a need of updating given rune
-    # but it's better to check if rune exists in the first place, and then - if needed - create it
     rune_data = log_data['response'].get('rune', {})
     if not rune_data:
         return
@@ -680,8 +676,7 @@ def sync_upgrade_rune(summoner, log_data):
             _create_new_rune(rune_data, summoner, assigned_to)
         except MonsterInstance.DoesNotExist:
             # data not synced
-            # TODO: Add 409 Validation or something instead of `do nothing`
-            return
+            return "monster"
 
 
 def sync_sell_rune(summoner, log_data):
@@ -710,14 +705,6 @@ def sync_grind_rune(summoner, log_data):
         return
 
     with transaction.atomic():
-        rune_craft = parse_rune_craft_data(rune_craft_data, summoner)[0]
-        if rune_craft.quantity == 0:
-            rune_craft.delete()
-        else:
-            if not rune_craft.owner:
-                rune_craft.owner = summoner
-            rune_craft.save()
-
         try:
             rune = RuneInstance.objects.get(
                 owner=summoner,
@@ -735,8 +722,16 @@ def sync_grind_rune(summoner, log_data):
                 _create_new_rune(rune_data, summoner, assigned_to)
             except MonsterInstance.DoesNotExist:
                 # data not synced
-                # TODO: Add 409 Validation or something instead of `do nothing`
-                return
+                return "monster"
+
+        # make sure rune & assigned_to monster data is synced, then change grinds
+        rune_craft = parse_rune_craft_data(rune_craft_data, summoner)[0]
+        if rune_craft.quantity == 0:
+            rune_craft.delete()
+        else:
+            if not rune_craft.owner:
+                rune_craft.owner = summoner
+            rune_craft.save()
 
 
 def sync_enchant_rune(summoner, log_data):
@@ -747,14 +742,6 @@ def sync_enchant_rune(summoner, log_data):
         return
 
     with transaction.atomic():
-        rune_craft = parse_rune_craft_data(rune_craft_data, summoner)[0]
-        if rune_craft.quantity == 0:
-            rune_craft.delete()
-        else:
-            if not rune_craft.owner:
-                rune_craft.owner = summoner
-            rune_craft.save()
-
         try:
             rune = RuneInstance.objects.get(
                 owner=summoner,
@@ -772,8 +759,16 @@ def sync_enchant_rune(summoner, log_data):
                 _create_new_rune(rune_data, summoner, assigned_to)
             except MonsterInstance.DoesNotExist:
                 # data not synced
-                # TODO: Add 409 Validation or something instead of `do nothing`
-                return
+                return "monster"
+
+        # make sure rune & assigned_to monster data is synced, then change grinds
+        rune_craft = parse_rune_craft_data(rune_craft_data, summoner)[0]
+        if rune_craft.quantity == 0:
+            rune_craft.delete()
+        else:
+            if not rune_craft.owner:
+                rune_craft.owner = summoner
+            rune_craft.save()
 
 
 def sync_reapp_rune(summoner, log_data):
@@ -796,8 +791,7 @@ def sync_reapp_rune(summoner, log_data):
             _create_new_rune(rune_data, summoner, assigned_to)
         except MonsterInstance.DoesNotExist:
             # data not synced
-            # TODO: Add 409 Validation or something instead of `do nothing`
-            return
+            return "monster"
 
 
 def sync_equip_rune(summoner, log_data):
@@ -809,6 +803,18 @@ def sync_equip_rune(summoner, log_data):
         return
 
     with transaction.atomic():
+        try:
+            mon = MonsterInstance.objects.get(
+                owner=summoner,
+                com2us_id=mon_data['unit_id'],
+            )
+            rune = RuneInstance.objects.get(
+                owner=summoner,
+                com2us_id=rune_id,
+            )
+        except (RuneInstance.DoesNotExist, MonsterInstance.DoesNotExist):
+            return "rune|monster"
+
         if removed_rune:
             try:
                 RuneInstance.objects.get(
@@ -817,22 +823,10 @@ def sync_equip_rune(summoner, log_data):
                 ).delete()
             except RuneInstance.DoesNotExist:
                 # rune didn't exist in db, profile probably not sync
-                pass
+                return "rune"
 
-        # raise an exception if monster doesn't exist in DB and revert all changes
-        # recreating whole monster with its runes and artifacts is too resource-heavy
-        # it's probably better to recreate it during profile import
-        # TODO: consider recreating monster in-place
-        mon = MonsterInstance.objects.get(
-            owner=summoner,
-            com2us_id=mon_data['unit_id'],
-        )
-        rune = RuneInstance.objects.get(
-            owner=summoner,
-            com2us_id=rune_id,
-        )
+        # it also recalculates monster stats, saves changes to DB only when everything else is synced
         rune.assigned_to = mon
-        # it also recalculates monster stats
         rune.save()
 
 
@@ -845,14 +839,13 @@ def sync_change_runes_in_rune_management(summoner, log_data):
         return
 
     with transaction.atomic():
-        # raise an exception if monster doesn't exist in DB and revert all changes
-        # recreating whole monster with its runes and artifacts is too resource-heavy
-        # it's probably better to recreate it during profile import
-        # TODO: consider recreating monster in-place
-        mon = MonsterInstance.objects.get(
-            owner=summoner,
-            com2us_id=mon_data['unit_id'],
-        )
+        try:
+            mon = MonsterInstance.objects.get(
+                owner=summoner,
+                com2us_id=mon_data['unit_id'],
+            )
+        except MonsterInstance.DoesNotExist:
+            return "monster"
 
         runes_to_unassign = RuneInstance.objects.select_related('assigned_to').filter(
             owner=summoner,
@@ -895,18 +888,18 @@ def sync_unequip_rune(summoner, log_data):
         return
 
     with transaction.atomic():
-        # raise an exception if monster doesn't exist in DB and revert all changes
-        # recreating whole monster with its runes and artifacts is too resource-heavy
-        # it's probably better to recreate it during profile import
-        # TODO: consider recreating monster in-place
-        mon = MonsterInstance.objects.get(
-            owner=summoner,
-            com2us_id=mon_data['unit_id'],
-        )
-        rune = RuneInstance.objects.get(
-            owner=summoner,
-            com2us_id=rune_data['rune_id'],
-        )
+        try:
+            mon = MonsterInstance.objects.get(
+                owner=summoner,
+                com2us_id=mon_data['unit_id'],
+            )
+            rune = RuneInstance.objects.get(
+                owner=summoner,
+                com2us_id=rune_data['rune_id'],
+            )
+        except (RuneInstance.DoesNotExist, MonsterInstance.DoesNotExist):
+            return "rune|monster"
+
         rune.assigned_to = None
         rune.save()
         # recalculate monster stats after unequipping rune
@@ -960,8 +953,7 @@ def sync_upgrade_artifact(summoner, log_data):
             _create_new_artifact(artifact_data, summoner, assigned_to)
         except MonsterInstance.DoesNotExist:
             # data not synced
-            # TODO: Add 409 Validation or something instead of `do nothing`
-            return
+            return "monster"
 
 
 def sync_change_artifact_assignment(summoner, log_data):
@@ -970,7 +962,7 @@ def sync_change_artifact_assignment(summoner, log_data):
 
     with transaction.atomic():
         for artifact in log_data['response'].get('updated_artifacts', []):
-            artifact_assignments[artifact['rid']] = artifact['occupied_id']
+            artifact_assignments[artifact['rid']] = artifact
             if artifact['occupied_id'] > 0:
                 monster_ids.append(artifact['occupied_id'])
 
@@ -989,8 +981,7 @@ def sync_change_artifact_assignment(summoner, log_data):
             artifact = artifacts.get(artifact_id, None)
             if not artifact:
                 # data not synced
-                # TODO: 409 Validation or create `Artifact` from `log_data['response']['updated_artifacts']`
-                continue
+                return "artifact"
 
             if artifact.assigned_to is not None and artifact.assigned_to.id not in mons_updated:
                 mons_updated[artifact.assigned_to.id] = artifact.assigned_to
@@ -1005,7 +996,9 @@ def sync_change_artifact_assignment(summoner, log_data):
 
         # `bulk_update` to prevent `ArtifactInstance` from calling `save` method and recalc monster stats
         ArtifactInstance.objects.bulk_update(
-            artifacts.values(), ['assigned_to'])
+            artifacts.values(),
+            ['assigned_to']
+        )
 
         # recalc stats for every monster updated
         for monster in mons_updated.values():
@@ -1057,9 +1050,7 @@ def sync_artifact_post_enchant(summoner, log_data):
 
             _create_new_artifact(artifact_data, summoner, assigned_to)
         except MonsterInstance.DoesNotExist:
-            # data not synced
-            # TODO: Add 409 Validation or something instead of `do nothing`
-            return
+            return "monster"
 
 
 def sync_daily_reward(summoner, log_data):
@@ -1091,7 +1082,7 @@ def sync_wish_reward(summoner, log_data):
     rune_data = log_data['response'].get('rune', {})
     monster_data = log_data['response'].get('unit_info', {})
 
-    _ = _create_new_rune(rune_data, summoner)
+    _create_new_rune(rune_data, summoner)
     _ = _create_new_monster(monster_data, summoner)
 
 

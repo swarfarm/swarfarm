@@ -1105,7 +1105,7 @@ sync_receive_guild_siege_reward_crate_schema = {
             'properties': {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
-                'crate_list': {'type': 'array', 'null'},
+                'crate_list': {'type': ['array', 'null']},
                 'command': {'type': 'string'},
             },
             'required': [

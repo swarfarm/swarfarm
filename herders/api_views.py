@@ -15,7 +15,7 @@ from herders.pagination import *
 from herders.permissions import *
 from herders.serializers import *
 from herders.profile_parser import validate_sw_json, default_import_options
-from herders.profile_commands import accepted_api_params, active_log_commands
+from herders.sync_commands import accepted_api_params, active_log_commands
 from herders.tasks import com2us_data_import
 from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactCraftInstance, ArtifactInstance
 from herders.signals import update_profile_date
@@ -380,10 +380,16 @@ class SyncData(viewsets.ViewSet):
 
         # Parse the log
         try:
-            active_log_commands[api_command].parse(summoner, log_data)
+            sync_conflict = active_log_commands[api_command].parse(
+                summoner,
+                log_data
+            )
         except Exception as e:
             mail_admins('Log server error', f'Request body:\n\n{log_data}')
             raise e
+
+        if sync_conflict:
+            return Response({"detail": "Data conflict, synchronization failed. Try logging in again to synchronize your entire profile with SWARFARM"}, status=status.HTTP_409_CONFLICT)
 
         # update summoner profile last update date
         summoner.save()

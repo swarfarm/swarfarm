@@ -249,6 +249,9 @@ def _parse_reward(reward, summoner):
                 _create_new_rune(rune, summoner)
         elif key == 'unit_info':
             _ = _create_new_monster(val, summoner)
+        elif key == 'unit_infos':
+            for unit in val:
+                _ = _create_new_monster(unit, summoner)
         elif key == 'craft_stuff' and val['item_master_type'] == GameItem.CATEGORY_CRAFT_STUFF:
             _add_quantity_to_item(val, summoner)
         elif key == 'material':
@@ -1081,15 +1084,15 @@ def sync_receive_mail(summoner, log_data):
         _create_new_rune(rune, summoner)
 
     for mon in monsters:
-        _create_new_monster(mon, summoner)
+        _ = _create_new_monster(mon, summoner)
 
 
 def sync_wish_reward(summoner, log_data):
     rune_data = log_data['response'].get('rune', {})
     monster_data = log_data['response'].get('unit_info', {})
 
-    _create_new_rune(rune_data, summoner)
-    _create_new_monster(monster_data, summoner)
+    _ = _create_new_rune(rune_data, summoner)
+    _ = _create_new_monster(monster_data, summoner)
 
 
 def sync_siege_crate_reward(summoner, log_data):
@@ -1106,7 +1109,4 @@ def sync_siege_crate_reward(summoner, log_data):
                 selected_crate = crate['reward_list']
                 break
 
-        for key, val in selected_crate.items():
-            if key == 'runes':
-                for rune in val:
-                    _create_new_rune(rune, summoner)
+        _parse_reward(selected_crate, summoner)

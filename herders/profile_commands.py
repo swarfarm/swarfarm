@@ -197,6 +197,15 @@ active_log_commands = {
         sync_schemas.sync_receive_guild_siege_reward_crate_schema,
         sync_parser.sync_siege_crate_reward,
     ),
+    'AwakenUnitSecond': GameApiCommand(
+        sync_schemas.sync_awaken_unit_schema,
+        sync_parser.sync_awaken_unit,
+    ),
+    # not tested, just assumning it has the same structure based on very similar structure for GetGuildMazeClearRewardCrateList with GetGuildSiegeRewardCrateList
+    'ReceiveGuildMazeClearRewardCrate': GameApiCommand(
+        sync_schemas.sync_receive_guild_siege_reward_crate_schema,
+        sync_parser.sync_siege_crate_reward,
+    ),
 }
 
 accepted_api_params = {

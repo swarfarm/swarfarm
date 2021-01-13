@@ -493,14 +493,13 @@ sync_awaken_unit_schema = {
             'properties': {
                 'tzone': {'type': 'string'},
                 'tvalue': {'type': 'number'},
-                'item_list': {'type': 'array'},
+                'item_list': {'type': ['array', 'null']},
                 'unit_info': {'type': 'object'},
                 'command': {'type': 'string'},
             },
             'required': [
                 'tzone',
                 'tvalue',
-                'item_list',
                 'unit_info',
                 'command',
             ]

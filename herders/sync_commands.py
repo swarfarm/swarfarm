@@ -110,7 +110,7 @@ active_log_commands = {
         sync_parser.sync_sell_unit,
     ),
     'SacrificeUnit_V3': GameApiCommand(
-        sync_schemas.sync_upgrade_unit_v3_schema,
+        sync_schemas.sync_sacrifice_unit_v3_schema,
         sync_parser.sync_upgrade_unit,
     ),
     'UpgradeUnit_V3': GameApiCommand(

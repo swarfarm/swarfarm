@@ -579,6 +579,44 @@ sync_upgrade_unit_v3_schema = {
     'required': ['request', 'response'],
 }
 
+sync_sacrifice_unit_v3_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_sacrifice_unit_v3.json',
+    'title': 'sync_sacrifice_unit_v3',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'source_unit_list': {'type': 'array'},
+            },
+            'required': ['wizard_id', 'command', 'source_unit_list'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'target_unit': {'type': 'object'},
+                'inventory_item_list': {'type': 'array'},
+                'unit_storage_list': {'type': 'array'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'target_unit',
+                'inventory_item_list',
+                'unit_storage_list',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
 sync_lock_unlock_unit_schema = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
     'id': 'http://swarfarm.com/schemas/sync_lock_unlock_unit.json',

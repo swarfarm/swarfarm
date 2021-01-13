@@ -563,7 +563,9 @@ def sync_upgrade_unit(summoner, log_data):
             full_sync=False
         )
 
-        mon_data = log_data['response']['unit_info']
+        mon_data = log_data['response'].get('unit_info', {})
+        if not mon_data:
+            mon_data = log_data['response'].get('target_unit', {})
         try:
             mon = MonsterInstance.objects.get(
                 owner=summoner, com2us_id=mon_data['unit_id'])
@@ -664,6 +666,7 @@ def sync_upgrade_rune(summoner, log_data):
         )
         if rune_data['upgrade_curr'] != rune.level:
             rune.level = rune_data['upgrade_curr']
+            rune.main_stat_value = rune_data['pri_eff'][1]
             _change_rune_substats(rune, rune_data, summoner)
             rune.save()
     except RuneInstance.DoesNotExist:

@@ -986,10 +986,10 @@ def sync_change_artifact_assignment(summoner, log_data):
             if artifact.assigned_to is not None and artifact.assigned_to.id not in mons_updated:
                 mons_updated[artifact.assigned_to.id] = artifact.assigned_to
 
-            if artifact_assignment > 0:
-                mon = monsters.get(artifact_assignment, None)
-                if artifact_assignment not in mons_updated and mon:
-                    mons_updated[artifact_assignment] = mon
+            if artifact_assignment['occupied_id'] > 0:
+                mon = monsters.get(artifact_assignment['occupied_id'], None)
+                if artifact_assignment['occupied_id'] not in mons_updated and mon:
+                    mons_updated[artifact_assignment['occupied_id']] = mon
                 artifact.assigned_to = mon
             else:
                 artifact.assigned_to = None

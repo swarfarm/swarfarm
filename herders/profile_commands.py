@@ -193,6 +193,10 @@ active_log_commands = {
         data_log_schemas.do_random_wish_item,
         sync_parser.sync_wish_reward,
     ),
+    'ReceiveGuildSiegeRewardCrate': GameApiCommand(
+        sync_schemas.sync_receive_guild_siege_reward_crate_schema,
+        sync_parser.sync_siege_crate_reward,
+    ),
 }
 
 accepted_api_params = {

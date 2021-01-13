@@ -1085,3 +1085,37 @@ sync_receive_mail_schema = {
     },
     'required': ['request', 'response'],
 }
+
+sync_receive_guild_siege_reward_crate_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_receive_guild_siege_reward_crate.json',
+    'title': 'sync_receive_guild_siege_reward_crate',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'crate_index': {'type': 'number'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'crate_list': {'type': 'array', 'null'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'crate_list',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}

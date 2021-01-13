@@ -1090,3 +1090,23 @@ def sync_wish_reward(summoner, log_data):
 
     _create_new_rune(rune_data, summoner)
     _create_new_monster(monster_data, summoner)
+
+
+def sync_siege_crate_reward(summoner, log_data):
+    selected_crate_id = log_data['request'].get('crate_index', 0)
+    crates = log_data['response'].get('crate_list', [])
+    selected_crate = {}
+
+    if not selected_crate or not crates:
+        return
+
+    with transaction.atomic():
+        for crate in crates:
+            if crate['crate_index'] == selected_crate_id and isinstance(crate['reward_list'], dict):
+                selected_crate = crate['reward_list']
+                break
+
+        for key, val in selected_crate.items():
+            if key == 'runes':
+                for rune in val:
+                    _create_new_rune(rune, summoner)

@@ -136,7 +136,6 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
 
             base_material = (Q(monster__archetype=Monster.ARCHETYPE_MATERIAL) | Q(monster__archetype=Monster.ARCHETYPE_NONE))
             awakened = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_AWAKENED)
-            awakened_second = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_SECOND)
             base_unawakened = Q(monster__awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED)
 
             base_monster_filters = obtainable & unawakened
@@ -156,7 +155,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             except MaterialStorage.DoesNotExist:
                 pass
             except MultipleObjectsReturned:
-                # should be better handling for this
+                # TODO: should be better handling for this
                 pass
 
             skill_groups = itertools.groupby(base_monsters, lambda mon: mon['skill_group_id'])
@@ -167,7 +166,8 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 data = {
                     'name': records[0]['name'],
                     'elements': {},
-                    'possible_skillups': devilmons_count,
+                    'possible_skillups': 0,
+                    'devilmons_count': devilmons_count,
                 }
                 elements = itertools.groupby(records, lambda mon: mon['element'])
                 for element, records_element in elements:

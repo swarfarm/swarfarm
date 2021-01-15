@@ -193,6 +193,7 @@ _preprocess_erratum = {
     2406: [replace_attack_def_with_just_def],  # Water Golem S2
     2407: [replace_attack_def_with_just_def],  # Fire Golem S2
     2410: [replace_attack_def_with_just_def],  # Dark Golem S2
+    2816: [remove_multiplier], # Water Sylphid S3
     2909: [fix_holy_light_multiplier],  # Light Dragon S2
     4606: [remove_multiplier], # Water Howl (Unawakened) S2
     4607: [remove_multiplier], # Fire Howl (Unawakened) S2
@@ -204,8 +205,21 @@ _preprocess_erratum = {
     4658: [remove_multiplier], # Wind Howl (2A) S2
     4659: [remove_multiplier], # Light Howl (2A) S2
     4660: [remove_multiplier], # Dark Howl (2A) S2
+    5609: [remove_multiplier], # Light Werewolf S2
+    6313: [remove_multiplier], # Wind Archangel S3
     6519: [fix_noble_agreement_multiplier],  # Julianne S2
+    8307: [remove_multiplier], # Fire Beast Monk S2
+    8308: [remove_multiplier], # Wind Beast Monk S2
+    8309: [remove_multiplier], # Light Beast Monk S2
+    9015: [remove_multiplier], # Dark Hell Lady S3
+    9108: [remove_multiplier], # Wind Sky Dancer S2
+    9114: [remove_multiplier], # Light Sky Dancer S3
+    9508: [remove_multiplier], # Wind Penguin Knight S2
+    9510: [remove_multiplier], # Dark Penguin Knight S2
     9713: [remove_multiplier], # Wind Polar Queen S3
+    9714: [remove_multiplier], # Light Polar Queen S3
+    11011: [remove_multiplier], # Water Martial Artist S3
+    12212: [remove_multiplier], # Fire Harp Magician S3
     12313: [remove_multiplier], # Wind Unicorn S3 (Passive)
     13115: [remove_multiplier], # Dark Lightning Emperor S3
 }

@@ -184,6 +184,7 @@ def definitely_obtainable(obj, raw):
     obj.obtainable = True
     return obj
 
+
 def definitely_2a(obj, raw):
     obj.awaken_level = Monster.AWAKEN_LEVEL_SECOND
     return obj

@@ -3,12 +3,18 @@ from django.db.models import Count
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
-from .models import MonsterInstance, RuneInstance, RuneBuild, RuneCraftInstance
+from .models import MonsterInstance, MonsterPiece, RuneInstance, RuneBuild, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, MaterialStorage, MonsterShrineStorage, BuildingInstance
 
 
 @receiver(post_save, sender=MonsterInstance)
+@receiver(post_save, sender=MonsterPiece)
 @receiver(post_save, sender=RuneInstance)
 @receiver(post_save, sender=RuneCraftInstance)
+@receiver(post_save, sender=ArtifactInstance)
+@receiver(post_save, sender=ArtifactCraftInstance)
+@receiver(post_save, sender=MaterialStorage)
+@receiver(post_save, sender=MonsterShrineStorage)
+@receiver(post_save, sender=BuildingInstance)
 def update_profile_date(sender, instance, **kwargs):
     instance.owner.save()
 

@@ -18,8 +18,12 @@ class GameApiCommand:
         self.parsers = parse_fns
 
     def parse(self, *args, **kwargs):
+        errors = []
         for fn in self.parsers:
-            fn(*args, **kwargs)
+            error = fn(*args, **kwargs)
+            if error:
+                errors.append(error)
+        return errors
 
     def validate(self, log_data):
         return self.validator.is_valid(log_data)

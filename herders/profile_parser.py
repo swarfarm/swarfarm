@@ -6,6 +6,21 @@ from bestiary.models import Monster, Building, GameItem
 from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance, ArtifactInstance, ArtifactCraftInstance
 from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
+default_import_options = {
+    'clear_profile': False,
+    'default_priority': '',
+    'lock_monsters': True,
+    'minimum_stars': 1,
+    'ignore_silver': False,
+    'ignore_material': False,
+    'except_with_runes': True,
+    'except_light_and_dark': True,
+    'except_fusion_ingredient': True,
+    'delete_missing_monsters': 1,
+    'delete_missing_runes': 1,
+    'ignore_validation_errors': False
+}
+
 
 def validate_sw_json(data, summoner):
     validation_errors = []
@@ -33,22 +48,23 @@ def validate_sw_json(data, summoner):
 
         # Check that the com2us ID matches previously imported value
         if summoner.com2us_id is not None and summoner.com2us_id != wizard_id:
-            validation_errors.append('Uploaded data does not match account from previous import. Are you sure you want to upload this file?')
+            validation_errors.append(
+                'Uploaded data does not match account from previous import. Are you sure you want to upload this file?')
 
     return schema_error, validation_errors
 
 
 def parse_sw_json(data, owner, options):
     wizard_id = None
-    parsed_runes = []
-    parsed_rune_crafts = []
-    parsed_artifacts = []
-    parsed_artifact_crafts = []
-    parsed_mons = []
+    parsed_runes = {}
+    parsed_rune_crafts = {}
+    parsed_artifacts = {}
+    parsed_artifact_crafts = {}
+    parsed_mons = {}
     parsed_inventory = {}
     parsed_monster_shrine = {}
     parsed_monster_pieces = []
-    parsed_buildings = []
+    parsed_buildings = {}
 
     # Grab the friend
     if data.get('command') == 'VisitFriend':
@@ -86,16 +102,29 @@ def parse_sw_json(data, owner, options):
         level = deco['level']
 
         try:
-            building_instance = BuildingInstance.objects.get(owner=owner, building=base_building)
+            building_instance = BuildingInstance.objects.get(
+                owner=owner, building=base_building)
         except BuildingInstance.DoesNotExist:
-            building_instance = BuildingInstance(owner=owner, building=base_building)
+            building_instance = BuildingInstance(
+                owner=owner, building=base_building)
         except BuildingInstance.MultipleObjectsReturned:
             # Should only be 1 ever - use the first and delete the others.
-            building_instance = BuildingInstance.objects.filter(owner=owner, building=base_building).first()
-            BuildingInstance.objects.filter(owner=owner, building=base_building).exclude(pk=building_instance.pk).delete()
+            building_instance = BuildingInstance.objects.filter(
+                owner=owner, building=base_building).first()
+            BuildingInstance.objects.filter(owner=owner, building=base_building).exclude(
+                pk=building_instance.pk).delete()
 
-        building_instance.level = level
-        parsed_buildings.append(building_instance)
+        if building_instance.level != level:
+            building_instance.level = level
+            parsed_buildings[building_instance.pk] = {
+                'obj': building_instance,
+                'new': True,
+            }
+        else:
+            parsed_buildings[building_instance.pk] = {
+                'obj': building_instance,
+                'new': False,
+            }
 
     # Inventory - essences and summoning pieces
     if inventory_info:
@@ -107,7 +136,8 @@ def parse_sw_json(data, owner, options):
                 or item['item_master_type'] == GameItem.CATEGORY_MATERIAL_MONSTER
                 or item['item_master_type'] == GameItem.CATEGORY_ARTIFACT_CRAFT
             ):
-               parsed_inventory[item['item_master_id']] = item['item_quantity']
+                parsed_inventory[item['item_master_id']
+                                 ] = item['item_quantity']
             elif item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
                 quantity = item.get('item_quantity')
                 if quantity > 0:
@@ -119,19 +149,23 @@ def parse_sw_json(data, owner, options):
                             pieces=quantity,
                             owner=owner,
                         ))
+
     if monster_shrine_info:
         for item in monster_shrine_info:
             parsed_monster_shrine[item['unit_master_id']] = item['quantity']
 
-
     # Extract Rune Inventory (unequipped runes)
     if runes_info:
         for rune_data in runes_info:
-            rune = parse_rune_data(rune_data, owner)
+            rune, has_changed_or_new = parse_rune_data(rune_data, owner)
             if rune:
-                rune.owner = owner
-                rune.assigned_to = None
-                parsed_runes.append(rune)
+                if has_changed_or_new or (not has_changed_or_new and rune.assigned_to):
+                    rune.owner = owner
+                    rune.assigned_to = None
+                parsed_runes[rune.pk] = {
+                    'obj': rune,
+                    'new': has_changed_or_new,
+                }
 
     # Extract monsters
     for unit_info in unit_list:
@@ -141,7 +175,8 @@ def parse_sw_json(data, owner, options):
         mon = None
 
         if not options['clear_profile']:
-            mon = MonsterInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
+            mon = MonsterInstance.objects.filter(
+                com2us_id=com2us_id, owner=owner).first()
 
         if not mon:
             mon = MonsterInstance()
@@ -153,26 +188,97 @@ def parse_sw_json(data, owner, options):
 
         # Base monster
         try:
-            mon.monster = Monster.objects.get(com2us_id=monster_type_id)
+            temp_monster = Monster.objects.get(com2us_id=monster_type_id)
         except Monster.DoesNotExist:
             # Unable to find a matching monster in the database - either crap data or brand new monster. Don't parse it.
             continue
 
+        # Lock a monster if it's locked in game
+        if options['lock_monsters']:
+            locked = locked_mons is not None and mon.com2us_id in locked_mons
+        # Equipped runes and artifacts
+        has_changed_runes_or_artifacts = False
+        equipped_runes = unit_info.get('runes')
+        equipped_artifacts = unit_info.get('artifacts', [])
+
+        # Sometimes the runes are a dict or a list in the json. Convert to list.
+        if isinstance(equipped_runes, dict):
+            equipped_runes = equipped_runes.values()
+
+        for rune_data in equipped_runes:
+            rune, has_changed_or_new = parse_rune_data(rune_data, owner)
+            if rune:
+                if has_changed_or_new or (not has_changed_or_new and rune.assigned_to != mon):
+                    has_changed_runes_or_artifacts = True
+                    rune.owner = owner
+                    rune.assigned_to = mon
+                parsed_runes[rune.pk] = {
+                    'obj': rune,
+                    'new': has_changed_or_new,
+                }
+
+        for artifact_data in equipped_artifacts:
+            artifact, has_changed_or_new = parse_artifact_data(
+                artifact_data, owner)
+            if artifact:
+                if has_changed_or_new or (not has_changed_or_new and artifact.assigned_to != mon):
+                    has_changed_runes_or_artifacts = True
+                    artifact.owner = owner
+                    artifact.assigned_to = mon
+                parsed_artifacts[artifact.pk] = {
+                    'obj': artifact,
+                    'new': has_changed_or_new,
+                }
+
+        skills = unit_info.get('skills', [])
+        temp_skill_1_level = skills[0][1] if len(skills) >= 1 else None
+        temp_skill_2_level = skills[1][1] if len(skills) >= 2 else None
+        temp_skill_3_level = skills[2][1] if len(skills) >= 3 else None
+        temp_skill_4_level = skills[3][1] if len(skills) >= 4 else None
+
+        if not has_changed_runes_or_artifacts and not is_new:
+            has_different_skillups = False
+            if (
+                (temp_skill_1_level and temp_skill_1_level != mon.skill_1_level)
+                or (temp_skill_2_level and temp_skill_2_level != mon.skill_2_level)
+                or (temp_skill_3_level and temp_skill_3_level != mon.skill_3_level)
+                or (temp_skill_4_level and temp_skill_4_level != mon.skill_4_level)
+            ):
+                has_different_skillups = True
+
+            has_changed = any([
+                mon.monster != temp_monster,  # different awaken level
+                mon.stars != unit_info.get('class'),  # i.e. from 5* to 6*
+                # has leveled up since last import
+                mon.level != unit_info.get('unit_level'),
+                # its place has changed (storage/outside)
+                mon.in_storage != (unit_info.get(
+                    'building_id') == storage_building_id),
+                mon.ignore_for_fusion != locked,
+            ])
+            if not has_changed and not has_different_skillups:
+                parsed_mons[mon.pk] = {
+                    'obj': mon,
+                    'new': False,
+                }
+                continue
+
+        mon.monster = temp_monster
         mon.stars = unit_info.get('class')
         mon.level = unit_info.get('unit_level')
 
-        skills = unit_info.get('skills', [])
-        if len(skills) >= 1:
-            mon.skill_1_level = skills[0][1]
-        if len(skills) >= 2:
-            mon.skill_2_level = skills[1][1]
-        if len(skills) >= 3:
-            mon.skill_3_level = skills[2][1]
-        if len(skills) >= 4:
-            mon.skill_4_level = skills[3][1]
+        if temp_skill_1_level:
+            mon.skill_1_level = temp_skill_1_level
+        if temp_skill_2_level:
+            mon.skill_2_level = temp_skill_2_level
+        if temp_skill_3_level:
+            mon.skill_3_level = temp_skill_3_level
+        if temp_skill_4_level:
+            mon.skill_4_level = temp_skill_4_level
 
         try:
-            created_date = get_current_timezone().localize(parse(unit_info.get('create_time')), is_dst=False)
+            created_date = get_current_timezone().localize(
+                parse(unit_info.get('create_time')), is_dst=False)
             mon.created = created_date
         except (ValueError, TypeError):
             mon.created = None
@@ -188,24 +294,20 @@ def parse_sw_json(data, owner, options):
             mon.fodder = True
             mon.priority = MonsterInstance.PRIORITY_DONE
 
-        # Lock a monster if it's locked in game
-        if options['lock_monsters']:
-            mon.ignore_for_fusion = locked_mons is not None and mon.com2us_id in locked_mons
-
-        # Equipped runes and artifacts
-        equipped_runes = unit_info.get('runes')
-        equipped_artifacts = unit_info.get('artifacts', [])
-
         # Check import options to determine if monster should be saved
         level_ignored = mon.stars < options['minimum_stars']
         silver_ignored = options['ignore_silver'] and not mon.monster.can_awaken
         material_ignored = options['ignore_material'] and mon.monster.archetype == Monster.ARCHETYPE_MATERIAL
-        allow_due_to_runes = options['except_with_runes'] and (len(equipped_runes) > 0 or len(equipped_artifacts) > 0)
-        allow_due_to_ld = options['except_light_and_dark'] and mon.monster.element in [Monster.ELEMENT_DARK, Monster.ELEMENT_LIGHT] and mon.monster.archetype != Monster.ARCHETYPE_MATERIAL
+        allow_due_to_runes = options['except_with_runes'] and (
+            len(equipped_runes) > 0 or len(equipped_artifacts) > 0)
+        allow_due_to_ld = options['except_light_and_dark'] and mon.monster.element in [
+            Monster.ELEMENT_DARK, Monster.ELEMENT_LIGHT] and mon.monster.archetype != Monster.ARCHETYPE_MATERIAL
         allow_due_to_fusion = options['except_fusion_ingredient'] and mon.monster.fusion_food
 
-        should_be_skipped = any([level_ignored, silver_ignored, material_ignored])
-        import_anyway = any([allow_due_to_runes, allow_due_to_ld, allow_due_to_fusion])
+        should_be_skipped = any(
+            [level_ignored, silver_ignored, material_ignored])
+        import_anyway = any(
+            [allow_due_to_runes, allow_due_to_ld, allow_due_to_fusion])
 
         if should_be_skipped and not import_anyway:
             continue
@@ -215,49 +317,49 @@ def parse_sw_json(data, owner, options):
         if unit_info.get('homunculus') and custom_name:
             mon.custom_name = custom_name
 
-        parsed_mons.append(mon)
-
-        # Sometimes the runes are a dict or a list in the json. Convert to list.
-        if isinstance(equipped_runes, dict):
-            equipped_runes = equipped_runes.values()
-
-        for rune_data in equipped_runes:
-            rune = parse_rune_data(rune_data, owner)
-            if rune:
-                rune.owner = owner
-                rune.assigned_to = mon
-                parsed_runes.append(rune)
-
-        for artifact_data in equipped_artifacts:
-            artifact = parse_artifact_data(artifact_data, owner)
-            if artifact:
-                artifact.owner = owner
-                artifact.assigned_to = mon
-                parsed_artifacts.append(artifact)
+        parsed_mons[mon.pk] = {
+            'obj': mon,
+            'new': True,
+        }
 
     # Extract grindstones/enchant gems
     if craft_info:
         for craft_data in craft_info:
-            craft = parse_rune_craft_data(craft_data, owner)
+            craft, has_changed_or_new = parse_rune_craft_data(
+                craft_data, owner)
             if craft:
-                craft.owner = owner
-                parsed_rune_crafts.append(craft)
+                if has_changed_or_new:
+                    craft.owner = owner
+                parsed_rune_crafts[craft.pk] = {
+                    'obj': craft,
+                    'new': has_changed_or_new
+                }
 
     # Extract artifact inventory
     if artifact_info:
         for artifact_data in artifact_info:
-            artifact = parse_artifact_data(artifact_data, owner)
+            artifact, has_changed_or_new = parse_artifact_data(
+                artifact_data, owner)
             if artifact:
-                artifact.owner = owner
-                artifact.assigned_to = None
-                parsed_artifacts.append(artifact)
+                if has_changed_or_new or (not has_changed_or_new and artifact.assigned_to):
+                    artifact.owner = owner
+                    artifact.assigned_to = None
+                parsed_artifacts[artifact.pk] = {
+                    'obj': artifact,
+                    'new': has_changed_or_new,
+                }
 
     if artifact_craft_info:
         for craft_data in artifact_craft_info:
-            craft = parse_artifact_craft_data(craft_data, owner)
+            craft, has_changed_or_new = parse_artifact_craft_data(
+                craft_data, owner)
             if craft:
-                craft.owner = owner
-                parsed_artifact_crafts.append(craft)
+                if has_changed_or_new:
+                    craft.owner = owner
+                parsed_artifact_crafts[craft.pk] = {
+                    'obj': craft,
+                    'new': has_changed_or_new,
+                }
 
     import_results = {
         'wizard_id': wizard_id,
@@ -280,7 +382,8 @@ def get_monster_from_id(com2us_id):
     try:
         return Monster.objects.get(com2us_id=com2us_id)
     except (TypeError, ValueError):
-        raise ValueError('Unable to find monster matching ID ' + str(com2us_id))
+        raise ValueError(
+            'Unable to find monster matching ID ' + str(com2us_id))
     except Monster.DoesNotExist:
         return None
 
@@ -288,10 +391,43 @@ def get_monster_from_id(com2us_id):
 def parse_rune_data(rune_data, owner):
     com2us_id = rune_data.get('rune_id')
 
-    rune = RuneInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
+    rune = RuneInstance.objects.filter(
+        com2us_id=com2us_id, owner=owner).first()
 
     if not rune:
+        is_new = True
         rune = RuneInstance()
+    else:
+        is_new = False
+
+    # Firstly, info that may say if rune has changed or not
+    substats = rune_data.get('sec_eff', [])
+    temp_substats = []
+    temp_substat_values = []
+    temp_substats_enchanted = []
+    temp_substats_grind_value = []
+
+    for substat in substats:
+        substat_type = RuneInstance.COM2US_STAT_MAP[substat[0]]
+        substat_value = substat[1]
+        enchanted = substat[2] == 1 if len(substat) >= 3 else 0
+        grind_value = substat[3] if len(substat) >= 4 else 0
+
+        temp_substats.append(substat_type)
+        temp_substat_values.append(substat_value)
+        temp_substats_enchanted.append(enchanted)
+        temp_substats_grind_value.append(grind_value)
+
+    if not is_new:
+        new_substats = any([
+            rune.substats != temp_substats,
+            rune.substat_values != temp_substat_values,
+            rune.substats_enchanted != temp_substats_enchanted,
+            rune.substats_grind_value != temp_substats_grind_value,
+        ])
+        # if the same level and no new substats, we assume nothing has changed in this rune
+        if rune.level == rune_data.get('upgrade_curr') and not new_substats:
+            return rune, False  # rune obj, has_changed_or_new
 
     # Basic rune info
     rune.type = RuneInstance.COM2US_TYPE_MAP[rune_data['set_id']]
@@ -304,7 +440,8 @@ def parse_rune_data(rune_data, owner):
         rune.ancient = True
     rune.stars = stars
     rune.level = rune_data.get('upgrade_curr')
-    rune.original_quality = RuneInstance.COM2US_QUALITY_MAP.get(rune_data.get('extra'))
+    rune.original_quality = RuneInstance.COM2US_QUALITY_MAP.get(
+        rune_data.get('extra'))
 
     # Rune stats
     main_stat = rune_data.get('pri_eff')
@@ -317,24 +454,12 @@ def parse_rune_data(rune_data, owner):
         rune.innate_stat = RuneInstance.COM2US_STAT_MAP.get(innate_stat[0])
         rune.innate_stat_value = innate_stat[1]
 
-    substats = rune_data.get('sec_eff', [])
-    rune.substats = []
-    rune.substat_values = []
-    rune.substats_enchanted = []
-    rune.substats_grind_value = []
+    rune.substats = temp_substats
+    rune.substat_values = temp_substat_values
+    rune.substats_enchanted = temp_substats_enchanted
+    rune.substats_grind_value = temp_substats_grind_value
 
-    for substat in substats:
-        substat_type = RuneInstance.COM2US_STAT_MAP[substat[0]]
-        substat_value = substat[1]
-        enchanted = substat[2] == 1
-        grind_value = substat[3]
-
-        rune.substats.append(substat_type)
-        rune.substat_values.append(substat_value)
-        rune.substats_enchanted.append(enchanted)
-        rune.substats_grind_value.append(grind_value)
-
-    return rune
+    return rune, True  # rune obj, has_changed_or_new
 
 
 def parse_rune_craft_data(craft_data, owner):
@@ -345,10 +470,14 @@ def parse_rune_craft_data(craft_data, owner):
     # [:-4] = rune set
 
     com2us_id = craft_data['craft_item_id']
-    craft = RuneCraftInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
+    craft = RuneCraftInstance.objects.filter(
+        com2us_id=com2us_id, owner=owner).first()
 
     if not craft:
+        is_new = True
         craft = RuneCraftInstance(com2us_id=com2us_id, owner=owner)
+    else:
+        is_new = False
 
     craft_type_id = str(craft_data['craft_type_id'])
 
@@ -356,23 +485,57 @@ def parse_rune_craft_data(craft_data, owner):
     stat = int(craft_type_id[-4:-2])
     rune_set = int(craft_type_id[:-4])
 
-    craft.type = RuneCraftInstance.COM2US_CRAFT_TYPE_MAP.get(craft_data['craft_type'])
+    # if craft data already exists w/o quantity change, then we assume it's the same as it was before import
+    if not is_new and craft.quantity == craft_data.get('amount', 1):
+        return craft, False  # craft obj, has_changed_or_new
+
+    craft.type = RuneCraftInstance.COM2US_CRAFT_TYPE_MAP.get(
+        craft_data['craft_type'])
     craft.quality = RuneCraftInstance.COM2US_QUALITY_MAP.get(quality)
     craft.stat = RuneCraftInstance.COM2US_STAT_MAP.get(stat)
     craft.rune = RuneCraftInstance.COM2US_TYPE_MAP.get(rune_set)
     craft.quantity = craft_data.get('amount', 1)
     craft.value = craft_data['sell_value']
 
-    return craft
+    return craft, True  # craft obj, has_changed_or_new
 
 
 def parse_artifact_data(artifact_data, owner):
     com2us_id = artifact_data.get('rid')
 
-    artifact = ArtifactInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
+    artifact = ArtifactInstance.objects.filter(
+        com2us_id=com2us_id, owner=owner).first()
 
     if not artifact:
         artifact = ArtifactInstance(com2us_id=com2us_id, owner=owner)
+        is_new = True
+    else:
+        is_new = False
+
+    temp_effects = []
+    temp_effects_value = []
+    temp_effects_upgrade_count = []
+    temp_effects_reroll_count = []
+    for sec_eff in artifact_data['sec_effects']:
+        effect = artifact.COM2US_EFFECT_MAP[sec_eff[0]]
+        value = sec_eff[1]
+        upgrade_count = sec_eff[2]
+        reroll_count = sec_eff[4]
+
+        temp_effects.append(effect)
+        temp_effects_value.append(value)
+        temp_effects_upgrade_count.append(upgrade_count)
+        temp_effects_reroll_count.append(reroll_count)
+
+    if not is_new:
+        new_substats = any([
+            artifact.effects != temp_effects,
+            artifact.effects_value != temp_effects_value,
+            artifact.effects_upgrade_count != temp_effects_upgrade_count,
+            artifact.effects_reroll_count != temp_effects_reroll_count,
+        ])
+        if artifact.level == artifact_data['level'] and not new_substats:
+            return artifact, False  # artifact obj, has_changed_or_new
 
     # Basic artifact data
     artifact.slot = artifact.COM2US_SLOT_MAP[artifact_data['type']]
@@ -392,22 +555,12 @@ def parse_artifact_data(artifact_data, owner):
     artifact.main_stat = artifact.COM2US_MAIN_STAT_MAP[main_eff[0]]
     artifact.main_stat_value = main_eff[1]
 
-    artifact.effects = []
-    artifact.effects_value = []
-    artifact.effects_upgrade_count = []
-    artifact.effects_reroll_count = []
-    for sec_eff in artifact_data['sec_effects']:
-        effect = artifact.COM2US_EFFECT_MAP[sec_eff[0]]
-        value = sec_eff[1]
-        upgrade_count = sec_eff[2]
-        reroll_count = sec_eff[4]
+    artifact.effects = temp_effects
+    artifact.effects_value = temp_effects_value
+    artifact.effects_upgrade_count = temp_effects_upgrade_count
+    artifact.effects_reroll_count = temp_effects_reroll_count
 
-        artifact.effects.append(effect)
-        artifact.effects_value.append(value)
-        artifact.effects_upgrade_count.append(upgrade_count)
-        artifact.effects_reroll_count.append(reroll_count)
-
-    return artifact
+    return artifact, True  # artifact obj, has_changed_or_new
 
 
 def parse_artifact_craft_data(craft_data, owner):
@@ -421,10 +574,14 @@ def parse_artifact_craft_data(craft_data, owner):
     #   [9:] = effect
 
     com2us_id = craft_data['rid']
-    craft = ArtifactCraftInstance.objects.filter(com2us_id=com2us_id, owner=owner).first()
+    craft = ArtifactCraftInstance.objects.filter(
+        com2us_id=com2us_id, owner=owner).first()
 
     if not craft:
+        is_new = True
         craft = ArtifactCraftInstance(com2us_id=com2us_id, owner=owner)
+    else:
+        is_new = False
 
     craft_type_id = str(craft_data['master_id'])
     artifact_type = int(craft_type_id[1:3])
@@ -433,11 +590,17 @@ def parse_artifact_craft_data(craft_data, owner):
     quality = int(craft_type_id[7:9])
     effect = int(craft_type_id[9:])
 
+    # if craft data already exists w/o quantity change, then we assume it's the same as it was before import
+    if not is_new and craft.quantity == craft_data.get('amount', 1):
+        return craft, False  # craft obj, has_changed_or_new
+
     craft.slot = ArtifactCraftInstance.COM2US_SLOT_MAP.get(artifact_type)
-    craft.element = ArtifactCraftInstance.COM2US_ELEMENT_MAP.get(unit_element) if unit_element else None
-    craft.archetype = ArtifactCraftInstance.COM2US_ARCHETYPE_MAP.get(unit_archetype) if unit_archetype else None
+    craft.element = ArtifactCraftInstance.COM2US_ELEMENT_MAP.get(
+        unit_element) if unit_element else None
+    craft.archetype = ArtifactCraftInstance.COM2US_ARCHETYPE_MAP.get(
+        unit_archetype) if unit_archetype else None
     craft.quality = ArtifactCraftInstance.COM2US_QUALITY_MAP.get(quality)
     craft.effect = ArtifactCraftInstance.COM2US_EFFECT_MAP.get(effect)
     craft.quantity = craft_data.get('amount', 1)
 
-    return craft
+    return craft, True  # craft obj, has_changed_or_new

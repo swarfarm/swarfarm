@@ -231,6 +231,9 @@ def _parse_changed_item_list(changed_item_list, summoner):
         # parse artifact craft drop - enchants
         elif item_type == GameItem.CATEGORY_ARTIFACT_CRAFT:
             _create_new_artifact_craft(info, summoner)
+        # parse HOH - monster pieces
+        elif item_type == GameItem.CATEGORY_MONSTER_PIECE:
+            _sync_monster_piece(info, summoner)
 
 
 def _parse_reward(reward, summoner):
@@ -286,8 +289,8 @@ def sync_rift_reward(summoner, log_data):
             # material storage
             if reward['type'] == GameItem.CATEGORY_CRAFT_STUFF:
                 _add_quantity_to_item(reward, summoner)
-            else:
-                # rune, grind, enchant
+            elif reward['type'] in [GameItem.CATEGORY_RUNE, GameItem.CATEGORY_RUNE_CRAFT, GameItem.CATEGORY_MONSTER]:
+                # rune, grind, enchant, rainbowmon
                 changed_item_list.append(reward)
 
         _parse_changed_item_list(changed_item_list, summoner)

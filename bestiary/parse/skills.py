@@ -149,8 +149,13 @@ def skills():
 
 
 # Skill erratum
-def replace_attack_def_with_just_def(raw):
+def replace_golem_multiplier(raw):
     raw['fun data'] = [["ATK", "*", 1.8], ["+"], ["DEF", "*", 2.5]]
+    return raw
+
+
+def replace_attack_def_with_just_def(raw):
+    raw['fun data'] = [[el.replace('ATTACK_DEF', 'DEF') if isinstance(el, str) else el for el in row] for row in raw['fun data']]
     return raw
 
 
@@ -185,15 +190,16 @@ def remove_multiplier(raw):
 
 
 _preprocess_erratum = {
-    2401: [replace_attack_def_with_just_def],  # Water Golem S1
-    2402: [replace_attack_def_with_just_def],  # Fire Golem S1
-    2403: [replace_attack_def_with_just_def],  # Wind Golem S1
-    2404: [replace_attack_def_with_just_def],  # Light Golem S1
-    2405: [replace_attack_def_with_just_def],  # Dark Golem S1
-    2406: [replace_attack_def_with_just_def],  # Water Golem S2
-    2407: [replace_attack_def_with_just_def],  # Fire Golem S2
-    2410: [replace_attack_def_with_just_def],  # Dark Golem S2
+    2401: [replace_golem_multiplier],  # Water Golem S1
+    2402: [replace_golem_multiplier],  # Fire Golem S1
+    2403: [replace_golem_multiplier],  # Wind Golem S1
+    2404: [replace_golem_multiplier],  # Light Golem S1
+    2405: [replace_golem_multiplier],  # Dark Golem S1
+    2406: [replace_golem_multiplier],  # Water Golem S2
+    2407: [replace_golem_multiplier],  # Fire Golem S2
+    2410: [replace_golem_multiplier],  # Dark Golem S2
     2816: [remove_multiplier], # Water Sylphid S3
+    2901: [replace_attack_def_with_just_def],  # Water Dragon S1
     2909: [fix_holy_light_multiplier],  # Light Dragon S2
     4606: [remove_multiplier], # Water Howl (Unawakened) S2
     4607: [remove_multiplier], # Fire Howl (Unawakened) S2

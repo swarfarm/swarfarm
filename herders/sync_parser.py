@@ -402,23 +402,31 @@ def sync_worldboss_reward(summoner, log_data):
 
 def sync_guild_black_market_buy(summoner, log_data):
     with transaction.atomic():
-        for item in log_data['response'].get('item_list', []):
-            if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
-                _sync_monster_piece(item, summoner)
-            elif item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
-                _sync_item(item, summoner)
+        items = log_data['response'].get('item_list', [])
+        if items:
+            for item in items:
+                if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
+                    _sync_monster_piece(item, summoner)
+                elif item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
+                    _sync_item(item, summoner)
 
-        for rune in log_data['response'].get('rune_list', []):
-            _create_new_rune(rune, summoner)
+        runes = log_data['response'].get('rune_list', [])
+        if runes:
+            for rune in runes:
+                _create_new_rune(rune, summoner)
 
-        for rune_craft in log_data['response'].get('runecraft_list', []):
-            _create_new_rune_craft(rune_craft, summoner)
+        rune_crafts = log_data['response'].get('runecraft_list', [])
+        if rune_crafts:
+            for rune_craft in rune_crafts:
+                _create_new_rune_craft(rune_craft, summoner)
 
 
 def sync_black_market_buy(summoner, log_data):
     with transaction.atomic():
-        for rune in log_data['response'].get('runes', []):
-            _create_new_rune(rune, summoner)
+        runes = log_data['response'].get('runes', [])
+        if runes:
+            for rune in runes:
+                _create_new_rune(rune, summoner)
 
         _ = _create_new_monster(
             log_data['response'].get('unit_info', {}),
@@ -536,9 +544,11 @@ def sync_awaken_unit(summoner, log_data):
         return
 
     with transaction.atomic():
-        for item in log_data['response'].get('item_list', []):
-            if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
-                _sync_monster_piece(item, summoner)
+        items = log_data['response'].get('item_list', [])
+        if items:
+            for item in items:
+                if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
+                    _sync_monster_piece(item, summoner)
 
         try:
             mon = MonsterInstance.objects.get(
@@ -1083,25 +1093,29 @@ def sync_daily_reward(summoner, log_data):
     items = log_data['response'].get('item_list', [])
     runes = log_data['response'].get('rune_list', [])
 
-    for item in items:
-        if item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
-            _sync_item(item, summoner)
-        if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
-            _sync_monster_piece(item, summoner)
+    if items:
+        for item in items:
+            if item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
+                _sync_item(item, summoner)
+            if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
+                _sync_monster_piece(item, summoner)
 
-    for rune in runes:
-        _create_new_rune(rune, summoner)
+    if runes:
+        for rune in runes:
+            _create_new_rune(rune, summoner)
 
 
 def sync_receive_mail(summoner, log_data):
     runes = log_data['response'].get('rune_list', [])
     monsters = log_data['response'].get('unit_list', [])
 
-    for rune in runes:
-        _create_new_rune(rune, summoner)
+    if runes:
+        for rune in runes:
+            _create_new_rune(rune, summoner)
 
-    for mon in monsters:
-        _ = _create_new_monster(mon, summoner)
+    if monsters:
+        for mon in monsters:
+            _ = _create_new_monster(mon, summoner)
 
 
 def sync_wish_reward(summoner, log_data):
@@ -1121,9 +1135,10 @@ def sync_siege_crate_reward(summoner, log_data):
         return
 
     with transaction.atomic():
-        for crate in crates:
-            if crate['crate_index'] == selected_crate_id and isinstance(crate['reward_list'], dict):
-                selected_crate = crate['reward_list']
-                break
+        if crates:
+            for crate in crates:
+                if crate['crate_index'] == selected_crate_id and isinstance(crate['reward_list'], dict):
+                    selected_crate = crate['reward_list']
+                    break
 
-        _parse_reward(selected_crate, summoner)
+            _parse_reward(selected_crate, summoner)

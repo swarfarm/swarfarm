@@ -348,7 +348,7 @@ class SyncData(viewsets.ViewSet):
             log_data = json.loads(log_data)
 
         try:
-            api_command = log_data['request']['command']
+            api_command = log_data['request']['command'] if log_data.get('request') and log_data['request'].get('command') else log_data['response']['command']
             # HubUserLogin is a special case, it doesn't store `wizard_id` in request since it needs to fetch it first
             wizard_id = log_data['request']['wizard_id'] if api_command != "HubUserLogin" else log_data['response']['wizard_info']['wizard_id']
         except (KeyError, TypeError):

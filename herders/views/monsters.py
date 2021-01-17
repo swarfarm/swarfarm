@@ -871,7 +871,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
                                         material_storage_created.append(MaterialStorage(
                                             owner=summoner,
                                             quantity=0,
-                                            item=GameItem.objects.get(com2us_id=ESSENCE_MAP[element][essence])
+                                            item=GameItem.objects.get(com2us_id=ESSENCE_MAP[element][essence], category__isnull=False)
                                         ))
                                         continue
                                     material_storage_edited.append(summoner_material_storage[ESSENCE_MAP[element][essence]])
@@ -1030,11 +1030,18 @@ def monster_piece_edit(request, profile_name, instance_id):
                 'is_owner': is_owner,
             }
 
-            response_data = {
-                'code': 'success',
-                'instance_id': new_piece.pk.hex,
-                'html': template.render(context),
-            }
+            # Delete if 0
+            if new_piece.pieces <= 0:
+                new_piece.delete()
+                response_data = {
+                    'code': 'success',
+                }
+            else:
+                response_data = {
+                    'code': 'success',
+                    'instance_id': new_piece.pk.hex,
+                    'html': template.render(context),
+                }
         else:
             # Return form filled in and errors shown
             context = {'form': form}

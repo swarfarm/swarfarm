@@ -1,4 +1,5 @@
 from django.utils.timezone import get_current_timezone
+from django.core.exceptions import MultipleObjectsReturned
 from dateutil.parser import *
 from django.db import transaction
 
@@ -35,7 +36,6 @@ def sync_monster_shrine(summoner, log_data, full_sync=True):
                     item=base,
                     quantity=monster['quantity'],
                 )
-            # TODO: think about adding it to the Model `save` method or `post_save` signal
             if mon.quantity == 0:
                 mon.delete()
             else:
@@ -152,6 +152,14 @@ def _sync_item(info, summoner):
             item=item,
             quantity=info['item_quantity'],
         )
+    except MultipleObjectsReturned:
+        # TODO: Find why it returns multiple objects
+        dupes = MaterialStorage.objects.select_related('item').filter(
+            owner=summoner, item__com2us_id=info['item_master_id'])
+        reward_item = dupes.first()
+        # delete dupe records, temporary solution
+        dupes.exclude(pk=reward_item.pk).delete()
+        reward_item.quantity = info['item_quantity']
     reward_item.save()
 
 
@@ -159,8 +167,8 @@ def _add_quantity_to_item(info, summoner):
     if not info:
         return
 
-    idx = info.get('id', info.get('item_master_id', None))
-    quantity = info.get('quantity', info.get('item_quantity', None))
+    idx = info.get('item_master_id', info.get('id', None))
+    quantity = info.get('item_quantity', info.get('quantity', None))
 
     if idx is None or quantity is None:
         return
@@ -177,6 +185,14 @@ def _add_quantity_to_item(info, summoner):
             item=item,
             quantity=quantity,
         )
+    except MultipleObjectsReturned:
+        # TODO: Find why it returns multiple objects
+        dupes = MaterialStorage.objects.select_related('item').filter(
+            owner=summoner, item__com2us_id=idx)
+        reward_item = dupes.first()
+        # delete dupe records, temporary solution
+        dupes.exclude(pk=reward_item.pk).delete()
+        reward_item.quantity += quantity
     reward_item.save()
 
 
@@ -195,7 +211,11 @@ def _sync_monster_piece(info, summoner):
             monster=Monster.objects.get(
                 com2us_id=info['item_master_id']),
         )
-    mon_piece.save()
+    
+    if mon_piece.pieces == 0:
+        mon_piece.delete()
+    else:
+        mon_piece.save()
 
 
 def _parse_changed_item_list(changed_item_list, summoner):
@@ -332,7 +352,7 @@ def sync_buy_item(summoner, log_data):
         for item in log_data['response'].get('item_list', []):
             if item['item_master_type'] in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
                 _sync_item(item, summoner)
-            if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
+            elif item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
                 _sync_monster_piece(item, summoner)
 
         # monsters used to buy/craft something, i.e. Rainbowmons

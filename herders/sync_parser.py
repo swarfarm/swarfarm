@@ -500,6 +500,11 @@ def sync_summon_unit(summoner, log_data):
         for mon in log_data['response'].get('unit_list', []):
             _ = _create_new_monster(mon, summoner)
 
+def sync_blessing_choice(summoner, log_data):
+     with transaction.atomic():
+        for mon in log_data['response'].get('unit_list', []):
+            _ = _create_new_monster(mon, summoner)
+
 
 def sync_monster_from_pieces(summoner, log_data):
     with transaction.atomic():

@@ -529,6 +529,8 @@ def sync_awaken_unit(summoner, log_data):
             for item in items:
                 if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
                     _sync_monster_piece(item, summoner)
+                elif item['item_master_type'] == GameItem.CATEGORY_ESSENCE:
+                    _sync_item(item, summoner)
 
         try:
             mon = MonsterInstance.objects.get(

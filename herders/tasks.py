@@ -62,9 +62,8 @@ def com2us_data_import(data, user_id, import_options):
 
         # inventory bulk update or create
         # firstly, delete all Summoner MaterialStorage records, if GameItem points to `UNKNOWN ITEM`
-        MaterialStorage.objects.select_related('item').filter(owner=summoner, item__category__isnull=True).delete()
-        all_inv_items = {gi.com2us_id: gi for gi in GameItem.objects.filter(
-            category__isnull=False)}  # to handle some `UNKNOWN ITEM` records
+        MaterialStorage.objects.select_related('item').filter(owner=summoner).exclude(item__category__in=dict(GameItem.CATEGORY_CHOICES).keys()).delete()
+        all_inv_items = {gi.com2us_id: gi for gi in GameItem.objects.filter(category__in=dict(GameItem.CATEGORY_CHOICES).keys())}  # to handle some `UNKNOWN ITEM` records
         summoner_inv_items = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related(
             'item').filter(owner=summoner)}
         summoner_new_inv_items = []

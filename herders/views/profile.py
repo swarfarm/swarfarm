@@ -371,7 +371,7 @@ def storage_update(request, profile_name):
             item.quantity = new_value
             item.save()
         except MaterialStorage.DoesNotExist:
-            game_item = GameItem.objects.get(slug=field_name, category__isnull=False)  # ignore some strange 'UNKNOWN ITEM'
+            game_item = GameItem.objects.get(slug=field_name)  # ignore some strange 'UNKNOWN ITEM'
             item = MaterialStorage.objects.create(owner=summoner, item=game_item, quantity=new_value)
             item.save()
         except GameItem.DoesNotExist:

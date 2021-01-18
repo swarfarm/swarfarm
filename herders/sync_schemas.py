@@ -1024,6 +1024,41 @@ sync_artifact_post_enchant_schema = {
     'required': ['request', 'response'],
 }
 
+sync_artifact_enchant_craft_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_artifact_enchant_craft.json',
+    'title': 'sync_artifact_enchant_craft',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'artifact_craft': {'type': 'object'},
+                'artifact_confirmed': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'artifact_craft',
+                'artifact_confirmed',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
 sync_change_artifact_assignment_schema = {
     '$schema': 'http://json-schema.org/draft-04/schema#',
     'id': 'http://swarfarm.com/schemas/sync_change_artifact_assignment.json',

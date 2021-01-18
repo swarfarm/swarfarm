@@ -177,6 +177,10 @@ active_log_commands = {
         sync_schemas.sync_artifact_post_enchant_schema,
         sync_parser.sync_artifact_post_enchant,
     ),
+    'ConvertArtifactByCraft': GameApiCommand(
+        sync_schemas.sync_artifact_enchant_craft_schema,
+        sync_parser.sync_artifact_enchant_craft,
+    ),
     'UpdateArtifactOccupation': GameApiCommand(
         sync_schemas.sync_change_artifact_assignment_schema,
         sync_parser.sync_change_artifact_assignment,
@@ -211,4 +215,4 @@ active_log_commands = {
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
-accepted_api_params['__version'] = 2
+accepted_api_params['__version'] = 3

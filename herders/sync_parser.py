@@ -1062,7 +1062,8 @@ def sync_sell_artifacts(summoner, log_data):
 
 def sync_artifact_pre_enchant(summoner, log_data):
     for item in log_data['response'].get('inventory_info', []):
-        _create_new_artifact_craft(item, summoner)
+        if item['item_master_type'] == GameItem.CATEGORY_ARTIFACT_CRAFT:
+            _sync_item(item, summoner)
 
 
 def sync_artifact_post_enchant(summoner, log_data):
@@ -1088,6 +1089,13 @@ def sync_artifact_post_enchant(summoner, log_data):
         except MonsterInstance.DoesNotExist:
             return "monster"
 
+
+def sync_artifact_enchant_craft(summoner, log_data):
+    artifact_craft = log_data['response'].get('artifact_craft', {})
+    artifact_data = log_data['response'].get('artifact_confirmed', {})
+
+    _create_new_artifact_craft(artifact_craft, summoner)
+    _create_new_artifact(artifact_data, summoner)
 
 def sync_daily_reward(summoner, log_data):
     items = log_data['response'].get('item_list', [])

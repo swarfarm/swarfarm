@@ -888,12 +888,12 @@ def sync_change_runes_in_rune_management(summoner, log_data):
                 runes_to_update[rune.id] = rune
             rune.assigned_to = mon
 
-        # omiting `save` method from `RuneInstance` because we'll force save
-        # every `MonsterInstance` used in this transaction
-        RuneInstance.objects.bulk_update(
-            runes_to_update.values(), ['assigned_to'])
+        # save every `RuneInstance` to recalc monster stats and 
+        # make sure there are not other runes on this slot
+        for rune in runes_to_update.values():
+            rune.save()
 
-        # recalc stats of every monster used in this transaction
+        # recalc stats of monster with unassigned runes after this transfer
         for mon in mons_to_update.values():
             mon.save()
 
@@ -1012,13 +1012,12 @@ def sync_change_artifact_assignment(summoner, log_data):
             else:
                 artifact.assigned_to = None
 
-        # `bulk_update` to prevent `ArtifactInstance` from calling `save` method and recalc monster stats
-        ArtifactInstance.objects.bulk_update(
-            artifacts.values(),
-            ['assigned_to']
-        )
+        # save every `ArtifactInstance` to recalc monster stats and 
+        # make sure there are not other artifacts on this slot
+        for artifact in artifacts.values():
+            artifact.save()
 
-        # recalc stats for every monster updated
+        # recalc stats for every monster with unassigned artifacts in this transfer
         for monster in mons_updated.values():
             monster.save()
 

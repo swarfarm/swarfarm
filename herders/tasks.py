@@ -141,8 +141,9 @@ def com2us_data_import(data, user_id, import_options):
 
         # Update saved monster pieces
         for piece in results['monster_pieces']:
-            piece.save()
-            imported_pieces.append(piece.pk)
+            if piece['new']:
+                piece['obj'].save()
+            imported_pieces.append(piece['obj'].pk)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'runes'})
@@ -226,6 +227,11 @@ def com2us_data_import(data, user_id, import_options):
             imported_artifact_crafts.append(craft['obj'].pk)
 
     with transaction.atomic():
+        # recalculate stats for every monster once again
+        # it's mostly for monsters with unequipped runes after synchronization
+        for mon in results['monsters'].values():
+            mon['obj'].save()
+
         # Delete objects missing from import
         if import_options['delete_missing_monsters']:
             MonsterInstance.objects.filter(owner=summoner).exclude(

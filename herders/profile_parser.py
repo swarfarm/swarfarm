@@ -144,11 +144,22 @@ def parse_sw_json(data, owner, options):
                     mon = get_monster_from_id(item['item_master_id'])
 
                     if mon:
-                        parsed_monster_pieces.append(MonsterPiece(
+                        has_changed = False
+                        monster_piece, created = MonsterPiece.objects.get_or_create(
+                            owner=owner, 
                             monster=mon,
-                            pieces=quantity,
-                            owner=owner,
-                        ))
+                            defaults={
+                                'pieces': quantity,
+                            }
+                        )
+                        if not created and monster_piece.pieces != quantity:
+                            monster_piece.pieces = quantity
+                            has_changed = True
+                        
+                        parsed_monster_pieces.append({
+                            'obj': monster_piece,
+                            'new': has_changed or created,
+                        })
 
     if monster_shrine_info:
         for item in monster_shrine_info:
@@ -160,6 +171,8 @@ def parse_sw_json(data, owner, options):
             rune, has_changed_or_new = parse_rune_data(rune_data, owner)
             if rune:
                 if has_changed_or_new or (not has_changed_or_new and rune.assigned_to):
+                    # it did change... its assignment, so make sure it'll be saved
+                    has_changed_or_new = True
                     rune.owner = owner
                     rune.assigned_to = None
                 parsed_runes[rune.pk] = {
@@ -209,6 +222,8 @@ def parse_sw_json(data, owner, options):
             rune, has_changed_or_new = parse_rune_data(rune_data, owner)
             if rune:
                 if has_changed_or_new or (not has_changed_or_new and rune.assigned_to != mon):
+                    # it did change... its assignment, so make sure it'll be saved
+                    has_changed_or_new = True
                     has_changed_runes_or_artifacts = True
                     rune.owner = owner
                     rune.assigned_to = mon
@@ -222,6 +237,8 @@ def parse_sw_json(data, owner, options):
                 artifact_data, owner)
             if artifact:
                 if has_changed_or_new or (not has_changed_or_new and artifact.assigned_to != mon):
+                    # it did change... its assignment, so make sure it'll be saved
+                    has_changed_or_new = True
                     has_changed_runes_or_artifacts = True
                     artifact.owner = owner
                     artifact.assigned_to = mon
@@ -342,6 +359,8 @@ def parse_sw_json(data, owner, options):
                 artifact_data, owner)
             if artifact:
                 if has_changed_or_new or (not has_changed_or_new and artifact.assigned_to):
+                    # it did change... its assignment, so make sure it'll be saved
+                    has_changed_or_new = True
                     artifact.owner = owner
                     artifact.assigned_to = None
                 parsed_artifacts[artifact.pk] = {

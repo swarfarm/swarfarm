@@ -97,6 +97,10 @@ active_log_commands = {
         data_log_schemas.summon_unit,
         sync_parser.sync_summon_unit,
     ),
+    'ConfirmSummonChoice': GameApiCommand(
+        sync_schemas.sync_blessing_choice_schema,
+        sync_parser.sync_blessing_choice,
+    ),
     'AssembleUnit_V2': GameApiCommand(
         sync_schemas.sync_monster_from_pieces_schema,
         sync_parser.sync_monster_from_pieces,
@@ -215,4 +219,4 @@ active_log_commands = {
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
-accepted_api_params['__version'] = 3
+accepted_api_params['__version'] = 4

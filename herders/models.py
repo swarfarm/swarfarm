@@ -84,6 +84,7 @@ class MaterialStorage(Storage):
 
     class Meta:
         ordering = ['item']
+        unique_together = [['owner', 'item']]
 
 
 class MonsterShrineStorage(Storage):
@@ -91,6 +92,7 @@ class MonsterShrineStorage(Storage):
 
     class Meta:
         ordering = ['item']
+        unique_together = [['owner', 'item']]
 
 
 class MonsterTag(models.Model):
@@ -668,6 +670,7 @@ class MonsterPiece(models.Model):
 
     class Meta:
         ordering = ['monster__name']
+        unique_together = [['owner', 'monster']]
 
     def __str__(self):
         return str(self.monster) + ' - ' + str(self.pieces) + ' pieces'

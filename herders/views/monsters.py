@@ -871,7 +871,7 @@ def monster_instance_awaken(request, profile_name, instance_id):
                                         material_storage_created.append(MaterialStorage(
                                             owner=summoner,
                                             quantity=0,
-                                            item=GameItem.objects.get(com2us_id=ESSENCE_MAP[element][essence], category__isnull=False)
+                                            item=GameItem.objects.get(com2us_id=ESSENCE_MAP[element][essence], category=GameItem.CATEGORY_ESSENCE)
                                         ))
                                         continue
                                     material_storage_edited.append(summoner_material_storage[ESSENCE_MAP[element][essence]])

@@ -1,5 +1,4 @@
 from django.utils.timezone import get_current_timezone
-from django.core.exceptions import MultipleObjectsReturned
 from dateutil.parser import *
 from django.db import transaction
 
@@ -24,22 +23,22 @@ def sync_monster_shrine(summoner, log_data, full_sync=True):
     if full_sync:
         swex_sync_monster_shrine.delay(log_data['response'], summoner.pk)
     else:
+        monster_ids = [m['unit_master_id'] for m in log_data]
+        monster_bases = {m.com2us_id: m for m in Monster.objects.filter(com2us_id__in=monster_ids)}
         for monster in log_data:
-            try:
-                mon = MonsterShrineStorage.objects.get(
-                    owner=summoner, item__com2us_id=monster['unit_master_id'])
-                mon.quantity = monster['quantity']
-            except MonsterShrineStorage.DoesNotExist:
-                base = Monster.objects.get(com2us_id=monster['unit_master_id'])
-                mon = MonsterShrineStorage(
-                    owner=summoner,
-                    item=base,
-                    quantity=monster['quantity'],
-                )
-            if mon.quantity == 0:
-                mon.delete()
-            else:
-                mon.save()
+            item = monster_bases.get(monster['unit_master_id'])
+            if not item:
+                # Monster doesn't exist
+                continue
+            obj, _ = MonsterShrineStorage.objects.update_or_create(
+                owner=summoner,
+                item=item,
+                defaults={
+                    'quantity': monster['quantity'],
+                }
+            )
+            if obj.quantity <= 0:
+                obj.delete()
 
 
 def _create_new_monster(unit_info, summoner):
@@ -140,82 +139,58 @@ def _sync_item(info, summoner):
     if not info:
         return
 
-    try:
-        reward_item = MaterialStorage.objects.get(
-            owner=summoner, item__com2us_id=info['item_master_id'])
-        reward_item.quantity = info['item_quantity']
-    except MaterialStorage.DoesNotExist:
-        item = GameItem.objects.get(
-            category__isnull=False, com2us_id=info['item_master_id'])
-        reward_item = MaterialStorage(
-            owner=summoner,
-            item=item,
-            quantity=info['item_quantity'],
-        )
-    except MultipleObjectsReturned:
-        # TODO: Find why it returns multiple objects
-        dupes = MaterialStorage.objects.select_related('item').filter(
-            owner=summoner, item__com2us_id=info['item_master_id'])
-        reward_item = dupes.first()
-        # delete dupe records, temporary solution
-        dupes.exclude(pk=reward_item.pk).delete()
-        reward_item.quantity = info['item_quantity']
-    reward_item.save()
+    item = GameItem.objects.get(
+        category=info['item_master_type'], 
+        com2us_id=info['item_master_id'],
+    )
+    MaterialStorage.objects.update_or_create(
+        owner=summoner,
+        item=item,
+        defaults={
+            'quantity': info['item_quantity'],
+        },
+    )
 
 
 def _add_quantity_to_item(info, summoner):
     if not info:
         return
 
-    idx = info.get('item_master_id', info.get('id', None))
-    quantity = info.get('item_quantity', info.get('quantity', None))
+    idx = info.get('item_master_id', info.get('id'))
+    quantity = info.get('item_quantity', info.get('quantity'))
+    typex = info.get('item_master_type', info.get('type'))
 
-    if idx is None or quantity is None:
+    if idx is None or quantity is None or typex is None:
         return
 
-    try:
-        reward_item = MaterialStorage.objects.get(
-            owner=summoner, item__com2us_id=idx)
-        reward_item.quantity += quantity
-    except MaterialStorage.DoesNotExist:
-        item = GameItem.objects.get(
-            category__isnull=False, com2us_id=idx)
-        reward_item = MaterialStorage(
-            owner=summoner,
-            item=item,
-            quantity=quantity,
-        )
-    except MultipleObjectsReturned:
-        # TODO: Find why it returns multiple objects
-        dupes = MaterialStorage.objects.select_related('item').filter(
-            owner=summoner, item__com2us_id=idx)
-        reward_item = dupes.first()
-        # delete dupe records, temporary solution
-        dupes.exclude(pk=reward_item.pk).delete()
-        reward_item.quantity += quantity
-    reward_item.save()
+    item = GameItem.objects.get(category=typex, com2us_id=idx)
+    obj, created = MaterialStorage.objects.get_or_create(
+        owner=summoner,
+        item=item,
+        defaults={
+            'quantity': quantity,
+        },
+    )
+
+    if not created:
+        obj.quantity += quantity
+        obj.save()
 
 
 def _sync_monster_piece(info, summoner):
     if not info:
         return
 
-    try:
-        mon_piece = MonsterPiece.objects.get(
-            owner=summoner, monster__com2us_id=info['item_master_id'])
-        mon_piece.pieces = info['item_quantity']
-    except MonsterPiece.DoesNotExist:
-        mon_piece = MonsterPiece(
-            owner=summoner,
-            pieces=info['item_quantity'],
-            monster=Monster.objects.get(
-                com2us_id=info['item_master_id']),
-        )
-    
-    if mon_piece.pieces == 0:
-        mon_piece.delete()
-    else:
-        mon_piece.save()
+    mon = Monster.objects.get(com2us_id=info['item_master_id'])
+    obj, _ = MonsterPiece.objects.update_or_create(
+        owner=summoner,
+        monster=mon,
+        defaults={
+            'pieces': info['item_quantity'],
+        },
+    )
+    if obj.pieces <= 0:
+        obj.delete()
 
 
 def _parse_changed_item_list(changed_item_list, summoner):
@@ -446,11 +421,14 @@ def sync_storage_monster_move(summoner, log_data):
     mons_updated = []
 
     for mon in mons:
-        mons_updated.append(mons_to_update[mon['unit_id']])
-        # there's no way of checking if it's storage or any other building (i.e. XP), so we assume it's storage
-        # unless we add to Summoner new field, which stores storage `building_id`
-        # TODO: Think about adding `storage` ID to `summoner`
-        mons_updated[-1].in_storage = True if mon['building_id'] != 0 else False
+        if mon['unit_id'] in mons_to_update.keys():
+            mons_updated.append(mons_to_update[mon['unit_id']])
+            # there's no way of checking if it's storage or any other building (i.e. XP), so we assume it's storage
+            # unless we add to Summoner new field, which stores storage `building_id`
+            # TODO: Think about adding `storage` ID to `summoner`
+            mons_updated[-1].in_storage = True if mon['building_id'] != 0 else False
+        else:
+            _ = _create_new_monster(mon, summoner)
 
     # we can omit `save` method, because it's only `in_storage` boolean field
     MonsterInstance.objects.bulk_update(mons_updated, ['in_storage'])
@@ -525,6 +503,11 @@ def sync_summon_unit(summoner, log_data):
         for mon in log_data['response'].get('unit_list', []):
             _ = _create_new_monster(mon, summoner)
 
+def sync_blessing_choice(summoner, log_data):
+     with transaction.atomic():
+        for mon in log_data['response'].get('unit_list', []):
+            _ = _create_new_monster(mon, summoner)
+
 
 def sync_monster_from_pieces(summoner, log_data):
     with transaction.atomic():
@@ -549,6 +532,8 @@ def sync_awaken_unit(summoner, log_data):
             for item in items:
                 if item['item_master_type'] == GameItem.CATEGORY_MONSTER_PIECE:
                     _sync_monster_piece(item, summoner)
+                elif item['item_master_type'] == GameItem.CATEGORY_ESSENCE:
+                    _sync_item(item, summoner)
 
         try:
             mon = MonsterInstance.objects.get(
@@ -906,12 +891,12 @@ def sync_change_runes_in_rune_management(summoner, log_data):
                 runes_to_update[rune.id] = rune
             rune.assigned_to = mon
 
-        # omiting `save` method from `RuneInstance` because we'll force save
-        # every `MonsterInstance` used in this transaction
-        RuneInstance.objects.bulk_update(
-            runes_to_update.values(), ['assigned_to'])
+        # save every `RuneInstance` to recalc monster stats and 
+        # make sure there are not other runes on this slot
+        for rune in runes_to_update.values():
+            rune.save()
 
-        # recalc stats of every monster used in this transaction
+        # recalc stats of monster with unassigned runes after this transfer
         for mon in mons_to_update.values():
             mon.save()
 
@@ -1030,13 +1015,12 @@ def sync_change_artifact_assignment(summoner, log_data):
             else:
                 artifact.assigned_to = None
 
-        # `bulk_update` to prevent `ArtifactInstance` from calling `save` method and recalc monster stats
-        ArtifactInstance.objects.bulk_update(
-            artifacts.values(),
-            ['assigned_to']
-        )
+        # save every `ArtifactInstance` to recalc monster stats and 
+        # make sure there are not other artifacts on this slot
+        for artifact in artifacts.values():
+            artifact.save()
 
-        # recalc stats for every monster updated
+        # recalc stats for every monster with unassigned artifacts in this transfer
         for monster in mons_updated.values():
             monster.save()
 
@@ -1096,6 +1080,7 @@ def sync_artifact_enchant_craft(summoner, log_data):
 
     _create_new_artifact_craft(artifact_craft, summoner)
     _create_new_artifact(artifact_data, summoner)
+
 
 def sync_daily_reward(summoner, log_data):
     items = log_data['response'].get('item_list', [])

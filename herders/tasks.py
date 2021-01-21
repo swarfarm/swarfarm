@@ -62,9 +62,8 @@ def com2us_data_import(data, user_id, import_options):
 
         # inventory bulk update or create
         # firstly, delete all Summoner MaterialStorage records, if GameItem points to `UNKNOWN ITEM`
-        MaterialStorage.objects.select_related('item').filter(owner=summoner, item__category__isnull=True).delete()
-        all_inv_items = {gi.com2us_id: gi for gi in GameItem.objects.filter(
-            category__isnull=False)}  # to handle some `UNKNOWN ITEM` records
+        MaterialStorage.objects.select_related('item').filter(owner=summoner).exclude(item__category__in=dict(GameItem.CATEGORY_CHOICES).keys()).delete()
+        all_inv_items = {gi.com2us_id: gi for gi in GameItem.objects.filter(category__in=dict(GameItem.CATEGORY_CHOICES).keys())}  # to handle some `UNKNOWN ITEM` records
         summoner_inv_items = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related(
             'item').filter(owner=summoner)}
         summoner_new_inv_items = []
@@ -142,8 +141,9 @@ def com2us_data_import(data, user_id, import_options):
 
         # Update saved monster pieces
         for piece in results['monster_pieces']:
-            piece.save()
-            imported_pieces.append(piece.pk)
+            if piece['new']:
+                piece['obj'].save()
+            imported_pieces.append(piece['obj'].pk)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'runes'})
@@ -227,6 +227,11 @@ def com2us_data_import(data, user_id, import_options):
             imported_artifact_crafts.append(craft['obj'].pk)
 
     with transaction.atomic():
+        # recalculate stats for every monster once again
+        # it's mostly for monsters with unequipped runes after synchronization
+        for mon in results['monsters'].values():
+            mon['obj'].save()
+
         # Delete objects missing from import
         if import_options['delete_missing_monsters']:
             MonsterInstance.objects.filter(owner=summoner).exclude(

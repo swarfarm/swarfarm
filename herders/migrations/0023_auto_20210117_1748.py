@@ -2,46 +2,28 @@
 
 from django.db import migrations
 from django.db.models import Count
+from django.db.models.query import QuerySet
 import itertools
+
+def do_delete(model, field_name):
+    dupes = model.objects.values_list('owner', field_name).annotate(count=Count('pk')).filter(count__gt=1).values('owner', field_name)
+    to_delete = model.objects.none()
+
+    for d in dupes.iterator(chunk_size=5000):
+        to_delete |= model.objects.filter(**d)[1:].values_list('pk', flat=True)
+
+    delete_qs = model.objects.filter(pk__in=to_delete)
+    delete_qs._raw_delete(delete_qs.db)
+
 
 def delete_duplicates(apps, schema_editor):
     MaterialStorage = apps.get_model('herders', 'MaterialStorage')
     MonsterShrineStorage = apps.get_model('herders', 'MonsterShrineStorage')
     MonsterPiece = apps.get_model('herders', 'MonsterPiece')
-    Summoner = apps.get_model('herders', 'Summoner')
 
-    summoner_ids = Summoner.objects.values_list('id', flat=True)
-
-    for summoner_id in summoner_ids:
-        material_storage_deleted = 0
-        monster_shrine_storage_deleted = 0
-        monster_piece_deleted = 0
-
-        summoner_material_storage = MaterialStorage.objects.select_related('item').filter(owner_id=summoner_id)
-        for _, g in itertools.groupby(summoner_material_storage, lambda x: x.item):
-            records = list(g)
-            for record in records[1:]:
-                material_storage_deleted += 1
-                record.delete()
-
-        summoner_monster_shrine_storage = MonsterShrineStorage.objects.select_related('item').filter(owner_id=summoner_id)
-        for _, g in itertools.groupby(summoner_monster_shrine_storage, lambda x: x.item):
-            records = list(g)
-            for record in records[1:]:
-                monster_shrine_storage_deleted += 1
-                record.delete()
-        
-        summoner_monster_piece = MonsterPiece.objects.select_related('monster').filter(owner_id=summoner_id)
-        for _, g in itertools.groupby(summoner_monster_piece, lambda x: x.monster):
-            records = list(g)
-            for record in records[1:]:
-                monster_piece_deleted += 1
-                record.delete()
-        
-        if material_storage_deleted or monster_shrine_storage_deleted or monster_piece_deleted:
-            # UserID : Material, Shrine, Pieces
-            # i.e. 42 : 0, 0, 3
-            print(summoner_id, ":", material_storage_deleted, ",", monster_shrine_storage_deleted, ",", monster_piece_deleted)
+    do_delete(MaterialStorage, 'item')
+    do_delete(MonsterShrineStorage, 'item')
+    do_delete(MonsterPiece, 'monster')
 
 def noop(*args, **kwargs):
     pass
@@ -56,16 +38,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(delete_duplicates, noop),
-        migrations.AlterUniqueTogether(
-            name='materialstorage',
-            unique_together={('owner', 'item')},
-        ),
-        migrations.AlterUniqueTogether(
-            name='monsterpiece',
-            unique_together={('owner', 'monster')},
-        ),
-        migrations.AlterUniqueTogether(
-            name='monstershrinestorage',
-            unique_together={('owner', 'item')},
-        ),
     ]

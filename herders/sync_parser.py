@@ -421,11 +421,14 @@ def sync_storage_monster_move(summoner, log_data):
     mons_updated = []
 
     for mon in mons:
-        mons_updated.append(mons_to_update[mon['unit_id']])
-        # there's no way of checking if it's storage or any other building (i.e. XP), so we assume it's storage
-        # unless we add to Summoner new field, which stores storage `building_id`
-        # TODO: Think about adding `storage` ID to `summoner`
-        mons_updated[-1].in_storage = True if mon['building_id'] != 0 else False
+        if mon['unit_id'] in mons_to_update.keys():
+            mons_updated.append(mons_to_update[mon['unit_id']])
+            # there's no way of checking if it's storage or any other building (i.e. XP), so we assume it's storage
+            # unless we add to Summoner new field, which stores storage `building_id`
+            # TODO: Think about adding `storage` ID to `summoner`
+            mons_updated[-1].in_storage = True if mon['building_id'] != 0 else False
+        else:
+            _ = _create_new_monster(mon, summoner)
 
     # we can omit `save` method, because it's only `in_storage` boolean field
     MonsterInstance.objects.bulk_update(mons_updated, ['in_storage'])

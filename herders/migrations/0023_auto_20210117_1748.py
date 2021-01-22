@@ -12,8 +12,14 @@ def do_delete(model, field_name):
     for d in dupes.iterator(chunk_size=5000):
         to_delete |= model.objects.filter(**d)[1:].values_list('pk', flat=True)
 
-    delete_qs = model.objects.filter(pk__in=to_delete)
-    delete_qs._raw_delete(delete_qs.db)
+    to_delete = list(to_delete)
+    chunk_size = 1000
+    start = 0
+
+    while start < len(to_delete):
+        delete_qs = model.objects.filter(pk__in=to_delete[start:start + chunk_size])
+        delete_qs._raw_delete(delete_qs.db)
+        start += chunk_size
 
 
 def delete_duplicates(apps, schema_editor):

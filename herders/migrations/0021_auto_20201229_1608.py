@@ -8,6 +8,14 @@ def populate_new_storage(apps, schema_editor):
     OldStorage = apps.get_model('herders', 'Storage')
     MaterialStorage = apps.get_model('herders', 'MaterialStorage')
 
+    if GameItem.objects.all().count() == 0:
+        print("Couldn't find any record in `GameItem` model. Removing all records from `Storage` and `MaterialStorage`.")
+        storage = OldStorage.objects.all()
+        storage._raw_delete(storage.db)
+        new_storage = MaterialStorage.objects.all()
+        new_storage._raw_delete(new_storage.db)
+        return
+
     # Build a reference of old storage field names to game item PKs
     essence_pks = {
         # [low, mid, high]

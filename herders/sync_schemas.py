@@ -1224,3 +1224,36 @@ sync_receive_guild_siege_reward_crate_schema = {
     },
     'required': ['request', 'response'],
 }
+
+sync_receive_guild_maze_reward_crate_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_receive_guild_maze_reward_crate.json',
+    'title': 'sync_receive_guild_maze_reward_crate',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'reward_crate': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'reward_crate',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}

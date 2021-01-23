@@ -503,6 +503,7 @@ def sync_summon_unit(summoner, log_data):
         for mon in log_data['response'].get('unit_list', []):
             _ = _create_new_monster(mon, summoner)
 
+
 def sync_blessing_choice(summoner, log_data):
      with transaction.atomic():
         for mon in log_data['response'].get('unit_list', []):
@@ -1135,3 +1136,31 @@ def sync_siege_crate_reward(summoner, log_data):
                     break
 
             _parse_reward(selected_crate, summoner)
+
+
+def sync_lab_crate_reward(summoner, log_data):
+    crate = log_data['response'].get('reward_crate', {})
+
+    if not crate:
+        return
+
+    with transaction.atomic():
+        for reward in crate.get('reward_list', []):
+            item_type = reward.get('item_master_type')
+            infos = reward.get('item_info_list', [])
+            # parse common item drop
+            if item_type in [GameItem.CATEGORY_ESSENCE, GameItem.CATEGORY_CRAFT_STUFF, GameItem.CATEGORY_ARTIFACT_CRAFT, GameItem.CATEGORY_MATERIAL_MONSTER]:
+                for info in infos:
+                    _sync_item(info, summoner)
+            # parse unit monster drop
+            elif item_type == GameItem.CATEGORY_MONSTER:
+                for info in infos:
+                    _ = _create_new_monster(info, summoner)
+            # parse rune drop
+            elif item_type == GameItem.CATEGORY_RUNE:
+                for info in infos:
+                    _create_new_rune(info, summoner)
+            # parse rune craft drop - grinds, echants
+            elif item_type == GameItem.CATEGORY_RUNE_CRAFT:
+                for info in infos:
+                    _create_new_rune_craft(info, summoner)

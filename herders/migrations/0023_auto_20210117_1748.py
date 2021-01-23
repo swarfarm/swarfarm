@@ -20,6 +20,12 @@ def do_delete(model, field_name):
 
             print(idx + 1)
 
+    to_delete_len = len(to_delete)
+
+    if to_delete_len:
+        delete_qs = model.objects.filter(pk__in=to_delete)
+        delete_qs._raw_delete(delete_qs.db)
+
 
 def delete_duplicates(apps, schema_editor):
     MaterialStorage = apps.get_model('herders', 'MaterialStorage')

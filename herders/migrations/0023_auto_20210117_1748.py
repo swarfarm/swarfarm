@@ -7,19 +7,18 @@ import itertools
 
 def do_delete(model, field_name):
     dupes = model.objects.values_list('owner', field_name).annotate(count=Count('pk')).filter(count__gt=1).values('owner', field_name)
-    to_delete = model.objects.none()
 
-    for d in dupes.iterator(chunk_size=5000):
+    chunk_size = 5000
+    to_delete = model.objects.none()
+    for idx, d in enumerate(dupes.iterator(chunk_size=chunk_size)):
         to_delete |= model.objects.filter(**d)[1:].values_list('pk', flat=True)
 
-    to_delete = list(to_delete)
-    chunk_size = 1000
-    start = 0
+        if (idx + 1) % chunk_size == 0:
+            delete_qs = model.objects.filter(pk__in=to_delete)
+            delete_qs._raw_delete(delete_qs.db)
+            to_delete = model.objects.none()
 
-    while start < len(to_delete):
-        delete_qs = model.objects.filter(pk__in=to_delete[start:start + chunk_size])
-        delete_qs._raw_delete(delete_qs.db)
-        start += chunk_size
+            print(idx + 1)
 
 
 def delete_duplicates(apps, schema_editor):

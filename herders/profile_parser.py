@@ -209,6 +209,9 @@ def parse_sw_json(data, owner, options):
         # Lock a monster if it's locked in game
         if options['lock_monsters']:
             locked = locked_mons is not None and mon.com2us_id in locked_mons
+        else:
+            locked = False
+
         # Equipped runes and artifacts
         has_changed_runes_or_artifacts = False
         equipped_runes = unit_info.get('runes')

@@ -204,6 +204,11 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             skill_up_mons = monster_filter.qs.filter(base_unawakened).exclude(base_material).values('id', 'monster__skill_group_id')
             for skill_group_id, records in itertools.groupby(skill_up_mons, lambda x: x['monster__skill_group_id']):
                 monster_stable[skill_group_id]['possible_skillups'] += len(list(records))
+
+            for mss_item in MonsterShrineStorage.objects.select_related('item').filter(owner=summoner, item__awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED):
+                skill_group_id = mss_item.item.skill_group_id
+                if skill_group_id in monster_stable:
+                    monster_stable[skill_group_id]['possible_skillups'] += mss_item.quantity
             
             monster_stable = sorted(monster_stable.values(), key=lambda x: x['name'])
             context['monster_stable'] = monster_stable

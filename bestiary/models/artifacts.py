@@ -64,6 +64,9 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
     EFFECT_SK1_ACCURACY = 40
     EFFECT_SK2_ACCURACY = 41
     EFFECT_SK3_ACCURACY = 42
+    EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD = 43
+    EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD = 44
+    EFFECT_CRIT_DMG_SINGLE_TARGET = 45
 
     EFFECT_CHOICES = (
         (EFFECT_ATK_LOST_HP, 'ATK+ Proportional to Lost HP'),
@@ -108,6 +111,9 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         (EFFECT_SK1_ACCURACY, 'Skill 1 Accuracy Increased'),
         (EFFECT_SK2_ACCURACY, 'Skill 2 Accuracy Increased'),
         (EFFECT_SK3_ACCURACY, 'Skill 3 Accuracy Increased'),
+        (EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD, "CRIT DMG+ up to N% as the enemy's HP condition is good"),
+        (EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD, "CRIT DMG+ up to N% as the enemy's HP condition is bad"),
+        (EFFECT_CRIT_DMG_SINGLE_TARGET, "Single-target skill CRIT DMG +%"),
     )
 
     EFFECT_STRINGS = {
@@ -153,6 +159,9 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         EFFECT_SK1_ACCURACY: '[Skill 1] Accuracy +{:g}%',
         EFFECT_SK2_ACCURACY: '[Skill 2] Accuracy +{:g}%',
         EFFECT_SK3_ACCURACY: '[Skill 3] Accuracy +{:g}%',
+        EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD: "CRIT DMG+ up to {:g}% as the enemy's HP condition is good",
+        EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD: "CRIT DMG+ up to {:g}% as the enemy's HP condition is bad",
+        EFFECT_CRIT_DMG_SINGLE_TARGET: "Single-target skill CRIT DMG +{:g}% on your turn",
     }
 
     COM2US_EFFECT_MAP = {
@@ -178,6 +187,9 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         219: EFFECT_DMG_PCT_OF_ATK,
         220: EFFECT_DMG_PCT_OF_DEF,
         221: EFFECT_DMG_PCT_OF_SPD,
+        222: EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD,
+        223: EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD,
+        224: EFFECT_CRIT_DMG_SINGLE_TARGET,
         300: EFFECT_DMG_TO_FIRE,
         301: EFFECT_DMG_TO_WATER,
         302: EFFECT_DMG_TO_WIND,
@@ -254,48 +266,54 @@ class Artifact(ArtifactObjectBase, base.Stars):
     MAX_NUMBER_OF_EFFECTS = 4
 
     EFFECT_VALUES = {
-        ArtifactObjectBase.EFFECT_ATK_LOST_HP: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_DEF_LOST_HP: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SPD_LOST_HP: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SPD_INABILITY: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_ATK: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_ATK_LOST_HP: {'min': 9, 'max': 14},
+        ArtifactObjectBase.EFFECT_DEF_LOST_HP: {'min': 9, 'max': 14},
+        ArtifactObjectBase.EFFECT_SPD_LOST_HP: {'min': 9, 'max': 14},
+        ArtifactObjectBase.EFFECT_ATK: {'min': 3, 'max': 5},
         ArtifactObjectBase.EFFECT_DEF: {'min': 2, 'max': 4},
-        ArtifactObjectBase.EFFECT_SPD: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_CRIT_RATE: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_COUNTER_DMG: {'min': 1, 'max': 3},
-        ArtifactObjectBase.EFFECT_COOP_ATTACK_DMG: {'min': 1, 'max': 3},
-        ArtifactObjectBase.EFFECT_BOMB_DMG: {'min': 1, 'max': 3},
-        ArtifactObjectBase.EFFECT_REFLECT_DMG: {'min': 1, 'max': 3},
-        ArtifactObjectBase.EFFECT_CRUSHING_HIT_DMG: {'min': 2, 'max': 4},
-        ArtifactObjectBase.EFFECT_DMG_RECEIVED_INABILITY: {'min': 1, 'max': 3},
-        ArtifactObjectBase.EFFECT_CRIT_DMG_RECEIVED: {'min': 1, 'max': 3},
-        ArtifactObjectBase.EFFECT_LIFE_DRAIN: {'min': 1, 'max': 3},
-        ArtifactObjectBase.EFFECT_HP_REVIVE: {'min': 1, 'max': 3},
-        ArtifactObjectBase.EFFECT_ATB_REVIVE: {'min': 1, 'max': 3},
-        ArtifactObjectBase.EFFECT_DMG_PCT_OF_HP: {'min': 0.1, 'max': 0.3},
+        ArtifactObjectBase.EFFECT_SPD: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_COUNTER_DMG: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_COOP_ATTACK_DMG: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_BOMB_DMG: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_CRIT_DMG_RECEIVED: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_LIFE_DRAIN: {'min': 5, 'max': 8},
+        ArtifactObjectBase.EFFECT_HP_REVIVE: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_ATB_REVIVE: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_DMG_PCT_OF_HP: {'min': 0.2, 'max': 0.3},
         ArtifactObjectBase.EFFECT_DMG_PCT_OF_ATK: {'min': 2, 'max': 4},
         ArtifactObjectBase.EFFECT_DMG_PCT_OF_DEF: {'min': 2, 'max': 4},
-        ArtifactObjectBase.EFFECT_DMG_PCT_OF_SPD: {'min': 20, 'max': 40},
-        ArtifactObjectBase.EFFECT_DMG_TO_FIRE: {'min': 2, 'max': 4},
-        ArtifactObjectBase.EFFECT_DMG_TO_WATER: {'min': 2, 'max': 4},
-        ArtifactObjectBase.EFFECT_DMG_TO_WIND: {'min': 2, 'max': 4},
-        ArtifactObjectBase.EFFECT_DMG_TO_LIGHT: {'min': 2, 'max': 4},
-        ArtifactObjectBase.EFFECT_DMG_TO_DARK: {'min': 2, 'max': 4},
-        ArtifactObjectBase.EFFECT_DMG_FROM_FIRE: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_DMG_FROM_WATER: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_DMG_FROM_WIND: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_DMG_FROM_LIGHT: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_DMG_FROM_DARK: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK1_CRIT_DMG: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK2_CRIT_DMG: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK3_CRIT_DMG: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK4_CRIT_DMG: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK1_RECOVERY: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK2_RECOVERY: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK3_RECOVERY: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK1_ACCURACY: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK2_ACCURACY: {'min': 3, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK3_ACCURACY: {'min': 3, 'max': 6},
+        ArtifactObjectBase.EFFECT_DMG_PCT_OF_SPD: {'min': 25, 'max': 40},
+        ArtifactObjectBase.EFFECT_DMG_TO_FIRE: {'min': 3, 'max': 5},
+        ArtifactObjectBase.EFFECT_DMG_TO_WATER: {'min': 3, 'max': 5},
+        ArtifactObjectBase.EFFECT_DMG_TO_WIND: {'min': 3, 'max': 5},
+        ArtifactObjectBase.EFFECT_DMG_TO_LIGHT: {'min': 3, 'max': 5},
+        ArtifactObjectBase.EFFECT_DMG_TO_DARK: {'min': 3, 'max': 5},
+        ArtifactObjectBase.EFFECT_DMG_FROM_FIRE: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_DMG_FROM_WATER: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_DMG_FROM_WIND: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_DMG_FROM_LIGHT: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_DMG_FROM_DARK: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK1_CRIT_DMG: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK2_CRIT_DMG: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK3_CRIT_DMG: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK4_CRIT_DMG: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK1_RECOVERY: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK2_RECOVERY: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK3_RECOVERY: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK1_ACCURACY: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK2_ACCURACY: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK3_ACCURACY: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD: {'min': 8, 'max': 12},
+        ArtifactObjectBase.EFFECT_CRIT_DMG_SINGLE_TARGET: {'min': 2, 'max': 4},
+
+        # The following effects were removed in patch 6.2.0, but still exist on old artifacts
+        ArtifactObjectBase.EFFECT_CRIT_RATE: {'min': 3, 'max': 6},
+        ArtifactObjectBase.EFFECT_SPD_INABILITY: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_DMG_RECEIVED_INABILITY: {'min': 1, 'max': 3},
+        ArtifactObjectBase.EFFECT_REFLECT_DMG: {'min': 1, 'max': 3},
+        ArtifactObjectBase.EFFECT_CRUSHING_HIT_DMG: {'min': 2, 'max': 4},
+
     }
 
     level = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(15)])
@@ -394,7 +412,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
                     )
                 })
 
-            if value < min_possible_value or value > max_possible_value:
+            if value < 1 or value > max_possible_value:
                 raise ValidationError({
                     'effects_value': ValidationError(
                         'Effect %(nth)s: Must be between %(min_val)s and %(max_val)s.',

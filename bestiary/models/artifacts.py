@@ -412,7 +412,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
                     )
                 })
 
-            if value < 1 or value > max_possible_value:
+            if value <= 0 or value > max_possible_value:
                 raise ValidationError({
                     'effects_value': ValidationError(
                         'Effect %(nth)s: Must be between %(min_val)s and %(max_val)s.',

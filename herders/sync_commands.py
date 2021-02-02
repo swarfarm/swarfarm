@@ -213,9 +213,13 @@ active_log_commands = {
         sync_schemas.sync_receive_guild_maze_reward_crate_schema,
         sync_parser.sync_lab_crate_reward,
     ),
+    'UpdateUnitExpGained': GameApiCommand(
+        sync_schemas.sync_update_unit_exp_gained_schema,
+        sync_parser.sync_update_unit_exp_gained,
+    ),
 }
 
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
-accepted_api_params['__version'] = 5
+accepted_api_params['__version'] = 6

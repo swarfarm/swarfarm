@@ -1257,3 +1257,36 @@ sync_receive_guild_maze_reward_crate_schema = {
     },
     'required': ['request', 'response'],
 }
+
+sync_update_unit_exp_gained_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_update_unit_exp_gained.json',
+    'title': 'sync_update_unit_exp_gained',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'unit_list': {'type': 'array'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'unit_list',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}

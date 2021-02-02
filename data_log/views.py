@@ -50,7 +50,7 @@ class LogData(viewsets.ViewSet):
             raise InvalidLogException('Unsupported game command')
 
         # Determine the user account providing this log
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and wizard_id == request.user.summoner.com2us_id:
             summoner = request.user.summoner
         else:
             # Attempt to get summoner instance from wizard_id in log data

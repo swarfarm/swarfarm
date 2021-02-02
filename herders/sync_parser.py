@@ -1164,3 +1164,18 @@ def sync_lab_crate_reward(summoner, log_data):
             elif item_type == GameItem.CATEGORY_RUNE_CRAFT:
                 for info in infos:
                     _create_new_rune_craft(info, summoner)
+
+
+def sync_update_unit_exp_gained(summoner, log_data):
+    for mon_data in log_data['response'].get('unit_list', []):
+        try:
+            mon = MonsterInstance.objects.get(
+                owner=summoner, 
+                com2us_id=mon_data['unit_id']
+            )
+
+            if mon.level != mon_data['unit_level']:
+                mon.level = mon_data['unit_level']
+                mon.save()
+        except Monster.DoesNotExist:
+            _ = _create_new_monster(mon_data, summoner)

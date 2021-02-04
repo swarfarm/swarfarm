@@ -78,6 +78,11 @@
                     <td class="text-success">{% if instance.rune_accuracy > 0 %}<span>+{{ instance.rune_accuracy }}</span>%{% endif %}</td>
                     <td {% if instance.accuracy >= 100 %} class="text-danger"{% endif %} {% if instance.level < 40 %}colspan="2"{% endif %}>{{ instance.accuracy }}%</td>
                 </tr>
+                <tr>
+                    <td>Effective HP</td>
+                    <td colspan="3">{{ instance.effective_hp }}</td>
+                    {% if instance.level < 40 %}<td>{{ max_stats.rune.effective_hp }} <span class="text-success">(+{{ max_stats.deltas.effective_hp }}%)</span></td>{% endif %}
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -141,6 +146,12 @@
                     <td>{{ instance.accuracy }}</td>
                     <td class="text-success">{% if bldg_stats.accuracy > 0 %}<span>+{{ bldg_stats.accuracy }}</span>%{% endif %}</td>
                     <td {% if instance.accuracy >= 100 %} class="text-danger"{% endif %}>{{ instance.accuracy|add:bldg_stats.accuracy }}%</td>
+                </tr>
+                <tr>
+                    <td>Effective HP</td>
+                    <td>{{ instance.effective_hp }}</td>
+                    <td class="text-success">{% if bldg_stats.effective_hp > 0 %}<span>+{{ bldg_stats.effective_hp }}</span>{% endif %}</td>
+                    <td>{{ instance.effective_hp|add:bldg_stats.effective_hp }}</td>
                 </tr>
                 </tbody>
             </table>
@@ -214,6 +225,13 @@
                     <td class="text-success">{% if bldg_stats.accuracy > 0 %}<span>+{{ bldg_stats.accuracy }}</span>%{% endif %}</td>
                     <td class="text-success">{% if guild_stats.accuracy > 0 %}<span>+{{ guild_stats.accuracy }}</span>%{% endif %}</td>
                     <td {% if instance.accuracy >= 100 %} class="text-danger"{% endif %}>{{ instance.accuracy|add:bldg_stats.accuracy|add:guild_stats.accuracy }}%</td>
+                </tr>
+                <tr>
+                    <td>Effective HP</td>
+                    <td>{{ instance.effective_hp }}</td>
+                    <td class="text-success">{% if bldg_stats.effective_hp > 0 %}<span>+{{ bldg_stats.effective_hp }}</span>{% endif %}</td>
+                    <td class="text-success">{% if guild_stats.effective_hp > 0 %}<span>+{{ guild_stats.effective_hp }}</span>{% endif %}</td>
+                    <td>{{ instance.effective_hp|add:bldg_stats.effective_hp|add:guild_stats.effective_hp }}</td>
                 </tr>
                 </tbody>
             </table>

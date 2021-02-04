@@ -656,3 +656,27 @@ def rune_craft_delete(request, profile_name, craft_id):
     else:
         return HttpResponseForbidden()
 
+
+@username_case_redirect
+@login_required()
+def rune_delete_notes_all(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if is_owner:
+        changed_notes = RuneInstance.objects.filter(owner=summoner, notes__isnull=False).update(notes=None)
+
+        messages.success(request, 'Removed notes from ' + str(changed_notes) + ' rune(s).')
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+

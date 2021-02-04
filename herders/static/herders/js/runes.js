@@ -221,6 +221,25 @@ $('body')
             }
         })
     })
+    .on('click', '.rune-delete-notes-all', function() {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure you want to delete notes from <strong>all</strong> of your runes?',
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/runes/delete-notes',
+                        global: false
+                    }).done(function() {
+                        update_rune_inventory();
+                    }).fail(function() {
+                        alert("Something went wrong! Server admin has been notified.");
+                    })
+                }
+            }
+        })
+    })
     .on('click', '.rune-resave-all', function() {
         bootbox.confirm(
             'The data structure for saving runes was changed and your runes need to be updated so the filters work properly. Click OK to start saving the runes. This process may take a minute or two depending on how many runes you own.',

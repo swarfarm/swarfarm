@@ -210,6 +210,25 @@ function EssenceStorage() {
     })
 }
 
+function DetachDataLogs() {
+    bootbox.confirm({
+        size: 'small',
+        message: 'Your logs will be detached from your account and anonymized. Are you sure?',
+        callback: function (result) {
+            if (result) {
+                $.ajax({
+                    type: 'get',
+                    url: '/profile/' + PROFILE_NAME + '/data_logs/detach/'
+                }).done(function () {
+                    location.reload();
+                }).fail(function () {
+                    alert("Something went wrong! Server admin has been notified.");
+                });
+            }
+        }
+    });
+}
+
 $('body')
     .on('click', '.canvas-slid a', function() {
         $('.navmenu').offcanvas('hide');
@@ -220,6 +239,7 @@ $('body')
     .on('click', '.essence-storage', function() { EssenceStorage() })
     .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
     .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
+    .on('click', '.data-logs-detach', function() { DetachDataLogs() })
     .on('change switchChange.bootstrapToggle', '.auto-submit', function() {
         clearTimeout(autosubmitDelay);
         var $form = $(this).parents("form");

@@ -249,7 +249,7 @@ function pickHex(left, max) {
     };
 
     return 'rgb(' + gradient.red + ',' + gradient.green + ',' + gradient.blue + ')';
-  }
+}
 
 $('body')
     .on('click', ':submit', function() {

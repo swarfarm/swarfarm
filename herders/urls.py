@@ -113,6 +113,7 @@ urlpatterns = [
         ])),
         url(r'^data_logs/', include([
             url(r'^$', views.data_log.Dashboard.as_view(), name='data_log_dashboard'),
+            url(r'^detach/$', views.data_log.detach_data_logs, name='data_log_detach'),
             url(r'^help/$', views.data_log.Help.as_view(), name='data_log_help'),
             url(r'^magic_shop/', include([
                 path('', views.data_log.MagicShopDashboard.as_view(), name='data_log_magic_shop_dashboard'),

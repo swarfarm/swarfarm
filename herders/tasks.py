@@ -1,7 +1,7 @@
 from celery import shared_task, current_task, states
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.db.models.signals import post_save
 
 from .models import Summoner, MaterialStorage, MonsterShrineStorage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactCraftInstance, ArtifactInstance
@@ -142,7 +142,11 @@ def com2us_data_import(data, user_id, import_options):
         # Update saved monster pieces
         for piece in results['monster_pieces']:
             if piece['new']:
-                piece['obj'].save()
+                try:
+                    piece['obj'].save()
+                except IntegrityError:
+                    pass
+
             imported_pieces.append(piece['obj'].pk)
 
     if not current_task.request.called_directly:

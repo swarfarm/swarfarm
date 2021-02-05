@@ -150,6 +150,7 @@ class RuneInstanceFilter(django_filters.FilterSet):
     innate_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     substats = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES, method='filter_substats')
     substat_logic = django_filters.BooleanFilter(method='filter_substat_logic')
+    substat_reverse = django_filters.BooleanFilter(method='filter_substat_reverse')
     assigned_to = django_filters.BooleanFilter(method='filter_assigned_to')
     is_grindable = django_filters.BooleanFilter(method='filter_is_grindable')
     is_enchantable = django_filters.BooleanFilter(method='filter_is_enchantable')
@@ -178,17 +179,28 @@ class RuneInstanceFilter(django_filters.FilterSet):
 
     def filter_substats(self, queryset, name, value):
         any_substat = self.form.cleaned_data.get('substat_logic', False)
+        reverse_substat = self.form.cleaned_data.get('substat_reverse', False)
 
         if len(value):
             if any_substat:
-                return queryset.filter(substats__overlap=value)
+                if reverse_substat:
+                    return queryset.exclude(substats__overlap=value)
+                else:
+                    return queryset.filter(substats__overlap=value)
             else:
-                return queryset.filter(substats__contains=value)
+                if reverse_substat:
+                    return queryset.exclude(substats__contains=value)
+                else:
+                    return queryset.filter(substats__contains=value)
         else:
             return queryset
 
     def filter_substat_logic(self, queryset, name, value):
         # This field is just used to alter the logic of substat filter
+        return queryset
+
+    def filter_substat_reverse(self, queryset, name, value):
+        # This field is just used to alter the reverse of substat filter
         return queryset
 
     def filter_assigned_to(self, queryset, name, value):

@@ -30,6 +30,7 @@ function update_rune_form_with_query(){
     update_form_radio_from_query(params, 'monster__fusion_food');
 
     update_form_toggle_from_query(params, 'substat_logic');
+    update_form_toggle_from_query(params, 'substat_reverse');
 }
 
 function update_rune_inventory() {

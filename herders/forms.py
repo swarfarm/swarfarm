@@ -1186,6 +1186,10 @@ class FilterRuneForm(forms.Form):
         label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
         required=False,
     )
+    substat_reverse = forms.BooleanField(
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If substats filters should be excluded."></span>'),
+        required=False,
+    )
     has_gem = forms.NullBooleanField(
         label='Enchant Gem Applied',
         required=False,
@@ -1277,15 +1281,28 @@ class FilterRuneForm(forms.Form):
                 Field('main_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
                 Field('innate_stat', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
                 Field('substats', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                Field(
-                    'substat_logic',
-                    data_toggle='toggle',
-                    data_on='One or More',
-                    data_onstyle='primary',
-                    data_off='All',
-                    data_offstyle='primary',
-                    data_width='125px',
-                    wrapper_class='form-group-sm form-group-condensed',
+                Div(
+                    Field(
+                        'substat_logic',
+                        data_toggle='toggle',
+                        data_on='One or More',
+                        data_onstyle='primary',
+                        data_off='All',
+                        data_offstyle='primary',
+                        data_width='125px',
+                        wrapper_class='form-group-sm form-group-condensed',
+                    ), 
+                    Field(
+                        'substat_reverse',
+                        data_toggle='toggle',
+                        data_on='Exclude',
+                        data_onstyle='primary',
+                        data_off='Include',
+                        data_offstyle='primary',
+                        data_width='125px',
+                        wrapper_class='form-group-sm form-group-condensed',
+                    ),
+                    css_class='d-flex justify-content-between',
                 ),
                 Field(
                     'has_grind',

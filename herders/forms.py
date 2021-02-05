@@ -1230,6 +1230,16 @@ class FilterRuneForm(forms.Form):
         required=False,
         widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No'))),
     )
+    is_grindable = forms.NullBooleanField(
+        label='Is Grindable',
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
+    is_enchantable = forms.NullBooleanField(
+        label='Is Enchantable',
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
 
     helper = FormHelper()
     helper.form_method = 'get'
@@ -1288,6 +1298,8 @@ class FilterRuneForm(forms.Form):
                     data_slider_ticks_labels='["0", "4"]',
                     wrapper_class='form-group-sm form-group-condensed'
                 ),
+                Field('is_grindable', wrapper_class='form-group-sm form-group-condensed'),
+                Field('is_enchantable', wrapper_class='form-group-sm form-group-condensed'),
                 css_class='col-md-4 col-sm-6'
             ),
             Div(

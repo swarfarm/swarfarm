@@ -71,9 +71,9 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
     form = FilterRuneForm(request.GET or None)
 
     if form.is_valid():
-        rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)
+        rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset, summoner=summoner)
     else:
-        rune_filter = RuneInstanceFilter(None, queryset=rune_queryset)
+        rune_filter = RuneInstanceFilter(None, queryset=rune_queryset, summoner=summoner)
 
     filtered_count = rune_filter.qs.count()
 

@@ -22,6 +22,8 @@ function update_rune_form_with_query(){
     update_form_select_from_query(params, 'has_gem');
     update_form_select_from_query(params, 'assigned_to');
     update_form_select_from_query(params, 'marked_for_sale');
+    update_form_select_from_query(params, 'is_grindable');
+    update_form_select_from_query(params, 'is_enchantable');
 
     update_form_radio_from_query(params, 'fodder');
     update_form_radio_from_query(params, 'in_storage');

@@ -567,7 +567,7 @@ class MonsterInstance(models.Model, base.Stars):
                 code='invalid_level'
             )
 
-        min_stars = self.monster.base_monster.base_stars
+        min_stars = self.monster.base_monster.natural_stars
 
         if self.stars and (self.stars > 6 or self.stars < min_stars):
             raise ValidationError(

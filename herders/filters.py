@@ -1,8 +1,8 @@
 import django_filters
 from django.db.models import Q
 
-from bestiary.models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat
-from .models import MonsterInstance, MonsterTag, RuneInstance, ArtifactInstance
+from bestiary.models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat, RuneCraft
+from .models import MonsterInstance, MonsterTag, RuneInstance, ArtifactInstance, RuneCraftInstance
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):
@@ -150,7 +150,10 @@ class RuneInstanceFilter(django_filters.FilterSet):
     innate_stat = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES)
     substats = django_filters.MultipleChoiceFilter(choices=RuneInstance.STAT_CHOICES, method='filter_substats')
     substat_logic = django_filters.BooleanFilter(method='filter_substat_logic')
+    substat_reverse = django_filters.BooleanFilter(method='filter_substat_reverse')
     assigned_to = django_filters.BooleanFilter(method='filter_assigned_to')
+    is_grindable = django_filters.BooleanFilter(method='filter_is_grindable')
+    is_enchantable = django_filters.BooleanFilter(method='filter_is_enchantable')
 
     class Meta:
         model = RuneInstance
@@ -170,14 +173,25 @@ class RuneInstanceFilter(django_filters.FilterSet):
             'has_gem': ['exact'],
         }
 
+    def __init__(self, *args, **kwargs):
+        self.summoner = kwargs.pop('summoner', None)
+        super(RuneInstanceFilter, self).__init__(*args, **kwargs)
+
     def filter_substats(self, queryset, name, value):
         any_substat = self.form.cleaned_data.get('substat_logic', False)
+        reverse_substat = self.form.cleaned_data.get('substat_reverse', False)
 
         if len(value):
             if any_substat:
-                return queryset.filter(substats__overlap=value)
+                if reverse_substat:
+                    return queryset.exclude(substats__overlap=value)
+                else:
+                    return queryset.filter(substats__overlap=value)
             else:
-                return queryset.filter(substats__contains=value)
+                if reverse_substat:
+                    return queryset.exclude(substats__contains=value)
+                else:
+                    return queryset.filter(substats__contains=value)
         else:
             return queryset
 
@@ -185,8 +199,95 @@ class RuneInstanceFilter(django_filters.FilterSet):
         # This field is just used to alter the logic of substat filter
         return queryset
 
+    def filter_substat_reverse(self, queryset, name, value):
+        # This field is just used to alter the reverse of substat filter
+        return queryset
+
     def filter_assigned_to(self, queryset, name, value):
         return queryset.filter(assigned_to__isnull=not value)
+
+    def filter_is_grindable(self, queryset, name, value):
+        if not self.summoner:
+            return queryset # AssignRune
+
+        # {
+        #     normal: {
+        #         swift: [atk%, hp%, spd, res%],
+        #         ...
+        #     },
+        #     ancient: {
+        #         swift: [atk%, hp%, spd, res%],
+        #         ...
+        #     },
+        # }
+        grinds = {
+            RuneCraft.CRAFT_GRINDSTONE: {}, 
+            RuneCraft.CRAFT_ANCIENT_GRINDSTONE: {},
+        }
+        rune_grinds =  RuneCraftInstance.objects.only('type', 'rune', 'stat').filter(
+            owner=self.summoner,
+            quantity__gte=1,
+            type__in=grinds.keys(),
+        )
+
+        for re in rune_grinds:
+            if re.rune not in grinds[re.type]:
+                grinds[re.type][re.rune] = []
+            if re.stat not in grinds[re.type][re.rune]:
+                grinds[re.type][re.rune].append(re.stat)
+
+        query = Q()
+        for key, val in grinds.items():
+            for rune, stats in val.items():
+                for stat in stats:
+                    query |= (Q(ancient=key == RuneCraft.CRAFT_ANCIENT_GRINDSTONE) & Q(type=rune) & ~Q(main_stat=stat) & ~Q(innate_stat=stat))
+
+        if value:
+            return queryset.filter(query)
+        else:
+            return queryset.exclude(query)
+
+    def filter_is_enchantable(self, queryset, name, value):
+        if not self.summoner:
+            return queryset # AssignRune
+
+        # {
+        #     normal: {
+        #         swift: [atk%, hp%, spd, res%],
+        #         ...
+        #     },
+        #     ancient: {
+        #         swift: [atk%, hp%, spd, res%],
+        #         ...
+        #     },
+        # }
+        enchants = {
+            RuneCraft.CRAFT_ENCHANT_GEM: {}, 
+            RuneCraft.CRAFT_ANCIENT_GEM: {},
+        }
+
+        rune_enchants =  RuneCraftInstance.objects.only('type', 'rune', 'stat').filter(
+            owner=self.summoner,
+            quantity__gte=1,
+            type__in=enchants.keys(),
+        )
+
+        for re in rune_enchants:
+            if re.rune not in enchants[re.type]:
+                enchants[re.type][re.rune] = []
+            if re.stat not in enchants[re.type][re.rune]:
+                enchants[re.type][re.rune].append(re.stat)
+
+        query = Q()
+        for key, val in enchants.items():
+            for rune, stats in val.items():
+                for stat in stats:
+                    query |= (Q(ancient=key == RuneCraft.CRAFT_ANCIENT_GEM) & Q(type=rune) & ~Q(main_stat=stat) & ~Q(innate_stat=stat))
+
+        if value:
+            return queryset.filter(query)
+        else:
+            return queryset.exclude(query)
 
 
 class ArtifactInstanceFilter(django_filters.FilterSet):

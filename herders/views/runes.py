@@ -71,9 +71,9 @@ def rune_inventory(request, profile_name, view_mode=None, box_grouping=None):
     form = FilterRuneForm(request.GET or None)
 
     if form.is_valid():
-        rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset)
+        rune_filter = RuneInstanceFilter(form.cleaned_data, queryset=rune_queryset, summoner=summoner)
     else:
-        rune_filter = RuneInstanceFilter(None, queryset=rune_queryset)
+        rune_filter = RuneInstanceFilter(None, queryset=rune_queryset, summoner=summoner)
 
     filtered_count = rune_filter.qs.count()
 
@@ -647,6 +647,30 @@ def rune_craft_delete(request, profile_name, craft_id):
         rune_name = craft.get_rune_display() or ''
         messages.warning(request, f'Deleted {rune_name} {craft.get_type_display()} {craft}')
         craft.delete()
+
+        response_data = {
+            'code': 'success',
+        }
+
+        return JsonResponse(response_data)
+    else:
+        return HttpResponseForbidden()
+
+
+@username_case_redirect
+@login_required()
+def rune_delete_notes_all(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if is_owner:
+        changed_notes = RuneInstance.objects.filter(owner=summoner, notes__isnull=False).update(notes=None)
+
+        messages.success(request, 'Removed notes from ' + str(changed_notes) + ' rune(s).')
 
         response_data = {
             'code': 'success',

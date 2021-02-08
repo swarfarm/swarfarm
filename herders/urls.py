@@ -68,6 +68,7 @@ urlpatterns = [
             url(r'^delete/(?P<rune_id>[0-9a-f]{32})/$', views.runes.rune_delete, name='rune_delete'),
             url(r'^unassign/(?P<rune_id>[0-9a-f]{32})/$', views.runes.rune_unassign, name='rune_unassign'),
             url(r'^unassign/all/$', views.runes.rune_unassign_all, name='rune_unassign_all'),
+            url(r'^delete-notes/$', views.runes.rune_delete_notes_all, name='rune_delete_notes_all'),
             url(r'^resave/all/$', views.runes.rune_resave_all, name='rune_resave_all'),
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/$', views.runes.rune_assign, name='rune_assign'),
             url(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<slot>[0-9])/$', views.runes.rune_assign, name='rune_assign_with_slot'),
@@ -113,6 +114,7 @@ urlpatterns = [
         ])),
         url(r'^data_logs/', include([
             url(r'^$', views.data_log.Dashboard.as_view(), name='data_log_dashboard'),
+            url(r'^detach/$', views.data_log.detach_data_logs, name='data_log_detach'),
             url(r'^help/$', views.data_log.Help.as_view(), name='data_log_help'),
             url(r'^magic_shop/', include([
                 path('', views.data_log.MagicShopDashboard.as_view(), name='data_log_magic_shop_dashboard'),

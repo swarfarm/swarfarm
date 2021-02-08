@@ -68,6 +68,12 @@
         <td {% if instance.accuracy >= 100 %} class="text-danger"{% endif %}>{{ instance.accuracy }}%</td>
     </tr>
     <tr>
+        <td>Effective HP</td>
+        <td></td>
+        <td></td>
+        <td>{{ instance.effective_hp }}</td>
+    </tr>
+    <tr>
         <td colspan="4" style="position:relative">
             {% for skill in instance.monster.skills %}
             <div class="monster-image" style="position:relative">

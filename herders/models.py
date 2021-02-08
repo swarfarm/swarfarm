@@ -356,6 +356,9 @@ class MonsterInstance(models.Model, base.Stars):
     def accuracy(self):
         return self.base_accuracy + self.rune_accuracy
 
+    def effective_hp(self):
+        return int(ceil(self.hp() * (1140 + self.defense() * 3.5) / 1000))
+
     def get_rune_stats(self, at_max_level=False):
         # TODO: Delete after switching to rune builds
         if at_max_level:
@@ -456,9 +459,9 @@ class MonsterInstance(models.Model, base.Stars):
                 'defense': max_base_def,
             },
             'rune': {
-                'hp': max_rune_stats.get(RuneInstance.STAT_HP, 0),
-                'attack': max_rune_stats.get(RuneInstance.STAT_ATK, 0),
-                'defense': max_rune_stats.get(RuneInstance.STAT_DEF, 0),
+                'hp': max_rune_stats.get(RuneInstance.STAT_HP, 0) + max_rune_stats.get(RuneInstance.STAT_HP_PCT, 0),
+                'attack': max_rune_stats.get(RuneInstance.STAT_ATK, 0) + max_rune_stats.get(RuneInstance.STAT_ATK_PCT, 0),
+                'defense': max_rune_stats.get(RuneInstance.STAT_DEF, 0) + max_rune_stats.get(RuneInstance.STAT_DEF_PCT, 0),
             },
         }
 
@@ -467,6 +470,9 @@ class MonsterInstance(models.Model, base.Stars):
             'attack': int(round(float(stats['base']['attack'] + stats['rune']['attack']) / self.attack() * 100 - 100)),
             'defense': int(round(float(stats['base']['defense'] + stats['rune']['defense']) / self.defense() * 100 - 100)),
         }
+
+        stats['rune']['effective_hp'] = int(ceil(float(stats['base']['hp'] + stats['rune']['hp']) * (1140 + (float(stats['base']['defense'] + stats['rune']['defense'])) * 3.5) / 1000))
+        stats['deltas']['effective_hp'] = int(round(stats['rune']['effective_hp'] / self.effective_hp() * 100 - 100))
 
         return stats
 
@@ -493,7 +499,7 @@ class MonsterInstance(models.Model, base.Stars):
             if b.building.affected_stat in bonuses.keys() and b.level > 0:
                 bonuses[b.building.affected_stat] += b.building.stat_bonus[b.level - 1]
 
-        return {
+        building_stats = {
             'hp': int(ceil(round(self.base_hp * (bonuses[Building.STAT_HP] / 100.0), 3))),
             'attack': int(ceil(round(self.base_attack * (bonuses[Building.STAT_ATK] / 100.0), 3))),
             'defense': int(ceil(round(self.base_defense * (bonuses[Building.STAT_DEF] / 100.0), 3))),
@@ -503,6 +509,10 @@ class MonsterInstance(models.Model, base.Stars):
             'resistance': bonuses[Building.STAT_RESIST_PCT],
             'accuracy': bonuses[Building.STAT_ACCURACY_PCT],
         }
+
+        building_stats['effective_hp'] = int(ceil((self.hp() + building_stats['hp']) * (1140 + 3.5 * (self.defense() + building_stats['defense'])) / 1000)) - self.effective_hp()
+
+        return building_stats
 
     def get_guild_stats(self):
         return self.get_building_stats(Building.AREA_GUILD)

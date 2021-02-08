@@ -1188,3 +1188,11 @@ button.rune-assign-choice {
   background: rgba(118, 255, 86, 1);
   color: #111111;
 }
+
+.d-flex{
+  display: flex;
+}
+
+.justify-content-between{
+  justify-content: space-between;
+}

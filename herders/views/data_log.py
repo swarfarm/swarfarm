@@ -2,18 +2,22 @@ from datetime import datetime
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
+from django.contrib.auth.decorators import login_required
 from django.db.models import Model, QuerySet, Q, F, Min, Max, Avg, Count, Sum, Value, CharField, Case, When
 from django.db.models.functions import Concat
-from django.http import Http404
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.views.generic import FormView, ListView, TemplateView
 from django_pivot.histogram import histogram
+from django.urls import reverse
+from django.shortcuts import render, redirect, get_object_or_404
 
 from bestiary.models import Dungeon, Level, GameItem, RuneCraft
 from data_log.reports.generate import get_drop_querysets, drop_report, get_monster_report, get_rune_report
 from data_log.util import transform_to_dict, replace_value_with_choice, floor_to_nearest, ceil_to_nearest
 from herders.forms import FilterLogTimestamp, FilterDungeonLogForm, FilterRiftDungeonForm, FilterSummonLogForm, \
     FilterWorldBossLogForm, FilterRiftDungeonFormGradeOnly, FilterRiftRaidLogForm, FilterRuneCraftLogForm, FilterMagicBoxCraftLogForm
-from herders.models import Monster, RuneInstance
+from herders.models import Monster, RuneInstance, Summoner
+from herders.decorators import username_case_redirect
 from .base import SummonerMixin, OwnerRequiredMixin
 
 
@@ -828,3 +832,36 @@ class MagicBoxCraftDashboard(DashboardMixin, MagicBoxCraftMixin, DataLogView):
 
 class MagicBoxCraftTable(MagicBoxCraftMixin, TableView):
     template_name = 'herders/profile/data_logs/magic_box/table.html'
+
+
+# Detach Data Logs
+@username_case_redirect
+@login_required()
+def detach_data_logs(request, profile_name):
+    return_path = request.GET.get(
+        'next',
+        reverse('herders:data_log_dashboard', kwargs={'profile_name': profile_name})
+    )
+    
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    # Check for proper owner before deleting
+    if is_owner:
+        summoner.shoprefreshlog_set.all().update(summoner=None)
+        summoner.wishlog_set.all().update(summoner=None)
+        summoner.craftrunelog_set.all().update(summoner=None)
+        summoner.magicboxcraft_set.all().update(summoner=None)
+        summoner.summonlog_set.all().update(summoner=None)
+        summoner.dungeonlog_set.all().update(summoner=None)
+        summoner.riftdungeonlog_set.all().update(summoner=None)
+        summoner.riftraidlog_set.all().update(summoner=None)
+        summoner.worldbosslog_set.all().update(summoner=None)
+
+        return redirect(return_path)
+    else:
+        return HttpResponseBadRequest()

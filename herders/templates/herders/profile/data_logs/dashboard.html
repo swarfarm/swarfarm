@@ -11,6 +11,8 @@
         <div class="alert alert-warning" role="alert">
             You don't have any data logs yet! See the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.
         </div>
+    {% else %}
+        <a class="btn btn-danger data-logs-detach" role="button">Detach All Logs</a>
     {% endif %}
 
     <ul class="list-unstyled">

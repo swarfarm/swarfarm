@@ -22,12 +22,15 @@ function update_rune_form_with_query(){
     update_form_select_from_query(params, 'has_gem');
     update_form_select_from_query(params, 'assigned_to');
     update_form_select_from_query(params, 'marked_for_sale');
+    update_form_select_from_query(params, 'is_grindable');
+    update_form_select_from_query(params, 'is_enchantable');
 
     update_form_radio_from_query(params, 'fodder');
     update_form_radio_from_query(params, 'in_storage');
     update_form_radio_from_query(params, 'monster__fusion_food');
 
     update_form_toggle_from_query(params, 'substat_logic');
+    update_form_toggle_from_query(params, 'substat_reverse');
 }
 
 function update_rune_inventory() {
@@ -211,6 +214,25 @@ $('body')
                     $.ajax({
                         type: 'get',
                         url: '/profile/' + PROFILE_NAME + '/runes/delete/all',
+                        global: false
+                    }).done(function() {
+                        update_rune_inventory();
+                    }).fail(function() {
+                        alert("Something went wrong! Server admin has been notified.");
+                    })
+                }
+            }
+        })
+    })
+    .on('click', '.rune-delete-notes-all', function() {
+        bootbox.confirm({
+            size: 'small',
+            message: 'Are you sure you want to delete notes from <strong>all</strong> of your runes?',
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/profile/' + PROFILE_NAME + '/runes/delete-notes',
                         global: false
                     }).done(function() {
                         update_rune_inventory();

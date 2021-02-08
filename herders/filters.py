@@ -251,8 +251,6 @@ class RuneInstanceFilter(django_filters.FilterSet):
         if not self.summoner:
             return queryset # AssignRune
 
-        print(value)
-
         # {
         #     normal: {
         #         swift: [atk%, hp%, spd, res%],

@@ -37,6 +37,11 @@
                         <img src="{% static 'herders/images/icons/battle.png' %}" alt="dungeon icon" /> Dungeons
                     </a>
                 </li>
+                <li {% if view == 'data_reports' %}class="active"{% endif %}>
+                    <a href="{% url 'data_log:data_reports' %}">
+                        <span class="fa fa-database"></span> Data Logs
+                    </a>
+                </li>
 
                 <li>
                     <div style="max-width:300px">{% crispy bestiary_quick_search %}</div>

@@ -3,6 +3,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from bestiary.models import Level, GameItem
+from data_log.models.log_models import CraftRuneLog, MagicBoxCraft
 
 
 class Report(models.Model):
@@ -36,3 +37,19 @@ class LevelReport(Report):
 
 class SummonReport(Report):
     item = models.ForeignKey(GameItem, on_delete=models.PROTECT)
+
+
+class MagicShopRefreshReport(Report):
+    pass
+
+
+class MagicBoxCraftingReport(Report):
+    box_type = models.IntegerField(choices=MagicBoxCraft.BOX_CHOICES)
+
+
+class WishReport(Report):
+    pass
+
+
+class RuneCraftingReport(Report):
+    craft_level = models.IntegerField(choices=CraftRuneLog.CRAFT_CHOICES)

@@ -1,0 +1,44 @@
+{% extends 'data_log/reports/base.html' %}
+{% load crispy_forms_tags report_charts static utils %}
+
+{% block title %}
+    Rune Crafting - {{ block.super }}
+{% endblock %}
+
+{% block reports %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <h2>Rune Crafting Log Summary</h2>
+
+    {% if craft_list %}
+        {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
+        <p>Total Runes Crafted: {{ log_count }}</p>
+
+        <div class="row">
+            <div class="col-lg-9 col-md-8 col-sm-12">
+                <div
+                    class="report-chart"
+                    data-chart="{% chart dashboard.runes_crafted type='pie' title="Rune Crafting Performed" percentage=False %}"
+                    style="height: 300px"
+                ></div>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Quick Links</h3>
+                    </div>
+                    <div class="list-group">
+                        {% for craft in craft_list %}
+                            <a href="{% url 'data_log:rune_crafting_detail' slug=craft.slug %}" class="list-group-item">
+                                {{ craft.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {% include 'data_log/reports/no_data.html' %}
+    {% endif %}
+{% endblock %}

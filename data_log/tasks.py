@@ -5,8 +5,8 @@ from django.db.models import Q
 from django.utils import timezone
 
 from .models import DungeonLog, RiftRaidLog, WorldBossLog
-from .reports.generate import generate_dungeon_log_reports, generate_rift_raid_reports, generate_rift_dungeon_reports, \
-    generate_world_boss_dungeon_reports
+from .reports.generate import generate_dungeon_log_reports, generate_magic_box_crafting_reports, generate_rift_raid_reports, generate_rift_dungeon_reports, generate_shop_refresh_reports, generate_summon_reports, generate_wish_reports, \
+    generate_world_boss_dungeon_reports, generate_rune_crafting_reports
 
 
 @shared_task
@@ -15,6 +15,11 @@ def generate_all_reports():
     generate_rift_raid_reports()
     generate_rift_dungeon_reports()
     generate_world_boss_dungeon_reports()
+    generate_shop_refresh_reports()
+    generate_magic_box_crafting_reports()
+    generate_wish_reports()
+    generate_summon_reports()
+    generate_rune_crafting_reports()
 
 
 @shared_task

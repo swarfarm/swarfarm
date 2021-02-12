@@ -269,7 +269,35 @@ class ReportAdmin(admin.ModelAdmin):
 
 @admin.register(models.LevelReport)
 class LevelReportAdmin(admin.ModelAdmin):
-    readonly_fields = ('generated_on', 'level')
+    readonly_fields = ('generated_on', 'level',)
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('level', 'level__dungeon')
+
+
+@admin.register(models.SummonReport)
+class SummonReportAdmin(admin.ModelAdmin):
+    readonly_fields = ('generated_on', 'item',)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('item')
+
+
+@admin.register(models.MagicShopRefreshReport)
+class MagicShopRefreshReportAdmin(admin.ModelAdmin):
+    readonly_fields = ('generated_on',)
+
+
+@admin.register(models.MagicBoxCraftingReport)
+class MagicBoxCraftingReportAdmin(admin.ModelAdmin):
+    readonly_fields = ('generated_on', 'box_type',)
+
+
+@admin.register(models.WishReport)
+class WishReportAdmin(admin.ModelAdmin):
+    readonly_fields = ('generated_on',)
+
+
+@admin.register(models.RuneCraftingReport)
+class RuneCraftingReportAdmin(admin.ModelAdmin):
+    readonly_fields = ('generated_on', 'craft_level',)

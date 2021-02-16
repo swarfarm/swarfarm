@@ -4,13 +4,13 @@
     <h2>Monsters</h2>
     <div
         class="report-chart"
-        data-chart="{% chart monsters.monsters title="Monsters - Unique" %}"
+        data-chart="{% chart monsters.monsters title="Monsters - Unique" sorted='value' reverse=True %}"
         style="height: 300px"
     ></div>
 
     <div
         class="report-chart"
-        data-chart="{% chart monsters.family title="Monsters - By Family" %}"
+        data-chart="{% chart monsters.family title="Monsters - By Family" sorted='value' reverse=True %}"
         style="height: 300px"
     ></div>
 
@@ -33,5 +33,4 @@
             style="height: 300px"
         ></div>
     </div>
-
 {% endif %}

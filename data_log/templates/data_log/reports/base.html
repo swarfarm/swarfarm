@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static crispy_forms_tags %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.45/css/bootstrap-datetimepicker.min.css" />
+{% endblock css %}
+
+{% block title %}
+    Data Logs - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
+        <p class="navmenu-brand">Data Logs</p>
+        <ul class="nav navmenu-nav">
+            {% with reports.shop_refresh as report %}
+                <li {% if subview == "magic_shop" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:magic_shop_refresh' %}">Magic Shop</a></li>
+            {% endwith %}
+            {% with reports.magic_box as report %}
+                <li {% if subview == "magic_box" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:magic_box_crafting' %}">Magic Box Crafting</a></li>
+            {% endwith %}
+            {% with reports.wish as report %}
+                <li {% if subview == "wish" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:wish' %}">Wish</a></li>
+            {% endwith %}
+            {% with reports.summon as report %}
+                <li {% if subview == "summon" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:summon' %}">Summon</a></li>
+            {% endwith %}
+            {% with reports.rune_crafting as report %}
+                <li {% if subview == "rune_crafting" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:rune_crafting' %}">Rune Crafting</a></li>
+            {% endwith %}
+        </ul>
+    </div>
+    
+    <div class="navmenu-content">
+        {% block reports %}
+            <h1>Data Logs</h1>
+            <ul class="list-unstyled">
+                {% with reports.shop_refresh as report %}
+                    <li><a href="{% url 'data_log:magic_shop_refresh' %}"><h2>Magic Shop
+                        <ul class="list-unstyled ml-10">
+                            {% if report %}
+                                <li><small>&emsp;Records: {{ report.log_count }}</small></li>
+                                <li><small>&emsp;Contributors: {{ report.unique_contributors }}</small></li>
+                                <li><small>&emsp;Created: {{ report.generated_on }}</small></li>
+                            {% else %}
+                                <li><small>No Records</small>
+                            {% endif %}
+                        </ul></h2></a>
+                    </li>
+                {% endwith %}
+                {% with reports.magic_box as report %}
+                    <li><a href="{% url 'data_log:magic_box_crafting' %}"><h2>Magic Box Crafting
+                        <ul class="list-unstyled ml-10">
+                            {% if report %}
+                                <li><small>&emsp;Records: {{ report.log_count }}</small></li>
+                                <li><small>&emsp;Created: {{ report.generated_on }}</small></li>
+                            {% else %}
+                                <li><small>No Records</small>
+                            {% endif %}
+                        </ul></h2></a>
+                    </li>
+                {% endwith %}
+                {% with reports.wish as report %}
+                    <li><a href="{% url 'data_log:wish' %}"><h2>Wish
+                        <ul class="list-unstyled ml-10">
+                            {% if report %}
+                                <li><small>&emsp;Records: {{ report.log_count }}</small></li>
+                                <li><small>&emsp;Contributors: {{ report.unique_contributors }}</small></li>
+                                <li><small>&emsp;Created: {{ report.generated_on }}</small></li>
+                            {% else %}
+                                <li><small>No Records</small>
+                            {% endif %}
+                        </ul></h2></a>
+                    </li>
+                {% endwith %}
+                {% with reports.summon as report %}
+                    <li><a href="{% url 'data_log:summon' %}"><h2>Summon
+                        <ul class="list-unstyled ml-10">
+                            {% if report %}
+                                <li><small>&emsp;Records: {{ report.log_count }}</small></li>
+                                <li><small>&emsp;Created: {{ report.generated_on }}</small></li>
+                            {% else %}
+                                <li><small>No Records</small>
+                            {% endif %}
+                        </ul></h2></a>
+                    </li>
+                {% endwith %}
+                {% with reports.rune_crafting as report %}
+                    <li><a href="{% url 'data_log:rune_crafting' %}"><h2>Rune Crafting
+                        <ul class="list-unstyled ml-10">
+                            {% if report %}
+                                <li><small>&emsp;Records: {{ report.log_count }}</small></li>
+                                <li><small>&emsp;Created: {{ report.generated_on }}</small></li>
+                            {% else %}
+                                <li><small>No Records</small>
+                            {% endif %}
+                        </ul></h2></a>
+                    </li>
+                {% endwith %}
+            </ul>
+        {% endblock reports %}
+    </div>
+    
+{% endblock content %}
+
+{% block javascript %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.45/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script type="application/javascript">
+        $(function(){
+            $(".drop-popover").popover({
+                html : true,
+                trigger : 'hover',
+                container : 'body',
+                placement: 'left',
+                content: function() {
+                  var content = $(this).attr("data-popover-content");
+                  return $(content).children(".popover-body").html();
+                },
+                title: function() {
+                  var title = $(this).attr("data-popover-content");
+                  return $(title).children(".popover-heading").html();
+                }
+            });
+        });
+
+        // Initialize datetime pickers
+        var datetimeopts = {
+            'format': 'YYYY-MM-DD HH:mm:ss',
+            'showTodayButton': true,
+            'useCurrent': false,
+            'showClear': true,
+            'showClose': true
+        };
+        $('#id_timestamp__gte').datetimepicker(datetimeopts);
+        $('#id_timestamp__lte').datetimepicker(datetimeopts);
+
+        $("#id_timestamp__gte").on("dp.change", function (e) {
+            $('#id_timestamp__lte').data("DateTimePicker").minDate(e.date);
+        });
+        $("#id_timestamp__lte").on("dp.change", function (e) {
+            $('#id_timestamp__gte').data("DateTimePicker").maxDate(e.date);
+        });
+    </script>
+{% endblock %}
+
+{% block javascript_compressed %}
+    <script type="text/javascript" src="{% static "data_log/reports.js" %}"></script>
+{% endblock javascript_compressed %}

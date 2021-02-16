@@ -1,12 +1,11 @@
 from collections import Counter
 from datetime import timedelta
-
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Min, Max, Avg, Sum, Func, F, Func, Q, CharField, FloatField, Value, StdDev
 from django.db.models.functions import Cast, Concat, Extract
 from django_pivot.histogram import histogram
 
-from bestiary.models import Monster, Rune, Level, GameItem, Dungeon, Artifact, ArtifactCraft
+from bestiary.models import Monster, Rune, Level, GameItem, Dungeon, Artifact
 from data_log import models
 from data_log.util import slice_records, floor_to_nearest, ceil_to_nearest, replace_value_with_choice, \
     transform_to_dict, round_timedelta
@@ -829,3 +828,97 @@ def generate_rift_dungeon_reports():
 
 def generate_world_boss_dungeon_reports():
     _generate_by_grade_reports(models.WorldBossLog)
+
+
+def generate_shop_refresh_reports():
+    records = slice_records(models.ShopRefreshLog.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    report = drop_report(records, min_count=0)
+
+    content_type = ContentType.objects.get_for_model(models.ShopRefreshLog)
+    if records.count() > 0:
+        models.MagicShopRefreshReport.objects.create(
+            content_type=content_type,
+            start_timestamp=records[records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+            end_timestamp=records[0].timestamp,
+            log_count=records.count(),
+            unique_contributors=records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+            report=report,
+        )
+
+
+def generate_magic_box_crafting_reports():
+    records = slice_records(models.MagicBoxCraft.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    content_type = ContentType.objects.get_for_model(models.MagicBoxCraft)
+    
+    for box_id, _ in models.MagicBoxCraft.BOX_CHOICES:
+        qs = records.filter(box_type=box_id)
+        report = drop_report(qs, min_count=0, include_currency=True)
+        
+        if qs.count() > 0:
+            models.MagicBoxCraftingReport.objects.create(
+                content_type=content_type,
+                start_timestamp=qs[qs.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+                end_timestamp=qs[0].timestamp,
+                log_count=qs.count(),
+                unique_contributors=qs.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+                report=report,
+                box_type=box_id,
+            )
+
+
+def generate_wish_reports():
+    records = slice_records(models.WishLog.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    report = drop_report(records, min_count=0, include_currency=True)
+
+    content_type = ContentType.objects.get_for_model(models.WishLog)
+    if records.count() > 0:
+        models.WishReport.objects.create(
+            content_type=content_type,
+            start_timestamp=records[records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+            end_timestamp=records[0].timestamp,
+            log_count=records.count(),
+            unique_contributors=records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+            report=report,
+        )
+
+
+def generate_summon_reports():
+    records = slice_records(models.SummonLog.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    content_type = ContentType.objects.get_for_model(models.SummonLog)
+
+    items = GameItem.objects.filter(pk__in=set(records.values_list('item', flat=True)))
+
+    for item in items:
+        qs = records.filter(item=item)
+        report = get_monster_report(qs, qs.count(), min_count=0)
+
+        if qs.count() > 0:
+            models.SummonReport.objects.create(
+                content_type=content_type,
+                start_timestamp=qs[qs.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+                end_timestamp=qs[0].timestamp,
+                log_count=qs.count(),
+                unique_contributors=qs.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+                report=report,
+                item=item,
+            )
+
+
+def generate_rune_crafting_reports():
+    records = slice_records(models.CraftRuneLog.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    content_type = ContentType.objects.get_for_model(models.CraftRuneLog)
+    
+    for craft_id, _ in models.CraftRuneLog.CRAFT_CHOICES:
+        qs = records.filter(craft_level=craft_id)
+        report = get_rune_report(qs, qs.count(), min_count=0)
+        
+        if qs.count() > 0:
+            models.RuneCraftingReport.objects.create(
+                content_type=content_type,
+                start_timestamp=qs[qs.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+                end_timestamp=qs[0].timestamp,
+                log_count=qs.count(),
+                unique_contributors=qs.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+                report=report,
+                craft_level=craft_id,
+            )

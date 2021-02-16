@@ -1,0 +1,18 @@
+{% extends 'data_log/reports/base.html' %}
+{% load crispy_forms_tags report_charts utils %}
+
+{% block title %}
+    Rune Crafting - {{ block.super }}
+{% endblock %}
+
+{% block reports %}
+    <h2>Rune Crafting Log Summary</h2>
+    {% if log_count %}
+        {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
+        <p>Total Logs: {{ log_count }}</p>
+        <hr />
+        {% include 'data_log/runes.html' with runes=report only %}
+    {% else %}
+        {% include 'herders/profile/data_logs/no_data.html' %}
+    {% endif %}
+{% endblock %}

@@ -446,16 +446,19 @@ class WishLogRuneDrop(RuneDrop):
 
 # Rune Crafting
 class CraftRuneLog(LogEntry, RuneDrop):
-    PARSE_IDS = list(range(1401001, 1401022)) + list(range(1402001, 1402022)) + list(range(1403001, 1403022))
+    # low, mid, high, ancient
+    PARSE_IDS = list(range(1401001, 1401022)) + list(range(1402001, 1402022)) + list(range(1403001, 1403022)) + list(range(1403022, 1403026))
 
     CRAFT_LOW = 1
     CRAFT_MID = 2
     CRAFT_HIGH = 3
+    CRAFT_ANCIENT = 4
 
     CRAFT_CHOICES = [
         (CRAFT_LOW, 'Low'),
         (CRAFT_MID, 'Mid'),
         (CRAFT_HIGH, 'High'),
+        (CRAFT_ANCIENT, 'Ancient'),
     ]
 
     craft_level = models.IntegerField(choices=CRAFT_CHOICES)
@@ -463,7 +466,11 @@ class CraftRuneLog(LogEntry, RuneDrop):
     @staticmethod
     def get_craft_level(com2us_item_id):
         # Craft level is in 1000s digit
-        return (com2us_item_id - 1400000) // 1000
+        # Ancient Craft is different, since it just continues `High` IDs
+        q, r = divmod(com2us_item_id - 1400000, 1000)
+        if q == 3 and r > 21:
+            return CraftRuneLog.CRAFT_ANCIENT
+        return q
 
     @classmethod
     def parse_buy_shop_item(cls, summoner, log_data):

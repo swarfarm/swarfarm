@@ -1,0 +1,21 @@
+{% extends 'data_log/reports/base.html' %}
+{% load crispy_forms_tags report_charts utils %}
+
+{% block title %}
+    {{ item }} - {{ block.super }}
+{% endblock %}
+
+{% block reports %}
+    <h2>{{ item }}</h2>
+    {% if log_count %}
+        <ul class="list list-inline">
+            {% if start_timestamp %}<li>{{ start_timestamp }} - {{ end_timestamp }}</li>{% endif %}
+            <li>Total Summons: {{ log_count }}</li>
+        </ul>
+
+        <hr />
+        {% include 'data_log/monster.html' with monsters=report only %}
+    {% else %}
+        {% include 'data_log/reports/no_data.html' %}
+    {% endif %}
+{% endblock %}

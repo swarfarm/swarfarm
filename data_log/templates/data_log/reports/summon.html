@@ -1,0 +1,45 @@
+{% extends 'data_log/reports/base.html' %}
+{% load crispy_forms_tags report_charts static utils %}
+
+{% block title %}
+    Summons - {{ block.super }}
+{% endblock %}
+
+{% block reports %}
+    {% static 'herders/images/' as img_url_prefix %}
+
+    <h2>Summon Log Summary</h2>
+
+    {% if item_list %}
+        {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
+        <p>Total Summons: {{ log_count }}</p>
+
+        <div class="row">
+            <div class="col-lg-9 col-md-8 col-sm-12">
+                <div
+                    class="report-chart"
+                    data-chart="{% chart dashboard.summons_performed type='pie' title="Summons Performed" percentage=False %}"
+                    style="height: 300px"
+                ></div>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Quick Links</h3>
+                    </div>
+                    <div class="list-group">
+                        {% for item in item_list %}
+                            <a href="{% url 'data_log:summon_detail' slug=item.slug %}" class="list-group-item">
+                                <img src="{{ img_url_prefix }}items/{{ item.icon }}" class="image-inline" alt="{{ item.name }} icon" />
+                                {{ item }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {% include 'data_log/reports/no_data.html' %}
+    {% endif %}
+{% endblock %}

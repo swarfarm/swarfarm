@@ -334,7 +334,4 @@ def data_report_rune_crafting_detail(request, slug):
     }
     content = _get_single_report(RuneCraftingReport, 'rune_crafting', filters=filters)
 
-    print(content)
-
     return render(request, 'data_log/reports/rune_craft_detail.html', content)
-# 

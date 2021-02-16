@@ -12,7 +12,7 @@
 
     {% if item_list %}
         {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
-        <p>Total Summons: {{ log_count }}</p>
+        <p>Total Summons: {{ dashboard.summons_performed.total }}</p>
 
         <div class="row">
             <div class="col-lg-9 col-md-8 col-sm-12">

@@ -148,8 +148,8 @@ class _TableDefs:
     MONSTER_FUSION_RECIPES = 46
     TOA_FLOOR_MODELS_AND_EFFECTS = 47
     ELLIA_COSTUMES = 48
-    GUILD_LEVELS = 49  # Unimplemented in-game
-    GUILD_BONUSES = 50  # Unimplemented in-game
+    GUILD_LEVELS = 49
+    GUILD_BONUSES = 50
     RUNE_STAT_VALUES = 51
     GUILD_RANKS = 52
     GUILD_UNASPECTED_SUMMON_PIECES = 53  # Ifrit and Cowgirl pieces
@@ -191,8 +191,34 @@ class _TableDefs:
     GUILD_SIEGE_MAP = 89
     GUILD_SIEGE_REWARD_BOXES = 90
     GUILD_SIEGE_RANKINGS = 91
+    # Unknown table 92 - probably effects monster gets with every star
+    # Unknown table 93 - lobby - loading screen?
+    LABYRINTH_BATTLE_TYPES = 94
+    # Unknown table 95 - quest-related, probably something about lab
+    LABYRINTH_BOXES = 96
+    # Unknown table 97
+    # Unknown table 98 - looks like siege-related, with score & rewards
+    # Unknown table 99 - one row, with desc `Welcome Gift`
     DIMENSIONAL_HOLE_MAP = 100
     DIMENSIONAL_HOLE_DUNGEONS = 101
+    DIMENSIONAL_HOLE_MODELS = 102
+    # Unknown table 103 - Arcane Tower, Summoner Circle, Temple of Wishes
+    # Unknown table 104 - some effect sets
+    TUTORIAL_MAP = 105
+    ARENA_LEAGUE_RANKS = 106
+    ARENA_LEAGUE_REWARDS = 107
+    BATTLE_APPEARANCE_TRANSMOG = 108
+    GUILD_SIEGE_BACKGROUND_SKINS = 109
+    GUILD_SIEGE_SEASON_REWARDS = 110
+    CHAT_BANNED_WORDS9 = 111
+    CHAT_BANNED_WORDS10 = 112
+    WORLD_ARENA_EMOTICONS = 113
+    ARTIFACT_SUBSTAT_VALUES = 114
+    ARTIFACT_ENCHANT_VALUES = 115
+    ARTIFACT_SELL_VALUES = 116
+    # Unknown table 117 - some x/y positions
+    REPEAT_BATTLE_PLACES = 118
+    WORLD_ARENA_ACHIEVEMENTS = 119
 
 
 class _LocalValueData:
@@ -283,7 +309,10 @@ class _LocalValueData:
     def _get_raw_data():
         if _LocalValueData._decrypted_data is None:
             with open(_LocalValueData.filename, 'rb') as f:
-                _LocalValueData._decrypted_data = JokerContainerFile(f).data
+                # Decryption by Lyrex;
+                # With 6.2.1 update Com2uS changed `localvalue.dat` encryption format, so Joker container is not being used anymore
+                # _LocalValueData._decrypted_data = JokerContainerFile(f).data
+                _LocalValueData._decrypted_data = JokerContainerFile._process_mode_300(f.read())
 
         return ConstBitStream(_LocalValueData._decrypted_data)
 

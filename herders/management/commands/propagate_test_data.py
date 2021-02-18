@@ -26,12 +26,6 @@ class Command(BaseCommand):
             help='Number of accounts to create',
         )
 
-    def _rand(self, target, iter_target):
-        rand = random.randint(self.MIN, self.MAX)
-        while rand in target or rand in iter_target:
-            rand = random.randint(self.MIN, self.MAX)
-        return rand
-
     def handle(self, *args, **kwargs):
         # TODO: Add whole `herders` copy, not only Monsters, Runes & Artifacts
         if not settings.DEBUG:
@@ -68,34 +62,23 @@ class Command(BaseCommand):
         acc_quantity = kwargs['accounts_quantity']
         self.stdout.write(self.style.SUCCESS(f'Starting data duplication process for {acc_quantity} account(s)!'))
 
-        summoner = Summoner.objects.first()
-        if not summoner:
+        owner = Summoner.objects.first()
+        if not owner:
             self.stdout.write(self.style.ERROR("No Summoner records in database, can't duplicate empty data"))
             return
 
-        monsters = MonsterInstance.objects.filter(owner=summoner).values(*monster_fields)
-        runes = RuneInstance.objects.filter(owner=summoner).values(*rune_fields)
-        artifacts = ArtifactInstance.objects.filter(owner=summoner).values(*artifact_fields)
+        monsters = MonsterInstance.objects.filter(owner=owner).values(*monster_fields)
+        runes = RuneInstance.objects.filter(owner=owner).values(*rune_fields)
+        artifacts = ArtifactInstance.objects.filter(owner=owner).values(*artifact_fields)
 
         self.stdout.write(self.style.SUCCESS(f'Duplicating per account:'))
         self.stdout.write(self.style.WARNING(f'- Monsters: {len(monsters)}'))
         self.stdout.write(self.style.WARNING(f'- Runes: {len(runes)}'))
         self.stdout.write(self.style.WARNING(f'- Artifacts: {len(artifacts)}'))
 
-        ids = {
-            'wizards': [summoner.com2us_id],
-            'monsters': list(set(MonsterInstance.objects.all().values_list('com2us_id', flat=True))),
-            'runes': list(set(RuneInstance.objects.all().values_list('com2us_id', flat=True))),
-            'artifacts': list(set(ArtifactInstance.objects.all().values_list('com2us_id', flat=True))),
-        }
         monster_pks = {m.pop('pk'): m['com2us_id'] for m in monsters}
 
         for iter in range(acc_quantity):
-            iter_ids = {
-                'monsters': {},
-                'runes': {},
-                'artifacts': {},
-            }
             iter_objs = {
                 'monsters': [],
                 'runes': [],
@@ -106,15 +89,10 @@ class Command(BaseCommand):
             with transaction.atomic():
                 user = User.objects.create_user(login, login + '@gmail.com', PASSWD)
 
-                wizard_id = self._rand(ids['wizards'], [])
-                ids['wizards'].append(wizard_id)
-                summoner = Summoner.objects.create(user=user, com2us_id=wizard_id)
+                summoner = Summoner.objects.create(user=user, com2us_id=owner.com2us_id)
 
                 for mon in monsters:
                     mon_obj = MonsterInstance(**mon)
-                    mon_id = self._rand(ids['monsters'], iter_ids['monsters'].values())
-                    iter_ids['monsters'][mon_obj.com2us_id] = mon_id
-                    mon_obj.com2us_id = mon_id
                     mon_obj.owner = summoner
                     iter_objs['monsters'].append(mon_obj)
 
@@ -122,31 +100,18 @@ class Command(BaseCommand):
 
                 for rune in runes:
                     rune_obj = RuneInstance(**rune)
-                    rune_id = self._rand(ids['runes'], iter_ids['runes'].values())
-                    iter_ids['runes'][rune_obj.com2us_id] = rune_id
-                    rune_obj.com2us_id = rune_id
                     rune_obj.owner = summoner
-                    rune_obj.assigned_to = iter_mons[iter_ids['monsters'][monster_pks[rune['assigned_to_id']]]] if rune['assigned_to_id'] else None
+                    rune_obj.assigned_to = iter_mons[monster_pks[rune['assigned_to_id']]] if rune['assigned_to_id'] else None
                     iter_objs['runes'].append(rune_obj)
 
                 for artifact in artifacts:
                     artifact_obj = ArtifactInstance(**artifact)
-                    artifact_id = self._rand(ids['artifacts'], iter_ids['artifacts'].values())
-                    iter_ids['artifacts'][artifact_obj.com2us_id] = artifact_id
-                    artifact_obj.com2us_id = artifact_id
                     artifact_obj.owner = summoner
-                    artifact_obj.assigned_to = iter_mons[iter_ids['monsters'][monster_pks[artifact['assigned_to_id']]]] if artifact['assigned_to_id'] else None
+                    artifact_obj.assigned_to = iter_mons[monster_pks[artifact['assigned_to_id']]] if artifact['assigned_to_id'] else None
                     iter_objs['artifacts'].append(artifact_obj)
 
                 RuneInstance.objects.bulk_create(iter_objs['runes'])
                 ArtifactInstance.objects.bulk_create(iter_objs['artifacts'])
-
-                for k, v in ids.items():
-                    if k not in iter_ids.keys():
-                        continue
-                    v += iter_ids[k].values()
-                    if len(v) != len(set(v)):
-                        raise ValueError(f"Some duplicates in {k}.")
                 
                 self.stdout.write(self.style.WARNING(f"[{iter + 1}] This iteration took {round(time.time() - iter_start, 2)} seconds ({round(time.time() - start, 2)} in total)!"))
                 

@@ -31,6 +31,23 @@ function update_bestiary_form_with_query(){
     update_form_toggle_from_query(params, 'effects_logic');
 }
 
+function clean_bestiary_url_data(data){
+    var cleanedParams = clean_query_params(data)
+    // We only get multi slider values after using `clean_query_params` function
+    // Need to check if these values are equal min-max, if yes -> delete them from query
+    // Because there's no point in using Filter without any effect
+    var params = new URLSearchParams(cleanedParams)
+    var multiSliderParams = ['natural_stars', 'skills__cooltime', 'skills__hits']
+    for (let name of multiSliderParams) {
+        var [valueMin, valueMax] = params.get(name).split(',')
+        var el = $("input[name='" + name + "']")
+        if(el.attr("data-slider-min") === valueMin && el.attr("data-slider-max") === valueMax){
+            params.delete(name)    
+        }
+    }
+    return params.toString()
+}
+
 function update_inventory() {
     $('#FilterBestiaryForm').submit();
 }
@@ -101,10 +118,11 @@ $('body')
         ToggleLoading($('body'), true);
 
         var $form = $(this);
+        var formData = clean_bestiary_url_data($form.serialize())
         $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),
-            data: $form.serialize()
+            data: formData
         }).done(function (data) {
             // Create URL with Filter fields
             var params_start = this.url.lastIndexOf('/?')

@@ -264,28 +264,17 @@ class FilterMonsterForm(forms.Form):
 
     def clean(self):
         super(FilterMonsterForm, self).clean()
-
         # Coalesce the effect fields into a single one that the filter can understand
         selected_buff_effects = self.cleaned_data.get('buffs')
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
         self.cleaned_data['skills__skill_effect__pk'] = chain(selected_buff_effects, selected_debuff_effects, selected_other_effects)
 
-        # Split the slider ranges into two min/max fields for the filters
+        # Split the slider ranges into two min/max fields for the automatic filters
         try:
             [min_stars, max_stars] = self.cleaned_data['natural_stars'].split(',')
+            self.cleaned_data['natural_stars__gte'] = int(min_stars)
+            self.cleaned_data['natural_stars__lte'] = int(max_stars)
         except:
-            min_stars = 1
-            max_stars = 6
-
-        self.cleaned_data['natural_stars__gte'] = int(min_stars)
-        self.cleaned_data['natural_stars__lte'] = int(max_stars)
-
-        try:
-            [min_hits, max_hits] = self.cleaned_data['skills__hits'].split(',')
-        except:
-            min_hits = 0
-            max_hits = 7
-
-        self.cleaned_data['skills__hits__gte'] = int(min_hits)
-        self.cleaned_data['skills__hits__lte'] = int(max_hits)
+            self.cleaned_data['natural_stars__gte'] = None
+            self.cleaned_data['natural_stars__lte'] = None

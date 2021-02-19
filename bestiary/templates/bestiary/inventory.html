@@ -76,28 +76,28 @@
                         <td><a href="{% url 'bestiary:detail' monster_slug=monster.bestiary_slug %}">{{ monster.name|title }}</a></td>
                         <td>{{ monster.base_stars }}<span class="glyphicon glyphicon-star"></span></td>
                         <td class="monster-element">
-                            <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" class="monster-element" />
+                            <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" class="monster-element" loading="lazy" />
                             <span class="hidden">{{ monster.element }}</span>
                         </td>
                         <td class="monster-type">{{ monster.get_archetype_display }}</td>
                         <td class="monster-awakens">
                             {% if monster.awakens_to %}
                             <a href="{% url 'bestiary:detail' monster_slug=monster.awakens_to.bestiary_slug %}">
-                                <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_to.image_filename }}" class="monster-thumb"/> {{ monster.awakens_to.name|title }}
+                                <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_to.image_filename }}" class="monster-thumb" loading="lazy" /> {{ monster.awakens_to.name|title }}
                             </a>
                             {% endif %}
                         </td>
                         <td class="monster-awakens">
                             {% if monster.awakens_from %}
                             <a href="{% url 'bestiary:detail' monster_slug=monster.awakens_from.bestiary_slug %}">
-                                <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_from.image_filename }}" class="monster-thumb"/> {{ monster.awakens_from.name|title }}
+                                <img src="{{ img_url_prefix }}monsters/{{ monster.awakens_from.image_filename }}" class="monster-thumb" loading="lazy" /> {{ monster.awakens_from.name|title }}
                             </a>
                             {% endif %}
                         </td>
                         <td class="monster-leader-skill">
                             {% if monster.leader_skill %}
                                 <div>
-                                    <img src="{{ img_url_prefix }}skills/leader/{{ monster.leader_skill.icon_filename }}"
+                                    <img src="{{ img_url_prefix }}skills/leader/{{ monster.leader_skill.icon_filename }}" loading="lazy" 
                                          data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ monster.leader_skill.skill_string }}" />
                                     <span class="image-plus image-plus-top-left">{{ monster.leader_skill.amount }}%</span>
                                     <span class="hidden">
@@ -110,7 +110,7 @@
                         <td class="monster-awaken-materials">
                             {% for skill in monster.skills.all %}
                                 <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
-                                    <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
+                                    <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
                                     {% if skill.max_level > 1 %}<span class="image-plus image-plus-right">{{ skill.max_level }}</span>{% endif %}
                                 </div>
                             {% endfor %}
@@ -118,7 +118,7 @@
                         <td>
                             {% if monster.skill_ups_to_max > 0 %}
                             <div class="monster-image">
-                                <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+                                <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb" loading="lazy" />
                                 <span class="image-plus image-plus-main">{{ monster.skill_ups_to_max }}</span>
                             </div>
                             {% else %}

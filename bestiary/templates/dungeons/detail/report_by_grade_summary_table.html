@@ -12,7 +12,7 @@
                 {% for drop in table.0.drops %}
                     <th>
                         {% if drop.icon %}
-                        <img src="{{ img_url_prefix }}{{ drop.type }}s/{{ drop.icon }}" alt="{{ drop.name }} icon" class="monster-inline"/>
+                        <img src="{{ img_url_prefix }}{{ drop.type }}s/{{ drop.icon }}" alt="{{ drop.name }} icon" class="monster-inline" loading="lazy" />
                         {% endif %}
                         {{ drop.name }}
                     </th>

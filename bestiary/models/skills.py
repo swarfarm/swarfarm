@@ -29,7 +29,7 @@ class Skill(models.Model):
 
     def image_url(self):
         if self.icon_filename:
-            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/skills/' + self.icon_filename))
+            return mark_safe('<img src="%s" height="42" width="42" loading="lazy" />' % static('herders/images/skills/' + self.icon_filename))
         else:
             return 'No Image'
 
@@ -202,7 +202,7 @@ class LeaderSkill(models.Model):
         return 'leader_skill_{0}{1}.png'.format(self.get_attribute_display().replace(' ', '_'), suffix)
 
     def image_url(self):
-        return mark_safe('<img src="{}" height="42" width="42"/>'.format(
+        return mark_safe('<img src="{}" height="42" width="42" loading="lazy" />'.format(
             static('herders/images/skills/leader/' + self.icon_filename())
         ))
 
@@ -257,7 +257,7 @@ class SkillEffect(models.Model):
 
     def image_url(self):
         if self.icon_filename:
-            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/buffs/' + self.icon_filename))
+            return mark_safe('<img src="%s" height="42" width="42" loading="lazy" />' % static('herders/images/buffs/' + self.icon_filename))
         else:
             return 'No Image'
 

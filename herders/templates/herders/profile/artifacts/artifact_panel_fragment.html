@@ -35,15 +35,15 @@
             <div class="rune-assigned-to">
                 <div class="monster-image">
                     <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=artifact.assigned_to.pk.hex %}" target="_blank">
-                        <img src="{{ img_url_prefix }}monsters/{{ artifact.assigned_to.monster.image_filename }}" class="monster-thumb"/>
+                        <img src="{{ img_url_prefix }}monsters/{{ artifact.assigned_to.monster.image_filename }}" class="monster-thumb" loading="lazy" />
                         <span>
                             {% for x in artifact.assigned_to.stars|get_range %}
                                 {% if artifact.assigned_to.monster.is_awakened %}
-                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% elif artifact.assigned_to.monster.can_awaken %}
-                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% else %}
-                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% endif %}
                             {% endfor %}
                         </span>

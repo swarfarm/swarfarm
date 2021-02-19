@@ -9,15 +9,15 @@
     <div class="panel-body">
         {% for monster in monsters %}
             <div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ monster.stars }}⭐ {% if not monster.is_awakened %}{{ monster.element }}{% endif %} {{ monster.name }} x{{ monster.count }}">
-                <img src="{{ img_url_prefix }}monsters/{{ monster.icon }}" alt="{{ monster.name }}" class="monster-thumb"/>
+                <img src="{{ img_url_prefix }}monsters/{{ monster.icon }}" alt="{{ monster.name }}" class="monster-thumb" loading="lazy" />
                 <span>
                     {% for x in monster.stars|get_range %}
                         {% if monster.is_awakened %}
-                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                         {% elif monster.can_awaken %}
-                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                         {% else %}
-                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                         {% endif %}
                     {% endfor %}
                 </span>

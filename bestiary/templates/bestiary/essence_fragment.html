@@ -2,6 +2,6 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="element-essence" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ element|capfirst }} {{ size|capfirst }}">
-    <img src="{{ img_url_prefix }}items/essence_{{ element }}_{{ size }}.png" />
+    <img src="{{ img_url_prefix }}items/essence_{{ element }}_{{ size }}.png" loading="lazy" />
     {% if not count == None %}<span class="image-plus image-plus-right">{{ count }}</span>{% endif %}
 </div>

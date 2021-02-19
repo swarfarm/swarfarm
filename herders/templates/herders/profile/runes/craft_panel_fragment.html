@@ -25,7 +25,7 @@
                 <li>
                     <span class="label rune-label-{{ craft.get_quality_display|lower }}">
                         {% if 'Ancient' in craft.get_type_display %}
-                            <img src="{{ img_url_prefix }}runes/ancient.png" class="inline-icon" alt="Ancient icon" />
+                            <img src="{{ img_url_prefix }}runes/ancient.png" class="inline-icon" alt="Ancient icon" loading="lazy" />
                         {% endif %}
                         {{ craft.get_quality_display }}
                     </span>
@@ -35,7 +35,7 @@
                 </li>
                 {% if craft.value %}
                     <li>
-                        <img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" alt="Mana icon"/>
+                        <img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" alt="Mana icon" loading="lazy" />
                         {{ craft.value }}
                     </li>
                 {% endif %}

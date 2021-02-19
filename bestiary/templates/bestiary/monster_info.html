@@ -4,7 +4,7 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <span class="panel-title"><strong><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" style="height:1em"/> {{ monster.name }}</strong> - <small>{{ monster.get_archetype_display }}</small></span>
+        <span class="panel-title"><strong><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" style="height:1em" loading="lazy" /> {{ monster.name }}</strong> - <small>{{ monster.get_archetype_display }}</small></span>
         {% if request.user.is_superuser %}
             <a href="{% url 'admin:bestiary_monster_change' object_id=monster.pk %}" class="btn btn-xs edit-skill pull-right" target="_blank"><span class="glyphicon glyphicon-pencil"></span></a>
         {% endif %}
@@ -42,7 +42,7 @@
                     <td class="monster-sources">
                         {% for source in sources %}
                             {% if source.icon_filename %}
-                            <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
+                            <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}" loading="lazy" 
                                  class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
                             {% else %}
                             <span class="monster-source"><span>{{ source }}</span></span>
@@ -93,7 +93,7 @@
                     <td>Skill-ups to Max</td>
                     <td class="monster-awaken-materials">
                         <div class="monster-image">
-                            <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+                            <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb" loading="lazy" />
                             <span class="image-plus image-plus-main">{{ monster.skill_ups_to_max }}</span>
                         </div>
                     </td>

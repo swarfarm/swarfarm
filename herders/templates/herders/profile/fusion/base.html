@@ -15,7 +15,7 @@
         {% for fusion in fusions %}
         <li>
             <a class="fusion-tab" data-fusion="{{ fusion.product.bestiary_slug }}">
-                <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-inline"/>
+                <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-inline" loading="lazy" />
                 {{ fusion.product.base_stars }}<span class="glyphicon glyphicon-star"></span> {{ fusion.product.name }}{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}
             </a>
         </li>

@@ -29,9 +29,9 @@
                 </div>
                 {% for x in log.stars|get_range %}
                     {% if log.level == 15 %}
-                    <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-awakened.png" />
+                    <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-awakened.png" loading="lazy" />
                     {% else %}
-                    <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
+                    <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" loading="lazy" />
                     {% endif %}
                 {% endfor %}
                 <span class="image-plus image-plus-right">{{ log.get_main_stat_display }}</span >

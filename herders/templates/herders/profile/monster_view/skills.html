@@ -5,7 +5,7 @@
 <div class="col-lg-12">
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="monster-skill-thumb pull-left"><img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}" /></div>
+            <div class="monster-skill-thumb pull-left"><img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}" loading="lazy" /></div>
             <h4 class="list-group-item-heading">Leader Skill</h4>
             <div class="list-group-item-text">
                 {{ instance.monster.leader_skill.skill_string }}
@@ -25,7 +25,7 @@
         <ul class="list-group">
             <li class="list-group-item">
                 <div class="monster-skill-thumb pull-left">
-                    <img src="{{ img_url_prefix }}skills/{{ skill.skill.icon_filename }}" />
+                    <img src="{{ img_url_prefix }}skills/{{ skill.skill.icon_filename }}" loading="lazy" />
                     <span class="image-plus image-plus-right">{{ skill.level }}/{{ skill.skill.max_level }}</span>
                 </div>
                 <p>
@@ -57,7 +57,7 @@
                 {% endif %}
                 {% for effect in skill.skill.skill_effect.all %}
                     {% if effect.icon_filename %}
-                    <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left"
+                    <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left" loading="lazy" 
                             data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
                             />
                     {% else %}

@@ -27,7 +27,7 @@
                 <a href="#{{ team.pk.hex }}" class="list-group-item team-link" data-team-id="{{ team.pk.hex }}">
                     {{ team.name }}
                     {% if team.favorite %}
-                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" />
+                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" loading="lazy" />
                     {% endif %}
                 </a>
             {% empty %}

@@ -31,7 +31,7 @@ $.fn.editable.defaults.container = 'body';
 function iconSelect2Template(option) {
     if (option.id) {
         var resource_url = $(option.element).data('image');
-        return $('<span><img src="' + resource_url + '" /> ' + option.text + '</span>');
+        return $('<span><img src="' + resource_url + '" loading="lazy" /> ' + option.text + '</span>');
     }
     else {
         return option.text;

@@ -16,7 +16,7 @@
                     <span class="glyphicon glyphicon-th"></span> Grid
                 </button>
                 <button class="btn btn-default rune-view-mode" data-mode="crafts">
-                    <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" />
+                    <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" loading="lazy" />
                 </button>
             </div>
             <span class="pull-right">{{ filtered_count }} of {{ total_count }} rune{{ total_count|pluralize }}</span>
@@ -65,7 +65,7 @@
                     </td>
                     <td>{{ rune.slot }}</td>
                     <td>{{ rune.stars }}</td>
-                    <td>{% if rune.value %}<img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" /> {{ rune.value }}{% endif %}</td>
+                    <td>{% if rune.value %}<img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" loading="lazy" /> {{ rune.value }}{% endif %}</td>
                     <td>{% if rune.efficiency %}{{ rune.efficiency|floatformat:1 }}%{% endif %}</td>
                     <td>{% if rune.max_efficiency %}{{ rune.max_efficiency|floatformat:1 }}%{% endif %}</td>
                     <td>{% if rune.get_hp_pct %}<span {% if rune.main_stat == rune.STAT_HP_PCT %}class="lead"{% endif %}>{{ rune.get_hp_pct }}%</span>{% endif %}</td>
@@ -84,15 +84,15 @@
                         <span class="hidden">{{ rune.assigned_to.monster.name }}-{{ rune.assigned_to.pk }}</span>
                         <div class="monster-image">
                             <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}" target="_blank">
-                                <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb"/>
+                                <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb" loading="lazy" />
                                 <span>
                                     {% for x in rune.assigned_to.stars|get_range %}
                                         {% if rune.assigned_to.monster.is_awakened %}
-                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                         {% elif rune.assigned_to.monster.can_awaken %}
-                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                         {% else %}
-                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                         {% endif %}
                                     {% endfor %}
                                 </span>

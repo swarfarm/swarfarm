@@ -21,7 +21,7 @@
                 {% if user.is_authenticated %}
                     <li {% if view == 'profile' and is_owner %}class="active"{% endif %}>
                          <a href="{% url 'herders:profile_default' profile_name=user.username %}">
-                            <img src="{% static 'herders/images/icons/monster.png' %}" /> My Profile
+                            <img src="{% static 'herders/images/icons/monster.png' %}" loading="lazy" /> My Profile
                         </a>
                     </li>
                 {% endif %}
@@ -34,7 +34,7 @@
 
                 <li {% if view == 'dungeons' %}class="active"{% endif %}>
                     <a href="{% url 'bestiary:dungeons' %}">
-                        <img src="{% static 'herders/images/icons/battle.png' %}" alt="dungeon icon" /> Dungeons
+                        <img src="{% static 'herders/images/icons/battle.png' %}" alt="dungeon icon" loading="lazy" /> Dungeons
                     </a>
                 </li>
                 <li {% if view == 'data_reports' %}class="active"{% endif %}>

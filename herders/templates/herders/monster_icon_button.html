@@ -3,15 +3,15 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <button class="btn btn-link monster-image {{ extra_classes }}" data-monster-id="{{ monster_id }}" data-stars="{{ stars }}" data-level="{{ level }}">
-    <img src="{{ img_url_prefix }}monsters/{{ filename }}" class="monster-thumb"/>
+    <img src="{{ img_url_prefix }}monsters/{{ filename }}" class="monster-thumb" loading="lazy" />
     <span>
         {% for x in stars|get_range %}
             {% if awakened %}
-                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
             {% elif can_awaken %}
-                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
             {% else %}
-                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
             {% endif %}
         {% endfor %}
     </span>

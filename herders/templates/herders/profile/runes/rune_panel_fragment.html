@@ -35,15 +35,15 @@
             <div class="rune-assigned-to">
                 <div class="monster-image">
                     <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}" target="_blank">
-                        <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb"/>
+                        <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb" loading="lazy" />
                         <span>
                             {% for x in rune.assigned_to.stars|get_range %}
                                 {% if rune.assigned_to.monster.is_awakened %}
-                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% elif rune.assigned_to.monster.can_awaken %}
-                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% else %}
-                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% endif %}
                             {% endfor %}
                         </span>
@@ -57,7 +57,7 @@
                 <li>
                     Orig: <span class="label rune-label-{{ rune.get_original_quality_display|lower }}">
                         {% if rune.ancient %}
-                            <img src="{{ img_url_prefix }}runes/ancient.png" class="inline-icon" alt="Ancient icon" />
+                            <img src="{{ img_url_prefix }}runes/ancient.png" class="inline-icon" alt="Ancient icon" loading="lazy" />
                         {% endif %}
                         {{ rune.get_original_quality_display }}
                     </span>
@@ -65,7 +65,7 @@
             {% endif %}
             {% if rune.value %}
                 <li class="mana-crystals">
-                    <img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" /> {{ rune.value }}
+                    <img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" loading="lazy" /> {{ rune.value }}
                     {% if rune.marked_for_sale %}<span class="glyphicon glyphicon-piggy-bank" data-toggle="tooltip" data-placement="top" title="Marked for Sale"></span>{% endif %}
                 </li>
             {% endif %}

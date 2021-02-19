@@ -32,21 +32,21 @@
             <td>{{ log.timestamp }}</td>
             <td>
                 <div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ log.item.name }}">
-                    <img src="{{ img_url_prefix }}items/{{ log.item.icon }}" class="monster-thumb"/>
+                    <img src="{{ img_url_prefix }}items/{{ log.item.icon }}" class="monster-thumb" loading="lazy" />
                 </div>
             </td>
             <td>
                 <a href="{% url 'bestiary:detail' monster_slug=log.monster.bestiary_slug %}" class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ log.monster.get_element_display }} {{ log.monster.name }}">
                     <div>
-                        <img src="{{ img_url_prefix }}monsters/{{ log.monster.image_filename }}" class="monster-thumb"/>
+                        <img src="{{ img_url_prefix }}monsters/{{ log.monster.image_filename }}" class="monster-thumb" loading="lazy" />
                         <span>
                             {% for x in log.grade|get_range %}
                                 {% if log.monster.is_awakened %}
-                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% elif log.monster.can_awaken %}
-                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% else %}
-                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% endif %}
                             {% endfor %}
                         </span>

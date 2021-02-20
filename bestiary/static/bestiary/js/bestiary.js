@@ -33,19 +33,10 @@ function update_bestiary_form_with_query(){
 
 function clean_bestiary_url_data(data){
     var cleanedParams = clean_query_params(data)
-    // We only get multi slider values after using `clean_query_params` function
-    // Need to check if these values are equal min-max, if yes -> delete them from query
-    // Because there's no point in using Filter without any effect
     var params = new URLSearchParams(cleanedParams)
     var multiSliderParams = ['natural_stars', 'skills__cooltime', 'skills__hits']
-    for (let name of multiSliderParams) {
-        var [valueMin, valueMax] = params.get(name).split(',')
-        var el = $("input[name='" + name + "']")
-        if(el.attr("data-slider-min") === valueMin && el.attr("data-slider-max") === valueMax){
-            params.delete(name)    
-        }
-    }
-    return params.toString()
+    var newData = clean_multi_slider_min_max_params(params, multiSliderParams)
+    return newData
 }
 
 function update_inventory() {
@@ -124,15 +115,7 @@ $('body')
             url: $form.attr('action'),
             data: formData
         }).done(function (data) {
-            // Create URL with Filter fields
-            var params_start = this.url.lastIndexOf('/?')
-            if (params_start > -1){
-                var index_start = Math.min(params_start + 2, this.url.length - 1) // +2 because /? are 2 symbols
-                var params = clean_query_params(this.url.substring(index_start))
-                $("#idapply").remove() // Apply button adds something to data :/
-                history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/inventory/')) + '/?' + params)
-            }
-            //
+            history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/inventory/')) + '/?' + formData)
 
             ToggleLoading($('body'), false);
             $('#bestiary-inventory').replaceWith(data);

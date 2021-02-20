@@ -350,7 +350,7 @@ $('body')
             url: $form.attr('action'),
             data: formData
         }).done(function (data) {
-            history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/inventory/')) + '/?' + formData)
+            history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/monster/inventory/')) + '/?' + formData)
 
             ToggleLoading($('body'), false);
             $('#monster-inventory').replaceWith(data);
@@ -409,8 +409,8 @@ $('body')
         });
 
         // Toggle button
-        $("input[name='effects_logic']").prop("checked", true);
-        $("input[name='effects_logic']").parent().removeClass('off');
+        $("input[name='effects_logic']").prop("checked", false);
+        $("input[name='effects_logic']").parent().addClass('off');
         
         update_monster_inventory();
     });

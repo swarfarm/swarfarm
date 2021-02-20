@@ -53,7 +53,6 @@ class MonsterFilter(django_filters.FilterSet):
             return queryset
 
     def filter_skill_effects(self, queryset, name, value):
-        print(self.form.cleaned_data)
         old_filtering = self.form.cleaned_data.get('effects_logic', False)
         stat_scaling = self.form.cleaned_data.get('skills__scaling_stats__pk', [])
         passive = self.form.cleaned_data.get('skills__passive', None)

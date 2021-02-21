@@ -33,6 +33,14 @@ function update_rune_form_with_query(){
     update_form_toggle_from_query(params, 'substat_reverse');
 }
 
+function clean_rune_url_data(data){
+    var cleanedParams = clean_query_params(data)
+    var params = new URLSearchParams(cleanedParams)
+    var multiSliderParams = ['stars', 'has_grind', 'level']
+    var newData = clean_multi_slider_min_max_params(params, multiSliderParams)
+    return newData
+}
+
 function update_rune_inventory() {
     $('#FilterInventoryForm').submit();
 }
@@ -346,20 +354,13 @@ $('body')
         ToggleLoading($('body'), true);
 
         var $form = $(this);
+        var formData = clean_rune_url_data($form.serialize())
         $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),
-            data: $form.serialize()
+            data: formData
         }).done(function (data) {
-            // Create URL with Filter fields
-            var params_start = this.url.lastIndexOf('/?')
-            if (params_start > -1){
-                var index_start = Math.min(params_start + 2, this.url.length - 1) // +2 because /? are 2 symbols
-                var params = clean_query_params(this.url.substring(index_start))
-                $("#idapply").remove() // Apply button adds something to data :/
-                history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/inventory/')) + '/?' + params)
-            }
-            //
+            history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/inventory/')) + '/?' + formData)
 
             ToggleLoading($('body'), false);
             $('#rune-inventory').replaceWith(data);

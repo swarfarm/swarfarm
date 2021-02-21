@@ -10,7 +10,7 @@
     <div class="monster-box-thumb">
         {% include 'bestiary/monster/portrait_large.html' with monster=piece.monster only %}
         <div class="image-plus-icon">
-            {% if piece.monster.fusion_food %}<img src="{{ img_url_prefix }}icons/fusion.png" />{% endif %}
+            {% if piece.monster.fusion_food %}<img src="{{ img_url_prefix }}icons/fusion.png" loading="lazy" />{% endif %}
         </div>
         <span class="image-plus image-plus-left">x{{ piece.pieces }} Pieces</span>
     </div>

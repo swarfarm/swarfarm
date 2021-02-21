@@ -10,7 +10,7 @@
                     <p class="list-group-item-text">
                         {% for set in runes.sets %}
                             <div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ set.type }}">
-                                <img src="{{ img_url_prefix }}runes/{{ set.type|lower }}.png" alt="{{ set.type }}" class="monster-thumb" />
+                                <img src="{{ img_url_prefix }}runes/{{ set.type|lower }}.png" alt="{{ set.type }}" class="monster-thumb" loading="lazy" />
                             </div>
                         {% endfor %}
                     </p>

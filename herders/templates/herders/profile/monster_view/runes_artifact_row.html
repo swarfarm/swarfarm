@@ -1,6 +1,6 @@
 <tr {% if artifact %}class="artifact-popover" data-artifact-id="{{ artifact.pk.hex }}"{% endif %}>
     <td style="vertical-align:middle;width:115px">
-        <img src="{{ img_url_prefix }}artifacts/{{ slot }}.png" alt="{{ slot }} icon">
+        <img src="{{ img_url_prefix }}artifacts/{{ slot }}.png" alt="{{ slot }} icon" loading="lazy" >
         {{ slot|capfirst }}
     </td>
     <td>

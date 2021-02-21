@@ -4,7 +4,7 @@
 <ul class="list-unstyled">
     <li>
         <div class="monster-skill-thumb pull-left">
-            <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
+            <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
             <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
         </div>
         <p>
@@ -32,7 +32,7 @@
         {% endif %}
         {% for effect in skill.skill_effect %}
             {% if effect.icon_filename %}
-                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect" />
+                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect" loading="lazy" />
             {% else %}
                 <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}">
                     <span>{{ effect.name }}</span>

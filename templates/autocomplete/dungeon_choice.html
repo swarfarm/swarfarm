@@ -4,6 +4,6 @@
 {% spaceless %}
     {% static 'herders/images/' as img_url_prefix %}
     <span data-value="{{ choice.pk }}">
-        {% if choice.icon %}<img src="{{ img_url_prefix }}dungeons/{{ choice.icon }}"/>{% endif %} <span style="padding-left:5px">{{ choice }} ({{ choice.get_category_display }})</span>
+        {% if choice.icon %}<img src="{{ img_url_prefix }}dungeons/{{ choice.icon }}" loading="lazy" />{% endif %} <span style="padding-left:5px">{{ choice }} ({{ choice.get_category_display }})</span>
     </span>
 {% endspaceless %}

@@ -27,7 +27,7 @@
         {% endif %}
     </td>
     <td class="monster-element">
-        <img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" />
+        <img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" loading="lazy" />
         <span>{{ instance.monster.element }}</span>
     </td>
     <td>{{ instance.monster.get_archetype_display }}</td>
@@ -45,7 +45,7 @@
     <td class="monster-leader-skill">
         {% if instance.monster.leader_skill %}
         <div>
-            <img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}"
+            <img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}" loading="lazy"
                  data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
             <span class="image-plus image-plus-top-left">{{ instance.monster.leader_skill.amount }}%</span>
         </div>
@@ -54,21 +54,21 @@
     <td class="monster-awakens">
         {% if instance.monster.awakens_from %}
         <a href="{% url 'bestiary:detail' monster_slug=instance.monster.awakens_from.bestiary_slug %}">
-            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.awakens_from.image_filename }}" class="monster-thumb"/> {{ instance.monster.awakens_from.name }}
+            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.awakens_from.image_filename }}" class="monster-thumb" loading="lazy"/> {{ instance.monster.awakens_from.name }}
         </a>
         {% endif %}
     </td>
     <td class="monster-awakens">
         {% if instance.monster.awakens_to %}
         <a href="{% url 'bestiary:detail' monster_slug=instance.monster.awakens_to.bestiary_slug %}">
-            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.awakens_to.image_filename }}" class="monster-thumb"/> {{ instance.monster.awakens_to.name }}
+            <img src="{{ img_url_prefix }}monsters/{{ instance.monster.awakens_to.image_filename }}" class="monster-thumb" loading="lazy"/> {{ instance.monster.awakens_to.name }}
         </a>
         {% endif %}
     </td>
     <td class="monster-awaken-materials">
         {% for skill in instance.monster.skills.all %}
             <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
-                <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" />
+                <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
                 {% if forloop.counter == 1 %}
                 <span class="image-plus image-plus-right">{{ instance.skill_1_level }}/{{ skill.max_level }}</span>
                 {% elif forloop.counter == 2 %}
@@ -84,7 +84,7 @@
     <td>
         {% if instance.skill_ups_to_max > 0 %}
         <div class="monster-image">
-            <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+            <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb" loading="lazy"/>
             <span class="image-plus image-plus-main">{{ instance.skill_ups_to_max }}</span>
         </div>
         {% else %}
@@ -144,10 +144,10 @@
     </td>
     <td class="monster-info-icons-column">
         {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
-            <img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion"/>
+            <img src="{{ img_url_prefix }}icons/fusion.png"  data-toggle="tooltip" data-placement="top" title="Used in monster fusion" loading="lazy"/>
             <span class="hidden">0</span>
         {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
-            <img src="{{ img_url_prefix }}icons/fusion_ignored.png"  data-toggle="tooltip" data-placement="top" title="Ignored for monster fusion"/>
+            <img src="{{ img_url_prefix }}icons/fusion_ignored.png"  data-toggle="tooltip" data-placement="top" title="Ignored for monster fusion" loading="lazy"/>
             <span class="hidden">1</span>
         {% else %}
             <span class="hidden">2</span>

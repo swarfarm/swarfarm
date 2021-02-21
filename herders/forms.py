@@ -717,42 +717,30 @@ class FilterMonsterInstanceForm(forms.Form):
         self.cleaned_data['in_storage'] = choices.get(self.cleaned_data.get('in_storage', 'None'), None)
         self.cleaned_data['monster__fusion_food'] = choices.get(self.cleaned_data.get('monster__fusion_food', 'None'), None)
 
-        # Split the slider ranges into two min/max fields for the filters
+        # Split the slider ranges into two min/max fields for the automatic filters
         try:
             [min_lv, max_lv] = self.cleaned_data['level'].split(',')
+            self.cleaned_data['level__gte'] = int(min_lv)
+            self.cleaned_data['level__lte'] = int(max_lv)
         except:
-            min_lv = 1
-            max_lv = 40
-
-        self.cleaned_data['level__gte'] = int(min_lv)
-        self.cleaned_data['level__lte'] = int(max_lv)
+            self.cleaned_data['level__gte'] = None
+            self.cleaned_data['level__lte'] = None
 
         try:
             [min_stars, max_stars] = self.cleaned_data['stars'].split(',')
+            self.cleaned_data['stars__gte'] = int(min_stars)
+            self.cleaned_data['stars__lte'] = int(max_stars)
         except:
-            min_stars = 1
-            max_stars = 6
-
-        self.cleaned_data['stars__gte'] = int(min_stars)
-        self.cleaned_data['stars__lte'] = int(max_stars)
+            self.cleaned_data['stars__gte'] = None
+            self.cleaned_data['stars__lte'] = None
 
         try:
             [min_nat_stars, max_nat_stars] = self.cleaned_data['monster__natural_stars'].split(',')
+            self.cleaned_data['monster__natural_stars__gte'] = int(min_nat_stars)
+            self.cleaned_data['monster__natural_stars__lte'] = int(max_nat_stars)
         except:
-            min_nat_stars = 1
-            max_nat_stars = 5
-
-        self.cleaned_data['monster__natural_stars__gte'] = int(min_nat_stars)
-        self.cleaned_data['monster__natural_stars__lte'] = int(max_nat_stars)
-
-        try:
-            [min_hits, max_hits] = self.cleaned_data['monster__skills__hits'].split(',')
-        except:
-            min_hits = 0
-            max_hits = 7
-
-        self.cleaned_data['monster__skills__hits__gte'] = int(min_hits)
-        self.cleaned_data['monster__skills__hits__lte'] = int(max_hits)
+            self.cleaned_data['monster__natural_stars__gte'] = None
+            self.cleaned_data['monster__natural_stars__lte'] = None
 
 
 # MonsterPiece forms

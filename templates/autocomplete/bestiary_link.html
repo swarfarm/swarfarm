@@ -3,6 +3,6 @@
 {% spaceless %}
     {% static 'herders/images/' as img_url_prefix %}
     <span data-redirect-url="{% url 'bestiary:detail' monster_slug=choice.bestiary_slug %}">
-        <img src="{{ img_url_prefix }}monsters/{{ choice.image_filename }}"/> <span>{{ choice }}</span>
+        <img src="{{ img_url_prefix }}monsters/{{ choice.image_filename }}" loading="lazy" /> <span>{{ choice }}</span>
     </span>
 {% endspaceless %}

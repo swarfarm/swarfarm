@@ -10,7 +10,7 @@
                     <div class="rune-symbol {{ choice.get_type_display|lower }}"></div>
                 </div>
                 {% for x in choice.stars|get_range %}
-                <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" />
+                <img class="star star-{{ forloop.counter }}" src="{{ img_url_prefix }}stars/star-unawakened.png" loading="lazy" />
                 {% endfor %}
                 <span class="image-plus image-plus-right">+{{ choice.level }}</span>
             </div>

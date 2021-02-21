@@ -101,7 +101,7 @@ class GameItem(models.Model):
     def image_tag(self):
         if self.icon:
             path = static('herders/images/items/' + self.icon)
-            return mark_safe(f'<img src="{path}" height="42" width="42"/>')
+            return mark_safe(f'<img src="{path}" height="42" width="42" loading="lazy" />')
         else:
             return 'No Image'
 
@@ -188,7 +188,7 @@ class Building(models.Model, base.Elements):
 
     def image_url(self):
         if self.icon_filename:
-            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/buildings/' + self.icon_filename))
+            return mark_safe('<img src="%s" height="42" width="42" loading="lazy" />' % static('herders/images/buildings/' + self.icon_filename))
         else:
             return 'No Image'
 
@@ -205,7 +205,7 @@ class Source(models.Model):
 
     def image_url(self):
         if self.icon_filename:
-            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/icons/' + self.icon_filename))
+            return mark_safe('<img src="%s" height="42" width="42" loading="lazy" />' % static('herders/images/icons/' + self.icon_filename))
         else:
             return 'No Image'
 

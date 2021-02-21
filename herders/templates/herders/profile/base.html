@@ -32,25 +32,25 @@
         <ul class="nav navmenu-nav">
             <li {% if view == 'profile' %}class="dropdown open"{% endif %}>
                  <a href="{% url 'herders:profile_default' profile_name=profile_name %}">
-                    <img src="{% static 'herders/images/icons/monster.png' %}" /> Monsters
+                    <img src="{% static 'herders/images/icons/monster.png' %}" loading="lazy" /> Monsters
                 </a>
                 {% block monster_menu %}{% endblock monster_menu %}
             </li>
             <li {% if view == 'runes' and is_owner %}class="dropdown open"{% endif %}>
                 <a href="{% url 'herders:runes' profile_name=profile_name %}">
-                    <img src="{% static 'herders/images/icons/rune.png' %}" /> Runes
+                    <img src="{% static 'herders/images/icons/rune.png' %}" loading="lazy" /> Runes
                 </a>
                 {% block rune_menu %}{% endblock rune_menu %}
             </li>
             <li {% if view == 'artifacts' and is_owner %}class="dropdown open"{% endif %}>
                 <a href="{% url 'herders:artifacts' profile_name=profile_name %}">
-                    <img src="{% static 'herders/images/icons/artifact.png' %}" /> Artifacts
+                    <img src="{% static 'herders/images/icons/artifact.png' %}" loading="lazy" /> Artifacts
                 </a>
                 {% block artifact_menu %}{% endblock artifact_menu %}
             </li>
             <li {% if view == 'fusion' %}class="dropdown open"{% endif %}>
                 <a href="{% url 'herders:fusion' profile_name=profile_name %}">
-                    <img src="{% static 'herders/images/icons/fusion.png' %}" /> Fusion
+                    <img src="{% static 'herders/images/icons/fusion.png' %}" loading="lazy" /> Fusion
                 </a>
                 {% block fusion_menu %}{% endblock fusion_menu %}
             </li>

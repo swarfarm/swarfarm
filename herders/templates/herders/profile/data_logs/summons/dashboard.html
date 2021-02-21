@@ -41,7 +41,7 @@
                         <a href="{% url 'herders:data_log_summons_table' profile_name=profile_name %}" class="list-group-item">View As Table</a>
                         {% for item in item_list %}
                             <a href="{% url 'herders:data_log_summons_detail' profile_name=profile_name slug=item.slug %}" class="list-group-item">
-                                <img src="{{ img_url_prefix }}items/{{ item.icon }}" class="image-inline" alt="{{ item.name }} icon" />
+                                <img src="{{ img_url_prefix }}items/{{ item.icon }}" class="image-inline" alt="{{ item.name }} icon" loading="lazy" />
                                 {{ item }}
                             </a>
                         {% endfor %}

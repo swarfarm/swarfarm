@@ -77,7 +77,7 @@
         <td colspan="4" style="position:relative">
             {% for skill in instance.monster.skills %}
             <div class="monster-image" style="position:relative">
-                <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" />
+                <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" class="monster-thumb" loading="lazy" />
                 {% if skill.max_level > 1 %}
                 <span class="image-plus image-plus-right">
                     {% if forloop.counter == 1 %}

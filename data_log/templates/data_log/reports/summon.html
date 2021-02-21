@@ -31,7 +31,7 @@
                     <div class="list-group">
                         {% for item in item_list %}
                             <a href="{% url 'data_log:summon_detail' slug=item.slug %}" class="list-group-item">
-                                <img src="{{ img_url_prefix }}items/{{ item.icon }}" class="image-inline" alt="{{ item.name }} icon" />
+                                <img src="{{ img_url_prefix }}items/{{ item.icon }}" class="image-inline" alt="{{ item.name }} icon" loading="lazy" />
                                 {{ item }}
                             </a>
                         {% endfor %}

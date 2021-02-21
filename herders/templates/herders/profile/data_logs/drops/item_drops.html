@@ -3,7 +3,7 @@
 
 {% for drop in drops %}
 <div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ drop.item.name }}">
-    <img src="{{ img_url_prefix }}items/{{ drop.item.icon }}" class="monster-thumb"/>
+    <img src="{{ img_url_prefix }}items/{{ drop.item.icon }}" class="monster-thumb" loading="lazy" />
     <span class="image-plus image-plus-right">{{ drop.quantity }}</span>
 </div>
 {% endfor %}

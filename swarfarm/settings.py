@@ -148,6 +148,17 @@ MIDDLEWARE = [
 if DEBUG:
     MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
 
+    DEBUG_TOOLBAR_PANELS = [
+        'ddt_request_history.panels.request_history.RequestHistoryPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+    ]
+    DEBUG_TOOLBAR_CONFIG = {
+        'RESULTS_STORE_SIZE': 1000,
+    }
+
 # Bugsnag
 if env('BUGSNAG_API_KEY'):
     MIDDLEWARE = ['bugsnag.django.middleware.BugsnagMiddleware'] + MIDDLEWARE

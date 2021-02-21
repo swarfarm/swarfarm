@@ -22,7 +22,7 @@
                             <h4 class="list-group-item-heading">{{ essence.name }}</h4>
                         </div>
                         <div class="list-group-item">
-                            <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_low.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_low.png" class="monster-inline pull-left" loading="lazy" />
                             <div class="inline-editable essence-input"
                                  data-type="number"
                                  data-name="{{ essence.field_name }}.low"
@@ -34,7 +34,7 @@
                             </div>
                         </div>
                         <div class="list-group-item">
-                            <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_mid.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_mid.png" class="monster-inline pull-left" loading="lazy" />
                             <div class="inline-editable essence-input"
                                  data-type="number"
                                  data-name="{{ essence.field_name }}.mid"
@@ -46,7 +46,7 @@
                             </div>
                         </div>
                         <div class="list-group-item">
-                            <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_high.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_high.png" class="monster-inline pull-left" loading="lazy" />
                             <div class="inline-editable essence-input"
                                  data-type="number"
                                  data-name="{{ essence.field_name }}.high"
@@ -75,7 +75,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <p>{{ craft.name }}</p>
-                            <img src="{{ img_url_prefix }}items/craft_material_{{ craft.field_name }}.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}items/craft_material_{{ craft.field_name }}.png" class="monster-inline pull-left" loading="lazy" />
                             <div id="craft_{{ craft.field_name }}"
                                  class="inline-editable essence-input"
                                  data-type="number"
@@ -105,7 +105,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <p>{{ monster.name }}</p>
-                            <img src="{{ img_url_prefix }}items/monster_{% if 'rainbowmon' in monster.field_name %}rainbowmon{% else %}{{ monster.field_name }}{% endif %}.png" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}items/monster_{% if 'rainbowmon' in monster.field_name %}rainbowmon{% else %}{{ monster.field_name }}{% endif %}.png" class="monster-inline pull-left" loading="lazy" />
                             <div id="craft_{{ monster.field_name }}"
                                  class="inline-editable essence-input"
                                  data-type="number"
@@ -135,7 +135,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body condensed">
                             <p>{{ monster.name }}</p>
-                            <img src="{{ img_url_prefix }}monsters/{{ monster.img }}" class="monster-inline pull-left" />
+                            <img src="{{ img_url_prefix }}monsters/{{ monster.img }}" class="monster-inline pull-left" loading="lazy" />
                             <div id="monster_{{ monster.field_name }}" class="essence-input">
                                 {{ monster.qty }}
                             </div>

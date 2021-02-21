@@ -5,7 +5,7 @@
 {% for drop in drops %}
 <a href="{% url 'bestiary:detail' monster_slug=drop.monster.bestiary_slug %}" class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ drop.monster.name }} pieces">
     <div>
-        <img src="{{ img_url_prefix }}monsters/{{ drop.monster.image_filename }}" class="monster-thumb"/>
+        <img src="{{ img_url_prefix }}monsters/{{ drop.monster.image_filename }}" class="monster-thumb" loading="lazy" />
         <span class="image-plus image-plus-main fa fa-puzzle-piece"></span>
         <span class="image-plus image-plus-right">x{{ drop.quantity }}</span>
     </div>

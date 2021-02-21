@@ -31,6 +31,14 @@ function update_bestiary_form_with_query(){
     update_form_toggle_from_query(params, 'effects_logic');
 }
 
+function clean_bestiary_url_data(data){
+    var cleanedParams = clean_query_params(data)
+    var params = new URLSearchParams(cleanedParams)
+    var multiSliderParams = ['natural_stars', 'skills__cooltime', 'skills__hits']
+    var newData = clean_multi_slider_min_max_params(params, multiSliderParams)
+    return newData
+}
+
 function update_inventory() {
     $('#FilterBestiaryForm').submit();
 }
@@ -101,20 +109,13 @@ $('body')
         ToggleLoading($('body'), true);
 
         var $form = $(this);
+        var formData = clean_bestiary_url_data($form.serialize())
         $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),
-            data: $form.serialize()
+            data: formData
         }).done(function (data) {
-            // Create URL with Filter fields
-            var params_start = this.url.lastIndexOf('/?')
-            if (params_start > -1){
-                var index_start = Math.min(params_start + 2, this.url.length - 1) // +2 because /? are 2 symbols
-                var params = clean_query_params(this.url.substring(index_start))
-                $("#idapply").remove() // Apply button adds something to data :/
-                history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/inventory/')) + '/?' + params)
-            }
-            //
+            history.replaceState({}, "", this.url.substring(0, this.url.indexOf('/inventory/')) + '/?' + formData)
 
             ToggleLoading($('body'), false);
             $('#bestiary-inventory').replaceWith(data);

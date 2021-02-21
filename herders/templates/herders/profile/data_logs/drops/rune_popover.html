@@ -23,7 +23,7 @@
         {% endif %}
         {% if drop.value %}
             <li class="mana-crystals">
-                <img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" /> {{ drop.value }}
+                <img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" loading="lazy" /> {{ drop.value }}
             </li>
         {% endif %}
         {% if drop.efficiency %}<li>Eff: {{ drop.efficiency|floatformat:1 }}%</li>{% endif %}

@@ -129,7 +129,7 @@ class Monster(models.Model, base.Elements, base.Stars, base.Archetype):
 
     def image_url(self):
         if self.image_filename:
-            return mark_safe('<img src="%s" height="42" width="42"/>' % static('herders/images/monsters/' + self.image_filename))
+            return mark_safe('<img src="%s" height="42" width="42" loading="lazy" />' % static('herders/images/monsters/' + self.image_filename))
         else:
             return 'No Image'
 

@@ -14,9 +14,9 @@
             <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
             <div class="image-plus-icon">
                 {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
-                    <img src="{{ img_url_prefix }}icons/fusion.png" />
+                    <img src="{{ img_url_prefix }}icons/fusion.png" loading="lazy" />
                 {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
-                    <img src="{{ img_url_prefix }}icons/fusion_ignored.png" />
+                    <img src="{{ img_url_prefix }}icons/fusion_ignored.png" loading="lazy" />
                 {% endif %}
                 {% if instance.ignore_for_fusion %}
                     <span class="fa-stack">
@@ -44,7 +44,7 @@
             {% else %}
                 <h1>{{ instance.monster.name }}</h1>
             {% endif %}
-            <p class="lead"><img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" style="height:1em"/> {{ instance.monster.get_archetype_display }}</p>
+            <p class="lead"><img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" style="height:1em" loading="lazy" /> {{ instance.monster.get_archetype_display }}</p>
         </div>
     </div>
     <table class="table table-condensed table-bordered">
@@ -62,10 +62,10 @@
                 <td>
                     <span class="monster-image">
                         <a href="{% url 'bestiary:detail' monster_slug=awakened.bestiary_slug %}" target="_blank">
-                            <img src="{{ img_url_prefix }}monsters/{{ awakened.image_filename }}" class="monster-thumb"/>
+                            <img src="{{ img_url_prefix }}monsters/{{ awakened.image_filename }}" class="monster-thumb" loading="lazy" />
                             <span>
                                 {% for x in awakened.base_stars|get_range %}
-                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                 {% endfor %}
                             </span>
                         </a>
@@ -109,7 +109,7 @@
             <td class="monster-sources">
                 {% for source in instance.monster.source.all %}
                     {% if source.icon_filename %}
-                    <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}"
+                    <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}" loading="lazy" 
                          class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
                     {% else %}
                     <span class="monster-source"><span>{{ source }}</span></span>
@@ -124,15 +124,15 @@
                     {% for fusion in fusion_ingredient_in %}
                     <div class="monster-image">
                         <a href="{% url 'herders:fusion' profile_name=profile_name %}#{{ fusion.product.bestiary_slug }}">
-                            <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb"/>
+                            <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-thumb" loading="lazy" />
                             <span>
                                 {% for x in fusion.product.base_stars|get_range %}
                                     {% if fusion.product.is_awakened %}
-                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                     {% elif fusion.product.can_awaken %}
-                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                     {% else %}
-                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                     {% endif %}
                                 {% endfor %}
                             </span>
@@ -148,15 +148,15 @@
                 <td>
                     <div class="monster-image">
                         <a href="{% url 'herders:fusion' profile_name=profile_name %}#{{ fusion_product_of.product.bestiary_slug }}">
-                            <img src="{{ img_url_prefix }}monsters/{{ fusion_product_of.product.image_filename }}" class="monster-thumb"/>
+                            <img src="{{ img_url_prefix }}monsters/{{ fusion_product_of.product.image_filename }}" class="monster-thumb" loading="lazy" />
                             <span>
                                 {% for x in fusion_product_of.product.base_stars|get_range %}
                                     {% if fusion_product_of.product.is_awakened %}
-                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                     {% elif fusion_product_of.product.can_awaken %}
-                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                     {% else %}
-                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                     {% endif %}
                                 {% endfor %}
                             </span>
@@ -199,7 +199,7 @@
                 {% else %}
                     {% if skillups.devilmon %}
                     <div class="monster-image">
-                        <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb"/>
+                        <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb" loading="lazy" />
                         <span class="image-plus image-plus-main">{{ skillups.devilmon }}</span>
                     </div>
                     {% endif %}
@@ -208,15 +208,15 @@
                             <div class="monster-image pull-left monster-popover" data-instance-id="{{ food_mon.pk.hex }}" title="{{ food_mon.monster.name }} - {{ food_mon.monster.get_element_display }} {% if food_mon.monster.awakens_from %}{{ food_mon.monster.awakens_from.name }}{% endif %}">
                                 <div>
                                     <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=food_mon.pk.hex %}?next={{ return_path }}#edit">
-                                        <img src="{{ img_url_prefix }}monsters/{{ food_mon.monster.image_filename }}" class="monster-thumb"/>
+                                        <img src="{{ img_url_prefix }}monsters/{{ food_mon.monster.image_filename }}" class="monster-thumb" loading="lazy" />
                                         <span>
                                             {% for x in food_mon.stars|get_range %}
                                                 {% if food_mon.monster.is_awakened %}
-                                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                    <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                                 {% elif food_mon.monster.can_awaken %}
-                                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                    <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                                 {% else %}
-                                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" />
+                                                    <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
                                                 {% endif %}
                                             {% endfor %}
                                         </span>
@@ -233,7 +233,7 @@
                         {% for piece in skillups.pieces %}
                             <div class="monster-image pull-left">
                                 <div>
-                                    <img src="{{ img_url_prefix }}monsters/{{ piece.monster.image_filename }}" class="monster-thumb"/>
+                                    <img src="{{ img_url_prefix }}monsters/{{ piece.monster.image_filename }}" class="monster-thumb" loading="lazy" />
                                     <span class="image-plus image-plus-main fa fa-puzzle-piece"></span>
                                     <span class="image-plus image-plus-right">x{{ piece.pieces }}</span>
                                 </div>
@@ -242,7 +242,7 @@
                     {% endif %}
                     {% if skillups.family_shrine %}
                     <div class="monster-image">
-                        <img src="{{ img_url_prefix }}buildings/monster_shrine.png" class="monster-thumb"/>
+                        <img src="{{ img_url_prefix }}buildings/monster_shrine.png" class="monster-thumb" loading="lazy" />
                         <span class="image-plus image-plus-main">{{ skillups.family_shrine }}</span>
                     </div>
                     {% endif %}

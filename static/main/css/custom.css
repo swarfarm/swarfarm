@@ -1200,3 +1200,7 @@ button.rune-assign-choice {
 .ml-10{
   margin-left: 10px;
 }
+
+.table-responsive{
+  overflow-y: hidden;
+}

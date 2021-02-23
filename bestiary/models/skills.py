@@ -243,6 +243,17 @@ class SkillEffectOtherManager(models.Manager):
 
 
 class SkillEffect(models.Model):
+    TYPE_DEBUFF = -1
+    TYPE_NEUTRAL = 0
+    TYPE_BUFF = 1
+
+    TYPE_CHOICES = (
+        (TYPE_DEBUFF, 'Debuff'),
+        (TYPE_NEUTRAL, 'Neutral'),
+        (TYPE_BUFF, 'Buff'),
+    )
+
+    type = models.IntegerField(choices=TYPE_CHOICES, default=TYPE_NEUTRAL)
     is_buff = models.BooleanField(default=True, help_text='Effect is beneficial to affected monster')
     name = models.CharField(max_length=40)
     description = models.TextField()

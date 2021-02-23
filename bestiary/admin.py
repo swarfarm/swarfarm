@@ -167,7 +167,7 @@ class LeaderSkillAdmin(admin.ModelAdmin):
 
 @admin.register(models.SkillEffect)
 class EffectAdmin(admin.ModelAdmin):
-    list_display = ('image_url', 'name', 'description', 'is_buff')
+    list_display = ('image_url', 'name', 'description', 'type')
 
 
 @admin.register(models.ScalingStat)

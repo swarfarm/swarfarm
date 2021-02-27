@@ -15,7 +15,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__leader_skill__attribute = django_filters.MultipleChoiceFilter(choices=LeaderSkill.ATTRIBUTE_CHOICES)
     monster__leader_skill__area = django_filters.MultipleChoiceFilter(choices=LeaderSkill.AREA_CHOICES)
     monster__skills__scaling_stats__pk = django_filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
-    monster__skills__skill_effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_monster__skills__skill_effect__pk')
+    monster__skills__effect__pk = django_filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_monster__skills__effect__pk')
     monster__skills__cooltime = django_filters.CharFilter(method='filter_bypass')
     monster__skills__hits = django_filters.CharFilter(method='filter_bypass')
     monster__skills__passive = django_filters.BooleanFilter(method='filter_bypass')
@@ -37,7 +37,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'monster__natural_stars': ['gte', 'lte'],
             'monster__leader_skill__attribute': ['exact'],
             'monster__leader_skill__area': ['exact'],
-            'monster__skills__skill_effect__pk': ['exact'],
+            'monster__skills__effect__pk': ['exact'],
             'monster__skills__scaling_stats__pk': ['exact'],
             'monster__skills__passive': ['exact'],
             'monster__skills__aoe': ['exact'],
@@ -64,7 +64,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
         else:
             return queryset.filter(Q(monster__fusion_food=False) | Q(ignore_for_fusion=True))
 
-    def filter_monster__skills__skill_effect__pk(self, queryset, name, value):
+    def filter_monster__skills__effect__pk(self, queryset, name, value):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)
         stat_scaling = self.form.cleaned_data.get('monster__skills__scaling_stats__pk', [])
         passive = self.form.cleaned_data.get('monster__skills__passive', None)
@@ -89,7 +89,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
         if old_filtering:
             # Filter if any skill on the monster has the designated fields
             for effect in value:
-                queryset = queryset.filter(monster__skills__skill_effect=effect)
+                queryset = queryset.filter(monster__skills__effect=effect)
 
             for pk in stat_scaling:
                 queryset = queryset.filter(monster__skills__scaling_stats=pk)
@@ -128,7 +128,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             skills_count = skills.count()
 
             for effect in value:
-                skills = skills.filter(skill_effect=effect)
+                skills = skills.filter(effect=effect)
 
             for pk in stat_scaling:
                 skills = skills.filter(scaling_stats=pk)
@@ -171,7 +171,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             return queryset.filter(monster__skills__in=skills).distinct()
 
     def filter_bypass(self, queryset, name, value):
-        # This field's logic is applied in filter_skill_effects()
+        # This field's logic is applied in filter_effects()
         return queryset
 
 

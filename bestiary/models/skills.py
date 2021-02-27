@@ -12,7 +12,6 @@ class Skill(models.Model):
     name = models.CharField(max_length=60)
     description = models.TextField()
     slot = models.IntegerField(default=1, help_text='Which button position the skill is in during battle')
-    skill_effect = models.ManyToManyField('SkillEffect', blank=True)
     effect = models.ManyToManyField('SkillEffect', through='SkillEffectDetail', blank=True, related_name='effect', help_text='Detailed skill effect information')
     cooltime = models.IntegerField(null=True, blank=True, help_text='Number of turns until skill can be used again')
     hits = models.IntegerField(default=1, help_text='Number of times this skill hits an enemy')
@@ -61,9 +60,6 @@ class Skill(models.Model):
 
     def copy_effects_from(self, other_skill):
         # Copy all the effects from another skill
-        # Old skill effects
-        self.skill_effect.set(other_skill.skill_effect.all())
-
         # Detailed skill effects
         self.effect.clear()
         for eff in SkillEffectDetail.objects.filter(skill=other_skill):
@@ -229,17 +225,17 @@ class LeaderSkill(models.Model):
 
 class SkillEffectBuffsManager(models.Manager):
     def get_queryset(self):
-        return super(SkillEffectBuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=True).exclude(icon_filename='')
+        return super(SkillEffectBuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(type=SkillEffect.TYPE_BUFF)
 
 
 class SkillEffectDebuffsManager(models.Manager):
     def get_queryset(self):
-        return super(SkillEffectDebuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(is_buff=False).exclude(icon_filename='')
+        return super(SkillEffectDebuffsManager, self).get_queryset().values_list('pk', 'icon_filename').filter(type=SkillEffect.TYPE_DEBUFF)
 
 
 class SkillEffectOtherManager(models.Manager):
     def get_queryset(self):
-        return super(SkillEffectOtherManager, self).get_queryset().filter(icon_filename='')
+        return super(SkillEffectOtherManager, self).get_queryset().filter(type=SkillEffect.TYPE_NEUTRAL)
 
 
 class SkillEffect(models.Model):

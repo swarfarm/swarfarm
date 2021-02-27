@@ -111,7 +111,7 @@
                                     <span>AOE</span>
                                 </span>
                             {% endif %}
-                            {% for effect in skill.skill_effect.all %}
+                            {% for effect in skill.effect.all %}
                                 {% if effect.icon_filename %}
                                 <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" loading="lazy" 
                                     data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
@@ -175,7 +175,7 @@
                         </td>
                         <td class="monster-skill-effects">
                             {% for skill in instance.monster.skills.all %}
-                                {% for effect in skill.skill_effect.all %}
+                                {% for effect in skill.effect.all %}
                                     {% if effect.icon_filename %}
                                         <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" loading="lazy" 
                                                 data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>

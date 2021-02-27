@@ -133,9 +133,9 @@ class EffectDetailInline(admin.TabularInline):
 class SkillAdmin(admin.ModelAdmin):
     readonly_fields = ('used_on',)
     list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
-    filter_vertical = ('skill_effect', 'scaling_stats')
+    filter_vertical = ('scaling_stats', )
     search_fields = ['com2us_id', 'name', 'description']
-    list_filter = ['slot', 'skill_effect', 'passive']
+    list_filter = ['slot', 'passive']
     inlines = (SkillUpgradeInline, EffectDetailInline,)
     save_as = True
 

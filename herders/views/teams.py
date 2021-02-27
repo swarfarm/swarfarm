@@ -196,7 +196,7 @@ def team_detail(request, profile_name, team_id):
     team_effects = []
     if team.leader:
         effects = SkillEffect.objects.filter(
-            pk__in=team.leader.monster.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True)
+            pk__in=team.leader.monster.skills.exclude(effect=None).values_list('effect', flat=True)
         )
 
         for effect in effects:
@@ -205,7 +205,7 @@ def team_detail(request, profile_name, team_id):
 
     for team_member in team.roster.all():
         effects = SkillEffect.objects.filter(
-            pk__in=team_member.monster.skills.exclude(skill_effect=None).values_list('skill_effect', flat=True)
+            pk__in=team_member.monster.skills.exclude(effect=None).values_list('effect', flat=True)
         )
         for effect in effects:
             if effect not in team_effects:

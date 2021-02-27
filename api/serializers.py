@@ -25,14 +25,14 @@ class MonsterSkillScalingStatSerializer(serializers.ModelSerializer):
 
 
 class MonsterSkillSerializer(serializers.HyperlinkedModelSerializer):
-    skill_effect = MonsterSkillEffectSerializer(many=True, read_only=True)
+    effect = MonsterSkillEffectSerializer(many=True, read_only=True)
     scales_with = MonsterSkillScalingStatSerializer(many=True, read_only=True)
 
     class Meta:
         model = Skill
         fields = (
             'pk', 'com2us_id', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'aoe', 'max_level', 'level_progress_description',
-            'skill_effect', 'multiplier_formula', 'multiplier_formula_raw', 'scales_with', 'icon_filename',
+            'effect', 'multiplier_formula', 'multiplier_formula_raw', 'scales_with', 'icon_filename',
         )
 
 

@@ -43,7 +43,7 @@ class SkillFilter(filters.FilterSet):
     description = filters.CharFilter(method='filter_description')
     scaling_stats__pk = filters.ModelMultipleChoiceFilter(queryset=ScalingStat.objects.all(), to_field_name='pk', conjoined=True)
     effects_logic = filters.BooleanFilter(method='filter_effects_logic')
-    effect__pk = filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_skill_effects')
+    effect__pk = filters.ModelMultipleChoiceFilter(queryset=SkillEffect.objects.all(), method='filter_effects')
     used_on = filters.NumberFilter(method='filter_used_on')
 
     class Meta:
@@ -66,14 +66,14 @@ class SkillFilter(filters.FilterSet):
     def filter_description(self, queryset, name, value):
         return queryset.filter(description__icontains=value)
 
-    def filter_skill_effects(self, queryset, name, value):
+    def filter_effects(self, queryset, name, value):
         old_filtering = self.form.cleaned_data.get('effects_logic', False)
         stat_scaling = self.form.cleaned_data.get('scaling_stats__pk', [])
 
         if old_filtering:
             # Filter if any skill on the monster has the designated fields
             for effect in value:
-                queryset = queryset.filter(skill_effect=effect)
+                queryset = queryset.filter(effect=effect)
 
             for pk in stat_scaling:
                 queryset = queryset.filter(scaling_stats=pk)
@@ -85,7 +85,7 @@ class SkillFilter(filters.FilterSet):
             skills = Skill.objects.all()
 
             for effect in value:
-                skills = skills.filter(skill_effect=effect)
+                skills = skills.filter(effect=effect)
 
             for pk in stat_scaling:
                 skills = skills.filter(scaling_stats=pk)

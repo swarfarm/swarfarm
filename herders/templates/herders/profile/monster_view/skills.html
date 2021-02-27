@@ -46,7 +46,7 @@
                 </ul>
             </li>
             {% endif %}
-            {% if skill.skill.skill_effect.all|length > 0 or skill.skill.aoe %}
+            {% if skill.skill.effect.all|length > 0 or skill.skill.aoe %}
             <li class="list-group-item">
                 <p class="list-group-item-heading"><strong>Skill Effects:</strong></p>
                 <p>
@@ -55,7 +55,7 @@
                         <span>AOE</span>
                     </span>
                 {% endif %}
-                {% for effect in skill.skill.skill_effect.all %}
+                {% for effect in skill.skill.effect.all %}
                     {% if effect.icon_filename %}
                     <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left" loading="lazy" 
                             data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"

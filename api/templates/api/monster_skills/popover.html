@@ -21,7 +21,7 @@
         {{ skill.level_progress_description|linebreaks }}
     </li>
     {% endif %}
-    {% if skill.skill_effect|length > 0 or skill.aoe %}
+    {% if skill.effect|length > 0 or skill.aoe %}
     <li>
         <p class="list-group-item-heading"><strong>Skill Effects:</strong></p>
         <p>
@@ -30,7 +30,7 @@
                 <span>AOE</span>
             </span>
         {% endif %}
-        {% for effect in skill.skill_effect %}
+        {% for effect in skill.effect %}
             {% if effect.icon_filename %}
                 <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect" loading="lazy" />
             {% else %}

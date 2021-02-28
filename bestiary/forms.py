@@ -121,19 +121,19 @@ class FilterMonsterForm(forms.Form):
     )
     buffs = AdvancedSelectMultiple(
         label='Buffs',
-        queryset=SkillEffect.objects.filter(is_buff=True).exclude(icon_filename=''),
+        queryset=SkillEffect.objects.filter(type=SkillEffect.TYPE_BUFF),
         required=False,
         widget=EffectSelectMultipleWidget
     )
     debuffs = AdvancedSelectMultiple(
         label='Debuffs',
-        queryset=SkillEffect.objects.filter(is_buff=False).exclude(icon_filename=''),
+        queryset=SkillEffect.objects.filter(type=SkillEffect.TYPE_DEBUFF),
         required=False,
         widget=EffectSelectMultipleWidget,
     )
     other_effects = forms.ModelMultipleChoiceField(
         label='Other Effects',
-        queryset=SkillEffect.objects.filter(icon_filename=''),
+        queryset=SkillEffect.objects.filter(type=SkillEffect.TYPE_NEUTRAL),
         required=False,
     )
     effects_logic = forms.BooleanField(
@@ -268,7 +268,7 @@ class FilterMonsterForm(forms.Form):
         selected_buff_effects = self.cleaned_data.get('buffs')
         selected_debuff_effects = self.cleaned_data.get('debuffs')
         selected_other_effects = self.cleaned_data.get('other_effects')
-        self.cleaned_data['skills__skill_effect__pk'] = chain(selected_buff_effects, selected_debuff_effects, selected_other_effects)
+        self.cleaned_data['skills__effect__pk'] = chain(selected_buff_effects, selected_debuff_effects, selected_other_effects)
 
         # Split the slider ranges into two min/max fields for the automatic filters
         try:

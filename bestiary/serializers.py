@@ -51,9 +51,11 @@ class SkillUpgradeSerializer(serializers.ModelSerializer):
 
 
 class SkillEffectSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source='get_type_display')
+    
     class Meta:
         model = models.SkillEffect
-        fields = ('id', 'url', 'name', 'is_buff', 'description', 'icon_filename')
+        fields = ('id', 'url', 'name', 'is_buff', 'type', 'description', 'icon_filename')
         extra_kwargs = {
             'url': {
                 'view_name': 'bestiary/skill-effects-detail',

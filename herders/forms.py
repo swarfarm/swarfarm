@@ -703,7 +703,7 @@ class FilterMonsterInstanceForm(forms.Form):
         # Coalesce the effect fields into a single one that the filter can understand
         buff_debuff_effects = self.cleaned_data.get('buff_debuff_effects')
         other_effects = self.cleaned_data.get('other_effects')
-        self.cleaned_data['monster__skills__skill_effect__pk'] = chain(buff_debuff_effects, other_effects)
+        self.cleaned_data['monster__skills__effect__pk'] = chain(buff_debuff_effects, other_effects)
 
         # Convert the select fields with None/True/False options into actual boolean values
         choices = {

@@ -95,6 +95,10 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             'team_leader',
             'tags'
         )
+    elif view_mode == 'collection':
+        monster_queryset = monster_queryset.prefetch_related(
+            'monster__skills'
+        )
 
     form = FilterMonsterInstanceForm(request.GET or None, auto_id='id_filter_%s')
     if form.is_valid():
@@ -128,8 +132,12 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                     | Q(awakens_from__name__icontains=mon_name)
                     | Q(awakens_from__awakens_from__name__icontains=mon_name)
                     | Q(awakens_to__name__icontains=mon_name))
-                mon_stars = form.cleaned_data['monster__natural_stars'].split(',')
-                filter_nat_stars = (Q(natural_stars__gte=mon_stars[0]) & Q(natural_stars__lte=mon_stars[1]))
+
+                if form.cleaned_data['monster__natural_stars'] != "":
+                    mon_stars = form.cleaned_data['monster__natural_stars'].split(',')
+                    filter_nat_stars = (Q(natural_stars__gte=mon_stars[0]) & Q(natural_stars__lte=mon_stars[1]))
+                else:
+                    filter_nat_stars = None
             else:
                 filter_monster_name = None
                 filter_nat_stars = None

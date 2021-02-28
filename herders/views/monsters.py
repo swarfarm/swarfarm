@@ -72,7 +72,11 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
     except Summoner.DoesNotExist:
         return render(request, 'herders/profile/not_found.html')
 
-    monster_queryset = MonsterInstance.objects.filter(owner=summoner).select_related('monster', 'monster__awakens_from')
+    monster_queryset = MonsterInstance.objects.filter(owner=summoner).select_related(
+        'monster',
+        'monster__awakens_from',
+        'monster__awakens_to',
+    )
     total_monsters = monster_queryset.count()
 
     is_owner = (request.user.is_authenticated and summoner.user == request.user)

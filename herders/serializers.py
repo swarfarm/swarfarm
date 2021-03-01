@@ -77,9 +77,8 @@ class RuneCraftInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate)
 
 
 class MonsterInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
-    runes = RuneInstanceSerializer(many=True, read_only=True, source='runeinstance_set')
-    # default_build = RuneBuildSerializer(read_only=True)
-    # rta_build = RuneBuildSerializer(read_only=True)
+    default_build = RuneBuildSerializer(read_only=True)
+    rta_build = RuneBuildSerializer(read_only=True)
 
     class Meta:
         model = MonsterInstance
@@ -88,8 +87,7 @@ class MonsterInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
             'stars', 'level', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
             'base_hp', 'base_attack', 'base_defense', 'base_speed', 'base_crit_rate', 'base_crit_damage', 'base_resistance', 'base_accuracy',
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
-            'artifact_hp', 'artifact_attack', 'artifact_defense',
-            'runes', 'default_build', 'rta_build', 'avg_rune_efficiency',
+            'default_build', 'rta_build', 'avg_rune_efficiency',
             'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes',
         ]
 

@@ -477,14 +477,14 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     try:
-        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+        instance = MonsterInstance.objects.select_related('monster', 'monster__leader_skill', 'default_build').prefetch_related('monster__skills').get(pk=instance_id)
     except ObjectDoesNotExist:
         return HttpResponseBadRequest()
 
     # Get all slotted runes and artifacts, with None in place of empty slots
-    runes = [instance.runeinstance_set.filter(slot=slot + 1).first() for slot in range(6)]
+    runes = [instance.default_build.runes.filter(slot=slot + 1).first() for slot in range(6)]
     artifacts = {
-        desc.lower(): instance.artifactinstance_set.filter(slot=slot).first()
+        desc.lower(): instance.default_build.artifacts.filter(slot=slot).first()
         for slot, desc in ArtifactInstance.SLOT_CHOICES
     }
 
@@ -594,15 +594,18 @@ def monster_instance_remove_runes(request, profile_name, instance_id):
 
     if is_owner:
         try:
-            instance = MonsterInstance.objects.get(pk=instance_id)
+            instance = MonsterInstance.objects.select_related(
+                'default_build',
+            ).prefetch_related(
+                'runeinstance_set'
+            ).get(pk=instance_id)
         except ObjectDoesNotExist:
             return HttpResponseBadRequest()
         else:
             for rune in instance.runeinstance_set.all():
                 rune.assigned_to = None
                 rune.save()
-
-            instance.save()
+            instance.default_build.runes.clear()
             messages.success(request, 'Removed all runes from ' + str(instance))
             response_data = {
                 'code': 'success',

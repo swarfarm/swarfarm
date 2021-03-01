@@ -4,7 +4,7 @@
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
         <h3 class="panel-title pull-left">Runes</h3>
-        {% if is_owner and instance.runeinstance_set.count %}
+        {% if is_owner and instance.default_build.runes.count %}
         <button class="btn btn-xs btn-danger pull-right rune-remove-all" data-instance-id="{{ instance.pk.hex }}">Remove All</button>
         {% endif %}
     </div>
@@ -44,7 +44,7 @@
         <div class="list-group-item">
             <h4 class="list-group-item-heading">Set Bonuses:</h4>
             <ul class="list-unstyled">
-                {% for bonus in instance.get_rune_set_bonuses %}
+                {% for bonus in instance.default_build.rune_set_bonus_text %}
                 <li>{{ bonus }}</li>
                 {% empty %}
                 <li>None</li>
@@ -52,11 +52,7 @@
             </ul>
         </div>
         <div class="list-group-item">
-            {% if instance.avg_rune_efficiency != None %}
-                <p>Avg. Rune Efficiency: {{ instance.avg_rune_efficiency|floatformat:"-2" }}%</p>
-            {% else %}
-                <p>Re-save monster to see average rune efficiency.</p>
-            {% endif %}
+            <p>Avg. Rune Efficiency: {{ instance.default_build.avg_efficiency|floatformat:"-2" }}%</p>
         </div>
     </div>
 </div>

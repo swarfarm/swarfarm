@@ -96,7 +96,7 @@
         {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune popover=True only %}
         {% endfor %}
     </td>
-    <td>{% if instance.avg_rune_efficiency %}{{ instance.avg_rune_efficiency|floatformat:-2 }}%{% endif %}</td>
+    <td>{% if instance.default_build.avg_efficiency %}{{ instance.default_build.avg_efficiency|floatformat:-2 }}%{% endif %}</td>
     <td>
         {% with num_artifacts=instance.artifactinstance_set.all|length %}
             {% if num_artifacts == 1 and not instance.artifactinstance_set.all.0.element %}

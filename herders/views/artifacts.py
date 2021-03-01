@@ -156,6 +156,14 @@ def add(request, profile_name):
             new_artifact = form.save(commit=False)
             new_artifact.owner = request.user.summoner
             new_artifact.save()
+            monster = new_artifact.assigned_to
+            other_artifacts = monster.default_build.artifacts.filter(slot=new_artifact.slot)
+            for o_artifact in other_artifacts:
+                o_artifact.assigned_to = None
+                o_artifact.save()
+            if monster:
+                monster.default_build.artifacts.remove(*other_artifacts)
+                monster.default_build.artifacts.add(new_artifact)
 
             messages.success(request, 'Added ' + str(new_artifact))
 
@@ -235,6 +243,15 @@ def edit(request, profile_name, artifact_id):
 
         if request.method == 'POST' and form.is_valid():
             artifact = form.save()
+            monster = artifact.assigned_to
+            other_artifacts = monster.default_build.artifacts.filter(slot=artifact.slot)
+            for o_artifact in other_artifacts:
+                o_artifact.assigned_to = None
+                o_artifact.save()
+            if monster:
+                monster.default_build.artifacts.remove(*other_artifacts)
+                monster.default_build.artifacts.add(artifact)
+                
             messages.success(request, 'Saved changes to ' + str(artifact))
             form = ArtifactInstanceForm()
             form.helper.form_action = reverse('herders:artifact_edit', kwargs={'profile_name': profile_name, 'artifact_id': artifact_id})
@@ -316,6 +333,13 @@ def assign_choice(request, profile_name, instance_id, artifact_id):
 
     artifact.assigned_to = monster
     artifact.save()
+    other_artifacts = monster.default_build.artifacts.filter(slot=artifact.slot)
+    for o_artifact in other_artifacts:
+        o_artifact.assigned_to = None
+        o_artifact.save()
+    if monster:
+        monster.default_build.artifacts.remove(*other_artifacts)
+        monster.default_build.artifacts.add(artifact)
 
     response_data = {
         'code': 'success',
@@ -335,12 +359,12 @@ def unassign(request, profile_name, artifact_id):
 
     if is_owner:
         artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
-        mon = artifact.assigned_to
+        monster = artifact.assigned_to
         artifact.assigned_to = None
         artifact.save()
 
-        if mon:
-            mon.save()
+        if monster:
+            monster.default_build.artifacts.remove(artifact)
 
         response_data = {
             'code': 'success',
@@ -364,6 +388,9 @@ def delete(request, profile_name, artifact_id):
     if is_owner:
         artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
         mon = artifact.assigned_to
+        if mon:
+            mon.default_build.artifacts.remove(artifact)
+            mon.rta_build.artifacts.remove(artifact)
         artifact.delete()
         messages.warning(request, 'Deleted ' + str(artifact))
 

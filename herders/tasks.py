@@ -154,13 +154,22 @@ def com2us_data_import(data, user_id, import_options):
 
     with transaction.atomic():
         # Save imported runes
+        assignments = {}
         for rune in results['runes'].values():
             # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
             # relationship was previously set.
             if rune['new']:
                 rune['obj'].assigned_to = rune['obj'].assigned_to
                 rune['obj'].save()
+            if rune['obj'].assigned_to:
+                if rune['obj'].assigned_to not in assignments:
+                    assignments[rune['obj'].assigned_to] = []
+                assignments[rune['obj'].assigned_to].append(rune['obj'])
+
             imported_runes.append(rune['obj'].pk)
+
+        for mon, runes in assignments.items():
+            mon.default_build.runes.set(runes, clear=True)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={
@@ -211,13 +220,21 @@ def com2us_data_import(data, user_id, import_options):
 
     with transaction.atomic():
         # Save imported artifacts
+        assignments = {}
         for artifact in results['artifacts'].values():
             # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
             # relationship was previously set.
             if artifact['new']:
                 artifact['obj'].assigned_to = artifact['obj'].assigned_to
                 artifact['obj'].save()
+            if artifact['obj'].assigned_to:
+                if artifact['obj'].assigned_to not in assignments:
+                    assignments[artifact['obj'].assigned_to] = []
+                assignments[artifact['obj'].assigned_to].append(artifact['obj'])
             imported_artifacts.append(artifact['obj'].pk)
+        
+        for mon, artifacts in assignments.items():
+            mon.default_build.artifacts.set(artifacts, clear=True)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={

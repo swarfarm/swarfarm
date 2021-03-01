@@ -50,8 +50,6 @@ def validate_rune_build_runes(sender, instance, action, reverse, model, pk_set, 
 @receiver(m2m_changed, sender=RuneBuild.runes.through)
 @receiver(m2m_changed, sender=RuneBuild.artifacts.through)
 def update_rune_build_stats(sender, instance, action, **kwargs):
-    print(action, instance)
-    # 
     if action not in ['post_add', 'post_clear', 'post_remove']:
         return
 

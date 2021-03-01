@@ -278,6 +278,7 @@ def rune_add(request, profile_name):
 @login_required
 def rune_edit(request, profile_name, rune_id):
     rune = get_object_or_404(RuneInstance, pk=rune_id)
+    orig_assign = rune.assigned_to
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
@@ -299,6 +300,9 @@ def rune_edit(request, profile_name, rune_id):
             if monster:
                 monster.default_build.runes.remove(*monster.default_build.runes.filter(slot=rune.slot))
                 monster.default_build.runes.add(rune)
+            if orig_assign and orig_assign != monster:
+                orig_assign.default_build.runes.remove(rune)
+
             messages.success(request, 'Saved changes to ' + str(rune))
             form = AddRuneInstanceForm(auto_id='edit_id_%s')
             form.helper.form_action = reverse('herders:rune_edit', kwargs={'profile_name': profile_name, 'rune_id': rune_id})
@@ -376,6 +380,8 @@ def rune_assign_choice(request, profile_name, instance_id, rune_id):
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
     rune = get_object_or_404(RuneInstance, pk=rune_id)
 
+    rune.assigned_to = monster
+    rune.save()
     monster.default_build.runes.remove(*monster.default_build.runes.filter(slot=rune.slot))
     monster.default_build.runes.add(rune)
 

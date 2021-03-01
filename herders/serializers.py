@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_nested.relations import NestedHyperlinkedIdentityField
 
-from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, \
+from herders.models import ArtifactInstance, Summoner, MaterialStorage, MonsterShrineStorage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, \
     RuneCraftInstance, TeamGroup, Team, RuneBuild
 
 
@@ -30,12 +30,29 @@ class RuneInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
         ]
 
 
+class ArtifactInstanceSerializer(serializers.HyperlinkedModelSerializer):
+    url = NestedHyperlinkedIdentityField(
+        view_name='profile/artifacts-detail',
+        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
+    )
+    precise_slot = serializers.CharField(source='get_precise_slot_display')
+
+    class Meta:
+        model = ArtifactInstance
+        fields = (
+            'id', 'url', 'com2us_id', 'assigned_to',
+            'slot', 'element', 'archetype', 'precise_slot', 'level', 'quality', 'original_quality',
+            'efficiency', 'max_efficiency','main_stat', 'main_stat_value', 
+            'effects', 'effects_value', 'effects_upgrade_count', 'effects_reroll_count',
+        )
+
 class RuneBuildSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/rune-builds-detail',
         parent_lookup_kwargs={'user_pk': 'owner__user__username'},
     )
     runes = RuneInstanceSerializer(many=True, read_only=True)
+    artifacts = ArtifactInstanceSerializer(many=True, read_only=True)
 
     class Meta:
         model = RuneBuild
@@ -45,6 +62,7 @@ class RuneBuildSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
             'name',
             'monster',
             'runes',
+            'artifacts',
             'hp',
             'hp_pct',
             'attack',

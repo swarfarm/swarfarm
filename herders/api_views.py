@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
-from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
+from herders.api_filters import ArtifactInstanceFilter, SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
 from herders.pagination import *
 from herders.permissions import *
 from herders.serializers import *
@@ -218,6 +218,26 @@ class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'main_stat',
         'innate_stat',
         'marked_for_sale',
+    )
+
+
+class ArtifactInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
+    queryset = ArtifactInstance.objects.all().select_related(
+        'owner__user',
+        'assigned_to',
+    )
+    serializer_class = ArtifactInstanceSerializer
+    # renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
+    filter_class = ArtifactInstanceFilter
+    ordering_fields = (
+        'level',
+        'stars',
+        'slot',
+        'quality',
+        'original_quality',
+        'assigned_to',
+        'main_stat',
     )
 
 

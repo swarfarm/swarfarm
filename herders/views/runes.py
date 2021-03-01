@@ -222,12 +222,8 @@ def rune_add(request, profile_name):
             new_rune.owner = request.user.summoner
             new_rune.save()
             monster = new_rune.assigned_to
-            other_runes = monster.default_build.runes.filter(slot=new_rune.slot)
-            for o_rune in other_runes:
-                o_rune.assigned_to = None
-                o_rune.save()
             if monster:
-                monster.default_build.runes.remove(*other_runes)
+                monster.default_build.runes.remove(* monster.default_build.runes.filter(slot=new_rune.slot))
                 monster.default_build.runes.add(new_rune)
 
             messages.success(request, 'Added ' + str(new_rune))
@@ -300,12 +296,8 @@ def rune_edit(request, profile_name, rune_id):
         if request.method == 'POST' and form.is_valid():
             rune = form.save()
             monster = rune.assigned_to
-            other_runes = monster.default_build.runes.filter(slot=rune.slot)
-            for o_rune in other_runes:
-                o_rune.assigned_to = None
-                o_rune.save()
             if monster:
-                monster.default_build.runes.remove(*other_runes)
+                monster.default_build.runes.remove(*monster.default_build.runes.filter(slot=rune.slot))
                 monster.default_build.runes.add(rune)
             messages.success(request, 'Saved changes to ' + str(rune))
             form = AddRuneInstanceForm(auto_id='edit_id_%s')
@@ -384,11 +376,7 @@ def rune_assign_choice(request, profile_name, instance_id, rune_id):
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
     rune = get_object_or_404(RuneInstance, pk=rune_id)
 
-    other_runes = monster.default_build.runes.filter(slot=rune.slot)
-    for o_rune in other_runes:
-        o_rune.assigned_to = None
-        o_rune.save()
-    monster.default_build.runes.remove(*other_runes)
+    monster.default_build.runes.remove(*monster.default_build.runes.filter(slot=rune.slot))
     monster.default_build.runes.add(rune)
 
     response_data = {

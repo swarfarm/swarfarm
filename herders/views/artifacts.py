@@ -157,12 +157,8 @@ def add(request, profile_name):
             new_artifact.owner = request.user.summoner
             new_artifact.save()
             monster = new_artifact.assigned_to
-            other_artifacts = monster.default_build.artifacts.filter(slot=new_artifact.slot)
-            for o_artifact in other_artifacts:
-                o_artifact.assigned_to = None
-                o_artifact.save()
             if monster:
-                monster.default_build.artifacts.remove(*other_artifacts)
+                monster.default_build.artifacts.remove(*monster.default_build.artifacts.filter(slot=new_artifact.slot))
                 monster.default_build.artifacts.add(new_artifact)
 
             messages.success(request, 'Added ' + str(new_artifact))
@@ -244,12 +240,8 @@ def edit(request, profile_name, artifact_id):
         if request.method == 'POST' and form.is_valid():
             artifact = form.save()
             monster = artifact.assigned_to
-            other_artifacts = monster.default_build.artifacts.filter(slot=artifact.slot)
-            for o_artifact in other_artifacts:
-                o_artifact.assigned_to = None
-                o_artifact.save()
             if monster:
-                monster.default_build.artifacts.remove(*other_artifacts)
+                monster.default_build.artifacts.remove(*monster.default_build.artifacts.filter(slot=artifact.slot))
                 monster.default_build.artifacts.add(artifact)
                 
             messages.success(request, 'Saved changes to ' + str(artifact))
@@ -333,12 +325,8 @@ def assign_choice(request, profile_name, instance_id, artifact_id):
 
     artifact.assigned_to = monster
     artifact.save()
-    other_artifacts = monster.default_build.artifacts.filter(slot=artifact.slot)
-    for o_artifact in other_artifacts:
-        o_artifact.assigned_to = None
-        o_artifact.save()
     if monster:
-        monster.default_build.artifacts.remove(*other_artifacts)
+        monster.default_build.artifacts.remove(*monster.default_build.artifacts.filter(slot=artifact.slot))
         monster.default_build.artifacts.add(artifact)
 
     response_data = {

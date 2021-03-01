@@ -743,9 +743,6 @@ class ArtifactInstance(Artifact):
                 artifact.assigned_to = None
                 artifact.save()
 
-            # Trigger stat calc update on the assigned monster
-            self.assigned_to.save()
-
 
 class ArtifactCraftInstance(ArtifactCraft):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -378,7 +378,6 @@ def delete(request, profile_name, artifact_id):
         mon = artifact.assigned_to
         if mon:
             mon.default_build.artifacts.remove(artifact)
-            mon.rta_build.artifacts.remove(artifact)
         artifact.delete()
         messages.warning(request, 'Deleted ' + str(artifact))
 

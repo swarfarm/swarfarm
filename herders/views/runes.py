@@ -223,7 +223,7 @@ def rune_add(request, profile_name):
             new_rune.save()
             monster = new_rune.assigned_to
             if monster:
-                monster.default_build.runes.remove(* monster.default_build.runes.filter(slot=new_rune.slot))
+                monster.default_build.runes.remove(*monster.default_build.runes.filter(slot=new_rune.slot))
                 monster.default_build.runes.add(new_rune)
 
             messages.success(request, 'Added ' + str(new_rune))
@@ -472,7 +472,6 @@ def rune_delete(request, profile_name, rune_id):
         mon = rune.assigned_to
         if mon:
             mon.default_build.runes.remove(rune)
-            mon.rta_build.runes.remove(rune)
         messages.warning(request, 'Deleted ' + str(rune))
         rune.delete()
 

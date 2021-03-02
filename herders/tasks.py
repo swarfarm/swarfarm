@@ -216,8 +216,6 @@ def com2us_data_import(data, user_id, import_options):
                     owner=summoner).get(com2us_id=mon_id)
                 artifacts = ArtifactInstance.objects.filter(
                     owner=summoner, com2us_id__in=artifact_ids)
-                print(artifact_ids)
-                print(artifacts)
                 mon.rta_build.artifacts.set(artifacts, clear=True)
             except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
                 # Continue with import in case monster was not imported or doesn't exist in user profile for some reason

@@ -705,12 +705,11 @@ def sync_upgrade_rune(summoner, log_data):
             _change_rune_substats(rune, rune_data, summoner)
             rune.save()
             # new substat/roll, recalculate build
-            if rune.level > 0 and rune.level % 3 == 0:
-                monster = rune.assigned_to
-                if monster:
-                    # remove and add to call `signal` which updates build data
-                    monster.default_build.runes.remove(rune)
-                    monster.default_build.runes.add(rune)
+            monster = rune.assigned_to
+            if monster:
+                # remove and add to call `signal` which updates build data
+                monster.default_build.runes.remove(rune)
+                monster.default_build.runes.add(rune)
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,
@@ -1010,12 +1009,11 @@ def sync_upgrade_artifact(summoner, log_data):
             artifact.level = artifact_data['level']
             _change_artifact_substats(artifact, artifact_data, summoner)
             artifact.save()
-            if artifact.level > 0 and artifact.level % 3 == 0:
-                monster = artifact.assigned_to
-                if monster:
-                    # remove and add to call `signal` which updates build data
-                    monster.default_build.artifacts.remove(artifact)
-                    monster.default_build.artifacts.add(artifact)
+            monster = artifact.assigned_to
+            if monster:
+                # remove and add to call `signal` which updates build data
+                monster.default_build.artifacts.remove(artifact)
+                monster.default_build.artifacts.add(artifact)
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,

@@ -30,7 +30,7 @@ class RuneInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
         ]
 
 
-class ArtifactInstanceSerializer(serializers.HyperlinkedModelSerializer):
+class ArtifactInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     url = NestedHyperlinkedIdentityField(
         view_name='profile/artifacts-detail',
         parent_lookup_kwargs={'user_pk': 'owner__user__username'},

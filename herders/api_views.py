@@ -131,6 +131,9 @@ class RuneBuildViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'runes',
         'runes__owner',
         'runes__owner__user'
+        'artifacts',
+        'artifacts__owner',
+        'artifacts__owner__user'
     ).order_by()
     serializer_class = RuneBuildSerializer
 
@@ -143,8 +146,8 @@ class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     ).prefetch_related(
         'default_build__runes',
         'rta_build__runes',
-        'runeinstance_set',
-        'runeinstance_set__owner__user',
+        'default_build__artifacts',
+        'rta_build__artifacts',
     )
     serializer_class = MonsterInstanceSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)

@@ -193,6 +193,13 @@ HubUserLoginSchema = {
                 'occupied_id': {'type': 'number'},
             }
         },
+        'world_arena_artifact_equip_list': {
+            'type': 'array',
+            'items': {
+                'artifact_id': {'type': 'number'},
+                'occupied_id': {'type': 'number'},
+            }
+        },
         'wizard_id': {'type': 'number'},
         'command': {'type': 'string'},
     },
@@ -203,6 +210,7 @@ HubUserLoginSchema = {
         'inventory_info',
         'runes',
         'world_arena_rune_equip_list',
+        'world_arena_artifact_equip_list',
         'wizard_info',
         'unit_list'
     ],

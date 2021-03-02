@@ -203,6 +203,33 @@ def com2us_data_import(data, user_id, import_options):
                 # Continue with import
                 continue
 
+        # Set RTA artofact builds assignments
+        assignments = {}
+        for assignment in results['rta_assignments_artifacts']:
+            mon_com2us_id = assignment['occupied_id']
+            if mon_com2us_id not in assignments:
+                assignments[mon_com2us_id] = []
+            assignments[mon_com2us_id].append(assignment['artifact_id'])
+        for mon_id, artifact_ids in assignments.items():
+            try:
+                mon = MonsterInstance.objects.filter(
+                    owner=summoner).get(com2us_id=mon_id)
+                artifacts = ArtifactInstance.objects.filter(
+                    owner=summoner, com2us_id__in=artifact_ids)
+                print(artifact_ids)
+                print(artifacts)
+                mon.rta_build.artifacts.set(artifacts, clear=True)
+            except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
+                # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
+                continue
+            except ValidationError:
+                slots = artifacts.values_list('slot', flat=True)
+                mail_admins('Artifaact Build Validation Error',
+                            f'monster: {mon.id}\r\artifacts: {artifact_ids}\r\nslots: {slots}')
+
+                # Continue with import
+                continue
+
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={
                                   'step': 'rune_crafts'})

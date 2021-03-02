@@ -394,7 +394,8 @@ def parse_sw_json(data, owner, options):
         'inventory': parsed_inventory,
         'monster_shrine': parsed_monster_shrine,
         'buildings': parsed_buildings,
-        'rta_assignments': data['world_arena_rune_equip_list']
+        'rta_assignments': data['world_arena_rune_equip_list'],
+        'rta_assignments_artifacts': data['world_arena_artifact_equip_list'],
     }
 
     return import_results

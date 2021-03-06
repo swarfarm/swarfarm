@@ -104,6 +104,9 @@ urlpatterns = [
             url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.profile.follow_add, name='profile_follow_add'),
             url(r'^remove/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.profile.follow_remove, name='profile_follow_remove'),
         ])),
+        url(r'compare/', include([
+            url(r'^(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.profile.compare, name='profile_compare'),
+        ])),
         url(r'^data/$', views.profile.import_export_home, name='import_export_home'),
         url(r'^import/', include([
             url(r'^swjson/$', views.profile.import_sw_json, name='import_swparser'),

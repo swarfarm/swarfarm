@@ -21,12 +21,13 @@ from django.utils.html import mark_safe
 from herders.decorators import username_case_redirect
 from herders.forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, EditUserForm, \
     EditSummonerForm, EditBuildingForm, ImportSWParserJSONForm
-from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, Building, BuildingInstance
+from herders.models import ArtifactInstance, MonsterInstance, RuneCraftInstance, RuneInstance, Summoner, MaterialStorage, MonsterShrineStorage, Building, BuildingInstance
 from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
 
 from bestiary.models import GameItem, Monster
+from data_log.reports.generate import get_artifact_report, get_monster_report, get_rune_craft_report, get_rune_report
 
 
 def register(request):
@@ -655,3 +656,59 @@ def export_win10_optimizer(request, profile_name):
     response['Content-Disposition'] = f'attachment; filename={request.user.username}_swarfarm_win10_optimizer_export.json'
 
     return response
+
+
+def _get_summoner_report(summoner, owner=True):
+    report = {}
+    # TODO: summary data should be here
+
+    # end summary data
+    qs = RuneInstance.objects.filter(owner=summoner)
+    report['runes'] = get_rune_report(qs, qs.count(), min_count=0)
+
+    qs = RuneCraftInstance.objects.filter(owner=summoner)
+    report['rune_crafts'] = get_rune_craft_report(qs, qs.count(), min_count=0)
+
+    qs = ArtifactInstance.objects.filter(owner=summoner)
+    report['artifacts'] = get_artifact_report(qs, qs.count(), min_count=0)
+
+    qs = MonsterInstance.objects.filter(owner=summoner)
+    report['monsters'] = get_monster_report(qs, qs.count(), min_count=0)
+
+    return report
+
+@username_case_redirect
+@login_required
+def compare(request, profile_name, follow_username):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+    try:
+        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+
+    summoner_report = _get_summoner_report(summoner)
+    follower_report = _get_summoner_report(follower, owner=False)
+
+    context = {
+        'is_owner': is_owner,
+        'can_compare': can_compare,
+        'profile_name': profile_name,
+        'follower_name': follow_username,
+        'reports': {
+            'summoner': summoner_report,
+            'follower': follower_report,
+        },
+        'view': 'compare',
+    }
+
+    return render(request, 'herders/profile/compare/profile.html', context)

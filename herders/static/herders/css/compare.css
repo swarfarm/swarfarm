@@ -1,0 +1,8 @@
+.profile-compare-header,
+.profile-compare-monsters-ajax
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}

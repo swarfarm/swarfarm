@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% endif %} - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+    {% if can_compare %}
+        <div class="profile-compare-header">
+            <h1>{{ profile_name }} <small>vs</small> {{ follower_name }}</h1>
+        </div>
+
+        <div class="profile-compare-monsters-ajax">
+            <div class="btn btn-info">Compare monsters</div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">Your friend's profile is not a Public profile!</div>
+    {% endif %}
+{% endblock %}

@@ -65,7 +65,10 @@ Friends - {{ block.super }}
                                     <span class="glyphicon glyphicon-plus-sign"></span> Follow
                                 </a>
                             {% else %}
-                                <span class="glyphicon glyphicon-ok-circle"></span> Following
+                                <a href="{% url 'herders:profile_compare' profile_name=profile_name follow_username=person.user.username%}" class="btn btn-xs btn-info">
+                                    <span class="glyphicon glyphicon-info-sign"></span> Compare
+                                </a>
+                                
                             {% endif %}
                         </td>
                     </tr>

@@ -40,8 +40,6 @@ class Command(BaseCommand):
         monster_fields = [
             'pk', 'owner_id', 'monster_id', 'com2us_id', 'created', 'stars', 'level', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
             'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes', 'custom_name',
-            'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
-            'avg_rune_efficiency',
         ]
         rune_fields = [
             'type', 'owner_id', 'com2us_id', 'assigned_to_id', 'marked_for_sale', 'notes', 'main_stat', 'main_stat_value',

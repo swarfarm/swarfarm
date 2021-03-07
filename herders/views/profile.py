@@ -2,7 +2,13 @@
 Profile CRUD, import/export, storage, and buildings
 """
 
+from collections import Counter
+from data_log.util import ceil_to_nearest, floor_to_nearest, replace_value_with_choice, transform_to_dict
 import json
+import itertools
+from operator import attrgetter
+
+from django.db.models.fields import CharField
 
 from celery.result import AsyncResult
 from django.contrib import messages
@@ -11,7 +17,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.core.mail import mail_admins
 from django.db import IntegrityError
-from django.db.models import FieldDoesNotExist
+from django.db.models import Func, F, Value, Count, Sum
+from django.db.models.functions import Concat, Cast
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.template import loader
@@ -26,7 +33,7 @@ from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
 
-from bestiary.models import GameItem, Monster
+from bestiary.models import GameItem, Monster, Rune
 from data_log.reports.generate import get_artifact_report, get_monster_report, get_rune_craft_report, get_rune_report
 
 
@@ -176,7 +183,7 @@ def follow_add(request, profile_name, follow_username):
         reverse('herders:profile_default', kwargs={'profile_name': profile_name})
     )
 
-    try:
+    try: 
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
@@ -659,23 +666,109 @@ def export_win10_optimizer(request, profile_name):
 
 
 def _get_summoner_report(summoner, owner=True):
-    report = {}
-    # TODO: summary data should be here
+    runes = RuneInstance.objects.filter(owner=summoner)
+    rune_crafts = RuneCraftInstance.objects.filter(owner=summoner)
+    artifacts = ArtifactInstance.objects.filter(owner=summoner)
+    monsters = MonsterInstance.objects.filter(owner=summoner)
 
-    # end summary data
-    qs = RuneInstance.objects.filter(owner=summoner)
-    report['runes'] = get_rune_report(qs, qs.count(), min_count=0)
+    report['runes'] = get_rune_report(runes, runes.count(), min_count=0)
 
-    qs = RuneCraftInstance.objects.filter(owner=summoner)
-    report['rune_crafts'] = get_rune_craft_report(qs, qs.count(), min_count=0)
+    report['rune_crafts'] = get_rune_craft_report(rune_crafts, rune_crafts.count(), min_count=0)
 
-    qs = ArtifactInstance.objects.filter(owner=summoner)
-    report['artifacts'] = get_artifact_report(qs, qs.count(), min_count=0)
+    report['artifacts'] = get_artifact_report(artifacts, artifacts.count(), min_count=0)
 
-    qs = MonsterInstance.objects.filter(owner=summoner)
-    report['monsters'] = get_monster_report(qs, qs.count(), min_count=0)
+    report['monsters'] = get_monster_report(monsters, monsters.count(), min_count=0)
 
     return report
+
+
+@username_case_redirect
+@login_required
+def report(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    context = {
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+        'report': _get_summoner_report(summoner),
+        'view': 'compare',
+    }
+
+    # TODO: CHANGE TEMPLATE
+    return render(request, 'herders/profile/compare/profile.html', context)
+
+
+def _compare_runes(summoner, follower):
+    stats = {stat[1]: {"summoner": 0, "follower": 0} for stat in sorted(Rune.STAT_CHOICES, key=lambda x: x[1])}
+    qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in Rune.QUALITY_CHOICES}
+    qualities[None] = {"summoner": 0, "follower": 0}
+    report_runes = {
+        'count': {"summoner": 0, "follower": 0},
+        'stars': {
+            6: {"summoner": 0, "follower": 0},
+            5: {"summoner": 0, "follower": 0},
+            4: {"summoner": 0, "follower": 0},
+            3: {"summoner": 0, "follower": 0},
+            2: {"summoner": 0, "follower": 0},
+            1: {"summoner": 0, "follower": 0},
+        },
+        'sets': {rune_set[1]: {"summoner": 0, "follower": 0} for rune_set in sorted(Rune.TYPE_CHOICES, key=lambda x: x[1])},
+        'quality': qualities,
+        'quality_original': qualities,
+        'slot': {
+            1: {"summoner": 0, "follower": 0},
+            2: {"summoner": 0, "follower": 0},
+            3: {"summoner": 0, "follower": 0},
+            4: {"summoner": 0, "follower": 0},
+            5: {"summoner": 0, "follower": 0},
+            6: {"summoner": 0, "follower": 0},
+        },
+        'main_stat': stats,
+        'innate_stat': stats,
+        'substats': stats,
+        'worth': {"summoner": 0, "follower": 0},
+    }
+    owners = [summoner, follower]
+    runes = RuneInstance.objects.select_related('owner').filter(owner__in=owners).order_by('owner')
+
+    rune_substats = dict(Rune.STAT_CHOICES)
+
+    for owner, iter_ in itertools.groupby(runes, key=attrgetter('owner')):
+        owner_str = "summoner"
+        if owner == follower:
+            owner_str = "follower"
+        runes_owner = list(iter_)
+        report_runes['count'][owner_str] = len(runes_owner)
+        for rune in runes_owner:
+            for sub_stat in rune.substats:
+                report_runes['substats'][rune_substats[sub_stat]][owner_str] += 1
+
+            report_runes['stars'][rune.stars][owner_str] += 1
+            report_runes['sets'][rune.get_type_display()][owner_str] += 1
+            report_runes['quality'][rune.get_quality_display()][owner_str] += 1
+            report_runes['quality_original'][rune.get_original_quality_display()][owner_str] += 1
+            report_runes['slot'][rune.slot][owner_str] += 1
+            report_runes['main_stat'][rune.get_main_stat_display()][owner_str] += 1
+            if rune.innate_stat:
+                report_runes['innate_stat'][rune.get_innate_stat_display()][owner_str] += 1
+            report_runes['worth'][owner_str] += rune.value
+
+    return report_runes
+
+
+def _prepare_compare_data(summoner, follower):
+    return {
+        "runes": _compare_runes(summoner, follower),
+    }
+
 
 @username_case_redirect
 @login_required
@@ -696,19 +789,13 @@ def compare(request, profile_name, follow_username):
 
     can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
 
-    summoner_report = _get_summoner_report(summoner)
-    follower_report = _get_summoner_report(follower, owner=False)
-
     context = {
         'is_owner': is_owner,
         'can_compare': can_compare,
         'profile_name': profile_name,
         'follower_name': follow_username,
-        'reports': {
-            'summoner': summoner_report,
-            'follower': follower_report,
-        },
+        'comparison': _prepare_compare_data(summoner, follower),
         'view': 'compare',
     }
 
-    return render(request, 'herders/profile/compare/profile.html', context)
+    return render(request, 'herders/profile/compare/base.html', context)

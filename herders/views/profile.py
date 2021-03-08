@@ -34,7 +34,7 @@ from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
 
-from bestiary.models import GameItem, Monster, Rune
+from bestiary.models import GameItem, Monster, Rune, Artifact, RuneCraft, ArtifactCraft
 from data_log.reports.generate import get_artifact_report, get_monster_report, get_rune_craft_report, get_rune_report
 
 
@@ -781,9 +781,44 @@ def _compare_runes(summoner, follower):
     return report_runes
 
 
+def _compare_rune_crafts(summoner, follower):
+    stats = {stat[1]: {"summoner": 0, "follower": 0} for stat in sorted(RuneCraft.STAT_CHOICES, key=lambda x: x[1])}
+    sets = {rune_set[1]: {"summoner": 0, "follower": 0} for rune_set in sorted(RuneCraft.TYPE_CHOICES, key=lambda x: x[1])}
+    sets[None] = {"summoner": 0, "follower": 0}
+    qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in RuneCraft.QUALITY_CHOICES}
+    report_data = {
+        'count': {"summoner": 0, "follower": 0},
+        'sets': copy.deepcopy(sets),
+        'quality': copy.deepcopy(qualities),
+        'stat': copy.deepcopy(stats),
+        'worth': {"summoner": 0, "follower": 0},
+    }
+    report = {type_[1]: copy.deepcopy(report_data) for type_ in RuneCraft.CRAFT_CHOICES}
+    owners = [summoner, follower]
+    runes = RuneCraftInstance.objects.select_related('owner').filter(owner__in=owners).order_by('owner')
+
+    for owner, iter_ in itertools.groupby(runes, key=attrgetter('owner')):
+        owner_str = "summoner"
+        if owner == follower:
+            owner_str = "follower"
+        records_owner = list(iter_)
+        for record in records_owner:
+            craft_type = record.get_type_display()
+            report[craft_type]['count'][owner_str] += record.quantity
+            report[craft_type]['sets'][record.get_rune_display()][owner_str] += record.quantity
+            report[craft_type]['quality'][record.get_quality_display()][owner_str] += record.quantity
+            report[craft_type]['stat'][record.get_stat_display()][owner_str] += record.quantity
+            report[craft_type]['worth'][owner_str] += record.value * record.quantity
+
+    _find_comparison_winner(report)
+
+    return report
+
+
 def _prepare_compare_data(summoner, follower):
     return {
         "runes": _compare_runes(summoner, follower),
+        "rune_crafts": _compare_rune_crafts(summoner, follower),
     }
 
 

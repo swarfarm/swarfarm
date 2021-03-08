@@ -22,24 +22,17 @@
 }
 
 .comparison-table td{
-    text-align: right;
+    text-align: left;
 }
 
-.comparison-winner,
-.comparison-loser,
-.comparison-tie
-{
-    margin-left: 5px;
-}
-
-.comparison-winner{
+.comparison-winner::before{
     color: green;
 }
 
-.comparison-loser{
+.comparison-loser::before{
     color: red;
 }
 
-.comparison-tie{
+.comparison-tie::before{
     color: orange;
 }

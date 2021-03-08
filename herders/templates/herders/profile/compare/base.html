@@ -6,6 +6,7 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
 {% endblock title %}
 
 {% block content %}
+    {% comment %} <pre>{{ comparison.rune_crafts|pprint }}</pre> {% endcomment %}
     {% if can_compare %}
         <div class="profile-compare-header">
             <h1>{{ profile_name }} <small>vs</small> {{ follower_name }}</h1>
@@ -18,6 +19,11 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
         <div class="row">
             <div class="col-md-6 col-12">
                 {% include "herders/profile/compare/runes.html" with profile_name=profile_name follower_name=follower_name runes=comparison.runes %}
+            </div>
+            <div class="col-md-6 col-12">
+                {% for rune_craft_key, rune_craft_records in comparison.rune_crafts.items %}
+                    {% include "herders/profile/compare/rune_craft.html" with profile_name=profile_name follower_name=follower_name title=rune_craft_key crafts=rune_craft_records %}
+                {% endfor %}
             </div>
         </div>
         

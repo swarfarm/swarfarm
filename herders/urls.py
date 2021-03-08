@@ -106,6 +106,8 @@ urlpatterns = [
         ])),
         url(r'compare/', include([
             url(r'^(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.profile.compare, name='profile_compare'),
+            url(r'^(?P<follow_username>[a-zA-Z0-9_@.]+)/runes/$', views.profile.compare_runes, name='profile_compare_runes'),
+            url(r'^(?P<follow_username>[a-zA-Z0-9_@.]+)/rune_crafts/(?P<rune_craft_slug>[\w-]+)$', views.profile.compare_rune_crafts, name='profile_compare_rune_crafts'),
         ])),
         url(r'^data/$', views.profile.import_export_home, name='import_export_home'),
         url(r'^import/', include([

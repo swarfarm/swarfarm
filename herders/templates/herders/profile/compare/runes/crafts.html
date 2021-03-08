@@ -1,0 +1,158 @@
+{% extends 'herders/profile/compare/runes/base.html' %}
+
+{% block title %}
+{{ craft_type }}s - {{ block.super }}
+{% endblock title %}
+
+{% block content_compare %}
+    <h1>{{ craft_type }}s</h1>
+    <hr />
+    <div class="container-fluid">
+        <div class="grid">
+            <div class="grid-sizer col-md-6 col-12"></div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Summary</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Count</th>
+                                <td>
+                                    {% if crafts.count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif crafts.count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif crafts.count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ crafts.count.summoner }}
+                                </td>
+                                <td>
+                                    {% if crafts.count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif crafts.count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif crafts.count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ crafts.count.follower }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Worth</th>
+                                <td>
+                                    {% if crafts.worth.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif crafts.worth.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif crafts.worth.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ crafts.worth.summoner }}
+                                </td>
+                                <td>
+                                    {% if crafts.worth.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif crafts.worth.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif crafts.worth.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ crafts.worth.follower }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Sets</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            {% for set_name, set_count in crafts.sets.items %}
+                            <tr>
+                                <th>{{ set_name }}</th>
+                                <td>
+                                    {% if set_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif set_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif set_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ set_count.summoner }}
+                                </td>
+                                <td>
+                                    {% if set_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif set_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif set_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ set_count.follower }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Stat</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            {% for stat_name, stat_count in crafts.stat.items %}
+                            <tr>
+                                <th>{{ stat_name }}</th>
+                                <td>
+                                    {% if stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif stat_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ stat_count.summoner }}
+                                </td>
+                                <td>
+                                    {% if stat_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ stat_count.follower }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Quality</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            {% for quality_name, quality_count in crafts.quality.items %}
+                            <tr>
+                                <th>{{ quality_name }}</th>
+                                <td>
+                                    {% if quality_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif quality_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif quality_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ quality_count.summoner }}
+                                </td>
+                                <td>
+                                    {% if quality_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif quality_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif quality_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ quality_count.follower }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -6,28 +6,49 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
 {% endblock title %}
 
 {% block content %}
+    <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
+        <p class="navmenu-brand">{% if can_compare %}{{profile_name}} <small>vs</small> {{ follower_name }}{% else %}private profile {% endif %}</p>
+        <ul class="nav navmenu-nav">
+            <li {% if view == "compare-summary" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare' profile_name follower_name %}">Summary</a></li>
+            <li {% if view == "compare-runes" %}class="dropdown open"{% endif %}>
+                <a href="{% url 'herders:profile_compare_runes' profile_name follower_name %}">Runes</a>
+                {% block runes_menu %}{% endblock runes_menu %}
+            </li>
+            <li {% if view == "compare-artifacts" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:wish' %}">Artifacts</a></li>
+            <li {% if view == "compare-monsters" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:summon' %}">Monsters</a></li>
+            <li {% if view == "compare-buildings" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:rune_crafting' %}">Buildings</a></li>
+        </ul>
+    </div>
     {% comment %} <pre>{{ comparison.rune_crafts|pprint }}</pre> {% endcomment %}
-    {% if can_compare %}
-        <div class="profile-compare-header">
-            <h1>{{ profile_name }} <small>vs</small> {{ follower_name }}</h1>
-        </div>
+    <div class="navmenu-content">
+        {% if can_compare %}
+            {% block content_compare %}
+                <div class="profile-compare-header">
+                    <h1>{{ profile_name }} <small>vs</small> {{ follower_name }}</h1>
+                </div>
+            {% endblock %}
 
-        <div class="profile-compare-monsters-ajax">
-            <div class="btn btn-info">Compare builds</div>
-        </div>
+            {% comment %} <div class="profile-compare-monsters-ajax">
+                <div class="btn btn-info">Compare builds</div>
+            </div> {% endcomment %}
 
-        <div class="row">
-            <div class="col-md-6 col-12">
-                {% include "herders/profile/compare/runes.html" with profile_name=profile_name follower_name=follower_name runes=comparison.runes %}
-            </div>
-            <div class="col-md-6 col-12">
-                {% for rune_craft_key, rune_craft_records in comparison.rune_crafts.items %}
-                    {% include "herders/profile/compare/rune_craft.html" with profile_name=profile_name follower_name=follower_name title=rune_craft_key crafts=rune_craft_records %}
-                {% endfor %}
-            </div>
-        </div>
-        
-    {% else %}
-        <div class="alert alert-warning">Your friend's profile is not a Public profile or you DO NOT follow eachother!</div>
-    {% endif %}
+            {% comment %} {% for rune_craft_key, rune_craft_records in comparison.rune_crafts.items %}
+                {% include "herders/profile/compare/compare_rune_craft.html" with profile_name=profile_name follower_name=follower_name title=rune_craft_key crafts=rune_craft_records %}
+            {% endfor %} {% endcomment %}
+            
+        {% else %}
+            <div class="alert alert-warning">Your friend's profile is not a Public profile or you DO NOT follow eachother!</div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script>
+        $('.grid').masonry({
+            itemSelector: '.grid-item', // use a separate class for itemSelector, other than .col-
+            columnWidth: '.grid-sizer',
+            percentPosition: true
+        });
+    </script>
 {% endblock %}

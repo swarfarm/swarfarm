@@ -1,0 +1,17 @@
+{% extends 'herders/profile/compare/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+Summary - {{ block.super }}
+{% endblock title %}
+
+{% block content_compare %}
+    <div class="profile-compare-header">
+        <h1>{{ profile_name }} <small>vs</small> {{ follower_name }}</h1>
+    </div>
+
+
+    <div class="profile-compare-monsters-ajax">
+        <div class="btn btn-info">Compare builds</div>
+    </div>
+{% endblock %}

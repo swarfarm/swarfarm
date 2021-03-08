@@ -7,6 +7,7 @@ from data_log.util import ceil_to_nearest, floor_to_nearest, replace_value_with_
 import json
 import itertools
 from operator import attrgetter
+import copy
 
 from django.db.models.fields import CharField
 
@@ -706,6 +707,20 @@ def report(request, profile_name):
     return render(request, 'herders/profile/compare/profile.html', context)
 
 
+def _find_comparison_winner(data):
+    for key, val in data.items():
+        if isinstance(val, dict) and "summoner" not in val.keys():
+            _find_comparison_winner(val)
+        else:
+            record = data[key]
+            if record["summoner"] > record["follower"]:
+                record["winner"] = "summoner" 
+            elif record["summoner"] < record["follower"]:
+                record["winner"] = "follower"
+            else:
+                record["winner"] = "tie"
+
+
 def _compare_runes(summoner, follower):
     stats = {stat[1]: {"summoner": 0, "follower": 0} for stat in sorted(Rune.STAT_CHOICES, key=lambda x: x[1])}
     qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in Rune.QUALITY_CHOICES}
@@ -721,8 +736,8 @@ def _compare_runes(summoner, follower):
             1: {"summoner": 0, "follower": 0},
         },
         'sets': {rune_set[1]: {"summoner": 0, "follower": 0} for rune_set in sorted(Rune.TYPE_CHOICES, key=lambda x: x[1])},
-        'quality': qualities,
-        'quality_original': qualities,
+        'quality': copy.deepcopy(qualities),
+        'quality_original': copy.deepcopy(qualities),
         'slot': {
             1: {"summoner": 0, "follower": 0},
             2: {"summoner": 0, "follower": 0},
@@ -731,11 +746,12 @@ def _compare_runes(summoner, follower):
             5: {"summoner": 0, "follower": 0},
             6: {"summoner": 0, "follower": 0},
         },
-        'main_stat': stats,
-        'innate_stat': stats,
-        'substats': stats,
+        'main_stat': copy.deepcopy(stats),
+        'innate_stat': copy.deepcopy(stats),
+        'substats': copy.deepcopy(stats),
         'worth': {"summoner": 0, "follower": 0},
     }
+    report_runes['innate_stat'][None] = {"summoner": 0, "follower": 0}
     owners = [summoner, follower]
     runes = RuneInstance.objects.select_related('owner').filter(owner__in=owners).order_by('owner')
 
@@ -757,9 +773,10 @@ def _compare_runes(summoner, follower):
             report_runes['quality_original'][rune.get_original_quality_display()][owner_str] += 1
             report_runes['slot'][rune.slot][owner_str] += 1
             report_runes['main_stat'][rune.get_main_stat_display()][owner_str] += 1
-            if rune.innate_stat:
-                report_runes['innate_stat'][rune.get_innate_stat_display()][owner_str] += 1
+            report_runes['innate_stat'][rune.get_innate_stat_display()][owner_str] += 1
             report_runes['worth'][owner_str] += rune.value
+
+    _find_comparison_winner(report_runes)
 
     return report_runes
 

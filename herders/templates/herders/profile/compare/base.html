@@ -15,7 +15,11 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
             <div class="btn btn-info">Compare builds</div>
         </div>
 
-        {% include "herders/profile/compare/runes.html" with profile_name=profile_name follower_name=follower_name runes=comparison.runes %}
+        <div class="row">
+            <div class="col-md-6 col-12">
+                {% include "herders/profile/compare/runes.html" with profile_name=profile_name follower_name=follower_name runes=comparison.runes %}
+            </div>
+        </div>
         
     {% else %}
         <div class="alert alert-warning">Your friend's profile is not a Public profile or you DO NOT follow eachother!</div>

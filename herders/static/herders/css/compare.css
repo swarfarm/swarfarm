@@ -6,3 +6,17 @@
     align-items: center;
     flex-wrap: wrap;
 }
+
+.ph-10{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.comparison-winner-cell{
+    background-color: lightgreen;
+}
+
+.comparison-table td,
+.comparison-table th{
+    width: 33%;
+}

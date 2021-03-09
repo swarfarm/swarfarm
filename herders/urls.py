@@ -105,11 +105,11 @@ urlpatterns = [
             url(r'^remove/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.profile.follow_remove, name='profile_follow_remove'),
         ])),
         url(r'compare/(?P<follow_username>[a-zA-Z0-9_@.]+)/', include([
-            url(r'^$', views.profile.compare, name='profile_compare'),
-            url(r'^runes/$', views.profile.compare_runes, name='profile_compare_runes'),
-            url(r'^rune_crafts/(?P<rune_craft_slug>[\w-]+)$', views.profile.compare_rune_crafts, name='profile_compare_rune_crafts'),
-            url(r'^artifacts/$', views.profile.compare_artifacts, name='profile_compare_artifacts'),
-            url(r'^artifact_crafts/$', views.profile.compare_artifact_crafts, name='profile_compare_artifact_crafts'),
+            url(r'^$', views.compare.summary, name='profile_compare'),
+            url(r'^runes/$', views.compare.runes, name='profile_compare_runes'),
+            url(r'^rune_crafts/(?P<rune_craft_slug>[\w-]+)$', views.compare.rune_crafts, name='profile_compare_rune_crafts'),
+            url(r'^artifacts/$', views.compare.artifacts, name='profile_compare_artifacts'),
+            url(r'^artifact_crafts/$', views.compare.artifact_crafts, name='profile_compare_artifact_crafts'),
         ])),
         url(r'^data/$', views.profile.import_export_home, name='import_export_home'),
         url(r'^import/', include([

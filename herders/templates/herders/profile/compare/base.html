@@ -14,7 +14,10 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
                 <a href="{% url 'herders:profile_compare_runes' profile_name follower_name %}">Runes</a>
                 {% block runes_menu %}{% endblock runes_menu %}
             </li>
-            <li {% if view == "compare-artifacts" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:wish' %}">Artifacts</a></li>
+            <li {% if view == "compare-artifacts" %}class="dropdown open"{% endif %}>
+                <a href="{% url 'herders:profile_compare_artifacts' profile_name follower_name %}">Artifacts</a>
+                {% block artifacts_menu %}{% endblock artifacts_menu %}
+            </li>
             <li {% if view == "compare-monsters" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:summon' %}">Monsters</a></li>
             <li {% if view == "compare-buildings" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:rune_crafting' %}">Buildings</a></li>
         </ul>

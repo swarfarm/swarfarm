@@ -1,0 +1,143 @@
+{% extends 'herders/profile/compare/artifacts/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+Artifact Crafts - {{ block.super }}
+{% endblock title %}
+
+
+{% block content_compare %}
+    <h1>Artifact Crafts</h1>
+    <hr />
+    <div class="container-fluid">
+        <div class="grid">
+            <div class="grid-sizer col-md-6 col-12"></div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Summary</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Count</th>
+                                <td>
+                                    {% if artifact_craft.count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif artifact_craft.count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif artifact_craft.count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ artifact_craft.count.summoner }}
+                                </td>
+                                <td>
+                                    {% if artifact_craft.count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif artifact_craft.count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif artifact_craft.count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ artifact_craft.count.follower }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Substat</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            {% for stat_name, stat_count in artifact_craft.substats.items %}
+                            <tr>
+                                <th>{{ stat_name }}</th>
+                                <td>
+                                    {% if stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif stat_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ stat_count.summoner }}
+                                </td>
+                                <td>
+                                    {% if stat_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ stat_count.follower }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Slot</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            {% for slot_name, slot_count in artifact_craft.slot.items %}
+                            <tr>
+                                <th>{{ slot_name }}</th>
+                                <td>
+                                    {% if slot_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif slot_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif slot_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ slot_count.summoner }}
+                                </td>
+                                <td>
+                                    {% if slot_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif slot_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif slot_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ slot_count.follower }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Quality</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            {% for quality_name, quality_count in artifact_craft.quality.items %}
+                            <tr>
+                                <th>{{ quality_name }}</th>
+                                <td>
+                                    {% if quality_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif quality_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif quality_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ quality_count.summoner }}
+                                </td>
+                                <td>
+                                    {% if quality_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif quality_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif quality_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ quality_count.follower }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

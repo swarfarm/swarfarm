@@ -30,7 +30,7 @@ from django.utils.text import slugify
 from herders.decorators import username_case_redirect
 from herders.forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, EditUserForm, \
     EditSummonerForm, EditBuildingForm, ImportSWParserJSONForm
-from herders.models import ArtifactInstance, MonsterInstance, RuneCraftInstance, RuneInstance, Summoner, MaterialStorage, MonsterShrineStorage, Building, BuildingInstance
+from herders.models import ArtifactCraftInstance, ArtifactInstance, MonsterInstance, RuneCraftInstance, RuneInstance, Summoner, MaterialStorage, MonsterShrineStorage, Building, BuildingInstance
 from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
@@ -876,6 +876,7 @@ def compare_runes(request, profile_name, follow_username):
 
     return render(request, 'herders/profile/compare/runes/base.html', context)
 
+
 @username_case_redirect
 @login_required
 def compare_rune_crafts(request, profile_name, follow_username, rune_craft_slug):
@@ -913,3 +914,124 @@ def compare_rune_crafts(request, profile_name, follow_username, rune_craft_slug)
 
     return render(request, 'herders/profile/compare/runes/crafts.html', context)
 
+
+def _compare_artifacts(summoner, follower):
+    qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in Artifact.QUALITY_CHOICES}
+    report = {
+        'count': {"summoner": 0, "follower": 0},
+        'quality': copy.deepcopy(qualities),
+        'quality_original': copy.deepcopy(qualities),
+        'slot': {artifact_slot[1]: {"summoner": 0, "follower": 0} for artifact_slot in (Artifact.ARCHETYPE_CHOICES + Artifact.NORMAL_ELEMENT_CHOICES)},
+        'main_stat': {stat[1]: {"summoner": 0, "follower": 0} for stat in sorted(Artifact.MAIN_STAT_CHOICES, key=lambda x: x[1])},
+        'substats': {effect[1]: {"summoner": 0, "follower": 0} for effect in sorted(Artifact.EFFECT_CHOICES, key=lambda x: x[1])},
+    }
+    owners = [summoner, follower]
+    artifacts = ArtifactInstance.objects.select_related('owner').filter(owner__in=owners).order_by('owner')
+
+    artifact_substats = dict(Artifact.EFFECT_CHOICES)
+
+    for owner, iter_ in itertools.groupby(artifacts, key=attrgetter('owner')):
+        owner_str = "summoner"
+        if owner == follower:
+            owner_str = "follower"
+        artifacts_owner = list(iter_)
+        report['count'][owner_str] = len(artifacts_owner)
+        for artifact in artifacts_owner:
+            for sub_stat in artifact.effects:
+                report['substats'][artifact_substats[sub_stat]][owner_str] += 1
+
+            report['quality'][artifact.get_quality_display()][owner_str] += 1
+            report['quality_original'][artifact.get_original_quality_display()][owner_str] += 1
+            report['slot'][artifact.get_precise_slot_display()][owner_str] += 1
+            report['main_stat'][artifact.get_main_stat_display()][owner_str] += 1
+
+    _find_comparison_winner(report)
+
+    return report
+
+@username_case_redirect
+@login_required
+def compare_artifacts(request, profile_name, follow_username):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+    try:
+        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+
+    context = {
+        'is_owner': is_owner,
+        'can_compare': can_compare,
+        'profile_name': profile_name,
+        'follower_name': follow_username,
+        'artifacts': _compare_artifacts(summoner, follower),
+        'view': 'compare-artifacts',
+    }
+
+    return render(request, 'herders/profile/compare/artifacts/base.html', context)
+
+
+def _compare_artifact_crafts(summoner, follower):
+    report = {
+        'count': {"summoner": 0, "follower": 0},
+        'quality': {quality[1]: {"summoner": 0, "follower": 0} for quality in Artifact.QUALITY_CHOICES},
+        'slot': {artifact_slot[1]: {"summoner": 0, "follower": 0} for artifact_slot in (Artifact.ARCHETYPE_CHOICES + Artifact.NORMAL_ELEMENT_CHOICES)},
+        'substats': {effect[1]: {"summoner": 0, "follower": 0} for effect in sorted(Artifact.EFFECT_CHOICES, key=lambda x: x[1])},
+    }
+    owners = [summoner, follower]
+    artifacts = ArtifactCraftInstance.objects.select_related('owner').filter(owner__in=owners).order_by('owner')
+
+    for owner, iter_ in itertools.groupby(artifacts, key=attrgetter('owner')):
+        owner_str = "summoner"
+        if owner == follower:
+            owner_str = "follower"
+        artifacts_owner = list(iter_)
+        for artifact in artifacts_owner:
+            report['substats'][artifact.get_effect_display()][owner_str] += artifact.quantity
+            report['quality'][artifact.get_quality_display()][owner_str] += artifact.quantity
+            report['slot'][artifact.get_archetype_display() or artifact.get_element_display()][owner_str] += artifact.quantity
+            report['count'][owner_str] += artifact.quantity
+
+    _find_comparison_winner(report)
+
+    return report
+
+
+@username_case_redirect
+@login_required
+def compare_artifact_crafts(request, profile_name, follow_username):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+    try:
+        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+
+    context = {
+        'is_owner': is_owner,
+        'can_compare': can_compare,
+        'profile_name': profile_name,
+        'follower_name': follow_username,
+        'artifact_craft': _compare_artifact_crafts(summoner, follower),
+        'view': 'compare-artifacts',
+    }
+
+    return render(request, 'herders/profile/compare/artifacts/crafts.html', context)

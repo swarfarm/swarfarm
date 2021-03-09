@@ -1,6 +1,8 @@
 import copy
+from herders.aggregations import Median, Perc25, Perc75
 import itertools
 from operator import attrgetter
+from django.db.models.aggregates import Avg, Max, Min, StdDev
 
 from django.utils.text import slugify
 from django.http import HttpResponseBadRequest
@@ -11,6 +13,32 @@ from bestiary.models import Rune, RuneCraft, Artifact, ArtifactCraft
 
 from herders.decorators import username_case_redirect
 from herders.models import RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner
+
+
+def _get_efficiency_statistics(model, owner, field="efficiency"):
+    eff_values = {}
+    eff_map = {
+        "efficiency__avg": "Efficiency (Average)",
+        "efficiency__stddev": "Efficiency (Standard Deviation)",
+        "efficiency__min": "Efficiency (Minimum)",
+        "efficiency__perc25": "Efficiency (25th Percentile)",
+        "efficiency__median": "Efficiency (Median)",
+        "efficiency__perc75": "Efficiency (75th Percentile)",
+        "efficiency__max": "Efficiency (Maximum)"
+    }
+    efficiencies = model.objects.filter(owner=owner).aggregate(
+        Avg(field),
+        StdDev(field),
+        Min(field),
+        Perc25(field),
+        Median(field),
+        Perc75(field),
+        Max(field)
+    )
+    for eff_key, eff_val in efficiencies.items():
+        eff_values[eff_map[eff_key]] = round(eff_val, 2)
+
+    return eff_values
 
 
 def _find_comparison_winner(data):
@@ -63,7 +91,10 @@ def _compare_runes(summoner, follower):
     qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in Rune.QUALITY_CHOICES}
     qualities[None] = {"summoner": 0, "follower": 0}
     report_runes = {
-        'count': {"summoner": 0, "follower": 0},
+        'summary': {
+            'Count': {"summoner": 0, "follower": 0},
+            'Worth': {"summoner": 0, "follower": 0},
+        },
         'stars': {
             6: {"summoner": 0, "follower": 0},
             5: {"summoner": 0, "follower": 0},
@@ -86,7 +117,6 @@ def _compare_runes(summoner, follower):
         'main_stat': copy.deepcopy(stats),
         'innate_stat': copy.deepcopy(stats),
         'substats': copy.deepcopy(stats),
-        'worth': {"summoner": 0, "follower": 0},
     }
     report_runes['innate_stat'][None] = {"summoner": 0, "follower": 0}
     owners = [summoner, follower]
@@ -99,7 +129,7 @@ def _compare_runes(summoner, follower):
         if owner == follower:
             owner_str = "follower"
         runes_owner = list(iter_)
-        report_runes['count'][owner_str] = len(runes_owner)
+        report_runes['summary']['Count'][owner_str] = len(runes_owner)
         for rune in runes_owner:
             for sub_stat in rune.substats:
                 report_runes['substats'][rune_substats[sub_stat]][owner_str] += 1
@@ -111,7 +141,15 @@ def _compare_runes(summoner, follower):
             report_runes['slot'][rune.slot][owner_str] += 1
             report_runes['main_stat'][rune.get_main_stat_display()][owner_str] += 1
             report_runes['innate_stat'][rune.get_innate_stat_display()][owner_str] += 1
-            report_runes['worth'][owner_str] += rune.value
+            report_runes['summary']['Worth'][owner_str] += rune.value
+    
+    summoner_eff = _get_efficiency_statistics(RuneInstance, summoner)
+    follower_eff = _get_efficiency_statistics(RuneInstance, follower)
+    for key in summoner_eff.keys():
+        report_runes["summary"][key] = {
+            "summoner": summoner_eff[key],
+            "follower": follower_eff[key],
+        }
 
     _find_comparison_winner(report_runes)
 
@@ -156,11 +194,13 @@ def _compare_rune_crafts(summoner, follower, craft_type):
     sets[None] = {"summoner": 0, "follower": 0}
     qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in RuneCraft.QUALITY_CHOICES}
     report = {
-        'count': {"summoner": 0, "follower": 0},
         'sets': copy.deepcopy(sets),
         'quality': copy.deepcopy(qualities),
         'stat': copy.deepcopy(stats),
-        'worth': {"summoner": 0, "follower": 0},
+        'summary': {
+            'Count': {"summoner": 0, "follower": 0},
+            'Worth': {"summoner": 0, "follower": 0},
+        },
     }
     owners = [summoner, follower]
     runes = RuneCraftInstance.objects.select_related('owner').filter(owner__in=owners, type=craft_type).order_by('owner')
@@ -171,11 +211,11 @@ def _compare_rune_crafts(summoner, follower, craft_type):
             owner_str = "follower"
         records_owner = list(iter_)
         for record in records_owner:
-            report['count'][owner_str] += record.quantity
+            report['summary']['Count'][owner_str] += record.quantity
             report['sets'][record.get_rune_display()][owner_str] += record.quantity
             report['quality'][record.get_quality_display()][owner_str] += record.quantity
             report['stat'][record.get_stat_display()][owner_str] += record.quantity
-            report['worth'][owner_str] += record.value * record.quantity
+            report['summary']['Worth'][owner_str] += record.value * record.quantity
 
     _find_comparison_winner(report)
 
@@ -223,7 +263,9 @@ def rune_crafts(request, profile_name, follow_username, rune_craft_slug):
 def _compare_artifacts(summoner, follower):
     qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in Artifact.QUALITY_CHOICES}
     report = {
-        'count': {"summoner": 0, "follower": 0},
+        'summary': {
+            'Count': {"summoner": 0, "follower": 0},
+        },
         'quality': copy.deepcopy(qualities),
         'quality_original': copy.deepcopy(qualities),
         'slot': {artifact_slot[1]: {"summoner": 0, "follower": 0} for artifact_slot in (Artifact.ARCHETYPE_CHOICES + Artifact.NORMAL_ELEMENT_CHOICES)},
@@ -240,7 +282,7 @@ def _compare_artifacts(summoner, follower):
         if owner == follower:
             owner_str = "follower"
         artifacts_owner = list(iter_)
-        report['count'][owner_str] = len(artifacts_owner)
+        report['summary']['Count'][owner_str] = len(artifacts_owner)
         for artifact in artifacts_owner:
             for sub_stat in artifact.effects:
                 report['substats'][artifact_substats[sub_stat]][owner_str] += 1
@@ -249,6 +291,14 @@ def _compare_artifacts(summoner, follower):
             report['quality_original'][artifact.get_original_quality_display()][owner_str] += 1
             report['slot'][artifact.get_precise_slot_display()][owner_str] += 1
             report['main_stat'][artifact.get_main_stat_display()][owner_str] += 1
+
+    summoner_eff = _get_efficiency_statistics(ArtifactInstance, summoner)
+    follower_eff = _get_efficiency_statistics(ArtifactInstance, follower)
+    for key in summoner_eff.keys():
+        report["summary"][key] = {
+            "summoner": summoner_eff[key],
+            "follower": follower_eff[key],
+        }
 
     _find_comparison_winner(report)
 
@@ -288,7 +338,9 @@ def artifacts(request, profile_name, follow_username):
 
 def _compare_artifact_crafts(summoner, follower):
     report = {
-        'count': {"summoner": 0, "follower": 0},
+        'summary': {
+            'Count': {"summoner": 0, "follower": 0},
+        },
         'quality': {quality[1]: {"summoner": 0, "follower": 0} for quality in Artifact.QUALITY_CHOICES},
         'slot': {artifact_slot[1]: {"summoner": 0, "follower": 0} for artifact_slot in (Artifact.ARCHETYPE_CHOICES + Artifact.NORMAL_ELEMENT_CHOICES)},
         'substats': {effect[1]: {"summoner": 0, "follower": 0} for effect in sorted(Artifact.EFFECT_CHOICES, key=lambda x: x[1])},
@@ -305,7 +357,7 @@ def _compare_artifact_crafts(summoner, follower):
             report['substats'][artifact.get_effect_display()][owner_str] += artifact.quantity
             report['quality'][artifact.get_quality_display()][owner_str] += artifact.quantity
             report['slot'][artifact.get_archetype_display() or artifact.get_element_display()][owner_str] += artifact.quantity
-            report['count'][owner_str] += artifact.quantity
+            report['summary']['Count'][owner_str] += artifact.quantity
 
     _find_comparison_winner(report)
 

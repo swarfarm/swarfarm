@@ -21,25 +21,26 @@ Artifact Crafts - {{ block.super }}
                             <th><h3>{{ follower_name }}</h3></th>
                         </thead>
                         <tbody>
+                            {% for record_name, record in artifact_craft.summary.items %}
                             <tr>
-                                <th>Count</th>
+                                <th>{{ record_name }}</th>
                                 <td>
-                                    {% if artifact_craft.count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif artifact_craft.count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif artifact_craft.count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
                                     {% endif %}
-                                    {{ artifact_craft.count.summoner }}
+                                    {{ record.summoner }}
                                 </td>
                                 <td>
-                                    {% if artifact_craft.count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif artifact_craft.count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif artifact_craft.count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
                                     {% endif %}
-                                    {{ artifact_craft.count.follower }}
+                                    {{ record.follower }}
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>
-                    </table>
                 </div>
             </div>
             <div class="grid-item col-md-6 col-12">

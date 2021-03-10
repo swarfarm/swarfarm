@@ -111,6 +111,7 @@ urlpatterns = [
             url(r'^artifacts/$', views.compare.artifacts, name='profile_compare_artifacts'),
             url(r'^artifact_crafts/$', views.compare.artifact_crafts, name='profile_compare_artifact_crafts'),
             url(r'^monsters/$', views.compare.monsters, name='profile_compare_monsters'),
+            url(r'^buildings/$', views.compare.buildings, name='profile_compare_buildings'),
         ])),
         url(r'^data/$', views.profile.import_export_home, name='import_export_home'),
         url(r'^import/', include([

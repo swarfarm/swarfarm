@@ -1,21 +1,21 @@
 import copy
-from herders.aggregations import Median, Perc25, Perc75
 import itertools
 from operator import attrgetter
-from django.db.models.aggregates import Avg, Max, Min, StdDev
 
 from django.utils.text import slugify
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.db.models.aggregates import Avg, Count, Max, Min, StdDev, Sum
 
 from bestiary.models import Rune, RuneCraft, Artifact, ArtifactCraft
 
+from herders.aggregations import Median, Perc25, Perc75
 from herders.decorators import username_case_redirect
 from herders.models import RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner
 
 
-def _get_efficiency_statistics(model, owner, field="efficiency"):
+def _get_efficiency_statistics(model, owner, field="efficiency", count=False, worth=False, worth_field='value'):
     eff_values = {}
     eff_map = {
         "efficiency__avg": "Efficiency (Average)",
@@ -24,9 +24,11 @@ def _get_efficiency_statistics(model, owner, field="efficiency"):
         "efficiency__perc25": "Efficiency (25th Percentile)",
         "efficiency__median": "Efficiency (Median)",
         "efficiency__perc75": "Efficiency (75th Percentile)",
-        "efficiency__max": "Efficiency (Maximum)"
+        "efficiency__max": "Efficiency (Maximum)",
+        "efficiency__count": "Count",
+        "value__sum": "Worth",
     }
-    efficiencies = model.objects.filter(owner=owner).aggregate(
+    aggregations = [
         Avg(field),
         StdDev(field),
         Min(field),
@@ -34,7 +36,13 @@ def _get_efficiency_statistics(model, owner, field="efficiency"):
         Median(field),
         Perc75(field),
         Max(field)
-    )
+    ]
+    if worth:
+        aggregations.insert(0, Sum(worth_field))
+    if count:
+        aggregations.insert(0, Count(field))
+
+    efficiencies = model.objects.filter(owner=owner).aggregate(*aggregations)
     for eff_key, eff_val in efficiencies.items():
         eff_values[eff_map[eff_key]] = round(eff_val, 2)
 
@@ -53,6 +61,32 @@ def _find_comparison_winner(data):
                 record["winner"] = "follower"
             else:
                 record["winner"] = "tie"
+
+
+def _compare_summary(summoner, follower):
+    report = {
+        "runes": {},
+        "artifacts": {},
+    }
+    runes_summoner_eff = _get_efficiency_statistics(RuneInstance, summoner, count=True, worth=True)
+    runes_follower_eff = _get_efficiency_statistics(RuneInstance, follower, count=True, worth=True)
+    for key in runes_summoner_eff.keys():
+        report["runes"][key] = {
+            "summoner": runes_summoner_eff[key],
+            "follower": runes_follower_eff[key],
+        }
+
+    artifacts_summoner_eff = _get_efficiency_statistics(ArtifactInstance, summoner, count=True)
+    artifacts_follower_eff = _get_efficiency_statistics(ArtifactInstance, follower, count=True)
+    for key in artifacts_summoner_eff.keys():
+        report["artifacts"][key] = {
+            "summoner": artifacts_summoner_eff[key],
+            "follower": artifacts_follower_eff[key],
+        }
+
+    _find_comparison_winner(report)
+
+    return report
 
 
 @username_case_redirect
@@ -79,7 +113,7 @@ def summary(request, profile_name, follow_username):
         'can_compare': can_compare,
         'profile_name': profile_name,
         'follower_name': follow_username,
-        'comparison': {},
+        'comparison': _compare_summary(summoner, follower),
         'view': 'compare-summary',
     }
 

@@ -14,4 +14,73 @@ Summary - {{ block.super }}
     <div class="profile-compare-monsters-ajax">
         <div class="btn btn-info">Compare builds</div>
     </div>
+    <div class="container-fluid">
+        <div class="grid">
+            <div class="grid-sizer col-md-6 col-12"></div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Runes</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            {% for record_name, record in comparison.runes.items %}
+                            <tr>
+                                <th>{{ record_name }}</th>
+                                <td>
+                                    {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ record.summoner }}
+                                </td>
+                                <td>
+                                    {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ record.follower }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid-item col-md-6 col-12">
+                <div class="grid-item-content">
+                    <table class="table table-responsive comparison-table">
+                        <thead>
+                            <th><h3>Artifacts</h3></th>
+                            <th><h3>{{ profile_name }}</h3></th>
+                            <th><h3>{{ follower_name }}</h3></th>
+                        </thead>
+                        <tbody>
+                            {% for stat_name, stat_count in comparison.artifacts.items %}
+                            <tr>
+                                <th>{{ stat_name }}</th>
+                                <td>
+                                    {% if stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif stat_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ stat_count.summoner }}
+                                </td>
+                                <td>
+                                    {% if stat_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                    {% elif stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                    {% endif %}
+                                    {{ stat_count.follower }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

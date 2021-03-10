@@ -12,7 +12,7 @@ from bestiary.models import Rune, RuneCraft, Artifact, Monster
 
 from herders.aggregations import Median, Perc25, Perc75
 from herders.decorators import username_case_redirect
-from herders.models import RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner, MonsterInstance
+from herders.models import MonsterShrineStorage, RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner, MonsterInstance
 
 
 def _get_efficiency_statistics(model, owner, field="efficiency", count=False, worth=False, worth_field='value'):
@@ -68,13 +68,17 @@ def _compare_summary(summoner, follower):
         "runes": {},
         "artifacts": {},
         "monsters": {
+            'Count': {
+                "summoner": MonsterInstance.objects.filter(owner=summoner).count() + MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'],
+                "follower": MonsterInstance.objects.filter(owner=follower).count() + MonsterShrineStorage.objects.filter(owner=follower).aggregate(count=Sum('quantity'))['count'],
+            },
             'Nat 5⭐': {
-                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).values('monster').count(), 
-                "follower": MonsterInstance.objects.filter(owner=follower, monster__natural_stars=5).values('monster').count(),
+                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).count(), 
+                "follower": MonsterInstance.objects.filter(owner=follower, monster__natural_stars=5).count(),
             },
             'Nat 4⭐': {
-                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=4).values('monster').count(), 
-                "follower": MonsterInstance.objects.filter(owner=follower, monster__natural_stars=4).values('monster').count(),
+                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=4).count(), 
+                "follower": MonsterInstance.objects.filter(owner=follower, monster__natural_stars=4).count(),
             },
         },
     }
@@ -93,7 +97,16 @@ def _compare_summary(summoner, follower):
             "summoner": artifacts_summoner_eff[key],
             "follower": artifacts_follower_eff[key],
         }
-    
+
+    owners = [summoner, follower]
+    monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner__in=owners, item__natural_stars__gte=4).order_by('owner')
+    for owner, iter_ in itertools.groupby(monsters_shrine, key=attrgetter('owner')):
+        owner_str = "summoner"
+        if owner == follower:
+            owner_str = "follower"
+        monsters_owner = list(iter_)
+        for monster in monsters_owner:
+            report['monsters'][f'Nat {monster.item.natural_stars}⭐'][owner_str] += monster.quantity
 
     _find_comparison_winner(report)
 
@@ -449,6 +462,7 @@ def _compare_monsters(summoner, follower):
             'Outside Storage': {"summoner": 0, "follower": 0},
             'Max Skillups': {"summoner": 0, "follower": 0},
             'Fusion Food': {"summoner": 0, "follower": 0},
+            'In Monster Shrine Storage': {"summoner": 0, "follower": 0},
         },
         'stars': {
             1: {"summoner": 0, "follower": 0},
@@ -491,6 +505,21 @@ def _compare_monsters(summoner, follower):
 
             if monster.monster.fusion_food:
                 report['summary']['Fusion Food'][owner_str] += 1
+
+    monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner__in=owners).order_by('owner')
+
+    for owner, iter_ in itertools.groupby(monsters_shrine, key=attrgetter('owner')):
+        owner_str = "summoner"
+        if owner == follower:
+            owner_str = "follower"
+        monsters_owner = list(iter_)
+        for monster in monsters_owner:
+            report['summary']['Count'][owner_str] += monster.quantity
+            report['summary']['In Monster Shrine Storage'][owner_str] += monster.quantity
+            report['stars'][monster.item.natural_stars][owner_str] += monster.quantity
+            report['natural_stars'][monster.item.natural_stars][owner_str] += monster.quantity
+            report['elements'][monster.item.get_element_display()][owner_str] += monster.quantity
+            report['archetypes'][monster.item.get_archetype_display()][owner_str] += monster.quantity
 
     _find_comparison_winner(report)
 

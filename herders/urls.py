@@ -110,6 +110,7 @@ urlpatterns = [
             url(r'^rune_crafts/(?P<rune_craft_slug>[\w-]+)$', views.compare.rune_crafts, name='profile_compare_rune_crafts'),
             url(r'^artifacts/$', views.compare.artifacts, name='profile_compare_artifacts'),
             url(r'^artifact_crafts/$', views.compare.artifact_crafts, name='profile_compare_artifact_crafts'),
+            url(r'^monsters/$', views.compare.monsters, name='profile_compare_monsters'),
         ])),
         url(r'^data/$', views.profile.import_export_home, name='import_export_home'),
         url(r'^import/', include([

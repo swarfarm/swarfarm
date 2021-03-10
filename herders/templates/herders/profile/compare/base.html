@@ -18,11 +18,10 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
                 <a href="{% url 'herders:profile_compare_artifacts' profile_name follower_name %}">Artifacts</a>
                 {% block artifacts_menu %}{% endblock artifacts_menu %}
             </li>
-            <li {% if view == "compare-monsters" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:summon' %}">Monsters</a></li>
+            <li {% if view == "compare-monsters" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_monsters' profile_name follower_name %}">Monsters</a></li>
             <li {% if view == "compare-buildings" %}class="dropdown open"{% endif %}><a href="{% url 'data_log:rune_crafting' %}">Buildings</a></li>
         </ul>
     </div>
-    {% comment %} <pre>{{ comparison.rune_crafts|pprint }}</pre> {% endcomment %}
     <div class="navmenu-content">
         {% if can_compare %}
             {% block content_compare %}
@@ -30,15 +29,6 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
                     <h1>{{ profile_name }} <small>vs</small> {{ follower_name }}</h1>
                 </div>
             {% endblock %}
-
-            {% comment %} <div class="profile-compare-monsters-ajax">
-                <div class="btn btn-info">Compare builds</div>
-            </div> {% endcomment %}
-
-            {% comment %} {% for rune_craft_key, rune_craft_records in comparison.rune_crafts.items %}
-                {% include "herders/profile/compare/compare_rune_craft.html" with profile_name=profile_name follower_name=follower_name title=rune_craft_key crafts=rune_craft_records %}
-            {% endfor %} {% endcomment %}
-            
         {% else %}
             <div class="alert alert-warning">Your friend's profile is not a Public profile or you DO NOT follow eachother!</div>
         {% endif %}

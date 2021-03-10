@@ -8,11 +8,11 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models.aggregates import Avg, Count, Max, Min, StdDev, Sum
 
-from bestiary.models import Rune, RuneCraft, Artifact, ArtifactCraft
+from bestiary.models import Rune, RuneCraft, Artifact, Monster
 
 from herders.aggregations import Median, Perc25, Perc75
 from herders.decorators import username_case_redirect
-from herders.models import RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner
+from herders.models import RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner, MonsterInstance
 
 
 def _get_efficiency_statistics(model, owner, field="efficiency", count=False, worth=False, worth_field='value'):
@@ -67,6 +67,16 @@ def _compare_summary(summoner, follower):
     report = {
         "runes": {},
         "artifacts": {},
+        "monsters": {
+            'Nat 5⭐': {
+                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).values('monster').count(), 
+                "follower": MonsterInstance.objects.filter(owner=follower, monster__natural_stars=5).values('monster').count(),
+            },
+            'Nat 4⭐': {
+                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=4).values('monster').count(), 
+                "follower": MonsterInstance.objects.filter(owner=follower, monster__natural_stars=4).values('monster').count(),
+            },
+        },
     }
     runes_summoner_eff = _get_efficiency_statistics(RuneInstance, summoner, count=True, worth=True)
     runes_follower_eff = _get_efficiency_statistics(RuneInstance, follower, count=True, worth=True)
@@ -83,6 +93,7 @@ def _compare_summary(summoner, follower):
             "summoner": artifacts_summoner_eff[key],
             "follower": artifacts_follower_eff[key],
         }
+    
 
     _find_comparison_winner(report)
 
@@ -427,3 +438,91 @@ def artifact_crafts(request, profile_name, follow_username):
     }
 
     return render(request, 'herders/profile/compare/artifacts/crafts.html', context)
+
+
+def _compare_monsters(summoner, follower):
+    owners = [summoner, follower]
+    report = {
+        'summary': {
+            'Count': {"summoner": 0, "follower": 0},
+            'In Storage': {"summoner": 0, "follower": 0},
+            'Outside Storage': {"summoner": 0, "follower": 0},
+            'Max Skillups': {"summoner": 0, "follower": 0},
+            'Fusion Food': {"summoner": 0, "follower": 0},
+        },
+        'stars': {
+            1: {"summoner": 0, "follower": 0},
+            2: {"summoner": 0, "follower": 0},
+            3: {"summoner": 0, "follower": 0},
+            4: {"summoner": 0, "follower": 0},
+            5: {"summoner": 0, "follower": 0},
+            6: {"summoner": 0, "follower": 0},
+        },
+        'natural_stars': {
+            1: {"summoner": 0, "follower": 0},
+            2: {"summoner": 0, "follower": 0},
+            3: {"summoner": 0, "follower": 0},
+            4: {"summoner": 0, "follower": 0},
+            5: {"summoner": 0, "follower": 0},
+        },
+        'elements': {element[1]: {"summoner": 0, "follower": 0} for element in Monster.NORMAL_ELEMENT_CHOICES},
+        'archetypes': {archetype[1]: {"summoner": 0, "follower": 0} for archetype in Monster.ARCHETYPE_CHOICES},
+    }    
+    monsters = MonsterInstance.objects.select_related('owner', 'monster').prefetch_related('monster__skills').filter(owner__in=owners).order_by('owner')
+
+    for owner, iter_ in itertools.groupby(monsters, key=attrgetter('owner')):
+        owner_str = "summoner"
+        if owner == follower:
+            owner_str = "follower"
+        monsters_owner = list(iter_)
+        report['summary']['Count'][owner_str] = len(monsters_owner)
+        for monster in monsters_owner:
+            # report['quality'][artifact.get_quality_display()][owner_str] += 1
+            if monster.in_storage:
+                report['summary']['In Storage'][owner_str] += 1
+            else:
+                report['summary']['Outside Storage'][owner_str] += 1
+            if monster.skill_ups_to_max() == 0:
+                report['summary']['Max Skillups'][owner_str] += 1
+            report['stars'][monster.stars][owner_str] += 1
+            report['natural_stars'][monster.monster.natural_stars][owner_str] += 1
+            report['elements'][monster.monster.get_element_display()][owner_str] += 1
+            report['archetypes'][monster.monster.get_archetype_display()][owner_str] += 1
+
+            if monster.monster.fusion_food:
+                report['summary']['Fusion Food'][owner_str] += 1
+
+    _find_comparison_winner(report)
+
+    return report
+
+
+@username_case_redirect
+@login_required
+def monsters(request, profile_name, follow_username):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+    try:
+        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+
+    context = {
+        'is_owner': is_owner,
+        'can_compare': can_compare,
+        'profile_name': profile_name,
+        'follower_name': follow_username,
+        'monsters': _compare_monsters(summoner, follower),
+        'view': 'compare-monsters',
+    }
+
+    return render(request, 'herders/profile/compare/monsters/base.html', context)

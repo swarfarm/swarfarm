@@ -2186,3 +2186,61 @@ class FilterMagicBoxCraftLogForm(FilterLogTimeRangeMixin):
             ),
             Submit('submit', 'Apply')
         )
+
+
+# Compare
+class CompareMonstersForm(forms.Form):
+    summoner_monster = forms.ModelChoiceField(required=True, queryset=MonsterInstance.objects.all(), widget=autocomplete.ModelSelect2(url='monster-instance-autocomplete'))
+    follower_monster = forms.ModelChoiceField(required=True, queryset=MonsterInstance.objects.all(), widget=autocomplete.ModelSelect2(url='monster-instance-follower-autocomplete', forward=['follower_name']))
+    follower_name = forms.CharField(required=True, widget=forms.HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+        summoner_name = kwargs.pop('summoner_name', None)
+        follower_name = kwargs.pop('follower_name', None)
+        super(CompareMonstersForm, self).__init__(*args, **kwargs)
+
+        if follower_name:
+            self.fields['follower_name'].initial = follower_name
+
+        summoner_label = f"{summoner_name}'s Monster" if summoner_name else 'Your Monster'
+        follower_label = f"{follower_name}'s Monster" if follower_name else 'Follower\'s Monster'
+
+        self.fields['summoner_monster'].label = False
+        self.fields['follower_monster'].label = False
+        self.fields['follower_name'].label = False
+
+        self.helper = FormHelper(self)
+        self.helper.form_method = 'post'
+        self.helper.form_id = 'compareMonstersForm'
+        self.helper.form_class = 'ajax-form'
+        self.helper.include_media = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    HTML(f'<label class="control-label">{summoner_label}</label>'),
+                    Div(
+                        Field('summoner_monster', wrapper_class='col-md-12', data_placeholder='Start typing...'),
+                    ),
+                    css_class='form-group form-group-condensed',
+                ),
+                Div(
+                    HTML(f'<label class="control-label">{follower_label}</label>'),
+                    Div(
+                        Field('follower_monster', wrapper_class='col-md-12', data_placeholder='Start typing...'),
+                    ),
+                    css_class='form-group form-group-condensed',
+                ),
+                css_class='form-horizontal',
+            ),
+            Div(
+                Field('follower_name'),
+            ),
+            Div(css_class='clearfix'),
+            FormActions(
+                Submit('save', 'Compare', css_class='float-right mr-15'),
+            ),
+        )
+
+    def clean(self):
+        super().clean()
+        

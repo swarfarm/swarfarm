@@ -20,6 +20,7 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
             </li>
             <li {% if view == "compare-monsters" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_monsters' profile_name follower_name %}">Monsters</a></li>
             <li {% if view == "compare-buildings" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_buildings' profile_name follower_name %}">Buildings</a></li>
+            <li {% if view == "compare-builds" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_builds' profile_name follower_name %}">Builds</a></li>
         </ul>
     </div>
     <div class="navmenu-content">

@@ -12,7 +12,9 @@ Summary - {{ block.super }}
 
 
     <div class="profile-compare-monsters-ajax">
-        <div class="btn btn-info">Compare builds</div>
+        <a href="{% url 'herders:profile_compare_builds' profile_name follower_name %}">
+            <div class="btn btn-primary">Compare builds</div>
+        </a>
     </div>
     <div class="container-fluid">
         <div class="grid">

@@ -41,6 +41,18 @@
     color: orange;
 }
 
+.float-right{
+    float: right;
+}
+
+.mr-15{
+    margin-right: 15px;
+}
+
+.w-monster-box{
+    width: 102px;
+}
+
 @media only screen and (max-width: 768px) {
     .grid-item.col-xs-12 {
         padding-left: 0!important;

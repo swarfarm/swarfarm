@@ -1,5 +1,6 @@
 import copy
 import itertools
+from numbers import Number
 from operator import attrgetter
 
 from django.utils.text import slugify
@@ -13,6 +14,7 @@ from bestiary.models import Rune, RuneCraft, Artifact, Monster, Building, Fusion
 from herders.aggregations import Median, Perc25, Perc75
 from herders.decorators import username_case_redirect
 from herders.models import BuildingInstance, MonsterShrineStorage, RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner, MonsterInstance
+from herders.forms import CompareMonstersForm
 
 
 def _get_efficiency_statistics(model, owner, field="efficiency", count=False, worth=False, worth_field='value'):
@@ -709,3 +711,115 @@ def buildings(request, profile_name, follow_username):
     }
 
     return render(request, 'herders/profile/compare/buildings/base.html', context)
+
+
+def _compare_monster_objects(mon_s, mon_f):
+    comparison = {
+        "Level": {"summoner": mon_s.level, "follower": mon_f.level},
+        "Stars": {"summoner": mon_s.stars, "follower": mon_f.stars},
+        "HP": {"summoner": mon_s.hp(), "follower": mon_f.hp()},
+        "Attack": {"summoner": mon_s.attack(), "follower": mon_f.attack()},
+        "Defense": {"summoner": mon_s.defense(), "follower": mon_f.defense()},
+        "Speed": {"summoner": mon_s.speed(), "follower": mon_f.speed()},
+        "Critical Rate": {"summoner": mon_s.crit_rate(), "follower": mon_f.crit_rate()},
+        "Critical Damage": {"summoner": mon_s.crit_damage(), "follower": mon_f.crit_damage()},
+        "Resistance": {"summoner": mon_s.resistance(), "follower": mon_f.resistance()},
+        "Accuracy": {"summoner": mon_s.accuracy(), "follower": mon_f.accuracy()},
+        "Effective HP": {"summoner": mon_s.effective_hp(), "follower": mon_f.effective_hp()},
+        "Skillups To Max": {"summoner": mon_s.skill_ups_to_max(), "follower": mon_f.skill_ups_to_max()},
+    }
+
+    _find_comparison_winner(comparison)
+    # reverse comparison
+    if comparison["Skillups To Max"]["winner"] == "summoner":
+        comparison["Skillups To Max"]["winner"] == "follower"
+    elif comparison["Skillups To Max"]["winner"] == "follower":
+        comparison["Skillups To Max"]["winner"] = "summoner"
+
+    return comparison
+
+
+def _compare_build_objects(mon_s, mon_f, rta=False):
+    if rta:
+        mon_s_build = mon_s.rta_build
+        mon_f_build = mon_f.rta_build
+    else:
+        mon_s_build = mon_s.default_build
+        mon_f_build = mon_f.default_build
+
+    comparison = {
+        "HP": {"summoner": mon_s_build.hp, "follower": mon_f_build.hp},
+        "HP %": {"summoner": mon_s_build.hp_pct, "follower": mon_f_build.hp_pct},
+        "Attack": {"summoner": mon_s_build.attack, "follower": mon_f_build.attack},
+        "Attack %": {"summoner": mon_s_build.attack_pct, "follower": mon_f_build.attack_pct},
+        "Defense": {"summoner": mon_s_build.defense, "follower": mon_f_build.defense},
+        "Defense %": {"summoner": mon_s_build.defense_pct, "follower": mon_f_build.defense_pct},
+        "Speed": {"summoner": mon_s_build.speed, "follower": mon_f_build.speed},
+        "Speed %": {"summoner": mon_s_build.speed_pct, "follower": mon_f_build.speed_pct},
+        "Critical Rate": {"summoner": mon_s_build.crit_rate, "follower": mon_f_build.crit_rate},
+        "Critical Damage": {"summoner": mon_s_build.crit_damage, "follower": mon_f_build.crit_damage},
+        "Resistance": {"summoner": mon_s_build.resistance, "follower": mon_f_build.resistance},
+        "Accuracy": {"summoner": mon_s_build.accuracy, "follower": mon_f_build.accuracy},
+    }
+
+    _find_comparison_winner(comparison)
+
+    comparison["Rune sets"] = {"summoner": mon_s_build.rune_set_summary, "follower": mon_f_build.rune_set_summary}
+
+    return comparison
+
+
+
+@username_case_redirect
+@login_required
+def builds(request, profile_name, follow_username):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+    try:
+        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+    
+    if request.method == 'POST':
+        form = CompareMonstersForm(request.POST, summoner_name=profile_name, follower_name=follow_username)
+        
+        if form.is_valid():
+            print(form.cleaned_data)
+            # 
+            context = {
+                'is_owner': is_owner,
+                'can_compare': can_compare,
+                'profile_name': profile_name,
+                'follower_name': follow_username,
+                'form': form,
+                "monsters": {"summoner": form.cleaned_data['summoner_monster'], "follower": form.cleaned_data['follower_monster']},
+                'comparison': {
+                    'builds': _compare_build_objects(form.cleaned_data['summoner_monster'], form.cleaned_data['follower_monster']),
+                    'monsters': _compare_monster_objects(form.cleaned_data['summoner_monster'], form.cleaned_data['follower_monster']),
+                    'rta_builds': _compare_build_objects(form.cleaned_data['summoner_monster'], form.cleaned_data['follower_monster'], rta=True),
+                },
+                'view': 'compare-builds',
+            }
+            return render(request, 'herders/profile/compare/builds/base.html', context)
+        else:
+            return HttpResponseBadRequest()
+    else:
+        context = {
+            'is_owner': is_owner,
+            'can_compare': can_compare,
+            'profile_name': profile_name,
+            'follower_name': follow_username,
+            'form': CompareMonstersForm(summoner_name=profile_name, follower_name=follow_username),
+            'view': 'compare-builds',
+        }
+
+        return render(request, 'herders/profile/compare/builds/base.html', context)

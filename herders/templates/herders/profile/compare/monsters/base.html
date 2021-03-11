@@ -77,31 +77,126 @@ Monsters - {{ block.super }}
             </div>
             <div class="grid-item col-md-6 col-sm-12 col-xs-12">
                 <div class="grid-item-content">
-                    <table class="table table-responsive comparison-table">
+                    <table class="table table-responsive comparison-table-5">
                         <thead>
                             <th><h3>Natural Stars</h3></th>
+                            <th><h3>Category</h3></th>
+                            <th><h3>Subcategory</h3></th>
                             <th><h3>{{ profile_name }}</h3></th>
                             <th><h3>{{ follower_name }}</h3></th>
                         </thead>
                         <tbody>
                             {% for star_name, star_count in monsters.natural_stars.items %}
-                            <tr>
-                                <th>{{ star_name }}⭐</th>
-                                <td>
-                                    {% if star_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif star_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif star_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ star_count.summoner }}
-                                </td>
-                                <td>
-                                    {% if star_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif star_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif star_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ star_count.follower }}
-                                </td>
-                            </tr>
+                                {% if star_name >= 4 %}
+                                    <tr>
+                                        <th rowspan="4">{{ star_name }}⭐</th>
+                                        <th rowspan="2">Fusion/Free</th>
+                                        <th>Elemental</th>
+                                        <td>
+                                            {% if star_count.fusion.elemental.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.fusion.elemental.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.fusion.elemental.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.fusion.elemental.summoner }}
+                                        </td>
+                                        <td>
+                                            {% if star_count.fusion.elemental.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.fusion.elemental.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.fusion.elemental.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.fusion.elemental.follower }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>L&D</th>
+                                        <td>
+                                            {% if star_count.fusion.ld.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.fusion.ld.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.fusion.ld.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.fusion.ld.summoner }}
+                                        </td>
+                                        <td>
+                                            {% if star_count.fusion.ld.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.fusion.ld.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.fusion.ld.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.fusion.ld.follower }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th rowspan="2">Not Fusion/Free</th>
+                                        <th>Elemental</th>
+                                        <td>
+                                            {% if star_count.nonfusion.elemental.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.nonfusion.elemental.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.nonfusion.elemental.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.nonfusion.elemental.summoner }}
+                                        </td>
+                                        <td>
+                                            {% if star_count.nonfusion.elemental.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.nonfusion.elemental.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.nonfusion.elemental.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.nonfusion.elemental.follower }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>L&D</th>
+                                        <td>
+                                            {% if star_count.nonfusion.ld.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.nonfusion.ld.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.nonfusion.ld.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.nonfusion.ld.summoner }}
+                                        </td>
+                                        <td>
+                                            {% if star_count.nonfusion.ld.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.nonfusion.ld.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.nonfusion.ld.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.nonfusion.ld.follower }}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <th rowspan="2">{{ star_name }}⭐</th>
+                                        <th rowspan="2">All</th>
+                                        <th>Elemental</th>
+                                        <td>
+                                            {% if star_count.nonfusion.elemental.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.nonfusion.elemental.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.nonfusion.elemental.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.nonfusion.elemental.summoner }}
+                                        </td>
+                                        <td>
+                                            {% if star_count.nonfusion.elemental.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.nonfusion.elemental.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.nonfusion.elemental.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.nonfusion.elemental.follower }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>L&D</th>
+                                        <td>
+                                            {% if star_count.nonfusion.ld.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.nonfusion.ld.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.nonfusion.ld.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.nonfusion.ld.summoner }}
+                                        </td>
+                                        <td>
+                                            {% if star_count.nonfusion.ld.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                            {% elif star_count.nonfusion.ld.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                            {% elif star_count.nonfusion.ld.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                            {% endif %}
+                                            {{ star_count.nonfusion.ld.follower }}
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>

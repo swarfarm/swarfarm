@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models.aggregates import Avg, Count, Max, Min, StdDev, Sum
 
-from bestiary.models import Rune, RuneCraft, Artifact, Monster, Building
+from bestiary.models import Rune, RuneCraft, Artifact, Monster, Building, Fusion
 
 from herders.aggregations import Median, Perc25, Perc75
 from herders.decorators import username_case_redirect
@@ -53,7 +53,7 @@ def _find_comparison_winner(data):
     for key, val in data.items():
         if isinstance(val, dict) and "summoner" not in val.keys():
             _find_comparison_winner(val)
-        else:
+        elif isinstance(val, dict):
             record = data[key]
             if record["summoner"] > record["follower"]:
                 record["winner"] = "summoner" 
@@ -61,6 +61,8 @@ def _find_comparison_winner(data):
                 record["winner"] = "follower"
             else:
                 record["winner"] = "tie"
+        else:
+            raise ValueError("Dictionary depth doesn't end with `summoner`, `follower` dictionary.")
 
 
 def _compare_summary(summoner, follower):
@@ -514,17 +516,23 @@ def _compare_monsters(summoner, follower):
             5: {"summoner": 0, "follower": 0},
             6: {"summoner": 0, "follower": 0},
         },
-        'natural_stars': {
-            1: {"summoner": 0, "follower": 0},
-            2: {"summoner": 0, "follower": 0},
-            3: {"summoner": 0, "follower": 0},
-            4: {"summoner": 0, "follower": 0},
-            5: {"summoner": 0, "follower": 0},
-        },
+        'natural_stars': { 
+            i : {
+                "fusion": {
+                    "elemental": {"summoner": 0, "follower": 0},
+                    "ld": {"summoner": 0, "follower": 0},
+                },
+                "nonfusion": {
+                    "elemental": {"summoner": 0, "follower": 0},
+                    "ld": {"summoner": 0, "follower": 0},
+                },
+            } for i in range(1, 6)},
         'elements': {element[1]: {"summoner": 0, "follower": 0} for element in Monster.NORMAL_ELEMENT_CHOICES},
         'archetypes': {archetype[1]: {"summoner": 0, "follower": 0} for archetype in Monster.ARCHETYPE_CHOICES},
-    }    
-    monsters = MonsterInstance.objects.select_related('owner', 'monster').prefetch_related('monster__skills').filter(owner__in=owners).order_by('owner')
+    }
+    monsters = MonsterInstance.objects.select_related('owner', 'monster', 'monster__awakens_to', 'monster__awakens_from', 'monster__awakens_from__awakens_from', 'monster__awakens_to__awakens_to').prefetch_related('monster__skills').filter(owner__in=owners).order_by('owner')
+    monsters_fusion = [f'{mon.product.family_id}-{mon.product.element}' for mon in Fusion.objects.select_related('product').only('product')]
+    free_nat5_families = [19200, 23000, 24100, 24600, 1000100, 1000200]
 
     for owner, iter_ in itertools.groupby(monsters, key=attrgetter('owner')):
         owner_str = "summoner"
@@ -540,7 +548,14 @@ def _compare_monsters(summoner, follower):
             if monster.skill_ups_to_max() == 0:
                 report['summary']['Max Skillups'][owner_str] += 1
             report['stars'][monster.stars][owner_str] += 1
-            report['natural_stars'][monster.monster.natural_stars][owner_str] += 1
+
+            if monster.monster.archetype != Monster.ARCHETYPE_MATERIAL:
+                mon_el = "elemental" if monster.monster.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+                if f'{monster.monster.family_id}-{monster.monster.element}' in monsters_fusion or monster.monster.family_id in free_nat5_families:
+                    report['natural_stars'][monster.monster.natural_stars]['fusion'][mon_el][owner_str] += 1
+                else:
+                    report['natural_stars'][monster.monster.natural_stars]['nonfusion'][mon_el][owner_str] += 1
+
             report['elements'][monster.monster.get_element_display()][owner_str] += 1
             report['archetypes'][monster.monster.get_archetype_display()][owner_str] += 1
 
@@ -558,7 +573,13 @@ def _compare_monsters(summoner, follower):
             report['summary']['Count'][owner_str] += monster.quantity
             report['summary']['In Monster Shrine Storage'][owner_str] += monster.quantity
             report['stars'][monster.item.natural_stars][owner_str] += monster.quantity
-            report['natural_stars'][monster.item.natural_stars][owner_str] += monster.quantity
+            if monster.item.archetype != Monster.ARCHETYPE_MATERIAL:
+                mon_el = "elemental" if monster.item.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+                if f'{monster.item.family_id}-{monster.item.element}' in monsters_fusion or monster.item.family_id in free_nat5_families:
+                    report['natural_stars'][monster.item.natural_stars]['fusion'][mon_el][owner_str] += 1
+                else:
+                    report['natural_stars'][monster.item.natural_stars]['nonfusion'][mon_el][owner_str] += 1
+
             report['elements'][monster.item.get_element_display()][owner_str] += monster.quantity
             report['archetypes'][monster.item.get_archetype_display()][owner_str] += monster.quantity
 

@@ -20,6 +20,10 @@
 .comparison-table th{
     width: 33%;
 }
+.comparison-table-5 td,
+.comparison-table-5 th{
+    width: 20%;
+}
 
 .comparison-table td{
     text-align: left;

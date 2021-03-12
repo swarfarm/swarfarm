@@ -29,7 +29,7 @@ from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
 from herders.views.compare import _get_efficiency_statistics
 
-from bestiary.models import GameItem, RuneCraft, Rune, Artifact
+from bestiary.models import GameItem, RuneCraft, Rune, Artifact, Monster, Fusion
 
 
 def register(request):
@@ -950,6 +950,85 @@ def stats_artifact_crafts(request, profile_name):
     return render(request, 'herders/profile/stats/artifacts/crafts.html', context)
 
 
+def _get_stats_monsters(summoner):
+    report = {
+        'summary': {
+            'Count': 0,
+            'In Storage': 0,
+            'Outside Storage': 0,
+            'Max Skillups': 0,
+            'Fusion Food': 0,
+            'In Monster Shrine Storage': 0,
+        },
+        'stars': {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0,
+            6: 0,
+        },
+        'natural_stars': { 
+            i : {
+                "fusion": {
+                    "elemental": 0,
+                    "ld": 0,
+                },
+                "nonfusion": {
+                    "elemental": 0,
+                    "ld": 0,
+                },
+            } for i in range(1, 6)},
+        'elements': {element[1]: 0 for element in Monster.NORMAL_ELEMENT_CHOICES},
+        'archetypes': {archetype[1]: 0 for archetype in Monster.ARCHETYPE_CHOICES},
+    }
+    monsters = MonsterInstance.objects.select_related('owner', 'monster', 'monster__awakens_to', 'monster__awakens_from', 'monster__awakens_from__awakens_from', 'monster__awakens_to__awakens_to').prefetch_related('monster__skills').filter(owner=summoner)
+    monsters_fusion = [f'{mon.product.family_id}-{mon.product.element}' for mon in Fusion.objects.select_related('product').only('product')]
+    free_nat5_families = [19200, 23000, 24100, 24600, 1000100, 1000200]
+
+    report['summary']['Count'] = monsters.count()
+    for monster in monsters:
+        if monster.in_storage:
+            report['summary']['In Storage'] += 1
+        else:
+            report['summary']['Outside Storage'] += 1
+        if monster.skill_ups_to_max() == 0:
+            report['summary']['Max Skillups'] += 1
+        report['stars'][monster.stars] += 1
+
+        if monster.monster.archetype != Monster.ARCHETYPE_MATERIAL:
+            mon_el = "elemental" if monster.monster.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+            if f'{monster.monster.family_id}-{monster.monster.element}' in monsters_fusion or monster.monster.family_id in free_nat5_families:
+                report['natural_stars'][monster.monster.natural_stars]['fusion'][mon_el] += 1
+            else:
+                report['natural_stars'][monster.monster.natural_stars]['nonfusion'][mon_el] += 1
+
+        report['elements'][monster.monster.get_element_display()] += 1
+        report['archetypes'][monster.monster.get_archetype_display()] += 1
+
+        if monster.monster.fusion_food:
+            report['summary']['Fusion Food'] += 1
+
+    monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner=summoner)
+
+    for monster in monsters_shrine:
+        report['summary']['Count'] += monster.quantity
+        report['summary']['In Monster Shrine Storage'] += monster.quantity
+        report['stars'][monster.item.natural_stars] += monster.quantity
+        if monster.item.archetype != Monster.ARCHETYPE_MATERIAL:
+            mon_el = "elemental" if monster.item.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+            if f'{monster.item.family_id}-{monster.item.element}' in monsters_fusion or monster.item.family_id in free_nat5_families:
+                report['natural_stars'][monster.item.natural_stars]['fusion'][mon_el] += 1
+            else:
+                report['natural_stars'][monster.item.natural_stars]['nonfusion'][mon_el] += 1
+
+        report['elements'][monster.item.get_element_display()] += monster.quantity
+        report['archetypes'][monster.item.get_archetype_display()] += monster.quantity
+
+    return report
+
+
+
 @username_case_redirect
 @login_required
 def stats_monsters(request, profile_name):
@@ -966,7 +1045,7 @@ def stats_monsters(request, profile_name):
     context = {
         'is_owner': is_owner,
         'profile_name': profile_name,
-        'monsters': _get_stats_summary(summoner),
+        'monsters': _get_stats_monsters(summoner),
         'view': 'stats',
         'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
     }

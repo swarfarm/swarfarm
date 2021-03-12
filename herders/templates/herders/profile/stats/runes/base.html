@@ -1,22 +1,11 @@
-{% extends 'herders/profile/compare/base.html' %}
+{% extends 'herders/profile/stats/base.html' %}
 {% load staticfiles %}
 
 {% block title %}
 Runes - {{ block.super }}
 {% endblock title %}
 
-{% block runes_menu %}
-    {% if is_owner%}
-        <ul class="dropdown-menu navmenu-nav">
-            {% for rune_craft_name, rune_craft_slug in subviews.items %}
-                <li><a href="{% url 'herders:profile_compare_rune_crafts' profile_name follower_name rune_craft_slug %}">{{ rune_craft_name }}s</a></li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endblock runes_menu %}
-
-
-{% block content_compare %}
+{% block content_stats %}
     <h1>Runes</h1>
     <hr />
     <div class="container-fluid">
@@ -27,27 +16,13 @@ Runes - {{ block.super }}
                     <table class="table table-responsive comparison-table">
                         <thead>
                             <th><h3>Summary</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for record_name, record in runes.summary.items %}
                             <tr>
                                 <th>{{ record_name }}</th>
-                                <td>
-                                    {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ record.summoner }}
-                                </td>
-                                <td>
-                                    {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ record.follower }}
-                                </td>
+                                <td>{{ record }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -59,27 +34,13 @@ Runes - {{ block.super }}
                     <table class="table table-responsive comparison-table">
                         <thead>
                             <th><h3>Main Stat</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for stat_name, stat_count in runes.main_stat.items %}
                             <tr>
                                 <th>{{ stat_name }}</th>
-                                <td>
-                                    {% if stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif stat_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ stat_count.summoner }}
-                                </td>
-                                <td>
-                                    {% if stat_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ stat_count.follower }}
-                                </td>
+                                <td>{{ stat_count }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -91,27 +52,13 @@ Runes - {{ block.super }}
                     <table class="table table-responsive comparison-table">
                         <thead>
                             <th><h3>Innate Stat</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for stat_name, stat_count in runes.innate_stat.items %}
                             <tr>
                                 <th>{{ stat_name }}</th>
-                                <td>
-                                    {% if stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif stat_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ stat_count.summoner }}
-                                </td>
-                                <td>
-                                    {% if stat_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ stat_count.follower }}
-                                </td>
+                                <td>{{ stat_count }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -123,27 +70,13 @@ Runes - {{ block.super }}
                     <table class="table table-responsive comparison-table">
                         <thead>
                             <th><h3>Substat</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for stat_name, stat_count in runes.substats.items %}
                             <tr>
                                 <th>{{ stat_name }}</th>
-                                <td>
-                                    {% if stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif stat_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ stat_count.summoner }}
-                                </td>
-                                <td>
-                                    {% if stat_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif stat_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif stat_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ stat_count.follower }}
-                                </td>
+                                <td>{{ stat_count }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -155,27 +88,13 @@ Runes - {{ block.super }}
                     <table class="table table-responsive comparison-table">
                         <thead>
                             <th><h3>Stars</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for star_name, star_count in runes.stars.items %}
                             <tr>
                                 <th>{{ star_name }}⭐</th>
-                                <td>
-                                    {% if star_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif star_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif star_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ star_count.summoner }}
-                                </td>
-                                <td>
-                                    {% if star_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif star_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif star_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ star_count.follower }}
-                                </td>
+                                <td>{{ star_count }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -188,26 +107,12 @@ Runes - {{ block.super }}
                         <thead>
                             <th><h3>Sets</h3></th>
                             <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
                         </thead>
                         <tbody>
                             {% for set_name, set_count in runes.sets.items %}
                             <tr>
                                 <th>{{ set_name }}</th>
-                                <td>
-                                    {% if set_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif set_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif set_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ set_count.summoner }}
-                                </td>
-                                <td>
-                                    {% if set_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif set_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif set_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ set_count.follower }}
-                                </td>
+                                <td>{{ set_count }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -219,27 +124,13 @@ Runes - {{ block.super }}
                     <table class="table table-responsive comparison-table">
                         <thead>
                             <th><h3>Slot</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for slot_name, slot_count in runes.slot.items %}
                             <tr>
                                 <th>{{ slot_name }}</th>
-                                <td>
-                                    {% if slot_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif slot_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif slot_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ slot_count.summoner }}
-                                </td>
-                                <td>
-                                    {% if slot_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif slot_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif slot_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ slot_count.follower }}
-                                </td>
+                                <td>{{ slot_count.summoner }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -251,27 +142,13 @@ Runes - {{ block.super }}
                     <table class="table table-responsive comparison-table">
                         <thead>
                             <th><h3>Quality</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for quality_name, quality_count in runes.quality.items %}
                             <tr>
                                 <th>{{ quality_name }}</th>
-                                <td>
-                                    {% if quality_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif quality_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif quality_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ quality_count.summoner }}
-                                </td>
-                                <td>
-                                    {% if quality_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif quality_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif quality_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ quality_count.follower }}
-                                </td>
+                                <td>{{ quality_count }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -283,27 +160,13 @@ Runes - {{ block.super }}
                     <table class="table table-responsive comparison-table">
                         <thead>
                             <th><h3>Quality (original)</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th></th>
                         </thead>
                         <tbody>
                             {% for quality_name, quality_count in runes.quality_original.items %}
                             <tr>
                                 <th>{{ quality_name }}</th>
-                                <td>
-                                    {% if quality_count.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif quality_count.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif quality_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ quality_count.summoner }}
-                                </td>
-                                <td>
-                                    {% if quality_count.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                    {% elif quality_count.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                    {% elif quality_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                    {% endif %}
-                                    {{ quality_count.follower }}
-                                </td>
+                                <td>{{ quality_count }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

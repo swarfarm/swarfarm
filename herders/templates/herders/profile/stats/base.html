@@ -8,18 +8,13 @@ Statistics - {{ profile_name }} - {{ block.super }}
 
 {% block profile_stats_menu %}
     <ul class="dropdown-menu navmenu-nav">
-        <li {% if view == "compare-summary" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_stats' profile_name %}">Summary</a></li>
-        {% comment %} <li {% if view == "compare-runes" %}class="dropdown open"{% endif %}>
-            <a href="{% url 'herders:profile_compare_runes' profile_name follower_name %}">Runes</a>
-            {% block runes_menu %}{% endblock runes_menu %}
-        </li>
-        <li {% if view == "compare-artifacts" %}class="dropdown open"{% endif %}>
-            <a href="{% url 'herders:profile_compare_artifacts' profile_name follower_name %}">Artifacts</a>
-            {% block artifacts_menu %}{% endblock artifacts_menu %}
-        </li>
-        <li {% if view == "compare-monsters" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_monsters' profile_name follower_name %}">Monsters</a></li>
-        <li {% if view == "compare-buildings" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_buildings' profile_name follower_name %}">Buildings</a></li>
-        <li {% if view == "compare-builds" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_builds' profile_name follower_name %}">Builds</a></li> {% endcomment %}
+        <li><a href="{% url 'herders:profile_stats' profile_name %}">Summary</a></li>
+        <li><a href="{% url 'herders:profile_stats_runes' profile_name %}">Runes</a></li>
+        {% for rune_craft_name, rune_craft_slug in subviews.items %}
+            <li><a href="{% url 'herders:profile_stats_rune_crafts' profile_name rune_craft_slug %}">Rune {{ rune_craft_name }}s</a></li>
+        {% endfor %}
+        <li><a href="{% url 'herders:profile_stats_artifacts' profile_name %}">Artifacts</a></li>
+        <li><a href="{% url 'herders:profile_stats_monsters' profile_name %}">Monsters</a></li>
     </ul>
 {% endblock profile_stats_menu %}
 

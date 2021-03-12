@@ -2,8 +2,8 @@
 Profile CRUD, import/export, storage, and buildings
 """
 
-from herders.views.compare import _get_efficiency_statistics
 import json
+import copy
 
 from celery.result import AsyncResult
 from django.contrib import messages
@@ -18,6 +18,7 @@ from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.template import loader
 from django.template.context_processors import csrf
 from django.utils.html import mark_safe
+from django.utils.text import slugify
 
 from herders.decorators import username_case_redirect
 from herders.forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, EditUserForm, \
@@ -26,9 +27,9 @@ from herders.models import ArtifactInstance, MonsterInstance, RuneCraftInstance,
 from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
+from herders.views.compare import _get_efficiency_statistics
 
-from bestiary.models import GameItem
-from data_log.reports.generate import get_artifact_report, get_monster_report, get_rune_craft_report, get_rune_report
+from bestiary.models import GameItem, RuneCraft, Rune
 
 
 def register(request):
@@ -702,6 +703,218 @@ def stats(request, profile_name):
         'profile_name': profile_name,
         'stats': _get_stats_summary(summoner),
         'view': 'stats',
+        'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
+    }
+
+    return render(request, 'herders/profile/stats/summary.html', context)
+
+
+def _get_stats_runes(summoner):
+    stats = {stat[1]: 0 for stat in sorted(Rune.STAT_CHOICES, key=lambda x: x[1])}
+    qualities = {quality[1]: 0 for quality in Rune.QUALITY_CHOICES}
+    qualities[None] = 0
+    report_runes = {
+        'summary': {
+            'Count': 0,
+            'Worth': 0,
+        },
+        'stars': {
+            6: 0,
+            5: 0,
+            4: 0,
+            3: 0,
+            2: 0,
+            1: 0,
+        },
+        'sets': {rune_set[1]: 0 for rune_set in sorted(Rune.TYPE_CHOICES, key=lambda x: x[1])},
+        'quality': copy.deepcopy(qualities),
+        'quality_original': copy.deepcopy(qualities),
+        'slot': {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0,
+            6: 0,
+        },
+        'main_stat': copy.deepcopy(stats),
+        'innate_stat': copy.deepcopy(stats),
+        'substats': copy.deepcopy(stats),
+    }
+    report_runes['innate_stat'][None] = 0
+    runes = RuneInstance.objects.select_related('owner').filter(owner=summoner)
+
+    rune_substats = dict(Rune.STAT_CHOICES)
+
+    report_runes['summary']['Count'] = runes.count()
+    for rune in runes:
+        for sub_stat in rune.substats:
+            report_runes['substats'][rune_substats[sub_stat]] += 1
+
+        report_runes['stars'][rune.stars] += 1
+        report_runes['sets'][rune.get_type_display()] += 1
+        report_runes['quality'][rune.get_quality_display()] += 1
+        report_runes['quality_original'][rune.get_original_quality_display()] += 1
+        report_runes['slot'][rune.slot] += 1
+        report_runes['main_stat'][rune.get_main_stat_display()] += 1
+        report_runes['innate_stat'][rune.get_innate_stat_display()] += 1
+        report_runes['summary']['Worth'] += rune.value
+    
+    summoner_eff = _get_efficiency_statistics(RuneInstance, summoner)
+    for key in summoner_eff.keys():
+        report_runes["summary"][key] = summoner_eff[key]
+
+
+    return report_runes
+
+
+@username_case_redirect
+@login_required
+def stats_runes(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    context = {
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+        'runes': _get_stats_runes(summoner),
+        'view': 'stats',
+        'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
+    }
+
+    return render(request, 'herders/profile/stats/runes/base.html', context)
+
+
+def _get_stats_rune_crafts(summoner, craft_type):
+    stats = {stat[1]: 0 for stat in sorted(RuneCraft.STAT_CHOICES, key=lambda x: x[1])}
+    sets = {rune_set[1]: 0 for rune_set in sorted(RuneCraft.TYPE_CHOICES, key=lambda x: x[1])}
+    sets[None] = 0
+    qualities = {quality[1]: 0 for quality in RuneCraft.QUALITY_CHOICES}
+    report = {
+        'sets': copy.deepcopy(sets),
+        'quality': copy.deepcopy(qualities),
+        'stat': copy.deepcopy(stats),
+        'summary': {
+            'Count': 0,
+            'Worth': 0,
+        },
+    }
+    rune_crafts = RuneCraftInstance.objects.select_related('owner').filter(owner=summoner, type=craft_type)
+
+    for record in rune_crafts:
+        report['summary']['Count'] += record.quantity
+        report['sets'][record.get_rune_display()] += record.quantity
+        report['quality'][record.get_quality_display()] += record.quantity
+        report['stat'][record.get_stat_display()] += record.quantity
+        report['summary']['Worth'] += record.value * record.quantity
+
+    return report
+
+
+@username_case_redirect
+@login_required
+def stats_rune_crafts(request, profile_name, rune_craft_slug):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    craft_types = {slugify(type_[1]): {"idx": type_[0], "name": type_[1]} for type_ in RuneCraft.CRAFT_CHOICES}
+    craft_type = craft_types.get(rune_craft_slug, None)
+    if craft_type is None:
+        return HttpResponseBadRequest()
+
+    context = {
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+        'crafts': _get_stats_rune_crafts(summoner, craft_type["idx"]),
+        'craft_type': craft_type['name'],
+        'view': 'stats',
+        'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
+    }
+
+    return render(request, 'herders/profile/stats/runes/crafts.html', context)
+
+
+@username_case_redirect
+@login_required
+def stats_artifacts(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    context = {
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+        'stats': _get_stats_summary(summoner),
+        'view': 'stats',
+        'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
+    }
+
+    return render(request, 'herders/profile/stats/summary.html', context)
+
+
+@username_case_redirect
+@login_required
+def stats_artifact_crafts(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    context = {
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+        'stats': _get_stats_summary(summoner),
+        'view': 'stats',
+        'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
+    }
+
+    return render(request, 'herders/profile/stats/summary.html', context)
+
+
+@username_case_redirect
+@login_required
+def stats_monsters(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return render(request, 'herders/profile/not_public.html', {})
+
+    context = {
+        'is_owner': is_owner,
+        'profile_name': profile_name,
+        'stats': _get_stats_summary(summoner),
+        'view': 'stats',
+        'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
     }
 
     return render(request, 'herders/profile/stats/summary.html', context)

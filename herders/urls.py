@@ -169,7 +169,7 @@ urlpatterns = [
                 path('table/', views.data_log.WorldBossTable.as_view(), name='data_log_world_boss_table'),
             ])),
         ])),
-        url(r'stats/(?P<follow_username>[a-zA-Z0-9_@.]+)/', include([
+        url(r'stats/', include([
             url(r'^$', views.profile.stats, name='profile_stats'),
             url(r'^runes/$', views.profile.stats_runes, name='profile_stats_runes'),
             url(r'^rune_crafts/(?P<rune_craft_slug>[\w-]+)$', views.profile.stats_rune_crafts, name='profile_stats_rune_crafts'),

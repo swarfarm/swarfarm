@@ -793,8 +793,6 @@ def builds(request, profile_name, follow_username):
         form = CompareMonstersForm(request.POST, summoner_name=profile_name, follower_name=follow_username)
         
         if form.is_valid():
-            print(form.cleaned_data)
-            # 
             context = {
                 'is_owner': is_owner,
                 'can_compare': can_compare,

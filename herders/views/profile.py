@@ -2,6 +2,7 @@
 Profile CRUD, import/export, storage, and buildings
 """
 
+from herders.views.compare import _get_efficiency_statistics
 import json
 
 from celery.result import AsyncResult
@@ -11,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.core.mail import mail_admins
 from django.db import IntegrityError
+from django.db.models.aggregates import Avg, Count, Max, Min, StdDev, Sum
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.template import loader
@@ -657,26 +659,34 @@ def export_win10_optimizer(request, profile_name):
     return response
 
 
-def _get_summoner_report(summoner, owner=True):
-    runes = RuneInstance.objects.filter(owner=summoner)
-    rune_crafts = RuneCraftInstance.objects.filter(owner=summoner)
-    artifacts = ArtifactInstance.objects.filter(owner=summoner)
-    monsters = MonsterInstance.objects.filter(owner=summoner)
+def _get_stats_summary(summoner):
+    report = {
+        "runes": {},
+        "artifacts": {},
+        "monsters": {
+            'Count': MonsterInstance.objects.filter(owner=summoner).count() + MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'],
+            'Nat 5⭐': MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).count(),
+            'Nat 4⭐': MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=4).count(),
+        },
+    }
+    runes_summoner_eff = _get_efficiency_statistics(RuneInstance, summoner, count=True, worth=True)
+    for key in runes_summoner_eff.keys():
+        report["runes"][key] = runes_summoner_eff[key]
 
-    report['runes'] = get_rune_report(runes, runes.count(), min_count=0)
+    artifacts_summoner_eff = _get_efficiency_statistics(ArtifactInstance, summoner, count=True)
+    for key in artifacts_summoner_eff.keys():
+        report["artifacts"][key] = artifacts_summoner_eff[key]
 
-    report['rune_crafts'] = get_rune_craft_report(rune_crafts, rune_crafts.count(), min_count=0)
-
-    report['artifacts'] = get_artifact_report(artifacts, artifacts.count(), min_count=0)
-
-    report['monsters'] = get_monster_report(monsters, monsters.count(), min_count=0)
+    monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner=summoner, item__natural_stars__gte=4)
+    for monster in monsters_shrine:
+        report['monsters'][f'Nat {monster.item.natural_stars}⭐'] += monster.quantity
 
     return report
 
 
 @username_case_redirect
 @login_required
-def report(request, profile_name):
+def stats(request, profile_name):
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
@@ -690,9 +700,8 @@ def report(request, profile_name):
     context = {
         'is_owner': is_owner,
         'profile_name': profile_name,
-        'report': _get_summoner_report(summoner),
-        'view': 'compare',
+        'stats': _get_stats_summary(summoner),
+        'view': 'stats',
     }
 
-    # TODO: CHANGE TEMPLATE
-    return render(request, 'herders/profile/compare/profile.html', context)
+    return render(request, 'herders/profile/stats/summary.html', context)

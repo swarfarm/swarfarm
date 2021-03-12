@@ -168,6 +168,14 @@ urlpatterns = [
                 path('', views.data_log.WorldBossDashboard.as_view(), name='data_log_world_boss_dashboard'),
                 path('table/', views.data_log.WorldBossTable.as_view(), name='data_log_world_boss_table'),
             ])),
-        ]))
+        ])),
+        url(r'stats/(?P<follow_username>[a-zA-Z0-9_@.]+)/', include([
+            url(r'^$', views.profile.stats, name='profile_stats'),
+            url(r'^runes/$', views.profile.stats_runes, name='profile_stats_runes'),
+            url(r'^rune_crafts/(?P<rune_craft_slug>[\w-]+)$', views.profile.stats_rune_crafts, name='profile_stats_rune_crafts'),
+            url(r'^artifacts/$', views.profile.stats_artifacts, name='profile_stats_artifacts'),
+            url(r'^artifact_crafts/$', views.profile.stats_artifact_crafts, name='profilestats_artifact_crafts'),
+            url(r'^monsters/$', views.profile.stats_monsters, name='profile_stats_monsters'),
+        ])),
     ])),
 ]

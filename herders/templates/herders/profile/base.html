@@ -80,6 +80,14 @@
                     {% block data_log_menu %}{% endblock data_log_menu %}
                 </li>
             {% endif %}
+            {% if is_owner %}
+                <li {% if view == 'stats' %}class="dropdown open"{% endif %}>
+                    <a href="{% url 'herders:profile_stats' profile_name=profile_name %}">
+                        <span class="fa fa-bar-chart"></span> Statistics
+                    </a>
+                    {% block profile_stats_menu %}{% endblock profile_stats_menu %}
+                </li>
+            {% endif %}
         </ul>
     </div>
 {% endblock subnav %}

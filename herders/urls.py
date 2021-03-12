@@ -174,7 +174,7 @@ urlpatterns = [
             url(r'^runes/$', views.profile.stats_runes, name='profile_stats_runes'),
             url(r'^rune_crafts/(?P<rune_craft_slug>[\w-]+)$', views.profile.stats_rune_crafts, name='profile_stats_rune_crafts'),
             url(r'^artifacts/$', views.profile.stats_artifacts, name='profile_stats_artifacts'),
-            url(r'^artifact_crafts/$', views.profile.stats_artifact_crafts, name='profilestats_artifact_crafts'),
+            url(r'^artifact_crafts/$', views.profile.stats_artifact_crafts, name='profile_stats_artifact_crafts'),
             url(r'^monsters/$', views.profile.stats_monsters, name='profile_stats_monsters'),
         ])),
     ])),

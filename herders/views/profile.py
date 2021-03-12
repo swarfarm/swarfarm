@@ -23,13 +23,13 @@ from django.utils.text import slugify
 from herders.decorators import username_case_redirect
 from herders.forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, EditUserForm, \
     EditSummonerForm, EditBuildingForm, ImportSWParserJSONForm
-from herders.models import ArtifactInstance, MonsterInstance, RuneCraftInstance, RuneInstance, Summoner, MaterialStorage, MonsterShrineStorage, Building, BuildingInstance
+from herders.models import ArtifactInstance, MonsterInstance, RuneCraftInstance, RuneInstance, Summoner, MaterialStorage, MonsterShrineStorage, Building, BuildingInstance, ArtifactCraftInstance
 from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
 from herders.views.compare import _get_efficiency_statistics
 
-from bestiary.models import GameItem, RuneCraft, Rune
+from bestiary.models import GameItem, RuneCraft, Rune, Artifact
 
 
 def register(request):
@@ -848,6 +848,40 @@ def stats_rune_crafts(request, profile_name, rune_craft_slug):
     return render(request, 'herders/profile/stats/runes/crafts.html', context)
 
 
+def _get_stats_artifacts(summoner):
+    qualities = {quality[1]: 0 for quality in Artifact.QUALITY_CHOICES}
+    report = {
+        'summary': {
+            'Count': 0,
+        },
+        'quality': copy.deepcopy(qualities),
+        'quality_original': copy.deepcopy(qualities),
+        'slot': {artifact_slot[1]: 0 for artifact_slot in (Artifact.ARCHETYPE_CHOICES + Artifact.NORMAL_ELEMENT_CHOICES)},
+        'main_stat': {stat[1]: 0 for stat in sorted(Artifact.MAIN_STAT_CHOICES, key=lambda x: x[1])},
+        'substats': {effect[1]: 0 for effect in sorted(Artifact.EFFECT_CHOICES, key=lambda x: x[1])},
+    }
+    artifacts = ArtifactInstance.objects.select_related('owner').filter(owner=summoner)
+
+    artifact_substats = dict(Artifact.EFFECT_CHOICES)
+
+    report['summary']['Count'] = artifacts.count()
+    for artifact in artifacts:
+        for sub_stat in artifact.effects:
+            report['substats'][artifact_substats[sub_stat]] += 1
+
+        report['quality'][artifact.get_quality_display()] += 1
+        report['quality_original'][artifact.get_original_quality_display()] += 1
+        report['slot'][artifact.get_precise_slot_display()] += 1
+        report['main_stat'][artifact.get_main_stat_display()] += 1
+
+    summoner_eff = _get_efficiency_statistics(ArtifactInstance, summoner)
+    for key in summoner_eff.keys():
+        report["summary"][key] = summoner_eff[key]
+
+    return report
+
+
+
 @username_case_redirect
 @login_required
 def stats_artifacts(request, profile_name):
@@ -864,12 +898,32 @@ def stats_artifacts(request, profile_name):
     context = {
         'is_owner': is_owner,
         'profile_name': profile_name,
-        'stats': _get_stats_summary(summoner),
+        'artifacts': _get_stats_artifacts(summoner),
         'view': 'stats',
         'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
     }
 
-    return render(request, 'herders/profile/stats/summary.html', context)
+    return render(request, 'herders/profile/stats/artifacts/base.html', context)
+
+
+def _get_stats_artifact_crafts(summoner):
+    report = {
+        'summary': {
+            'Count': 0,
+        },
+        'quality': {quality[1]: 0 for quality in Artifact.QUALITY_CHOICES},
+        'slot': {artifact_slot[1]: 0 for artifact_slot in (Artifact.ARCHETYPE_CHOICES + Artifact.NORMAL_ELEMENT_CHOICES)},
+        'substats': {effect[1]: 0 for effect in sorted(Artifact.EFFECT_CHOICES, key=lambda x: x[1])},
+    }
+    artifacts = ArtifactCraftInstance.objects.select_related('owner').filter(owner=summoner)
+
+    for artifact in artifacts:
+        report['substats'][artifact.get_effect_display()] += artifact.quantity
+        report['quality'][artifact.get_quality_display()] += artifact.quantity
+        report['slot'][artifact.get_archetype_display() or artifact.get_element_display()] += artifact.quantity
+        report['summary']['Count'] += artifact.quantity
+
+    return report
 
 
 @username_case_redirect
@@ -888,12 +942,12 @@ def stats_artifact_crafts(request, profile_name):
     context = {
         'is_owner': is_owner,
         'profile_name': profile_name,
-        'stats': _get_stats_summary(summoner),
+        'artifact_craft': _get_stats_artifact_crafts(summoner),
         'view': 'stats',
         'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
     }
 
-    return render(request, 'herders/profile/stats/summary.html', context)
+    return render(request, 'herders/profile/stats/artifacts/crafts.html', context)
 
 
 @username_case_redirect
@@ -912,9 +966,9 @@ def stats_monsters(request, profile_name):
     context = {
         'is_owner': is_owner,
         'profile_name': profile_name,
-        'stats': _get_stats_summary(summoner),
+        'monsters': _get_stats_summary(summoner),
         'view': 'stats',
         'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
     }
 
-    return render(request, 'herders/profile/stats/summary.html', context)
+    return render(request, 'herders/profile/stats/monsters/base.html', context)

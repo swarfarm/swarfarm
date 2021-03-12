@@ -6,6 +6,13 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
 {% endblock title %}
 
 {% block content %}
+    <div class="navbar navbar-default navmenu-collapsed">
+        <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
     <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
         <p class="navmenu-brand">{% if can_compare %}{{profile_name}} <small>vs</small> {{ follower_name }}{% else %}private profile {% endif %}</p>
         <ul class="nav navmenu-nav">

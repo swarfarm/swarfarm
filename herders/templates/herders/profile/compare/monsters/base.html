@@ -15,9 +15,10 @@ Monsters - {{ block.super }}
                 <div class="grid-item-content table-responsive">
                     <table class="table comparison-table">
                         <thead>
-                            <th><h3>Summary</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Summary</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for record_name, record in monsters.summary.items %}
@@ -37,6 +38,9 @@ Monsters - {{ block.super }}
                                     {% endif %}
                                     {{ record.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -47,9 +51,10 @@ Monsters - {{ block.super }}
                 <div class="grid-item-content table-responsive">
                     <table class="table comparison-table">
                         <thead>
-                            <th><h3>Stars</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Stars</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for star_name, star_count in monsters.stars.items %}
@@ -69,6 +74,9 @@ Monsters - {{ block.super }}
                                     {% endif %}
                                     {{ star_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if star_count.winner == 'follower' %}minus{% elif star_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if star_count.winner != 'tie' %}{{ star_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -77,13 +85,14 @@ Monsters - {{ block.super }}
             </div>
             <div class="grid-item col-md-6 col-sm-12 col-xs-12">
                 <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table-5">
+                    <table class="table comparison-table-6">
                         <thead>
-                            <th><h3>Natural Stars</h3></th>
-                            <th><h3>Category</h3></th>
-                            <th><h3>Subcategory</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Natural Stars</th>
+                            <th>Category</th>
+                            <th>Subcategory</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for star_name, star_count in monsters.natural_stars.items %}
@@ -106,6 +115,9 @@ Monsters - {{ block.super }}
                                             {% endif %}
                                             {{ star_count.fusion.elemental.follower }}
                                         </td>
+                                        <td><span class="comparison-difference-{% if star_count.fusion.elemental.winner == 'follower' %}minus{% elif star_count.fusion.elemental.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                            {% if star_count.fusion.elemental.winner != 'tie' %}{{ star_count.fusion.elemental.diff }}{% endif %}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>L&D</th>
@@ -122,6 +134,9 @@ Monsters - {{ block.super }}
                                             {% elif star_count.fusion.ld.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
                                             {% endif %}
                                             {{ star_count.fusion.ld.follower }}
+                                        </td>
+                                        <td><span class="comparison-difference-{% if star_count.fusion.ld.winner == 'follower' %}minus{% elif star_count.fusion.ld.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                            {% if star_count.fusion.ld.winner != 'tie' %}{{ star_count.fusion.ld.diff }}{% endif %}
                                         </td>
                                     </tr>
                                     <tr>
@@ -141,6 +156,9 @@ Monsters - {{ block.super }}
                                             {% endif %}
                                             {{ star_count.nonfusion.elemental.follower }}
                                         </td>
+                                        <td><span class="comparison-difference-{% if star_count.nonfusion.elemental.winner == 'follower' %}minus{% elif star_count.nonfusion.elemental.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                            {% if star_count.nonfusion.elemental.winner != 'tie' %}{{ star_count.nonfusion.elemental.diff }}{% endif %}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>L&D</th>
@@ -157,6 +175,9 @@ Monsters - {{ block.super }}
                                             {% elif star_count.nonfusion.ld.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
                                             {% endif %}
                                             {{ star_count.nonfusion.ld.follower }}
+                                        </td>
+                                        <td><span class="comparison-difference-{% if star_count.nonfusion.ld.winner == 'follower' %}minus{% elif star_count.nonfusion.ld.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                            {% if star_count.nonfusion.ld.winner != 'tie' %}{{ star_count.nonfusion.ld.diff }}{% endif %}
                                         </td>
                                     </tr>
                                 {% else %}
@@ -178,6 +199,9 @@ Monsters - {{ block.super }}
                                             {% endif %}
                                             {{ star_count.nonfusion.elemental.follower }}
                                         </td>
+                                        <td><span class="comparison-difference-{% if star_count.nonfusion.elemental.winner == 'follower' %}minus{% elif star_count.nonfusion.elemental.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                            {% if star_count.nonfusion.elemental.winner != 'tie' %}{{ star_count.nonfusion.elemental.diff }}{% endif %}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>L&D</th>
@@ -195,6 +219,9 @@ Monsters - {{ block.super }}
                                             {% endif %}
                                             {{ star_count.nonfusion.ld.follower }}
                                         </td>
+                                        <td><span class="comparison-difference-{% if star_count.nonfusion.ld.winner == 'follower' %}minus{% elif star_count.nonfusion.ld.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                            {% if star_count.nonfusion.ld.winner != 'tie' %}{{ star_count.nonfusion.ld.diff }}{% endif %}
+                                        </td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}
@@ -206,9 +233,10 @@ Monsters - {{ block.super }}
                 <div class="grid-item-content table-responsive">
                     <table class="table comparison-table">
                         <thead>
-                            <th><h3>Elements</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Elements</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for record_name, record_count in monsters.elements.items %}
@@ -228,6 +256,9 @@ Monsters - {{ block.super }}
                                     {% endif %}
                                     {{ record_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if record_count.winner == 'follower' %}minus{% elif record_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if record_count.winner != 'tie' %}{{ record_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -238,9 +269,10 @@ Monsters - {{ block.super }}
                 <div class="grid-item-content table-responsive">
                     <table class="table comparison-table">
                         <thead>
-                            <th><h3>Archetypes</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Archetypes</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for record_name, record_count in monsters.archetypes.items %}
@@ -259,6 +291,9 @@ Monsters - {{ block.super }}
                                     {% elif record_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
                                     {% endif %}
                                     {{ record_count.follower }}
+                                </td>
+                                <td><span class="comparison-difference-{% if record_count.winner == 'follower' %}minus{% elif record_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if record_count.winner != 'tie' %}{{ record_count.diff }}{% endif %}
                                 </td>
                             </tr>
                             {% endfor %}

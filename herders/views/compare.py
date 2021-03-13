@@ -57,9 +57,11 @@ def _find_comparison_winner(data):
             _find_comparison_winner(val)
         elif isinstance(val, dict):
             record = data[key]
-            if record["summoner"] > record["follower"]:
+            diff = round(record["summoner"] - record["follower"], 2)
+            record["diff"] = diff
+            if diff > 0:
                 record["winner"] = "summoner" 
-            elif record["summoner"] < record["follower"]:
+            elif diff < 0:
                 record["winner"] = "follower"
             else:
                 record["winner"] = "tie"

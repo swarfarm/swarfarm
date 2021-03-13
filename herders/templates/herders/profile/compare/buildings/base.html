@@ -15,9 +15,10 @@ Buildings - {{ block.super }}
                 <div class="grid-item-content table-responsive">
                     <table class="table comparison-table">
                         <thead>
-                            <th><h3>Summary</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Summary</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for record_name, record in buildings.summary.items %}
@@ -37,6 +38,9 @@ Buildings - {{ block.super }}
                                     {% endif %}
                                     {{ record.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -47,9 +51,10 @@ Buildings - {{ block.super }}
                 <div class="grid-item-content table-responsive">
                     <table class="table comparison-table">
                         <thead>
-                            <th><h3>Levels</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Levels</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for record_name, record_count in buildings.levels.items %}
@@ -69,6 +74,9 @@ Buildings - {{ block.super }}
                                     {% endif %}
                                     {{ record_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if record_count.winner == 'follower' %}minus{% elif record_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if record_count.winner != 'tie' %}{{ record_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -79,9 +87,10 @@ Buildings - {{ block.super }}
                 <div class="grid-item-content table-responsive">
                     <table class="table comparison-table">
                         <thead>
-                            <th><h3>Remaining Upgrade Cost</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Remaining Upgrade Cost</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for record_name, record_count in buildings.remaining_costs.items %}
@@ -100,6 +109,9 @@ Buildings - {{ block.super }}
                                     {% elif record_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
                                     {% endif %}
                                     {{ record_count.follower }}
+                                </td>
+                                <td><span class="comparison-difference-{% if record_count.winner == 'follower' %}minus{% elif record_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if record_count.winner != 'tie' %}{{ record_count.diff }}{% endif %}
                                 </td>
                             </tr>
                             {% endfor %}

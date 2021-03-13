@@ -18,11 +18,11 @@
 
 .comparison-table td,
 .comparison-table th{
-    width: 33%;
+    width: 25%;
 }
-.comparison-table-5 td,
-.comparison-table-5 th{
-    width: 20%;
+.comparison-table-6 td,
+.comparison-table-6 th{
+    width: 16.67%;
 }
 
 .comparison-table td{
@@ -51,6 +51,14 @@
 
 .w-monster-box{
     width: 102px;
+}
+
+.comparison-difference-minus{
+    color: red;
+}
+
+.comparison-difference-plus{
+    color: green;
 }
 
 @media only screen and (max-width: 768px) {

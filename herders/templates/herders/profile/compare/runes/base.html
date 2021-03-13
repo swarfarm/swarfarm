@@ -26,9 +26,10 @@ Runes - {{ block.super }}
                 <div class="grid-item-content">
                     <table class="table table-responsive comparison-table">
                         <thead>
-                            <th><h3>Summary</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Summary</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for record_name, record in runes.summary.items %}
@@ -48,6 +49,9 @@ Runes - {{ block.super }}
                                     {% endif %}
                                     {{ record.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -58,9 +62,10 @@ Runes - {{ block.super }}
                 <div class="grid-item-content">
                     <table class="table table-responsive comparison-table">
                         <thead>
-                            <th><h3>Main Stat</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Main Stat</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for stat_name, stat_count in runes.main_stat.items %}
@@ -80,6 +85,9 @@ Runes - {{ block.super }}
                                     {% endif %}
                                     {{ stat_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if stat_count.winner == 'follower' %}minus{% elif stat_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if stat_count.winner != 'tie' %}{{ stat_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -90,9 +98,10 @@ Runes - {{ block.super }}
                 <div class="grid-item-content">
                     <table class="table table-responsive comparison-table">
                         <thead>
-                            <th><h3>Innate Stat</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Innate Stat</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for stat_name, stat_count in runes.innate_stat.items %}
@@ -112,6 +121,9 @@ Runes - {{ block.super }}
                                     {% endif %}
                                     {{ stat_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if stat_count.winner == 'follower' %}minus{% elif stat_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if stat_count.winner != 'tie' %}{{ stat_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -122,9 +134,10 @@ Runes - {{ block.super }}
                 <div class="grid-item-content">
                     <table class="table table-responsive comparison-table">
                         <thead>
-                            <th><h3>Substat</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Substat</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for stat_name, stat_count in runes.substats.items %}
@@ -144,6 +157,9 @@ Runes - {{ block.super }}
                                     {% endif %}
                                     {{ stat_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if stat_count.winner == 'follower' %}minus{% elif stat_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if stat_count.winner != 'tie' %}{{ stat_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -154,9 +170,10 @@ Runes - {{ block.super }}
                 <div class="grid-item-content">
                     <table class="table table-responsive comparison-table">
                         <thead>
-                            <th><h3>Stars</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Stars</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for star_name, star_count in runes.stars.items %}
@@ -176,6 +193,9 @@ Runes - {{ block.super }}
                                     {% endif %}
                                     {{ star_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if star_count.winner == 'follower' %}minus{% elif star_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if star_count.winner != 'tie' %}{{ star_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -186,9 +206,10 @@ Runes - {{ block.super }}
                 <div class="grid-item-content">
                     <table class="table table-responsive comparison-table">
                         <thead>
-                            <th><h3>Sets</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Sets</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for set_name, set_count in runes.sets.items %}
@@ -208,6 +229,9 @@ Runes - {{ block.super }}
                                     {% endif %}
                                     {{ set_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if set_count.winner == 'follower' %}minus{% elif set_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if set_count.winner != 'tie' %}{{ set_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -218,9 +242,10 @@ Runes - {{ block.super }}
                 <div class="grid-item-content">
                     <table class="table table-responsive comparison-table">
                         <thead>
-                            <th><h3>Slot</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Slot</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for slot_name, slot_count in runes.slot.items %}
@@ -240,6 +265,9 @@ Runes - {{ block.super }}
                                     {% endif %}
                                     {{ slot_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if slot_count.winner == 'follower' %}minus{% elif slot_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if slot_count.winner != 'tie' %}{{ slot_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -250,9 +278,10 @@ Runes - {{ block.super }}
                 <div class="grid-item-content">
                     <table class="table table-responsive comparison-table">
                         <thead>
-                            <th><h3>Quality</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Quality</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for quality_name, quality_count in runes.quality.items %}
@@ -272,6 +301,9 @@ Runes - {{ block.super }}
                                     {% endif %}
                                     {{ quality_count.follower }}
                                 </td>
+                                <td><span class="comparison-difference-{% if quality_count.winner == 'follower' %}minus{% elif quality_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if quality_count.winner != 'tie' %}{{ quality_count.diff }}{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -282,9 +314,10 @@ Runes - {{ block.super }}
                 <div class="grid-item-content">
                     <table class="table table-responsive comparison-table">
                         <thead>
-                            <th><h3>Quality (original)</h3></th>
-                            <th><h3>{{ profile_name }}</h3></th>
-                            <th><h3>{{ follower_name }}</h3></th>
+                            <th>Quality (original)</th>
+                            <th>{{ profile_name }}</th>
+                            <th>{{ follower_name }}</th>
+                            <th>Difference</th>
                         </thead>
                         <tbody>
                             {% for quality_name, quality_count in runes.quality_original.items %}
@@ -303,6 +336,9 @@ Runes - {{ block.super }}
                                     {% elif quality_count.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
                                     {% endif %}
                                     {{ quality_count.follower }}
+                                </td>
+                                <td><span class="comparison-difference-{% if quality_count.winner == 'follower' %}minus{% elif quality_count.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                    {% if quality_count.winner != 'tie' %}{{ quality_count.diff }}{% endif %}
                                 </td>
                             </tr>
                             {% endfor %}

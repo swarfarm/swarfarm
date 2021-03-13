@@ -12,78 +12,10 @@ Artifact Enchants - {{ block.super }}
     <div class="container-fluid">
         <div class="grid">
             <div class="grid-sizer col-md-6 col-sm-12 col-xs-12"></div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Summary</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for record_name, record in artifact_craft.summary.items %}
-                            <tr>
-                                <th>{{ record_name }}</th>
-                                <td>{{ record }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Substat</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for stat_name, stat_count in artifact_craft.substats.items %}
-                            <tr>
-                                <th>{{ stat_name }}</th>
-                                <td>{{ stat_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Slot</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for slot_name, slot_count in artifact_craft.slot.items %}
-                            <tr>
-                                <th>{{ slot_name }}</th>
-                                <td>{{ slot_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Quality</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for quality_name, quality_count in artifact_craft.quality.items %}
-                            <tr>
-                                <th>{{ quality_name }}</th>
-                                <td>{{ quality_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            {% include 'herders/profile/stats/table.html' with title="Summary" data=artifact_craft.summary %}
+            {% include 'herders/profile/stats/table.html' with title="Substats" data=artifact_craft.substats %}
+            {% include 'herders/profile/stats/table.html' with title="Slot" data=artifact_craft.slot %}
+            {% include 'herders/profile/stats/table.html' with title="Quality" data=artifact_craft.quality %}
         </div>
     </div>
 {% endblock %}

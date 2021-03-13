@@ -12,114 +12,12 @@ Artifacts - {{ block.super }}
     <div class="container-fluid">
         <div class="grid">
             <div class="grid-sizer col-md-6 col-sm-12 col-xs-12"></div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Summary</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for record_name, record in artifacts.summary.items %}
-                            <tr>
-                                <th>{{ record_name }}</th>
-                                <td>{{ record }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Substat</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for stat_name, stat_count in artifacts.substats.items %}
-                            <tr>
-                                <th>{{ stat_name }}</th>
-                                <td>{{ stat_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Main Stat</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for stat_name, stat_count in artifacts.main_stat.items %}
-                            <tr>
-                                <th>{{ stat_name }}</th>
-                                <td>{{ stat_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Slot</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for slot_name, slot_count in artifacts.slot.items %}
-                            <tr>
-                                <th>{{ slot_name }}</th>
-                                <td>{{ slot_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Quality</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for quality_name, quality_count in artifacts.quality.items %}
-                            <tr>
-                                <th>{{ quality_name }}</th>
-                                <td>{{ quality_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Quality (original)</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for quality_name, quality_count in artifacts.quality_original.items %}
-                            <tr>
-                                <th>{{ quality_name }}</th>
-                                <td>{{ quality_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            {% include 'herders/profile/stats/table.html' with title="Summary" data=artifacts.summary %}
+            {% include 'herders/profile/stats/table.html' with title="Substats" data=artifacts.substats %}
+            {% include 'herders/profile/stats/table.html' with title="Main Stat" data=artifacts.main_stat %}
+            {% include 'herders/profile/stats/table.html' with title="Slot" data=artifacts.slot %}
+            {% include 'herders/profile/stats/table.html' with title="Quality" data=artifacts.quality %}
+            {% include 'herders/profile/stats/table.html' with title="Quality (Original)" data=artifacts.quality_original %}
         </div>
     </div>
 {% endblock %}

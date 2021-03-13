@@ -11,42 +11,9 @@ Monsters - {{ block.super }}
     <div class="container-fluid">
         <div class="grid">
             <div class="grid-sizer col-md-6 col-sm-12 col-xs-12"></div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Summary</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for record_name, record in monsters.summary.items %}
-                            <tr>
-                                <th>{{ record_name }}</th>
-                                <td>{{ record }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Stars</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for star_name, star_count in monsters.stars.items %}
-                            <tr>
-                                <th>{{ star_name }}⭐</th>
-                                <td>{{ star_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            {% include 'herders/profile/stats/table.html' with title="Summary" data=monsters.summary %}
+            {% include 'herders/profile/stats/table.html' with title="Stars" data=monsters.stars %}
+
             <div class="grid-item col-md-6 col-sm-12 col-xs-12">
                 <div class="grid-item-content table-responsive">
                     <table class="table comparison-table-5">
@@ -95,42 +62,9 @@ Monsters - {{ block.super }}
                     </table>
                 </div>
             </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Elements</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for record_name, record_count in monsters.elements.items %}
-                            <tr>
-                                <th>{{ record_name }}</th>
-                                <td>{{ record_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table">
-                        <thead>
-                            <th><h3>Archetypes</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for record_name, record_count in monsters.archetypes.items %}
-                            <tr>
-                                <th>{{ record_name }}</th>
-                                <td>{{ record_count }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            
+            {% include 'herders/profile/stats/table.html' with title="Elements" data=monsters.elements %}
+            {% include 'herders/profile/stats/table.html' with title="Archetypes" data=monsters.archetypes %}
         </div>
     </div>
 {% endblock %}

@@ -17,11 +17,12 @@ from django.urls import reverse
 from bestiary.models import Monster, Building, Fusion, ESSENCE_MAP, GameItem
 from herders.decorators import username_case_redirect
 from herders.filters import MonsterInstanceFilter
-from herders.forms import FilterMonsterInstanceForm, \
+from herders.forms import CompareMonstersForm, FilterMonsterInstanceForm, \
     AddMonsterInstanceForm, BulkAddMonsterInstanceForm, \
     BulkAddMonsterInstanceFormset, EditMonsterInstanceForm, PowerUpMonsterInstanceForm, AwakenMonsterInstanceForm, \
     MonsterPieceForm
 from herders.models import Summoner, MonsterInstance, MonsterPiece, MaterialStorage, MonsterShrineStorage, ArtifactInstance
+from herders.views.compare import _compare_build_objects, _compare_monster_objects
 
 DEFAULT_VIEW_MODE = 'box'
 
@@ -1134,3 +1135,46 @@ def monster_piece_delete(request, profile_name, instance_id):
         return redirect(return_path)
     else:
         return HttpResponseForbidden()
+
+
+@username_case_redirect
+@login_required
+def monster_compare(request, profile_name):
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    is_owner = (request.user.is_authenticated and summoner.user == request.user)
+
+    if not is_owner:
+        return HttpResponseForbidden()
+    
+    if request.method == 'POST':
+        form = CompareMonstersForm(request.POST)
+        
+        if form.is_valid():
+            context = {
+                'is_owner': is_owner,
+                'profile_name': profile_name,
+                'form': form,
+                "monsters": [form.cleaned_data['monster_first'], form.cleaned_data['monster_second']],
+                'comparison': {
+                    'builds': _compare_build_objects(form.cleaned_data['monster_first'], form.cleaned_data['monster_second']),
+                    'monsters': _compare_monster_objects(form.cleaned_data['monster_first'], form.cleaned_data['monster_second']),
+                    'rta_builds': _compare_build_objects(form.cleaned_data['monster_first'], form.cleaned_data['monster_second'], rta=True),
+                },
+                'view': 'profile',
+            }
+            return render(request, 'herders/profile/monster_inventory/compare.html', context)
+        else:
+            return HttpResponseBadRequest()
+    else:
+        context = {
+            'is_owner': is_owner,
+            'profile_name': profile_name,
+            'form': CompareMonstersForm(),
+            'view': 'profile',
+        }
+
+        return render(request, 'herders/profile/monster_inventory/compare.html', context)

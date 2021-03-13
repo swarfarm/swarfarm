@@ -20,6 +20,7 @@ urlpatterns = [
         ])),
         url(r'^buildings/$', views.profile.buildings, name='profile_buildings'),
         url(r'^monster/', include([
+            url(r'^compare/$', views.monsters.monster_compare, name='monster_compare'),
             url(r'^inventory/$', views.monsters.monster_inventory, name='monster_inventory'),
             url(r'^inventory/(?P<view_mode>(list|box|pieces|collection))/$', views.monsters.monster_inventory, name='monster_inventory_view_mode'),
             url(r'^inventory/(?P<view_mode>(list|box|pieces|collection))/(?P<box_grouping>[a-zA-Z_]+)/$', views.monsters.monster_inventory, name='monster_inventory_view_mode_sorted'),

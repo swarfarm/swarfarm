@@ -14,7 +14,7 @@ from bestiary.models import Rune, RuneCraft, Artifact, Monster, Building, Fusion
 from herders.aggregations import Median, Perc25, Perc75
 from herders.decorators import username_case_redirect
 from herders.models import BuildingInstance, MonsterShrineStorage, RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner, MonsterInstance
-from herders.forms import CompareMonstersForm
+from herders.forms import CompareMonstersWithFollowerForm
 
 
 def _get_efficiency_statistics(model, owner, field="efficiency", count=False, worth=False, worth_field='value'):
@@ -835,7 +835,7 @@ def builds(request, profile_name, follow_username):
     can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
     
     if request.method == 'POST':
-        form = CompareMonstersForm(request.POST, summoner_name=profile_name, follower_name=follow_username)
+        form = CompareMonstersWithFollowerForm(request.POST, summoner_name=profile_name, follower_name=follow_username)
         
         if form.is_valid():
             context = {
@@ -861,7 +861,7 @@ def builds(request, profile_name, follow_username):
             'can_compare': can_compare,
             'profile_name': profile_name,
             'follower_name': follow_username,
-            'form': CompareMonstersForm(summoner_name=profile_name, follower_name=follow_username),
+            'form': CompareMonstersWithFollowerForm(summoner_name=profile_name, follower_name=follow_username),
             'view': 'compare-builds',
         }
 

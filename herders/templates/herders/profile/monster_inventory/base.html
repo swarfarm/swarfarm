@@ -18,6 +18,7 @@
             <li><a class="monster-add"><span class="glyphicon glyphicon-plus"></span> Add Monster</a></li>
             <li><a class="quick-fodder-menu"><span class="fa fa-clock-o"></span> Quick Fodder</a></li>
             <li><a href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}" ><span class="fa fa-list-ul"></span> Bulk Add</a></li>
+            <li><a href="{% url 'herders:monster_compare' profile_name=profile_name %}" ><span class="fa fa-exchange"></span> Compare</a></li>
         </ul>
     {% endif %}
 {% endblock monster_menu %}

@@ -741,6 +741,40 @@ def _compare_monster_objects(mon_s, mon_f):
     return comparison
 
 
+def _compare_monster_rune_sets(s_build, f_build):
+    sets = {"summoner": s_build.active_rune_sets, "follower": f_build.active_rune_sets}
+    sets_without_stat_increase = {"summoner": [], "follower": []}
+
+    for owner, sets_ in sets.items():
+        for set_ in sets_:
+            stat = RuneInstance.RUNE_SET_BONUSES[set_]['stat']
+            if not stat:
+                sets_without_stat_increase[owner].append(set_)
+    
+    final_sets = {"summoner": [], "follower": [], "diff": []}
+
+    for set_ in sets_without_stat_increase["summoner"]:
+        final_sets["summoner"].append(RuneInstance.TYPE_CHOICES[set_ - 1][1])
+        if set_ not in sets_without_stat_increase["follower"]:
+            final_sets["diff"].append({
+                "text": "+ " + final_sets["summoner"][-1],
+                "winner": "summoner"
+            })
+
+    for set_ in sets_without_stat_increase["follower"]:
+        final_sets["follower"].append(RuneInstance.TYPE_CHOICES[set_ - 1][1])
+        if set_ not in sets_without_stat_increase["summoner"]:
+            final_sets["diff"].append({
+                "text": "- " + final_sets["follower"][-1],
+                "winner": "follower"
+            })
+
+    final_sets["summoner"] = "/".join(final_sets["summoner"])
+    final_sets["follower"] = "/".join(final_sets["follower"])
+
+    return final_sets
+
+
 def _compare_build_objects(mon_s, mon_f, rta=False):
     if rta:
         mon_s_build = mon_s.rta_build
@@ -766,7 +800,14 @@ def _compare_build_objects(mon_s, mon_f, rta=False):
 
     _find_comparison_winner(comparison)
 
-    comparison["Rune sets"] = {"summoner": mon_s_build.rune_set_summary, "follower": mon_f_build.rune_set_summary}
+    comparison["Rune sets"] = _compare_monster_rune_sets(mon_s_build, mon_f_build)
+    for slot in [2, 4, 6]:
+        s_rune = mon_s_build.runes.filter(slot=slot).first()
+        f_rune = mon_f_build.runes.filter(slot=slot).first()
+        comparison[f"Slot {slot}"] = {
+            "summoner": s_rune.get_main_stat_display() if s_rune else "",
+            "follower": f_rune.get_main_stat_display() if f_rune else "",
+        }
 
     return comparison
 

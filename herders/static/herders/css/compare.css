@@ -16,15 +16,6 @@
     background-color: lightgreen;
 }
 
-.comparison-table td,
-.comparison-table th{
-    width: 25%;
-}
-.comparison-table-6 td,
-.comparison-table-6 th{
-    width: 16.67%;
-}
-
 .comparison-table td{
     text-align: left;
 }
@@ -59,6 +50,15 @@
 
 .comparison-difference-plus{
     color: green;
+}
+
+.compare-build-diff{
+    min-width: 10%;
+    width: 10%;
+}
+
+.comparison-table th:first-child{
+    width: 25%;
 }
 
 @media only screen and (max-width: 768px) {

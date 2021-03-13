@@ -52,11 +52,6 @@
     color: green;
 }
 
-.compare-build-diff{
-    min-width: 10%;
-    width: 10%;
-}
-
 .comparison-table th:first-child{
     width: 25%;
 }

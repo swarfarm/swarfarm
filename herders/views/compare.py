@@ -61,8 +61,10 @@ def _find_comparison_winner(data):
             record["diff"] = diff
             if diff > 0:
                 record["winner"] = "summoner" 
+                record["diff"] = "> " + str(abs(diff))
             elif diff < 0:
                 record["winner"] = "follower"
+                record["diff"] = "< " + str(abs(diff))
             else:
                 record["winner"] = "tie"
         else:

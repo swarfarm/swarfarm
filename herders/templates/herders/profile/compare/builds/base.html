@@ -23,21 +23,21 @@ Builds - {{ block.super }}
                             <thead>
                                 <tr>
                                     <th>Summoner</th>
-                                    <th>{{ profile_name }}</th>
-                                    <th>{{ follower_name }}</th>
-                                    <th class="compare-build-diff">Difference</th>
+                                    <th class="compare-build-monster">{{ profile_name }}</th>
+                                    <th></th>
+                                    <th class="compare-build-monster">{{ follower_name }}</th>
                                 </tr>
                                 <tr>
                                     <th>Monster</th>
                                     <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.summoner is_owner=False %}</th>
-                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.follower is_owner=False %}</th>
                                     <th></th>
+                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.follower is_owner=False %}</th>
                                 </tr>
                                 <tr>
                                     <th>Bestiary</th>
                                     <th><a target="_blank" href="{% url 'bestiary:detail' monsters.summoner.monster.bestiary_slug %}" /><div class="btn btn-primary w-monster-box">{{ monsters.summoner.monster }}</div></th>
-                                    <th><a target="_blank" href="{% url 'bestiary:detail' monsters.follower.monster.bestiary_slug %}" /><div class="btn btn-primary w-monster-box">{{ monsters.follower.monster }}</div></th>
                                     <th></th>
+                                    <th><a target="_blank" href="{% url 'bestiary:detail' monsters.follower.monster.bestiary_slug %}" /><div class="btn btn-primary w-monster-box">{{ monsters.follower.monster }}</div></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -52,14 +52,16 @@ Builds - {{ block.super }}
                                         {{ record.summoner }}
                                     </td>
                                     <td>
+                                        <span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                            {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
                                         {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
                                         {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
                                         {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
                                         {% endif %}
                                         {{ record.follower }}
-                                    </td>
-                                    <td><span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
-                                        {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -80,8 +82,8 @@ Builds - {{ block.super }}
                                 <tr>
                                     <th>Summoner</th>
                                     <th>{{ profile_name }}</th>
+                                    <th></th>
                                     <th>{{ follower_name }}</th>
-                                    <th class="compare-build-diff">Difference</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -96,13 +98,6 @@ Builds - {{ block.super }}
                                         {{ record.summoner }}
                                     </td>
                                     <td>
-                                        {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                        {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                        {% endif %}
-                                        {{ record.follower }}
-                                    </td>
-                                    <td>
                                         {% if record_name == 'Rune sets' %}
                                             {% for diff in record.diff %}
                                                 <span class="comparison-difference-{% if diff.winner == 'follower'%}minus{% else %}plus{% endif %}">{{ diff.text }}</span><br />
@@ -112,6 +107,13 @@ Builds - {{ block.super }}
                                                 {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
                                             </span>
                                         {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                        {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                        {% endif %}
+                                        {{ record.follower }}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -132,8 +134,8 @@ Builds - {{ block.super }}
                                 <tr>
                                     <th>Summoner</th>
                                     <th>{{ profile_name }}</th>
+                                    <th></th>
                                     <th>{{ follower_name }}</th>
-                                    <th class="compare-build-diff">Difference</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -148,13 +150,6 @@ Builds - {{ block.super }}
                                         {{ record.summoner }}
                                     </td>
                                     <td>
-                                        {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                        {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                        {% endif %}
-                                        {{ record.follower }}
-                                    </td>
-                                    <td>
                                         {% if record_name == 'Rune sets' %}
                                             {% for diff in record.diff %}
                                                 <span class="comparison-difference-{% if diff.winner == 'follower'%}minus{% else %}plus{% endif %}">{{ diff.text }}</span><br />
@@ -164,6 +159,13 @@ Builds - {{ block.super }}
                                                 {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
                                             </span>
                                         {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                        {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                        {% endif %}
+                                        {{ record.follower }}
                                     </td>
                                 </tr>
                                 {% endfor %}

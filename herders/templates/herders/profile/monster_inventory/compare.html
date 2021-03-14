@@ -9,23 +9,25 @@ Builds - {{ block.super }}
 {% block profile %}
     <h1>Builds</h1>
     <hr />
-    <div class="container-fluid">
+    <div class="container">
         {% crispy form %}
 
         {% if comparison %}
-            <h2>Monster</h2>
             <hr />
             <div class="grid">
-                <div class="grid-sizer col-md-12 col-sm-12 col-xs-12"></div>
-                <div class="grid-item col-md-12 col-sm-12 col-xs-12">
+                <div class="grid-sizer col-lg-4 col-md-12 col-xs-12"></div>
+                <div class="grid-item col-lg-4 col-md-12 col-xs-12">
                     <div class="grid-item-content table-responsive">
                         <table class="table comparison-table">
                             <thead>
                                 <tr>
+                                    <th colspan="4" class="comparison-table-category"><h3>Monster</h3></th>
+                                </tr>
+                                <tr>
                                     <th>Monster</th>
-                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.0 is_owner=False %}</th>
+                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.0 %}</th>
                                     <th></th>
-                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.1 is_owner=False %}</th>
+                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.1 %}</th>
                                 </tr>
                                 <tr>
                                     <th>Bestiary</th>
@@ -63,21 +65,18 @@ Builds - {{ block.super }}
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <h2>Build</h2>
-            <hr />
-            <div class="grid">
-                <div class="grid-sizer col-md-12 col-sm-12 col-xs-12"></div>
-                <div class="grid-item col-md-12 col-sm-12 col-xs-12">
+                <div class="grid-item col-lg-4 col-md-12 col-xs-12">
                     <div class="grid-item-content table-responsive">
                         <table class="table comparison-table">
                             <thead>
                                 <tr>
-                                    <th>Monster Instance</th>
-                                    <th class="compare-build-monster">{{ monster.0.monster }}</th>
+                                    <th colspan="4" class="comparison-table-category"><h3>Build</h3></th>
+                                </tr>
+                                <tr>
+                                    <th>Monster</th>
+                                    <th class="compare-build-monster">{{ monsters.0.monster }}</th>
                                     <th></th>
-                                    <th class="compare-build-monster">{{ monster.1.monster }}</th>
+                                    <th class="compare-build-monster">{{ monsters.1.monster }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -115,21 +114,18 @@ Builds - {{ block.super }}
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <h2> RTA Build</h2>
-            <hr />
-            <div class="grid">
-                <div class="grid-sizer col-md-12 col-sm-12 col-xs-12"></div>
-                <div class="grid-item col-md-12 col-sm-12 col-xs-12">
+                <div class="grid-item col-lg-4 col-md-12 col-xs-12">
                     <div class="grid-item-content table-responsive">
                         <table class="table comparison-table">
                             <thead>
                                 <tr>
-                                    <th>Monster Instance</th>
-                                    <th class="compare-build-monster">{{ monster.0.monster }}</th>
+                                    <th colspan="4" class="comparison-table-category"><h3>RTA Build</h3></th>
+                                </tr>
+                                <tr>
+                                    <th>Monster</th>
+                                    <th class="compare-build-monster">{{ monsters.0.monster }}</th>
                                     <th></th>
-                                    <th class="compare-build-monster">{{ monster.1.monster }}</th>
+                                    <th class="compare-build-monster">{{ monsters.1.monster }}</th>
                                 </tr>
                             </thead>
                             <tbody>

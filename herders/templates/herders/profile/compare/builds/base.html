@@ -9,23 +9,25 @@ Builds - {{ block.super }}
 {% block content_compare %}
     <h1>Builds</h1>
     <hr />
-    <div class="container-fluid">
+    <div class="container">
         {% crispy form %}
 
         {% if comparison %}
-            <h2>Monster</h2>
             <hr />
             <div class="grid">
-                <div class="grid-sizer col-md-12 col-sm-12 col-xs-12"></div>
-                <div class="grid-item col-md-12 col-sm-12 col-xs-12">
+                <div class="grid-sizer col-lg-4 col-md-12 col-xs-12"></div>
+                <div class="grid-item col-lg-4 col-md-12 col-xs-12">
                     <div class="grid-item-content table-responsive">
-                        <table class="table comparison-table">
+                        <table class="table">
                             <thead>
                                 <tr>
+                                    <th colspan="4" class="comparison-table-category"><h3>Monster</h3></th>
+                                </tr>
+                                <tr>
                                     <th>Summoner</th>
-                                    <th class="compare-build-monster">{{ profile_name }}</th>
+                                    <th>{{ profile_name }}</th>
                                     <th></th>
-                                    <th class="compare-build-monster">{{ follower_name }}</th>
+                                    <th>{{ follower_name }}</th>
                                 </tr>
                                 <tr>
                                     <th>Monster</th>
@@ -69,16 +71,13 @@ Builds - {{ block.super }}
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <h2>Build</h2>
-            <hr />
-            <div class="grid">
-                <div class="grid-sizer col-md-12 col-sm-12 col-xs-12"></div>
-                <div class="grid-item col-md-12 col-sm-12 col-xs-12">
+                <div class="grid-item col-lg-4 col-md-12 col-xs-12">
                     <div class="grid-item-content table-responsive">
                         <table class="table comparison-table">
                             <thead>
+                                <tr>
+                                    <th colspan="4" class="comparison-table-category"><h3>Build</h3></th>
+                                </tr>
                                 <tr>
                                     <th>Summoner</th>
                                     <th>{{ profile_name }}</th>
@@ -121,16 +120,13 @@ Builds - {{ block.super }}
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <h2> RTA Build</h2>
-            <hr />
-            <div class="grid">
-                <div class="grid-sizer col-md-12 col-sm-12 col-xs-12"></div>
-                <div class="grid-item col-md-12 col-sm-12 col-xs-12">
+                <div class="grid-item col-lg-4 col-md-12 col-xs-12">
                     <div class="grid-item-content table-responsive">
                         <table class="table comparison-table">
                             <thead>
+                                <tr>
+                                    <th colspan="4" class="comparison-table-category"><h3>RTA Build</h3></th>
+                                </tr>
                                 <tr>
                                     <th>Summoner</th>
                                     <th>{{ profile_name }}</th>
@@ -173,9 +169,7 @@ Builds - {{ block.super }}
                         </table>
                     </div>
                 </div>
-            </div>
-
-            
+            </div>            
         {% endif %}
     </div>
 {% endblock %}

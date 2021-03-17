@@ -89,8 +89,8 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
         ).prefetch_related(
             'monster__skills',
             'default_build__runes',
-            'runeinstance_set',
-            'artifactinstance_set',
+            'runes',
+            'artifacts',
             'team_set',
             'team_leader',
             'tags'
@@ -597,12 +597,12 @@ def monster_instance_remove_runes(request, profile_name, instance_id):
             instance = MonsterInstance.objects.select_related(
                 'default_build',
             ).prefetch_related(
-                'runeinstance_set'
+                'runes'
             ).get(pk=instance_id)
         except ObjectDoesNotExist:
             return HttpResponseBadRequest()
         else:
-            for rune in instance.runeinstance_set.all():
+            for rune in instance.runes.all():
                 rune.assigned_to = None
                 rune.save()
             instance.default_build.runes.clear()

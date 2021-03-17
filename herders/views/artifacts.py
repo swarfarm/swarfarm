@@ -321,7 +321,7 @@ def assign_choice(request, profile_name, instance_id, artifact_id):
     artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
 
     # Clear existing artifacts assigned here
-    monster.artifactinstance_set.filter(slot=artifact.slot).update(assigned_to=False)
+    monster.artifacts.filter(slot=artifact.slot).update(assigned_to=False)
 
     artifact.assigned_to = monster
     artifact.save()

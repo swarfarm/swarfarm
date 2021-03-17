@@ -127,10 +127,10 @@ def _convert_monster_to_win10_json(monster):
         ])
 
     # Fill in runes and artifacts
-    for rune in monster.runeinstance_set.all():
+    for rune in monster.runes.all():
         mon_json['runes'].append(_convert_rune_to_win10_json(rune))
 
-    for artifact in monster.artifactinstance_set.all():
+    for artifact in monster.artifacts.all():
         mon_json['artifacts'].append(_convert_artifact_to_win10_json(artifact))
 
     return mon_json

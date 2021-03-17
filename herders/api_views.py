@@ -64,8 +64,8 @@ class GlobalMonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         'monster',
         'owner__user',
     ).prefetch_related(
-        'runeinstance_set',
-        'runeinstance_set__owner__user',
+        'runes',
+        'runes__owner__user',
     ).order_by()
     serializer_class = MonsterInstanceSerializer
     permission_classes = [AllowAny]
@@ -281,7 +281,7 @@ class TeamGroupViewSet(ProfileItemMixin, viewsets.ModelViewSet):
 
 class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = Team.objects.all().select_related('group', 'leader').prefetch_related(
-        'leader__runeinstance_set', 'roster', 'roster__runeinstance_set')
+        'leader__runes', 'roster', 'roster__runes')
     serializer_class = TeamSerializer
     # Browseable API causes major query explosion when trying to generate form options.
     renderer_classes = [JSONRenderer]

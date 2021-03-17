@@ -21,7 +21,7 @@ class RuneInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     class Meta:
         model = RuneInstance
         fields = [
-            'id', 'url', 'com2us_id', 'assigned_to',
+            'id', 'url', 'com2us_id', 'assigned_to', 'rta_assigned_to',
             'type', 'slot', 'stars', 'level', 'quality', 'original_quality', 'value',
             'substat_upgrades_remaining', 'efficiency', 'max_efficiency',
             'main_stat', 'main_stat_value',
@@ -40,7 +40,7 @@ class ArtifactInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
     class Meta:
         model = ArtifactInstance
         fields = (
-            'id', 'url', 'com2us_id', 'assigned_to',
+            'id', 'url', 'com2us_id', 'assigned_to', 'rta_assigned_to',
             'slot', 'element', 'archetype', 'precise_slot', 'level', 'quality', 'original_quality',
             'efficiency', 'max_efficiency','main_stat', 'main_stat_value', 
             'effects', 'effects_value', 'effects_upgrade_count', 'effects_reroll_count',

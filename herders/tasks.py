@@ -173,63 +173,6 @@ def com2us_data_import(data, user_id, import_options):
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={
-                                  'step': 'rta_builds'})
-
-    with transaction.atomic():
-        # Set RTA rune builds assignments
-        # Group by assignee first
-        assignments = {}
-        for assignment in results['rta_assignments']:
-            mon_com2us_id = assignment['occupied_id']
-            if mon_com2us_id not in assignments:
-                assignments[mon_com2us_id] = []
-            assignments[mon_com2us_id].append(assignment['rune_id'])
-
-        for mon_id, rune_ids in assignments.items():
-            try:
-                mon = MonsterInstance.objects.filter(
-                    owner=summoner).get(com2us_id=mon_id)
-                runes = RuneInstance.objects.filter(
-                    owner=summoner, com2us_id__in=rune_ids)
-                mon.rta_build.runes.set(runes, clear=True)
-            except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
-                # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
-                continue
-            except ValidationError:
-                slots = runes.values_list('slot', flat=True)
-                mail_admins('Rune Build Validation Error',
-                            f'monster: {mon.id}\r\nrunes: {rune_ids}\r\nslots: {slots}')
-
-                # Continue with import
-                continue
-
-        # Set RTA artofact builds assignments
-        assignments = {}
-        for assignment in results['rta_assignments_artifacts']:
-            mon_com2us_id = assignment['occupied_id']
-            if mon_com2us_id not in assignments:
-                assignments[mon_com2us_id] = []
-            assignments[mon_com2us_id].append(assignment['artifact_id'])
-        for mon_id, artifact_ids in assignments.items():
-            try:
-                mon = MonsterInstance.objects.filter(
-                    owner=summoner).get(com2us_id=mon_id)
-                artifacts = ArtifactInstance.objects.filter(
-                    owner=summoner, com2us_id__in=artifact_ids)
-                mon.rta_build.artifacts.set(artifacts, clear=True)
-            except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
-                # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
-                continue
-            except ValidationError:
-                slots = artifacts.values_list('slot', flat=True)
-                mail_admins('Artifaact Build Validation Error',
-                            f'monster: {mon.id}\r\artifacts: {artifact_ids}\r\nslots: {slots}')
-
-                # Continue with import
-                continue
-
-    if not current_task.request.called_directly:
-        current_task.update_state(state=states.STARTED, meta={
                                   'step': 'rune_crafts'})
 
     with transaction.atomic():
@@ -271,6 +214,66 @@ def com2us_data_import(data, user_id, import_options):
             if craft['new']:
                 craft['obj'].save()
             imported_artifact_crafts.append(craft['obj'].pk)
+
+    if not current_task.request.called_directly:
+        current_task.update_state(state=states.STARTED, meta={
+                                  'step': 'rta_builds'})
+
+    with transaction.atomic():
+        # Set RTA rune builds assignments
+        # Group by assignee first
+        assignments = {}
+        for assignment in results['rta_assignments']:
+            mon_com2us_id = assignment['occupied_id']
+            if mon_com2us_id not in assignments:
+                assignments[mon_com2us_id] = []
+            assignments[mon_com2us_id].append(assignment['rune_id'])
+
+        for mon_id, rune_ids in assignments.items():
+            try:
+                mon = MonsterInstance.objects.filter(
+                    owner=summoner).get(com2us_id=mon_id)
+                runes = RuneInstance.objects.filter(
+                    owner=summoner, com2us_id__in=rune_ids)
+                mon.rta_build.runes.set(runes, clear=True)
+                runes.update(rta_assigned_to=mon)
+            except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
+                # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
+                continue
+            except ValidationError:
+                slots = runes.values_list('slot', flat=True)
+                mail_admins('Rune Build Validation Error',
+                            f'monster: {mon.id}\r\nrunes: {rune_ids}\r\nslots: {slots}')
+
+                # Continue with import
+                continue
+
+        # Set RTA artofact builds assignments
+        assignments = {}
+        for assignment in results['rta_assignments_artifacts']:
+            mon_com2us_id = assignment['occupied_id']
+            if mon_com2us_id not in assignments:
+                assignments[mon_com2us_id] = []
+            assignments[mon_com2us_id].append(assignment['artifact_id'])
+        for mon_id, artifact_ids in assignments.items():
+            try:
+                mon = MonsterInstance.objects.filter(
+                    owner=summoner).get(com2us_id=mon_id)
+                artifacts = ArtifactInstance.objects.filter(
+                    owner=summoner, com2us_id__in=artifact_ids)
+                mon.rta_build.artifacts.set(artifacts, clear=True)
+                artifacts.update(rta_assigned_to=mon)
+            except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
+                # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
+                continue
+            except ValidationError:
+                slots = artifacts.values_list('slot', flat=True)
+                mail_admins('Artifaact Build Validation Error',
+                            f'monster: {mon.id}\r\artifacts: {artifact_ids}\r\nslots: {slots}')
+
+                # Continue with import
+                continue
+
 
     with transaction.atomic():
         # recalculate stats for every monster once again

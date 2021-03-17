@@ -24,6 +24,7 @@ admin.site.register(User, CustomUserAdmin)
 
 class RuneInstanceInline(admin.TabularInline):
     model = models.RuneInstance
+    fk_name = 'assigned_to'
     fields = (
         'stars',
         'level',

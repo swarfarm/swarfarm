@@ -473,8 +473,8 @@ class MonsterInstance(models.Model, base.Stars):
         if added:
             self.save()
 
-        self.default_build.runes.set(self.runeinstance_set.all(), clear=True)
-        self.default_build.artifacts.set(self.artifactinstance_set.all(), clear=True)
+        self.default_build.runes.set(self.runes.all(), clear=True)
+        self.default_build.artifacts.set(self.artifacts.all(), clear=True)
 
 
 class MonsterPiece(models.Model):
@@ -509,7 +509,9 @@ class RuneInstance(Rune):
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     assigned_to = models.ForeignKey(
-        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='runes')
+    rta_assigned_to = models.ForeignKey(
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='runes_rta')
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
 
@@ -541,7 +543,7 @@ class RuneInstance(Rune):
     def clean(self):
         super().clean()
 
-        if self.assigned_to is not None and (self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0):
+        if self.assigned_to is not None and (self.assigned_to.runes.filter(slot=self.slot).exclude(pk=self.pk).count() > 0):
             raise ValidationError(
                 'Monster already has rune in slot %(slot)s.',
                 params={
@@ -732,7 +734,9 @@ class ArtifactInstance(Artifact):
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     assigned_to = models.ForeignKey(
-        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='artifacts')
+    rta_assigned_to = models.ForeignKey(
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='artifacts_rta')
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

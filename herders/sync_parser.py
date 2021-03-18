@@ -1189,3 +1189,11 @@ def sync_update_unit_exp_gained(summoner, log_data):
         if mon.level != mon_data['unit_level']:
             mon.level = mon_data['unit_level']
             mon.save()
+
+
+def sync_change_material(summoner, log_data):
+    removed_item = log_data['response'].get('removed_item', {})
+    added_item = log_data['response'].get('added_item', {})
+
+    _sync_item(removed_item, summoner)
+    _sync_item(added_item, summoner)

@@ -236,7 +236,6 @@ def com2us_data_import(data, user_id, import_options):
                 runes = RuneInstance.objects.filter(
                     owner=summoner, com2us_id__in=rune_ids)
                 mon.rta_build.runes.set(runes, clear=True)
-                runes.update(rta_assigned_to=mon)
             except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
                 # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
                 continue
@@ -262,7 +261,6 @@ def com2us_data_import(data, user_id, import_options):
                 artifacts = ArtifactInstance.objects.filter(
                     owner=summoner, com2us_id__in=artifact_ids)
                 mon.rta_build.artifacts.set(artifacts, clear=True)
-                artifacts.update(rta_assigned_to=mon)
             except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
                 # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
                 continue

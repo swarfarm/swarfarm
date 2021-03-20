@@ -59,34 +59,6 @@ class SummonerViewSet(viewsets.ModelViewSet):
             return SummonerSerializer
 
 
-class GlobalMonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = MonsterInstance.objects.filter(owner__public=True).select_related(
-        'monster',
-        'owner__user',
-    ).prefetch_related(
-        'runes',
-        'runes__owner__user',
-    ).order_by()
-    serializer_class = MonsterInstanceSerializer
-    permission_classes = [AllowAny]
-    pagination_class = PublicListPagination
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = MonsterInstanceFilter
-
-
-class GlobalRuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = RuneInstance.objects.filter(owner__public=True).select_related(
-        'owner',
-        'owner__user',
-        'assigned_to',
-    ).order_by()
-    serializer_class = RuneInstanceSerializer
-    permission_classes = [AllowAny]
-    pagination_class = PublicListPagination
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = RuneInstanceFilter
-
-
 class ProfileItemMixin(viewsets.GenericViewSet):
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
@@ -134,7 +106,7 @@ class RuneBuildViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'artifacts',
         'artifacts__owner',
         'artifacts__owner__user'
-    ).order_by()
+    )
     serializer_class = RuneBuildSerializer
 
 
@@ -207,7 +179,6 @@ class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'assigned_to',
     )
     serializer_class = RuneInstanceSerializer
-    # renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filter_class = RuneInstanceFilter
     ordering_fields = (
@@ -226,11 +197,11 @@ class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
 
 class ArtifactInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = ArtifactInstance.objects.all().select_related(
+        'owner',
         'owner__user',
         'assigned_to',
     )
     serializer_class = ArtifactInstanceSerializer
-    # renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filter_class = ArtifactInstanceFilter
     ordering_fields = (

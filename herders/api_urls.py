@@ -18,18 +18,14 @@ Personal:
 /profile/<username>/monster-pieces/<id>
 /profile/<username>/runes/
 /profile/<username>/runes/<id>
+/profile/<username>/artifacts/
+/profile/<username>/artifacts/<id>
 /profile/<username>/rune-builds/
 /profile/<username>/rune-builds/id
 /profile/<username>/rune-crafts/
 /profile/<username>/rune-crafts/<id>
 /profile/<username>/teams/
 /profile/<username>/teams/<id>
-
-Global, for searching and filtering:
-/monster-instances/
-/monster-instances/<id>
-/rune-instances/
-/rune-instances/<id>
 """
 
 router = DefaultRouter()
@@ -37,8 +33,6 @@ router.register(r'profiles/upload', ProfileJsonUpload, base_name='profile/upload
 router.register(r'profiles/sync', SyncData, base_name='sync-profile')
 router.register(r'profiles/accepted-commands', SyncAcceptedCommands, base_name='sync-accepted-commands')
 router.register(r'profiles', SummonerViewSet, base_name='profiles')
-# router.register(r'monster-instances', GlobalMonsterInstanceViewSet, base_name='monster-instances')
-# router.register(r'rune-instances', GlobalRuneInstanceViewSet, base_name='rune-instances')
 
 profile_router = NestedDefaultRouter(router, r'profiles', lookup='user')
 profile_router.register(r'monsters', MonsterInstanceViewSet, base_name='profile/monsters')

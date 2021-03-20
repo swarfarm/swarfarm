@@ -28,6 +28,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # TODO: Add whole `herders` copy, not only Monsters, Runes & Artifacts
+        # TODO: DEFAULT / RTA BUILDS
         if not settings.DEBUG:
             self.stdout.write(self.style.ERROR('Command used outside DEBUG Mode'))
             return
@@ -41,12 +42,9 @@ class Command(BaseCommand):
             'pk', 'owner_id', 'monster_id', 'com2us_id', 'created', 'stars', 'level', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
             'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes', 'custom_name',
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
-            'avg_rune_efficiency',
         ]
         rune_fields = [
             'type', 'owner_id', 'com2us_id', 'assigned_to_id', 'marked_for_sale', 'notes', 'main_stat', 'main_stat_value',
-            'substat_1', 'substat_1_value', 'substat_1_craft', 'substat_2', 'substat_2_value', 'substat_2_craft',
-            'substat_3', 'substat_3_value', 'substat_3_craft', 'substat_4', 'substat_4_value', 'substat_4_craft',
             'innate_stat', 'innate_stat_value', 'stars', 'level', 'slot', 'quality', 'original_quality', 'ancient', 'value', 
             'substats', 'substat_values', 'substats_enchanted', 'substats_grind_value', 'has_hp', 'has_atk', 'has_def',
             'has_crit_rate', 'has_crit_dmg', 'has_speed', 'has_resist', 'has_accuracy', 'efficiency', 'max_efficiency',

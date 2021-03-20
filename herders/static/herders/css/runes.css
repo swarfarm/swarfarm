@@ -19,6 +19,7 @@
 .artifact-panel {
     width: 300px;
     height: auto;
+    min-height: 135px;
     position: relative;
 }
 

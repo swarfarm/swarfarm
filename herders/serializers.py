@@ -105,7 +105,7 @@ class MonsterInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
             'stars', 'level', 'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level',
             'base_hp', 'base_attack', 'base_defense', 'base_speed', 'base_crit_rate', 'base_crit_damage', 'base_resistance', 'base_accuracy',
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
-            'default_build', 'rta_build', 'avg_rune_efficiency',
+            'default_build', 'rta_build',
             'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes',
         ]
 

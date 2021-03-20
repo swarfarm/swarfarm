@@ -184,16 +184,14 @@ def add(request, profile_name):
             }
     else:
         # Check for any pre-filled GET parameters
-        specific_slot = request.GET.get('slot', None)
-
-        if specific_slot in [v[0] for v in ArtifactInstance.NORMAL_ELEMENT_CHOICES]:
+        element = request.GET.get('element', None)
+        archetype = request.GET.get('archetype', None)
+        if element is not None:
             slot = ArtifactInstance.SLOT_ELEMENTAL
-            element = specific_slot
-            archetype = None
-        elif specific_slot in [v[0] for v in ArtifactInstance.ARCHETYPE_CHOICES]:
+        elif archetype is not None:
             slot = ArtifactInstance.SLOT_ARCHETYPE
-            archetype = specific_slot
-            element = None
+        else:
+            slot = None
 
         assigned_to = request.GET.get('assigned_to', None)
 

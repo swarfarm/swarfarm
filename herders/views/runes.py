@@ -277,7 +277,6 @@ def rune_add(request, profile_name):
 @login_required
 def rune_edit(request, profile_name, rune_id):
     rune = get_object_or_404(RuneInstance, pk=rune_id)
-    orig_assign = rune.assigned_to
     try:
         summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
@@ -426,18 +425,11 @@ def rune_unassign_all(request, profile_name):
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     assigned_mons = []
-    assigned_runes = RuneInstance.objects.filter(owner=summoner, assigned_to__isnull=False)
+    assigned_runes = RuneInstance.objects.select_related('assigned_to').filter(owner=summoner, assigned_to__isnull=False)
     number_assigned = assigned_runes.count()
+    assigned_mons = MonsterInstance.objects.select_related('default_build').prefetch_related('default_build__runes').filter(pk__in=assigned_runes.values_list('assigned_to', flat=True))
 
     if is_owner:
-        for rune in assigned_runes:
-            if rune.assigned_to not in assigned_mons:
-                assigned_mons.append(rune.assigned_to)
-
-            rune.assigned_to = None
-            rune.save()
-
-        # Clear runes from Monster Default Build
         for mon in assigned_mons:
             mon.default_build.runes.clear()
 
@@ -491,16 +483,12 @@ def rune_delete_all(request, profile_name):
 
     if is_owner:
         # Delete the runes
-        death_row = RuneInstance.objects.filter(owner=summoner)
+        death_row = RuneInstance.objects.select_related('assigned_to').filter(owner=summoner)
         number_killed = death_row.count()
-        assigned_mons = []
-        for rune in death_row:
-            if rune.assigned_to and rune.assigned_to not in assigned_mons:
-                assigned_mons.append(rune.assigned_to)
-
+        assigned_mons = MonsterInstance.objects.select_related('default_build').prefetch_related('default_build__runes').filter(pk__in=death_row.values_list('assigned_to', flat=True))
         for mon in assigned_mons:
-            mon.default_build.clear()
-            mon.rta_build.clear()
+            mon.default_build.runes.clear()
+            mon.rta_build.runes.clear()
 
         death_row.delete()
 

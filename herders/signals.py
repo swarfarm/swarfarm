@@ -98,7 +98,7 @@ def manage_assigned_to(sender, instance, action, reverse, model, pk_set, **kwarg
     if action not in ('post_add', 'post_clear', 'post_remove'):
         return
 
-    if instance.default_build.exists():
+    if instance == instance.monster.default_build:
         if action == 'post_remove':
             # Unassign objects which were removed
             model.objects.filter(pk__in=pk_set).update(assigned_to=None)
@@ -109,7 +109,7 @@ def manage_assigned_to(sender, instance, action, reverse, model, pk_set, **kwarg
             # Remove all objects assigned to the monster
             model.objects.filter(assigned_to=instance.monster).update(assigned_to=None)
     
-    if instance.rta_build.exists():
+    if instance == instance.monster.rta_build:
         if action == 'post_remove':
             # Unassign objects which were removed
             model.objects.filter(pk__in=pk_set).update(rta_assigned_to=None)

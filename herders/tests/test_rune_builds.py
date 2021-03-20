@@ -24,6 +24,7 @@ class RuneBuildModelTests(TestCase):
             level=40,
         )
         self.rune_build = self.monster.default_build
+        self.rta_build = self.monster.rta_build
 
     def test_stats_update_when_adding_rune(self):
         rune = models.RuneInstance.objects.create(
@@ -47,7 +48,7 @@ class RuneBuildModelTests(TestCase):
         self.assertEqual(self.rune_build.hp, 4)
         self.assertEqual(self.rune_build.defense, 7)
 
-    def test_status_udpate_when_adding_artifact(self):
+    def test_stats_update_when_adding_artifact(self):
         artifact = models.ArtifactInstance.objects.create(
             owner=self.summoner,
             slot=models.ArtifactInstance.SLOT_ARCHETYPE,
@@ -196,3 +197,19 @@ class RuneBuildModelTests(TestCase):
         artifact2.refresh_from_db()
         self.assertIsNone(artifact.assigned_to)
         self.assertEqual(artifact2.assigned_to, self.monster)
+
+
+    def test_assign_artifact_default_build_check_rta_build(self):
+        artifact = models.ArtifactInstance.objects.create(
+            owner=self.summoner,
+            slot=models.ArtifactInstance.SLOT_ARCHETYPE,
+            archetype=self.monster.monster.archetype,
+            main_stat=models.ArtifactInstance.STAT_ATK,
+            original_quality=models.ArtifactInstance.QUALITY_NORMAL,
+            quality=models.ArtifactInstance.QUALITY_NORMAL,
+            level=0
+        )
+        self.rune_build.assign_artifact(artifact)
+        artifact.refresh_from_db()
+        self.assertEqual(artifact.assigned_to, self.monster)
+        self.assertEqual(artifact.rta_assigned_to, None)

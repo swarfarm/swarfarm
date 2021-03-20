@@ -172,8 +172,8 @@ class Efficiency(TestCase):
         self.assertAlmostEqual(100, artifact.max_efficiency)
 
     def test_efficiency_middling_lv15(self):
-        atk_upgrades = (Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['min'] +
-                        Artifact.EFFECT_VALUES[Artifact.EFFECT_ATK]['max']) / 2
+        bomb_upgrades = (Artifact.EFFECT_VALUES[Artifact.EFFECT_BOMB_DMG]['min'] +
+                        Artifact.EFFECT_VALUES[Artifact.EFFECT_BOMB_DMG]['max']) / 2
         def_upgrades = (Artifact.EFFECT_VALUES[Artifact.EFFECT_DEF]['min'] +
                         Artifact.EFFECT_VALUES[Artifact.EFFECT_DEF]['max']) / 2
         crushing_upgrades = (Artifact.EFFECT_VALUES[Artifact.EFFECT_CRUSHING_HIT_DMG]['min'] +
@@ -184,13 +184,13 @@ class Efficiency(TestCase):
         artifact = Artifact.stub(
             level=15,
             effects=[
-                Artifact.EFFECT_ATK,
+                Artifact.EFFECT_BOMB_DMG,
                 Artifact.EFFECT_DEF,
                 Artifact.EFFECT_CRUSHING_HIT_DMG,
                 Artifact.EFFECT_DMG_PCT_OF_ATK,
             ],
             effects_value=[
-                atk_upgrades * 5,  # All upgrades into this effect
+                bomb_upgrades * 5,  # All upgrades into this effect
                 def_upgrades,
                 crushing_upgrades,
                 pct_atk_upgrades,
@@ -388,7 +388,7 @@ class Effects(TestCase):
     def test_effect_value_just_right(self):
         artifact = Artifact.stub(
             effects=[Artifact.EFFECT_ATK],
-            effects_value=[8],
+            effects_value=[10],
             effects_upgrade_count=[0],
             effects_reroll_count=[0],
             level=3,

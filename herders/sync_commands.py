@@ -217,9 +217,17 @@ active_log_commands = {
         sync_schemas.sync_update_unit_exp_gained_schema,
         sync_parser.sync_update_unit_exp_gained,
     ),
+    'UpgradeMaterial': GameApiCommand(
+        sync_schemas.sync_change_material_schema,
+        sync_parser.sync_change_material,
+    ),
+    'downgradeMaterial': GameApiCommand(
+        sync_schemas.sync_change_material_schema,
+        sync_parser.sync_change_material,
+    ),
 }
 
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
-accepted_api_params['__version'] = 6
+accepted_api_params['__version'] = 7

@@ -1290,3 +1290,38 @@ sync_update_unit_exp_gained_schema = {
     },
     'required': ['request', 'response'],
 }
+
+sync_change_material_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_change_material.json',
+    'title': 'sync_change_material',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'removed_item': {'type': 'object'},
+                'added_item': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'removed_item',
+                'added_item',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}

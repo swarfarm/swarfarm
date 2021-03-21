@@ -1,0 +1,70 @@
+{
+    "data": {
+        "request": {
+            "command": "sellInventoryItem",
+            "wizard_id": 123,
+            "session_key": "8530cb635274bad1f63cea7f2d49ac",
+            "proto_ver": 11810,
+            "infocsv": "4.02.41",
+            "channel_uid": 208752514,
+            "ts_val": 1138096386,
+            "item_master_type": 29,
+            "item_master_id": 1003,
+            "item_quantity": 14
+        },
+        "response": {
+            "command": "sellInventoryItem",
+            "ret_code": 0,
+            "wizard_info": {
+                "wizard_id": 123,
+                "wizard_name": "QuazTo",
+                "wizard_mana": 18051951,
+                "wizard_crystal": 46,
+                "wizard_crystal_paid": 0,
+                "wizard_last_login": "2021-01-10 21:40:47",
+                "wizard_last_country": "PL",
+                "wizard_last_lang": "en",
+                "wizard_level": 50,
+                "experience": 3800000,
+                "wizard_energy": 150,
+                "energy_max": 150,
+                "energy_per_min": 0.2,
+                "next_energy_gain": 0,
+                "arena_energy": 10,
+                "arena_energy_max": 10,
+                "arena_energy_next_gain": 0,
+                "unit_slots": {
+                    "number": 120
+                },
+                "rep_unit_id": 12365082509,
+                "rep_assigned": 0,
+                "pvp_event": 0,
+                "mail_box_event": 0,
+                "social_point_current": 3000,
+                "social_point_max": 3000,
+                "honor_point": 345,
+                "guild_point": 1632,
+                "darkportal_energy": 12,
+                "darkportal_energy_max": 10,
+                "costume_point": 71,
+                "costume_point_max": 9999,
+                "honor_medal": 0,
+                "honor_mark": 0,
+                "event_coin": 0,
+                "lobby_master_id": 1008,
+                "emblem_master_id": 0,
+                "period_energy_max": 0
+            },
+            "item_info": {
+                "wizard_id": 123,
+                "item_master_type": 29,
+                "item_master_id": 1003,
+                "item_quantity": 119
+            },
+            "ts_val": 1138096408,
+            "tvalue": 1610284944,
+            "tvaluelocal": 1610223744,
+            "tzone": "America/Los_Angeles"
+        }
+    }
+}

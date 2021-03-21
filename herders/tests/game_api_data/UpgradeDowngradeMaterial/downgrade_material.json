@@ -1,0 +1,75 @@
+{
+    "data": {
+        "request": {
+            "command": "downgradeMaterial",
+            "wizard_id": 123,
+            "session_key": "0eb7ce6367a3158705f6295d79a99d",
+            "proto_ver": 11860,
+            "infocsv": "4.02.58_2PlaOH2o",
+            "channel_uid": 208752514,
+            "ts_val": 2088515633,
+            "item_master_id": 13004,
+            "item_quantity": 5
+        },
+        "response": {
+            "command": "downgradeMaterial",
+            "ret_code": 0,
+            "wizard_info": {
+                "wizard_id": 123,
+                "wizard_name": "QuazTo",
+                "wizard_mana": 18418239,
+                "wizard_crystal": 67,
+                "wizard_crystal_paid": 0,
+                "wizard_last_login": "2021-03-18 20:40:26",
+                "wizard_last_country": "PL",
+                "wizard_last_lang": "en",
+                "wizard_level": 50,
+                "experience": 3800000,
+                "wizard_energy": 636,
+                "energy_max": 150,
+                "energy_per_min": 0.2,
+                "next_energy_gain": 0,
+                "arena_energy": 10,
+                "arena_energy_max": 10,
+                "arena_energy_next_gain": 0,
+                "unit_slots": {
+                    "number": 120
+                },
+                "rep_unit_id": 12365082509,
+                "rep_assigned": 0,
+                "pvp_event": 0,
+                "mail_box_event": 0,
+                "social_point_current": 3000,
+                "social_point_max": 3000,
+                "honor_point": 165,
+                "guild_point": 413,
+                "darkportal_energy": 12,
+                "darkportal_energy_max": 10,
+                "costume_point": 71,
+                "costume_point_max": 9999,
+                "honor_medal": 0,
+                "honor_mark": 0,
+                "event_coin": 75,
+                "lobby_master_id": 1008,
+                "emblem_master_id": 0,
+                "period_energy_max": 0
+            },
+            "removed_item": {
+                "wizard_id": 123,
+                "item_master_type": 11,
+                "item_master_id": 13004,
+                "item_quantity": 66
+            },
+            "added_item": {
+                "wizard_id": 123,
+                "item_master_type": 11,
+                "item_master_id": 12004,
+                "item_quantity": 122
+            },
+            "ts_val": 2088515638,
+            "tvalue": 1616068286,
+            "tvaluelocal": 1616010686,
+            "tzone": "America/Los_Angeles"
+        }
+    }
+}

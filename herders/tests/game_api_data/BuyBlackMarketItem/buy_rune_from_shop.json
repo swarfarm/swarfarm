@@ -1,0 +1,112 @@
+{
+    "data": {
+        "request": {
+            "command": "BuyBlackMarketItem",
+            "wizard_id": 123,
+            "session_key": "c115f604adcd1c861114cdd64ca47e",
+            "proto_ver": 11810,
+            "infocsv": "4.02.41",
+            "channel_uid": 208139408,
+            "ts_val": 1138041102,
+            "building_id": 87790554,
+            "item_no": 1,
+            "item_master_type": 8,
+            "item_master_id": 0,
+            "amount": 1
+        },
+        "response": {
+            "command": "BuyBlackMarketItem",
+            "ret_code": 0,
+            "item_no": 1,
+            "runes": [
+                {
+                    "rune_id": 24026465124,
+                    "wizard_id": 123,
+                    "occupied_type": 2,
+                    "occupied_id": 0,
+                    "slot_no": 2,
+                    "rank": 4,
+                    "class": 4,
+                    "set_id": 6,
+                    "upgrade_limit": 15,
+                    "upgrade_curr": 0,
+                    "base_value": 88200,
+                    "sell_value": 7669,
+                    "pri_eff": [
+                        1,
+                        160
+                    ],
+                    "prefix_eff": [
+                        3,
+                        10
+                    ],
+                    "sec_eff": [
+                        [
+                            10,
+                            3,
+                            0,
+                            0
+                        ],
+                        [
+                            8,
+                            4,
+                            0,
+                            0
+                        ],
+                        [
+                            2,
+                            4,
+                            0,
+                            0
+                        ]
+                    ],
+                    "extra": 4
+                }
+            ],
+            "wizard_info": {
+                "wizard_id": 123,
+                "wizard_name": "Lyrex_",
+                "wizard_mana": 37354011,
+                "wizard_crystal": 13501,
+                "wizard_crystal_paid": 6415,
+                "wizard_last_login": "2021-01-10 05:30:57",
+                "wizard_last_country": "DE",
+                "wizard_last_lang": "en",
+                "wizard_level": 50,
+                "experience": 3800000,
+                "wizard_energy": 153,
+                "energy_max": 190,
+                "energy_per_min": 0.26,
+                "next_energy_gain": 80,
+                "arena_energy": 5,
+                "arena_energy_max": 10,
+                "arena_energy_next_gain": 1587,
+                "unit_slots": {
+                    "number": 120
+                },
+                "rep_unit_id": 7428739422,
+                "rep_assigned": 1,
+                "pvp_event": 0,
+                "mail_box_event": 0,
+                "social_point_current": 1030,
+                "social_point_max": 3000,
+                "honor_point": 613,
+                "guild_point": 3494,
+                "darkportal_energy": 11,
+                "darkportal_energy_max": 10,
+                "costume_point": 69,
+                "costume_point_max": 9999,
+                "honor_medal": 93,
+                "honor_mark": 81,
+                "event_coin": 100,
+                "lobby_master_id": 1001,
+                "emblem_master_id": 0,
+                "period_energy_max": 10
+            },
+            "ts_val": 1138041092,
+            "tvalue": 1610229644,
+            "tvaluelocal": 1610200844,
+            "tzone": "Europe/Berlin"
+        }
+    }
+}

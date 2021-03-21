@@ -6,7 +6,6 @@ from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
-from bestiary.models import Monster, GameItem, monsters
 from herders import api_views, models
 
 import json
@@ -32,7 +31,9 @@ class BaseSyncTest(TestCase):
                 **kwargs,
             )
             return view(request)
-    
+
+
+class AuthSyncTest(BaseSyncTest):
     def test_not_authenticated_sync(self):
         resp = self._do_sync('BattleDimensionHoleDungeonResult_V2/beast_men_b1_rune_drop.json')
         self.assertEqual(resp.status_code, 401)
@@ -50,7 +51,8 @@ class BaseSyncTest(TestCase):
 
 class DungeonSyncTest(BaseSyncTest):
     def test_dimension_hole_rune_drop(self):
-        self._do_sync('BattleDimensionHoleDungeonResult_V2/beast_men_b1_rune_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleDimensionHoleDungeonResult_V2/beast_men_b1_rune_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id=32514358242)
         self.assertTrue(runes.exists())
 
@@ -59,7 +61,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertIsNone(rune.assigned_to)
 
     def test_dimension_hole_rune_grind_drop(self):
-        self._do_sync('BattleDimensionHoleDungeonResult_V2/forest_b5_grind_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleDimensionHoleDungeonResult_V2/forest_b5_grind_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         rune_grinds = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=109426984)
         self.assertTrue(rune_grinds.exists())
 
@@ -68,7 +71,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertEqual(rune_grind.quantity, 2)
 
     def test_dimension_hole_rune_enchant_drop(self):
-        self._do_sync('BattleDimensionHoleDungeonResult_V2/sanctuary_b5_gem_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleDimensionHoleDungeonResult_V2/sanctuary_b5_gem_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         rune_enchants = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=112481826)
         self.assertTrue(rune_enchants.exists())
 
@@ -77,7 +81,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertEqual(rune_enchant.quantity, 1)
 
     def test_dimension_hole_rune_craft_drop(self):
-        self._do_sync('BattleDimensionHoleDungeonResult_V2/ellunia_b3_rune_ore_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleDimensionHoleDungeonResult_V2/ellunia_b3_rune_ore_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         rune_crafts = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id=9002)
         self.assertTrue(rune_crafts.exists())
 
@@ -86,7 +91,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertEqual(rune_craft.quantity, 12)
 
     def test_dungeon_rune_drop(self):
-        self._do_sync('BattleDungeonResult_V2/dragon_b10_rune_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleDungeonResult_V2/dragon_b10_rune_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id=30350462692)
         self.assertTrue(runes.exists())
 
@@ -95,7 +101,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertIsNone(rune.assigned_to)
 
     def test_dungeon_monster_drop(self):
-        self._do_sync('BattleDungeonResult_V2/giants_b5_rainbowmon_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleDungeonResult_V2/giants_b5_rainbowmon_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=15177707867)
         self.assertTrue(monsters.exists())
 
@@ -105,7 +112,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertIsNotNone(monster.rta_build)
     
     def test_dungeon_monster_piece_drop(self):
-        self._do_sync('BattleDungeonResult_V2/hoh_phantom_thief.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleDungeonResult_V2/hoh_phantom_thief.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         monster_pieces = models.MonsterPiece.objects.filter(owner=self.summoner, monster__com2us_id=14102)
         self.assertTrue(monster_pieces.exists())
 
@@ -114,7 +122,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertEqual(monster_piece.pieces, 75)
 
     def test_dungeon_item_drop(self):
-        self._do_sync('BattleDungeonResult_V2/hall_of_dark_small_essence_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleDungeonResult_V2/hall_of_dark_small_essence_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         essences = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id=11005)
         self.assertTrue(essences.exists())
 
@@ -123,7 +132,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertEqual(essence.quantity, 207)
 
     def test_dungeon_artifact_drop(self):
-        self._do_sync('BattleDungeonResult_V2/punisher_b5_artifact_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleDungeonResult_V2/punisher_b5_artifact_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         artifacts = models.ArtifactInstance.objects.filter(owner=self.summoner, com2us_id=1509482)
         self.assertTrue(artifacts.exists())
 
@@ -132,7 +142,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertIsNone(artifact.assigned_to)
 
     def test_scenario_rune_drop(self):
-        self._do_sync('BattleScenarioResult/faimon_hell_rune_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleScenarioResult/faimon_hell_rune_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id=25151442364)
         self.assertTrue(runes.exists())
 
@@ -141,7 +152,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertIsNone(rune.assigned_to)
 
     def test_scenario_monster_drop(self):
-        self._do_sync('BattleScenarioResult/faimon_hell_monster_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleScenarioResult/faimon_hell_monster_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=13138378732)
         self.assertTrue(monsters.exists())
 
@@ -151,7 +163,8 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertIsNotNone(monster.rta_build)
 
     def test_scenario_item_drop(self):
-        self._do_sync('BattleScenarioResult/faimon_hell_craft_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleScenarioResult/faimon_hell_craft_drop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         essences = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id=1003)
         self.assertTrue(essences.exists())
 
@@ -164,7 +177,8 @@ class DungeonSyncTest(BaseSyncTest):
             5002: 3,
             6001: 1,
         }
-        self._do_sync('BattleRiftDungeonResult/fire_beast_b.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleRiftDungeonResult/fire_beast_b.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         essences = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id__in=result_mapping.keys())
         self.assertTrue(essences.exists())
 
@@ -172,7 +186,8 @@ class DungeonSyncTest(BaseSyncTest):
             self.assertEqual(essence.quantity, result_mapping[essence.item.com2us_id])
 
     def test_rift_rune_drop(self):
-        self._do_sync('BattleRiftDungeonResult/fire_beast_b.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleRiftDungeonResult/fire_beast_b.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id=25328315344)
         self.assertTrue(runes.exists())
 
@@ -181,10 +196,212 @@ class DungeonSyncTest(BaseSyncTest):
         self.assertIsNone(rune.assigned_to)
 
     def test_raid_grindstones_drop(self):
-        self._do_sync('BattleRiftOfWorldsRaidResult/raid_r1_3x_grindstones.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        resp = self._do_sync('BattleRiftOfWorldsRaidResult/raid_r1_3x_grindstones.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
         rune_crafts = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=219997106)
         self.assertTrue(rune_crafts.exists())
 
         rune_craft = rune_crafts.first()
         self.assertIsNotNone(rune_craft)
         self.assertEqual(rune_craft.quantity, 1)
+
+    def test_worldboss_reward(self):
+        result_mapping = {
+            12003: 170,
+            11002: 392,
+        }
+        resp = self._do_sync('BattleWorldBossResult/world_boss_result.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        essences = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id__in=result_mapping.keys())
+        self.assertTrue(essences.exists())
+
+        for essence in essences:
+            self.assertEqual(essence.quantity, result_mapping[essence.item.com2us_id])
+        
+        runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id__in=[25328315344, 26589504160])
+        self.assertTrue(runes.exists())
+
+        for rune in runes:
+            self.assertIsNotNone(rune)
+            self.assertIsNone(rune.assigned_to)
+
+    def test_lab_rotation_clear_no_reward(self):
+        resp = self._do_sync('ReceiveGuildMazeClearRewardCrate/lab_clear_box_no_sync.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertFalse(models.RuneInstance.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.ArtifactInstance.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.RuneCraftInstance.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.ArtifactCraftInstance.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.MonsterInstance.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.MaterialStorage.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.MonsterShrineStorage.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.MonsterPiece.objects.filter(owner=self.summoner).exists())
+    
+    def test_siege_box_reward_only_runes(self):
+        resp = self._do_sync('ReceiveGuildSiegeRewardCrate/siege_box_runes.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id__in=[35209589327, 35209589330])
+        self.assertTrue(runes.exists())
+
+        for rune in runes:
+            self.assertIsNotNone(rune)
+            self.assertIsNone(rune.assigned_to)
+        
+        self.assertFalse(models.ArtifactInstance.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.RuneCraftInstance.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.ArtifactCraftInstance.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.MonsterInstance.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.MaterialStorage.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.MonsterShrineStorage.objects.filter(owner=self.summoner).exists())
+        self.assertFalse(models.MonsterPiece.objects.filter(owner=self.summoner).exists())
+
+    def test_lab_stage_clear_reward_grind(self):
+        resp = self._do_sync('pickGuildMazeBattleClearReward/lab_clear_stage_grind.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        rune_grinds = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=179407168)
+        self.assertTrue(rune_grinds.exists())
+
+        rune_grind = rune_grinds.first()
+        self.assertIsNotNone(rune_grind)
+        self.assertEqual(rune_grind.quantity, 1)
+        
+    
+    def test_lab_stage_clear_reward_rune(self):
+        resp = self._do_sync('pickGuildMazeBattleClearReward/lab_clear_stage_rune.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id=35153348554)
+        self.assertTrue(runes.exists())
+
+        rune = runes.first()
+        self.assertIsNotNone(rune)
+        self.assertIsNone(rune.assigned_to)
+
+    def test_toa_60_rainbowmon(self):
+        resp = self._do_sync('BattleTrialTowerResult_v2/toa_60_rainbowmon.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=17446569075)
+        self.assertTrue(monsters.exists())
+
+        monster = monsters.first()
+        self.assertIsNotNone(monster)
+        self.assertIsNotNone(monster.default_build)
+        self.assertIsNotNone(monster.rta_build)
+        
+
+class MiscSyncTest(BaseSyncTest):
+    def test_buy_rune_from_shop(self):
+        resp = self._do_sync('BuyBlackMarketItem/buy_rune_from_shop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id=24026465124)
+        self.assertTrue(runes.exists())
+
+        rune = runes.first()
+        self.assertIsNotNone(rune)
+        self.assertIsNone(rune.assigned_to)
+
+    def test_buy_monster_from_shop(self):
+        resp = self._do_sync('BuyBlackMarketItem/buy_monster_from_shop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=10856141877)
+        self.assertTrue(monsters.exists())
+
+        monster = monsters.first()
+        self.assertIsNotNone(monster)
+        self.assertIsNotNone(monster.default_build)
+        self.assertIsNotNone(monster.rta_build)
+
+    def test_buy_rune_from_guild_shop(self):
+        resp = self._do_sync('BuyGuildBlackMarketItem/buy_rune_from_guild_shop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id=24026517599)
+        self.assertTrue(runes.exists())
+
+        rune = runes.first()
+        self.assertIsNotNone(rune)
+        self.assertIsNone(rune.assigned_to)
+
+    def test_buy_monster_piece_from_guild_shop(self):
+        resp = self._do_sync('BuyGuildBlackMarketItem/buy_monster_piece_from_guild_shop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monster_pieces = models.MonsterPiece.objects.filter(owner=self.summoner, monster__com2us_id=14102)
+        self.assertTrue(monster_pieces.exists())
+
+        monster_piece = monster_pieces.first()
+        self.assertIsNotNone(monster_piece)
+        self.assertEqual(monster_piece.pieces, 40)
+
+    def test_buy_grind_from_guild_shop(self):
+        resp = self._do_sync('BuyGuildBlackMarketItem/buy_grind_from_guild_shop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        rune_grinds = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=151706129)
+        self.assertTrue(rune_grinds.exists())
+
+        rune_grind = rune_grinds.first()
+        self.assertIsNotNone(rune_grind)
+        self.assertEqual(rune_grind.quantity, 1)
+
+    def test_buy_enchant_from_guild_shop(self):
+        resp = self._do_sync('BuyGuildBlackMarketItem/buy_enchant_from_guild_shop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        rune_enchants = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=150055487)
+        self.assertTrue(rune_enchants.exists())
+
+        rune_enchant = rune_enchants.first()
+        self.assertIsNotNone(rune_enchant)
+        self.assertEqual(rune_enchant.quantity, 2)
+
+    def test_sell_item(self):
+        resp = self._do_sync('sell_inventory_item.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        item = models.MaterialStorage.objects.get(owner=self.summoner, item__com2us_id=1003)
+        self.assertIsNotNone(item)
+        self.assertEqual(item.quantity, 119)
+
+    def test_wish_monster(self):
+        resp = self._do_sync('DoRandomWishItem/wish_monster.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=13158397674)
+        self.assertTrue(monsters.exists())
+
+        monster = monsters.first()
+        self.assertIsNotNone(monster)
+        self.assertIsNotNone(monster.default_build)
+        self.assertIsNotNone(monster.rta_build)
+
+    def test_wish_rune(self):
+        resp = self._do_sync('DoRandomWishItem/wish_rune.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        runes = models.RuneInstance.objects.filter(owner=self.summoner, com2us_id=25258738053)
+        self.assertTrue(runes.exists())
+
+        rune = runes.first()
+        self.assertIsNotNone(rune)
+        self.assertIsNone(rune.assigned_to)
+
+    def test_upgrade_material(self):
+        result_mapping = {
+            12006: 36,
+            13006: 6,
+        }
+        resp = self._do_sync('UpgradeDowngradeMaterial/upgrade_material.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        essences = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id__in=result_mapping.keys())
+        self.assertTrue(essences.exists())
+
+        for essence in essences:
+            self.assertEqual(essence.quantity, result_mapping[essence.item.com2us_id])
+
+    def test_downgrade_material(self):
+        result_mapping = {
+            13004: 66,
+            12004: 122,
+        }
+        resp = self._do_sync('UpgradeDowngradeMaterial/downgrade_material.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        essences = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id__in=result_mapping.keys())
+        self.assertTrue(essences.exists())
+
+        for essence in essences:
+            self.assertEqual(essence.quantity, result_mapping[essence.item.com2us_id])

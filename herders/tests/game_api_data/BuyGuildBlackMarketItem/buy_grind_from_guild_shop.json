@@ -1,0 +1,128 @@
+{
+    "data": {
+        "request": {
+            "command": "BuyGuildBlackMarketItem",
+            "wizard_id": 123,
+            "session_key": "c115f604adcd1c861114cdd64ca47e",
+            "proto_ver": 11810,
+            "infocsv": "4.02.41",
+            "channel_uid": 208139408,
+            "ts_val": 1138039866,
+            "guild_id": 168084,
+            "item_no": 2,
+            "refresh_ts": 1610226285
+        },
+        "response": {
+            "command": "BuyGuildBlackMarketItem",
+            "ret_code": 0,
+            "item_no": 2,
+            "wizard_info": {
+                "wizard_id": 123,
+                "wizard_name": "Lyrex_",
+                "wizard_mana": 37752248,
+                "wizard_crystal": 13500,
+                "wizard_crystal_paid": 6415,
+                "wizard_last_login": "2021-01-10 05:30:57",
+                "wizard_last_country": "DE",
+                "wizard_last_lang": "en",
+                "wizard_level": 50,
+                "experience": 3800000,
+                "wizard_energy": 215,
+                "energy_max": 190,
+                "energy_per_min": 0.26,
+                "next_energy_gain": 0,
+                "arena_energy": 3,
+                "arena_energy_max": 10,
+                "arena_energy_next_gain": 1272,
+                "unit_slots": {
+                    "number": 120
+                },
+                "rep_unit_id": 7428739422,
+                "rep_assigned": 1,
+                "pvp_event": 0,
+                "mail_box_event": 0,
+                "social_point_current": 1030,
+                "social_point_max": 3000,
+                "honor_point": 613,
+                "guild_point": 3494,
+                "darkportal_energy": 11,
+                "darkportal_energy_max": 10,
+                "costume_point": 69,
+                "costume_point_max": 9999,
+                "honor_medal": 93,
+                "honor_mark": 81,
+                "event_coin": 100,
+                "lobby_master_id": 1001,
+                "emblem_master_id": 0,
+                "period_energy_max": 10
+            },
+            "guild_info": {
+                "guild_id": 168084,
+                "name": "Guild Name",
+                "master_wizard_id": 6573765,
+                "member_now": 25,
+                "member_max": 30,
+                "comment": "Guild Description",
+                "notice": "Guild Notice",
+                "level": 30,
+                "experience": 28752,
+                "recruit_status": 1,
+                "arena_rating_id": 2001,
+                "last_market_refresh_auto": "2021-01-10 06:04:45",
+                "last_market_refresh_manual": "2021-01-03 06:04:45",
+                "master_wizard_name": "Leader Name",
+                "master_wizard_level": 50,
+                "skill_info": {
+                    "1001": {
+                        "1": 5,
+                        "3": 5,
+                        "2": 5
+                    },
+                    "2001": {
+                        "1": 5,
+                        "3": 5,
+                        "2": 5
+                    },
+                    "3001": {
+                        "1": 5,
+                        "3": 5,
+                        "2": 5
+                    },
+                    "4001": {
+                        "1": 5,
+                        "3": 5,
+                        "2": 5
+                    },
+                    "5001": [
+                        4
+                    ],
+                    "6001": [
+                        5
+                    ],
+                    "7001": [
+                        5
+                    ]
+                },
+                "market_refresh_ts": 1610226285,
+                "next_market_refresh_auto_ts": 1610255085,
+                "next_market_refresh_manual_ts": 1609635885
+            },
+            "item_list": [],
+            "rune_list": [],
+            "runecraft_list": [
+                {
+                    "craft_item_id": 151706129,
+                    "wizard_id": 123,
+                    "craft_type": 2,
+                    "craft_type_id": 190304,
+                    "sell_value": 16000,
+                    "amount": 1
+                }
+            ],
+            "ts_val": 1138039871,
+            "tvalue": 1610226359,
+            "tvaluelocal": 1610197559,
+            "tzone": "Europe/Berlin"
+        }
+    }
+}

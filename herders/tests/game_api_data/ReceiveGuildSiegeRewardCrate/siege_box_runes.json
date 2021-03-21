@@ -1,0 +1,385 @@
+{
+    "data": {
+        "request": {
+            "command": "ReceiveGuildSiegeRewardCrate",
+            "wizard_id": 123,
+            "session_key": "0fdde83985ab5a8cac739a579344d1",
+            "proto_ver": 11810,
+            "infocsv": "4.02.41",
+            "channel_uid": 160408217,
+            "ts_val": 1137783573,
+            "siege_id": 2021010301,
+            "crate_index": 3
+        },
+        "response": {
+            "command": "ReceiveGuildSiegeRewardCrate",
+            "ret_code": 0,
+            "siege_id": 2021010301,
+            "wizard_info": {
+                "wizard_id": 123,
+                "wizard_name": "Marcanthalas",
+                "wizard_mana": 32577161,
+                "wizard_crystal": 1122,
+                "wizard_crystal_paid": 0,
+                "wizard_last_login": "2021-01-13 08:49:04",
+                "wizard_last_country": "PL",
+                "wizard_last_lang": "en",
+                "wizard_level": 50,
+                "experience": 3800000,
+                "wizard_energy": 349,
+                "energy_max": 190,
+                "energy_per_min": 0.2,
+                "next_energy_gain": 0,
+                "arena_energy": 10,
+                "arena_energy_max": 10,
+                "arena_energy_next_gain": 0,
+                "unit_slots": {
+                    "number": 120
+                },
+                "rep_unit_id": 9116028848,
+                "rep_assigned": 1,
+                "pvp_event": 0,
+                "mail_box_event": 0,
+                "social_point_current": 1140,
+                "social_point_max": 3000,
+                "honor_point": 643,
+                "guild_point": 812,
+                "darkportal_energy": 3,
+                "darkportal_energy_max": 10,
+                "costume_point": 40,
+                "costume_point_max": 9999,
+                "honor_medal": 18,
+                "honor_mark": 0,
+                "event_coin": 65,
+                "lobby_master_id": 1009,
+                "emblem_master_id": 0,
+                "period_energy_max": 0
+            },
+            "crate_list": [
+                {
+                    "crate_index": 1,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 2,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 3,
+                    "crate_master_id": 10,
+                    "reward_list": {
+                        "currency": [
+                            {
+                                "item_master_id": 102,
+                                "item_quantity": 10000
+                            },
+                            {
+                                "item_master_id": 102,
+                                "item_quantity": 10000
+                            },
+                            {
+                                "item_master_id": 102,
+                                "item_quantity": 30000
+                            },
+                            {
+                                "item_master_id": 102,
+                                "item_quantity": 10000
+                            }
+                        ],
+                        "runes": [
+                            {
+                                "rune_id": 35209589327,
+                                "wizard_id": 123,
+                                "occupied_type": 2,
+                                "occupied_id": 0,
+                                "slot_no": 4,
+                                "rank": 3,
+                                "class": 6,
+                                "set_id": 1,
+                                "upgrade_limit": 15,
+                                "upgrade_curr": 0,
+                                "base_value": 171180,
+                                "sell_value": 12798,
+                                "pri_eff": [
+                                    3,
+                                    22
+                                ],
+                                "prefix_eff": [
+                                    0,
+                                    0
+                                ],
+                                "sec_eff": [
+                                    [
+                                        2,
+                                        6
+                                    ],
+                                    [
+                                        10,
+                                        7
+                                    ]
+                                ],
+                                "extra": 3
+                            },
+                            {
+                                "rune_id": 35209589330,
+                                "wizard_id": 123,
+                                "occupied_type": 2,
+                                "occupied_id": 0,
+                                "slot_no": 6,
+                                "rank": 4,
+                                "class": 6,
+                                "set_id": 21,
+                                "upgrade_limit": 15,
+                                "upgrade_curr": 0,
+                                "base_value": 431120,
+                                "sell_value": 23085,
+                                "pri_eff": [
+                                    11,
+                                    12
+                                ],
+                                "prefix_eff": [
+                                    0,
+                                    0
+                                ],
+                                "sec_eff": [
+                                    [
+                                        5,
+                                        20
+                                    ],
+                                    [
+                                        1,
+                                        287
+                                    ],
+                                    [
+                                        3,
+                                        14
+                                    ]
+                                ],
+                                "extra": 4
+                            }
+                        ]
+                    },
+                    "channel_uid": 160408217,
+                    "wizard_id": 123,
+                    "wizard_name": "Marcanthalas"
+                },
+                {
+                    "crate_index": 4,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 5,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 6,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 7,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 8,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 9,
+                    "crate_master_id": 110,
+                    "reward_list": {
+                        "random_scroll": [
+                            {
+                                "item_master_id": 10,
+                                "item_quantity": 5
+                            },
+                            {
+                                "item_master_id": 2,
+                                "item_quantity": 1
+                            }
+                        ],
+                        "runes": [
+                            {
+                                "rune_id": 35209490493,
+                                "wizard_id": 19529066,
+                                "occupied_type": 2,
+                                "occupied_id": 0,
+                                "slot_no": 6,
+                                "rank": 5,
+                                "class": 6,
+                                "set_id": 18,
+                                "upgrade_limit": 15,
+                                "upgrade_curr": 0,
+                                "base_value": 592790,
+                                "sell_value": 31742,
+                                "pri_eff": [
+                                    5,
+                                    22
+                                ],
+                                "prefix_eff": [
+                                    10,
+                                    5
+                                ],
+                                "sec_eff": [
+                                    [
+                                        6,
+                                        7
+                                    ],
+                                    [
+                                        11,
+                                        8
+                                    ],
+                                    [
+                                        8,
+                                        5
+                                    ],
+                                    [
+                                        4,
+                                        5
+                                    ]
+                                ],
+                                "extra": 5
+                            },
+                            {
+                                "rune_id": 35209490501,
+                                "wizard_id": 19529066,
+                                "occupied_type": 2,
+                                "occupied_id": 0,
+                                "slot_no": 1,
+                                "rank": 3,
+                                "class": 6,
+                                "set_id": 15,
+                                "upgrade_limit": 15,
+                                "upgrade_curr": 0,
+                                "base_value": 421610,
+                                "sell_value": 22576,
+                                "pri_eff": [
+                                    3,
+                                    22
+                                ],
+                                "prefix_eff": [
+                                    0,
+                                    0
+                                ],
+                                "sec_eff": [
+                                    [
+                                        8,
+                                        5
+                                    ],
+                                    [
+                                        11,
+                                        8
+                                    ]
+                                ],
+                                "extra": 3
+                            }
+                        ],
+                        "currency": [
+                            {
+                                "item_master_id": 1,
+                                "item_quantity": 50
+                            },
+                            {
+                                "item_master_id": 1,
+                                "item_quantity": 50
+                            }
+                        ]
+                    },
+                    "channel_uid": 136983699,
+                    "wizard_id": 19529066,
+                    "wizard_name": "oTrajectory"
+                },
+                {
+                    "crate_index": 10,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 11,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 12,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 13,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 14,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                },
+                {
+                    "crate_index": 15,
+                    "crate_master_id": 0,
+                    "reward_list": [],
+                    "channel_uid": 0,
+                    "wizard_id": 0,
+                    "wizard_name": ""
+                }
+            ],
+            "crate_master_id_list": [
+                {
+                    "crate_master_id": 10,
+                    "quantity": 14
+                },
+                {
+                    "crate_master_id": 110,
+                    "quantity": 1
+                }
+            ],
+            "item_list": [],
+            "ts_val": 1137783594,
+            "tvalue": 1610495394,
+            "tvaluelocal": 1610434194,
+            "tzone": "America/Los_Angeles"
+        }
+    }
+}

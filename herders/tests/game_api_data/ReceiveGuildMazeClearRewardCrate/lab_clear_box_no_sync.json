@@ -1,0 +1,120 @@
+{
+    "data": {
+        "request": {
+            "command": "ReceiveGuildMazeClearRewardCrate",
+            "wizard_id": 123,
+            "session_key": "5e3c2c583ab0cfb58d8329a46f312f",
+            "proto_ver": 11821,
+            "infocsv": "4.02.46_nI1O4Mxj",
+            "channel_uid": 208752514,
+            "ts_val": 2082673603,
+            "maze_no": 61,
+            "schedule_id": 61,
+            "crate_index": 8
+        },
+        "response": {
+            "command": "ReceiveGuildMazeClearRewardCrate",
+            "ret_code": 0,
+            "wizard": {
+                "wizard_id": 123,
+                "wizard_name": "QuazTo",
+                "wizard_mana": 13447836,
+                "wizard_crystal": 147,
+                "wizard_crystal_paid": 0,
+                "wizard_last_login": "2021-01-23 21:22:41",
+                "wizard_last_country": "PL",
+                "wizard_last_lang": "en",
+                "wizard_level": 50,
+                "experience": 3800000,
+                "wizard_energy": 360,
+                "energy_max": 150,
+                "energy_per_min": 0.2,
+                "next_energy_gain": 0,
+                "arena_energy": 10,
+                "arena_energy_max": 10,
+                "arena_energy_next_gain": 0,
+                "unit_slots": {
+                    "number": 120
+                },
+                "rep_unit_id": 12365082509,
+                "rep_assigned": 0,
+                "pvp_event": 0,
+                "mail_box_event": 0,
+                "social_point_current": 3000,
+                "social_point_max": 3000,
+                "honor_point": 165,
+                "guild_point": 475,
+                "darkportal_energy": 9,
+                "darkportal_energy_max": 10,
+                "costume_point": 71,
+                "costume_point_max": 9999,
+                "honor_medal": 0,
+                "honor_mark": 0,
+                "event_coin": 35,
+                "lobby_master_id": 1008,
+                "emblem_master_id": 0,
+                "period_energy_max": 0
+            },
+            "reward_crate": {
+                "guild_id": 230795,
+                "maze_no": 61,
+                "schedule_id": 61,
+                "crate_index": 8,
+                "reward_list": [
+                    {
+                        "item_master_type": 9,
+                        "item_master_id": 8,
+                        "item_class": 0,
+                        "item_level": 0,
+                        "item_quantity": 15,
+                        "premium": 0,
+                        "sorting": 0
+                    },
+                    {
+                        "item_master_type": 6,
+                        "item_master_id": 1,
+                        "item_class": 0,
+                        "item_level": 0,
+                        "item_quantity": 30,
+                        "premium": 0,
+                        "sorting": 0
+                    },
+                    {
+                        "item_master_type": 6,
+                        "item_master_id": 1,
+                        "item_class": 0,
+                        "item_level": 0,
+                        "item_quantity": 30,
+                        "premium": 0,
+                        "sorting": 0
+                    },
+                    {
+                        "item_master_type": 6,
+                        "item_master_id": 1,
+                        "item_class": 0,
+                        "item_level": 0,
+                        "item_quantity": 50,
+                        "premium": 0,
+                        "sorting": 0
+                    },
+                    {
+                        "item_master_type": 9,
+                        "item_master_id": 5,
+                        "item_class": 0,
+                        "item_level": 0,
+                        "item_quantity": 2,
+                        "premium": 0,
+                        "sorting": 0
+                    }
+                ],
+                "channel_uid": 208752514,
+                "wizard_id": 123,
+                "wizard_name": "QuazTo"
+            },
+            "ts_val": 2082673624,
+            "tvalue": 1611404624,
+            "tvaluelocal": 1611343424,
+            "tzone": "America/Los_Angeles"
+        }
+    }
+}

@@ -1153,11 +1153,11 @@ def sync_wish_reward(summoner, log_data):
 
 
 def sync_siege_crate_reward(summoner, log_data):
-    selected_crate_id = log_data['request'].get('crate_index', 0)
+    selected_crate_id = log_data['request'].get('crate_index', None)
     crates = log_data['response'].get('crate_list', [])
     selected_crate = {}
 
-    if not selected_crate or not crates:
+    if selected_crate_id is None or not crates:
         return
 
     with transaction.atomic():

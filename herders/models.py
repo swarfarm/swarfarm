@@ -663,6 +663,7 @@ class RuneBuild(models.Model):
         self.artifacts.remove(*self.artifacts.filter(slot=artifact.slot))
         self.artifacts.add(artifact)
 
+
 class RuneCraftInstance(RuneCraft):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)

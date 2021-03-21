@@ -113,6 +113,7 @@ class RuneBuildModelTests(TestCase):
             level=0,
             quality=models.RuneInstance.QUALITY_NORMAL,
         )
+
         with self.assertRaises(ValidationError) as cm:
             self.rune_build.runes.add(rune2)
 

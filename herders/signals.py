@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
@@ -24,6 +24,8 @@ def validate_rune_build_runes(sender, instance, action, reverse, model, pk_set, 
     if action != 'pre_add':
         return
 
+    slots = model.objects.filter(pk__in=pk_set).values_list('slot', flat=True)
+
     too_many_slots = model.objects.filter(
         runebuild=instance
     ).exclude(
@@ -31,7 +33,7 @@ def validate_rune_build_runes(sender, instance, action, reverse, model, pk_set, 
     ).values('slot').annotate(
         slot__count=Count('slot')
     ).filter(
-        slot__count__gt=1
+        Q(slot__count__gt=1) | (Q(slot__in=slots) & Q(slot__count__gte=1))
     ).order_by('slot')
 
     if too_many_slots.exists():
@@ -54,6 +56,8 @@ def validate_rune_build_artifacts(sender, instance, action, reverse, model, pk_s
     if action != 'pre_add':
         return
 
+    slots = model.objects.filter(pk__in=pk_set).values_list('slot', flat=True)
+
     too_many_slots = model.objects.filter(
         runebuild=instance
     ).exclude(
@@ -61,7 +65,7 @@ def validate_rune_build_artifacts(sender, instance, action, reverse, model, pk_s
     ).values('slot').annotate(
         slot__count=Count('slot')
     ).filter(
-        slot__count__gt=1
+        Q(slot__count__gt=1) | (Q(slot__in=slots) & Q(slot__count__gte=1))
     ).order_by('slot')
 
     if too_many_slots.exists():

@@ -168,17 +168,9 @@ def parse_sw_json(data, owner, options):
     # Extract Rune Inventory (unequipped runes)
     if runes_info:
         for rune_data in runes_info:
-            rune, has_changed_or_new = parse_rune_data(rune_data, owner)
+            rune = parse_rune_data(rune_data, owner)
             if rune:
-                if has_changed_or_new or (not has_changed_or_new and rune.assigned_to):
-                    # it did change... its assignment, so make sure it'll be saved
-                    has_changed_or_new = True
-                    rune.owner = owner
-                    rune.assigned_to = None
-                parsed_runes[rune.pk] = {
-                    'obj': rune,
-                    'new': has_changed_or_new,
-                }
+                parsed_runes[rune.pk] = rune
 
     # Extract monsters
     for unit_info in unit_list:
@@ -206,14 +198,7 @@ def parse_sw_json(data, owner, options):
             # Unable to find a matching monster in the database - either crap data or brand new monster. Don't parse it.
             continue
 
-        # Lock a monster if it's locked in game
-        if options['lock_monsters']:
-            locked = locked_mons is not None and mon.com2us_id in locked_mons
-        else:
-            locked = False
-
         # Equipped runes and artifacts
-        has_changed_runes_or_artifacts = False
         equipped_runes = unit_info.get('runes')
         equipped_artifacts = unit_info.get('artifacts', [])
 
@@ -221,34 +206,19 @@ def parse_sw_json(data, owner, options):
         if isinstance(equipped_runes, dict):
             equipped_runes = equipped_runes.values()
 
+        mon_runes = []
         for rune_data in equipped_runes:
-            rune, has_changed_or_new = parse_rune_data(rune_data, owner)
+            rune = parse_rune_data(rune_data, owner)
             if rune:
-                if has_changed_or_new or (not has_changed_or_new and rune.assigned_to != mon):
-                    # it did change... its assignment, so make sure it'll be saved
-                    has_changed_or_new = True
-                    has_changed_runes_or_artifacts = True
-                    rune.owner = owner
-                    rune.assigned_to = mon
-                parsed_runes[rune.pk] = {
-                    'obj': rune,
-                    'new': has_changed_or_new,
-                }
+                parsed_runes[rune.pk] = rune
+                mon_runes.append(rune)
 
+        mon_artifacts = []
         for artifact_data in equipped_artifacts:
-            artifact, has_changed_or_new = parse_artifact_data(
-                artifact_data, owner)
+            artifact = parse_artifact_data(artifact_data, owner)
             if artifact:
-                if has_changed_or_new or (not has_changed_or_new and artifact.assigned_to != mon):
-                    # it did change... its assignment, so make sure it'll be saved
-                    has_changed_or_new = True
-                    has_changed_runes_or_artifacts = True
-                    artifact.owner = owner
-                    artifact.assigned_to = mon
-                parsed_artifacts[artifact.pk] = {
-                    'obj': artifact,
-                    'new': has_changed_or_new,
-                }
+                parsed_artifacts[artifact.pk] = artifact
+                mon_artifacts.append(artifact)
 
         skills = unit_info.get('skills', [])
         temp_skill_1_level = skills[0][1] if len(skills) >= 1 else None
@@ -256,36 +226,13 @@ def parse_sw_json(data, owner, options):
         temp_skill_3_level = skills[2][1] if len(skills) >= 3 else None
         temp_skill_4_level = skills[3][1] if len(skills) >= 4 else None
 
-        if not has_changed_runes_or_artifacts and not is_new:
-            has_different_skillups = False
-            if (
-                (temp_skill_1_level and temp_skill_1_level != mon.skill_1_level)
-                or (temp_skill_2_level and temp_skill_2_level != mon.skill_2_level)
-                or (temp_skill_3_level and temp_skill_3_level != mon.skill_3_level)
-                or (temp_skill_4_level and temp_skill_4_level != mon.skill_4_level)
-            ):
-                has_different_skillups = True
-
-            has_changed = any([
-                mon.monster != temp_monster,  # different awaken level
-                mon.stars != unit_info.get('class'),  # i.e. from 5* to 6*
-                # has leveled up since last import
-                mon.level != unit_info.get('unit_level'),
-                # its place has changed (storage/outside)
-                mon.in_storage != (unit_info.get(
-                    'building_id') == storage_building_id),
-                mon.ignore_for_fusion != locked,
-            ])
-            if not has_changed and not has_different_skillups:
-                parsed_mons[mon.pk] = {
-                    'obj': mon,
-                    'new': False,
-                }
-                continue
-
         mon.monster = temp_monster
         mon.stars = unit_info.get('class')
         mon.level = unit_info.get('unit_level')
+
+        # Lock a monster if it's locked in game
+        if options['lock_monsters']:
+            mon.ignore_for_fusion = locked_mons is not None and mon.com2us_id in locked_mons
 
         if temp_skill_1_level:
             mon.skill_1_level = temp_skill_1_level
@@ -337,10 +284,7 @@ def parse_sw_json(data, owner, options):
         if unit_info.get('homunculus') and custom_name:
             mon.custom_name = custom_name
 
-        parsed_mons[mon.pk] = {
-            'obj': mon,
-            'new': True,
-        }
+        parsed_mons[mon.pk] = {"obj": mon, "runes": mon_runes, "artifacts": mon_artifacts}
 
     # Extract grindstones/enchant gems
     if craft_info:
@@ -358,18 +302,9 @@ def parse_sw_json(data, owner, options):
     # Extract artifact inventory
     if artifact_info:
         for artifact_data in artifact_info:
-            artifact, has_changed_or_new = parse_artifact_data(
-                artifact_data, owner)
+            artifact = parse_artifact_data(artifact_data, owner)
             if artifact:
-                if has_changed_or_new or (not has_changed_or_new and artifact.assigned_to):
-                    # it did change... its assignment, so make sure it'll be saved
-                    has_changed_or_new = True
-                    artifact.owner = owner
-                    artifact.assigned_to = None
-                parsed_artifacts[artifact.pk] = {
-                    'obj': artifact,
-                    'new': has_changed_or_new,
-                }
+                parsed_artifacts[artifact.pk] = artifact
 
     if artifact_craft_info:
         for craft_data in artifact_craft_info:
@@ -418,10 +353,7 @@ def parse_rune_data(rune_data, owner):
         com2us_id=com2us_id, owner=owner).first()
 
     if not rune:
-        is_new = True
         rune = RuneInstance()
-    else:
-        is_new = False
 
     # Firstly, info that may say if rune has changed or not
     substats = rune_data.get('sec_eff', [])
@@ -440,17 +372,6 @@ def parse_rune_data(rune_data, owner):
         temp_substat_values.append(substat_value)
         temp_substats_enchanted.append(enchanted)
         temp_substats_grind_value.append(grind_value)
-
-    if not is_new:
-        new_substats = any([
-            rune.substats != temp_substats,
-            rune.substat_values != temp_substat_values,
-            rune.substats_enchanted != temp_substats_enchanted,
-            rune.substats_grind_value != temp_substats_grind_value,
-        ])
-        # if the same level and no new substats, we assume nothing has changed in this rune
-        if rune.level == rune_data.get('upgrade_curr') and not new_substats:
-            return rune, False  # rune obj, has_changed_or_new
 
     # Basic rune info
     rune.type = RuneInstance.COM2US_TYPE_MAP[rune_data['set_id']]
@@ -482,7 +403,9 @@ def parse_rune_data(rune_data, owner):
     rune.substats_enchanted = temp_substats_enchanted
     rune.substats_grind_value = temp_substats_grind_value
 
-    return rune, True  # rune obj, has_changed_or_new
+    rune.owner = owner
+
+    return rune
 
 
 def parse_rune_craft_data(craft_data, owner):
@@ -531,9 +454,6 @@ def parse_artifact_data(artifact_data, owner):
 
     if not artifact:
         artifact = ArtifactInstance(com2us_id=com2us_id, owner=owner)
-        is_new = True
-    else:
-        is_new = False
 
     temp_effects = []
     temp_effects_value = []
@@ -549,16 +469,6 @@ def parse_artifact_data(artifact_data, owner):
         temp_effects_value.append(value)
         temp_effects_upgrade_count.append(upgrade_count)
         temp_effects_reroll_count.append(reroll_count)
-
-    if not is_new:
-        new_substats = any([
-            artifact.effects != temp_effects,
-            artifact.effects_value != temp_effects_value,
-            artifact.effects_upgrade_count != temp_effects_upgrade_count,
-            artifact.effects_reroll_count != temp_effects_reroll_count,
-        ])
-        if artifact.level == artifact_data['level'] and not new_substats:
-            return artifact, False  # artifact obj, has_changed_or_new
 
     # Basic artifact data
     artifact.slot = artifact.COM2US_SLOT_MAP[artifact_data['type']]
@@ -583,7 +493,9 @@ def parse_artifact_data(artifact_data, owner):
     artifact.effects_upgrade_count = temp_effects_upgrade_count
     artifact.effects_reroll_count = temp_effects_reroll_count
 
-    return artifact, True  # artifact obj, has_changed_or_new
+    artifact.owner = owner
+
+    return artifact
 
 
 def parse_artifact_craft_data(craft_data, owner):

@@ -1,0 +1,58 @@
+{
+  "data": {
+    "request": {
+      "wizard_id": 123,
+      "command": "DoRandomWishItem"
+    },
+    "response": {
+      "tzone": "America/Los_Angeles",
+      "tvalue": 1552324209,
+      "wish_info": {
+        "trial_remained": 0,
+        "wish_sequence": 15,
+        "wish_id": 1,
+        "item_master_type": 25,
+        "item_master_id": 102,
+        "amount": 1,
+        "cash_used": false
+      },
+      "rune": null,
+      "unit_info": {
+        "unit_id": 13167686904,
+        "wizard_id": 123,
+        "island_id": 1,
+        "pos_x": 10,
+        "pos_y": 8,
+        "building_id": 0,
+        "unit_master_id": 14314,
+        "unit_level": 20,
+        "class": 2,
+        "con": 3,
+        "atk": 3,
+        "def": 3,
+        "spd": 0,
+        "resist": 0,
+        "accuracy": 0,
+        "critical_rate": 0,
+        "critical_damage": 0,
+        "experience": 35822,
+        "exp_gained": 0,
+        "exp_gain_rate": 0,
+        "skills": [
+          [
+            99003,
+            1
+          ]
+        ],
+        "runes": [],
+        "costume_master_id": 0,
+        "trans_items": [],
+        "attribute": 4,
+        "create_time": "2019-03-12 02:10:09",
+        "source": 7,
+        "homunculus": 0,
+        "homunculus_name": ""
+      }
+    }
+  }
+}

@@ -98,6 +98,7 @@ def _create_new_rune(rune_info, summoner, assigned_to=None):
         return
 
     reward_rune = parse_rune_data(rune_info, summoner)
+    reward_rune.save()
     mon = reward_rune.assigned_to
     if mon:
         mon.default_build.runes.remove(reward_rune)
@@ -119,6 +120,7 @@ def _create_new_artifact(artifact_info, summoner, assigned_to=None):
         return
 
     reward_artifact = parse_artifact_data(artifact_info, summoner)
+    reward_artifact.save()
     mon = reward_artifact.assigned_to
     if mon:
         mon.default_build.artifacts.remove(reward_artifact)

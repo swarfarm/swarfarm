@@ -1,0 +1,121 @@
+{
+    "data": {
+        "request": {
+            "command": "UpgradeUnit_V3",
+            "wizard_id": 123,
+            "session_key": "c115f604adcd1c861114cdd64ca47e",
+            "proto_ver": 11810,
+            "infocsv": "4.02.41",
+            "channel_uid": 208139408,
+            "ts_val": 1138041972,
+            "target_master_type": 1,
+            "target_id": 10856006746,
+            "island_id": 1,
+            "building_id": 0,
+            "pos_x": 11,
+            "pos_y": 27,
+            "source_unit_list": [],
+            "source_item_list": [],
+            "source_storage_list": [
+                {
+                    "unit_master_id": 14102,
+                    "class": 1
+                }
+            ]
+        },
+        "response": {
+            "command": "UpgradeUnit_V3",
+            "ret_code": 0,
+            "wizard_info": {
+                "wizard_id": 123,
+                "wizard_name": "Lyrex_",
+                "wizard_mana": 37427606,
+                "wizard_crystal": 13500,
+                "wizard_crystal_paid": 6415,
+                "wizard_last_login": "2021-01-10 05: 30: 57",
+                "wizard_last_country": "DE",
+                "wizard_last_lang": "en",
+                "wizard_level": 50,
+                "experience": 3800000,
+                "wizard_energy": 144,
+                "energy_max": 190,
+                "energy_per_min": 0.26,
+                "next_energy_gain": 89,
+                "arena_energy": 4,
+                "arena_energy_max": 10,
+                "arena_energy_next_gain": 949,
+                "unit_slots": {
+                    "number": 120
+                },
+                "rep_unit_id": 7428739422,
+                "rep_assigned": 1,
+                "pvp_event": 0,
+                "mail_box_event": 0,
+                "social_point_current": 1030,
+                "social_point_max": 3000,
+                "honor_point": 613,
+                "guild_point": 3494,
+                "darkportal_energy": 11,
+                "darkportal_energy_max": 10,
+                "costume_point": 69,
+                "costume_point_max": 9999,
+                "honor_medal": 93,
+                "honor_mark": 81,
+                "event_coin": 100,
+                "lobby_master_id": 1001,
+                "emblem_master_id": 0,
+                "period_energy_max": 10
+            },
+            "unit_info": {
+                "unit_id": 10856006746,
+                "wizard_id": 123,
+                "island_id": 1,
+                "pos_x": 11,
+                "pos_y": 27,
+                "building_id": 0,
+                "unit_master_id": 14102,
+                "unit_level": 1,
+                "class": 5,
+                "con": 42,
+                "atk": 64,
+                "def": 86,
+                "spd": 102,
+                "resist": 15,
+                "accuracy": 0,
+                "critical_rate": 15,
+                "critical_damage": 50,
+                "experience": 0,
+                "exp_gained": 0,
+                "exp_gain_rate": 0,
+                "skills": [
+                    [
+                        4401,
+                        2
+                    ]
+                ],
+                "runes": [],
+                "artifacts": [],
+                "costume_master_id": 0,
+                "trans_items": [],
+                "attribute": 1,
+                "create_time": "2021-01-10 06: 37: 35",
+                "source": 42,
+                "homunculus": 0,
+                "homunculus_name": "",
+                "awakening_info": []
+            },
+            "inventory_item_list": [],
+            "unit_storage_list": [
+                {
+                    "unit_master_id": 14102,
+                    "class": 1,
+                    "quantity": 0
+                }
+            ],
+            "ts_val": 1138042250,
+            "tvalue": 1610228482,
+            "tvaluelocal": 1610199682,
+            "tzone": "Europe/Berlin"
+        }
+    }
+}

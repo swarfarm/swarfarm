@@ -1,0 +1,81 @@
+{
+    "data": {
+        "request": {
+            "command": "AwakenUnitSecond",
+            "wizard_id": 123,
+            "session_key": "c115f604adcd1c861114cdd64ca47e",
+            "proto_ver": 11810,
+            "infocsv": "4.02.41",
+            "channel_uid": 208139408,
+            "ts_val": 1137808234,
+            "unit_id": 10812428307,
+            "unit_gui_mode": 0,
+            "unit_gui_rtarena_bookmark": 0
+        },
+        "response": {
+            "command": "AwakenUnitSecond",
+            "ret_code": 0,
+            "unit_info": {
+                "unit_id": 10812428307,
+                "wizard_id": 123,
+                "island_id": 1,
+                "pos_x": 12,
+                "pos_y": 20,
+                "building_id": 0,
+                "unit_master_id": 14132,
+                "unit_level": 29,
+                "class": 4,
+                "con": 309,
+                "atk": 438,
+                "def": 333,
+                "spd": 111,
+                "resist": 15,
+                "accuracy": 0,
+                "critical_rate": 15,
+                "critical_damage": 50,
+                "experience": 174909,
+                "exp_gained": 0,
+                "exp_gain_rate": 0,
+                "skills": [
+                    [
+                        1352,
+                        1
+                    ],
+                    [
+                        1357,
+                        1
+                    ],
+                    [
+                        1362,
+                        1
+                    ]
+                ],
+                "runes": [],
+                "artifacts": [],
+                "costume_master_id": 0,
+                "trans_items": [],
+                "attribute": 2,
+                "create_time": "2021-01-04 05:51:58",
+                "source": 42,
+                "homunculus": 0,
+                "homunculus_name": "",
+                "awakening_info": {
+                    "rid": 3789800,
+                    "wizard_id": 123,
+                    "unit_id": 10812428307,
+                    "unit_master_id": 14112,
+                    "awaken_master_id": 14132,
+                    "exp": 100000,
+                    "is_awakened": 1,
+                    "date_mod": "2021-01-13 15:40:39",
+                    "date_add": "2021-01-04 05:52:04",
+                    "max_exp": 100000
+                }
+            },
+            "ts_val": 1137808239,
+            "tvalue": 1610520039,
+            "tvaluelocal": 1610491239,
+            "tzone": "Europe/Berlin"
+        }
+    }
+}

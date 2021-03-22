@@ -76,7 +76,7 @@ def _create_new_monster(unit_info, summoner):
 
     mon.stars = unit_info.get('class')
     mon.level = unit_info.get('unit_level')
-    mon.in_storage = False
+    mon.in_storage = unit_info.get('building_id') != 0
     mon.ignore_for_fusion = False
 
     if mon.monster.archetype == Monster.ARCHETYPE_MATERIAL:
@@ -537,8 +537,8 @@ def sync_monster_from_pieces(summoner, log_data):
 
 
 def sync_awaken_unit(summoner, log_data):
-    mon = log_data['response'].get('unit_info', {})
-    if not mon:
+    mon_data = log_data['response'].get('unit_info', {})
+    if not mon_data:
         return
 
     with transaction.atomic():
@@ -550,16 +550,16 @@ def sync_awaken_unit(summoner, log_data):
                 elif item['item_master_type'] == GameItem.CATEGORY_ESSENCE:
                     _sync_item(item, summoner)
 
-            mon = MonsterInstance.objects.filter(
-                owner=summoner, com2us_id=mon['unit_id']).first()
+        mon = MonsterInstance.objects.filter(
+            owner=summoner, com2us_id=mon_data['unit_id']).first()
 
-            if not mon:
-                # probably not synced data
-                _ = _create_new_monster(mon, summoner)
-            else:
-                if mon.monster.awakens_to is not None:
-                    mon.monster = mon.monster.awakens_to
-                    mon.save()
+        if not mon:
+            # probably not synced data
+            _ = _create_new_monster(mon_data, summoner)
+        else:
+            if mon.monster.awakens_to is not None:
+                mon.monster = mon.monster.awakens_to
+                mon.save()
 
 
 def sync_sell_unit(summoner, log_data):

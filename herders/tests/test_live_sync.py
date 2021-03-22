@@ -1,11 +1,10 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
+from bestiary.models import Monster
 from herders import api_views, models
 
 import json
@@ -405,3 +404,427 @@ class MiscSyncTest(BaseSyncTest):
 
         for essence in essences:
             self.assertEqual(essence.quantity, result_mapping[essence.item.com2us_id])
+
+
+class MonsterSyncTest(BaseSyncTest):
+    def test_monster_to_building(self):
+        resp = self._do_sync('MoveUnitBuilding/monster_to_building.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=17396548050)
+        self.assertTrue(monsters.exists())
+
+        monster = monsters.first()
+        self.assertIsNotNone(monster)
+        self.assertTrue(monster.in_storage)
+
+    def test_monster_from_building(self):
+        resp = self._do_sync('MoveUnitBuilding/monster_from_building.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=17396548050)
+        self.assertTrue(monsters.exists())
+
+        monster = monsters.first()
+        self.assertIsNotNone(monster)
+        self.assertFalse(monster.in_storage)
+
+    def test_monster_to_shrine_storage(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10855864692,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10855864694,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        self.assertEqual(models.MonsterInstance.objects.filter(owner=self.summoner).count(), 2)
+
+        resp = self._do_sync('ConvertUnitToFromStorage/monsters_to_shrine.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id__in=[10855864692, 10855864694])
+        self.assertFalse(monsters.exists())
+
+        shrine = models.MonsterShrineStorage.objects.filter(owner=self.summoner, item=base_mon)
+        self.assertTrue(shrine.exists())
+        self.assertEqual(shrine.first().quantity, 2)
+
+    def test_monsters_from_shrine_storage_empty(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+
+        resp = self._do_sync('ConvertUnitToFromStorage/monsters_from_shrine_empty.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        shrine = models.MonsterShrineStorage.objects.filter(owner=self.summoner, item=base_mon)
+        self.assertFalse(shrine.exists())
+        self.assertEqual(models.MonsterInstance.objects.filter(owner=self.summoner, monster=base_mon).count(), 2)
+    
+    def test_monsters_from_shrine_storage(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+
+        resp = self._do_sync('ConvertUnitToFromStorage/monsters_from_shrine.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        shrine = models.MonsterShrineStorage.objects.filter(owner=self.summoner, item=base_mon)
+        self.assertTrue(shrine.exists())
+        self.assertEqual(shrine.first().quantity, 17)
+        self.assertEqual(models.MonsterInstance.objects.filter(owner=self.summoner, monster=base_mon).count(), 2)
+
+    def test_monster_to_material_storage(self):
+        base_mon = Monster.objects.get(com2us_id=14314)
+        models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10855869695,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10855869683,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        self.assertEqual(models.MonsterInstance.objects.filter(owner=self.summoner).count(), 2)
+
+        resp = self._do_sync('ConvertUnitToFromItem/monsters_to_material_storage.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id__in=[10855869695, 10855869683])
+        self.assertFalse(monsters.exists())
+
+        shrine = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id=143140501)
+        self.assertTrue(shrine.exists())
+        self.assertEqual(shrine.first().quantity, 2)
+
+    def test_monsters_from_material_storage_empty(self):
+        base_mon = Monster.objects.get(com2us_id=14314)
+
+        resp = self._do_sync('ConvertUnitToFromItem/monsters_from_material_storage_empty.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        ms = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id=143140501)
+        self.assertTrue(ms.exists())
+        self.assertEqual(ms.first().quantity, 0)
+        self.assertEqual(models.MonsterInstance.objects.filter(owner=self.summoner, monster=base_mon).count(), 2)
+
+    def test_monsters_from_material_storage(self):
+        base_mon = Monster.objects.get(com2us_id=14314)
+
+        resp = self._do_sync('ConvertUnitToFromItem/monsters_from_material_storage.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        ms = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id=143140501)
+        self.assertTrue(ms.exists())
+        self.assertEqual(ms.first().quantity, 98)
+        self.assertEqual(models.MonsterInstance.objects.filter(owner=self.summoner, monster=base_mon).count(), 2)
+
+    def test_summon_monster(self):
+        resp = self._do_sync('SummonUnit/scroll_mystical.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=13118224623)
+        self.assertTrue(monsters.exists())
+
+        monster = monsters.first()
+        self.assertIsNotNone(monster)
+        self.assertIsNotNone(monster.default_build)
+        self.assertIsNotNone(monster.rta_build)
+
+    def test_summon_monster_blessing_pop(self):
+        resp = self._do_sync('SummonUnit/scroll_mystical_blessing_pop.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner)
+        self.assertFalse(monsters.exists())
+
+    def test_summon_monster_blessing_choice(self):
+        resp = self._do_sync('ConfirmSummonChoice/blessing_selection.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=14755571003)
+        self.assertTrue(monsters.exists())
+
+        monster = monsters.first()
+        self.assertIsNotNone(monster)
+        self.assertIsNotNone(monster.default_build)
+        self.assertIsNotNone(monster.rta_build)
+        
+    def test_summon_monster_from_pieces(self):
+        resp = self._do_sync('SummonUnit/monster_pieces.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=10855948375)
+        self.assertTrue(monsters.exists())
+
+        monster = monsters.first()
+        self.assertIsNotNone(monster)
+        self.assertIsNotNone(monster.default_build)
+        self.assertIsNotNone(monster.rta_build)
+
+        monster_pieces = models.MonsterPiece.objects.filter(owner=self.summoner, monster__com2us_id=14102)
+        self.assertTrue(monster_pieces.exists())
+        self.assertEqual(monster_pieces.first().pieces, 20)
+
+    def test_summon_monster_from_pieces_all(self):
+        resp = self._do_sync('SummonUnit/monster_pieces_empty.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        monsters = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=10855948375)
+        self.assertTrue(monsters.exists())
+
+        monster = monsters.first()
+        self.assertIsNotNone(monster)
+        self.assertIsNotNone(monster.default_build)
+        self.assertIsNotNone(monster.rta_build)
+
+        monster_pieces = models.MonsterPiece.objects.filter(owner=self.summoner, monster__com2us_id=14102)
+        self.assertFalse(monster_pieces.exists())
+        
+    def test_awaken_unit(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10855959738,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon.save()
+        resp = self._do_sync('awaken_unit.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mon.refresh_from_db()
+        self.assertEqual(mon.monster, base_mon.awakens_to)
+
+        result_mapping = {
+            11004: 1,
+            11006: 275,
+        }
+        essences = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id__in=result_mapping.keys())
+        self.assertTrue(essences.exists())
+
+        for essence in essences:
+            self.assertEqual(essence.quantity, result_mapping[essence.item.com2us_id])
+
+    def test_awaken_unit_not_existing(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        resp = self._do_sync('awaken_unit.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mons = models.MonsterInstance.objects.filter(owner=self.summoner, com2us_id=10855959738)
+        self.assertTrue(mons.exists())
+        self.assertIsNotNone(mons.first())
+        self.assertEqual(mons.first().monster, base_mon.awakens_to)
+
+        result_mapping = {
+            11004: 1,
+            11006: 275,
+        }
+        essences = models.MaterialStorage.objects.filter(owner=self.summoner, item__com2us_id__in=result_mapping.keys())
+        self.assertTrue(essences.exists())
+
+        for essence in essences:
+            self.assertEqual(essence.quantity, result_mapping[essence.item.com2us_id])
+
+    def test_sell_unit(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10855953452,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        resp = self._do_sync('sell_unit.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        with self.assertRaises(models.MonsterInstance.DoesNotExist) as cm:
+            mon.refresh_from_db()
+
+    def test_sacrifice_unit_with_fooder_from_inventory_lvlup(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        fooders = [
+            models.MonsterInstance.objects.create(
+                owner=self.summoner,
+                com2us_id=c2_id,
+                monster=base_mon,
+                stars=4,
+                level=1,
+            )
+        for c2_id in [10855994586, ]]
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10855959738,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon_lvl = 1
+        resp = self._do_sync('SacrificeUnit_V3/food_from_inventory_lvlup.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mon.refresh_from_db()
+        self.assertNotEqual(mon_lvl, mon.level)
+
+        for fooder in fooders:
+            with self.assertRaises(models.MonsterInstance.DoesNotExist) as cm:
+                fooder.refresh_from_db()
+        
+    def test_sacrifice_unit_with_fooder_from_shrine_lvlup(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        fooders = [
+            models.MonsterShrineStorage.objects.create(
+                owner=self.summoner,
+                item=base_mon,
+                quantity=1
+            )
+        ]
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10855959738,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon_lvl = 1
+        resp = self._do_sync('SacrificeUnit_V3/food_from_shrine_lvlup.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mon.refresh_from_db()
+        self.assertNotEqual(mon_lvl, mon.level)
+
+        for fooder in fooders:
+            with self.assertRaises(models.MonsterShrineStorage.DoesNotExist) as cm:
+                fooder.refresh_from_db()
+
+    def test_sacrifice_unit_with_fooder_from_storage_no_lvlup(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        fooders = [
+            models.MonsterInstance.objects.create(
+                owner=self.summoner,
+                com2us_id=c2_id,
+                monster=base_mon,
+                stars=4,
+                level=1,
+            )
+        for c2_id in [10855994587,]]
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10855959738,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon_lvl = 1
+        resp = self._do_sync('SacrificeUnit_V3/food_from_storage_no_lvlup.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mon.refresh_from_db()
+        self.assertEqual(mon_lvl, mon.level)
+
+        for fooder in fooders:
+            with self.assertRaises(models.MonsterInstance.DoesNotExist) as cm:
+                fooder.refresh_from_db()
+
+    def test_upgrade_unit(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        fooders = [
+            models.MonsterShrineStorage.objects.create(
+                owner=self.summoner,
+                item=base_mon,
+                quantity=1
+            )
+        ]
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10856006746,
+            monster=base_mon,
+            stars=4,
+            level=30,
+        )
+        mon_stars = 4
+
+        resp = self._do_sync('upgrade_unit.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mon.refresh_from_db()
+        self.assertEqual(mon.level, 1)
+        self.assertEqual(mon_stars + 1, mon.stars)
+
+        for fooder in fooders:
+            with self.assertRaises(models.MonsterShrineStorage.DoesNotExist) as cm:
+                fooder.refresh_from_db()
+
+    def test_lock_unit(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10563022833,
+            monster=base_mon,
+            stars=4,
+            level=30,
+        )
+        resp = self._do_sync('LockUnlockUnit/lock_unit.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mon.refresh_from_db()
+        self.assertTrue(mon.ignore_for_fusion)
+
+    def test_lock_unit_not_exist(self):
+        resp = self._do_sync('LockUnlockUnit/lock_unit.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 409)
+
+    def test_unlock_unit(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10563022833,
+            monster=base_mon,
+            stars=4,
+            level=30,
+        )
+        resp = self._do_sync('LockUnlockUnit/unlock_unit.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mon.refresh_from_db()
+        self.assertFalse(mon.ignore_for_fusion)
+
+    def test_2a_unit(self):
+        base_mon = Monster.objects.get(com2us_id=14112)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10812428307,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon.save()
+        resp = self._do_sync('2a_unit.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mon.refresh_from_db()
+        self.assertEqual(mon.monster, base_mon.awakens_to)
+
+    def test_levelup_unit_in_building(self):
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=17382539199,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon_lvl = 1
+        resp = self._do_sync('SacrificeUnit_V3/levelup_unit_in_building.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        mon.refresh_from_db()
+        self.assertEqual(mon_lvl + 1, mon.level)
+
+
+class RuneSyncTest(BaseSyncTest):
+    pass
+
+class ArtifactSyncTest(BaseSyncTest):
+    pass

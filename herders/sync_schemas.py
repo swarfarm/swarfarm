@@ -1036,8 +1036,9 @@ sync_artifact_post_enchant_schema = {
             'properties': {
                 'wizard_id': {'type': 'number'},
                 'command': {'type': 'string'},
+                'before_after': {'type': 'number'},
             },
-            'required': ['wizard_id', 'command'],
+            'required': ['wizard_id', 'command', 'before_after'],
         },
         'response': {
             'type': 'object',

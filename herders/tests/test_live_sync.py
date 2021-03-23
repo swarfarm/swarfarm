@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
-from bestiary.models import Monster
+from bestiary.models import Monster, GameItem
 from herders import api_views, models
 
 import json
@@ -989,9 +989,6 @@ class RuneSyncTest(BaseSyncTest):
         mon.refresh_from_db()
 
         self.assertEqual(mon.default_build.hp_pct, 0)
-        
-        rune_grinds = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=131099962)
-        self.assertFalse(rune_grinds.exists())
 
     def test_grind_rune_unequipped(self):
         rune = models.RuneInstance.objects.create(
@@ -1016,6 +1013,9 @@ class RuneSyncTest(BaseSyncTest):
 
         rune.refresh_from_db()
         self.assertListEqual([6, 0, 0, 4], rune.substats_grind_value)
+
+        rune_grinds = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=131099962)
+        self.assertFalse(rune_grinds.exists())
 
     def test_grind_rune_equipped(self):
         rune = models.RuneInstance.objects.create(
@@ -1177,6 +1177,7 @@ class RuneSyncTest(BaseSyncTest):
         mon.refresh_from_db()
 
         self.assertEqual(mon.default_build.speed, 6)
+        self.assertEqual(rune.assigned_to, mon)
 
     def test_equip_rune_from_rune_management(self):
         rune = models.RuneInstance.objects.create(
@@ -1213,7 +1214,201 @@ class RuneSyncTest(BaseSyncTest):
         # different data in test JSON, but we don't update Rune data on equip
         # so we can just use this placeholder data
         self.assertEqual(mon.default_build.speed, 6)
+        self.assertEqual(rune.assigned_to, mon)
 
 
 class ArtifactSyncTest(BaseSyncTest):
-    pass
+    def test_artifact_upgrade_fail(self):
+        artifact = models.ArtifactInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10050129,
+            slot=models.ArtifactInstance.SLOT_ELEMENTAL,
+            element=models.ArtifactInstance.ELEMENT_WIND,
+            main_stat=models.ArtifactInstance.STAT_HP,
+            original_quality=models.ArtifactInstance.QUALITY_NORMAL,
+            quality=models.ArtifactInstance.QUALITY_NORMAL,
+            level=6
+        )
+        artifact_level = artifact.level
+        artifact_main_stat = artifact.main_stat_value
+        resp = self._do_sync('UpgradeArtifact/fail.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        
+        artifact.refresh_from_db()
+        self.assertEqual(artifact_level, artifact.level)
+        self.assertEqual(artifact_main_stat, artifact.main_stat_value)
+
+    def test_artifact_upgrade_success(self):
+        # `equipped` also checks the `unequipped` case
+        artifact = models.ArtifactInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10050129,
+            slot=models.ArtifactInstance.SLOT_ELEMENTAL,
+            element=models.ArtifactInstance.ELEMENT_WIND,
+            main_stat=models.ArtifactInstance.STAT_HP,
+            original_quality=models.ArtifactInstance.QUALITY_NORMAL,
+            quality=models.ArtifactInstance.QUALITY_NORMAL,
+            level=6
+        )
+        artifact_level = artifact.level
+
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10508978971,
+            monster=base_mon,
+            stars=4,
+            level=28,
+        )
+        mon.default_build.assign_artifact(artifact)
+        resp = self._do_sync('UpgradeArtifact/success.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        
+        artifact.refresh_from_db()
+        self.assertEqual(artifact_level + 1, artifact.level)
+        self.assertEqual(models.ArtifactInstance.MAIN_STAT_VALUES[artifact.main_stat][artifact.level], artifact.main_stat_value)
+
+        mon.refresh_from_db()
+        self.assertEqual(mon.default_build.hp, artifact.main_stat_value)
+        self.assertEqual(artifact.assigned_to, mon)
+
+    def test_sell_artifact(self):
+        # `equipped` also checks the `unequipped` case
+        artifact = models.ArtifactInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=15483252,
+            slot=models.ArtifactInstance.SLOT_ELEMENTAL,
+            element=models.ArtifactInstance.ELEMENT_WIND,
+            main_stat=models.ArtifactInstance.STAT_HP,
+            original_quality=models.ArtifactInstance.QUALITY_NORMAL,
+            quality=models.ArtifactInstance.QUALITY_NORMAL,
+            level=6
+        )
+
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=123456,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon.default_build.assign_artifact(artifact)
+
+        resp = self._do_sync('sell_artifact.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        
+        with self.assertRaises(models.ArtifactInstance.DoesNotExist) as cm:
+            artifact.refresh_from_db()
+
+        mon.refresh_from_db()
+        self.assertEqual(mon.default_build.hp, 0)
+
+    def test_decrease_conversion_stones(self):
+        resp = self._do_sync('EnchantArtifact/decrease_conversion_stones.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        item = GameItem.objects.get(category=GameItem.CATEGORY_ARTIFACT_CRAFT, com2us_id=1)
+        crafts = models.MaterialStorage.objects.filter(owner=self.summoner, item=item)
+        self.assertTrue(crafts.exists())
+
+        craft = crafts.first()
+        self.assertIsNotNone(craft)
+        self.assertEqual(craft.quantity, 0)
+
+    def test_enchant_artifact_with_stones_pick_old(self):
+        # doesn't matter artifact instance from JSON
+        # we are not going to touch it anyway
+        artifact = models.ArtifactInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=9784102,
+            slot=models.ArtifactInstance.SLOT_ELEMENTAL,
+            element=models.ArtifactInstance.ELEMENT_WIND,
+            main_stat=models.ArtifactInstance.STAT_HP,
+            original_quality=models.ArtifactInstance.QUALITY_NORMAL,
+            quality=models.ArtifactInstance.QUALITY_NORMAL,
+            level=6
+        )
+        a_eff = artifact.effects
+        a_eff_val = artifact.effects_value
+        resp = self._do_sync('EnchantArtifact/stones_old.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        artifact.refresh_from_db()
+
+        self.assertListEqual(artifact.effects, a_eff)
+        self.assertListEqual(artifact.effects_value, a_eff_val)
+
+    def test_enchant_artifact_with_stones_pick_new(self):
+        artifact = models.ArtifactInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=9784102,
+            slot=models.ArtifactInstance.SLOT_ELEMENTAL,
+            element=models.ArtifactInstance.ELEMENT_FIRE,
+            main_stat=models.ArtifactInstance.STAT_HP,
+            original_quality=models.ArtifactInstance.QUALITY_RARE,
+            quality=models.ArtifactInstance.QUALITY_LEGEND,
+            level=12,
+            effects=[models.ArtifactInstance.EFFECT_SPD_INABILITY, models.ArtifactInstance.EFFECT_COUNTER_DMG, models.ArtifactInstance.EFFECT_DMG_TO_LIGHT, models.ArtifactInstance.EFFECT_HP_REVIVE],
+            effects_value=[8, 5, 3, 1],
+        )
+        resp = self._do_sync('EnchantArtifact/stones_new.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        artifact.refresh_from_db()
+
+        self.assertListEqual(artifact.effects, [models.ArtifactInstance.EFFECT_SPD_INABILITY, models.ArtifactInstance.EFFECT_COUNTER_DMG, models.ArtifactInstance.EFFECT_DMG_TO_LIGHT, models.ArtifactInstance.EFFECT_DMG_FROM_FIRE])
+        self.assertListEqual(artifact.effects_value, [8, 5, 3, 5])
+
+    def test_enchant_artifact_with_enchant(self):
+        artifact = models.ArtifactInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=75269245,
+            slot=models.ArtifactInstance.SLOT_ELEMENTAL,
+            element=models.ArtifactInstance.ELEMENT_WATER,
+            main_stat=models.ArtifactInstance.STAT_DEF,
+            original_quality=models.ArtifactInstance.QUALITY_RARE,
+            quality=models.ArtifactInstance.QUALITY_LEGEND,
+            level=15,
+            effects=[models.ArtifactInstance.EFFECT_DEF, models.ArtifactInstance.EFFECT_DMG_PCT_OF_DEF, models.ArtifactInstance.EFFECT_CRIT_DMG_RECEIVED, models.ArtifactInstance.EFFECT_DMG_FROM_WATER],
+            effects_value=[6, 5, 1, 6],
+        )
+        resp = self._do_sync('EnchantArtifact/craft.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        artifact.refresh_from_db()
+
+        self.assertListEqual(artifact.effects, [models.ArtifactInstance.EFFECT_DEF, models.ArtifactInstance.EFFECT_DMG_PCT_OF_DEF, models.ArtifactInstance.EFFECT_DMG_TO_WATER, models.ArtifactInstance.EFFECT_DMG_FROM_WATER])
+        self.assertListEqual(artifact.effects_value, [6, 5, 6, 6])
+
+    def test_change_artifact_assignment(self):
+        artifact = models.ArtifactInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=73023865,
+            slot=models.ArtifactInstance.SLOT_ELEMENTAL,
+            archetype=models.ArtifactInstance.ARCHETYPE_DEFENSE,
+            main_stat=models.ArtifactInstance.STAT_DEF,
+            original_quality=models.ArtifactInstance.QUALITY_HERO,
+            quality=models.ArtifactInstance.QUALITY_HERO,
+            level=0,
+            effects=[models.ArtifactInstance.EFFECT_SK3_CRIT_DMG],
+            effects_value=[6],
+        )
+
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=17086368823,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+
+        resp = self._do_sync('update_artifact_occupation.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        artifact.refresh_from_db()
+        mon.refresh_from_db()
+
+        self.assertEqual(artifact.assigned_to, mon)
+        self.assertEqual(mon.default_build.defense, artifact.main_stat_value)

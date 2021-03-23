@@ -1005,8 +1005,7 @@ def sync_change_artifact_assignment(summoner, log_data):
 
 
 def sync_sell_artifacts(summoner, log_data):
-    artifact_ids = log_data['response'].get('artifact_ids', [])
-
+    artifact_ids = log_data['request'].get('artifact_ids', [])
     if not artifact_ids:
         return
 
@@ -1025,7 +1024,7 @@ def sync_sell_artifacts(summoner, log_data):
 
         # recalculate builds
         for mon, mon_artifacts in mons.items():
-            mon.default_build.artifacts.remove(mon_artifacts)
+            mon.default_build.artifacts.remove(*mon_artifacts)
 
         artifacts.delete()
 
@@ -1039,7 +1038,7 @@ def sync_artifact_pre_enchant(summoner, log_data):
 def sync_artifact_post_enchant(summoner, log_data):
     artifact_data = log_data['response'].get('artifact', {})
 
-    if not artifact_data:
+    if not artifact_data or log_data['request'].get('before_after', 1) == 1:
         return
 
     artifact = ArtifactInstance.objects.filter(
@@ -1049,6 +1048,7 @@ def sync_artifact_post_enchant(summoner, log_data):
 
     if artifact:
         _change_artifact_substats(artifact, artifact_data, summoner)
+        artifact.save()
         monster = artifact.assigned_to
         if monster:
             monster.default_build.assign_artifact(artifact)

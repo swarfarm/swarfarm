@@ -17,7 +17,7 @@
             "ret_code": 0,
             "wizard": {
                 "wizard_id": 123,
-                "wizard_name": "QuazTo",
+                "wizard_name": "test",
                 "wizard_mana": 13447836,
                 "wizard_crystal": 147,
                 "wizard_crystal_paid": 0,
@@ -109,7 +109,7 @@
                 ],
                 "channel_uid": 208752514,
                 "wizard_id": 123,
-                "wizard_name": "QuazTo"
+                "wizard_name": "test"
             },
             "ts_val": 2082673624,
             "tvalue": 1611404624,

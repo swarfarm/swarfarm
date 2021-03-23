@@ -17,7 +17,7 @@
             "siege_id": 2021010301,
             "wizard_info": {
                 "wizard_id": 123,
-                "wizard_name": "Marcanthalas",
+                "wizard_name": "test",
                 "wizard_mana": 32577161,
                 "wizard_crystal": 1122,
                 "wizard_crystal_paid": 0,
@@ -169,7 +169,7 @@
                     },
                     "channel_uid": 160408217,
                     "wizard_id": 123,
-                    "wizard_name": "Marcanthalas"
+                    "wizard_name": "test"
                 },
                 {
                     "crate_index": 4,

@@ -18,7 +18,7 @@
             "item_no": 6,
             "wizard_info": {
                 "wizard_id": 123,
-                "wizard_name": "QuazTo",
+                "wizard_name": "test",
                 "wizard_mana": 123,
                 "wizard_crystal": 2,
                 "wizard_crystal_paid": 0,
@@ -70,7 +70,7 @@
                 "arena_rating_id": 1001,
                 "last_market_refresh_auto": "2021-01-19 00:12:25",
                 "last_market_refresh_manual": "2021-01-18 00:12:25",
-                "master_wizard_name": "Marcanthalas",
+                "master_wizard_name": "test",
                 "master_wizard_level": 50,
                 "skill_info": {
                     "1001": {

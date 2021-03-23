@@ -140,12 +140,12 @@ active_log_commands = {
     # grind rune
     'AmplifyRune_v2': GameApiCommand(
         sync_schemas.sync_grind_enchant_rune_schema,
-        sync_parser.sync_grind_rune,
+        sync_parser.sync_grind_enchant_rune,
     ),
     # enchant rune
     'ConvertRune_v2': GameApiCommand(
         sync_schemas.sync_grind_enchant_rune_schema,
-        sync_parser.sync_enchant_rune,
+        sync_parser.sync_grind_enchant_rune,
     ),
     # enchant rune
     'ConfirmRune': GameApiCommand(

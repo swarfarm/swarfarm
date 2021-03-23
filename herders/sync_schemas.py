@@ -795,8 +795,9 @@ sync_reapp_rune_schema = {
             'properties': {
                 'wizard_id': {'type': 'number'},
                 'command': {'type': 'string'},
+                'roll_back': {'type': 'number'},
             },
-            'required': ['wizard_id', 'command'],
+            'required': ['wizard_id', 'command', 'roll_back'],
         },
         'response': {
             'type': 'object',

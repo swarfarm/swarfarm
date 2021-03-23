@@ -714,7 +714,7 @@ def sync_upgrade_rune(summoner, log_data):
 
 
 def sync_sell_rune(summoner, log_data):
-    rune_ids = [r['rune_id'] for r in log_data['response'].get('runes', [])]
+    rune_ids = log_data['request'].get('rune_id_list', [])
     if not rune_ids:
         return
 
@@ -733,12 +733,12 @@ def sync_sell_rune(summoner, log_data):
 
         # recalculate builds
         for mon, mon_runes in mons.items():
-            mon.default_build.runes.remove(mon_runes)
+            mon.default_build.runes.remove(*mon_runes)
 
         runes.delete()
 
 
-def sync_grind_rune(summoner, log_data):
+def sync_grind_enchant_rune(summoner, log_data):
     rune_data = log_data['response'].get('rune', {})
     rune_craft_data = log_data['response'].get('rune_craft_item', {})
 
@@ -762,49 +762,6 @@ def sync_grind_rune(summoner, log_data):
                 owner=summoner,
                 com2us_id=rune_data['occupied_id']
             ).first() if rune_data['occupied_id'] != 0 else None
-
-            if not assigned_to:
-                return "monster"
-
-            _create_new_rune(rune_data, summoner, assigned_to)
-
-        # make sure rune & assigned_to monster data is synced, then change grinds
-        rune_craft = parse_rune_craft_data(rune_craft_data, summoner)[0]
-        if rune_craft.quantity == 0:
-            rune_craft.delete()
-        else:
-            if not rune_craft.owner:
-                rune_craft.owner = summoner
-            rune_craft.save()
-
-
-def sync_enchant_rune(summoner, log_data):
-    rune_data = log_data['response'].get('rune', {})
-    rune_craft_data = log_data['response'].get('rune_craft_item', {})
-
-    if not rune_data or not rune_craft_data:
-        return
-
-    with transaction.atomic():
-        rune = RuneInstance.objects.filter(
-            owner=summoner,
-            com2us_id=rune_data['rune_id']
-        ).first()
-
-        if rune:
-            _change_rune_substats(rune, rune_data, summoner)
-            rune.save()
-            monster = rune.assigned_to
-            if monster:
-                monster.default_build.assign_rune(rune)
-        else:
-            assigned_to = MonsterInstance.objects.filter(
-                owner=summoner,
-                com2us_id=rune_data['occupied_id']
-            ).first() if rune_data['occupied_id'] != 0 else None
-
-            if not assigned_to:
-                return "monster"
 
             _create_new_rune(rune_data, summoner, assigned_to)
 
@@ -819,6 +776,9 @@ def sync_enchant_rune(summoner, log_data):
 
 
 def sync_reapp_rune(summoner, log_data):
+    if log_data['request'].get('rollback', False):
+        return
+
     rune_data = log_data['response'].get('rune', {})
 
     rune = RuneInstance.objects.filter(
@@ -837,9 +797,6 @@ def sync_reapp_rune(summoner, log_data):
             owner=summoner,
             com2us_id=rune_data['occupied_id']
         ).first() if rune_data['occupied_id'] != 0 else None
-
-        if not assigned_to:
-            return "monster"
 
         _create_new_rune(rune_data, summoner, assigned_to)
 

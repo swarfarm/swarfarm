@@ -824,7 +824,396 @@ class MonsterSyncTest(BaseSyncTest):
 
 
 class RuneSyncTest(BaseSyncTest):
-    pass
+    def test_rune_upgrade_fail_unequipped(self):
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=23370471984,
+            type=models.RuneInstance.TYPE_FOCUS,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_HP_PCT,
+            stars=6,
+            level=4,
+            quality=models.RuneInstance.QUALITY_HERO,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_HP, models.RuneInstance.STAT_CRIT_DMG_PCT, models.RuneInstance.STAT_CRIT_RATE_PCT],
+            substat_values=[428, 6, 4],
+            substats_enchanted=[False, False, False],
+            substats_grind_value=[0, 0, 0],
+        )
+        rune_lvl = rune.level
+        rune_mainstat = rune.main_stat_value
+        rune_substats = rune.substats
+        rune_substat_values = rune.substat_values
+        resp = self._do_sync('UpgradeRune/fail.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        
+        rune.refresh_from_db()
+        self.assertEqual(rune_lvl, rune.level)
+        self.assertEqual(rune_mainstat, rune.main_stat_value)
+        self.assertListEqual(rune_substats, rune.substats)
+        self.assertListEqual(rune_substat_values, rune.substat_values)
+    
+    def test_rune_upgrade_success_unequipped(self):
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=23370471984,
+            type=models.RuneInstance.TYPE_FOCUS,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_HP_PCT,
+            stars=6,
+            level=4,
+            quality=models.RuneInstance.QUALITY_HERO,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_HP, models.RuneInstance.STAT_CRIT_DMG_PCT, models.RuneInstance.STAT_CRIT_RATE_PCT],
+            substat_values=[428, 6, 4],
+            substats_enchanted=[False, False, False],
+            substats_grind_value=[0, 0, 0],
+        )
+        rune_lvl = rune.level
+        rune_substats = rune.substats
+        rune_substat_values = rune.substat_values
+
+        resp = self._do_sync('UpgradeRune/success.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        
+        rune.refresh_from_db()
+        new_main_stat = models.RuneInstance.MAIN_STAT_VALUES[models.RuneInstance.STAT_HP_PCT][rune.stars][rune.level]
+        self.assertEqual(rune_lvl + 1, rune.level)
+        self.assertEqual(rune.main_stat_value, new_main_stat)
+        self.assertListEqual(rune_substats, rune.substats)
+        self.assertListEqual(rune_substat_values, rune.substat_values)
+
+    def test_rune_upgrade_success_equipped(self):
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=23370471984,
+            type=models.RuneInstance.TYPE_FOCUS,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_HP_PCT,
+            stars=6,
+            level=4,
+            quality=models.RuneInstance.QUALITY_HERO,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_HP, models.RuneInstance.STAT_CRIT_DMG_PCT, models.RuneInstance.STAT_CRIT_RATE_PCT],
+            substat_values=[428, 6, 4],
+            substats_enchanted=[False, False, False],
+            substats_grind_value=[0, 0, 0],
+        )
+        rune_lvl = rune.level
+        rune_substats = rune.substats
+        rune_substat_values = rune.substat_values
+
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=123456,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon.default_build.assign_rune(rune)
+
+        resp = self._do_sync('UpgradeRune/success.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        
+        rune.refresh_from_db()
+        mon.refresh_from_db()
+        new_main_stat = models.RuneInstance.MAIN_STAT_VALUES[models.RuneInstance.STAT_HP_PCT][rune.stars][rune.level]
+        self.assertEqual(rune_lvl + 1, rune.level)
+        self.assertEqual(rune.main_stat_value, new_main_stat)
+        self.assertListEqual(rune_substats, rune.substats)
+        self.assertListEqual(rune_substat_values, rune.substat_values)
+        self.assertEqual(mon.default_build.hp_pct, new_main_stat)
+
+    def test_sell_rune_multiple_unequipped(self):
+        runes = [models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=c2_id,
+            type=models.RuneInstance.TYPE_FOCUS,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_HP_PCT,
+            stars=6,
+            level=4,
+            quality=models.RuneInstance.QUALITY_LEGEND,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_HP, models.RuneInstance.STAT_CRIT_DMG_PCT, models.RuneInstance.STAT_CRIT_RATE_PCT],
+            substat_values=[428, 6, 4],
+            substats_enchanted=[False, False, False],
+            substats_grind_value=[0, 0, 0],
+        ) for c2_id in [23578172095, 23514549801]]
+
+        resp = self._do_sync('SellRune/multiple_unequipped.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        
+        for rune in runes:
+            with self.assertRaises(models.RuneInstance.DoesNotExist) as cm:
+                rune.refresh_from_db()
+    
+    def test_sell_rune_single_equipped(self):
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=23578172095,
+            type=models.RuneInstance.TYPE_FOCUS,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_HP_PCT,
+            stars=6,
+            level=4,
+            quality=models.RuneInstance.QUALITY_LEGEND,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_HP, models.RuneInstance.STAT_CRIT_DMG_PCT, models.RuneInstance.STAT_CRIT_RATE_PCT],
+            substat_values=[428, 6, 4],
+            substats_enchanted=[False, False, False],
+            substats_grind_value=[0, 0, 0],
+        )
+
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=123456,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon.default_build.assign_rune(rune)
+
+        resp = self._do_sync('SellRune/single_equipped.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+        
+        with self.assertRaises(models.RuneInstance.DoesNotExist) as cm:
+            rune.refresh_from_db()
+        mon.refresh_from_db()
+
+        self.assertEqual(mon.default_build.hp_pct, 0)
+        
+        rune_grinds = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=131099962)
+        self.assertFalse(rune_grinds.exists())
+
+    def test_grind_rune_unequipped(self):
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=15946662483,
+            type=models.RuneInstance.TYPE_FOCUS,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_ATK_PCT,
+            stars=6,
+            level=4,
+            quality=models.RuneInstance.QUALITY_LEGEND,
+            innate_stat=models.RuneInstance.STAT_HP,
+            innate_stat_value=315,
+            substats=[models.RuneInstance.STAT_HP, models.RuneInstance.STAT_CRIT_RATE_PCT, models.RuneInstance.STAT_ACCURACY_PCT, models.RuneInstance.STAT_SPD],
+            substat_values=[21, 7, 12, 5],
+            substats_enchanted=[False, True, False, False],
+            substats_grind_value=[6, 0, 0, 0],
+        )
+        
+        resp = self._do_sync('GrindEnchantReapp/grind_speed_unequipped.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        rune.refresh_from_db()
+        self.assertListEqual([6, 0, 0, 4], rune.substats_grind_value)
+
+    def test_grind_rune_equipped(self):
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=15946662483,
+            type=models.RuneInstance.TYPE_FOCUS,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_ATK_PCT,
+            stars=6,
+            level=4,
+            quality=models.RuneInstance.QUALITY_LEGEND,
+            innate_stat=models.RuneInstance.STAT_HP,
+            innate_stat_value=315,
+            substats=[models.RuneInstance.STAT_HP, models.RuneInstance.STAT_CRIT_RATE_PCT, models.RuneInstance.STAT_ACCURACY_PCT, models.RuneInstance.STAT_SPD],
+            substat_values=[21, 7, 12, 5],
+            substats_enchanted=[False, True, False, False],
+            substats_grind_value=[6, 0, 0, 0],
+        )
+
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=123456,
+            monster=base_mon,
+            stars=4,
+            level=1,
+        )
+        mon.default_build.assign_rune(rune)
+        
+        resp = self._do_sync('GrindEnchantReapp/grind_speed_equipped.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        rune.refresh_from_db()
+        self.assertListEqual([6, 0, 0, 4], rune.substats_grind_value)
+        mon.refresh_from_db()
+        self.assertEqual(mon.default_build.speed, 9)  # 5 + 4 grind
+
+        rune_grinds = models.RuneCraftInstance.objects.filter(owner=self.summoner, com2us_id=131099962)
+        self.assertFalse(rune_grinds.exists())
+
+    def test_enchant_rune(self):
+        # don't check equipped/unequipped, because previous tests `test_grind_rune_(un)equipped` check that
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=23219580822,
+            type=models.RuneInstance.TYPE_FOCUS,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_ATK_PCT,
+            stars=6,
+            level=12,
+            quality=models.RuneInstance.QUALITY_LEGEND,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_DEF_PCT, models.RuneInstance.STAT_ACCURACY_PCT, models.RuneInstance.STAT_SPD, models.RuneInstance.STAT_HP],
+            substat_values=[13, 7, 17, 355],
+            substats_enchanted=[False, False, False, False],
+            substats_grind_value=[7, 0, 0, 0],
+        )
+        
+        resp = self._do_sync('GrindEnchantReapp/enchant_hp_pct.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        rune.refresh_from_db()
+        self.assertListEqual(rune.substats, [models.RuneInstance.STAT_DEF_PCT, models.RuneInstance.STAT_ACCURACY_PCT, models.RuneInstance.STAT_SPD, models.RuneInstance.STAT_HP_PCT])
+        self.assertListEqual(rune.substat_values, [13, 7, 17, 8])
+        self.assertListEqual(rune.substats_enchanted, [False, False, False, True])
+        self.assertListEqual(rune.substats_grind_value, [7, 0, 0, 0])
+
+    def test_reapp_rune_pick_old(self):
+        # don't check equipped/unequipped, because previous tests `test_grind_rune_(un)equipped` check that
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=22738885100,
+            type=models.RuneInstance.TYPE_REVENGE,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_DEF_PCT,
+            stars=6,
+            level=12,
+            quality=models.RuneInstance.QUALITY_LEGEND,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_SPD, models.RuneInstance.STAT_HP_PCT, models.RuneInstance.STAT_ATK_PCT, models.RuneInstance.STAT_DEF],
+            substat_values=[15, 7, 12, 24],
+            substats_enchanted=[False, False, False, False],
+            substats_grind_value=[0, 0, 0, 0],
+        )
+        rune_substats = rune.substats
+        rune_sub_vals = rune.substat_values
+        rune_sub_ench = rune.substats_enchanted
+        rune_sub_grinds = rune.substats_grind_value
+        
+        resp = self._do_sync('GrindEnchantReapp/reapp_old.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        rune.refresh_from_db()
+        self.assertListEqual(rune.substats, rune_substats)
+        self.assertListEqual(rune.substat_values, rune_sub_vals)
+        self.assertListEqual(rune.substats_enchanted, rune_sub_ench)
+        self.assertListEqual(rune.substats_grind_value, rune_sub_grinds)
+
+    def test_reapp_rune_pick_new(self):
+        # don't check equipped/unequipped, because previous tests `test_grind_rune_(un)equipped` check that
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=22738885100,
+            type=models.RuneInstance.TYPE_REVENGE,
+            slot=2,
+            main_stat=models.RuneInstance.STAT_DEF_PCT,
+            stars=6,
+            level=12,
+            quality=models.RuneInstance.QUALITY_LEGEND,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_SPD, models.RuneInstance.STAT_HP_PCT, models.RuneInstance.STAT_ATK_PCT, models.RuneInstance.STAT_DEF],
+            substat_values=[15, 7, 12, 24],
+            substats_enchanted=[False, False, False, False],
+            substats_grind_value=[0, 0, 0, 0],
+        )
+        
+        resp = self._do_sync('GrindEnchantReapp/reapp_new.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        rune.refresh_from_db()
+        self.assertListEqual(rune.substats, [models.RuneInstance.STAT_HP_PCT, models.RuneInstance.STAT_CRIT_DMG_PCT, models.RuneInstance.STAT_ACCURACY_PCT, models.RuneInstance.STAT_ATK_PCT])
+        self.assertListEqual(rune.substat_values, [5, 20, 12, 15])
+        self.assertListEqual(rune.substats_enchanted, [False, False, False, False])
+        self.assertListEqual(rune.substats_grind_value, [0, 0, 0, 0])
+
+    def test_equip_rune_from_monster_view(self):
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=23703327529,
+            type=models.RuneInstance.TYPE_REVENGE,
+            slot=5,
+            main_stat=models.RuneInstance.STAT_HP,
+            stars=6,
+            level=0,
+            quality=models.RuneInstance.QUALITY_HERO,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_RESIST_PCT, models.RuneInstance.STAT_CRIT_RATE_PCT, models.RuneInstance.STAT_SPD],
+            substat_values=[4, 6, 6],
+            substats_enchanted=[False, False, False],
+            substats_grind_value=[0, 0, 0],
+        )
+
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10508978971,
+            monster=base_mon,
+            stars=4,
+            level=28,
+        )
+        resp = self._do_sync('EquipUnequipRune/equip_monster_view.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        rune.refresh_from_db()
+        mon.refresh_from_db()
+
+        self.assertEqual(mon.default_build.speed, 6)
+
+    def test_equip_rune_from_rune_management(self):
+        rune = models.RuneInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=23766273768,
+            type=models.RuneInstance.TYPE_REVENGE,
+            slot=5,
+            main_stat=models.RuneInstance.STAT_HP,
+            stars=6,
+            level=0,
+            quality=models.RuneInstance.QUALITY_HERO,
+            innate_stat=None,
+            innate_stat_value=None,
+            substats=[models.RuneInstance.STAT_RESIST_PCT, models.RuneInstance.STAT_CRIT_RATE_PCT, models.RuneInstance.STAT_SPD],
+            substat_values=[4, 6, 6],
+            substats_enchanted=[False, False, False],
+            substats_grind_value=[0, 0, 0],
+        )
+
+        base_mon = Monster.objects.get(com2us_id=14102)
+        mon = models.MonsterInstance.objects.create(
+            owner=self.summoner,
+            com2us_id=10508978971,
+            monster=base_mon,
+            stars=4,
+            level=28,
+        )
+        resp = self._do_sync('EquipUnequipRune/equip_rune_management.json', HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(resp.status_code, 200)
+
+        rune.refresh_from_db()
+        mon.refresh_from_db()
+
+        # different data in test JSON, but we don't update Rune data on equip
+        # so we can just use this placeholder data
+        self.assertEqual(mon.default_build.speed, 6)
+
 
 class ArtifactSyncTest(BaseSyncTest):
     pass

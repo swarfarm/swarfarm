@@ -146,9 +146,9 @@ artifact_type_map = {
 }
 
 artifact_main_stat_map = {
-    ArtifactInstance.STAT_HP: 101,
-    ArtifactInstance.STAT_ATK: 102,
-    ArtifactInstance.STAT_DEF: 103,
+    ArtifactInstance.STAT_HP: 100,
+    ArtifactInstance.STAT_ATK: 101,
+    ArtifactInstance.STAT_DEF: 102,
 }
 
 artifact_effect_map = {

@@ -1,0 +1,82 @@
+{
+  "data": {
+    "request": {
+      "command": "ConfirmSummonChoice",
+      "wizard_id": 123,
+      "session_key": "abc",
+      "proto_ver": 11570,
+      "infocsv": "4.01.61",
+      "channel_uid": 205493321,
+      "ts_val": 1110381410,
+      "rid": 1458321,
+      "choice_ids": [
+        13103
+      ],
+      "pos_arr": [
+        {
+          "island_id": 3,
+          "pos_x": 8,
+          "pos_y": 27,
+          "unit_master_id": 13103
+        }
+      ]
+    },
+    "response": {
+      "command": "ConfirmSummonChoice",
+      "unit_list": [
+        {
+          "unit_id": 14755571003,
+          "wizard_id": 123,
+          "island_id": 3,
+          "pos_x": 8,
+          "pos_y": 27,
+          "building_id": 0,
+          "unit_master_id": 13103,
+          "unit_level": 1,
+          "class": 5,
+          "con": 280,
+          "atk": 261,
+          "def": 314,
+          "spd": 95,
+          "resist": 15,
+          "accuracy": 0,
+          "critical_rate": 15,
+          "critical_damage": 50,
+          "experience": 0,
+          "exp_gained": 0,
+          "exp_gain_rate": 0,
+          "skills": [
+            [
+              12003,
+              1
+            ],
+            [
+              12008,
+              1
+            ],
+            [
+              12013,
+              1
+            ]
+          ],
+          "runes": [],
+          "costume_master_id": 0,
+          "trans_items": [],
+          "attribute": 3,
+          "create_time": "2019-12-23 10:18:38",
+          "source": 5,
+          "homunculus": 0,
+          "homunculus_name": "",
+          "awakening_info": []
+        }
+      ],
+      "summon_choices": [],
+      "summon_tag": [],
+      "ret_code": 0,
+      "ts_val": 1110381415,
+      "tvalue": 1577063918,
+      "tvaluelocal": 1577002718,
+      "tzone": "America/Los_Angeles"
+    }
+  }
+}

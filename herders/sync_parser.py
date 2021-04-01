@@ -14,8 +14,7 @@ def sync_profile(summoner, log_data):
     if schema_errors or validation_errors:
         return
 
-    import_options = summoner.preferences.get(
-        'import_options', default_import_options)
+    import_options = summoner.preferences.get('import_options', default_import_options)
     com2us_data_import.delay(log_data['response'], summoner.pk, import_options)
 
 
@@ -77,7 +76,7 @@ def _create_new_monster(unit_info, summoner):
 
     mon.stars = unit_info.get('class')
     mon.level = unit_info.get('unit_level')
-    mon.in_storage = False
+    mon.in_storage = unit_info.get('building_id') != 0
     mon.ignore_for_fusion = False
 
     if mon.monster.archetype == Monster.ARCHETYPE_MATERIAL:
@@ -98,16 +97,13 @@ def _create_new_rune(rune_info, summoner, assigned_to=None):
     if not rune_info:
         return
 
-    reward_rune = parse_rune_data(rune_info, summoner)[0]
-    reward_rune.owner = summoner
-    if reward_rune.assigned_to != assigned_to:
-        reward_rune.assigned_to = assigned_to
+    reward_rune = parse_rune_data(rune_info, summoner)
     reward_rune.save()
-
-    monster = reward_rune.assigned_to
-    if monster:
-        monster.default_build.runes.remove(*monster.default_build.runes.filter(slot=reward_rune.slot))
-        monster.default_build.runes.add(reward_rune)
+    mon = reward_rune.assigned_to
+    if mon:
+        mon.default_build.runes.remove(reward_rune)
+    if assigned_to:
+        assigned_to.default_build.assign_rune(reward_rune)
 
 
 def _create_new_rune_craft(rune_craft_info, summoner):
@@ -123,16 +119,13 @@ def _create_new_artifact(artifact_info, summoner, assigned_to=None):
     if not artifact_info:
         return
 
-    reward_artifact = parse_artifact_data(artifact_info, summoner)[0]
-    reward_artifact.owner = summoner
-    if reward_artifact.assigned_to != assigned_to:
-        reward_artifact.assigned_to = assigned_to
+    reward_artifact = parse_artifact_data(artifact_info, summoner)
     reward_artifact.save()
-
-    monster = reward_artifact.assigned_to
-    if monster:
-        monster.default_build.artifacts.remove(*monster.default_build.artifacts.filter(slot=reward_artifact.slot))
-        monster.default_build.artifacts.add(reward_artifact)
+    mon = reward_artifact.assigned_to
+    if mon:
+        mon.default_build.artifacts.remove(reward_artifact)
+    if assigned_to:
+        assigned_to.default_build.assign_artifact(reward_artifact)
 
 
 def _create_new_artifact_craft(artifact_craft_info, summoner):
@@ -544,8 +537,8 @@ def sync_monster_from_pieces(summoner, log_data):
 
 
 def sync_awaken_unit(summoner, log_data):
-    mon = log_data['response'].get('unit_info', {})
-    if not mon:
+    mon_data = log_data['response'].get('unit_info', {})
+    if not mon_data:
         return
 
     with transaction.atomic():
@@ -557,16 +550,16 @@ def sync_awaken_unit(summoner, log_data):
                 elif item['item_master_type'] == GameItem.CATEGORY_ESSENCE:
                     _sync_item(item, summoner)
 
-            mon = MonsterInstance.objects.filter(
-                owner=summoner, com2us_id=mon['unit_id']).first()
+        mon = MonsterInstance.objects.filter(
+            owner=summoner, com2us_id=mon_data['unit_id']).first()
 
-            if not mon:
-                # probably not synced data
-                _ = _create_new_monster(mon, summoner)
-            else:
-                if mon.monster.awakens_to is not None:
-                    mon.monster = mon.monster.awakens_to
-                    mon.save()
+        if not mon:
+            # probably not synced data
+            _ = _create_new_monster(mon_data, summoner)
+        else:
+            if mon.monster.awakens_to is not None:
+                mon.monster = mon.monster.awakens_to
+                mon.save()
 
 
 def sync_sell_unit(summoner, log_data):
@@ -707,9 +700,7 @@ def sync_upgrade_rune(summoner, log_data):
             # new substat/roll, recalculate build
             monster = rune.assigned_to
             if monster:
-                # remove and add to call `signal` which updates build data
-                monster.default_build.runes.remove(rune)
-                monster.default_build.runes.add(rune)
+                monster.default_build.assign_rune(rune)
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,
@@ -723,7 +714,7 @@ def sync_upgrade_rune(summoner, log_data):
 
 
 def sync_sell_rune(summoner, log_data):
-    rune_ids = [r['rune_id'] for r in log_data['response'].get('runes', [])]
+    rune_ids = log_data['request'].get('rune_id_list', [])
     if not rune_ids:
         return
 
@@ -742,12 +733,12 @@ def sync_sell_rune(summoner, log_data):
 
         # recalculate builds
         for mon, mon_runes in mons.items():
-            mon.default_build.runes.remove(mon_runes)
+            mon.default_build.runes.remove(*mon_runes)
 
         runes.delete()
 
 
-def sync_grind_rune(summoner, log_data):
+def sync_grind_enchant_rune(summoner, log_data):
     rune_data = log_data['response'].get('rune', {})
     rune_craft_data = log_data['response'].get('rune_craft_item', {})
 
@@ -765,59 +756,12 @@ def sync_grind_rune(summoner, log_data):
             rune.save()
             monster = rune.assigned_to
             if monster:
-                # remove and add to call `signal` which updates build data
-                monster.default_build.runes.remove(rune)
-                monster.default_build.runes.add(rune)
+                monster.default_build.assign_rune(rune)
         else:
             assigned_to = MonsterInstance.objects.filter(
                 owner=summoner,
                 com2us_id=rune_data['occupied_id']
             ).first() if rune_data['occupied_id'] != 0 else None
-
-            if not assigned_to:
-                return "monster"
-
-            _create_new_rune(rune_data, summoner, assigned_to)
-
-        # make sure rune & assigned_to monster data is synced, then change grinds
-        rune_craft = parse_rune_craft_data(rune_craft_data, summoner)[0]
-        if rune_craft.quantity == 0:
-            rune_craft.delete()
-        else:
-            if not rune_craft.owner:
-                rune_craft.owner = summoner
-            rune_craft.save()
-
-
-def sync_enchant_rune(summoner, log_data):
-    rune_data = log_data['response'].get('rune', {})
-    rune_craft_data = log_data['response'].get('rune_craft_item', {})
-
-    if not rune_data or not rune_craft_data:
-        return
-
-    with transaction.atomic():
-        rune = RuneInstance.objects.filter(
-            owner=summoner,
-            com2us_id=rune_data['rune_id']
-        ).first()
-
-        if rune:
-            _change_rune_substats(rune, rune_data, summoner)
-            rune.save()
-            monster = rune.assigned_to
-            if monster:
-                # remove and add to call `signal` which updates build data
-                monster.default_build.runes.remove(rune)
-                monster.default_build.runes.add(rune)
-        else:
-            assigned_to = MonsterInstance.objects.filter(
-                owner=summoner,
-                com2us_id=rune_data['occupied_id']
-            ).first() if rune_data['occupied_id'] != 0 else None
-
-            if not assigned_to:
-                return "monster"
 
             _create_new_rune(rune_data, summoner, assigned_to)
 
@@ -832,6 +776,9 @@ def sync_enchant_rune(summoner, log_data):
 
 
 def sync_reapp_rune(summoner, log_data):
+    if log_data['request'].get('rollback', False):
+        return
+
     rune_data = log_data['response'].get('rune', {})
 
     rune = RuneInstance.objects.filter(
@@ -844,17 +791,12 @@ def sync_reapp_rune(summoner, log_data):
         rune.save()
         monster = rune.assigned_to
         if monster:
-            # remove and add to call `signal` which updates build data
-            monster.default_build.runes.remove(rune)
-            monster.default_build.runes.add(rune)
+            monster.default_build.assign_rune(rune)
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,
             com2us_id=rune_data['occupied_id']
         ).first() if rune_data['occupied_id'] != 0 else None
-
-        if not assigned_to:
-            return "monster"
 
         _create_new_rune(rune_data, summoner, assigned_to)
 
@@ -881,7 +823,8 @@ def sync_equip_rune(summoner, log_data):
                 owner=summoner,
                 com2us_id=removed_rune['rune_id']
             )
-            mon.default_build.runes.remove(*runes_to_remove)
+            # it should be fetched by Signal
+            # mon.default_build.runes.remove(*runes_to_remove)
             runes_to_remove.delete()
 
         rune = RuneInstance.objects.filter(
@@ -892,9 +835,7 @@ def sync_equip_rune(summoner, log_data):
         if not rune:
             return "rune"
 
-        rune.assigned_to = mon
-        rune.save()
-        mon.default_build.runes.set(rune)
+        mon.default_build.assign_rune(rune)
 
 
 def sync_change_runes_in_rune_management(summoner, log_data):
@@ -929,17 +870,12 @@ def sync_change_runes_in_rune_management(summoner, log_data):
             if rune.assigned_to not in unequip:
                 unequip[rune.assigned_to] = []
             unequip[rune.assigned_to].append(rune)
-            rune.assigned_to = None
-            rune.save()
         
         for monster, runes in unequip.items():
             monster.default_build.runes.remove(*runes)
 
         for rune in runes_to_equip:
-            rune.assigned_to = mon
-            rune.save()
-            mon.default_build.runes.remove(*mon.default_build.runes.filter(slot=rune.slot))
-            mon.default_build.runes.add(rune)
+            mon.default_build.assign_rune(rune)
 
 
 def sync_unequip_rune(summoner, log_data):
@@ -966,8 +902,6 @@ def sync_unequip_rune(summoner, log_data):
         if not rune:
             return "rune"
 
-        rune.assigned_to = None
-        rune.save()
         mon.default_build.runes.remove(rune)
 
 
@@ -1011,9 +945,7 @@ def sync_upgrade_artifact(summoner, log_data):
             artifact.save()
             monster = artifact.assigned_to
             if monster:
-                # remove and add to call `signal` which updates build data
-                monster.default_build.artifacts.remove(artifact)
-                monster.default_build.artifacts.add(artifact)
+                monster.default_build.assign_artifact(artifact)
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,
@@ -1048,36 +980,32 @@ def sync_change_artifact_assignment(summoner, log_data):
             com2us_id__in=mons_id,
         )}
 
-
-
         for artifact_data in log_artifacts:
             artifact = artifacts[artifact_data['rid']]
             if artifact_data['occupied_id'] > 0:
-                monster = monsters[artifact_data['occupied_id']]
+                monster = monsters.get(artifact_data['occupied_id'], None)
+                if not monster:
+                    return "monster" # don't try to equip rune on non-existing monster
                 if monster not in artifact_equip:
                     artifact_equip[monster] = []
                 artifact_equip[monster].append(artifact)
-                artifact.assigned_to = monster
-                artifact.save()
             else:
                 if not artifact.assigned_to:
                     continue # don't try to unequipp already unequipped artifact
                 if artifact.assigned_to not in artifact_unequip:
-                    artifact_equip[artifact.assigned_to] = []
-                artifact_equip[artifact.assigned_to].append(artifact)
-                artifact.assigned_to = None
-                artifact.save()
+                    artifact_unequip[artifact.assigned_to] = []
+                artifact_unequip[artifact.assigned_to].append(artifact)
 
         for mon, artifacts in artifact_unequip.items():
             mon.default_build.artifacts.remove(*artifacts)
 
         for mon, artifacts in artifact_equip.items():
-            mon.default_build.artifacts.set(*artifacts)
+            for artifact in artifacts:
+                mon.default_build.assign_artifact(artifact)
 
 
 def sync_sell_artifacts(summoner, log_data):
-    artifact_ids = log_data['response'].get('artifact_ids', [])
-
+    artifact_ids = log_data['request'].get('artifact_ids', [])
     if not artifact_ids:
         return
 
@@ -1096,7 +1024,7 @@ def sync_sell_artifacts(summoner, log_data):
 
         # recalculate builds
         for mon, mon_artifacts in mons.items():
-            mon.default_build.artifacts.remove(mon_artifacts)
+            mon.default_build.artifacts.remove(*mon_artifacts)
 
         artifacts.delete()
 
@@ -1110,7 +1038,7 @@ def sync_artifact_pre_enchant(summoner, log_data):
 def sync_artifact_post_enchant(summoner, log_data):
     artifact_data = log_data['response'].get('artifact', {})
 
-    if not artifact_data:
+    if not artifact_data or log_data['request'].get('before_after', 1) == 1:
         return
 
     artifact = ArtifactInstance.objects.filter(
@@ -1120,11 +1048,10 @@ def sync_artifact_post_enchant(summoner, log_data):
 
     if artifact:
         _change_artifact_substats(artifact, artifact_data, summoner)
+        artifact.save()
         monster = artifact.assigned_to
         if monster:
-            # remove and add to call `signal` which updates build data
-            monster.default_build.artifacts.remove(artifact)
-            monster.default_build.artifacts.add(artifact)
+            monster.default_build.assign_artifact(artifact)
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,
@@ -1183,11 +1110,11 @@ def sync_wish_reward(summoner, log_data):
 
 
 def sync_siege_crate_reward(summoner, log_data):
-    selected_crate_id = log_data['request'].get('crate_index', 0)
+    selected_crate_id = log_data['request'].get('crate_index', None)
     crates = log_data['response'].get('crate_list', [])
     selected_crate = {}
 
-    if not selected_crate or not crates:
+    if selected_crate_id is None or not crates:
         return
 
     with transaction.atomic():
@@ -1242,3 +1169,11 @@ def sync_update_unit_exp_gained(summoner, log_data):
         if mon.level != mon_data['unit_level']:
             mon.level = mon_data['unit_level']
             mon.save()
+
+
+def sync_change_material(summoner, log_data):
+    removed_item = log_data['response'].get('removed_item', {})
+    added_item = log_data['response'].get('added_item', {})
+
+    _sync_item(removed_item, summoner)
+    _sync_item(added_item, summoner)

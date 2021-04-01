@@ -90,19 +90,19 @@
         </td>
     </tr>
 
-    {% if instance.runeinstance_set|length > 0 %}
+    {% if instance.runes|length > 0 %}
     <tr>
         <td colspan="4" class="rune-popover-row">
-            {% for rune in instance.runeinstance_set %}
+            {% for rune in instance.runes %}
             {% include 'api/rune_instance/thumbnail.html' with rune=rune only %}
             {% endfor %}
         </td>
     </tr>
     {% endif %}
-    {% if instance.artifactinstance_set|length > 0 %}
+    {% if instance.artifacts|length > 0 %}
     <tr>
         <td colspan="4" class="rune-popover-row">
-            {% for artifact in instance.artifactinstance_set %}
+            {% for artifact in instance.artifacts %}
                 {% include 'api/artifact_instance/thumbnail.html' with artifact=artifact only %}
             {% endfor %}
         </td>

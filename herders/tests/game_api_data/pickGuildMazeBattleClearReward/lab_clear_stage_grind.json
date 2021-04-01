@@ -1,0 +1,46 @@
+{
+    "data": {
+        "request": {
+            "command": "pickGuildMazeBattleClearReward",
+            "wizard_id": 123,
+            "session_key": "a881e3ba1070b5dcbac18553ebdfdc",
+            "proto_ver": 11810,
+            "infocsv": "4.02.41",
+            "channel_uid": 160408217,
+            "ts_val": 1138150658,
+            "battle_key": 1610205930,
+            "pick_set_id": 13
+        },
+        "response": {
+            "command": "pickGuildMazeBattleClearReward",
+            "ret_code": 0,
+            "pick_rune_list": [],
+            "pick_changestone_list": [
+                {
+                    "item_master_type": 27,
+                    "before": {
+                        "craft_item_id": 179407121,
+                        "wizard_id": 123,
+                        "craft_type": 1,
+                        "craft_type_id": 110503,
+                        "sell_value": 24000,
+                        "amount": 0
+                    },
+                    "after": {
+                        "craft_item_id": 179407168,
+                        "wizard_id": 123,
+                        "craft_type": 1,
+                        "craft_type_id": 130503,
+                        "sell_value": 24000,
+                        "amount": 1
+                    },
+                    "item_rid": 179407168
+                }
+            ],
+            "ts_val": 1138150663,
+            "tvalue": 1610206095,
+            "tvaluelocal": 1610144895,
+            "tzone": "America/Los_Angeles"
+        }
+    }
+}

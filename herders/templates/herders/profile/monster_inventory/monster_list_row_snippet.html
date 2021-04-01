@@ -92,20 +92,20 @@
         {% endif %}
     </td>
     <td>
-        {% for rune in instance.runeinstance_set.all %}
+        {% for rune in instance.runes.all %}
         {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune popover=True only %}
         {% endfor %}
     </td>
     <td>{% if instance.default_build.avg_efficiency %}{{ instance.default_build.avg_efficiency|floatformat:-2 }}%{% endif %}</td>
     <td>
-        {% with num_artifacts=instance.artifactinstance_set.all|length %}
-            {% if num_artifacts == 1 and not instance.artifactinstance_set.all.0.element %}
+        {% with num_artifacts=instance.artifacts.all|length %}
+            {% if num_artifacts == 1 and not instance.artifacts.all.0.element %}
                 <div class="rune-image pull-left">
                     <div class="artifact-bg unknown">
                     </div>
                 </div>
             {% endif %}
-            {% for artifact in instance.artifactinstance_set.all %}
+            {% for artifact in instance.artifacts.all %}
                 {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact popover=True only %}
             {% endfor %}
         {% endwith %}

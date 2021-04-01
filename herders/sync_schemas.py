@@ -795,8 +795,9 @@ sync_reapp_rune_schema = {
             'properties': {
                 'wizard_id': {'type': 'number'},
                 'command': {'type': 'string'},
+                'roll_back': {'type': 'number'},
             },
-            'required': ['wizard_id', 'command'],
+            'required': ['wizard_id', 'command', 'roll_back'],
         },
         'response': {
             'type': 'object',
@@ -1035,8 +1036,9 @@ sync_artifact_post_enchant_schema = {
             'properties': {
                 'wizard_id': {'type': 'number'},
                 'command': {'type': 'string'},
+                'before_after': {'type': 'number'},
             },
-            'required': ['wizard_id', 'command'],
+            'required': ['wizard_id', 'command', 'before_after'],
         },
         'response': {
             'type': 'object',
@@ -1284,6 +1286,41 @@ sync_update_unit_exp_gained_schema = {
                 'tzone',
                 'tvalue',
                 'unit_list',
+                'command',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+sync_change_material_schema = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/sync_change_material.json',
+    'title': 'sync_change_material',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': ['wizard_id', 'command'],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'removed_item': {'type': 'object'},
+                'added_item': {'type': 'object'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'removed_item',
+                'added_item',
                 'command',
             ]
         }

@@ -1,4 +1,5 @@
 from math import trunc
+from django.core.mail import mail_admins
 
 from django.utils import timezone
 
@@ -79,10 +80,13 @@ def transform_to_dict(data, value_key='count', **kwargs):
                     name_key = key
                     break
 
-        if transform:
-            dict_data[transform[item[name_key]]] = item[value_key]
-        else:
-            dict_data[item[name_key]] = item[value_key]
+        try:
+            if transform:
+                dict_data[transform[item[name_key]]] = item[value_key]
+            else:
+                dict_data[item[name_key]] = item[value_key]
+        except KeyError as e:
+            continue
 
     return dict_data
 

@@ -147,7 +147,7 @@ class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RuneInstance
         fields = (
-            'pk', 'type', 'get_type_display', 'assigned_to', 'efficiency', 'notes', 'marked_for_sale',
+            'pk', 'type', 'get_type_display', 'assigned_to', 'rta_assigned_to', 'efficiency', 'notes', 'marked_for_sale',
             'stars', 'level', 'slot', 'quality', 'original_quality', 'value', 'get_quality_display', 'get_original_quality_display',
             'main_stat', 'get_main_stat_rune_display', 'main_stat_value',
             'innate_stat', 'get_innate_stat_rune_display', 'innate_stat_value',
@@ -161,7 +161,7 @@ class ArtifactInstanceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ArtifactInstance
         fields = (
-            'pk', 'element', 'get_element_display', 'assigned_to', 'efficiency', 'max_efficiency',
+            'pk', 'element', 'get_element_display', 'assigned_to', 'rta_assigned_to', 'efficiency', 'max_efficiency',
             'quality', 'get_quality_display', 'original_quality', 'get_original_quality_display',
             'slot', 'get_slot_display', 'element', 'archetype',
             'level', 'main_stat', 'get_main_stat_display', 'main_stat_value',
@@ -201,8 +201,8 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
     monster = MonsterSerializer(read_only=True)
     team_leader = TeamSerializer(many=True)
     team_set = TeamSerializer(many=True)
-    runeinstance_set = RuneInstanceSerializer(many=True)
-    artifactinstance_set = ArtifactInstanceSerializer(many=True)
+    runes = RuneInstanceSerializer(many=True)
+    artifacts = ArtifactInstanceSerializer(many=True)
     tags = MonsterTagSerializer(many=True)
 
     class Meta:
@@ -214,7 +214,7 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
             'base_hp', 'base_attack', 'base_defense', 'base_speed', 'base_crit_rate', 'base_crit_damage', 'base_resistance', 'base_accuracy',
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
             'hp', 'attack', 'defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy', 'effective_hp',
-            'team_leader', 'team_set', 'runeinstance_set', 'artifactinstance_set', 'tags'
+            'team_leader', 'team_set', 'runes', 'artifacts', 'tags'
         )
         depth = 1
 

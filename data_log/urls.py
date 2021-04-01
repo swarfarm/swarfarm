@@ -7,8 +7,8 @@ from . import views
 app_name = 'log_data'
 
 router = routers.SimpleRouter()
-router.register(r'log/upload', views.LogData, base_name='log-upload')
-router.register(r'log/accepted_commands', views.AcceptedCommands, base_name='log-accepted-commands')
+router.register(r'log/upload', views.LogData, basename='log-upload')
+router.register(r'log/accepted_commands', views.AcceptedCommands, basename='log-accepted-commands')
 
 urlpatterns = [
     url(r'^$', views.data_reports, name='data_reports'),

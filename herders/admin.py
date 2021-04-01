@@ -22,26 +22,6 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
 
-class RuneInstanceInline(admin.TabularInline):
-    model = models.RuneInstance
-    fields = (
-        'stars',
-        'level',
-        'slot',
-        'quality',
-        'ancient',
-        'main_stat',
-        'main_stat_value',
-        'innate_stat',
-        'innate_stat_value',
-        'substats',
-        'substat_values',
-        'efficiency',
-    )
-    extra = 0
-    show_change_link = True
-
-
 class RuneBuildInline(admin.TabularInline):
     model = models.RuneBuild
     exclude = ('owner', 'runes', )
@@ -53,10 +33,9 @@ class RuneBuildInline(admin.TabularInline):
 class MonsterInstanceAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'owner')
     filter_vertical = ('tags',)
-    exclude = ('owner',)
+    exclude = ('owner', 'default_build', 'rta_build', )
     search_fields = ('id', )
-    readonly_fields = ('default_build', 'rta_build', )
-    inlines = (RuneInstanceInline, RuneBuildInline,)
+    inlines = (RuneBuildInline,)
 
 
 admin.site.register(models.MonsterTag)
@@ -88,7 +67,7 @@ class RuneBuildAdmin(admin.ModelAdmin):
         'owner',
         'monster',
     )
-    readonly_fields = ('owner', 'monster', 'runes', )
+    readonly_fields = ('owner', 'monster', 'runes', 'artifacts', )
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related(

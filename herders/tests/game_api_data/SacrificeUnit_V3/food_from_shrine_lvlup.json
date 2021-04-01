@@ -1,0 +1,130 @@
+{
+    "data": {
+        "request": {
+            "command": "SacrificeUnit_V3",
+            "wizard_id": 123,
+            "session_key": "c115f604adcd1c861114cdd64ca47e",
+            "proto_ver": 11810,
+            "infocsv": "4.02.41",
+            "channel_uid": 208139408,
+            "ts_val": 1138042836,
+            "target_unit_id": 10855959738,
+            "island_id": 1,
+            "building_id": 0,
+            "pos_x": 20,
+            "pos_y": 28,
+            "source_unit_list": [],
+            "source_item_list": [],
+            "source_storage_list": [
+                {
+                    "unit_master_id": 14102,
+                    "class": 1
+                }
+            ]
+        },
+        "response": {
+            "command": "SacrificeUnit_V3",
+            "ret_code": 0,
+            "gauge": {
+                "original": 800,
+                "bonus": 400
+            },
+            "target_unit": {
+                "unit_id": 10855959738,
+                "wizard_id": 123,
+                "island_id": 1,
+                "pos_x": 20,
+                "pos_y": 28,
+                "building_id": 0,
+                "unit_master_id": 14214,
+                "unit_level": 11,
+                "class": 1,
+                "con": 2,
+                "atk": 2,
+                "def": 2,
+                "spd": 0,
+                "resist": 0,
+                "accuracy": 0,
+                "critical_rate": 0,
+                "critical_damage": 0,
+                "experience": 8853,
+                "exp_gained": 0,
+                "exp_gain_rate": 0,
+                "skills": [
+                    [
+                        99001,
+                        1
+                    ],
+                    [
+                        99002,
+                        1
+                    ]
+                ],
+                "runes": [],
+                "artifacts": [],
+                "costume_master_id": 0,
+                "trans_items": [],
+                "attribute": 4,
+                "create_time": "2021-01-10 06:29:47",
+                "source": 15,
+                "homunculus": 0,
+                "homunculus_name": "",
+                "awakening_info": [],
+                "gain_exp": 1200,
+                "level_up": 1
+            },
+            "wizard_info": {
+                "wizard_id": 123,
+                "wizard_name": "test",
+                "wizard_mana": 37431906,
+                "wizard_crystal": 13500,
+                "wizard_crystal_paid": 6415,
+                "wizard_last_login": "2021-01-10 05:30:57",
+                "wizard_last_country": "DE",
+                "wizard_last_lang": "en",
+                "wizard_level": 50,
+                "experience": 3800000,
+                "wizard_energy": 142,
+                "energy_max": 190,
+                "energy_per_min": 0.26,
+                "next_energy_gain": 44,
+                "arena_energy": 4,
+                "arena_energy_max": 10,
+                "arena_energy_next_gain": 1366,
+                "unit_slots": {
+                    "number": 120
+                },
+                "rep_unit_id": 7428739422,
+                "rep_assigned": 1,
+                "pvp_event": 0,
+                "mail_box_event": 0,
+                "social_point_current": 1030,
+                "social_point_max": 3000,
+                "honor_point": 613,
+                "guild_point": 3494,
+                "darkportal_energy": 11,
+                "darkportal_energy_max": 10,
+                "costume_point": 69,
+                "costume_point_max": 9999,
+                "honor_medal": 93,
+                "honor_mark": 81,
+                "event_coin": 100,
+                "lobby_master_id": 1001,
+                "emblem_master_id": 0,
+                "period_energy_max": 10
+            },
+            "inventory_item_list": [],
+            "unit_storage_list": [
+                {
+                    "unit_master_id": 14102,
+                    "class": 1,
+                    "quantity": 0
+                }
+            ],
+            "ts_val": 1138042857,
+            "tvalue": 1610228065,
+            "tvaluelocal": 1610199265,
+            "tzone": "Europe/Berlin"
+        }
+    }
+}

@@ -29,6 +29,7 @@ env = environ.Env(
     SUMMONERS_WAR_IV=(str, '0' * 32),
     JOKER_CONTAINER_KEY=(str, '0' * 64),
     JOKER_CONTAINER_IV=(str, '0' * 32),
+    ADMINS=(list, [])
 )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
@@ -84,7 +85,7 @@ SERVER_EMAIL = env('EMAIL_FROM')
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # Admins and Managers
-ADMINS = (('Peter', 'swarfarm@porksmash.com'),)
+ADMINS = [tuple(record.split('+')) for record in env('ADMINS')]
 MANAGERS = ADMINS
 
 # Application definition
@@ -290,6 +291,7 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
     'DEFAULT_VERSION': 'v2',
     'ALLOWED_VERSIONS': ['v2'],
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
 
 REST_FRAMEWORK_EXTENSIONS = {

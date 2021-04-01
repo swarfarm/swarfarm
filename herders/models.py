@@ -257,10 +257,6 @@ class MonsterInstance(models.Model, base.Stars):
     @property
     def rune_accuracy(self):
         return self.rune_stats.get(base.Stats.STAT_ACCURACY_PCT, 0.0)
-    
-    @property
-    def avg_rune_efficiency(self):
-        return self.default_build.avg_efficiency
 
     # Totals for stats including rune bonuses
     def hp(self):
@@ -390,7 +386,7 @@ class MonsterInstance(models.Model, base.Stars):
         }
 
     def clean(self):
-        from django.core.exceptions import ValidationError
+        super().clean()
 
         # Check skill levels
         if self.skill_1_level is None or self.skill_1_level < 1:
@@ -425,8 +421,6 @@ class MonsterInstance(models.Model, base.Stars):
                 code='invalid_stars'
             )
 
-        super(MonsterInstance, self).clean()
-
     def save(self, *args, **kwargs):
         # Remove custom name if not a homunculus
         if not self.monster.homunculus:
@@ -451,10 +445,10 @@ class MonsterInstance(models.Model, base.Stars):
 
         if self.default_build is None or self.rta_build is None:
             self._initialize_rune_build()
+            self.save()
 
     def _initialize_rune_build(self):
         # Create empty rune builds if none exists
-        added = False
         if self.default_build is None:
             self.default_build = RuneBuild.objects.create(
                 owner_id=self.owner.pk,
@@ -468,13 +462,6 @@ class MonsterInstance(models.Model, base.Stars):
                 monster_id=self.pk,
                 name='Real-Time Arena',
             )
-            added = True
-
-        if added:
-            self.save()
-
-        self.default_build.runes.set(self.runeinstance_set.all(), clear=True)
-        self.default_build.artifacts.set(self.artifactinstance_set.all(), clear=True)
 
 
 class MonsterPiece(models.Model):
@@ -509,55 +496,14 @@ class RuneInstance(Rune):
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     assigned_to = models.ForeignKey(
-        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='runes')
+    rta_assigned_to = models.ForeignKey(
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='runes_rta')
     marked_for_sale = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
 
-    # Old substat fields to be removed later, but still used
-    substat_1 = models.IntegerField(
-        choices=Rune.STAT_CHOICES, null=True, blank=True)
-    substat_1_value = models.IntegerField(null=True, blank=True)
-    substat_1_craft = models.IntegerField(
-        choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    substat_2 = models.IntegerField(
-        choices=Rune.STAT_CHOICES, null=True, blank=True)
-    substat_2_value = models.IntegerField(null=True, blank=True)
-    substat_2_craft = models.IntegerField(
-        choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    substat_3 = models.IntegerField(
-        choices=Rune.STAT_CHOICES, null=True, blank=True)
-    substat_3_value = models.IntegerField(null=True, blank=True)
-    substat_3_craft = models.IntegerField(
-        choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-    substat_4 = models.IntegerField(
-        choices=Rune.STAT_CHOICES, null=True, blank=True)
-    substat_4_value = models.IntegerField(null=True, blank=True)
-    substat_4_craft = models.IntegerField(
-        choices=RuneCraft.CRAFT_CHOICES, null=True, blank=True)
-
     class Meta:
         ordering = ['slot', 'type', 'level']
-
-    def clean(self):
-        super().clean()
-
-        if self.assigned_to is not None and (self.assigned_to.runeinstance_set.filter(slot=self.slot).exclude(pk=self.pk).count() > 0):
-            raise ValidationError(
-                'Monster already has rune in slot %(slot)s.',
-                params={
-                    'slot': self.slot,
-                },
-                code='slot_occupied'
-            )
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-        if self.assigned_to:
-            # Check no other runes are in this slot
-            for rune in RuneInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot).exclude(pk=self.pk):
-                rune.assigned_to = None
-                rune.save()
 
 
 class RuneBuild(models.Model):
@@ -707,6 +653,16 @@ class RuneBuild(models.Model):
         except AttributeError:
             pass
 
+    def assign_rune(self, rune):
+        # Clear any existing rune in slot
+        self.runes.remove(*self.runes.filter(slot=rune.slot))
+        self.runes.add(rune)
+
+    def assign_artifact(self, artifact):
+        # Clear any existing artifact in slot
+        self.artifacts.remove(*self.artifacts.filter(slot=artifact.slot))
+        self.artifacts.add(artifact)
+
 
 class RuneCraftInstance(RuneCraft):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -732,16 +688,9 @@ class ArtifactInstance(Artifact):
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     com2us_id = models.BigIntegerField(blank=True, null=True)
     assigned_to = models.ForeignKey(
-        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-        if self.assigned_to:
-            # Check no other artifacts are in this slot
-            for artifact in ArtifactInstance.objects.filter(assigned_to=self.assigned_to, slot=self.slot).exclude(pk=self.pk):
-                artifact.assigned_to = None
-                artifact.save()
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='artifacts')
+    rta_assigned_to = models.ForeignKey(
+        MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='artifacts_rta')
 
 
 class ArtifactCraftInstance(ArtifactCraft):

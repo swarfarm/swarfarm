@@ -1,0 +1,235 @@
+{
+    "data": {
+        "request": {
+            "command": "ConvertArtifactByCraft",
+            "wizard_id": 123,
+            "session_key": "c7fb8b72b3297cc0cc258e34e00758",
+            "proto_ver": 11820,
+            "infocsv": "4.02.46_nI1O4Mxj",
+            "channel_uid": 160408217,
+            "ts_val": 2083246374,
+            "artifact_id": 75269245,
+            "craft_master_id": 101010003301,
+            "effect_id": 214
+        },
+        "response": {
+            "command": "ConvertArtifactByCraft",
+            "ret_code": 0,
+            "wizard_info": {
+                "wizard_id": 123,
+                "wizard_name": "test",
+                "wizard_mana": 32210501,
+                "wizard_crystal": 2735,
+                "wizard_crystal_paid": 0,
+                "wizard_last_login": "2021-01-18 09:34:32",
+                "wizard_last_country": "PL",
+                "wizard_last_lang": "en",
+                "wizard_level": 50,
+                "experience": 3800000,
+                "wizard_energy": 190,
+                "energy_max": 190,
+                "energy_per_min": 0.2,
+                "next_energy_gain": 0,
+                "arena_energy": 10,
+                "arena_energy_max": 10,
+                "arena_energy_next_gain": 0,
+                "unit_slots": {
+                    "number": 120
+                },
+                "rep_unit_id": 9116028848,
+                "rep_assigned": 1,
+                "pvp_event": 0,
+                "mail_box_event": 0,
+                "social_point_current": 210,
+                "social_point_max": 3000,
+                "honor_point": 917,
+                "guild_point": 1727,
+                "darkportal_energy": 12,
+                "darkportal_energy_max": 10,
+                "costume_point": 47,
+                "costume_point_max": 9999,
+                "honor_medal": 18,
+                "honor_mark": 0,
+                "event_coin": 25,
+                "lobby_master_id": 1009,
+                "emblem_master_id": 0,
+                "period_energy_max": 0
+            },
+            "artifact_before": {
+                "rid": 75269245,
+                "wizard_id": 123,
+                "occupied_id": 17417623543,
+                "slot": 1,
+                "type": 1,
+                "attribute": 1,
+                "unit_style": 0,
+                "natural_rank": 3,
+                "rank": 5,
+                "level": 15,
+                "pri_effect": [
+                    102,
+                    100,
+                    15,
+                    0,
+                    0
+                ],
+                "sec_effects": [
+                    [
+                        205,
+                        6,
+                        1,
+                        0,
+                        0
+                    ],
+                    [
+                        220,
+                        5,
+                        1,
+                        0,
+                        0
+                    ],
+                    [
+                        214,
+                        1,
+                        0,
+                        0,
+                        0
+                    ],
+                    [
+                        306,
+                        6,
+                        0,
+                        0,
+                        0
+                    ]
+                ],
+                "locked": 0,
+                "source": 50001,
+                "extra": [],
+                "date_add": "2021-01-18 00:33:34",
+                "date_mod": "2021-01-18 00:38:47"
+            },
+            "artifact_after": {
+                "rid": 75269245,
+                "wizard_id": 123,
+                "occupied_id": 17417623543,
+                "slot": 1,
+                "type": 1,
+                "attribute": 1,
+                "unit_style": 0,
+                "natural_rank": 3,
+                "rank": 5,
+                "level": 15,
+                "pri_effect": [
+                    102,
+                    100,
+                    15,
+                    0,
+                    0
+                ],
+                "sec_effects": [
+                    [
+                        205,
+                        6,
+                        1,
+                        0,
+                        0
+                    ],
+                    [
+                        220,
+                        5,
+                        1,
+                        0,
+                        0
+                    ],
+                    [
+                        301,
+                        6,
+                        0,
+                        1,
+                        0
+                    ],
+                    [
+                        306,
+                        6,
+                        0,
+                        0,
+                        0
+                    ]
+                ],
+                "locked": 0,
+                "source": 50001,
+                "extra": [],
+                "date_add": "2021-01-18 00:33:34",
+                "date_mod": "2021-01-18 00:38:47"
+            },
+            "artifact_confirmed": {
+                "rid": 75269245,
+                "wizard_id": 123,
+                "occupied_id": 17417623543,
+                "slot": 1,
+                "type": 1,
+                "attribute": 1,
+                "unit_style": 0,
+                "natural_rank": 3,
+                "rank": 5,
+                "level": 15,
+                "pri_effect": [
+                    102,
+                    100,
+                    15,
+                    0,
+                    0
+                ],
+                "sec_effects": [
+                    [
+                        205,
+                        6,
+                        1,
+                        0,
+                        0
+                    ],
+                    [
+                        220,
+                        5,
+                        1,
+                        0,
+                        0
+                    ],
+                    [
+                        301,
+                        6,
+                        0,
+                        1,
+                        0
+                    ],
+                    [
+                        306,
+                        6,
+                        0,
+                        0,
+                        0
+                    ]
+                ],
+                "locked": 0,
+                "source": 50001,
+                "extra": [],
+                "date_add": "2021-01-18 00:33:34",
+                "date_mod": "2021-01-18 09:34:59"
+            },
+            "converted_effect_id": 214,
+            "artifact_craft": {
+                "rid": 55576,
+                "wizard_id": 123,
+                "type": 1,
+                "master_id": 101010003301,
+                "quantity": 0,
+                "date_mod": "2020-08-03 16:28:55"
+            },
+            "ts_val": 2083246395,
+            "tvalue": 1610930099,
+            "tvaluelocal": 1610868899,
+            "tzone": "America/Los_Angeles"
+        }
+    }
+}

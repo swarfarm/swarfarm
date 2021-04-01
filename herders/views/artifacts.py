@@ -157,6 +157,10 @@ def add(request, profile_name):
             new_artifact.owner = request.user.summoner
             new_artifact.save()
 
+            if new_artifact.assigned_to:
+                new_artifact.assigned_to.default_build.assign_artifact(new_artifact)
+
+
             messages.success(request, 'Added ' + str(new_artifact))
 
             # Send back blank form
@@ -182,12 +186,25 @@ def add(request, profile_name):
         # Check for any pre-filled GET parameters
         element = request.GET.get('element', None)
         archetype = request.GET.get('archetype', None)
-        if element is not None:
-            slot = ArtifactInstance.SLOT_ELEMENTAL
-        elif archetype is not None:
-            slot = ArtifactInstance.SLOT_ARCHETYPE
+        specific_slot = request.GET.get('slot', None)
+
+        if specific_slot:
+            if specific_slot in [v[0] for v in ArtifactInstance.NORMAL_ELEMENT_CHOICES]:
+                slot = ArtifactInstance.SLOT_ELEMENTAL
+                element = specific_slot
+                archetype = None
+            elif specific_slot in [v[0] for v in ArtifactInstance.ARCHETYPE_CHOICES]:
+                slot = ArtifactInstance.SLOT_ARCHETYPE
+                archetype = specific_slot
+                element = None
         else:
-            slot = None
+            if element is not None:
+                slot = ArtifactInstance.SLOT_ELEMENTAL
+            elif archetype is not None:
+                slot = ArtifactInstance.SLOT_ARCHETYPE
+            else:
+                slot = None
+
         assigned_to = request.GET.get('assigned_to', None)
 
         try:
@@ -234,7 +251,17 @@ def edit(request, profile_name, artifact_id):
         context.update(csrf(request))
 
         if request.method == 'POST' and form.is_valid():
+            orig_assigned_to = ArtifactInstance.objects.get(pk=form.instance.pk).assigned_to
             artifact = form.save()
+
+            if orig_assigned_to and artifact.assigned_to != orig_assigned_to:
+                # Unassign from old monster
+                orig_assigned_to.default_build.artifacts.remove(artifact)
+
+            if artifact.assigned_to:
+                # Assign to new monster
+                artifact.assigned_to.default_build.assign_artifact(artifact)
+                
             messages.success(request, 'Saved changes to ' + str(artifact))
             form = ArtifactInstanceForm()
             form.helper.form_action = reverse('herders:artifact_edit', kwargs={'profile_name': profile_name, 'artifact_id': artifact_id})
@@ -264,11 +291,9 @@ def edit(request, profile_name, artifact_id):
 @username_case_redirect
 @login_required
 def assign(request, profile_name, instance_id, slot=None):
-    qs = ArtifactInstance.objects.filter(owner=request.user.summoner, assigned_to=None)
+    qs = ArtifactInstance.objects.filter(owner=request.user.summoner)
     filter_form = AssignArtifactForm(request.POST or None, initial={'slot': [slot]}, prefix='assign')
     filter_form.helper.form_action = reverse('herders:artifact_assign', kwargs={'profile_name': profile_name, 'instance_id': instance_id})
-    # instance = get_object_or_404(MonsterInstance, pk=instance_id)
-    # qs = qs.filter(Q(archetype=instance.monster.archetype) | Q(element=instance.monster.element))
 
     if request.method == 'POST' and filter_form.is_valid():
         filter = ArtifactInstanceFilter(filter_form.cleaned_data, queryset=qs)
@@ -309,13 +334,10 @@ def assign(request, profile_name, instance_id, slot=None):
 @login_required
 def assign_choice(request, profile_name, instance_id, artifact_id):
     monster = get_object_or_404(MonsterInstance, pk=instance_id)
+    build = monster.default_build
     artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
 
-    # Clear existing artifacts assigned here
-    monster.artifactinstance_set.filter(slot=artifact.slot).update(assigned_to=False)
-
-    artifact.assigned_to = monster
-    artifact.save()
+    build.assign_artifact(artifact)
 
     response_data = {
         'code': 'success',
@@ -335,12 +357,9 @@ def unassign(request, profile_name, artifact_id):
 
     if is_owner:
         artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
-        mon = artifact.assigned_to
-        artifact.assigned_to = None
-        artifact.save()
-
-        if mon:
-            mon.save()
+        monster = artifact.assigned_to
+        if monster:
+            monster.default_build.artifacts.remove(artifact)
 
         response_data = {
             'code': 'success',
@@ -364,6 +383,8 @@ def delete(request, profile_name, artifact_id):
     if is_owner:
         artifact = get_object_or_404(ArtifactInstance, pk=artifact_id)
         mon = artifact.assigned_to
+        if mon:
+            mon.default_build.artifacts.remove(artifact)
         artifact.delete()
         messages.warning(request, 'Deleted ' + str(artifact))
 

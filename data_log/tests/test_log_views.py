@@ -144,14 +144,25 @@ class LogDataViewTests(BaseLogTest):
 
     def test_authenticated_log(self):
         u = User.objects.create(username='t')
-        Summoner.objects.create(user=u)
+        Summoner.objects.create(user=u, com2us_id=123)
+        token = Token.objects.create(user=u)
+
+        self._do_log('SummonUnit/scroll_unknown_qty1.json', HTTP_AUTHORIZATION=f'Token {token.key}')
+
+        log = models.SummonLog.objects.first()
+        self.assertEqual(log.summoner, u.summoner)
+        self.assertEqual(log.wizard_id, u.summoner.com2us_id)
+
+    def test_authenticated_notowner_log(self):
+        u = User.objects.create(username='t')
+        Summoner.objects.create(user=u, com2us_id=100)
         token = Token.objects.create(user=u)
 
         self._do_log('SummonUnit/scroll_unknown_qty1.json', HTTP_AUTHORIZATION=f'Token {token.key}')
 
         # Verify created log found user without any com2us_id stored on Summoner instance
         log = models.SummonLog.objects.first()
-        self.assertEqual(log.summoner, u.summoner)
+        self.assertEqual(log.summoner, None)
         self.assertEqual(log.wizard_id, 123)
 
     def test_mismatched_accepted_api_params_version(self):

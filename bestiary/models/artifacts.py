@@ -244,7 +244,7 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
                 })
 
 
-class Artifact(ArtifactObjectBase, base.Stars):
+class Artifact(ArtifactObjectBase):
     MAIN_STAT_CHOICES = (
         (ArtifactObjectBase.STAT_HP, 'HP'),
         (ArtifactObjectBase.STAT_ATK, 'ATK'),
@@ -412,7 +412,7 @@ class Artifact(ArtifactObjectBase, base.Stars):
                     )
                 })
 
-            if value <= 0 or value > max_possible_value:
+            if value < min_possible_value or value > max_possible_value:
                 raise ValidationError({
                     'effects_value': ValidationError(
                         'Effect %(nth)s: Must be between %(min_val)s and %(max_val)s.',

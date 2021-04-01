@@ -210,6 +210,26 @@ function EditArtifact(artifact_id) {
     });
 }
 
+function CreateNewArtifact(slot) {
+    $.ajax({
+        type: 'get',
+        url: '/profile/' + PROFILE_NAME + '/artifacts/add/?slot=' + slot + '&assigned_to=' + INSTANCE_ID,
+    }).done(function (response) {
+        if (rune_dialog) {
+            $('.bootbox-body').html(response.html)
+        }
+        else {
+            rune_dialog = bootbox.dialog({
+                title: "Add new artifact",
+                size: "large",
+                message: response.html
+            });
+        }
+
+        update_artifact_slot_visibility();
+    });
+}
+
 function UnassignArtifact(artifact_id) {
     bootbox.dialog({
         message: 'Remove from slot or delete completely?',
@@ -412,6 +432,7 @@ $('body')
     .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
     .on('click', '.monster-power-up', function() { PowerUpMonster($(this).data('instance-id')) })
     .on('click', '#addNewRune', function() { CreateNewRune($("#id_assign-slot_0").val()) })
+    .on('click', '#addNewArtifact', function() { CreateNewArtifact($("#id_assign-slot").val()[0]) })
     .on('submit', '#AssignRuneForm', function() {
         var $form = $(this);
         $.ajax({

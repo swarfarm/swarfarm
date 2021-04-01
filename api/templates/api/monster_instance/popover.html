@@ -16,25 +16,19 @@
     <tr>
         <td>HP</td>
         <td>{{ instance.base_hp }}</td>
-        {% with rune_artifact_hp=instance.rune_hp|add:instance.artifact_hp %}
-            <td class="text-success">{% if rune_artifact_hp > 0 %}<span>+{{ rune_artifact_hp }}</span>{% endif %}</td>
-        {% endwith %}
+        <td class="text-success">{% if instance.rune_hp > 0 %}<span>+{{ instance.rune_hp }}</span>{% endif %}</td>
         <td>{{ instance.hp }}</td>
     </tr>
     <tr>
         <td>ATK</td>
         <td>{{ instance.base_attack }}</td>
-        {% with rune_artifact_attack=instance.rune_attack|add:instance.artifact_attack %}
-            <td class="text-success">{% if rune_artifact_attack > 0 %}<span>+{{ rune_artifact_attack }}</span>{% endif %}</td>
-        {% endwith %}
+        <td class="text-success">{% if instance.rune_attack > 0 %}<span>+{{ instance.rune_attack }}</span>{% endif %}</td>
         <td>{{ instance.attack }}</td>
     </tr>
     <tr>
         <td>DEF</td>
         <td>{{ instance.base_defense }}</td>
-        {% with rune_artifact_defense=instance.rune_defense|add:instance.artifact_defense %}
-            <td class="text-success">{% if rune_artifact_defense > 0 %}<span>+{{ rune_artifact_defense }}</span>{% endif %}</td>
-        {% endwith %}
+        <td class="text-success">{% if instance.rune_defense > 0 %}<span>+{{ instance.rune_defense }}</span>{% endif %}</td>
         <td>{{ instance.defense }}</td>
     </tr>
     <tr>
@@ -96,19 +90,19 @@
         </td>
     </tr>
 
-    {% if instance.runeinstance_set|length > 0 %}
+    {% if instance.runes|length > 0 %}
     <tr>
         <td colspan="4" class="rune-popover-row">
-            {% for rune in instance.runeinstance_set %}
+            {% for rune in instance.runes %}
             {% include 'api/rune_instance/thumbnail.html' with rune=rune only %}
             {% endfor %}
         </td>
     </tr>
     {% endif %}
-    {% if instance.artifactinstance_set|length > 0 %}
+    {% if instance.artifacts|length > 0 %}
     <tr>
         <td colspan="4" class="rune-popover-row">
-            {% for artifact in instance.artifactinstance_set %}
+            {% for artifact in instance.artifacts %}
                 {% include 'api/artifact_instance/thumbnail.html' with artifact=artifact only %}
             {% endfor %}
         </td>

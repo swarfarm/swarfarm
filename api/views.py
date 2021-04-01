@@ -310,7 +310,7 @@ def nightbot_monsters(request, profile_name, monster_name):
             nightbot_responses = []
 
             for mon in mons:
-                desc = mon.monster.name + ': ' + mon.get_rune_set_summary()
+                desc = mon.monster.name + ': ' + mon.default_build.rune_set_summary
                 if mon.notes is not None and mon.notes != '':
                     desc += ' - ' + mon.notes
 

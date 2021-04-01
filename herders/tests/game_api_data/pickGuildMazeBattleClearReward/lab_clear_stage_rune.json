@@ -1,0 +1,110 @@
+{
+    "data": {
+        "request": {
+            "command": "pickGuildMazeBattleClearReward",
+            "wizard_id": 123,
+            "session_key": "8b6a4bce823aee4ee0324f3cb11ed3",
+            "proto_ver": 11810,
+            "infocsv": "4.02.41",
+            "channel_uid": 208752514,
+            "ts_val": 1138151730,
+            "battle_key": 1610209110,
+            "pick_set_id": 5
+        },
+        "response": {
+            "command": "pickGuildMazeBattleClearReward",
+            "ret_code": 0,
+            "pick_rune_list": [
+                {
+                    "item_master_type": 8,
+                    "before": {
+                        "rune_id": 35153341676,
+                        "wizard_id": 123,
+                        "occupied_type": 2,
+                        "occupied_id": 0,
+                        "slot_no": 3,
+                        "rank": 4,
+                        "class": 5,
+                        "set_id": 19,
+                        "upgrade_limit": 15,
+                        "upgrade_curr": 0,
+                        "base_value": 183600,
+                        "sell_value": 10944,
+                        "pri_eff": [
+                            5,
+                            15
+                        ],
+                        "prefix_eff": [
+                            0,
+                            0
+                        ],
+                        "sec_eff": [
+                            [
+                                8,
+                                5,
+                                0,
+                                0
+                            ],
+                            [
+                                12,
+                                5,
+                                0,
+                                0
+                            ],
+                            [
+                                6,
+                                5,
+                                0,
+                                0
+                            ]
+                        ],
+                        "extra": 4
+                    },
+                    "after": {
+                        "rune_id": 35153348554,
+                        "wizard_id": 123,
+                        "occupied_type": 2,
+                        "occupied_id": 0,
+                        "slot_no": 3,
+                        "rank": 4,
+                        "class": 5,
+                        "set_id": 5,
+                        "upgrade_limit": 15,
+                        "upgrade_curr": 0,
+                        "base_value": 206550,
+                        "sell_value": 11475,
+                        "pri_eff": [
+                            5,
+                            15
+                        ],
+                        "prefix_eff": [
+                            0,
+                            0
+                        ],
+                        "sec_eff": [
+                            [
+                                6,
+                                6
+                            ],
+                            [
+                                8,
+                                5
+                            ],
+                            [
+                                10,
+                                3
+                            ]
+                        ],
+                        "extra": 4
+                    },
+                    "item_rid": 35153348554
+                }
+            ],
+            "pick_changestone_list": [],
+            "ts_val": 1138151752,
+            "tvalue": 1610209216,
+            "tvaluelocal": 1610148016,
+            "tzone": "America/Los_Angeles"
+        }
+    }
+}

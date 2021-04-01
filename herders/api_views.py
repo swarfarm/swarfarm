@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
-from herders.api_filters import SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
+from herders.api_filters import ArtifactInstanceFilter, SummonerFilter, MonsterInstanceFilter, RuneInstanceFilter, TeamFilter
 from herders.pagination import *
 from herders.permissions import *
 from herders.serializers import *
@@ -59,34 +59,6 @@ class SummonerViewSet(viewsets.ModelViewSet):
             return SummonerSerializer
 
 
-class GlobalMonsterInstanceViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = MonsterInstance.objects.filter(owner__public=True).select_related(
-        'monster',
-        'owner__user',
-    ).prefetch_related(
-        'runeinstance_set',
-        'runeinstance_set__owner__user',
-    ).order_by()
-    serializer_class = MonsterInstanceSerializer
-    permission_classes = [AllowAny]
-    pagination_class = PublicListPagination
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = MonsterInstanceFilter
-
-
-class GlobalRuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = RuneInstance.objects.filter(owner__public=True).select_related(
-        'owner',
-        'owner__user',
-        'assigned_to',
-    ).order_by()
-    serializer_class = RuneInstanceSerializer
-    permission_classes = [AllowAny]
-    pagination_class = PublicListPagination
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = RuneInstanceFilter
-
-
 class ProfileItemMixin(viewsets.GenericViewSet):
     pagination_class = ProfileItemPagination
     permission_classes = [IsOwner]
@@ -131,7 +103,10 @@ class RuneBuildViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'runes',
         'runes__owner',
         'runes__owner__user'
-    ).order_by()
+        'artifacts',
+        'artifacts__owner',
+        'artifacts__owner__user'
+    )
     serializer_class = RuneBuildSerializer
 
 
@@ -143,8 +118,8 @@ class MonsterInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     ).prefetch_related(
         'default_build__runes',
         'rta_build__runes',
-        'runeinstance_set',
-        'runeinstance_set__owner__user',
+        'default_build__artifacts',
+        'rta_build__artifacts',
     )
     serializer_class = MonsterInstanceSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
@@ -204,7 +179,6 @@ class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'assigned_to',
     )
     serializer_class = RuneInstanceSerializer
-    # renderer_classes = [JSONRenderer]  # Browseable API causes major query explosion when trying to generate form options.
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filter_class = RuneInstanceFilter
     ordering_fields = (
@@ -218,6 +192,26 @@ class RuneInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
         'main_stat',
         'innate_stat',
         'marked_for_sale',
+    )
+
+
+class ArtifactInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
+    queryset = ArtifactInstance.objects.all().select_related(
+        'owner',
+        'owner__user',
+        'assigned_to',
+    )
+    serializer_class = ArtifactInstanceSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
+    filter_class = ArtifactInstanceFilter
+    ordering_fields = (
+        'level',
+        'stars',
+        'slot',
+        'quality',
+        'original_quality',
+        'assigned_to',
+        'main_stat',
     )
 
 
@@ -258,7 +252,7 @@ class TeamGroupViewSet(ProfileItemMixin, viewsets.ModelViewSet):
 
 class TeamViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = Team.objects.all().select_related('group', 'leader').prefetch_related(
-        'leader__runeinstance_set', 'roster', 'roster__runeinstance_set')
+        'leader__runes', 'roster', 'roster__runes')
     serializer_class = TeamSerializer
     # Browseable API causes major query explosion when trying to generate form options.
     renderer_classes = [JSONRenderer]

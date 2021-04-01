@@ -129,14 +129,36 @@ def com2us_data_import(data, user_id, import_options):
             pk__in=results['buildings'].keys()).update(level=0)
 
     if not current_task.request.called_directly:
+        current_task.update_state(state=states.STARTED, meta={'step': 'runes'})
+
+    with transaction.atomic():
+        # Save imported runes
+        for rune in results['runes'].values():
+            rune.save()
+            imported_runes.append(rune.pk)
+
+    if not current_task.request.called_directly:
+        current_task.update_state(
+            state=states.STARTED, meta={'step': 'artifacts'})
+
+    with transaction.atomic():
+        # Save imported artifacts
+        for artifact in results['artifacts'].values():
+            artifact.save()
+            imported_artifacts.append(artifact.pk)
+
+    if not current_task.request.called_directly:
         current_task.update_state(
             state=states.STARTED, meta={'step': 'monsters'})
 
     with transaction.atomic():
         # Save the imported monsters
         for mon in results['monsters'].values():
-            if mon['new']:
-                mon['obj'].save()
+            mon['obj'].save()
+            mon['obj'].default_build.runes.set(mon['runes'], clear=True)
+            mon['obj'].default_build.artifacts.set(mon['artifacts'], clear=True)
+            mon['obj'].rta_build.runes.clear()
+            mon['obj'].rta_build.artifacts.clear()
             imported_monsters.append(mon['obj'].pk)
 
         # Update saved monster pieces
@@ -150,17 +172,26 @@ def com2us_data_import(data, user_id, import_options):
             imported_pieces.append(piece['obj'].pk)
 
     if not current_task.request.called_directly:
-        current_task.update_state(state=states.STARTED, meta={'step': 'runes'})
+        current_task.update_state(state=states.STARTED, meta={
+                                  'step': 'rune_crafts'})
 
     with transaction.atomic():
-        # Save imported runes
-        for rune in results['runes'].values():
-            # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
-            # relationship was previously set.
-            if rune['new']:
-                rune['obj'].assigned_to = rune['obj'].assigned_to
-                rune['obj'].save()
-            imported_runes.append(rune['obj'].pk)
+        # Save imported rune crafts
+        for craft in results['rune_crafts'].values():
+            if craft['new']:
+                craft['obj'].save()
+            imported_crafts.append(craft['obj'].pk)
+
+    if not current_task.request.called_directly:
+        current_task.update_state(state=states.STARTED, meta={
+                                  'step': 'artifact_crafts'})
+
+    with transaction.atomic():
+        # Save imported artifact crafts
+        for craft in results['artifact_crafts'].values():
+            if craft['new']:
+                craft['obj'].save()
+            imported_artifact_crafts.append(craft['obj'].pk)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={
@@ -194,48 +225,33 @@ def com2us_data_import(data, user_id, import_options):
                 # Continue with import
                 continue
 
-    if not current_task.request.called_directly:
-        current_task.update_state(state=states.STARTED, meta={
-                                  'step': 'rune_crafts'})
+        # Set RTA artofact builds assignments
+        assignments = {}
+        for assignment in results['rta_assignments_artifacts']:
+            mon_com2us_id = assignment['occupied_id']
+            if mon_com2us_id not in assignments:
+                assignments[mon_com2us_id] = []
+            assignments[mon_com2us_id].append(assignment['artifact_id'])
+        for mon_id, artifact_ids in assignments.items():
+            try:
+                mon = MonsterInstance.objects.filter(
+                    owner=summoner).get(com2us_id=mon_id)
+                artifacts = ArtifactInstance.objects.filter(
+                    owner=summoner, com2us_id__in=artifact_ids)
+                mon.rta_build.artifacts.set(artifacts, clear=True)
+            except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
+                # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
+                continue
+            except ValidationError:
+                slots = artifacts.values_list('slot', flat=True)
+                mail_admins('Artifaact Build Validation Error',
+                            f'monster: {mon.id}\r\artifacts: {artifact_ids}\r\nslots: {slots}')
+
+                # Continue with import
+                continue
+
 
     with transaction.atomic():
-        # Save imported rune crafts
-        for craft in results['rune_crafts'].values():
-            if craft['new']:
-                craft['obj'].save()
-            imported_crafts.append(craft['obj'].pk)
-
-    if not current_task.request.called_directly:
-        current_task.update_state(
-            state=states.STARTED, meta={'step': 'artifacts'})
-
-    with transaction.atomic():
-        # Save imported artifacts
-        for artifact in results['artifacts'].values():
-            # Refresh the internal assigned_to_id field, as the monster didn't have a PK when the
-            # relationship was previously set.
-            if artifact['new']:
-                artifact['obj'].assigned_to = artifact['obj'].assigned_to
-                artifact['obj'].save()
-            imported_artifacts.append(artifact['obj'].pk)
-
-    if not current_task.request.called_directly:
-        current_task.update_state(state=states.STARTED, meta={
-                                  'step': 'artifact_crafts'})
-
-    with transaction.atomic():
-        # Save imported artifact crafts
-        for craft in results['artifact_crafts'].values():
-            if craft['new']:
-                craft['obj'].save()
-            imported_artifact_crafts.append(craft['obj'].pk)
-
-    with transaction.atomic():
-        # recalculate stats for every monster once again
-        # it's mostly for monsters with unequipped runes after synchronization
-        for mon in results['monsters'].values():
-            mon['obj'].save()
-
         # Delete objects missing from import
         if import_options['delete_missing_monsters']:
             MonsterInstance.objects.filter(owner=summoner).exclude(

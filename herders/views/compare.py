@@ -249,7 +249,8 @@ def _compare_runes(summoner, follower):
             report_runes['slot'][rune.slot][owner_str] += 1
             report_runes['main_stat'][rune.get_main_stat_display()][owner_str] += 1
             report_runes['innate_stat'][rune.get_innate_stat_display()][owner_str] += 1
-            report_runes['summary']['Worth'][owner_str] += rune.value
+            if rune.value:
+                report_runes['summary']['Worth'][owner_str] += rune.value
     
     summoner_eff = _get_efficiency_statistics(RuneInstance, summoner)
     follower_eff = _get_efficiency_statistics(RuneInstance, follower)
@@ -323,7 +324,8 @@ def _compare_rune_crafts(summoner, follower, craft_type):
             report['sets'][record.get_rune_display()][owner_str] += record.quantity
             report['quality'][record.get_quality_display()][owner_str] += record.quantity
             report['stat'][record.get_stat_display()][owner_str] += record.quantity
-            report['summary']['Worth'][owner_str] += record.value * record.quantity
+            if record.value:
+                report['summary']['Worth'][owner_str] += record.value * record.quantity
 
     _find_comparison_winner(report)
 

@@ -758,7 +758,8 @@ def _get_stats_runes(summoner):
         report_runes['slot'][rune.slot] += 1
         report_runes['main_stat'][rune.get_main_stat_display()] += 1
         report_runes['innate_stat'][rune.get_innate_stat_display()] += 1
-        report_runes['summary']['Worth'] += rune.value
+        if rune.value:
+            report_runes['summary']['Worth'] += rune.value
     
     summoner_eff = _get_efficiency_statistics(RuneInstance, summoner)
     for key in summoner_eff.keys():
@@ -813,7 +814,8 @@ def _get_stats_rune_crafts(summoner, craft_type):
         report['sets'][record.get_rune_display()] += record.quantity
         report['quality'][record.get_quality_display()] += record.quantity
         report['stat'][record.get_stat_display()] += record.quantity
-        report['summary']['Worth'] += record.value * record.quantity
+        if record.value:
+            report['summary']['Worth'] += record.value * record.quantity
 
     return report
 

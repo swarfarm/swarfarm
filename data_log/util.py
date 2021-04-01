@@ -86,24 +86,7 @@ def transform_to_dict(data, value_key='count', **kwargs):
             else:
                 dict_data[item[name_key]] = item[value_key]
         except KeyError as e:
-            error_str = str(e) + "\n\n"
-            error_str += f"Item: {item}\n\n"
-            if transform:
-                error_str += "dict_data[transform[item[name_key]]] = item[value_key]\n\n"
-                error_str += f"name_key = {name_key}\n\n"
-                error_str += f"value_key = {value_key}\n\n"
-                error_str += f"item.keys() = {item.keys()}\n\n"
-                error_str += f"transform.keys() = {transform.keys()}\n\n"
-                error_str += f"dict_data.keys() = {dict_data.keys()}\n\n"
-            else:
-                error_str += "dict_data[item[name_key]] = item[value_key]\n\n"
-                error_str += f"name_key = {name_key}\n\n"
-                error_str += f"value_key = {value_key}\n\n"
-                error_str += f"item.keys() = {item.keys()}\n\n"
-                error_str += f"dict_data.keys() = {dict_data.keys()}\n\n"
-
-            mail_admins('Report Generating Error', f'Error:\n\n{error_str}')
-            raise e
+            continue
 
     return dict_data
 

@@ -385,7 +385,7 @@ class SyncData(viewsets.ViewSet):
                 log_data
             )
         except Exception as e:
-            mail_admins('Log server error', f'Request body:\n\n{log_data}')
+            mail_admins('Sync server error', f'Request body:\n\n{log_data}')
             raise e
 
         if sync_conflict:

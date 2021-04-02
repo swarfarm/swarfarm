@@ -6,3 +6,4 @@ from . import profile
 from . import runes
 from . import artifacts
 from . import teams
+from . import compare

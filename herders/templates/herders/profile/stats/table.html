@@ -1,0 +1,18 @@
+<div class="grid-item col-md-6 col-sm-12 col-xs-12">
+    <div class="grid-item-content table-responsive">
+        <table class="table">
+            <thead>
+                <th>{{ title }}</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for record_name, record_count in data.items %}
+                <tr>
+                    <th>{{ record_name }}</th>
+                    <td>{{ record_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

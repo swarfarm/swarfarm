@@ -1,0 +1,35 @@
+{% extends 'herders/profile/base.html' %}
+{% load crispy_forms_tags report_charts static utils %}
+{% static 'herders/images/' as img_url_prefix %}
+
+{% block title %}
+Statistics - {{ profile_name }} - {{ block.super }}
+{% endblock title %}
+
+{% block profile_stats_menu %}
+    <ul class="dropdown-menu navmenu-nav">
+        <li><a href="{% url 'herders:profile_stats' profile_name %}">Summary</a></li>
+        <li><a href="{% url 'herders:profile_stats_runes' profile_name %}">Runes</a></li>
+        {% for rune_craft_name, rune_craft_slug in subviews.items %}
+            <li><a href="{% url 'herders:profile_stats_rune_crafts' profile_name rune_craft_slug %}">Rune {{ rune_craft_name }}s</a></li>
+        {% endfor %}
+        <li><a href="{% url 'herders:profile_stats_artifacts' profile_name %}">Artifacts</a></li>
+        <li><a href="{% url 'herders:profile_stats_artifact_crafts' profile_name %}">Artifact Enchants</a></li>
+        <li><a href="{% url 'herders:profile_stats_monsters' profile_name %}">Monsters</a></li>
+    </ul>
+{% endblock profile_stats_menu %}
+
+{% block profile %}
+    {% block content_stats %}{% endblock %}
+{% endblock profile %}
+
+{% block javascript %}
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script>
+        $('.grid').masonry({
+            itemSelector: '.grid-item', // use a separate class for itemSelector, other than .col-
+            columnWidth: '.grid-sizer',
+            percentPosition: true
+        });
+    </script>
+{% endblock %}

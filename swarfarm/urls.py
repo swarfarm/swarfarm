@@ -24,6 +24,7 @@ urlpatterns = [
         url(r'^quick-search/$', QuickSearchAutocomplete.as_view(), name='bestiary-quicksearch-autocomplete'),
         url(r'^monster-tag/$', MonsterTagAutocomplete.as_view(), name='monster-tag-autocomplete'),
         url(r'^monster-instance/$', MonsterInstanceAutocomplete.as_view(), name='monster-instance-autocomplete'),
+        url(r'^monster-instance-follower/$', MonsterInstanceFollowerAutocomplete.as_view(), name='monster-instance-follower-autocomplete'),
     ])),
     url(r'^api/v2/', include('apiv2.urls', namespace='v2')),
     url(r'^api/', include('api.urls')),

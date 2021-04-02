@@ -1,0 +1,69 @@
+.profile-compare-header,
+.profile-compare-monsters-ajax
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.ph-10{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.comparison-winner-cell{
+    background-color: lightgreen;
+}
+
+.comparison-table td{
+    text-align: left;
+}
+
+.comparison-winner::before{
+    color: green;
+}
+
+.comparison-loser::before{
+    color: red;
+}
+
+.comparison-tie::before{
+    color: orange;
+}
+
+.float-right{
+    float: right;
+}
+
+.mr-15{
+    margin-right: 15px;
+}
+
+.w-monster-box{
+    width: 102px;
+}
+
+.comparison-difference-minus{
+    color: red;
+}
+
+.comparison-difference-plus{
+    color: green;
+}
+
+.comparison-table th:first-child{
+    width: 25%;
+}
+
+.comparison-table-category{
+    text-align: center;
+}
+
+
+@media only screen and (max-width: 768px) {
+    .grid-item.col-xs-12 {
+        padding-left: 0!important;
+        padding-right: 0!important;
+    }
+}

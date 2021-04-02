@@ -1,0 +1,19 @@
+{% extends 'herders/profile/stats/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+Summary - {{ block.super }}
+{% endblock title %}
+
+{% block content_stats %}
+    <h2>{{ profile_name }} statistics</h2>
+    <hr />
+    <div class="container-fluid">
+        <div class="grid">
+            <div class="grid-sizer col-md-6 col-sm-12 col-xs-12"></div>
+            {% include 'herders/profile/stats/table.html' with title="Artifacts" data=stats.artifacts %}
+            {% include 'herders/profile/stats/table.html' with title="Runes" data=stats.runes %}
+            {% include 'herders/profile/stats/table.html' with title="Monsters" data=stats.monsters %}
+        </div>
+    </div>
+{% endblock %}

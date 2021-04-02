@@ -20,6 +20,7 @@ urlpatterns = [
         ])),
         url(r'^buildings/$', views.profile.buildings, name='profile_buildings'),
         url(r'^monster/', include([
+            url(r'^compare/$', views.monsters.monster_compare, name='monster_compare'),
             url(r'^inventory/$', views.monsters.monster_inventory, name='monster_inventory'),
             url(r'^inventory/(?P<view_mode>(list|box|pieces|collection))/$', views.monsters.monster_inventory, name='monster_inventory_view_mode'),
             url(r'^inventory/(?P<view_mode>(list|box|pieces|collection))/(?P<box_grouping>[a-zA-Z_]+)/$', views.monsters.monster_inventory, name='monster_inventory_view_mode_sorted'),
@@ -104,6 +105,16 @@ urlpatterns = [
             url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.profile.follow_add, name='profile_follow_add'),
             url(r'^remove/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.profile.follow_remove, name='profile_follow_remove'),
         ])),
+        url(r'compare/(?P<follow_username>[a-zA-Z0-9_@.]+)/', include([
+            url(r'^$', views.compare.summary, name='profile_compare'),
+            url(r'^runes/$', views.compare.runes, name='profile_compare_runes'),
+            url(r'^rune_crafts/(?P<rune_craft_slug>[\w-]+)$', views.compare.rune_crafts, name='profile_compare_rune_crafts'),
+            url(r'^artifacts/$', views.compare.artifacts, name='profile_compare_artifacts'),
+            url(r'^artifact_crafts/$', views.compare.artifact_crafts, name='profile_compare_artifact_crafts'),
+            url(r'^monsters/$', views.compare.monsters, name='profile_compare_monsters'),
+            url(r'^buildings/$', views.compare.buildings, name='profile_compare_buildings'),
+            url(r'^builds/$', views.compare.builds, name='profile_compare_builds'),
+        ])),
         url(r'^data/$', views.profile.import_export_home, name='import_export_home'),
         url(r'^import/', include([
             url(r'^swjson/$', views.profile.import_sw_json, name='import_swparser'),
@@ -158,6 +169,14 @@ urlpatterns = [
                 path('', views.data_log.WorldBossDashboard.as_view(), name='data_log_world_boss_dashboard'),
                 path('table/', views.data_log.WorldBossTable.as_view(), name='data_log_world_boss_table'),
             ])),
-        ]))
+        ])),
+        url(r'stats/', include([
+            url(r'^$', views.profile.stats, name='profile_stats'),
+            url(r'^runes/$', views.profile.stats_runes, name='profile_stats_runes'),
+            url(r'^rune_crafts/(?P<rune_craft_slug>[\w-]+)$', views.profile.stats_rune_crafts, name='profile_stats_rune_crafts'),
+            url(r'^artifacts/$', views.profile.stats_artifacts, name='profile_stats_artifacts'),
+            url(r'^artifact_crafts/$', views.profile.stats_artifact_crafts, name='profile_stats_artifact_crafts'),
+            url(r'^monsters/$', views.profile.stats_monsters, name='profile_stats_monsters'),
+        ])),
     ])),
 ]

@@ -1,0 +1,24 @@
+{% for record_name, record in records.items %}
+    <tr>
+        <th>{{ record_name }}</th>
+        <td>
+            {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+            {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+            {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+            {% endif %}
+            {{ record.summoner }}
+        </td>
+        <td>
+            <span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
+            </span>
+        </td>
+        <td>
+            {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+            {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+            {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+            {% endif %}
+            {{ record.follower }}
+        </td>
+    </tr>
+{% endfor %}

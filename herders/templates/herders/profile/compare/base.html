@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% endif %} - {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+    <div class="navbar navbar-default navmenu-collapsed">
+        <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
+        <p class="navmenu-brand">{% if can_compare %}{{profile_name}} <small>vs</small> {{ follower_name }}{% else %}private profile {% endif %}</p>
+        <ul class="nav navmenu-nav">
+            <li {% if view == "compare-summary" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare' profile_name follower_name %}">Summary</a></li>
+            <li {% if view == "compare-runes" %}class="dropdown open"{% endif %}>
+                <a href="{% url 'herders:profile_compare_runes' profile_name follower_name %}">Runes</a>
+                {% block runes_menu %}{% endblock runes_menu %}
+            </li>
+            <li {% if view == "compare-artifacts" %}class="dropdown open"{% endif %}>
+                <a href="{% url 'herders:profile_compare_artifacts' profile_name follower_name %}">Artifacts</a>
+                {% block artifacts_menu %}{% endblock artifacts_menu %}
+            </li>
+            <li {% if view == "compare-monsters" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_monsters' profile_name follower_name %}">Monsters</a></li>
+            <li {% if view == "compare-buildings" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_buildings' profile_name follower_name %}">Buildings</a></li>
+            <li {% if view == "compare-builds" %}class="dropdown open"{% endif %}><a href="{% url 'herders:profile_compare_builds' profile_name follower_name %}">Builds</a></li>
+        </ul>
+    </div>
+    <div class="navmenu-content">
+        {% if can_compare %}
+            {% block content_compare %}
+                <div class="profile-compare-header">
+                    <h1>{{ profile_name }} <small>vs</small> {{ follower_name }}</h1>
+                </div>
+            {% endblock %}
+        {% else %}
+            <div class="alert alert-warning">Your friend's profile is not a Public profile or you DO NOT follow eachother!</div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script>
+        $('.grid').masonry({
+            itemSelector: '.grid-item', // use a separate class for itemSelector, other than .col-
+            columnWidth: '.grid-sizer',
+            percentPosition: true
+        });
+    </script>
+{% endblock %}

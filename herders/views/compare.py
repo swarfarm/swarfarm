@@ -77,8 +77,8 @@ def _compare_summary(summoner, follower):
         "artifacts": {},
         "monsters": {
             'Count': {
-                "summoner": MonsterInstance.objects.filter(owner=summoner).count() + MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'],
-                "follower": MonsterInstance.objects.filter(owner=follower).count() + MonsterShrineStorage.objects.filter(owner=follower).aggregate(count=Sum('quantity'))['count'],
+                "summoner": MonsterInstance.objects.filter(owner=summoner).count() + MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'] or 0,
+                "follower": MonsterInstance.objects.filter(owner=follower).count() + MonsterShrineStorage.objects.filter(owner=follower).aggregate(count=Sum('quantity'))['count'] or 0,
             },
             'Nat 5⭐': {
                 "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).count(), 
@@ -118,7 +118,7 @@ def _compare_summary(summoner, follower):
             owner_str = "follower"
         monsters_owner = list(iter_)
         for monster in monsters_owner:
-            report['monsters'][f'Nat {monster.item.natural_stars}⭐'][owner_str] += monster.quantity
+            report['monsters'][f'Nat {monster.item.natural_stars}⭐'][owner_str] += monster.quantity or 0
 
     buildings = BuildingInstance.objects.select_related('owner', 'building').filter(owner__in=owners).order_by('owner')
     buildings_owners = {
@@ -134,18 +134,18 @@ def _compare_summary(summoner, follower):
             buildings_owners[owner_str].append(building.building.name)
             remaining_cost = building.remaining_upgrade_cost()
             if building.building.area == Building.AREA_GENERAL:
-                report['buildings']['Remaining Towers Cost'][owner_str] += remaining_cost
+                report['buildings']['Remaining Towers Cost'][owner_str] += remaining_cost or 0
             else:
-                report['buildings']['Remaining Flags Cost'][owner_str] += remaining_cost
+                report['buildings']['Remaining Flags Cost'][owner_str] += remaining_cost or 0
 
     for building in Building.objects.all().order_by('area', 'name'):
         for owner in ["summoner", "follower"]:
             if building.name not in buildings_owners[owner]:
                 upgrade_cost = sum(building.upgrade_cost)
                 if building.area == Building.AREA_GENERAL:
-                    report['buildings']['Remaining Towers Cost'][owner] += upgrade_cost
+                    report['buildings']['Remaining Towers Cost'][owner] += upgrade_cost or 0
                 else:
-                    report['buildings']['Remaining Flags Cost'][owner] += upgrade_cost
+                    report['buildings']['Remaining Flags Cost'][owner] += upgrade_cost or 0
 
 
     _find_comparison_winner(report)
@@ -249,8 +249,7 @@ def _compare_runes(summoner, follower):
             report_runes['slot'][rune.slot][owner_str] += 1
             report_runes['main_stat'][rune.get_main_stat_display()][owner_str] += 1
             report_runes['innate_stat'][rune.get_innate_stat_display()][owner_str] += 1
-            if rune.value:
-                report_runes['summary']['Worth'][owner_str] += rune.value
+            report_runes['summary']['Worth'][owner_str] += rune.value or 0
     
     summoner_eff = _get_efficiency_statistics(RuneInstance, summoner)
     follower_eff = _get_efficiency_statistics(RuneInstance, follower)
@@ -320,12 +319,12 @@ def _compare_rune_crafts(summoner, follower, craft_type):
             owner_str = "follower"
         records_owner = list(iter_)
         for record in records_owner:
-            report['summary']['Count'][owner_str] += record.quantity
-            report['sets'][record.get_rune_display()][owner_str] += record.quantity
-            report['quality'][record.get_quality_display()][owner_str] += record.quantity
-            report['stat'][record.get_stat_display()][owner_str] += record.quantity
+            report['summary']['Count'][owner_str] += record.quantity or 0
+            report['sets'][record.get_rune_display()][owner_str] += record.quantity or 0
+            report['quality'][record.get_quality_display()][owner_str] += record.quantity or 0
+            report['stat'][record.get_stat_display()][owner_str] += record.quantity or 0
             if record.value:
-                report['summary']['Worth'][owner_str] += record.value * record.quantity
+                report['summary']['Worth'][owner_str] += record.value * record.quantity or 0
 
     _find_comparison_winner(report)
 
@@ -464,10 +463,10 @@ def _compare_artifact_crafts(summoner, follower):
             owner_str = "follower"
         artifacts_owner = list(iter_)
         for artifact in artifacts_owner:
-            report['substats'][artifact.get_effect_display()][owner_str] += artifact.quantity
-            report['quality'][artifact.get_quality_display()][owner_str] += artifact.quantity
-            report['slot'][artifact.get_archetype_display() or artifact.get_element_display()][owner_str] += artifact.quantity
-            report['summary']['Count'][owner_str] += artifact.quantity
+            report['substats'][artifact.get_effect_display()][owner_str] += artifact.quantity or 0
+            report['quality'][artifact.get_quality_display()][owner_str] += artifact.quantity or 0
+            report['slot'][artifact.get_archetype_display() or artifact.get_element_display()][owner_str] += artifact.quantity or 0
+            report['summary']['Count'][owner_str] += artifact.quantity or 0
 
     _find_comparison_winner(report)
 
@@ -579,8 +578,8 @@ def _compare_monsters(summoner, follower):
         monsters_owner = list(iter_)
         for monster in monsters_owner:
             report['summary']['Count'][owner_str] += monster.quantity
-            report['summary']['In Monster Shrine Storage'][owner_str] += monster.quantity
-            report['stars'][monster.item.natural_stars][owner_str] += monster.quantity
+            report['summary']['In Monster Shrine Storage'][owner_str] += monster.quantity or 0
+            report['stars'][monster.item.natural_stars][owner_str] += monster.quantity or 0
             if monster.item.archetype != Monster.ARCHETYPE_MATERIAL:
                 mon_el = "elemental" if monster.item.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
                 if f'{monster.item.family_id}-{monster.item.element}' in monsters_fusion or monster.item.family_id in free_nat5_families:
@@ -588,8 +587,8 @@ def _compare_monsters(summoner, follower):
                 else:
                     report['natural_stars'][monster.item.natural_stars]['nonfusion'][mon_el][owner_str] += 1
 
-            report['elements'][monster.item.get_element_display()][owner_str] += monster.quantity
-            report['archetypes'][monster.item.get_archetype_display()][owner_str] += monster.quantity
+            report['elements'][monster.item.get_element_display()][owner_str] += monster.quantity or 0
+            report['archetypes'][monster.item.get_archetype_display()][owner_str] += monster.quantity or 0
 
     _find_comparison_winner(report)
 
@@ -649,9 +648,9 @@ def _compare_buildings(summoner, follower):
         for building in buildings_owner:
             remaining_cost = building.remaining_upgrade_cost()
             if building.building.area == Building.AREA_GENERAL:
-                report['summary']['Remaining Towers Cost'][owner_str] += remaining_cost
+                report['summary']['Remaining Towers Cost'][owner_str] += remaining_cost or 0
             else:
-                report['summary']['Remaining Flags Cost'][owner_str] += remaining_cost
+                report['summary']['Remaining Flags Cost'][owner_str] += remaining_cost or 0
             report['remaining_costs'][building.building.name][owner_str] = remaining_cost
             report['levels'][building.building.name][owner_str] = building.level
 
@@ -662,9 +661,9 @@ def _compare_buildings(summoner, follower):
                 upgrade_cost = sum(building.upgrade_cost)
                 report['remaining_costs'][building.name][owner] = upgrade_cost
                 if building.area == Building.AREA_GENERAL:
-                    report['summary']['Remaining Towers Cost'][owner] += upgrade_cost
+                    report['summary']['Remaining Towers Cost'][owner] += upgrade_cost or 0
                 else:
-                    report['summary']['Remaining Flags Cost'][owner] += upgrade_cost
+                    report['summary']['Remaining Flags Cost'][owner] += upgrade_cost or 0
 
 
     _find_comparison_winner(report)

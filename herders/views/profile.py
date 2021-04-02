@@ -665,7 +665,7 @@ def _get_stats_summary(summoner):
         "runes": {},
         "artifacts": {},
         "monsters": {
-            'Count': MonsterInstance.objects.filter(owner=summoner).count() + MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'],
+            'Count': MonsterInstance.objects.filter(owner=summoner).count() + MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'] or 0,
             'Nat 5⭐': MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).count(),
             'Nat 4⭐': MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=4).count(),
         },
@@ -680,7 +680,7 @@ def _get_stats_summary(summoner):
 
     monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner=summoner, item__natural_stars__gte=4)
     for monster in monsters_shrine:
-        report['monsters'][f'Nat {monster.item.natural_stars}⭐'] += monster.quantity
+        report['monsters'][f'Nat {monster.item.natural_stars}⭐'] += monster.quantity or 0
 
     return report
 
@@ -758,8 +758,7 @@ def _get_stats_runes(summoner):
         report_runes['slot'][rune.slot] += 1
         report_runes['main_stat'][rune.get_main_stat_display()] += 1
         report_runes['innate_stat'][rune.get_innate_stat_display()] += 1
-        if rune.value:
-            report_runes['summary']['Worth'] += rune.value
+        report_runes['summary']['Worth'] += rune.value or 0
     
     summoner_eff = _get_efficiency_statistics(RuneInstance, summoner)
     for key in summoner_eff.keys():
@@ -810,12 +809,12 @@ def _get_stats_rune_crafts(summoner, craft_type):
     rune_crafts = RuneCraftInstance.objects.select_related('owner').filter(owner=summoner, type=craft_type)
 
     for record in rune_crafts:
-        report['summary']['Count'] += record.quantity
-        report['sets'][record.get_rune_display()] += record.quantity
-        report['quality'][record.get_quality_display()] += record.quantity
-        report['stat'][record.get_stat_display()] += record.quantity
+        report['summary']['Count'] += record.quantity or 0
+        report['sets'][record.get_rune_display()] += record.quantity or 0
+        report['quality'][record.get_quality_display()] += record.quantity or 0
+        report['stat'][record.get_stat_display()] += record.quantity or 0
         if record.value:
-            report['summary']['Worth'] += record.value * record.quantity
+            report['summary']['Worth'] += record.value * record.quantity or 0
 
     return report
 
@@ -920,10 +919,10 @@ def _get_stats_artifact_crafts(summoner):
     artifacts = ArtifactCraftInstance.objects.select_related('owner').filter(owner=summoner)
 
     for artifact in artifacts:
-        report['substats'][artifact.get_effect_display()] += artifact.quantity
-        report['quality'][artifact.get_quality_display()] += artifact.quantity
-        report['slot'][artifact.get_archetype_display() or artifact.get_element_display()] += artifact.quantity
-        report['summary']['Count'] += artifact.quantity
+        report['substats'][artifact.get_effect_display()] += artifact.quantity or 0
+        report['quality'][artifact.get_quality_display()] += artifact.quantity or 0
+        report['slot'][artifact.get_archetype_display() or artifact.get_element_display()] += artifact.quantity or 0
+        report['summary']['Count'] += artifact.quantity or 0
 
     return report
 
@@ -1014,9 +1013,9 @@ def _get_stats_monsters(summoner):
     monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner=summoner)
 
     for monster in monsters_shrine:
-        report['summary']['Count'] += monster.quantity
-        report['summary']['In Monster Shrine Storage'] += monster.quantity
-        report['stars'][monster.item.natural_stars] += monster.quantity
+        report['summary']['Count'] += monster.quantity or 0
+        report['summary']['In Monster Shrine Storage'] += monster.quantity or 0
+        report['stars'][monster.item.natural_stars] += monster.quantity or 0
         if monster.item.archetype != Monster.ARCHETYPE_MATERIAL:
             mon_el = "elemental" if monster.item.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
             if f'{monster.item.family_id}-{monster.item.element}' in monsters_fusion or monster.item.family_id in free_nat5_families:
@@ -1024,8 +1023,8 @@ def _get_stats_monsters(summoner):
             else:
                 report['natural_stars'][monster.item.natural_stars]['nonfusion'][mon_el] += 1
 
-        report['elements'][monster.item.get_element_display()] += monster.quantity
-        report['archetypes'][monster.item.get_archetype_display()] += monster.quantity
+        report['elements'][monster.item.get_element_display()] += monster.quantity or 0
+        report['archetypes'][monster.item.get_archetype_display()] += monster.quantity or 0
 
     return report
 

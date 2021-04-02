@@ -548,6 +548,10 @@ def _compare_monsters(summoner, follower):
         monsters_owner = list(iter_)
         report['summary']['Count'][owner_str] = len(monsters_owner)
         for monster in monsters_owner:
+            if monster.monster.archetype == Monster.ARCHETYPE_MATERIAL:
+                report['summary']['Count'][owner_str] -= 1
+                continue
+
             if monster.in_storage:
                 report['summary']['In Storage'][owner_str] += 1
             else:
@@ -556,12 +560,11 @@ def _compare_monsters(summoner, follower):
                 report['summary']['Max Skillups'][owner_str] += 1
             report['stars'][monster.stars][owner_str] += 1
 
-            if monster.monster.archetype != Monster.ARCHETYPE_MATERIAL:
-                mon_el = "elemental" if monster.monster.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
-                if f'{monster.monster.family_id}-{monster.monster.element}' in monsters_fusion or monster.monster.family_id in free_nat5_families:
-                    report['natural_stars'][monster.monster.natural_stars]['fusion'][mon_el][owner_str] += 1
-                else:
-                    report['natural_stars'][monster.monster.natural_stars]['nonfusion'][mon_el][owner_str] += 1
+            mon_el = "elemental" if monster.monster.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+            if f'{monster.monster.family_id}-{monster.monster.element}' in monsters_fusion or monster.monster.family_id in free_nat5_families:
+                report['natural_stars'][monster.monster.natural_stars]['fusion'][mon_el][owner_str] += 1
+            else:
+                report['natural_stars'][monster.monster.natural_stars]['nonfusion'][mon_el][owner_str] += 1
 
             report['elements'][monster.monster.get_element_display()][owner_str] += 1
             report['archetypes'][monster.monster.get_archetype_display()][owner_str] += 1
@@ -577,15 +580,18 @@ def _compare_monsters(summoner, follower):
             owner_str = "follower"
         monsters_owner = list(iter_)
         for monster in monsters_owner:
+            if monster.item.archetype == Monster.ARCHETYPE_MATERIAL:
+                continue
+
             report['summary']['Count'][owner_str] += monster.quantity
             report['summary']['In Monster Shrine Storage'][owner_str] += monster.quantity or 0
             report['stars'][monster.item.natural_stars][owner_str] += monster.quantity or 0
-            if monster.item.archetype != Monster.ARCHETYPE_MATERIAL:
-                mon_el = "elemental" if monster.item.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
-                if f'{monster.item.family_id}-{monster.item.element}' in monsters_fusion or monster.item.family_id in free_nat5_families:
-                    report['natural_stars'][monster.item.natural_stars]['fusion'][mon_el][owner_str] += 1
-                else:
-                    report['natural_stars'][monster.item.natural_stars]['nonfusion'][mon_el][owner_str] += 1
+
+            mon_el = "elemental" if monster.item.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+            if f'{monster.item.family_id}-{monster.item.element}' in monsters_fusion or monster.item.family_id in free_nat5_families:
+                report['natural_stars'][monster.item.natural_stars]['fusion'][mon_el][owner_str] += monster.quantity
+            else:
+                report['natural_stars'][monster.item.natural_stars]['nonfusion'][mon_el][owner_str] += monster.quantity
 
             report['elements'][monster.item.get_element_display()][owner_str] += monster.quantity or 0
             report['archetypes'][monster.item.get_archetype_display()][owner_str] += monster.quantity or 0

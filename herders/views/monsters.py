@@ -459,6 +459,15 @@ def monster_instance_view(request, profile_name, instance_id):
 
     try:
         context['instance'] = MonsterInstance.objects.select_related('monster', 'monster__leader_skill').prefetch_related('monster__skills').get(pk=instance_id)
+
+        if context['instance'].owner != summoner:
+            rev = reverse('herders:monster_instance_view', 
+                kwargs={
+                    "profile_name": context['instance'].owner.user.username, 
+                    "instance_id": instance_id,
+                },
+            )
+            return redirect(rev, permanent=True)
     except ObjectDoesNotExist:
         return render(request, 'herders/profile/monster_view/not_found.html', context)
 

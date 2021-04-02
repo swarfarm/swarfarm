@@ -33,7 +33,7 @@ Builds - {{ block.super }}
                                     <th>Monster</th>
                                     <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.summoner is_owner=False %}</th>
                                     <th></th>
-                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.follower is_owner=False %}</th>
+                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=follower_name instance=monsters.follower is_owner=False %}</th>
                                 </tr>
                                 <tr>
                                     <th>Bestiary</th>

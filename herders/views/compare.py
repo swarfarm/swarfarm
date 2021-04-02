@@ -77,8 +77,8 @@ def _compare_summary(summoner, follower):
         "artifacts": {},
         "monsters": {
             'Count': {
-                "summoner": MonsterInstance.objects.filter(owner=summoner).count() + MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'] or 0,
-                "follower": MonsterInstance.objects.filter(owner=follower).count() + MonsterShrineStorage.objects.filter(owner=follower).aggregate(count=Sum('quantity'))['count'] or 0,
+                "summoner": MonsterInstance.objects.filter(owner=summoner).count() + (MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'] or 0),
+                "follower": MonsterInstance.objects.filter(owner=follower).count() + (MonsterShrineStorage.objects.filter(owner=follower).aggregate(count=Sum('quantity'))['count'] or 0),
             },
             'Nat 5⭐': {
                 "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).count(), 

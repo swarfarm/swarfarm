@@ -665,7 +665,7 @@ def _get_stats_summary(summoner):
         "runes": {},
         "artifacts": {},
         "monsters": {
-            'Count': MonsterInstance.objects.filter(owner=summoner).count() + MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'] or 0,
+            'Count': MonsterInstance.objects.filter(owner=summoner).count() + (MonsterShrineStorage.objects.filter(owner=summoner).aggregate(count=Sum('quantity'))['count'] or 0),
             'Nat 5⭐': MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).count(),
             'Nat 4⭐': MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=4).count(),
         },

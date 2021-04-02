@@ -46,7 +46,7 @@ def _get_efficiency_statistics(model, owner, field="efficiency", count=False, wo
 
     efficiencies = model.objects.filter(owner=owner).aggregate(*aggregations)
     for eff_key, eff_val in efficiencies.items():
-        eff_values[eff_map[eff_key]] = round(eff_val, 2)
+        eff_values[eff_map[eff_key]] = round(eff_val or 0, 2)
 
     return eff_values
 

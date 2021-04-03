@@ -588,6 +588,7 @@ class RuneBuild(models.Model):
             base.Stats.STAT_DEF: self.defense,
             base.Stats.STAT_DEF_PCT: self.defense_pct,
             base.Stats.STAT_SPD: self.speed,
+            base.Stats.STAT_SPD_PCT: self.speed_pct,
             base.Stats.STAT_CRIT_RATE_PCT: self.crit_rate,
             base.Stats.STAT_CRIT_DMG_PCT: self.crit_damage,
             base.Stats.STAT_RESIST_PCT: self.resistance,

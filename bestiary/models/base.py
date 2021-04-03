@@ -136,6 +136,7 @@ class Stats:
         STAT_HP_PCT: STAT_HP,
         STAT_ATK_PCT: STAT_ATK,
         STAT_DEF_PCT: STAT_DEF,
+        STAT_SPD_PCT: STAT_SPD,
     }
 
     COM2US_STAT_MAP = {

@@ -67,7 +67,8 @@ def register(request):
                     new_summoner.save()
 
                     # Automatically log them in
-                    user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+                    user = authenticate(
+                        username=form.cleaned_data['username'], password=form.cleaned_data['password'])
                     if user is not None:
                         if user.is_active:
                             login(request, user)
@@ -78,7 +79,8 @@ def register(request):
                     if new_summoner is not None:
                         new_summoner.delete()
 
-                    form.add_error(None, 'There was an issue completing your registration. Please try again.')
+                    form.add_error(
+                        None, 'There was an issue completing your registration. Please try again.')
                     mail_admins(
                         subject='Error during user registration',
                         message='{}'.format(e),
@@ -120,14 +122,16 @@ def change_username_complete(request):
 def profile_delete(request, profile_name):
     user = request.user
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     form = DeleteProfileForm(request.POST or None)
-    form.helper.form_action = reverse('herders:profile_delete', kwargs={'profile_name': profile_name})
+    form.helper.form_action = reverse('herders:profile_delete', kwargs={
+                                      'profile_name': profile_name})
 
     context = {
         'form': form,
@@ -136,7 +140,8 @@ def profile_delete(request, profile_name):
         if request.method == 'POST' and form.is_valid():
             logout(request)
             user.delete()
-            messages.warning(request, 'Your profile has been permanently deleted.')
+            messages.warning(
+                request, 'Your profile has been permanently deleted.')
             return redirect('news:latest_news')
 
         return render(request, 'herders/profile/profile_delete.html', context)
@@ -149,11 +154,13 @@ def profile_delete(request, profile_name):
 def following(request, profile_name):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile_following', kwargs={'profile_name': profile_name})
+        reverse('herders:profile_following', kwargs={
+                'profile_name': profile_name})
     )
 
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -175,11 +182,13 @@ def following(request, profile_name):
 def follow_add(request, profile_name, follow_username):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
+        reverse('herders:profile_default', kwargs={
+                'profile_name': profile_name})
     )
 
-    try: 
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    try:
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
     new_follower = get_object_or_404(Summoner, user__username=follow_username)
@@ -198,19 +207,23 @@ def follow_add(request, profile_name, follow_username):
 def follow_remove(request, profile_name, follow_username):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
+        reverse('herders:profile_default', kwargs={
+                'profile_name': profile_name})
     )
 
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
-    removed_follower = get_object_or_404(Summoner, user__username=follow_username)
+    removed_follower = get_object_or_404(
+        Summoner, user__username=follow_username)
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     if is_owner:
         summoner.following.remove(removed_follower)
-        messages.info(request, 'Unfollowed %s' % removed_follower.user.username)
+        messages.info(request, 'Unfollowed %s' %
+                      removed_follower.user.username)
         return redirect(return_path)
     else:
         return HttpResponseForbidden()
@@ -221,17 +234,20 @@ def follow_remove(request, profile_name, follow_username):
 def profile_edit(request, profile_name):
     return_path = request.GET.get(
         'next',
-        reverse('herders:profile_default', kwargs={'profile_name': profile_name})
+        reverse('herders:profile_default', kwargs={
+                'profile_name': profile_name})
     )
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
     user_form = EditUserForm(request.POST or None, instance=request.user)
-    summoner_form = EditSummonerForm(request.POST or None, instance=request.user.summoner)
+    summoner_form = EditSummonerForm(
+        request.POST or None, instance=request.user.summoner)
 
     context = {
         'is_owner': is_owner,
@@ -259,7 +275,8 @@ def profile_edit(request, profile_name):
 @login_required
 def storage(request, profile_name):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -269,9 +286,11 @@ def storage(request, profile_name):
         craft_mats = []
         monster_mats = []
         monster_shrine_mats = []
-        summoner_material_storage = {ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
+        summoner_material_storage = {
+            ms.item.com2us_id: ms for ms in MaterialStorage.objects.select_related('item').filter(owner=summoner)}
 
-        essences = {gi.com2us_id: gi for gi in GameItem.objects.filter(category=GameItem.CATEGORY_ESSENCE)}
+        essences = {gi.com2us_id: gi for gi in GameItem.objects.filter(
+            category=GameItem.CATEGORY_ESSENCE)}
         essence_elements = {
             key: {
                 'name': None,
@@ -286,13 +305,16 @@ def storage(request, profile_name):
             slug_split = essence.slug.split('-')
             element = slug_split[0]
             if not essence_elements[element]['name']:
-                essence_elements[element]['name'] = ' '.join(essence.name.split(' ')[::2]) # drop `low`, `mid`, `high`
+                essence_elements[element]['name'] = ' '.join(
+                    essence.name.split(' ')[::2])  # drop `low`, `mid`, `high`
             if not essence_elements[element]['field_name']:
-                essence_elements[element]['field_name'] = '_'.join(slug_split[::2]) # drop `low`, `mid`, `high`, connect with `_`
+                essence_elements[element]['field_name'] = '_'.join(
+                    slug_split[::2])  # drop `low`, `mid`, `high`, connect with `_`
             if not essence_elements[element]['element']:
-                essence_elements[element]['element'] = element # only element
-            
-            essence_elements[element]['qty'][essence_lvl.index(slug_split[1])] = summoner_material_storage[key].quantity if key in summoner_material_storage else 0
+                essence_elements[element]['element'] = element  # only element
+
+            essence_elements[element]['qty'][essence_lvl.index(
+                slug_split[1])] = summoner_material_storage[key].quantity if key in summoner_material_storage else 0
         essence_mats = list(essence_elements.values())
 
         craft_categories = [
@@ -300,7 +322,8 @@ def storage(request, profile_name):
             GameItem.CATEGORY_RUNE_CRAFT,
             GameItem.CATEGORY_ARTIFACT_CRAFT,
         ]
-        crafts = {gi.com2us_id: gi for gi in GameItem.objects.filter(category__in=craft_categories).order_by('com2us_id')}
+        crafts = {gi.com2us_id: gi for gi in GameItem.objects.filter(
+            category__in=craft_categories).order_by('com2us_id')}
         for key, craft in crafts.items():
             craft_mats.append({
                 'name': craft.name,
@@ -308,7 +331,8 @@ def storage(request, profile_name):
                 'qty': summoner_material_storage[key].quantity if key in summoner_material_storage else 0,
             })
 
-        material_monsters = {gi.com2us_id: gi for gi in GameItem.objects.filter(category=GameItem.CATEGORY_MATERIAL_MONSTER).order_by('category')}
+        material_monsters = {gi.com2us_id: gi for gi in GameItem.objects.filter(
+            category=GameItem.CATEGORY_MATERIAL_MONSTER).order_by('category')}
         for key, material_monster in material_monsters.items():
             monster_mats.append({
                 'name': material_monster.name.replace('White', 'Light').replace('Red', 'Fire').replace('Blue', 'Water').replace('Gold', 'Wind'),
@@ -344,7 +368,8 @@ def storage(request, profile_name):
 @login_required
 def storage_update(request, profile_name):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -360,22 +385,26 @@ def storage_update(request, profile_name):
         essence_size = None
         if 'essence' in field_name:
             field_name, essence_size = field_name.split('.')
-        
+
         field_name = field_name.split('_')
         if essence_size:
             field_name.insert(1, essence_size)
-        field_name = '-'.join(field_name) # slug
+        field_name = '-'.join(field_name)  # slug
 
         if 'angelmon' in field_name:
-            field_name = field_name.replace('light', 'white').replace('fire', 'red').replace('water', 'blue').replace('wind', 'gold')
+            field_name = field_name.replace('light', 'white').replace(
+                'fire', 'red').replace('water', 'blue').replace('wind', 'gold')
 
         try:
-            item = MaterialStorage.objects.select_related('item').get(owner=summoner, item__slug=field_name)
+            item = MaterialStorage.objects.select_related(
+                'item').get(owner=summoner, item__slug=field_name)
             item.quantity = new_value
             item.save()
         except MaterialStorage.DoesNotExist:
-            game_item = GameItem.objects.get(slug=field_name)  # ignore some strange 'UNKNOWN ITEM'
-            item = MaterialStorage.objects.create(owner=summoner, item=game_item, quantity=new_value)
+            # ignore some strange 'UNKNOWN ITEM'
+            game_item = GameItem.objects.get(slug=field_name)
+            item = MaterialStorage.objects.create(
+                owner=summoner, item=game_item, quantity=new_value)
             item.save()
         except GameItem.DoesNotExist:
             return HttpResponseBadRequest('No such item exists')
@@ -388,7 +417,8 @@ def storage_update(request, profile_name):
 @username_case_redirect
 def buildings(request, profile_name):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return render(request, 'herders/profile/not_found.html')
 
@@ -406,7 +436,8 @@ def buildings(request, profile_name):
 @username_case_redirect
 def buildings_inventory(request, profile_name):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return render(request, 'herders/profile/not_found.html')
 
@@ -451,7 +482,8 @@ def buildings_inventory(request, profile_name):
 @login_required
 def building_edit(request, profile_name, building_id):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -459,9 +491,11 @@ def building_edit(request, profile_name, building_id):
     base_building = get_object_or_404(Building, pk=building_id)
 
     try:
-        owned_instance = BuildingInstance.objects.get(owner=summoner, building=base_building)
+        owned_instance = BuildingInstance.objects.get(
+            owner=summoner, building=base_building)
     except BuildingInstance.DoesNotExist:
-        owned_instance = BuildingInstance.objects.create(owner=summoner, level=0, building=base_building)
+        owned_instance = BuildingInstance.objects.create(
+            owner=summoner, level=0, building=base_building)
 
     form = EditBuildingForm(request.POST or None, instance=owned_instance)
     form.helper.form_action = reverse(
@@ -486,7 +520,8 @@ def building_edit(request, profile_name, building_id):
                 'code': 'success',
             }
         else:
-            template = loader.get_template('herders/profile/buildings/edit_form.html')
+            template = loader.get_template(
+                'herders/profile/buildings/edit_form.html')
             response_data = {
                 'code': 'error',
                 'html': template.render(context),
@@ -506,7 +541,8 @@ def _building_data(summoner, building):
         currency = 'guild_points.png'
 
     try:
-        instance = BuildingInstance.objects.get(owner=summoner, building=building)
+        instance = BuildingInstance.objects.get(
+            owner=summoner, building=building)
         if instance.level > 0:
             stat_bonus = building.stat_bonus[instance.level - 1]
         else:
@@ -519,8 +555,10 @@ def _building_data(summoner, building):
         remaining_upgrade_cost = total_upgrade_cost
     except BuildingInstance.MultipleObjectsReturned:
         # Should only be 1 ever - use the first and delete the others.
-        instance = BuildingInstance.objects.filter(owner=summoner, building=building).first()
-        BuildingInstance.objects.filter(owner=summoner, building=building).exclude(pk=instance.pk).delete()
+        instance = BuildingInstance.objects.filter(
+            owner=summoner, building=building).first()
+        BuildingInstance.objects.filter(
+            owner=summoner, building=building).exclude(pk=instance.pk).delete()
         return _building_data(summoner, building)
 
     return {
@@ -575,10 +613,12 @@ def import_sw_json(request, profile_name):
         request.session.save()
 
         form = ImportSWParserJSONForm(request.POST, request.FILES)
-        form.helper.form_action = reverse('herders:import_swparser', kwargs={'profile_name': profile_name})
+        form.helper.form_action = reverse('herders:import_swparser', kwargs={
+                                          'profile_name': profile_name})
 
         if form.is_valid():
-            summoner = get_object_or_404(Summoner, user__username=request.user.username)
+            summoner = get_object_or_404(
+                Summoner, user__username=request.user.username)
             uploaded_file = form.cleaned_data['json_file']
             import_options = _get_import_options(form.cleaned_data)
 
@@ -593,7 +633,8 @@ def import_sw_json(request, profile_name):
             except AttributeError:
                 errors.append('Issue opening uploaded file. Please try again.')
             else:
-                schema_errors, validation_errors = validate_sw_json(data, request.user.summoner)
+                schema_errors, validation_errors = validate_sw_json(
+                    data, request.user.summoner)
 
                 if schema_errors:
                     errors.append(schema_errors)
@@ -603,7 +644,8 @@ def import_sw_json(request, profile_name):
 
                 if not errors and (not validation_failures or import_options['ignore_validation_errors']):
                     # Queue the import
-                    task = com2us_data_import.delay(data, summoner.pk, import_options)
+                    task = com2us_data_import.delay(
+                        data, summoner.pk, import_options)
                     request.session['import_task_id'] = task.task_id
 
                     return render(
@@ -670,15 +712,18 @@ def _get_stats_summary(summoner):
             'Nat 4⭐': MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=4).count(),
         },
     }
-    runes_summoner_eff = _get_efficiency_statistics(RuneInstance, summoner, count=True, worth=True)
+    runes_summoner_eff = _get_efficiency_statistics(
+        RuneInstance, summoner, count=True, worth=True)
     for key in runes_summoner_eff.keys():
         report["runes"][key] = runes_summoner_eff[key]
 
-    artifacts_summoner_eff = _get_efficiency_statistics(ArtifactInstance, summoner, count=True)
+    artifacts_summoner_eff = _get_efficiency_statistics(
+        ArtifactInstance, summoner, count=True)
     for key in artifacts_summoner_eff.keys():
         report["artifacts"][key] = artifacts_summoner_eff[key]
 
-    monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner=summoner, item__natural_stars__gte=4)
+    monsters_shrine = MonsterShrineStorage.objects.select_related(
+        'owner', 'item').filter(owner=summoner, item__natural_stars__gte=4)
     for monster in monsters_shrine:
         report['monsters'][f'Nat {monster.item.natural_stars}⭐'] += monster.quantity or 0
 
@@ -689,7 +734,8 @@ def _get_stats_summary(summoner):
 @login_required
 def stats(request, profile_name):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -710,7 +756,8 @@ def stats(request, profile_name):
 
 
 def _get_stats_runes(summoner):
-    stats = {stat[1]: 0 for stat in sorted(Rune.STAT_CHOICES, key=lambda x: x[1])}
+    stats = {stat[1]: 0 for stat in sorted(
+        Rune.STAT_CHOICES, key=lambda x: x[1])}
     qualities = {quality[1]: 0 for quality in Rune.QUALITY_CHOICES}
     qualities[None] = 0
     report_runes = {
@@ -759,11 +806,10 @@ def _get_stats_runes(summoner):
         report_runes['main_stat'][rune.get_main_stat_display()] += 1
         report_runes['innate_stat'][rune.get_innate_stat_display()] += 1
         report_runes['summary']['Worth'] += rune.value or 0
-    
+
     summoner_eff = _get_efficiency_statistics(RuneInstance, summoner)
     for key in summoner_eff.keys():
         report_runes["summary"][key] = summoner_eff[key]
-
 
     return report_runes
 
@@ -772,7 +818,8 @@ def _get_stats_runes(summoner):
 @login_required
 def stats_runes(request, profile_name):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -793,8 +840,14 @@ def stats_runes(request, profile_name):
 
 
 def _get_stats_rune_crafts(summoner, craft_type):
-    stats = {stat[1]: 0 for stat in sorted(RuneCraft.STAT_CHOICES, key=lambda x: x[1])}
-    sets = {rune_set[1]: 0 for rune_set in sorted(RuneCraft.TYPE_CHOICES, key=lambda x: x[1])}
+    if craft_type in RuneCraft.CRAFT_GRINDSTONES:
+        stats = {stat[1]: 0 for stat in sorted(
+            RuneCraft.STAT_CHOICES, key=lambda x: x[1]) if stat[0] in RuneCraft.STAT_GRINDABLE}
+    else:
+        stats = {stat[1]: 0 for stat in sorted(
+            RuneCraft.STAT_CHOICES, key=lambda x: x[1])}
+    sets = {rune_set[1]: 0 for rune_set in sorted(
+        RuneCraft.TYPE_CHOICES, key=lambda x: x[1])}
     sets[None] = 0
     qualities = {quality[1]: 0 for quality in RuneCraft.QUALITY_CHOICES}
     report = {
@@ -805,16 +858,36 @@ def _get_stats_rune_crafts(summoner, craft_type):
             'Count': 0,
             'Worth': 0,
         },
+        'detailed': {
+            stat: {
+                "total": 0,
+                "sets": {
+                    set_: {"total": 0, "qualities": copy.deepcopy(qualities)}
+                    for set_ in sets.keys() if set_ is not None
+                }
+            }
+            for stat in stats.keys()},
     }
-    rune_crafts = RuneCraftInstance.objects.select_related('owner').filter(owner=summoner, type=craft_type)
+    rune_crafts = RuneCraftInstance.objects.select_related(
+        'owner').filter(owner=summoner, type=craft_type)
 
     for record in rune_crafts:
+        set_ = record.get_rune_display()
+        quality = record.get_quality_display()
+        stat = record.get_stat_display()
+
         report['summary']['Count'] += record.quantity or 0
-        report['sets'][record.get_rune_display()] += record.quantity or 0
-        report['quality'][record.get_quality_display()] += record.quantity or 0
-        report['stat'][record.get_stat_display()] += record.quantity or 0
+        report['sets'][set_] += record.quantity or 0
+        report['quality'][quality] += record.quantity or 0
+        report['stat'][stat] += record.quantity or 0
+
         if record.value:
             report['summary']['Worth'] += record.value * record.quantity or 0
+
+        if set_:
+            report['detailed'][stat]['total'] += record.quantity or 0
+            report['detailed'][stat]['sets'][set_]["total"] += record.quantity or 0
+            report['detailed'][stat]['sets'][set_]["qualities"][quality] += record.quantity or 0
 
     return report
 
@@ -823,7 +896,8 @@ def _get_stats_rune_crafts(summoner, craft_type):
 @login_required
 def stats_rune_crafts(request, profile_name, rune_craft_slug):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -832,7 +906,8 @@ def stats_rune_crafts(request, profile_name, rune_craft_slug):
     if not is_owner:
         return render(request, 'herders/profile/not_public.html', {})
 
-    craft_types = {slugify(type_[1]): {"idx": type_[0], "name": type_[1]} for type_ in RuneCraft.CRAFT_CHOICES}
+    craft_types = {slugify(type_[1]): {"idx": type_[0], "name": type_[
+        1]} for type_ in RuneCraft.CRAFT_CHOICES}
     craft_type = craft_types.get(rune_craft_slug, None)
     if craft_type is None:
         return HttpResponseBadRequest()
@@ -842,6 +917,7 @@ def stats_rune_crafts(request, profile_name, rune_craft_slug):
         'profile_name': profile_name,
         'crafts': _get_stats_rune_crafts(summoner, craft_type["idx"]),
         'craft_type': craft_type['name'],
+        'immemorial': 'Immemorial' in craft_type['name'],
         'view': 'stats',
         'subviews': {type_[1]: slugify(type_[1]) for type_ in RuneCraft.CRAFT_CHOICES},
     }
@@ -861,7 +937,8 @@ def _get_stats_artifacts(summoner):
         'main_stat': {stat[1]: 0 for stat in sorted(Artifact.MAIN_STAT_CHOICES, key=lambda x: x[1])},
         'substats': {effect[1]: 0 for effect in sorted(Artifact.EFFECT_CHOICES, key=lambda x: x[1])},
     }
-    artifacts = ArtifactInstance.objects.select_related('owner').filter(owner=summoner)
+    artifacts = ArtifactInstance.objects.select_related(
+        'owner').filter(owner=summoner)
 
     artifact_substats = dict(Artifact.EFFECT_CHOICES)
 
@@ -882,12 +959,12 @@ def _get_stats_artifacts(summoner):
     return report
 
 
-
 @username_case_redirect
 @login_required
 def stats_artifacts(request, profile_name):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -916,12 +993,14 @@ def _get_stats_artifact_crafts(summoner):
         'slot': {artifact_slot[1]: 0 for artifact_slot in (Artifact.ARCHETYPE_CHOICES + Artifact.NORMAL_ELEMENT_CHOICES)},
         'substats': {effect[1]: 0 for effect in sorted(Artifact.EFFECT_CHOICES, key=lambda x: x[1])},
     }
-    artifacts = ArtifactCraftInstance.objects.select_related('owner').filter(owner=summoner)
+    artifacts = ArtifactCraftInstance.objects.select_related(
+        'owner').filter(owner=summoner)
 
     for artifact in artifacts:
         report['substats'][artifact.get_effect_display()] += artifact.quantity or 0
         report['quality'][artifact.get_quality_display()] += artifact.quantity or 0
-        report['slot'][artifact.get_archetype_display() or artifact.get_element_display()] += artifact.quantity or 0
+        report['slot'][artifact.get_archetype_display(
+        ) or artifact.get_element_display()] += artifact.quantity or 0
         report['summary']['Count'] += artifact.quantity or 0
 
     return report
@@ -931,7 +1010,8 @@ def _get_stats_artifact_crafts(summoner):
 @login_required
 def stats_artifact_crafts(request, profile_name):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -969,8 +1049,8 @@ def _get_stats_monsters(summoner):
             5: 0,
             6: 0,
         },
-        'natural_stars': { 
-            i : {
+        'natural_stars': {
+            i: {
                 "fusion": {
                     "elemental": 0,
                     "ld": 0,
@@ -983,8 +1063,10 @@ def _get_stats_monsters(summoner):
         'elements': {element[1]: 0 for element in Monster.NORMAL_ELEMENT_CHOICES},
         'archetypes': {archetype[1]: 0 for archetype in Monster.ARCHETYPE_CHOICES},
     }
-    monsters = MonsterInstance.objects.select_related('owner', 'monster', 'monster__awakens_to', 'monster__awakens_from', 'monster__awakens_from__awakens_from', 'monster__awakens_to__awakens_to').prefetch_related('monster__skills').filter(owner=summoner)
-    monsters_fusion = [f'{mon.product.family_id}-{mon.product.element}' for mon in Fusion.objects.select_related('product').only('product')]
+    monsters = MonsterInstance.objects.select_related('owner', 'monster', 'monster__awakens_to', 'monster__awakens_from',
+                                                      'monster__awakens_from__awakens_from', 'monster__awakens_to__awakens_to').prefetch_related('monster__skills').filter(owner=summoner)
+    monsters_fusion = [
+        f'{mon.product.family_id}-{mon.product.element}' for mon in Fusion.objects.select_related('product').only('product')]
     free_nat5_families = [19200, 23000, 24100, 24600, 1000100, 1000200]
 
     report['summary']['Count'] = monsters.count()
@@ -1001,7 +1083,8 @@ def _get_stats_monsters(summoner):
             report['summary']['Max Skillups'] += 1
         report['stars'][monster.stars] += 1
 
-        mon_el = "elemental" if monster.monster.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+        mon_el = "elemental" if monster.monster.element in [
+            Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
         if f'{monster.monster.family_id}-{monster.monster.element}' in monsters_fusion or monster.monster.family_id in free_nat5_families:
             report['natural_stars'][monster.monster.natural_stars]['fusion'][mon_el] += 1
         else:
@@ -1013,7 +1096,8 @@ def _get_stats_monsters(summoner):
         if monster.monster.fusion_food:
             report['summary']['Fusion Food'] += 1
 
-    monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner=summoner)
+    monsters_shrine = MonsterShrineStorage.objects.select_related(
+        'owner', 'item').filter(owner=summoner)
 
     for monster in monsters_shrine:
         if monster.item.archetype == Monster.ARCHETYPE_MATERIAL:
@@ -1023,24 +1107,27 @@ def _get_stats_monsters(summoner):
         report['summary']['In Monster Shrine Storage'] += monster.quantity or 0
         report['stars'][monster.item.natural_stars] += monster.quantity or 0
 
-        mon_el = "elemental" if monster.item.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+        mon_el = "elemental" if monster.item.element in [
+            Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
         if f'{monster.item.family_id}-{monster.item.element}' in monsters_fusion or monster.item.family_id in free_nat5_families:
             report['natural_stars'][monster.item.natural_stars]['fusion'][mon_el] += monster.quantity or 0
         else:
             report['natural_stars'][monster.item.natural_stars]['nonfusion'][mon_el] += monster.quantity or 0
 
-        report['elements'][monster.item.get_element_display()] += monster.quantity or 0
-        report['archetypes'][monster.item.get_archetype_display()] += monster.quantity or 0
+        report['elements'][monster.item.get_element_display()
+                           ] += monster.quantity or 0
+        report['archetypes'][monster.item.get_archetype_display()
+                             ] += monster.quantity or 0
 
     return report
-
 
 
 @username_case_redirect
 @login_required
 def stats_monsters(request, profile_name):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 

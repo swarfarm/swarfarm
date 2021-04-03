@@ -1189,18 +1189,22 @@ button.rune-assign-choice {
   color: #111111;
 }
 
-.d-flex{
+.d-flex {
   display: flex;
 }
 
-.justify-content-between{
+.justify-content-between {
   justify-content: space-between;
 }
 
-.ml-10{
+.ml-10 {
   margin-left: 10px;
 }
 
-.table-responsive{
+.table-responsive {
   overflow-y: hidden;
+}
+
+.row-empty {
+  background-color: rgba(255, 0, 0, 0.2);
 }

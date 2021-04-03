@@ -115,6 +115,16 @@ class Stats:
         STAT_ACCURACY_PCT: 'Accuracy',
     }
 
+    STAT_GRINDABLE = [
+        STAT_HP,
+        STAT_HP_PCT,
+        STAT_ATK,
+        STAT_ATK_PCT,
+        STAT_DEF,
+        STAT_DEF_PCT,
+        STAT_SPD,
+    ]
+
     PERCENT_STATS = (
         STAT_HP_PCT,
         STAT_ATK_PCT,

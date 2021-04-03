@@ -60,7 +60,7 @@ def _find_comparison_winner(data):
             diff = round(record["summoner"] - record["follower"], 2)
             record["diff"] = diff
             if diff > 0:
-                record["winner"] = "summoner" 
+                record["winner"] = "summoner"
                 record["diff"] = "> " + str(abs(diff))
             elif diff < 0:
                 record["winner"] = "follower"
@@ -68,7 +68,8 @@ def _find_comparison_winner(data):
             else:
                 record["winner"] = "tie"
         else:
-            raise ValueError("Dictionary depth doesn't end with `summoner`, `follower` dictionary.")
+            raise ValueError(
+                "Dictionary depth doesn't end with `summoner`, `follower` dictionary.")
 
 
 def _compare_summary(summoner, follower):
@@ -81,11 +82,11 @@ def _compare_summary(summoner, follower):
                 "follower": MonsterInstance.objects.filter(owner=follower).count() + (MonsterShrineStorage.objects.filter(owner=follower).aggregate(count=Sum('quantity'))['count'] or 0),
             },
             'Nat 5⭐': {
-                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).count(), 
+                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=5).count(),
                 "follower": MonsterInstance.objects.filter(owner=follower, monster__natural_stars=5).count(),
             },
             'Nat 4⭐': {
-                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=4).count(), 
+                "summoner": MonsterInstance.objects.filter(owner=summoner, monster__natural_stars=4).count(),
                 "follower": MonsterInstance.objects.filter(owner=follower, monster__natural_stars=4).count(),
             },
         },
@@ -94,16 +95,20 @@ def _compare_summary(summoner, follower):
             'Remaining Flags Cost': {"summoner": 0, "follower": 0},
         }
     }
-    runes_summoner_eff = _get_efficiency_statistics(RuneInstance, summoner, count=True, worth=True)
-    runes_follower_eff = _get_efficiency_statistics(RuneInstance, follower, count=True, worth=True)
+    runes_summoner_eff = _get_efficiency_statistics(
+        RuneInstance, summoner, count=True, worth=True)
+    runes_follower_eff = _get_efficiency_statistics(
+        RuneInstance, follower, count=True, worth=True)
     for key in runes_summoner_eff.keys():
         report["runes"][key] = {
             "summoner": runes_summoner_eff[key],
             "follower": runes_follower_eff[key],
         }
 
-    artifacts_summoner_eff = _get_efficiency_statistics(ArtifactInstance, summoner, count=True)
-    artifacts_follower_eff = _get_efficiency_statistics(ArtifactInstance, follower, count=True)
+    artifacts_summoner_eff = _get_efficiency_statistics(
+        ArtifactInstance, summoner, count=True)
+    artifacts_follower_eff = _get_efficiency_statistics(
+        ArtifactInstance, follower, count=True)
     for key in artifacts_summoner_eff.keys():
         report["artifacts"][key] = {
             "summoner": artifacts_summoner_eff[key],
@@ -111,7 +116,8 @@ def _compare_summary(summoner, follower):
         }
 
     owners = [summoner, follower]
-    monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner__in=owners, item__natural_stars__gte=4).order_by('owner')
+    monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(
+        owner__in=owners, item__natural_stars__gte=4).order_by('owner')
     for owner, iter_ in itertools.groupby(monsters_shrine, key=attrgetter('owner')):
         owner_str = "summoner"
         if owner == follower:
@@ -120,7 +126,8 @@ def _compare_summary(summoner, follower):
         for monster in monsters_owner:
             report['monsters'][f'Nat {monster.item.natural_stars}⭐'][owner_str] += monster.quantity or 0
 
-    buildings = BuildingInstance.objects.select_related('owner', 'building').filter(owner__in=owners).order_by('owner')
+    buildings = BuildingInstance.objects.select_related(
+        'owner', 'building').filter(owner__in=owners).order_by('owner')
     buildings_owners = {
         "summoner": [],
         "follower": [],
@@ -147,7 +154,6 @@ def _compare_summary(summoner, follower):
                 else:
                     report['buildings']['Remaining Flags Cost'][owner] += upgrade_cost or 0
 
-
     _find_comparison_winner(report)
 
     # reverse comparison winner
@@ -167,11 +173,13 @@ def _compare_summary(summoner, follower):
 @login_required
 def summary(request, profile_name, follow_username):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
     try:
-        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+        follower = Summoner.objects.select_related(
+            'user').get(user__username=follow_username)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -180,7 +188,8 @@ def summary(request, profile_name, follow_username):
     if not is_owner:
         return render(request, 'herders/profile/not_public.html', {})
 
-    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+    can_compare = (follower in summoner.following.all(
+    ) and follower in summoner.followed_by.all() and follower.public)
 
     context = {
         'is_owner': is_owner,
@@ -195,8 +204,10 @@ def summary(request, profile_name, follow_username):
 
 
 def _compare_runes(summoner, follower):
-    stats = {stat[1]: {"summoner": 0, "follower": 0} for stat in sorted(Rune.STAT_CHOICES, key=lambda x: x[1])}
-    qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in Rune.QUALITY_CHOICES}
+    stats = {stat[1]: {"summoner": 0, "follower": 0}
+             for stat in sorted(Rune.STAT_CHOICES, key=lambda x: x[1])}
+    qualities = {quality[1]: {"summoner": 0, "follower": 0}
+                 for quality in Rune.QUALITY_CHOICES}
     qualities[None] = {"summoner": 0, "follower": 0}
     report_runes = {
         'summary': {
@@ -228,7 +239,8 @@ def _compare_runes(summoner, follower):
     }
     report_runes['innate_stat'][None] = {"summoner": 0, "follower": 0}
     owners = [summoner, follower]
-    runes = RuneInstance.objects.select_related('owner').filter(owner__in=owners).order_by('owner')
+    runes = RuneInstance.objects.select_related(
+        'owner').filter(owner__in=owners).order_by('owner')
 
     rune_substats = dict(Rune.STAT_CHOICES)
 
@@ -240,17 +252,21 @@ def _compare_runes(summoner, follower):
         report_runes['summary']['Count'][owner_str] = len(runes_owner)
         for rune in runes_owner:
             for sub_stat in rune.substats:
-                report_runes['substats'][rune_substats[sub_stat]][owner_str] += 1
+                report_runes['substats'][rune_substats[sub_stat]
+                                         ][owner_str] += 1
 
             report_runes['stars'][rune.stars][owner_str] += 1
             report_runes['sets'][rune.get_type_display()][owner_str] += 1
             report_runes['quality'][rune.get_quality_display()][owner_str] += 1
-            report_runes['quality_original'][rune.get_original_quality_display()][owner_str] += 1
+            report_runes['quality_original'][rune.get_original_quality_display(
+            )][owner_str] += 1
             report_runes['slot'][rune.slot][owner_str] += 1
-            report_runes['main_stat'][rune.get_main_stat_display()][owner_str] += 1
-            report_runes['innate_stat'][rune.get_innate_stat_display()][owner_str] += 1
+            report_runes['main_stat'][rune.get_main_stat_display()
+                                      ][owner_str] += 1
+            report_runes['innate_stat'][rune.get_innate_stat_display()
+                                        ][owner_str] += 1
             report_runes['summary']['Worth'][owner_str] += rune.value or 0
-    
+
     summoner_eff = _get_efficiency_statistics(RuneInstance, summoner)
     follower_eff = _get_efficiency_statistics(RuneInstance, follower)
     for key in summoner_eff.keys():
@@ -268,11 +284,13 @@ def _compare_runes(summoner, follower):
 @login_required
 def runes(request, profile_name, follow_username):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
     try:
-        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+        follower = Summoner.objects.select_related(
+            'user').get(user__username=follow_username)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -281,7 +299,8 @@ def runes(request, profile_name, follow_username):
     if not is_owner:
         return render(request, 'herders/profile/not_public.html', {})
 
-    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+    can_compare = (follower in summoner.following.all(
+    ) and follower in summoner.followed_by.all() and follower.public)
 
     context = {
         'is_owner': is_owner,
@@ -297,10 +316,17 @@ def runes(request, profile_name, follow_username):
 
 
 def _compare_rune_crafts(summoner, follower, craft_type):
-    stats = {stat[1]: {"summoner": 0, "follower": 0} for stat in sorted(RuneCraft.STAT_CHOICES, key=lambda x: x[1])}
-    sets = {rune_set[1]: {"summoner": 0, "follower": 0} for rune_set in sorted(RuneCraft.TYPE_CHOICES, key=lambda x: x[1])}
+    if craft_type in RuneCraft.CRAFT_GRINDSTONES:
+        stats = {stat[1]: {"summoner": 0, "follower": 0} for stat in sorted(
+            RuneCraft.STAT_CHOICES, key=lambda x: x[1]) if stat[0] in RuneCraft.STAT_GRINDABLE}
+    else:
+        stats = {stat[1]: {"summoner": 0, "follower": 0} for stat in sorted(
+            RuneCraft.STAT_CHOICES, key=lambda x: x[1])}
+    sets = {rune_set[1]: {"summoner": 0, "follower": 0}
+            for rune_set in sorted(RuneCraft.TYPE_CHOICES, key=lambda x: x[1])}
     sets[None] = {"summoner": 0, "follower": 0}
-    qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in RuneCraft.QUALITY_CHOICES}
+    qualities = {quality[1]: {"summoner": 0, "follower": 0}
+                 for quality in RuneCraft.QUALITY_CHOICES}
     report = {
         'sets': copy.deepcopy(sets),
         'quality': copy.deepcopy(qualities),
@@ -311,7 +337,8 @@ def _compare_rune_crafts(summoner, follower, craft_type):
         },
     }
     owners = [summoner, follower]
-    runes = RuneCraftInstance.objects.select_related('owner').filter(owner__in=owners, type=craft_type).order_by('owner')
+    runes = RuneCraftInstance.objects.select_related('owner').filter(
+        owner__in=owners, type=craft_type).order_by('owner')
 
     for owner, iter_ in itertools.groupby(runes, key=attrgetter('owner')):
         owner_str = "summoner"
@@ -320,11 +347,15 @@ def _compare_rune_crafts(summoner, follower, craft_type):
         records_owner = list(iter_)
         for record in records_owner:
             report['summary']['Count'][owner_str] += record.quantity or 0
-            report['sets'][record.get_rune_display()][owner_str] += record.quantity or 0
-            report['quality'][record.get_quality_display()][owner_str] += record.quantity or 0
-            report['stat'][record.get_stat_display()][owner_str] += record.quantity or 0
+            report['sets'][record.get_rune_display(
+            )][owner_str] += record.quantity or 0
+            report['quality'][record.get_quality_display(
+            )][owner_str] += record.quantity or 0
+            report['stat'][record.get_stat_display(
+            )][owner_str] += record.quantity or 0
             if record.value:
-                report['summary']['Worth'][owner_str] += record.value * record.quantity or 0
+                report['summary']['Worth'][owner_str] += record.value * \
+                    record.quantity or 0
 
     _find_comparison_winner(report)
 
@@ -335,11 +366,13 @@ def _compare_rune_crafts(summoner, follower, craft_type):
 @login_required
 def rune_crafts(request, profile_name, follow_username, rune_craft_slug):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
     try:
-        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+        follower = Summoner.objects.select_related(
+            'user').get(user__username=follow_username)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -348,9 +381,11 @@ def rune_crafts(request, profile_name, follow_username, rune_craft_slug):
     if not is_owner:
         return render(request, 'herders/profile/not_public.html', {})
 
-    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+    can_compare = (follower in summoner.following.all(
+    ) and follower in summoner.followed_by.all() and follower.public)
 
-    craft_types = {slugify(type_[1]): {"idx": type_[0], "name": type_[1]} for type_ in RuneCraft.CRAFT_CHOICES}
+    craft_types = {slugify(type_[1]): {"idx": type_[0], "name": type_[
+        1]} for type_ in RuneCraft.CRAFT_CHOICES}
     craft_type = craft_types.get(rune_craft_slug, None)
     if craft_type is None:
         return HttpResponseBadRequest()
@@ -370,7 +405,8 @@ def rune_crafts(request, profile_name, follow_username, rune_craft_slug):
 
 
 def _compare_artifacts(summoner, follower):
-    qualities = {quality[1]: {"summoner": 0, "follower": 0} for quality in Artifact.QUALITY_CHOICES}
+    qualities = {quality[1]: {"summoner": 0, "follower": 0}
+                 for quality in Artifact.QUALITY_CHOICES}
     report = {
         'summary': {
             'Count': {"summoner": 0, "follower": 0},
@@ -382,7 +418,8 @@ def _compare_artifacts(summoner, follower):
         'substats': {effect[1]: {"summoner": 0, "follower": 0} for effect in sorted(Artifact.EFFECT_CHOICES, key=lambda x: x[1])},
     }
     owners = [summoner, follower]
-    artifacts = ArtifactInstance.objects.select_related('owner').filter(owner__in=owners).order_by('owner')
+    artifacts = ArtifactInstance.objects.select_related(
+        'owner').filter(owner__in=owners).order_by('owner')
 
     artifact_substats = dict(Artifact.EFFECT_CHOICES)
 
@@ -397,7 +434,8 @@ def _compare_artifacts(summoner, follower):
                 report['substats'][artifact_substats[sub_stat]][owner_str] += 1
 
             report['quality'][artifact.get_quality_display()][owner_str] += 1
-            report['quality_original'][artifact.get_original_quality_display()][owner_str] += 1
+            report['quality_original'][artifact.get_original_quality_display()
+                                       ][owner_str] += 1
             report['slot'][artifact.get_precise_slot_display()][owner_str] += 1
             report['main_stat'][artifact.get_main_stat_display()][owner_str] += 1
 
@@ -418,11 +456,13 @@ def _compare_artifacts(summoner, follower):
 @login_required
 def artifacts(request, profile_name, follow_username):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
     try:
-        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+        follower = Summoner.objects.select_related(
+            'user').get(user__username=follow_username)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -431,7 +471,8 @@ def artifacts(request, profile_name, follow_username):
     if not is_owner:
         return render(request, 'herders/profile/not_public.html', {})
 
-    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+    can_compare = (follower in summoner.following.all(
+    ) and follower in summoner.followed_by.all() and follower.public)
 
     context = {
         'is_owner': is_owner,
@@ -455,7 +496,8 @@ def _compare_artifact_crafts(summoner, follower):
         'substats': {effect[1]: {"summoner": 0, "follower": 0} for effect in sorted(Artifact.EFFECT_CHOICES, key=lambda x: x[1])},
     }
     owners = [summoner, follower]
-    artifacts = ArtifactCraftInstance.objects.select_related('owner').filter(owner__in=owners).order_by('owner')
+    artifacts = ArtifactCraftInstance.objects.select_related(
+        'owner').filter(owner__in=owners).order_by('owner')
 
     for owner, iter_ in itertools.groupby(artifacts, key=attrgetter('owner')):
         owner_str = "summoner"
@@ -463,9 +505,12 @@ def _compare_artifact_crafts(summoner, follower):
             owner_str = "follower"
         artifacts_owner = list(iter_)
         for artifact in artifacts_owner:
-            report['substats'][artifact.get_effect_display()][owner_str] += artifact.quantity or 0
-            report['quality'][artifact.get_quality_display()][owner_str] += artifact.quantity or 0
-            report['slot'][artifact.get_archetype_display() or artifact.get_element_display()][owner_str] += artifact.quantity or 0
+            report['substats'][artifact.get_effect_display(
+            )][owner_str] += artifact.quantity or 0
+            report['quality'][artifact.get_quality_display(
+            )][owner_str] += artifact.quantity or 0
+            report['slot'][artifact.get_archetype_display(
+            ) or artifact.get_element_display()][owner_str] += artifact.quantity or 0
             report['summary']['Count'][owner_str] += artifact.quantity or 0
 
     _find_comparison_winner(report)
@@ -477,11 +522,13 @@ def _compare_artifact_crafts(summoner, follower):
 @login_required
 def artifact_crafts(request, profile_name, follow_username):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
     try:
-        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+        follower = Summoner.objects.select_related(
+            'user').get(user__username=follow_username)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -490,7 +537,8 @@ def artifact_crafts(request, profile_name, follow_username):
     if not is_owner:
         return render(request, 'herders/profile/not_public.html', {})
 
-    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+    can_compare = (follower in summoner.following.all(
+    ) and follower in summoner.followed_by.all() and follower.public)
 
     context = {
         'is_owner': is_owner,
@@ -523,8 +571,8 @@ def _compare_monsters(summoner, follower):
             5: {"summoner": 0, "follower": 0},
             6: {"summoner": 0, "follower": 0},
         },
-        'natural_stars': { 
-            i : {
+        'natural_stars': {
+            i: {
                 "fusion": {
                     "elemental": {"summoner": 0, "follower": 0},
                     "ld": {"summoner": 0, "follower": 0},
@@ -537,8 +585,10 @@ def _compare_monsters(summoner, follower):
         'elements': {element[1]: {"summoner": 0, "follower": 0} for element in Monster.NORMAL_ELEMENT_CHOICES},
         'archetypes': {archetype[1]: {"summoner": 0, "follower": 0} for archetype in Monster.ARCHETYPE_CHOICES},
     }
-    monsters = MonsterInstance.objects.select_related('owner', 'monster', 'monster__awakens_to', 'monster__awakens_from', 'monster__awakens_from__awakens_from', 'monster__awakens_to__awakens_to').prefetch_related('monster__skills').filter(owner__in=owners).order_by('owner')
-    monsters_fusion = [f'{mon.product.family_id}-{mon.product.element}' for mon in Fusion.objects.select_related('product').only('product')]
+    monsters = MonsterInstance.objects.select_related('owner', 'monster', 'monster__awakens_to', 'monster__awakens_from', 'monster__awakens_from__awakens_from',
+                                                      'monster__awakens_to__awakens_to').prefetch_related('monster__skills').filter(owner__in=owners).order_by('owner')
+    monsters_fusion = [
+        f'{mon.product.family_id}-{mon.product.element}' for mon in Fusion.objects.select_related('product').only('product')]
     free_nat5_families = [19200, 23000, 24100, 24600, 1000100, 1000200]
 
     for owner, iter_ in itertools.groupby(monsters, key=attrgetter('owner')):
@@ -560,19 +610,23 @@ def _compare_monsters(summoner, follower):
                 report['summary']['Max Skillups'][owner_str] += 1
             report['stars'][monster.stars][owner_str] += 1
 
-            mon_el = "elemental" if monster.monster.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+            mon_el = "elemental" if monster.monster.element in [
+                Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
             if f'{monster.monster.family_id}-{monster.monster.element}' in monsters_fusion or monster.monster.family_id in free_nat5_families:
                 report['natural_stars'][monster.monster.natural_stars]['fusion'][mon_el][owner_str] += 1
             else:
                 report['natural_stars'][monster.monster.natural_stars]['nonfusion'][mon_el][owner_str] += 1
 
-            report['elements'][monster.monster.get_element_display()][owner_str] += 1
-            report['archetypes'][monster.monster.get_archetype_display()][owner_str] += 1
+            report['elements'][monster.monster.get_element_display()
+                               ][owner_str] += 1
+            report['archetypes'][monster.monster.get_archetype_display()
+                                 ][owner_str] += 1
 
             if monster.monster.fusion_food:
                 report['summary']['Fusion Food'][owner_str] += 1
 
-    monsters_shrine = MonsterShrineStorage.objects.select_related('owner', 'item').filter(owner__in=owners).order_by('owner')
+    monsters_shrine = MonsterShrineStorage.objects.select_related(
+        'owner', 'item').filter(owner__in=owners).order_by('owner')
 
     for owner, iter_ in itertools.groupby(monsters_shrine, key=attrgetter('owner')):
         owner_str = "summoner"
@@ -587,14 +641,17 @@ def _compare_monsters(summoner, follower):
             report['summary']['In Monster Shrine Storage'][owner_str] += monster.quantity or 0
             report['stars'][monster.item.natural_stars][owner_str] += monster.quantity or 0
 
-            mon_el = "elemental" if monster.item.element in [Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
+            mon_el = "elemental" if monster.item.element in [
+                Monster.ELEMENT_WATER, Monster.ELEMENT_FIRE, Monster.ELEMENT_WIND] else "ld"
             if f'{monster.item.family_id}-{monster.item.element}' in monsters_fusion or monster.item.family_id in free_nat5_families:
                 report['natural_stars'][monster.item.natural_stars]['fusion'][mon_el][owner_str] += monster.quantity
             else:
                 report['natural_stars'][monster.item.natural_stars]['nonfusion'][mon_el][owner_str] += monster.quantity
 
-            report['elements'][monster.item.get_element_display()][owner_str] += monster.quantity or 0
-            report['archetypes'][monster.item.get_archetype_display()][owner_str] += monster.quantity or 0
+            report['elements'][monster.item.get_element_display(
+            )][owner_str] += monster.quantity or 0
+            report['archetypes'][monster.item.get_archetype_display()
+                                 ][owner_str] += monster.quantity or 0
 
     _find_comparison_winner(report)
 
@@ -605,11 +662,13 @@ def _compare_monsters(summoner, follower):
 @login_required
 def monsters(request, profile_name, follow_username):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
     try:
-        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+        follower = Summoner.objects.select_related(
+            'user').get(user__username=follow_username)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -618,7 +677,8 @@ def monsters(request, profile_name, follow_username):
     if not is_owner:
         return render(request, 'herders/profile/not_public.html', {})
 
-    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+    can_compare = (follower in summoner.following.all(
+    ) and follower in summoner.followed_by.all() and follower.public)
 
     context = {
         'is_owner': is_owner,
@@ -635,7 +695,8 @@ def monsters(request, profile_name, follow_username):
 def _compare_buildings(summoner, follower):
     owners = [summoner, follower]
     building_objs = Building.objects.all().order_by('area', 'name')
-    building_choices = {building.name: {"summoner": 0, "follower": 0} for building in building_objs}
+    building_choices = {building.name: {"summoner": 0,
+                                        "follower": 0} for building in building_objs}
     report = {
         'summary': {
             'Remaining Towers Cost': {"summoner": 0, "follower": 0},
@@ -643,8 +704,9 @@ def _compare_buildings(summoner, follower):
         },
         'levels': copy.deepcopy(building_choices),
         'remaining_costs': copy.deepcopy(building_choices),
-    }    
-    buildings = BuildingInstance.objects.select_related('owner', 'building').filter(owner__in=owners).order_by('owner')
+    }
+    buildings = BuildingInstance.objects.select_related(
+        'owner', 'building').filter(owner__in=owners).order_by('owner')
 
     for owner, iter_ in itertools.groupby(buildings, key=attrgetter('owner')):
         owner_str = "summoner"
@@ -660,7 +722,6 @@ def _compare_buildings(summoner, follower):
             report['remaining_costs'][building.building.name][owner_str] = remaining_cost
             report['levels'][building.building.name][owner_str] = building.level
 
-
     for building in building_objs:
         for owner in ["summoner", "follower"]:
             if report['levels'][building.name][owner] == 0 and report['remaining_costs'][building.name][owner] == 0:
@@ -670,7 +731,6 @@ def _compare_buildings(summoner, follower):
                     report['summary']['Remaining Towers Cost'][owner] += upgrade_cost or 0
                 else:
                     report['summary']['Remaining Flags Cost'][owner] += upgrade_cost or 0
-
 
     _find_comparison_winner(report)
 
@@ -697,11 +757,13 @@ def _compare_buildings(summoner, follower):
 @login_required
 def buildings(request, profile_name, follow_username):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
     try:
-        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+        follower = Summoner.objects.select_related(
+            'user').get(user__username=follow_username)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -710,7 +772,8 @@ def buildings(request, profile_name, follow_username):
     if not is_owner:
         return render(request, 'herders/profile/not_public.html', {})
 
-    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
+    can_compare = (follower in summoner.following.all(
+    ) and follower in summoner.followed_by.all() and follower.public)
 
     context = {
         'is_owner': is_owner,
@@ -751,7 +814,8 @@ def _compare_monster_objects(mon_s, mon_f):
 
 
 def _compare_monster_rune_sets(s_build, f_build):
-    sets = {"summoner": s_build.active_rune_sets, "follower": f_build.active_rune_sets}
+    sets = {"summoner": s_build.active_rune_sets,
+            "follower": f_build.active_rune_sets}
     sets_without_stat_increase = {"summoner": [], "follower": []}
 
     for owner, sets_ in sets.items():
@@ -759,7 +823,7 @@ def _compare_monster_rune_sets(s_build, f_build):
             stat = RuneInstance.RUNE_SET_BONUSES[set_]['stat']
             if not stat:
                 sets_without_stat_increase[owner].append(set_)
-    
+
     final_sets = {"summoner": [], "follower": [], "diff": []}
 
     for set_ in sets_without_stat_increase["summoner"]:
@@ -809,7 +873,8 @@ def _compare_build_objects(mon_s, mon_f, rta=False):
 
     _find_comparison_winner(comparison)
 
-    comparison["Rune sets"] = _compare_monster_rune_sets(mon_s_build, mon_f_build)
+    comparison["Rune sets"] = _compare_monster_rune_sets(
+        mon_s_build, mon_f_build)
     for slot in [2, 4, 6]:
         s_rune = mon_s_build.runes.filter(slot=slot).first()
         f_rune = mon_f_build.runes.filter(slot=slot).first()
@@ -821,16 +886,17 @@ def _compare_build_objects(mon_s, mon_f, rta=False):
     return comparison
 
 
-
 @username_case_redirect
 @login_required
 def builds(request, profile_name, follow_username):
     try:
-        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+        summoner = Summoner.objects.select_related(
+            'user').get(user__username=profile_name)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
     try:
-        follower = Summoner.objects.select_related('user').get(user__username=follow_username)
+        follower = Summoner.objects.select_related(
+            'user').get(user__username=follow_username)
     except Summoner.DoesNotExist:
         return HttpResponseBadRequest()
 
@@ -839,11 +905,13 @@ def builds(request, profile_name, follow_username):
     if not is_owner:
         return render(request, 'herders/profile/not_public.html', {})
 
-    can_compare = (follower in summoner.following.all() and follower in summoner.followed_by.all() and follower.public)
-    
+    can_compare = (follower in summoner.following.all(
+    ) and follower in summoner.followed_by.all() and follower.public)
+
     if request.method == 'POST':
-        form = CompareMonstersWithFollowerForm(request.POST, summoner_name=profile_name, follower_name=follow_username)
-        
+        form = CompareMonstersWithFollowerForm(
+            request.POST, summoner_name=profile_name, follower_name=follow_username)
+
         if form.is_valid():
             context = {
                 'is_owner': is_owner,

@@ -15,5 +15,42 @@
             {% include 'herders/profile/stats/table.html' with title="Stats" data=crafts.stat %}
             {% include 'herders/profile/stats/table.html' with title="Quality" data=crafts.quality %}
         </div>
+        {% if not immemorial %}
+            <h2>Detailed view</h2>
+            <hr />
+            <div class="grid">
+                <div class="grid-sizer col-md-6 col-sm-12 col-xs-12"></div>
+                {% for stat, records in crafts.detailed.items %}
+                    <div class="grid-item col-md-6 col-sm-12 col-xs-12">
+                        <div class="grid-item-content table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <th>{{ stat }}</th>
+                                    {% for quality in crafts.quality %}
+                                    <th>{{ quality }}</th>
+                                    {% endfor %}
+                                </thead>
+                                <tbody>
+                                    {% if records.total %}
+                                        {% for set_, recs in records.sets.items %}
+                                            <tr {% if not recs.total %}class="row-empty"{% endif %}>
+                                                <th>{{ set_ }}</th>
+                                                {% for quality, val in recs.qualities.items %}
+                                                <td>{% if val %}{{ val }}{% endif %}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                    <tr class="row-empty">
+                                        <th colspan="{{ crafts.quality|length|add:1 }}" style="text-align: center;">No {{ stat }} {{ craft_type }}s</th>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

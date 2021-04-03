@@ -10,7 +10,8 @@ from data_log import models
 from data_log.util import slice_records, floor_to_nearest, ceil_to_nearest, replace_value_with_choice, \
     transform_to_dict, round_timedelta
 
-MINIMUM_THRESHOLD = 0.005  # Any drops that occur less than this percentage of time are filtered out
+# Any drops that occur less than this percentage of time are filtered out
+MINIMUM_THRESHOLD = 0.005
 CLEAR_TIME_BIN_WIDTH = timedelta(seconds=5)
 
 
@@ -20,7 +21,8 @@ def get_report_summary(drops, total_log_count, **kwargs):
         'chart': [],
     }
 
-    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
+    min_count = kwargs.get('min_count', max(
+        1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     # Chart data: list of {'drop': <string>, 'count': <int>}
     # Table data: dict (by drop type) of lists of items which drop, with stats. 'count' is only required stat.
@@ -30,12 +32,15 @@ def get_report_summary(drops, total_log_count, **kwargs):
 
         if drop_type == models.ItemDrop.RELATED_NAME:
             if kwargs.get('exclude_social_points'):
-                qs = qs.exclude(item__category=GameItem.CATEGORY_CURRENCY, item__name='Social Point')
+                qs = qs.exclude(
+                    item__category=GameItem.CATEGORY_CURRENCY, item__name='Social Point')
 
-            chart_qs = qs.values(name=F('item__name')).annotate(count=Count('pk')).order_by('-count')
+            chart_qs = qs.values(name=F('item__name')).annotate(
+                count=Count('pk')).order_by('-count')
 
             if not kwargs.get('include_currency'):
-                chart_qs = chart_qs.exclude(item__category=GameItem.CATEGORY_CURRENCY)
+                chart_qs = chart_qs.exclude(
+                    item__category=GameItem.CATEGORY_CURRENCY)
 
             chart_data = list(chart_qs)
             table_data = list(
@@ -47,8 +52,10 @@ def get_report_summary(drops, total_log_count, **kwargs):
                     min=Min('quantity'),
                     max=Max('quantity'),
                     avg=Avg('quantity'),
-                    drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-                    qty_per_100=Cast(Sum('quantity'), FloatField()) / total_log_count * 100,
+                    drop_chance=Cast(Count('pk'), FloatField()
+                                     ) / total_log_count * 100,
+                    qty_per_100=Cast(Sum('quantity'), FloatField()
+                                     ) / total_log_count * 100,
                 ).order_by('item__category', '-count')
             )
         elif drop_type == models.MonsterDrop.RELATED_NAME:
@@ -73,8 +80,10 @@ def get_report_summary(drops, total_log_count, **kwargs):
                         stars=F('grade'),
                     ).annotate(
                         count=Count('pk'),
-                        drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-                        qty_per_100=Cast(Count('pk'), FloatField()) / total_log_count * 100,
+                        drop_chance=Cast(Count('pk'), FloatField()
+                                         ) / total_log_count * 100,
+                        qty_per_100=Cast(Count('pk'), FloatField()
+                                         ) / total_log_count * 100,
                     )
                 ),
                 {'element': Monster.ELEMENT_CHOICES}
@@ -94,21 +103,25 @@ def get_report_summary(drops, total_log_count, **kwargs):
 
             table_data = {
                 'sets': replace_value_with_choice(
-                    list(qs.values('rune').annotate(count=Count('pk')).order_by('rune')),
+                    list(qs.values('rune').annotate(
+                        count=Count('pk')).order_by('rune')),
                     {'rune': Rune.TYPE_CHOICES}
                 ),
                 'type': replace_value_with_choice(
-                    list(qs.values('type').annotate(count=Count('pk')).order_by('type')),
+                    list(qs.values('type').annotate(
+                        count=Count('pk')).order_by('type')),
                     {'type': Rune.TYPE_CHOICES}
                 ),
                 'quality': replace_value_with_choice(
-                    list(qs.values('quality').annotate(count=Count('pk')).order_by('quality')),
+                    list(qs.values('quality').annotate(
+                        count=Count('pk')).order_by('quality')),
                     {'quality': Rune.QUALITY_CHOICES}
                 ),
             }
         else:
             # Chart is name, count only
-            item_name = ' '.join([s.capitalize() for s in drop_type.split('_')]).rstrip('s')
+            item_name = ' '.join([s.capitalize()
+                                  for s in drop_type.split('_')]).rstrip('s')
             count = qs.aggregate(count=Count('pk'))['count']
             if count > 0:
                 chart_data = [{
@@ -134,8 +147,10 @@ def get_report_summary(drops, total_log_count, **kwargs):
                             min=Min('quantity'),
                             max=Max('quantity'),
                             avg=Avg('quantity'),
-                            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-                            qty_per_100=Cast(Sum('quantity'), FloatField()) / total_log_count * 100,
+                            drop_chance=Cast(
+                                Count('pk'), FloatField()) / total_log_count * 100,
+                            qty_per_100=Cast(
+                                Sum('quantity'), FloatField()) / total_log_count * 100,
                         )
                     ),
                     {'element': Monster.ELEMENT_CHOICES}
@@ -143,12 +158,14 @@ def get_report_summary(drops, total_log_count, **kwargs):
             elif drop_type == models.RuneDrop.RELATED_NAME:
                 table_data = {
                     'sets': replace_value_with_choice(
-                        list(qs.values('type').annotate(count=Count('pk')).order_by('type')),
+                        list(qs.values('type').annotate(
+                            count=Count('pk')).order_by('type')),
                         {'type': Rune.TYPE_CHOICES}
                     ),
                     'slots': list(qs.values('slot').annotate(count=Count('pk')).order_by('slot')),
                     'quality': replace_value_with_choice(
-                        list(qs.values('quality').annotate(count=Count('pk')).order_by('quality')),
+                        list(qs.values('quality').annotate(
+                            count=Count('pk')).order_by('quality')),
                         {'quality': Rune.QUALITY_CHOICES}
                     ),
                 }
@@ -166,15 +183,18 @@ def get_report_summary(drops, total_log_count, **kwargs):
             elif drop_type == models.ArtifactDrop.RELATED_NAME:
                 table_data = {
                     'element': replace_value_with_choice(
-                        list(qs.filter(slot=Artifact.SLOT_ELEMENTAL).values('element').annotate(count=Count('pk')).order_by('element')),
+                        list(qs.filter(slot=Artifact.SLOT_ELEMENTAL).values(
+                            'element').annotate(count=Count('pk')).order_by('element')),
                         {'type': Artifact.ELEMENT_CHOICES}
                     ),
                     'archetype': replace_value_with_choice(
-                        list(qs.filter(slot=Artifact.SLOT_ARCHETYPE).values('archetype').annotate(count=Count('pk')).order_by('archetype')),
+                        list(qs.filter(slot=Artifact.SLOT_ARCHETYPE).values(
+                            'archetype').annotate(count=Count('pk')).order_by('archetype')),
                         {'type': Artifact.ARCHETYPE_CHOICES}
                     ),
                     'quality': replace_value_with_choice(
-                        list(qs.values('quality').annotate(count=Count('pk')).order_by('quality')),
+                        list(qs.values('quality').annotate(
+                            count=Count('pk')).order_by('quality')),
                         {'quality': Artifact.QUALITY_CHOICES}
                     ),
                 }
@@ -183,23 +203,32 @@ def get_report_summary(drops, total_log_count, **kwargs):
                     list(
                         qs.values(
                             name=F('level__dungeon__secretdungeon__monster__name'),
-                            slug=F('level__dungeon__secretdungeon__monster__bestiary_slug'),
-                            icon=F('level__dungeon__secretdungeon__monster__image_filename'),
-                            element=F('level__dungeon__secretdungeon__monster__element'),
-                            can_awaken=F('level__dungeon__secretdungeon__monster__can_awaken'),
-                            is_awakened=F('level__dungeon__secretdungeon__monster__is_awakened'),
-                            stars=F('level__dungeon__secretdungeon__monster__natural_stars'),
+                            slug=F(
+                                'level__dungeon__secretdungeon__monster__bestiary_slug'),
+                            icon=F(
+                                'level__dungeon__secretdungeon__monster__image_filename'),
+                            element=F(
+                                'level__dungeon__secretdungeon__monster__element'),
+                            can_awaken=F(
+                                'level__dungeon__secretdungeon__monster__can_awaken'),
+                            is_awakened=F(
+                                'level__dungeon__secretdungeon__monster__is_awakened'),
+                            stars=F(
+                                'level__dungeon__secretdungeon__monster__natural_stars'),
                         ).annotate(
                             count=Count('pk'),
-                            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-                            qty_per_100=Cast(Sum('pk'), FloatField()) / total_log_count * 100,
+                            drop_chance=Cast(
+                                Count('pk'), FloatField()) / total_log_count * 100,
+                            qty_per_100=Cast(
+                                Sum('pk'), FloatField()) / total_log_count * 100,
                         )
                     ),
                     {'element': Monster.ELEMENT_CHOICES}
                 )
 
             else:
-                raise NotImplementedError(f"No summary table generation for {drop_type}")
+                raise NotImplementedError(
+                    f"No summary table generation for {drop_type}")
 
         summary['chart'] += chart_data
 
@@ -213,7 +242,8 @@ def get_item_report(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
 
-    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
+    min_count = kwargs.get('min_count', max(
+        1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     results = list(
         qs.values(
@@ -225,8 +255,10 @@ def get_item_report(qs, total_log_count, **kwargs):
             min=Min('quantity'),
             max=Max('quantity'),
             avg=Avg('quantity'),
-            drop_chance=Cast(Count('pk'), FloatField()) / total_log_count * 100,
-            qty_per_100=Cast(Sum('quantity'), FloatField()) / total_log_count * 100,
+            drop_chance=Cast(Count('pk'), FloatField()) /
+            total_log_count * 100,
+            qty_per_100=Cast(Sum('quantity'), FloatField()) /
+            total_log_count * 100,
         ).filter(count__gt=min_count).order_by('-count')
     )
 
@@ -237,7 +269,8 @@ def get_monster_report(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
 
-    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
+    min_count = kwargs.get('min_count', max(
+        1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     return {
         'monsters': {  # By unique monster
@@ -249,7 +282,8 @@ def get_monster_report(qs, total_log_count, **kwargs):
                         'monster',
                     ).annotate(
                         monster_name=Func(
-                            Concat(F('monster__element'), Value(' '), F('monster__name')),
+                            Concat(F('monster__element'), Value(
+                                ' '), F('monster__name')),
                             function='INITCAP',
                         ),
                         count=Count('pk'),
@@ -283,7 +317,8 @@ def get_monster_report(qs, total_log_count, **kwargs):
                     qs.values(
                         nat_stars=F('monster__natural_stars'),
                     ).annotate(
-                        grade=Concat(Cast('monster__natural_stars', CharField()), Value('⭐')),
+                        grade=Concat(
+                            Cast('monster__natural_stars', CharField()), Value('⭐')),
                         count=Count('monster__natural_stars'),
                     ).filter(count__gt=min_count).order_by('-count')
                 ),
@@ -299,7 +334,8 @@ def get_monster_report(qs, total_log_count, **kwargs):
                         qs.values(
                             element=F('monster__element')
                         ).annotate(
-                            element_cap=Func(F('monster__element'), function='INITCAP',),
+                            element_cap=Func(
+                                F('monster__element'), function='INITCAP',),
                             count=Count('pk')
                         ).filter(count__gt=min_count).order_by('-count')
                     ),
@@ -332,7 +368,8 @@ def get_rune_report(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
 
-    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
+    min_count = kwargs.get('min_count', max(
+        1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     # Substat distribution
     # Unable to use database aggregation on an ArrayField without ORM gymnastics, so post-process data in python
@@ -365,7 +402,8 @@ def get_rune_report(qs, total_log_count, **kwargs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('type').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
+                    list(qs.values('type').annotate(count=Count('pk')).filter(
+                        count__gt=min_count).order_by('-count')),
                     {'type': qs.model.TYPE_CHOICES}
                 )
             ),
@@ -375,7 +413,8 @@ def get_rune_report(qs, total_log_count, **kwargs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('quality').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
+                    list(qs.values('quality').annotate(count=Count('pk')).filter(
+                        count__gt=min_count).order_by('-count')),
                     {'quality': qs.model.QUALITY_CHOICES}
                 )
             ),
@@ -390,7 +429,8 @@ def get_rune_report(qs, total_log_count, **kwargs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('main_stat').annotate(count=Count('main_stat')).filter(count__gt=min_count).order_by('main_stat')),
+                    list(qs.values('main_stat').annotate(count=Count('main_stat')).filter(
+                        count__gt=min_count).order_by('main_stat')),
                     {'main_stat': qs.model.STAT_CHOICES}
                 )
             )
@@ -400,7 +440,8 @@ def get_rune_report(qs, total_log_count, **kwargs):
             'total': qs.filter(slot=2).count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.filter(slot=2).values('main_stat').annotate(count=Count('main_stat')).filter(count__gt=min_count).order_by('main_stat')),
+                    list(qs.filter(slot=2).values('main_stat').annotate(count=Count(
+                        'main_stat')).filter(count__gt=min_count).order_by('main_stat')),
                     {'main_stat': qs.model.STAT_CHOICES}
                 )
             )
@@ -432,7 +473,8 @@ def get_rune_report(qs, total_log_count, **kwargs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('innate_stat').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('innate_stat')),
+                    list(qs.values('innate_stat').annotate(count=Count('pk')).filter(
+                        count__gt=min_count).order_by('innate_stat')),
                     {'innate_stat': qs.model.STAT_CHOICES}
                 )
             )
@@ -443,7 +485,8 @@ def get_rune_report(qs, total_log_count, **kwargs):
             'data': transform_to_dict(
                 replace_value_with_choice(
                     sorted(
-                        [{'substat': k, 'count': v} for k, v in substat_counts.items()],
+                        [{'substat': k, 'count': v}
+                            for k, v in substat_counts.items()],
                         key=lambda count: count['substat']
                     ),
                     {'substat': qs.model.STAT_CHOICES}
@@ -467,7 +510,8 @@ def get_artifact_report(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
 
-    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
+    min_count = kwargs.get('min_count', max(
+        1, int(MINIMUM_THRESHOLD * total_log_count)))
     # Secondary effect distribution
     # Unable to use database aggregation on an ArrayField without ORM gymnastics, so post-process data in python
     all_effects = qs.annotate(
@@ -526,7 +570,8 @@ def get_artifact_report(qs, total_log_count, **kwargs):
             'data': transform_to_dict(
                 replace_value_with_choice(
                     sorted(
-                        [{'effect': k, 'count': v} for k, v in effect_counts.items()],
+                        [{'effect': k, 'count': v}
+                            for k, v in effect_counts.items()],
                         key=lambda count: count['effect']
                     ),
                     {'effect': qs.model.EFFECT_CHOICES}
@@ -545,7 +590,8 @@ def _rune_craft_report_data(qs, total_log_count, **kwargs):
     if qs.count() == 0:
         return None
 
-    min_count = kwargs.get('min_count', max(1, int(MINIMUM_THRESHOLD * total_log_count)))
+    min_count = kwargs.get('min_count', max(
+        1, int(MINIMUM_THRESHOLD * total_log_count)))
 
     return {
         'type': {
@@ -553,7 +599,8 @@ def _rune_craft_report_data(qs, total_log_count, **kwargs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('type').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
+                    list(qs.values('type').annotate(count=Count('pk')).filter(
+                        count__gt=min_count).order_by('-count')),
                     {'type': qs.model.CRAFT_CHOICES}
                 )
             ),
@@ -563,7 +610,8 @@ def _rune_craft_report_data(qs, total_log_count, **kwargs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('rune').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
+                    list(qs.values('rune').annotate(count=Count('pk')).filter(
+                        count__gt=min_count).order_by('-count')),
                     {'rune': qs.model.TYPE_CHOICES}
                 )
             ),
@@ -573,7 +621,8 @@ def _rune_craft_report_data(qs, total_log_count, **kwargs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('quality').annotate(count=Count('pk')).filter(count__gt=min_count).order_by('-count')),
+                    list(qs.values('quality').annotate(count=Count('pk')).filter(
+                        count__gt=min_count).order_by('-count')),
                     {'quality': qs.model.QUALITY_CHOICES}
                 )
             ),
@@ -583,7 +632,8 @@ def _rune_craft_report_data(qs, total_log_count, **kwargs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('stat').annotate(count=Count('stat')).filter(count__gt=min_count).order_by('stat')),
+                    list(qs.values('stat').annotate(count=Count('stat')).filter(
+                        count__gt=min_count).order_by('stat')),
                     {'stat': qs.model.STAT_CHOICES}
                 )
             )
@@ -631,7 +681,8 @@ def drop_report(qs, **kwargs):
     # Clear time statistics, if supported by the qs model
     if hasattr(qs.model, 'clear_time'):
         successful_runs = qs.filter(
-            Q(success=True) | Q(level__dungeon__category=Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS)
+            Q(success=True) | Q(
+                level__dungeon__category=Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS)
         )
 
         if successful_runs.count():
@@ -644,16 +695,19 @@ def drop_report(qs, **kwargs):
 
             # Use +/- 3 std deviations of clear time avg as bounds for time range in case of extreme outliers skewing chart scale
             min_time = round_timedelta(
-                max(clear_time_aggs['min'], clear_time_aggs['avg'] - timedelta(seconds=clear_time_aggs['std_dev'] * 3)),
+                max(clear_time_aggs['min'], clear_time_aggs['avg'] -
+                    timedelta(seconds=clear_time_aggs['std_dev'] * 3)),
                 CLEAR_TIME_BIN_WIDTH,
                 direction='down',
             )
             max_time = round_timedelta(
-                min(clear_time_aggs['max'], clear_time_aggs['avg'] + timedelta(seconds=clear_time_aggs['std_dev'] * 3)),
+                min(clear_time_aggs['max'], clear_time_aggs['avg'] +
+                    timedelta(seconds=clear_time_aggs['std_dev'] * 3)),
                 CLEAR_TIME_BIN_WIDTH,
                 direction='up',
             )
-            bins = [min_time + CLEAR_TIME_BIN_WIDTH * x for x in range(0, int((max_time - min_time) / CLEAR_TIME_BIN_WIDTH))]
+            bins = [min_time + CLEAR_TIME_BIN_WIDTH *
+                    x for x in range(0, int((max_time - min_time) / CLEAR_TIME_BIN_WIDTH))]
 
             # Histogram generates on entire qs, not just successful runs.
             report_data['clear_time'] = {
@@ -681,8 +735,10 @@ def grade_summary_report(qs, grade_choices):
     drops = get_drop_querysets(qs)
 
     # List of all drops. Currently only care about monsters and items
-    all_items = GameItem.objects.filter(pk__in=drops['items'].values_list('item', flat=True)) if 'items' in drops else []
-    all_monsters = Monster.objects.filter(pk__in=drops['monsters'].values_list('monster', flat=True)) if 'monsters' in drops else []
+    all_items = GameItem.objects.filter(pk__in=drops['items'].values_list(
+        'item', flat=True)) if 'items' in drops else []
+    all_monsters = Monster.objects.filter(pk__in=drops['monsters'].values_list(
+        'monster', flat=True)) if 'monsters' in drops else []
     all_runes = drops['runes'] if 'runes' in drops else []
 
     for grade_id, grade_name in grade_choices:
@@ -703,8 +759,10 @@ def grade_summary_report(qs, grade_choices):
                 min=Min('quantity'),
                 max=Max('quantity'),
                 avg=Avg('quantity'),
-                drop_chance=Cast(Count('pk'), FloatField()) / grade_run_count * 100,
-                qty_per_100=Cast(Sum('quantity'), FloatField()) / grade_run_count * 100,
+                drop_chance=Cast(Count('pk'), FloatField()) /
+                grade_run_count * 100,
+                qty_per_100=Cast(Sum('quantity'), FloatField()
+                                 ) / grade_run_count * 100,
             )
 
             grade_report['drops'].append({
@@ -720,8 +778,10 @@ def grade_summary_report(qs, grade_choices):
                 monster=monster
             ).aggregate(
                 count=Count('pk'),
-                drop_chance=Cast(Count('pk'), FloatField()) / grade_run_count * 100,
-                qty_per_100=Cast(Func(Count('pk'), 0, function='nullif'), FloatField()) / grade_run_count * 100,
+                drop_chance=Cast(Count('pk'), FloatField()) /
+                grade_run_count * 100,
+                qty_per_100=Cast(
+                    Func(Count('pk'), 0, function='nullif'), FloatField()) / grade_run_count * 100,
             )
 
             grade_report['drops'].append({
@@ -738,8 +798,10 @@ def grade_summary_report(qs, grade_choices):
                 stars=stars,
             ).aggregate(
                 count=Count('pk'),
-                drop_chance=Cast(Count('pk'), FloatField()) / grade_run_count * 100,
-                qty_per_100=Cast(Func(Count('pk'), 0, function='nullif'), FloatField()) / grade_run_count * 100,
+                drop_chance=Cast(Count('pk'), FloatField()) /
+                grade_run_count * 100,
+                qty_per_100=Cast(
+                    Func(Count('pk'), 0, function='nullif'), FloatField()) / grade_run_count * 100,
             )
 
             grade_report['drops'].append({
@@ -755,10 +817,12 @@ def grade_summary_report(qs, grade_choices):
 
 def _generate_level_reports(model, **kwargs):
     content_type = ContentType.objects.get_for_model(model)
-    levels = model.objects.values_list('level', flat=True).distinct().order_by()
+    levels = model.objects.values_list(
+        'level', flat=True).distinct().order_by()
 
     for level in Level.objects.filter(pk__in=levels):
-        records = slice_records(model.objects.filter(level=level, success=True), minimum_count=2500, report_timespan=timedelta(weeks=2))
+        records = slice_records(model.objects.filter(
+            level=level, success=True), minimum_count=2500, report_timespan=timedelta(weeks=2))
 
         if records.count() > 0:
             report_data = drop_report(records, **kwargs)
@@ -766,10 +830,12 @@ def _generate_level_reports(model, **kwargs):
             models.LevelReport.objects.create(
                 level=level,
                 content_type=content_type,
-                start_timestamp=records[records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+                # first() and last() do not work on sliced qs
+                start_timestamp=records[records.count() - 1].timestamp,
                 end_timestamp=records[0].timestamp,
                 log_count=records.count(),
-                unique_contributors=records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+                unique_contributors=records.aggregate(Count('wizard_id', distinct=True))[
+                    'wizard_id__count'],
                 report=report_data,
             )
 
@@ -779,12 +845,14 @@ def generate_dungeon_log_reports(**kwargs):
 
 
 def generate_rift_raid_reports():
-    _generate_level_reports(models.RiftRaidLog, include_currency=True, exclude_social_points=True)
+    _generate_level_reports(
+        models.RiftRaidLog, include_currency=True, exclude_social_points=True)
 
 
 def _generate_by_grade_reports(model):
     content_type = ContentType.objects.get_for_model(model)
-    levels = model.objects.values_list('level', flat=True).distinct().order_by()
+    levels = model.objects.values_list(
+        'level', flat=True).distinct().order_by()
 
     for level in Level.objects.filter(pk__in=levels):
         all_records = model.objects.none()
@@ -794,7 +862,8 @@ def _generate_by_grade_reports(model):
 
         # Generate a report by grade
         for grade, grade_desc in model.GRADE_CHOICES:
-            records = slice_records(model.objects.filter(level=level, grade=grade), minimum_count=2500, report_timespan=timedelta(weeks=2))
+            records = slice_records(model.objects.filter(
+                level=level, grade=grade), minimum_count=2500, report_timespan=timedelta(weeks=2))
 
             if records.count() > 0:
                 grade_report = drop_report(records)
@@ -809,7 +878,8 @@ def _generate_by_grade_reports(model):
 
         if all_records.count() > 0:
             # Generate a report with all results for a complete list of all things that drop here
-            report_data['summary'] = grade_summary_report(all_records, model.GRADE_CHOICES)
+            report_data['summary'] = grade_summary_report(
+                all_records, model.GRADE_CHOICES)
 
             models.LevelReport.objects.create(
                 level=level,
@@ -817,7 +887,8 @@ def _generate_by_grade_reports(model):
                 start_timestamp=all_records.last().timestamp,
                 end_timestamp=all_records.first().timestamp,
                 log_count=all_records.count(),
-                unique_contributors=all_records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+                unique_contributors=all_records.aggregate(Count('wizard_id', distinct=True))[
+                    'wizard_id__count'],
                 report=report_data,
             )
 
@@ -831,94 +902,144 @@ def generate_world_boss_dungeon_reports():
 
 
 def generate_shop_refresh_reports():
-    records = slice_records(models.ShopRefreshLog.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    records = slice_records(models.ShopRefreshLog.objects.all(
+    ), minimum_count=2500, report_timespan=timedelta(weeks=2))
     report = drop_report(records, min_count=0)
 
     content_type = ContentType.objects.get_for_model(models.ShopRefreshLog)
     if records.count() > 0:
         models.MagicShopRefreshReport.objects.create(
             content_type=content_type,
-            start_timestamp=records[records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+            # first() and last() do not work on sliced qs
+            start_timestamp=records[records.count() - 1].timestamp,
             end_timestamp=records[0].timestamp,
             log_count=records.count(),
-            unique_contributors=records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+            unique_contributors=records.aggregate(Count('wizard_id', distinct=True))[
+                'wizard_id__count'],
             report=report,
         )
 
 
 def generate_magic_box_crafting_reports():
-    records = slice_records(models.MagicBoxCraft.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    records = slice_records(models.MagicBoxCraft.objects.all(
+    ), minimum_count=2500, report_timespan=timedelta(weeks=2))
     content_type = ContentType.objects.get_for_model(models.MagicBoxCraft)
-    
+
     for box_id, _ in models.MagicBoxCraft.BOX_CHOICES:
         qs = records.filter(box_type=box_id)
         report = drop_report(qs, min_count=0, include_currency=True)
-        
+
         if qs.count() > 0:
             models.MagicBoxCraftingReport.objects.create(
                 content_type=content_type,
-                start_timestamp=qs[qs.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+                # first() and last() do not work on sliced qs
+                start_timestamp=qs[qs.count() - 1].timestamp,
                 end_timestamp=qs[0].timestamp,
                 log_count=qs.count(),
-                unique_contributors=qs.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+                unique_contributors=qs.aggregate(Count('wizard_id', distinct=True))[
+                    'wizard_id__count'],
                 report=report,
                 box_type=box_id,
             )
 
 
 def generate_wish_reports():
-    records = slice_records(models.WishLog.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    records = slice_records(models.WishLog.objects.all(
+    ), minimum_count=2500, report_timespan=timedelta(weeks=2))
     report = drop_report(records, min_count=0, include_currency=True)
 
     content_type = ContentType.objects.get_for_model(models.WishLog)
     if records.count() > 0:
         models.WishReport.objects.create(
             content_type=content_type,
-            start_timestamp=records[records.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+            # first() and last() do not work on sliced qs
+            start_timestamp=records[records.count() - 1].timestamp,
             end_timestamp=records[0].timestamp,
             log_count=records.count(),
-            unique_contributors=records.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+            unique_contributors=records.aggregate(Count('wizard_id', distinct=True))[
+                'wizard_id__count'],
             report=report,
         )
 
 
 def generate_summon_reports():
-    records = slice_records(models.SummonLog.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    records = slice_records(models.SummonLog.objects.all(
+    ), minimum_count=2500, report_timespan=timedelta(weeks=2))
     content_type = ContentType.objects.get_for_model(models.SummonLog)
 
-    items = GameItem.objects.filter(pk__in=set(records.values_list('item', flat=True)))
+    items = GameItem.objects.filter(pk__in=set(
+        records.values_list('item', flat=True)), category__isnull=False)
+    item_group_pairs = {item: item for item in items}
 
-    for item in items:
-        qs = records.filter(item=item)
+    # unknown scrolls, hearts
+    hearts = GameItem.objects.get(
+        category=GameItem.CATEGORY_CURRENCY, com2us_id=2)
+    us = GameItem.objects.get(
+        category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=1)
+    # crystals, ms
+    crystals = GameItem.objects.get(
+        category=GameItem.CATEGORY_CURRENCY, com2us_id=1)
+    ms = GameItem.objects.get(
+        category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=2)
+    # ld & pieces
+    ld = GameItem.objects.get(
+        category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=3)
+    ld_pieces = GameItem.objects.get(
+        category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=10)
+    # ls & pieces
+    ls = GameItem.objects.get(
+        category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=7)
+    ls_pieces = GameItem.objects.get(
+        category=GameItem.CATEGORY_SUMMON_SCROLL, com2us_id=9)
+
+    item_group_pairs[hearts] = us
+    item_group_pairs[crystals] = ms
+    item_group_pairs[ld_pieces] = ld
+    item_group_pairs[ls_pieces] = ls
+
+    item_groups = {}
+    for item in set(item_group_pairs.values()):
+        item_groups[item] = [k for k, v in item_group_pairs.items()
+                             if v == item]
+
+    for item_g, items in item_groups.items():
+        if not items:
+            continue
+        qs = records.filter(item__in=items)
         report = get_monster_report(qs, qs.count(), min_count=0)
 
         if qs.count() > 0:
             models.SummonReport.objects.create(
                 content_type=content_type,
-                start_timestamp=qs[qs.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+                # first() and last() do not work on sliced qs
+                start_timestamp=qs[qs.count() - 1].timestamp,
                 end_timestamp=qs[0].timestamp,
                 log_count=qs.count(),
-                unique_contributors=qs.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+                unique_contributors=qs.aggregate(Count('wizard_id', distinct=True))[
+                    'wizard_id__count'],
                 report=report,
-                item=item,
+                item=item_g,
             )
 
 
 def generate_rune_crafting_reports():
-    records = slice_records(models.CraftRuneLog.objects.all(), minimum_count=2500, report_timespan=timedelta(weeks=2))
+    records = slice_records(models.CraftRuneLog.objects.all(
+    ), minimum_count=2500, report_timespan=timedelta(weeks=2))
     content_type = ContentType.objects.get_for_model(models.CraftRuneLog)
-    
+
     for craft_id, _ in models.CraftRuneLog.CRAFT_CHOICES:
         qs = records.filter(craft_level=craft_id)
         report = get_rune_report(qs, qs.count(), min_count=0)
-        
+
         if qs.count() > 0:
             models.RuneCraftingReport.objects.create(
                 content_type=content_type,
-                start_timestamp=qs[qs.count() - 1].timestamp,  # first() and last() do not work on sliced qs
+                # first() and last() do not work on sliced qs
+                start_timestamp=qs[qs.count() - 1].timestamp,
                 end_timestamp=qs[0].timestamp,
                 log_count=qs.count(),
-                unique_contributors=qs.aggregate(Count('wizard_id', distinct=True))['wizard_id__count'],
+                unique_contributors=qs.aggregate(Count('wizard_id', distinct=True))[
+                    'wizard_id__count'],
                 report=report,
                 craft_level=craft_id,
             )

@@ -24,7 +24,8 @@ admin.site.register(User, CustomUserAdmin)
 
 class RuneBuildInline(admin.TabularInline):
     model = models.RuneBuild
-    exclude = ('owner', 'runes', )
+    exclude = ('owner', )
+    readonly_fields = ('runes', 'artifacts', )
     extra = 0
     show_change_link = True
 
@@ -56,7 +57,7 @@ class TeamGroupAdmin(admin.ModelAdmin):
 class RuneInstanceAdmin(admin.ModelAdmin):
     list_display = ('type', 'stars', 'level', 'slot', 'owner', 'main_stat')
     search_fields = ('id',)
-    exclude = ('owner', 'assigned_to')
+    exclude = ('owner', 'assigned_to', 'rta_assigned_to', )
     readonly_fields = ('quality', 'has_hp', 'has_atk', 'has_def', 'has_crit_rate', 'has_crit_dmg', 'has_speed', 'has_resist', 'has_accuracy')
 
 
@@ -83,7 +84,7 @@ class RuneCraftInstanceAdmin(admin.ModelAdmin):
 
 @admin.register(models.ArtifactInstance)
 class ArtifactInstanceAdmin(admin.ModelAdmin):
-    readonly_fields = ('owner', 'assigned_to')
+    readonly_fields = ('owner', 'assigned_to', 'rta_assigned_to', )
 
 
 @admin.register(models.ArtifactCraftInstance)

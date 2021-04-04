@@ -39,7 +39,7 @@ function iconSelect2Template(option) {
 }
 
 // Init all the select2s with the appropriate templates
-$.fn.select2.defaults.set("theme", "bootstrap");
+$.fn.select2.defaults.set("theme", "bootstrap-5");
 $.fn.select2.defaults.set("width", "100%");
 $.fn.select2.defaults.set("allowClear", true);
 $.fn.select2.defaults.set("escapeMarkup", function(m) {return m;});

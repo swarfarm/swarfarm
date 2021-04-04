@@ -3,16 +3,64 @@ body {
   height: 100%;
 }
 body {
-  padding-top: 50px;
+  padding-top: 70px;
 }
 
-#wrap {
-  min-height: 100%;
-  position: relative;
+blockquote{
+  margin: 0;
+  color: rgba(0, 0, 0, 0.5);
+  border-left: 4px solid black;
+  padding-left: 10px;
+  border-radius: 5px;
+}
+
+.footer{
+  height: unset;
+  width: 100%;
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 0px 1px #dee2e6;
+  box-sizing: border-box;
+}
+
+.page-link{
+  padding: .375rem .856rem;
+}
+
+.card a{
+  text-decoration: none;
 }
 
 thead {
   background-color: #ffffff;
+}
+
+.navbar{
+  padding: 0;
+}
+
+.nav-item{
+  padding: 0.5625rem;
+}
+
+.nav-item.active{
+  background-color: #e7e7e7;
+}
+
+.patreon{
+  color: rgba(255, 66, 77, .75)!important;
+}
+
+.color-patreon{
+  color: rgb(255, 66, 77)!important;
+}
+
+.navbar-autocomplete #div_id_name{
+  margin-bottom: 0!important;
+  min-width: 200px;
 }
 
 .profile-anchor-offset {
@@ -20,54 +68,6 @@ thead {
   position: relative;
   top: -120px;
   visibility: hidden;
-}
-
-.container {
-  width: auto;
-  position: relative;
-  min-height: 100%;
-  overflow: auto;
-  padding-bottom: 40px;
-  padding-top: 10px;
-}
-
-.navmenu-collapsed {
-  z-index: 999;
-  position: fixed;
-  top: 50px;
-  width: 100%;
-  display: block;
-  background: white;
-  border: 1px solid transparent;
-}
-
-.navmenu-collapsed button {
-  float: left;
-  margin-left: 15px;
-}
-
-.navmenu-content {
-  padding-top: 50px;
-}
-
-@media (min-width: 1px) {
-  .navmenu-collapsed .navbar-toggle {
-    display: block !important;
-  }
-}
-
-@media (min-width: 992px) {
-  .navmenu-content {
-    padding-left: 300px;
-    padding-top: 0;
-  }
-  .navmenu-collapsed {
-    display: none;
-  }
-}
-
-.navmenu a {
-  cursor: pointer;
 }
 
 .dropdown-menu > li > form {
@@ -137,9 +137,6 @@ footer {
   margin-right: 0 !important;
 }
 
-.inline-editable {
-}
-
 .inline-editable:hover {
   cursor: pointer;
   position: relative;
@@ -167,8 +164,6 @@ select.short {
   max-width: 300px;
 }
 
-.navbar img,
-.navmenu img,
 .btn-group img,
 .select2 img,
 .select2-results img {
@@ -177,15 +172,6 @@ select.short {
 
 .select2-container {
   min-width: 60px;
-}
-
-.navbar .btn {
-  margin-left: 3px;
-  margin-right: 3px;
-}
-
-.navbar-right {
-  margin-right: 5px;
 }
 
 .subnavmenu-fixed-left {
@@ -1151,16 +1137,6 @@ button.rune-assign-choice {
   border-bottom: 1px solid #ddd;
   border-radius: 0;
   padding: 10px;
-}
-
-.nav-tabs {
-  margin-bottom: 0;
-}
-
-.navmenu-text {
-  position: relative;
-  display: block;
-  padding: 0 15px;
 }
 
 .dungeon-icon {

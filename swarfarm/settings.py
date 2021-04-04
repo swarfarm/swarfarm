@@ -109,6 +109,7 @@ INSTALLED_APPS = [
     'compressor',
     'corsheaders',
     'crispy_forms',
+    'crispy_bootstrap5',
     'django_celery_results',
     'django_celery_beat',
     'markdown_deux',
@@ -256,7 +257,8 @@ COMPRESS_ENABLED = env('COMPRESS_ENABLED')
 COMPRESS_CSS_FILTERS = ['compressor.filters.cssmin.rCSSMinFilter']
 
 # crispyforms
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Google APIs
 RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')

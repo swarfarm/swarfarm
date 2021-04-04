@@ -40,7 +40,7 @@ class BestiaryQuickSearchForm(forms.Form):
             Field(
                 'name',
             ),
-            css_class='input-group'
+            css_class='input-group navbar-autocomplete'
         ),
     )
 

@@ -2,105 +2,104 @@
 {% load utils %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <span class="panel-title"><strong><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" style="height:1em" loading="lazy" /> {{ monster.name }}</strong> - <small>{{ monster.get_archetype_display }}</small></span>
+<div class="card border-0 shadow mb-3">
+    <div class="card-header bg-white">
+        <span class="card-title"><strong><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" style="height:1em" loading="lazy" /> {{ monster.name }}</strong> - <small>{{ monster.get_archetype_display }}</small></span>
         {% if request.user.is_superuser %}
-            <a href="{% url 'admin:bestiary_monster_change' object_id=monster.pk %}" class="btn btn-xs edit-skill pull-right" target="_blank"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="{% url 'admin:bestiary_monster_change' object_id=monster.pk %}" class="btn btn-sm edit-skill float-right" target="_blank"><i class="fas fa-edit"></i></a>
         {% endif %}
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <div class="monster-box">
             {% include 'bestiary/monster/portrait_large.html' with monster=monster only %}
 
             {% if monster.obtainable %}
             <div class="monster-box-actions">
-                <button class="btn btn-link btn-xs monster-add" data-monster="{{ monster.pk }}" data-stars="{{ monster.stars }}">
-                    <span class="glyphicon glyphicon-plus"></span> Collection
+                <button class="btn btn-link btn-sm monster-add text-decoration-none" data-monster="{{ monster.pk }}" data-stars="{{ monster.stars }}">
+                    <small class="fw-lighter"><i class="fas fa-plus"></i> Collection</small>
                 </button>
             </div>
             {% endif %}
         </div>
 
-        <div class="panel panel-default monster-info-panel">
-            <table class="table table-condensed table-bordered">
-                <tbody>
-                {% if monster.transforms_to %}
-                    <tr>
-                        <td>Transforms Into</td>
-                        <td><a href="{% url 'bestiary:detail' monster_slug=monster.transforms_to.bestiary_slug  %}"><img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ monster.transforms_to.image_filename }}" /> {{ monster.transforms_to }}</a></td>
-                    </tr>
-                {% endif %}
-                <tr>
-                    <td>Awakening Bonus:</td>
-                    <td>{{ monster.awaken_bonus }}</td>
-                </tr>
-                {% with sources=monster.source.all %}
-                {% if sources|length %}
-                <tr>
-                    <td>Sources:</td>
-                    <td class="monster-sources">
-                        {% for source in sources %}
-                            {% if source.icon_filename %}
-                            <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}" loading="lazy" 
-                                 class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
-                            {% else %}
-                            <span class="monster-source"><span>{{ source }}</span></span>
-                            {% endif %}
-                        {% endfor %}
-                    </td>
-                </tr>
-                {% endif %}
-                {% endwith %}
-                {% if monster.can_awaken and not monster.is_awakened %}
-                <tr>
-                    <td>Awakening Essences:</td>
-                    <td class="monster-awaken-materials">
-                        {% include 'bestiary/awakening_essences.html' %}
-                    </td>
-                </tr>
-                {% endif %}
-                {% with fusion_set=monster.fusion_ingredient_for.all %}
-                    {% if fusion_set|length %}
-                        <tr>
-                            <td>Fusion Ingredient For:</td>
-                            <td class="monster-awaken-materials">
-                                {% for fusion in fusion_set %}
-                                    <a href="{% url 'bestiary:detail' monster_slug=fusion.product.bestiary_slug %}">
-                                        {% include 'bestiary/monster/portrait_small.html' with monster=fusion.product only %}
-                                    </a>
-                                {% endfor %}
-                            </td>
-                        </tr>
-                    {% endif %}
-                {% endwith %}
-                
-                {% if monster.fusion %}
-                    <tr>
-                        <td>Fusion Product Of:</td>
-                        <td class="monster-awaken-materials">
-                            {% for fusion_from in monster.fusion.ingredients.all %}
-                                <a href="{% url 'bestiary:detail' monster_slug=fusion_from.bestiary_slug %}">
-                                    {% include 'bestiary/monster/portrait_small.html' with monster=fusion_from only %}
-                                </a>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {% endif %}
+        <div class="card border-0 mb-3 ms-3">
+            {% if monster.transforms_to %}
+            <div class="card-header bg-white d-flex justify-content-between">
+                <div class="fw-lighter">Transforms Into</div>
+                <a href="{% url 'bestiary:detail' monster_slug=monster.transforms_to.bestiary_slug  %}">
+                    {{ monster.transforms_to }} <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ monster.transforms_to.image_filename }}" />
+                </a>
+            </div>
+            {% endif %}
 
-                {% if monster.skill_ups_to_max %}
-                <tr>
-                    <td>Skill-ups to Max</td>
-                    <td class="monster-awaken-materials">
-                        <div class="monster-image">
-                            <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb" loading="lazy" />
-                            <span class="image-plus image-plus-main">{{ monster.skill_ups_to_max }}</span>
-                        </div>
-                    </td>
-                </tr>
-                {% endif %}
-                </tbody>
-            </table>
+            {% if monster.awaken_bonus %}
+            <div class="card-header bg-white card-bestiary-monster-details">
+                <div class="fw-lighter">Awakening Bonus</div>
+                {{ monster.awaken_bonus }}
+            </div>
+            {% endif %}
+
+            {% with sources=monster.source.all %}
+            {% if sources|length %}
+            <div class="card-header bg-white card-bestiary-monster-details">
+                <div class="fw-lighter">Sources</div>
+                <div>
+                    {% for source in sources %}
+                        {% if source.icon_filename %}
+                        <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}" loading="lazy" 
+                                class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
+                        {% else %}
+                        <span class="monster-source"><span>{{ source }}</span></span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {% if monster.can_awaken and not monster.is_awakened %}
+            <div class="card-header bg-white card-bestiary-monster-details">
+                <div class="fw-lighter">Awakening Essences</div>
+                <div>{% include 'bestiary/awakening_essences.html' %}</div>
+            </div>
+            {% endif %}
+            {% with fusion_set=monster.fusion_ingredient_for.all %}
+            {% if fusion_set|length %}
+            <div class="card-header bg-white card-bestiary-monster-details">
+                <div class="fw-lighter">Fusion Ingredient For</div>
+                <div>
+                    {% for fusion in fusion_set %}
+                        <a href="{% url 'bestiary:detail' monster_slug=fusion.product.bestiary_slug %}">
+                            {% include 'bestiary/monster/portrait_small.html' with monster=fusion.product only %}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+                
+            {% if monster.fusion %}
+            <div class="card-header bg-white card-bestiary-monster-details">
+                <div class="fw-lighter">Fusion Product Of</div>
+                <div>
+                    {% for fusion_from in monster.fusion.ingredients.all %}
+                        <a href="{% url 'bestiary:detail' monster_slug=fusion_from.bestiary_slug %}">
+                            {% include 'bestiary/monster/portrait_small.html' with monster=fusion_from only %}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if monster.skill_ups_to_max %}
+            <div class="card-header bg-white card-bestiary-monster-details">
+                <div class="fw-lighter">Skill-ups to Max</div>
+                <div class="monster-image">
+                    <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb" loading="lazy" />
+                    <span class="image-plus image-plus-main">{{ monster.skill_ups_to_max }}</span>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

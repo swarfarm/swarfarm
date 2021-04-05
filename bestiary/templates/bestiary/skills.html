@@ -4,14 +4,15 @@
 <div class="row condensed">
     {% if monster.leader_skill %}
     <div class="col-lg-12">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="monster-skill-thumb pull-left"><img src="{{ img_url_prefix }}skills/leader/{{ monster.leader_skill.icon_filename }}" loading="lazy" /></div>
-                <h4 class="list-group-item-heading">Leader Skill</h4>
-                <div class="list-group-item-text">
-                    {{ monster.leader_skill.skill_string }}
+        <div class="card border-0 shadow mb-3">
+            <div class="card-body d-flex">
+                <div class="monster-skill-thumb float-left"><img src="{{ img_url_prefix }}skills/leader/{{ monster.leader_skill.icon_filename }}" loading="lazy" /></div>
+                <div>
+                    <h4 class="fw-lighter mb-0">Leader Skill</h4>
+                    <div class="fw-lighter">
+                        {{ monster.leader_skill.skill_string }}
+                    </div>
                 </div>
-                <div class="clearfix"></div>
             </div>
         </div>
     </div>
@@ -19,68 +20,68 @@
 
     {% for skill in monster.skills.all %}
     <div class="{% if monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
-        <div class="panel panel-default">
-            <div class="panel-heading">
+        <div class="card border-0 shadow mb-3">
+            <div class="card-header bg-white">
                 {% if request.user.is_superuser %}
-                    <a href="{% url 'admin:bestiary_skill_change' object_id=skill.pk %}" class="btn btn-xs edit-skill pull-right" target="_blank"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="{% url 'admin:bestiary_skill_change' object_id=skill.pk %}" class="btn btn-sm edit-skill float-right" target="_blank"><i class="fas fa-edit"></i></span></a>
                 {% endif %}
-                <p class="panel-title"><strong>{{ skill.name }}</strong></p>
+                <p class="card-title fw-lighter"><strong>{{ skill.name }}</strong></p>
             </div>
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <div class="monster-skill-thumb pull-left">
+
+            <div class="{% if skill.level_progress_description_list|length > 0 %}card-header{% else %}card-footer border-0{% endif %} bg-white">
+                <div class="card-bestiary-monster-details flex-nowrap">
+                    <div class="monster-skill-thumb float-left">
                         <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
                         <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
                     </div>
-                    <p>
-                        {{ skill.description }}
-                        {% if skill.cooltime %}
-                            (Reusable in {{ skill.cooltime }} turn{{ skill.cooltime|pluralize }}).
+                    <div class="d-flex flex-wrap">
+                    {% if skill.effect.all|length > 0 or skill.aoe %}
+                        {% if skill.aoe %}
+                            <span class="skill-effect skill-effect-buff p-1 mb-1">
+                                <span>AOE</span>
+                            </span>
                         {% endif %}
-                    </p>
-                    <div class="clearfix"></div>
-                </li>
-                {% if skill.level_progress_description_list|length > 0%}
-                <li class="list-group-item">
-                    <p class="list-group-item-heading"><strong>Level-up Progress:</strong></p>
-                    <ul class="list-unstyled">
+                        {% for effect in skill.effect.all %}
+                            {% if effect.icon_filename %}
+                                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect float-left mb-1" loading="lazy" 
+                                    data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                />
+                            {% else %}
+                                <span class="skill-effect p-1 mb-1 {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                    <span>{{ effect.name }}</span>
+                                </span>
+                            {% endif %}
+                        {% endfor %}
+                        </p>
+                    </li>
+                    {% endif %}
+                    </div>
+                </div>
+                <div class="fw-lighter">
+                    {{ skill.description }}
+                    {% if skill.cooltime %}
+                        (Reusable in {{ skill.cooltime }} turn{{ skill.cooltime|pluralize }}).
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if skill.level_progress_description_list|length > 0 %}
+            <div class="{% if skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
+                <strong class="fw-normal">Level-up Progress</strong>
+                <ul class="list-unstyled fw-lighter">
                     {% for line in skill.level_progress_description_list %}
                         <li>{{ line }}</li>
                     {% endfor %}
-                    </ul>
-                </li>
-                {% endif %}
-                {% if skill.effect.all|length > 0 or skill.aoe %}
-                <li class="list-group-item">
-                    <p class="list-group-item-heading"><strong>Skill Effects:</strong></p>
-                    <p>
-                    {% if skill.aoe %}
-                        <span class="skill-effect skill-effect-buff">
-                            <span>AOE</span>
-                        </span>
-                    {% endif %}
-                    {% for effect in skill.effect.all %}
-                        {% if effect.icon_filename %}
-                        <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect pull-left" loading="lazy" 
-                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                />
-                        {% else %}
-                            <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                                <span>{{ effect.name }}</span>
-                            </span>
-                        {% endif %}
-                    {% endfor %}
-                    </p>
-                    <div class="clearfix"></div>
-                </li>
-                {% endif %}
-                {% if skill.multiplier_formula %}
-                <li class="list-group-item">
-                    <p class="list-group-item-heading"><strong>Multiplier Formula:</strong></p>
-                    <p>{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
-                </li>
-                {% endif %}
-            </ul>
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if skill.multiplier_formula %}
+            <div class="card-footer border-0 bg-white">
+                <strong class="fw-normal">Multiplier Formula</strong>
+                <p class="fw-lighter">{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
+            </div>
+            {% endif %}
         </div>
     </div>
     {% endfor %}

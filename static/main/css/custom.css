@@ -101,8 +101,16 @@ blockquote{
   z-index: 1002;
 }
 
-.page-link{
-  padding: .375rem .856rem;
+.pager-btn.active{
+  background-color: #0d6efd!important;
+  color: white;
+}
+
+.card-monster.active{
+  background-color: #ededed!important;
+}
+.card-monster:hover{
+  background-color: #e1e1e1!important;
 }
 
 .card a{
@@ -249,20 +257,6 @@ select.short {
   min-width: 60px;
 }
 
-.toggle:before {
-  padding-right: 5px;
-  float: left;
-  font-family: "Glyphicons Halflings";
-  content: "\e114";
-}
-
-.toggle.collapsed:before {
-  padding-right: 5px;
-  float: left;
-  font-family: "Glyphicons Halflings";
-  content: "\e080";
-}
-
 .panel-horizontal {
   display: table;
 }
@@ -322,6 +316,10 @@ select.short {
   margin: 0 5px 5px 0;
   text-decoration: none;
   -webkit-transition: color 0.2s;
+}
+
+.bg-white th{
+  background-color: white!important;
 }
 
 .tag::before {
@@ -539,13 +537,6 @@ span.monster-image {
   font-weight: bold;
 }
 
-.btn-xs.monster-edit,
-.btn-xs.monster-awaken,
-.btn-xs.monster-copy,
-.btn-xs.monster-delete {
-  padding: 1px 2px;
-}
-
 .monster-level-column {
   text-align: center;
   width: 65px;
@@ -600,6 +591,15 @@ span.monster-image {
 
 .rating-symbol .glyphicon {
   font-size: 140%;
+}
+
+.card-bestiary-monster-details{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 #id_monster-wrapper {
@@ -682,25 +682,8 @@ span.monster-image {
   cursor: pointer;
 }
 
-.tablesorter-headerUnSorted > div.tablesorter-header-inner:before {
-  padding-right: 3px;
-  font-family: "Glyphicons Halflings";
-  font-size: 0.7em;
-  content: "\e150";
-}
-
-.tablesorter-headerAsc > div.tablesorter-header-inner:before {
-  padding-right: 3px;
-  font-family: "Glyphicons Halflings";
-  font-size: 0.7em;
-  content: "\e114";
-}
-
-.tablesorter-headerDesc > div.tablesorter-header-inner:before {
-  padding-right: 3px;
-  font-family: "Glyphicons Halflings";
-  font-size: 0.7em;
-  content: "\e113";
+.tablesorter-sticky-visible{
+  top: 59px!important;
 }
 
 .filters {
@@ -712,18 +695,6 @@ span.monster-image {
   cursor: pointer;
   color: #333;
   margin-bottom: 5px;
-}
-
-.filter-header::after {
-  float: right;
-  font-family: "Glyphicons Halflings";
-  content: "\e114";
-}
-
-.filter-header.collapsed::after {
-  float: right;
-  font-family: "Glyphicons Halflings";
-  content: "\e080";
 }
 
 .slider.slider-horizontal {
@@ -857,29 +828,6 @@ div.disabled {
   top: 8px;
   right: 10px;
 }
-/*
-.list-group-item>img {
-    position: absolute;
-    width: 20px;
-    top: 8px;
-    right: 10px;
-}*/
-
-.collapsible > button:before,
-.collapsible > a:before {
-  padding-right: 5px;
-  float: left;
-  font-family: "Glyphicons Halflings";
-  content: "\e114";
-}
-
-.collapsible > button.collapsed:before,
-.collapsible > a.collapsed:before {
-  padding-right: 5px;
-  float: left;
-  font-family: "Glyphicons Halflings";
-  content: "\e080";
-}
 
 .team-list > a {
   display: block;
@@ -901,56 +849,6 @@ td > h4,
 td > h5,
 td > h6 {
   margin: 0;
-}
-
-.bestiary-detail {
-  margin-left: 145px;
-}
-
-.bestiary-stats-table th,
-.bestiary-stats-table td {
-  text-align: center;
-}
-
-.bestiary-detail .panel-title > img {
-  height: 25px;
-  padding-right: 5px;
-}
-
-.bestiary-stat-column {
-  width: 50px;
-}
-
-.bestiary-portraits {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.monster-info-panel {
-  margin-left: 110px;
-}
-
-.skill-table {
-  vertical-align: middle;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.skill-table > tbody > tr > td {
-  vertical-align: middle;
-  text-align: left;
-}
-
-.filter-group {
-  padding-bottom: 5px;
-}
-
-.filter-description {
-  padding-right: 10px;
-  display: inline-block;
-  width: 100px;
-  text-align: right;
 }
 
 .monster-leader-skill {

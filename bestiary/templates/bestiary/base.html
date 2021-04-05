@@ -8,8 +8,8 @@
 
 {% block content %}
     <div class="filters">
-        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#monsterFilterCollapse">
-            <span class="glyphicon glyphicon-filter"></span> Filters
+        <button class="btn btn-outline-dark filter-header collapsed w-100" data-bs-toggle="collapse" data-bs-target="#monsterFilterCollapse">
+            <i class="fas fa-filter"></i> Filters
         </button>
         <div class="collapse" id="monsterFilterCollapse">
             {% crispy bestiary_filter_form %}

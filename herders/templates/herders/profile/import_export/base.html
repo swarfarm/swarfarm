@@ -5,33 +5,23 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="row">
-                <div class="col-md-6 col-md-offset-3">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <h2>Import JSON Data</h2>
-                            <p><a class="btn btn-primary btn-lg btn-block" href="{% url 'herders:import_swparser' profile_name=request.user.username  %}" role="button">Import SW JSON</a></p>
-                            <p>Upload extracted JSON data produced by using the <a href="https://github.com/Xzandro/sw-exporter">Summoner's War Exporter</a> or SWProxy program.</p>
-                        </div>
-                    </div>
+        <div class="col-lg-4 offset-lg-2">
+            <div class="card border-0 shadow mb-3" >
+                <div class="card-body">
+                    <h1 class="card-title fw-lighter">Import JSON Data</h1>
+                    <p>Upload extracted JSON data produced by using the <a href="https://github.com/Xzandro/sw-exporter">Summoner's War Exporter</a></p>
+                    <p><a class="btn btn-primary btn-block" href="{% url 'herders:import_swparser' profile_name=request.user.username  %}" role="button">Import SW JSON</a></p>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-6 col-md-offset-3">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <h2>Export SWOP Optimizer</h2>
-                            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                                <a class="btn btn-primary btn-lg" href="{% url 'herders:export_win10_optimizer' profile_name=request.user.username  %}" role="button">Download File</a>
-                            </div>
-                            <p>Windows 10 app or <a href="http://tool.swop.one" target="_blank">online version.</a></p>
-                        </div>
-                    </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow mb-3" >
+                <div class="card-body">
+                    <h1 class="card-title fw-lighter">Export SWOP Optimizer</h1>
+                    <p>Windows 10 app or <a href="http://tool.swop.one" target="_blank">online version</a></p>
+                    <a class="btn btn-primary" href="{% url 'herders:export_win10_optimizer' profile_name=request.user.username  %}" role="button">Download File</a>
                 </div>
             </div>
         </div>
     </div>
-
 {% endblock content %}

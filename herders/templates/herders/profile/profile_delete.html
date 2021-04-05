@@ -5,5 +5,9 @@
 {% block title %}Delete Profile - {{ block.super }}{% endblock title %}
 
 {% block content %}
-    {% crispy form %}
+    <div class="row">
+        <div class="col-md-8 offset-md-4">
+            {% crispy form %}
+        </div>
+    </div>
 {% endblock content %}

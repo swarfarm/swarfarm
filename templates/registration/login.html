@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-4 col-md-offset-4">
+        <div class="col-md-4 offset-md-4">
             {% if next %}
                 {% if user.is_authenticated %}
                     <p>Your account doesn't have access to this page. To proceed,
@@ -14,7 +14,7 @@
             {% endif %}
 
             {% crispy form %}
-            <p class="pull-right"><a href="{% url 'password_reset' %}">Lost password?</a></p>
+            <p class="float-right"><a class="nav-link" href="{% url 'password_reset' %}">Lost password?</a></p>
         </div>
     </div>
 {% endblock %}

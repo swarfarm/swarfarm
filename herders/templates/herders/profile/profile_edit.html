@@ -4,32 +4,33 @@
 {% block title %}Edit Profile - {{ block.super }}{% endblock title %}
 
 {% block content %}
-    <div class="col-md-6 col-md-offset-3">
-        <form action="{% url 'herders:edit_profile' profile_name=profile_name %}?next={{ return_path }}" method="post">
-            {% csrf_token %}
-            {% crispy user_form %}
-            {% crispy summoner_form %}
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <form action="{% url 'herders:edit_profile' profile_name=profile_name %}?next={{ return_path }}" method="post">
+                {% csrf_token %}
+                {% crispy user_form %}
+                {% crispy summoner_form %}
 
-            <div class="input-group">
-                <span class="input-group-addon" id="basic-addon1">API Key</span>
-                <input id="api_key" type="text" class="form-control" placeholder="Click Regenerate to get API Key" readonly value="{{ request.user.auth_token.key }}">
-                <span class="input-group-btn">
-                    <button id="generate-api-key" class="btn btn-default" type="button">Regenerate</button>
-                </span>
+                <div class="input-group">
+                    <label class="input-group-text" for="api_key">API Key</label>
+                    <input id="api_key" type="text" class="form-control" placeholder="Click Regenerate to get API Key" readonly value="{{ request.user.auth_token.key }}" aria-describedby="generate-api-key help-block">
+                    <button id="generate-api-key" class="btn btn-outline-dark" type="button">Regenerate</button>
+                </div>
+                <div id="help-block" class="form-text mb-3">This API key allows other services to authenticate as you on SWARFARM without your username and password.</div>
 
-            </div>
-            <p class="help-block">This API key allows other services to authenticate as you on SWARFARM without your username and password.</p>
-
-            <div class="form-actions">
-                <input type="submit" name="save" value="Save" class="btn btn-primary btn btn-primary" id="submit-id-save"/>
-                <input type="button" name="cancel" value="Cancel" class="btn btn-default" id="button-id-cancel"/>
-                <a href="{% url 'password_change' %}" class="btn btn-link">Change Password</a>
-                <a href="{% url 'username_change' %}" class="btn btn-link">Change Username</a>
-                <a href="{% url 'herders:profile_delete' profile_name=profile_name %}" class="btn btn-danger pull-right">Delete Account</a>
-            </div>
-        </form>
-
-
+                <button type="button" class="btn btn-outline-dark dropdown-toggle dropdown-menu-end float-right" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span>Action</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item px-0 text-start"><button type="submit" name="save" class="btn btn-default w-100 text-start" id="submit-id-save"><i class="fas fa-save"></i> Save</button></li>
+                    <li class="dropdown-divider" />
+                    <li class="dropdown-item px-0 text-start"><a class="btn btn-default w-100 text-start" href="{% url 'password_change' %}"><i class="fas fa-key"></i> Change Password</a></li>
+                    <li class="dropdown-item px-0 text-start"><a class="btn btn-default w-100 text-start" href="{% url 'username_change' %}"><i class="fas fa-user-tag"></i> Change Username</a></li>
+                    <li class="dropdown-divider" />
+                    <li class="dropdown-item px-0 text-start"><a class="btn btn-danger w-100 text-start rounded-0" href="{% url 'herders:profile_delete' profile_name=profile_name %}"><i class="fas fa-user-slash"></i> Delete Account</a></li>
+                </ul>
+            </form>
+        </div>
     </div>
 {% endblock content %}
 

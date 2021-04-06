@@ -1,101 +1,165 @@
 {% load report_charts %}
 
 {% if runes %}
-    <h2>Rune Drops</h2>
-    <h3>Type/slot</h3>
-    <div class="row">
-        <div class="col-md-6 col-lg-3">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.type type='pie' title="Rune Set" sorted='rune'%}"
-                style="height: 300px"
-            ></div>
+    <div class="card border-0 shadow mb-3 h-100">
+        <div class="card-header bg-white">
+            <h2 class="fw-lighter">Rune Drops</h2>
         </div>
+        <div class="card-body">
+            <h3 class="card-title fw-lighter">Type/slot</h3>
+            <div class="row">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.type type='pie' title="Rune Set" sorted='rune'%}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.slot type='pie' title="Slot" sorted='key' %}"
-                style="height: 300px"
-            ></div>
-        </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.slot type='pie' title="Slot" sorted='key' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.stars type='pie' title="Stars" sorted='key' %}"
-                style="height: 300px"
-            ></div>
-        </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.stars type='pie' title="Stars" sorted='key' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.quality type='pie' title="Quality" sorted='quality' colors='quality' %}"
-                style="height: 300px"
-            ></div>
-        </div>
-    </div>
-
-    <h3>Stats</h3>
-    <div class="row">
-        <div class="col-md-6 col-lg-4">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.slot_2_main_stat title="Slot 2 Main Stat" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.slot_4_main_stat title="Slot 4 Main Stat" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.slot_6_main_stat title="Slot 6 Main Stat" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-md-6 col-lg-6">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.innate_stat title="By Innate Stat" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
-        </div>
-
-        <div class="col-md-6 col-lg-6">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.substats title="By Substats" percentage=True sorted='value' reverse=True %}"
-                style="height: 300px"
-            ></div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.quality type='pie' title="Quality" sorted='quality' colors='quality' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <h3>Other</h3>
-    <div class="row">
-        <div class="col-sm-12 col-md-6 col-lg-6">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.value title="Rune Sell Value" legend=True colors='quality' sorted='quality' %}"
-                style="height: 300px"
-            ></div>
+    <div class="card border-0 shadow mb-3 h-100">
+        <div class="card-header bg-white">
+            <h2 class="fw-lighter">Rune Drops</h2>
         </div>
+        <div class="card-body">
+            <h3 class="card-title fw-lighter">Stats</h3>
+            <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.slot_2_main_stat title="Slot 2 Main Stat" percentage=True sorted='value' reverse=True %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="col-sm-12 col-md-6 col-lg-6">
-            <div
-                class="report-chart"
-                data-chart="{% chart runes.max_efficiency title="Maximum Efficiency Distribution" legend=True colors='quality' sorted='quality' %}"
-                style="height: 300px"
-            ></div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.slot_4_main_stat title="Slot 4 Main Stat" percentage=True sorted='value' reverse=True %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.slot_6_main_stat title="Slot 6 Main Stat" percentage=True sorted='value' reverse=True %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-6">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.innate_stat title="By Innate Stat" percentage=True sorted='value' reverse=True %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-6">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.substats title="By Substats" percentage=True sorted='value' reverse=True %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow mb-3 h-100">
+        <div class="card-header bg-white">
+            <h2 class="fw-lighter">Rune Drops</h2>
+        </div>
+        <div class="card-body">
+            <h3 class="card-title fw-lighter">Other</h3>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.value title="Rune Sell Value" legend=True colors='quality' sorted='quality' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.max_efficiency title="Maximum Efficiency Distribution" legend=True colors='quality' sorted='quality' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endif %}

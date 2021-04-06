@@ -2,34 +2,63 @@
 
 {% block report %}
     {% if report %}
-        <ul class="list-unstyled">
-            <li>Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
-            <li>{{ report.log_count }} records</li>
-            <li>{{ report.unique_contributors }} unique contributors</li>
-        </ul>
+        <div class="card shadow border-0 mb-3">
+            <div class="card-body">
+                <ul class="list-unstyled pb-0">
+                    <li class="fw-lighter">Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
+                    <li class="fw-lighter">{{ report.log_count }} records</li>
+                    <li class="fw-lighter">{{ report.unique_contributors }} unique contributors</li>
+                </ul>
+            </div>
+        </div>
 
-        <ul class="nav nav-tabs">
-            <li role="presentation" class="active">
-                <a href="#summary_tab" aria-controls="home" role="tab" data-toggle="tab">
+        <ul class="nav nav-pills mb-3" id="rating-tab" role="tablist">
+            <li class="nav-item card border-0 shadow mb-3 mx-1 p-0" role="presentation">
+                <button 
+                    class="nav-link card-body card-monster active" 
+                    id="rating-0-tab" 
+                    data-bs-toggle="pill" 
+                    data-bs-target="#rating-0" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="rating-0" 
+                    aria-selected="true"
+                >
                     Summary
-                </a>
+                </button>
             </li>
             {% for grade_report in report.report.reports reversed %}
-                <li role="presentation">
-                    <a href="#{{ forloop.counter }}_tab" aria-controls="home" role="tab" data-toggle="tab">
-                        {{ grade_report.grade }}
-                    </a>
-                </li>
+            <li class="nav-item card border-0 shadow mb-3 mx-1 p-0" role="presentation">
+                <button 
+                    class="nav-link card-body card-monster" 
+                    id="rating-{{ forloop.counter }}-tab" 
+                    data-bs-toggle="pill" 
+                    data-bs-target="#rating-{{ forloop.counter }}" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="rating-{{ forloop.counter }}" 
+                    aria-selected="true"
+                >
+                    {{ grade_report.grade }}
+                </button>
+            </li>
             {% endfor %}
         </ul>
 
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="summary_tab">
-                {% include 'dungeons/detail/report_by_grade_summary_table.html' with table=report.report.summary only %}
+        <div class="tab-content" id="rating-tabContent">
+            <div class="tab-pane fade show active" id="rating-0" role="tabpanel" aria-labelledby="rating-0-tab">
+                <div class="card border-0 shadow m-3 card-dungeon-md card-dungeon-sm">
+                    <div class="card-header bg-white">
+                        <h4 class="fw-lighter">Summary</h4>
+                    </div>
+                    <div class="card-body">
+                        {% include 'dungeons/detail/report_by_grade_summary_table.html' with table=report.report.summary only %}
+                    </div>
+                </div>
             </div>
 
             {% for grade_report in report.report.reports reversed %}
-                <div  role="tabpanel" class="tab-pane" id="{{ forloop.counter }}_tab">
+                <div class="tab-pane fade" id="rating-{{ forloop.counter }}" role="tabpanel" aria-labelledby="rating-{{ forloop.counter }}-tab">
                     <h2>{{ grade_report.grade }}</h2>
                     {% if grade_report.report %}
                         {% include 'dungeons/detail/report_snippet.html' with report=grade_report.report only %}

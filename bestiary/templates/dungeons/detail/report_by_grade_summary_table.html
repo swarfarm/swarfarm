@@ -2,7 +2,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 {% if table|length %}
-    <h3>Average Quantity per 100 Runs</h3>
+    <h4 class="fw-lighter">Average Quantity per 100 Runs</h4>
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -33,5 +33,8 @@
         </table>
     </div>
 {% else %}
-    No data!
+    <div class="callout callout-info">
+        <h1 class="fw-lighter">No data <i class="fas fa-sad-tear"></i></h1>
+        <p class="fw-lighter">No reports generated for this level yet</p>
+    </div>
 {% endif %}

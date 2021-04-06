@@ -2,60 +2,96 @@
 
 {% if rune_crafts %}
     {% if rune_crafts.grindstone %}
-        <h2>Grindstones</h2>
-        <div class="row">
-            <div class="col-md-6 col-lg-4">
-                <div
-                    class="report-chart"
-                    data-chart="{% chart rune_crafts.grindstone.rune type='pie' title="Rune Set" sorted='rune' %}"
-                    style="height: 300px"
-                ></div>
-            </div>
+    <div class="card border-0 shadow mb-3 h-100">
+        <div class="card-header bg-white">
+            <h2 class="fw-lighter">Grindstones</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart rune_crafts.grindstone.rune type='pie' title="Rune Set" sorted='rune' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="col-md-6 col-lg-4">
-                <div
-                    class="report-chart"
-                    data-chart="{% chart rune_crafts.grindstone.quality type='pie' title="Quality" sorted='quality' colors='quality' %}"
-                    style="height: 300px"
-                ></div>
-            </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart rune_crafts.grindstone.quality type='pie' title="Quality" sorted='quality' colors='quality' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="col-md-6 col-lg-4">
-                <div
-                    class="report-chart"
-                    data-chart="{% chart rune_crafts.grindstone.stat title="By Stat" percentage=True sorted='value' reverse=True %}"
-                    style="height: 300px"
-                ></div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart rune_crafts.grindstone.stat title="By Stat" percentage=True sorted='value' reverse=True %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
     {% endif %}
 
     {% if rune_crafts.gem %}
-        <h2>Enchant Gems</h2>
-        <div class="row">
-            <div class="col-md-6 col-lg-4">
-                <div
-                    class="report-chart"
-                    data-chart="{% chart rune_crafts.gem.rune type='pie' title="Rune Set" sorted='rune' %}"
-                    style="height: 300px"
-                ></div>
-            </div>
+    <div class="card border-0 shadow mb-3 h-100">
+        <div class="card-header bg-white">
+            <h2 class="fw-lighter">Enchant Gems</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart rune_crafts.gem.rune type='pie' title="Rune Set" sorted='rune' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="col-md-6 col-lg-4">
-                <div
-                    class="report-chart"
-                    data-chart="{% chart rune_crafts.gem.quality type='pie' title="Quality" sorted='quality' colors='quality' %}"
-                    style="height: 300px"
-                ></div>
-            </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart rune_crafts.gem.quality type='pie' title="Quality" sorted='quality' colors='quality' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="col-md-6 col-lg-4">
-                <div
-                    class="report-chart"
-                    data-chart="{% chart rune_crafts.gem.stat title="By Stat" percentage=True sorted='value' reverse=True %}"
-                    style="height: 300px"
-                ></div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart rune_crafts.gem.stat title="By Stat" percentage=True sorted='value' reverse=True %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
     {% endif %}
 {% endif %}

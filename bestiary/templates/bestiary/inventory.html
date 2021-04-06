@@ -74,7 +74,7 @@
                             </a>
                         </td>
                         <td><a href="{% url 'bestiary:detail' monster_slug=monster.bestiary_slug %}">{{ monster.name|title }}</a></td>
-                        <td>{{ monster.base_stars }}<span class="glyphicon glyphicon-star"></span></td>
+                        <td>{{ monster.base_stars }}<i class="fas fa-star"></i></td>
                         <td class="monster-element">
                             <img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" class="monster-element" loading="lazy" />
                             <span class="visually-hidden">{{ monster.element }}</span>

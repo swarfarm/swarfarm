@@ -14,6 +14,10 @@ blockquote{
   border-radius: 5px;
 }
 
+.dropdown-item:active{
+  background-color: inherit;
+}
+
 .callout{
   margin: 0;
   border-left: 3px solid black;
@@ -86,6 +90,15 @@ blockquote{
     top: 30px;
     width: 0px;
   }
+  .card-dungeon-md{
+    width: 45%;
+  }
+}
+
+@media (max-width: 768px){
+  .card-dungeon-sm{
+    width: 100%;
+  }
 }
 
 .footer{
@@ -108,9 +121,12 @@ blockquote{
 
 .card-monster.active{
   background-color: #ededed!important;
+  color: black!important;
 }
+
 .card-monster:hover{
   background-color: #e1e1e1!important;
+  color: black!important;
 }
 
 .card a{

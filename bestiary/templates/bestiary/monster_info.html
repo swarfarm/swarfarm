@@ -24,7 +24,7 @@
 
         <div class="card border-0 mb-3 ms-3">
             {% if monster.transforms_to %}
-            <div class="card-header bg-white d-flex justify-content-between">
+            <div class="card-header bg-white d-flex justify-content-between flex-wrap">
                 <div class="fw-lighter">Transforms Into</div>
                 <a href="{% url 'bestiary:detail' monster_slug=monster.transforms_to.bestiary_slug  %}">
                     {{ monster.transforms_to }} <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ monster.transforms_to.image_filename }}" />

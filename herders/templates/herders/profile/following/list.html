@@ -30,6 +30,7 @@ Friends - {{ block.super }}
                                     <i class="fas fa-user"></i>
                                 </a>
                             {% endif %}
+
                             {% if friend.following %}
                                 <a href="{% url 'herders:profile_follow_remove' profile_name=profile_name follow_username=friend.obj.user.username %}?next={{ return_path }}" class="btn btn-xs btn-danger float-right ms-1">
                                     <i class="fas fa-user-minus"></i>
@@ -39,12 +40,26 @@ Friends - {{ block.super }}
                                     <i class="fas fa-user-plus"></i>
                                 </a>
                             {% endif %}
+
+                            {% if friend.followed_by and friend.following %}
                             <a 
-                                href="{% url 'herders:profile_compare' profile_name=profile_name follow_username=friend.obj.user.username %}" 
-                                class="btn btn-xs btn-info float-right ms-1 {% if not friend.followed_by or not friend.following %}disabled{% endif %}"
+                                href="{% url 'herders:profile_compare' profile_name=profile_name follow_username=friend.obj.user.username %}"
+                                class="btn btn-xs btn-info float-right ms-1"
                             >
                                 <i class="fas fa-user-friends"></i>
                             </a>
+                            {% else %}
+                            <span 
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="You need to follow each other in order to compare profiles/builds."
+                                tabindex="0"
+                                class="d-inline-block float-right"
+                            >
+                                <a href="#" class="btn btn-xs btn-info float-right ms-1 disabled">
+                                    <i class="fas fa-user-friends"></i>
+                                </a>
+                            </span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

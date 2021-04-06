@@ -10,7 +10,7 @@
 
     <div class="d-flex justify-content-center flex-wrap">
         {% for mon in family %}
-            <div class="card border-0 shadow mb-3 mx-3 p-0 card-monster{% if mon.bestiary_slug == active_slug %} active{% endif %}">
+            <div class="card border-0 shadow mb-3 mx-3 p-0 card-monster card-dungeon-sm{% if mon.bestiary_slug == active_slug %} active{% endif %}">
                 <div class="card-body p-0">
                     <a href="{% url 'bestiary:detail' monster_slug=mon.bestiary_slug %}" class="nav-link p-3{% if mon.bestiary_slug == active_slug %} active{% endif %}">
                         <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ mon.image_filename }}" loading="lazy" /> {{ mon }} {% if mon.is_awakened %}({{ mon.get_element_display }}){% endif %}
@@ -19,6 +19,7 @@
             </div>
         {% endfor %}
     </div>
+    <hr />
 
     {% for m in monsters %}
         {% include 'bestiary/monster_detail.html' with monster=m %}

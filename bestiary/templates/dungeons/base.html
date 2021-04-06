@@ -16,31 +16,49 @@
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
 
-    <div class="row">
-    {% for category, cat_dungeons in dungeons.items %}
-        <div class="col-md-6 col-sm-12">
-            <h1>{{ category }}{{ cat_dungeons|length|pluralize }}</h1>
-            <ul class="media-list">
+    <ul class="nav nav-pills mb-3" id="dungeons-tab" role="tablist">
+        {% for category in dungeons %}
+            <li class="nav-item card border-0 shadow mb-3 mx-3 p-0" role="presentation">
+                <button 
+                    class="nav-link card-body card-monster{% if forloop.first %} active{% endif %}" 
+                    id="dungeons-{{ forloop.counter }}-tab" 
+                    data-bs-toggle="pill" 
+                    data-bs-target="#dungeons-{{ forloop.counter }}" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="dungeons-{{ forloop.counter }}" 
+                    aria-selected="true"
+                >
+                    {{ category }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+    <hr />
+    <div class="tab-content" id="dungeons-tabContent">
+        {% for category, cat_dungeons in dungeons.items %}
+        <div class="tab-pane fade{% if forloop.first %} show active{% endif %}" id="dungeons-{{ forloop.counter }}" role="tabpanel" aria-labelledby="dungeons-{{ forloop.counter }}-tab">
+            <div class="d-flex flex-wrap justify-content-around">
             {% for d in cat_dungeons %}
-                <li class="media">
-                    <div class="media-left">
+                <div class="card border-0 shadow m-3 card-dungeon-md card-dungeon-sm">
+                    <div class="card-header bg-white">
                         {% if d.icon %}
                             <a href="{% url 'bestiary:dungeon_detail_no_floor' slug=d.slug %}">
                                 <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="media-object dungeon-icon" loading="lazy" />
                             </a>
                         {% endif %}
-                    </div>
-                    <div class="media-body">
                         <a href="{% url 'bestiary:dungeon_detail_no_floor' slug=d.slug %}">
-                            <h4 class="media-heading">{{ d.name }}</h4>
+                            <h4 class="fw-lighter">{{ d.name }}</h4>
                         </a>
+                    </div>
+                    <div class="card-body p-0">
                         {% include 'dungeons/base_floor_pagination.html' %}
                     </div>
-                </li>
+                </div>
             {% endfor %}
-            </ul>
+            </div>
         </div>
-    {% endfor %}
+        {% endfor %}
     </div>
 {% endblock content %}
 

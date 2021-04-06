@@ -28,51 +28,53 @@
                 <p class="card-title fw-lighter"><strong>{{ skill.name }}</strong></p>
             </div>
 
-            <div class="{% if skill.level_progress_description_list|length > 0 %}card-header{% else %}card-footer border-0{% endif %} bg-white">
-                <div class="card-bestiary-monster-details flex-nowrap">
+            <div class="{% if skill.level_progress_description_list|length > 0 or skill.effect.all|length > 0 or skill.aoe or skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
+                <div class="card-bestiary-monster-details">
                     <div class="monster-skill-thumb float-left">
                         <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
                         <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
                     </div>
-                    <div class="d-flex flex-wrap">
-                    {% if skill.effect.all|length > 0 or skill.aoe %}
-                        {% if skill.aoe %}
-                            <span class="skill-effect skill-effect-buff p-1 mb-1">
-                                <span>AOE</span>
-                            </span>
+                    <p class="fw-lighter">
+                        {{ skill.description }}
+                        {% if skill.cooltime %}
+                            (Reusable in {{ skill.cooltime }} turn{{ skill.cooltime|pluralize }}).
                         {% endif %}
-                        {% for effect in skill.effect.all %}
-                            {% if effect.icon_filename %}
-                                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect float-left mb-1" loading="lazy" 
-                                    data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
-                                />
-                            {% else %}
-                                <span class="skill-effect p-1 mb-1 {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                                    <span>{{ effect.name }}</span>
-                                </span>
-                            {% endif %}
-                        {% endfor %}
-                        </p>
-                    </li>
-                    {% endif %}
-                    </div>
-                </div>
-                <div class="fw-lighter">
-                    {{ skill.description }}
-                    {% if skill.cooltime %}
-                        (Reusable in {{ skill.cooltime }} turn{{ skill.cooltime|pluralize }}).
-                    {% endif %}
+                    </p>
                 </div>
             </div>
 
             {% if skill.level_progress_description_list|length > 0 %}
-            <div class="{% if skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
+            <div class="{% if skill.effect.all|length > 0 or skill.aoe %}card-header{% else %}card-footer border-0{% endif %} bg-white">
                 <strong class="fw-normal">Level-up Progress</strong>
                 <ul class="list-unstyled fw-lighter">
                     {% for line in skill.level_progress_description_list %}
                         <li>{{ line }}</li>
                     {% endfor %}
                 </ul>
+            </div>
+            {% endif %}
+
+            {% if skill.effect.all|length > 0 or skill.aoe %}
+            <div class="{% if skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
+                <strong class="fw-normal">Skill effects</strong>
+                <div class="d-flex flex-wrap">
+                    {% if skill.aoe %}
+                        <span class="skill-effect skill-effect-buff p-1 mb-1">
+                            <span>AOE</span>
+                        </span>
+                    {% endif %}
+                    {% for effect in skill.effect.all %}
+                        {% if effect.icon_filename %}
+                            <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect float-left mb-1" loading="lazy" 
+                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                            />
+                        {% else %}
+                            <span class="skill-effect p-1 mb-1 {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                                <span>{{ effect.name }}</span>
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
             {% endif %}
 

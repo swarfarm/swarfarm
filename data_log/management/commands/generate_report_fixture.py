@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Create Data Log Report fixtures'
 
     def handle(self, *args, **kwargs):
-        self.stdout.write('Creating fixtures for Data Log Reports...')
+        self.stdout.write(self.style.HTTP_INFO('Creating fixtures for Data Log Reports...'))
         JSONSerializer = serializers.get_serializer("json")
         j = JSONSerializer()
         data = []
@@ -23,8 +23,10 @@ class Command(BaseCommand):
         ]
 
         for model in models_to_serialize:
+            self.stdout.write(self.style.WARNING(model.__name__))
             data += json.loads(j.serialize(model.objects.order_by('-generated_on')[:100]))
         
+        self.stdout.write(self.style.WARNING(models.Report.__name__))
         data += json.loads(j.serialize(models.Report.objects.order_by('-generated_on')[:1000]))
 
         with open("fixture_reports.json", "w+") as f:

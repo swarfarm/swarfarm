@@ -129,6 +129,23 @@ blockquote{
   color: black!important;
 }
 
+.card-progress{
+  transition: background-color 1s ease;
+  background-color: white;
+}
+
+.card-progress-success{
+  background-color: rgba(34, 139, 34, 0.25)!important;
+}
+
+.card-progress-info{
+  background-color:rgba(0, 174, 239, .25)!important;
+}
+
+.card-progress-error{
+  background-color: rgba(255, 66, 77, .25)!important;
+}
+
 .card a{
   text-decoration: none;
 }

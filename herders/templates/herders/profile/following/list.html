@@ -6,6 +6,12 @@ Friends - {{ block.super }}
 {% endblock title %}
 
 {% block content %}
+    {% if not friends %}
+    <div class="callout callout-danger">
+        <h1 class="fw-lighter">You have no friends <i class="fas fa-sad-tear"></i></h1>
+        <p class="fw-lighter">Consider adding someone to your friend list, so we can show you new features, like comparing your profile/builds with your friend's profile/build.
+    </div>
+    {% else %}
     <div class="callout callout-info">
         <h1 class="fw-lighter">Info</h1>
         <p class="fw-lighter">In order to compare profile/build with your friend, you need to <strong>follow each other</strong>. In addition, both profiles need to be <strong>Public</strong>
@@ -66,4 +72,5 @@ Friends - {{ block.super }}
             {% endif %}
         {% endfor %}
     </div>
+    {% endif %}
 {% endblock %}

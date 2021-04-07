@@ -6,19 +6,23 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-4 offset-lg-2">
-            <div class="card border-0 shadow mb-3" >
+            <div class="card border-0 shadow mb-3 h-100">
                 <div class="card-body">
                     <h1 class="card-title fw-lighter">Import JSON Data</h1>
                     <p>Upload extracted JSON data produced by using the <a href="https://github.com/Xzandro/sw-exporter">Summoner's War Exporter</a></p>
-                    <p><a class="btn btn-primary btn-block" href="{% url 'herders:import_swparser' profile_name=request.user.username  %}" role="button">Import SW JSON</a></p>
+                </div>
+                <div class="card-footer border-0 bg-white">
+                    <a class="btn btn-primary btn-block" href="{% url 'herders:import_swparser' profile_name=request.user.username  %}" role="button">Import SW JSON</a>
                 </div>
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="card border-0 shadow mb-3" >
+            <div class="card border-0 shadow mb-3 h-100">
                 <div class="card-body">
                     <h1 class="card-title fw-lighter">Export SWOP Optimizer</h1>
                     <p>Windows 10 app or <a href="http://tool.swop.one" target="_blank">online version</a></p>
+                </div>
+                <div class="card-footer border-0 bg-white">
                     <a class="btn btn-primary" href="{% url 'herders:export_win10_optimizer' profile_name=request.user.username  %}" role="button">Download File</a>
                 </div>
             </div>

@@ -2,7 +2,7 @@
 
 {% block report %}
     {% if report %}
-        <div class="card shadow border-0 mb-3">
+        <div class="card shadow-sm border-0 mb-3">
             <div class="card-body">
                 <ul class="list-unstyled pb-0">
                     <li class="fw-lighter">Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
@@ -13,7 +13,7 @@
         </div>
 
         <ul class="nav nav-pills mb-3" id="rating-tab" role="tablist">
-            <li class="nav-item card border-0 shadow mb-3 mx-1 p-0" role="presentation">
+            <li class="nav-item card border-0 shadow-sm mb-3 mx-1 p-0" role="presentation">
                 <button 
                     class="nav-link card-body card-monster active" 
                     id="rating-0-tab" 
@@ -28,7 +28,7 @@
                 </button>
             </li>
             {% for grade_report in report.report.reports reversed %}
-            <li class="nav-item card border-0 shadow mb-3 mx-1 p-0" role="presentation">
+            <li class="nav-item card border-0 shadow-sm mb-3 mx-1 p-0" role="presentation">
                 <button 
                     class="nav-link card-body card-monster" 
                     id="rating-{{ forloop.counter }}-tab" 
@@ -47,7 +47,7 @@
 
         <div class="tab-content" id="rating-tabContent">
             <div class="tab-pane fade show active" id="rating-0" role="tabpanel" aria-labelledby="rating-0-tab">
-                <div class="card border-0 shadow m-3 card-dungeon-md card-dungeon-sm">
+                <div class="card border-0 shadow-sm m-3 card-dungeon-md card-dungeon-sm">
                     <div class="card-header bg-white">
                         <h4 class="fw-lighter">Summary</h4>
                     </div>

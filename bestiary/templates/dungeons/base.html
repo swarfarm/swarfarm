@@ -18,7 +18,7 @@
 
     <ul class="nav nav-pills mb-3" id="dungeons-tab" role="tablist">
         {% for category in dungeons %}
-            <li class="nav-item card border-0 shadow mb-3 mx-3 p-0" role="presentation">
+            <li class="nav-item card border-0 shadow-sm mb-3 mx-3 p-0" role="presentation">
                 <button 
                     class="nav-link card-body card-monster{% if forloop.first %} active{% endif %}" 
                     id="dungeons-{{ forloop.counter }}-tab" 

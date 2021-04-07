@@ -24,7 +24,7 @@ blockquote{
   padding-left: 10px;
   border-radius: 5px;
   padding-top: 5px;
-  padding-bottom: 2px;
+  padding-bottom: 5px;
   margin-bottom: 10px;
 }
 
@@ -54,8 +54,13 @@ blockquote{
   border: 0;
   border-radius: 0;
   padding-top: 20px;
-  transition: 0.5s;
   width: 300px;
+}
+
+.btn-abs-top-right{
+  position: absolute;
+  top: 15px;
+  right: 0;
 }
 
 .list-group-item.active{

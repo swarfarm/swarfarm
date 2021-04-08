@@ -18,17 +18,20 @@
                 </div>
                 <div id="help-block" class="form-text mb-3">This API key allows other services to authenticate as you on SWARFARM without your username and password.</div>
 
-                <button type="button" class="btn btn-outline-dark dropdown-toggle dropdown-menu-end float-right" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span>Action</span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li class="dropdown-item px-0 text-start"><button type="submit" name="save" class="btn btn-default w-100 text-start" id="submit-id-save"><i class="fas fa-save"></i> Save</button></li>
-                    <li class="dropdown-divider" />
-                    <li class="dropdown-item px-0 text-start"><a class="btn btn-default w-100 text-start" href="{% url 'password_change' %}"><i class="fas fa-key"></i> Change Password</a></li>
-                    <li class="dropdown-item px-0 text-start"><a class="btn btn-default w-100 text-start" href="{% url 'username_change' %}"><i class="fas fa-user-tag"></i> Change Username</a></li>
-                    <li class="dropdown-divider" />
-                    <li class="dropdown-item px-0 text-start"><a class="btn btn-danger w-100 text-start rounded-0" href="{% url 'herders:profile_delete' profile_name=profile_name %}"><i class="fas fa-user-slash"></i> Delete Account</a></li>
-                </ul>
+                <div class="btn-group float-right" role="group" aria-label="FormButtons">
+                    <div class="btn-group" role="group" aria-label="Actions">
+                        <button type="button" class="btn btn-outline-dark dropdown-toggle dropdown-menu-end" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>Action</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item px-0 text-start"><a class="btn btn-default w-100 text-start" href="{% url 'password_change' %}"><i class="fas fa-key"></i> Change Password</a></li>
+                            <li class="dropdown-item px-0 text-start"><a class="btn btn-default w-100 text-start" href="{% url 'username_change' %}"><i class="fas fa-user-tag"></i> Change Username</a></li>
+                            <li class="dropdown-divider" />
+                            <li class="dropdown-item px-0 text-start"><a class="btn btn-danger w-100 text-start rounded-0" href="{% url 'herders:profile_delete' profile_name=profile_name %}"><i class="fas fa-user-slash"></i> Delete Account</a></li>
+                        </ul>
+                    </div>
+                    <button type="submit" name="save" class="btn btn-success" id="submit-id-save"><i class="fas fa-save"></i> Save</button>
+                </div>
             </form>
         </div>
     </div>

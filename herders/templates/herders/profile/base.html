@@ -4,18 +4,16 @@
 {% block subnav %}
     {% static 'herders/images/' as img_url_prefix %}
 
-    <div class="navbar navbar-default navmenu-collapsed">
-        <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+    <div class="navbar navbar-light">
+        <button type="button" class="navbar-toggler d-lg-none mb-2 ms-2" onClick="openSidebarMobile()">
+            <span class="navbar-toggler-icon"></span>
         </button>
     </div>
-    <div class="navmenu navmenu-default subnavmenu-fixed-left offcanvas-sm">
+    <div class="navmenu subnavmenu-fixed-left offcanvas-sm bg-light shadow">
         {% if is_owner %}
-            <p class="navmenu-brand">My Profile</p>
+            <h3 class="nav-link fw-lighter text-reset">My Profile</h3>
         {% else %}
-            <p class="navmenu-brand">
+            <p class="nav-link fw-lighter text-reset">
                 {{ profile_name }}'s Profile
                 {% if user.is_authenticated %}
                     {% if summoner not in user.summoner.following.all %}
@@ -26,64 +24,66 @@
                 {% endif %}
             </p>
         {% endif %}
+        <button type="button" class="d-lg-none navbar-toggler btn-abs-top-right" onClick="closeSidebarMobile()">
+            <i class="fas fa-times"></i>
+        </button>
+        <p class="nav-link fw-lighter text-reset">Last updated {{ summoner.last_update|naturalday }}</p>      
 
-        <p class="navmenu-text">Last updated {{ summoner.last_update|naturalday }}</p>
-
-        <ul class="nav navmenu-nav">
-            <li {% if view == 'profile' %}class="dropdown open"{% endif %}>
-                 <a href="{% url 'herders:profile_default' profile_name=profile_name %}">
-                    <img src="{% static 'herders/images/icons/monster.png' %}" loading="lazy" /> Monsters
+        <ul class="navbar-nav">
+            <li class="nav-item py-0{% if view == 'profile' %} active{% endif %}">
+                <a class="nav-link text-reset fw-lighter" href="{% url 'herders:profile_default' profile_name=profile_name %}">
+                    <img class="submenu-icon" src="{% static 'herders/images/icons/monster.png' %}" loading="lazy" /> Monsters
                 </a>
                 {% block monster_menu %}{% endblock monster_menu %}
             </li>
-            <li {% if view == 'runes' and is_owner %}class="dropdown open"{% endif %}>
-                <a href="{% url 'herders:runes' profile_name=profile_name %}">
-                    <img src="{% static 'herders/images/icons/rune.png' %}" loading="lazy" /> Runes
+            <li class="nav-item py-0{% if view == 'runes' and is_owner %} active{% endif %}">
+                <a class="nav-link text-reset fw-lighter" href="{% url 'herders:runes' profile_name=profile_name %}">
+                    <img class="submenu-icon" src="{% static 'herders/images/icons/rune.png' %}" loading="lazy" /> Runes
                 </a>
                 {% block rune_menu %}{% endblock rune_menu %}
             </li>
-            <li {% if view == 'artifacts' and is_owner %}class="dropdown open"{% endif %}>
-                <a href="{% url 'herders:artifacts' profile_name=profile_name %}">
-                    <img src="{% static 'herders/images/icons/artifact.png' %}" loading="lazy" /> Artifacts
+            <li class="nav-item py-0{% if view == 'artifacts' and is_owner %} active{% endif %}">
+                <a class="nav-link text-reset fw-lighter" href="{% url 'herders:artifacts' profile_name=profile_name %}">
+                    <img class="submenu-icon" src="{% static 'herders/images/icons/artifact.png' %}" loading="lazy" /> Artifacts
                 </a>
                 {% block artifact_menu %}{% endblock artifact_menu %}
             </li>
-            <li {% if view == 'fusion' %}class="dropdown open"{% endif %}>
-                <a href="{% url 'herders:fusion' profile_name=profile_name %}">
-                    <img src="{% static 'herders/images/icons/fusion.png' %}" loading="lazy" /> Fusion
+            <li class="nav-item py-0{% if view == 'fusion' %} active{% endif %}">
+                <a class="nav-link text-reset fw-lighter" href="{% url 'herders:fusion' profile_name=profile_name %}">
+                    <img class="submenu-icon" src="{% static 'herders/images/icons/fusion.png' %}" loading="lazy" /> Fusion
                 </a>
                 {% block fusion_menu %}{% endblock fusion_menu %}
             </li>
-            <li {% if view == 'teams' and is_owner %}class="dropdown open"{% endif %}>
-                <a href="{% url 'herders:teams' profile_name=profile_name %}">
-                    <i class="fa fa-users"></i> Teams
+            <li class="nav-item py-0{% if view == 'teams' and is_owner %} active{% endif %}">
+                <a class="nav-link text-reset fw-lighter" href="{% url 'herders:teams' profile_name=profile_name %}">
+                    <i class="fas fa-users"></i> Teams
                 </a>
                 {% block team_menu %}{% endblock team_menu %}
             </li>
             {% if is_owner %}
-                <li>
-                    <a href="{% url 'herders:storage' profile_name=profile_name %}">
-                        <span class="fa fa-archive"></span> Material Storage
+                <li class="nav-item py-0">
+                    <a class="nav-link text-reset fw-lighter" href="{% url 'herders:storage' profile_name=profile_name %}">
+                        <i class="fas fa-archive"></i> Material Storage
                     </a>
                 </li>
             {% endif %}
-            <li>
-                <a href="{% url 'herders:buildings' profile_name=profile_name %}">
-                    <span class="fa fa-building"></span> Buildings
+            <li class="nav-item py-0">
+                <a class="nav-link text-reset fw-lighter" href="{% url 'herders:buildings' profile_name=profile_name %}">
+                    <i class="fas fa-building"></i> Buildings
                 </a>
             </li>
             {% if is_owner %}
-                <li {% if view == 'data_log' %}class="dropdown open"{% endif %}>
-                    <a href="{% url 'herders:data_log_dashboard' profile_name=profile_name %}">
-                        <span class="fa fa-database"></span> Data Logs
+                <li class="nav-item py-0{% if view == 'data_log' %} active{% endif %}">
+                    <a class="nav-link text-reset fw-lighter" href="{% url 'herders:data_log_dashboard' profile_name=profile_name %}">
+                        <i class="fas fa-database"></i> Data Logs
                     </a>
                     {% block data_log_menu %}{% endblock data_log_menu %}
                 </li>
             {% endif %}
             {% if is_owner %}
-                <li {% if view == 'stats' %}class="dropdown open"{% endif %}>
-                    <a href="{% url 'herders:profile_stats' profile_name=profile_name %}">
-                        <span class="fa fa-bar-chart"></span> Statistics
+                <li class="nav-item py-0{% if view == 'stats' %} active{% endif %}">
+                    <a class="nav-link text-reset fw-lighter" href="{% url 'herders:profile_stats' profile_name=profile_name %}">
+                        <i class="fas fa-chart-bar"></i> Statistics
                     </a>
                     {% block profile_stats_menu %}{% endblock profile_stats_menu %}
                 </li>

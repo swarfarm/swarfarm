@@ -11,12 +11,12 @@
 {% endblock title %}
 
 {% block fusion_menu %}
-    <ul class="dropdown-menu navmenu-nav">
+    <ul class="navbar-nav ps-2">
         {% for fusion in fusions %}
-        <li>
-            <a class="fusion-tab" data-fusion="{{ fusion.product.bestiary_slug }}">
+        <li class="nav-item py-0">
+            <a class="nav-link fw-lighter py-1 text-muted fusion-tab" style="cursor: pointer;" data-fusion="{{ fusion.product.bestiary_slug }}">
                 <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-inline" loading="lazy" />
-                {{ fusion.product.base_stars }}<span class="glyphicon glyphicon-star"></span> {{ fusion.product.name }}{% if fusion.acquired %} - <span class="glyphicon glyphicon-ok-circle"></span> Acquired!{% endif %}
+                {{ fusion.product.base_stars }}<i class="fas fa-star"></i> {{ fusion.product.name }}{% if fusion.acquired %} - <i class="fas fa-check-circle"></i> Acquired!{% endif %}
             </a>
         </li>
         {% endfor %}

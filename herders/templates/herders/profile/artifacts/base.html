@@ -14,9 +14,8 @@
 
 {% block artifact_menu %}
     {% if is_owner %}
-        <ul class="dropdown-menu navmenu-nav">
-            <li><a class="artifact-add"><span class="glyphicon glyphicon-plus"></span> Add Artifact</a></li>
-            {# <li><a class="artifact-add"><span class="glyphicon glyphicon-plus"></span> Add Conversion Stone</a></li> #}
+        <ul class="navbar-nav ps-2">
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted artifact-add" style="cursor: pointer;"><i class="fas fa-plus"></i> Add Artifact</a></li>
         </ul>
     {% endif %}
 {% endblock artifact_menu %}

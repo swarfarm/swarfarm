@@ -1,4 +1,4 @@
-var element_loading_template = '<div class="spinner-overlay"><div class="spinner"></div></div>';
+var element_loading_template = '<div class="spinner-overlay text-center"><div class="spinner spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
 var popoverDelay = null;
 var autosubmitDelay = null;
 

@@ -10,16 +10,16 @@
 {% endblock %}
 
 {% block data_log_menu %}
-    <ul class="dropdown-menu navmenu-nav">
-        <li><a href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}">Dungeons</a></li>
-        <li><a href="{% url 'herders:data_log_rift_dungeon_dashboard' profile_name=profile_name %}">Elemental Rift Beast</a></li>
-        <li><a href="{% url 'herders:data_log_rift_raid_dashboard' profile_name=profile_name %}">Rift Raid</a></li>
-        <li><a href="{% url 'herders:data_log_world_boss_dashboard' profile_name=profile_name %}">World Boss</a></li>
-        <li><a href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}">Summons</a></li>
-        <li><a href="{% url 'herders:data_log_magic_shop_dashboard' profile_name=profile_name %}">Magic Shop</a></li>
-        <li><a href="{% url 'herders:data_log_wish_dashboard' profile_name=profile_name %}">Wishes</a></li>
-        <li><a href="{% url 'herders:data_log_rune_craft_dashboard' profile_name=profile_name %}">Rune Crafting</a></li>
-        <li><a href="{% url 'herders:data_log_magic_box_craft_dashboard' profile_name=profile_name %}">Magic Box Crafting</a></li>
+    <ul class="navbar-nav ps-2">
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}">Dungeons</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:data_log_rift_dungeon_dashboard' profile_name=profile_name %}">Elemental Rift Beast</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:data_log_rift_raid_dashboard' profile_name=profile_name %}">Rift Raid</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:data_log_world_boss_dashboard' profile_name=profile_name %}">World Boss</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}">Summons</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:data_log_magic_shop_dashboard' profile_name=profile_name %}">Magic Shop</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:data_log_wish_dashboard' profile_name=profile_name %}">Wishes</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:data_log_rune_craft_dashboard' profile_name=profile_name %}">Rune Crafting</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:data_log_magic_box_craft_dashboard' profile_name=profile_name %}">Magic Box Crafting</a></li>
     </ul>
 {% endblock data_log_menu %}
 

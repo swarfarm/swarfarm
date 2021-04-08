@@ -7,15 +7,15 @@ Statistics - {{ profile_name }} - {{ block.super }}
 {% endblock title %}
 
 {% block profile_stats_menu %}
-    <ul class="dropdown-menu navmenu-nav">
-        <li><a href="{% url 'herders:profile_stats' profile_name %}">Summary</a></li>
-        <li><a href="{% url 'herders:profile_stats_runes' profile_name %}">Runes</a></li>
+    <ul class="navbar-nav ps-2">
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:profile_stats' profile_name %}">Summary</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:profile_stats_runes' profile_name %}">Runes</a></li>
         {% for rune_craft_name, rune_craft_slug in subviews.items %}
-            <li><a href="{% url 'herders:profile_stats_rune_crafts' profile_name rune_craft_slug %}">Rune {{ rune_craft_name }}s</a></li>
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:profile_stats_rune_crafts' profile_name rune_craft_slug %}">Rune {{ rune_craft_name }}s</a></li>
         {% endfor %}
-        <li><a href="{% url 'herders:profile_stats_artifacts' profile_name %}">Artifacts</a></li>
-        <li><a href="{% url 'herders:profile_stats_artifact_crafts' profile_name %}">Artifact Enchants</a></li>
-        <li><a href="{% url 'herders:profile_stats_monsters' profile_name %}">Monsters</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:profile_stats_artifacts' profile_name %}">Artifacts</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:profile_stats_artifact_crafts' profile_name %}">Artifact Enchants</a></li>
+        <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:profile_stats_monsters' profile_name %}">Monsters</a></li>
     </ul>
 {% endblock profile_stats_menu %}
 

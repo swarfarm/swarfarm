@@ -6,9 +6,18 @@
 
 {% block team_menu %}
     {% if is_owner %}
-        <ul class="dropdown-menu navmenu-nav">
-            <li><a data-toggle="modal" data-target="#addTeamGroupModal"><span class="glyphicon glyphicon-plus"></span> Add group</a></li>
-            <li><a class="team-edit"><span class="glyphicon glyphicon-plus"></span> Add team</a></li>
+        <ul class="navbar-nav ps-2">
+            <li class="nav-item py-0">
+                <a 
+                    class="nav-link fw-lighter py-0 text-muted" 
+                    style="cursor: pointer;" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#addTeamGroupModal"
+                >
+                    <i class="fas fa-plus"></i> Add Group
+                </a>
+            </li>
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted team-edit" style="cursor: pointer;"><i class="far fa-clock"></i> Add team</a></li>
         </ul>
     {% endif %}
 {% endblock team_menu %}

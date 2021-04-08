@@ -113,6 +113,14 @@
         <script type="text/javascript" src="{% static 'main/js/custom_filters.js' %}"></script>
         {% block javascript_compressed %}{% endblock javascript_compressed %}
         <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
+        <script>
+            function openSidebarMobile(){
+                $(".subnavmenu-fixed-left").animate({width: "300px"}, 500 );
+            }
+            function closeSidebarMobile(){
+                $(".subnavmenu-fixed-left").animate({width: "0"}, 500 );
+            }
+        </script>
         {% endcompress %}
 
         {% include 'autocomplete/media.html' %}

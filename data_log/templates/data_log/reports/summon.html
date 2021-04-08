@@ -8,34 +8,41 @@
 {% block reports %}
     {% static 'herders/images/' as img_url_prefix %}
 
-    <h2>Summon Log Summary</h2>
-
     {% if item_list %}
-        {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
-        <p>Total Summons: {{ dashboard.summons_performed.total }}</p>
-
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white">
+                <h2 class="fw-lighter">Summon Log Summary</h2>
+            </div>
+            <div class="card-body">
+                {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
+                <p>Total Summons: {{ dashboard.summons_performed.total }}</p>
+            </div>
+        </div>
+        <hr />
         <div class="row">
             <div class="col-lg-9 col-md-8 col-sm-12">
-                <div
-                    class="report-chart"
-                    data-chart="{% chart dashboard.summons_performed type='pie' title="Summons Performed" percentage=False %}"
-                    style="height: 300px"
-                ></div>
+                <div class="card shadow border-0 mb-3">
+                    <div
+                        class="report-chart"
+                        data-chart="{% chart dashboard.summons_performed type='pie' title="Summons Performed" percentage=False %}"
+                        style="height: 300px"
+                    ></div>
+                </div>
             </div>
 
             <div class="col-lg-3 col-md-4 col-sm-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Quick Links</h3>
+                <div class="card shadow border-0 mb-3">
+                    <div class="card-header bg-white">
+                        <h3 class="card-title fw-lighter">Quick Links</h3>
                     </div>
-                    <div class="list-group">
-                        {% for item in item_list %}
-                            <a href="{% url 'data_log:summon_detail' slug=item.slug %}" class="list-group-item">
+                    {% for item in item_list %}
+                        <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
+                            <a href="{% url 'data_log:summon_detail' slug=item.slug %}">
                                 <img src="{{ img_url_prefix }}items/{{ item.icon }}" class="image-inline" alt="{{ item.name }} icon" loading="lazy" />
                                 {{ item }}
                             </a>
-                        {% endfor %}
-                    </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

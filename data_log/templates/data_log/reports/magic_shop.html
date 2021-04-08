@@ -6,10 +6,16 @@
 {% endblock %}
 
 {% block reports %}
-    <h2>Magic Shop Log Summary</h2>
     {% if log_count %}
-        {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
-        <p>Total Logs: {{ log_count }}</p>
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white">
+                <h2 class="fw-lighter">Magic Shop Log Summary</h2>
+            </div>
+            <div class="card-body">
+                {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
+                <p>Total Logs: {{ log_count }}</p>
+            </div>
+        </div>
         <hr />
         {% include 'data_log/summary.html' with summary=report.summary hide_monsters=True only %}
         <hr />

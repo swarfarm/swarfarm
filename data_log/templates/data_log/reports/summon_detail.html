@@ -6,13 +6,16 @@
 {% endblock %}
 
 {% block reports %}
-    <h2>{{ item }}</h2>
     {% if log_count %}
-        <ul class="list list-inline">
-            {% if start_timestamp %}<li>{{ start_timestamp }} - {{ end_timestamp }}</li>{% endif %}
-            <li>Total Summons: {{ log_count }}</li>
-        </ul>
-
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white">
+                <h2 class="fw-lighter">{{ item }}</h2>
+            </div>
+            <div class="card-body">
+                {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
+                <p>Total Summons: {{ log_count }}</p>
+            </div>
+        </div>
         <hr />
         {% include 'data_log/monster.html' with monsters=report only %}
     {% else %}

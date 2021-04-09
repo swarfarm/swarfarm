@@ -7,11 +7,13 @@
 {% block title %}Bestiary - {{ block.super }}{% endblock title %}
 
 {% block content %}
-    <div class="filters">
-        <button class="btn btn-outline-dark filter-header collapsed w-100" data-bs-toggle="collapse" data-bs-target="#monsterFilterCollapse">
-            <i class="fas fa-filter"></i> Filters
-        </button>
-        <div class="collapse" id="monsterFilterCollapse">
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-header bg-white">
+            <button class="btn btn-outline-dark btn-block w-100 collapsed" data-bs-toggle="collapse" data-bs-target="#monsterFilterCollapse">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+        </div>
+        <div class="card-body collapse" id="monsterFilterCollapse">
             {% crispy bestiary_filter_form %}
         </div>
     </div>

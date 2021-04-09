@@ -1,6 +1,7 @@
 html,
 body {
   height: 100%;
+  overflow-x: hidden;
 }
 body {
   padding-top: 70px;
@@ -120,8 +121,12 @@ blockquote{
 }
 
 .pager-btn.active{
-  background-color: #0d6efd!important;
-  color: white;
+  background-color: #212529!important;
+  color: #fff;
+}
+
+.page-link{
+  color: #000;
 }
 
 .card-monster.active{
@@ -521,10 +526,10 @@ span.monster-image {
 }
 
 .monster-box {
-  width: 100px;
+  width: 102px;
   position: relative;
   float: left;
-  border: 1px solid black;
+  border: 1px solid rgba(0, 0, 0, .1);
   border-radius: 6px;
   margin: 1px;
 }

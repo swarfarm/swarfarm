@@ -36,7 +36,7 @@
 
             {% for page_num in page_range %}
                 <li class="page-item">
-                    <a class=" page-link border-0 pager-btn bg-white{% if page_num == posts.number %} active{% endif %}" href="{% url 'news:latest_news' %}?page={{ page_num }}">{{ page_num }}</a>
+                    <a class="page-link border-0 pager-btn bg-white{% if page_num == posts.number %} active{% endif %}" href="{% url 'news:latest_news' %}?page={{ page_num }}">{{ page_num }}</a>
                 </li>
             {% endfor %}
 

@@ -409,7 +409,8 @@ monster_table.tablesorter({
         filter_searchDelay : 300,
         filter_saveFilters : save_filters,
         filter_searchFiltered : true
-    }
+    },
+    theme: 'bootstrap',
 });
 
 //Get list of current filters and set buttons properly

@@ -42,7 +42,7 @@
             {% if monsters %}
                 {% for groupname, monsters in monster_stable.items %}
                     {% if monsters|length > 0 %}
-                        <div class="card shadow-sm border-0 mb-3">
+                        <div class="card shadow-sm border-0 mb-3 pb-2">
                             <div class="card-header bg-white collapsible">
                                 <a role="button" data-bs-toggle="collapse" data-bs-target="#monstergroup{{ forloop.counter }}" aria-expanded="true">
                                     <strong>{{ groupname|capfirst }}</strong>

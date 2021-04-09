@@ -370,7 +370,8 @@ $('body')
                     filter_reset: '.reset',
                     stickyHeaders_zIndex : 2,
                     stickyHeaders_offset: 50
-                }
+                },
+                theme: 'bootstrap',
             });
             $('[data-toggle="tooltip"]').tooltip();
         });

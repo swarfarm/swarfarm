@@ -373,10 +373,11 @@ $('body')
                     columnSelector_container : '#column-selectors',
                     columnSelector_saveColumns: true,
                     columnSelector_mediaquery: false,
-                    columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>',
+                    columnSelector_layout: '<div class="form-check me-3"><label class="form-check-label"><input class="form-check-input" type="checkbox">{name}</label></div>',
                     stickyHeaders_zIndex : 2,
                     stickyHeaders_offset: 50
-                }
+                },
+                theme: 'bootstrap',
             });
 
             $('td[id^="monster-collection-cell"]').each(function() {

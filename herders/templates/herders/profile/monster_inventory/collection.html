@@ -5,74 +5,74 @@
 <div id="monster-inventory">
     {% static 'herders/images/' as img_url_prefix %}
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="btn-group">
-                <button class="btn btn-default profile-view-mode" data-mode="list">
-                    <span class="glyphicon glyphicon-th-list"></span> List
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-dark profile-view-mode" data-mode="list">
+                    <i class="fas fa-th-list"></i> List
                 </button>
-                <button class="btn btn-default profile-view-mode" data-mode="box">
-                    <span class="glyphicon glyphicon-th-large"></span> Box
+                <button class="btn btn-outline-dark profile-view-mode" data-mode="box">
+                    <i class="fas fa-th-large"></i> Box
                 </button>
-                <button class="btn btn-default profile-view-mode" data-mode="pieces">
-                    <span class="fa fa-puzzle-piece"></span> Pieces
+                <button class="btn btn-outline-dark profile-view-mode" data-mode="pieces">
+                    <i class="fas fa-puzzle-piece"></i> Pieces
                 </button>
-                <button class="btn btn-default profile-view-mode active" data-mode="collection">
-                    <span class="fa fa-users"></span> Collection
+                <button class="btn btn-outline-dark profile-view-mode active" data-mode="collection">
+                    <i class="fas fa-layer-group"></i> Collection
                 </button>
             </div>
-
         </div>
-        <div class="panel-body">
-            <h3>Legend</h3>
-            <p>It does <b>NOT</b> include second awakening monsters. Number in cell indicates how many skill ups left to max</p>
+        <div class="card-body">
+            {% if monster_stable %}
+                <h3>Legend</h3>
+                <p>It does <b>NOT</b> include second awakening monsters. Number in cell indicates how many skill ups left to max</p>
 
-            <table class="table table-responsive">
-                <tbody>
-                    <tr>
-                        <td class="monster-collection cell not-owned legend">Not owned or not awakened</td>
-                        <td class="monster-collection cell owned legend">Owned and awakened, not skilled up</td>
-                        <td class="monster-collection cell owned full legend">Owned, awakened and fully skilled up</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        {% if monster_stable %}
-            <table class="table table-responsive">
-                <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col">Fire</th>
-                        <th scope="col">Water</th>
-                        <th scope="col">Wind</th>
-                        <th scope="col">Light</th>
-                        <th scope="col">Dark</th>
-                        <th scope="col">Possible skillups</th>
-                        <th scope="col">Possible skillups (with Devilmons)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for mon in monster_stable %}
+                <table class="table table-responsive">
+                    <tbody>
                         <tr>
-                            <td>{{ mon.name }}</td>
+                            <td class="monster-collection cell not-owned legend">Not owned or not awakened</td>
+                            <td class="monster-collection cell owned legend">Owned and awakened, not skilled up</td>
+                            <td class="monster-collection cell owned full legend">Owned, awakened and fully skilled up</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                            {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.fire name=mon.name element="Fire" %}
-                            {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.water name=mon.name element="Water" %}
-                            {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.wind name=mon.name element="Wind" %}
-                            {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.light name=mon.name element="Light" %}
-                            {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.dark name=mon.name element="Dark" %}
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Fire</th>
+                            <th scope="col">Water</th>
+                            <th scope="col">Wind</th>
+                            <th scope="col">Light</th>
+                            <th scope="col">Dark</th>
+                            <th scope="col">Possible skillups</th>
+                            <th scope="col">Possible skillups (with Devilmons)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mon in monster_stable %}
+                            <tr>
+                                <td>{{ mon.name }}</td>
 
-                            <td>{% if mon.possible_skillups %}{{ mon.possible_skillups }}{% endif %}</td>
-                            <td>{% if mon.possible_skillups or mon.devilmons_count %}{{ mon.possible_skillups|add:mon.devilmons_count }}{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <div class="panel-body">
-                <div class="alert alert-warning">Your search returned no results or you have no monsters!</div>
-            </div>
-        {% endif %}
+                                {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.fire name=mon.name element="Fire" %}
+                                {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.water name=mon.name element="Water" %}
+                                {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.wind name=mon.name element="Wind" %}
+                                {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.light name=mon.name element="Light" %}
+                                {% include 'herders/profile/monster_inventory/collection_cell.html' with data=mon.elements.dark name=mon.name element="Dark" %}
+
+                                <td>{% if mon.possible_skillups %}{{ mon.possible_skillups }}{% endif %}</td>
+                                <td>{% if mon.possible_skillups or mon.devilmons_count %}{{ mon.possible_skillups|add:mon.devilmons_count }}{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="callout callout-warning">
+                    <h2 class="fw-lighter">No records!</h2>
+                    <p class="fw-lighter">Your search returned no results or you have no monsters!</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>

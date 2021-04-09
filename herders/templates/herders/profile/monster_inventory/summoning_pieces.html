@@ -1,39 +1,36 @@
 <div id="monster-inventory">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="btn-group">
-                <button class="btn btn-default profile-view-mode" data-mode="list">
-                    <span class="glyphicon glyphicon-th-list"></span> List
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-dark profile-view-mode" data-mode="list">
+                    <i class="fas fa-th-list"></i> List
                 </button>
-                <button class="btn btn-default profile-view-mode" data-mode="box">
-                    <span class="glyphicon glyphicon-th-large"></span> Box
+                <button class="btn btn-outline-dark profile-view-mode" data-mode="box">
+                    <i class="fas fa-th-large"></i> Box
                 </button>
-                <button class="btn btn-default profile-view-mode active" data-mode="pieces">
-                    <span class="fa fa-puzzle-piece"></span> Pieces
+                <button class="btn btn-outline-dark profile-view-mode active" data-mode="pieces">
+                    <i class="fas fa-puzzle-piece"></i> Pieces
                 </button>
-                <button class="btn btn-default profile-view-mode" data-mode="collection">
-                    <span class="fa fa-users"></span> Collection
+                <button class="btn btn-outline-dark profile-view-mode" data-mode="collection">
+                    <i class="fas fa-layer-group"></i> Collection
                 </button>
             </div>
-            <button class="btn btn-default monster-piece-add">
-                <span class="glyphicon glyphicon-plus"></span> Add Pieces
+
+            <button class="btn btn-outline-dark monster-piece-add">
+                <i class="fas fa-plus"></i> Add Pieces
             </button>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             {% if monster_pieces %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <strong>Summoning Pieces</strong>
+                {% for piece in monster_pieces %}
+                    {% include 'herders/profile/monster_inventory/monster_piece_snippet.html' %}
+                {% endfor %}
+            {% else %}
+                <div class="callout callout-warning">
+                    <h2 class="fw-lighter">No records!</h2>
+                    <p class="fw-lighter">Your search returned no results or you have no monsters!</p>
                 </div>
-                <div class="panel-body">
-                    {% for piece in monster_pieces %}
-                        {% include 'herders/profile/monster_inventory/monster_piece_snippet.html' %}
-                    {% endfor %}
-                </div>
-            </div>
-        {% else %}
-            <div class="alert alert-warning">You have no monster pieces!</div>
-        {% endif %}
+            {% endif %}
         </div>
     </div>
 </div>

@@ -24,11 +24,13 @@
 {% endblock monster_menu %}
 
 {% block profile %}
-    <div class="filters">
-        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#monsterFilterCollapse">
-            <span class="glyphicon glyphicon-filter"></span> Filters
-        </button>
-        <div class="collapse" id="monsterFilterCollapse">
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-header bg-white">
+            <button class="btn btn-outline-dark btn-block w-100 collapsed" data-bs-toggle="collapse" data-bs-target="#monsterFilterCollapse">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+        </div>
+        <div class="card-body collapse" id="monsterFilterCollapse">
             {% crispy monster_filter_form %}
         </div>
     </div>

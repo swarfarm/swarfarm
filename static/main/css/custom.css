@@ -521,7 +521,7 @@ span.monster-image {
 }
 
 .monster-box {
-  width: auto;
+  width: 100px;
   position: relative;
   float: left;
   border: 1px solid black;
@@ -542,28 +542,27 @@ span.monster-image {
 }
 
 .monster-box .monster-star-2 {
-  left: 11px;
+  left: 10px;
 }
 
 .monster-box .monster-star-3 {
-  left: 21px;
+  left: 19px;
 }
 
 .monster-box .monster-star-4 {
-  left: 31px;
+  left: 28px;
 }
 
 .monster-box .monster-star-5 {
-  left: 41px;
+  left: 37px;
 }
 
 .monster-box .monster-star-6 {
-  left: 51px;
+  left: 46px;
 }
 
 .monster-box-thumb {
   position: relative;
-  border-bottom: 1px solid black;
 }
 
 .monster-box-actions {
@@ -571,8 +570,7 @@ span.monster-image {
   text-align: center;
   width: 100%;
   line-height: 12px;
-  font-size: 11px;
-  font-weight: bold;
+  font-size: 12px;
 }
 
 .monster-level-column {
@@ -666,13 +664,11 @@ span.monster-image {
   position: absolute;
   top: 1px;
   right: 1px;
-  horiz-align: center;
 }
 
 .image-plus-icon > * {
-  display: block;
   color: black;
-  width: 2em;
+  width: 2em!important;
 }
 
 .image-plus-left {
@@ -722,17 +718,6 @@ span.monster-image {
 
 .tablesorter-sticky-visible{
   top: 59px!important;
-}
-
-.filters {
-  margin-bottom: 15px;
-}
-
-.filter-header {
-  display: block;
-  cursor: pointer;
-  color: #333;
-  margin-bottom: 5px;
 }
 
 .slider.slider-horizontal {

@@ -159,17 +159,6 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             #
 
             base_monsters = Monster.objects.filter(base_monster_filters).exclude(material).order_by('skill_group_id', 'com2us_id').values('name', 'com2us_id', 'element', 'skill_group_id', 'skill_ups_to_max')
-            devilmons_count = monster_filter.qs.filter(monster__com2us_id=61105).count()
-
-            try:
-                devilmon_material_storage = MaterialStorage.objects.select_related(
-                    'item').get(owner=summoner, item__name__icontains='devilmon')
-                devilmons_count += devilmon_material_storage.quantity
-            except MaterialStorage.DoesNotExist:
-                pass
-            except MultipleObjectsReturned:
-                # TODO: should be better handling for this
-                pass
 
             skill_groups = itertools.groupby(base_monsters, lambda mon: mon['skill_group_id'])
             for skill_group_id, records in skill_groups:
@@ -180,7 +169,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                     'name': records[0]['name'],
                     'elements': {},
                     'possible_skillups': 0,
-                    'devilmons_count': devilmons_count,
+                    'skillups_need': 0,
                 }
                 elements = itertools.groupby(records, lambda mon: mon['element'])
                 for element, records_element in elements:
@@ -191,6 +180,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                         'skill_ups_to_max': None,
                         'skillups_max': records_element[0]['skill_ups_to_max'],
                     }
+                    data['skillups_need'] += records_element[0]['skill_ups_to_max']
                 monster_stable[skill_group_id] = data
 
             for mon in monster_filter.qs.filter(awakened).exclude(base_material):
@@ -208,20 +198,26 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 skill_ups_to_max = mon.skill_ups_to_max()
                 if not skill_ups_to_max:
                     data['skilled_up'] = True
+                    monster_stable[mon.monster.skill_group_id]['skillups_need'] -= data['skillups_max']
                     continue
 
                 if not data['skill_ups_to_max'] or skill_ups_to_max < data['skill_ups_to_max']:
+                    monster_stable[mon.monster.skill_group_id]['skillups_need'] -= data['skill_ups_to_max'] or data['skillups_max']
+                    monster_stable[mon.monster.skill_group_id]['skillups_need'] += skill_ups_to_max
                     data['skill_ups_to_max'] = skill_ups_to_max
 
             # some other field than `monster__skill_group_id` is needed, so all records are saved, not only unique ones
             skill_up_mons = monster_filter.qs.filter(base_unawakened).exclude(base_material).values('id', 'monster__skill_group_id')
             for skill_group_id, records in itertools.groupby(skill_up_mons, lambda x: x['monster__skill_group_id']):
-                monster_stable[skill_group_id]['possible_skillups'] += len(list(records))
+                r_c = len(list(records))
+                monster_stable[skill_group_id]['possible_skillups'] += r_c
+                monster_stable[skill_group_id]['skillups_need'] -= r_c
 
             for mss_item in MonsterShrineStorage.objects.select_related('item').filter(owner=summoner, item__awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED):
                 skill_group_id = mss_item.item.skill_group_id
                 if skill_group_id in monster_stable:
                     monster_stable[skill_group_id]['possible_skillups'] += mss_item.quantity
+                    monster_stable[skill_group_id]['skillups_need'] -= mss_item.quantity
             
             monster_stable = sorted(monster_stable.values(), key=lambda x: x['name'])
             context['monster_stable'] = monster_stable

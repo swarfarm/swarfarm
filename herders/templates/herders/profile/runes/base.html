@@ -25,11 +25,13 @@
 {% endblock rune_menu %}
 
 {% block profile %}
-    <div class="filters">
-        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#runeFilterCollapse">
-            <span class="glyphicon glyphicon-filter"></span> Filters
-        </button>
-        <div class="collapse" id="runeFilterCollapse">
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-header bg-white">
+            <button class="btn btn-outline-dark btn-block w-100 collapsed" data-bs-toggle="collapse" data-bs-target="#runeFilterCollapse">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+        </div>
+        <div class="card-body collapse" id="runeFilterCollapse">
             {% crispy rune_filter_form %}
         </div>
     </div>

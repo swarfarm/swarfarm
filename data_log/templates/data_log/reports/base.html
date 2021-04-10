@@ -59,9 +59,12 @@
                             <h3 class="fw-lighter">Magic Shop</h3>
                         </div>
                         <div class="card-body">
-                            <p>Records<span class="float-right">{{ report.log_count }}</p>
-                            <p>Contributors<span class="float-right">{{ report.unique_contributors }}</p>
-                            <p>Created<span class="float-right">{{ report.generated_on }}</p>
+                            <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
+                            <p>Contributors<span class="float-right">{% if report.unique_contributors %}{{ report.unique_contributors }}{% else %}0{% endif %}</p>
+                            <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:magic_shop_refresh' %}">Details</a>
                         </div>
                     </div>
                 </div>
@@ -70,11 +73,14 @@
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
                         <div class="card-header bg-white">
-                            <h3 class="fw-lighter">Magic Shop</h3>
+                            <h3 class="fw-lighter">Magic Box</h3>
                         </div>
                         <div class="card-body">
-                            <p>Records<span class="float-right">{{ report.log_count }}</p>
-                            <p>Created<span class="float-right">{{ report.generated_on }}</p>
+                            <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
+                            <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:magic_box_crafting' %}">Details</a>
                         </div>
                     </div>
                 </div>
@@ -83,12 +89,15 @@
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
                         <div class="card-header bg-white">
-                            <h3 class="fw-lighter">Magic Shop</h3>
+                            <h3 class="fw-lighter">Wish</h3>
                         </div>
                         <div class="card-body">
-                            <p>Records<span class="float-right">{{ report.log_count }}</p>
-                            <p>Contributors<span class="float-right">{{ report.unique_contributors }}</p>
-                            <p>Created<span class="float-right">{{ report.generated_on }}</p>
+                            <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
+                            <p>Contributors<span class="float-right">{% if report.unique_contributors %}{{ report.unique_contributors }}{% else %}0{% endif %}</p>
+                            <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:wish' %}">Details</a>
                         </div>
                     </div>
                 </div>
@@ -97,12 +106,14 @@
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
                         <div class="card-header bg-white">
-                            <h3 class="fw-lighter">Magic Shop</h3>
+                            <h3 class="fw-lighter">Summon</h3>
                         </div>
                         <div class="card-body">
-                            <p>Records<span class="float-right">{{ report.log_count }}</p>
-                            <p>Contributors<span class="float-right">{{ report.unique_contributors }}</p>
-                            <p>Created<span class="float-right">{{ report.generated_on }}</p>
+                            <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
+                            <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:summon' %}">Details</a>
                         </div>
                     </div>
                 </div>
@@ -111,12 +122,14 @@
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
                         <div class="card-header bg-white">
-                            <h3 class="fw-lighter">Magic Shop</h3>
+                            <h3 class="fw-lighter">Rune Crafting</h3>
                         </div>
                         <div class="card-body">
-                            <p>Records<span class="float-right">{{ report.log_count }}</p>
-                            <p>Contributors<span class="float-right">{{ report.unique_contributors }}</p>
-                            <p>Created<span class="float-right">{{ report.generated_on }}</p>
+                            <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
+                            <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:rune_crafting' %}">Details</a>
                         </div>
                     </div>
                 </div>

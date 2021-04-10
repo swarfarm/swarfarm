@@ -586,6 +586,7 @@ def monster_instance_view_info(request, profile_name, instance_id):
         'profile_name': profile_name,
         'fusion_ingredient_in': ingredient_in,
         'fusion_product_of': product_of,
+        'is_owner': (request.user.is_authenticated and request.user.summoner == instance.owner),
         'skillups': instance.get_possible_skillups(),
     }
 

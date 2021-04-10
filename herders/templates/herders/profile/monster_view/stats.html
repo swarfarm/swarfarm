@@ -1,15 +1,15 @@
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <p class="panel-title">Stats</p>
+<div class="card border-0 shadow mb-3 h-100">
+    <div class="card-header bg-white pb-0">
+        <p class="card-title fw-lighter">Stats</p>
     </div>
-    <ul class="nav nav-pills nav-justified">
-        <li role="presentation" class="active"><a href="#stats_base" data-toggle="pill">Base</a></li>
-        <li role="presentation"><a href="#stats_buildings" data-toggle="pill">Buildings</a></li>
-        <li role="presentation"><a href="#stats_guild" data-toggle="pill">Guild</a></li>
-    </ul>
+    <div class="nav nav-pills btn-group" role="group">
+        <button class="btn btn-outline-dark active" data-bs-toggle="pill" data-bs-target="#stats_base">Base</button>
+        <button class="btn btn-outline-dark" data-bs-toggle="pill" data-bs-target="#stats_buildings">Buildings</button>
+        <button class="btn btn-outline-dark" data-bs-toggle="pill" data-bs-target="#stats_guild">Guild</button>
+    </div>
     <div class="tab-content">
         {# Base stats #}
-        <div role="tabpanel" class="tab-pane active" id="stats_base">
+        <div role="tabpanel" class="tab-pane fade show active" id="stats_base">
             <table class="table table-condensed table-bordered text-center">
                 <thead>
                 <tr>
@@ -82,7 +82,7 @@
         </div>
 
         {# Building stats #}
-        <div role="tabpanel" class="tab-pane" id="stats_buildings">
+        <div role="tabpanel" class="tab-pane fade" id="stats_buildings">
             <table class="table table-condensed table-bordered text-center">
                 <thead>
                 <tr>
@@ -152,7 +152,7 @@
         </div>
 
         {# Guild battle stats #}
-        <div role="tabpanel" class="tab-pane" id="stats_guild">
+        <div role="tabpanel" class="tab-pane fade" id="stats_guild">
             <table class="table table-condensed table-bordered text-center">
                 <thead>
                 <tr>

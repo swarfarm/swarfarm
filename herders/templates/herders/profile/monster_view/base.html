@@ -16,36 +16,36 @@
     {% static 'herders/images/' as img_url_prefix %}
 
     {% if is_owner%}
-        <ul class="dropdown-menu navmenu-nav">
-            <li><a><img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-inline" loading="lazy" /> {% if instance.custom_name %}{{ instance.custom_name }}{% else %}{{ instance.monster.name }}{% endif %}</a></li>
-            <li><a class="monster-edit" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-edit"></span> Edit</a></li>
-            <li><a class="monster-copy" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-copy"></span> Copy</a></li>
-            <li><a class="monster-power-up" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-arrow-up"></span> Power Up</a></li>
+        <ul class="navbar-nav ps-2">
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-edit" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-edit"></i> Edit</a></li>
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-copy" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-clone"></i> Copy</a></li>
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-power-up" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-chevron-up"></i> Power Up</a></li>
             {% if instance.monster.awakens_to is not None %}
-                <li><a class="monster-awaken" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-star" style="color:purple"></span> Awaken</a></li>
+                <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-awaken" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-angle-double-up" style="color: purple;"></i> Awaken</a></li>
             {% endif %}
-            <li><a class="monster-delete" data-instance-id="{{ instance.pk.hex }}"><span class="glyphicon glyphicon-trash text-danger"></span> Delete</a></li>
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-delete" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-trash text-danger"></i> Delete</a></li>
         </ul>
     {% endif %}
 {% endblock monster_menu %}
 
 {% block profile %}
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-12 col-lg-6">
             <div id="monster-view-notes-info"></div>
         </div>
-        <div class="col-lg-6">
-            <div id="monster-view-runes"></div>
-        </div>
-        <div class="col-lg-12">
+        <div class="col-12 col-lg-6">
             <div id="monster-view-stats"></div>
         </div>
+        <div class="col-12">
+            <div id="monster-view-skills"></div>
+        </div>
+        <div class="col-12">
+            <div id="monster-view-runes"></div>
+        </div>
+        <div class="col-12">
+            <div id="monster-view-runes-rta"></div>
+        </div>
     </div>
-    <div class="row">
-        <div id="monster-view-skills"></div>
-    </div>
-
-    <div class="clearfix"></div>
 {% endblock profile %}
 
 {% block javascript_compressed %}

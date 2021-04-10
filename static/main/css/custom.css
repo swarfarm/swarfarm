@@ -356,7 +356,7 @@ select.short {
   line-height: 26px;
   padding: 0 8px 0 23px;
   position: relative;
-  margin: 0 5px 5px 0;
+  margin: 5px 0px;
   text-decoration: none;
   -webkit-transition: color 0.2s;
 }
@@ -532,6 +532,12 @@ span.monster-image {
   border: 1px solid rgba(0, 0, 0, .1);
   border-radius: 6px;
   margin: 1px;
+}
+
+@media (max-width: 768px){
+  .monster-box{
+    float: unset;
+  }
 }
 
 .monster-box .monster-star {

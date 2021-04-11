@@ -49,8 +49,11 @@ class JokerContainerFile:
     data_offset = mode_offset + mode_size + 1  # Skips unknown byte 0x01 between mode and data
     mode_f100_offset = data_offset + (7 * 8)
 
-    def __init__(self, f):
-        self.file = ConstBitStream(f.read())
+    def __init__(self, f, read=True):
+        if read:
+            self.file = ConstBitStream(f.read())
+        else:
+            self.file = ConstBitStream(f)
         self.file.pos = self.identifier_offset
         identifier = self.file.peek(f'bytes:{self.identifier_size}')
         if identifier != b'Joker':

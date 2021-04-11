@@ -533,6 +533,13 @@ class RuneBuild(models.Model):
         return f'{self.name} - {self.rune_set_summary}'
 
     @cached_property
+    def rune_set_text(self):
+        main_stat_text = self.rune_set_summary.find(' - ')
+        if main_stat_text > -1:
+            return self.rune_set_summary[:main_stat_text]
+        return self.rune_set_summary
+
+    @cached_property
     def rune_set_summary(self):
         num_equipped = self.runes.count()
 
@@ -552,10 +559,10 @@ class RuneBuild(models.Model):
         if num_equipped > active_set_required_count:
             active_set_names.append('Broken')
 
-        set_summary = '/'.join(active_set_names)
+        set_summary = ' / '.join(active_set_names)
 
         # Build main stat list for even slots
-        main_stat_summary = '/'.join([
+        main_stat_summary = ' / '.join([
             rune.get_main_stat_display() for rune in self.runes.filter(slot__in=[2, 4, 6])
         ])
 
@@ -637,22 +644,21 @@ class RuneBuild(models.Model):
             Avg('efficiency'))['efficiency__avg'] or 0.0
 
     def clear_cache_properties(self):
-        try:
-            del self.rune_set_summary
-        except AttributeError:
-            pass 
-        try:
-            del self.rune_set_bonus_text
-        except AttributeError:
-            pass 
-        try:
-            del self.active_rune_sets
-        except AttributeError:
-            pass 
-        try:
-            del self.rune_stats
-        except AttributeError:
-            pass
+        fields = [
+            self.rune_set_text,
+            self.rune_set_summary,
+            self.rune_set_bonus_text,
+            self.active_rune_sets,
+            self.rune_stats,
+            self.runes_per_slot,
+            self.artifacts_per_slot
+        ]
+
+        for field in fields: 
+            try:
+                del field
+            except AttributeError:
+                pass 
 
     def assign_rune(self, rune):
         # Clear any existing rune in slot
@@ -663,6 +669,29 @@ class RuneBuild(models.Model):
         # Clear any existing artifact in slot
         self.artifacts.remove(*self.artifacts.filter(slot=artifact.slot))
         self.artifacts.add(artifact)
+
+    @cached_property
+    def runes_per_slot(self):
+        runes = OrderedDict([(i, None) for i in range(1, 7)])
+        for rune in self.runes.all():
+            runes[rune.slot] = rune
+
+        return runes
+
+    @cached_property
+    def artifacts_per_slot(self):
+        artifacts = OrderedDict([(desc.lower(), None) for _, desc in ArtifactInstance.SLOT_CHOICES])
+
+        for artifact in self.artifacts.all():
+            artifacts[artifact.get_slot_display().lower()] = artifact
+
+        return artifacts
+
+    def get_artifact_element(self):
+        return self.artifacts_per_slot[Artifact.SLOT_ELEMENTAL]
+
+    def get_artifact_archetype(self):
+        return self.artifacts_per_slot[Artifact.SLOT_ARCHETYPE]
 
 
 class RuneCraftInstance(RuneCraft):

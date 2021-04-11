@@ -91,6 +91,11 @@ blockquote{
   }
 }
 
+.instance-build{
+  border-right: 1px solid rgba(0, 0, 0, .1);
+  padding-right: 10px;
+}
+
 @media (max-width: 992px){
   .subnavmenu-fixed-left{
     top: 30px;
@@ -98,6 +103,15 @@ blockquote{
   }
   .card-dungeon-md{
     width: 45%;
+  }
+
+  .instance-build{
+    flex-direction: column;
+    padding-right: 0!important;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    padding-bottom: 5px;
   }
 }
 
@@ -1138,4 +1152,163 @@ button.rune-assign-choice {
 
 .row-empty {
   background-color: rgba(255, 0, 0, 0.2);
+}
+
+.build-runes{
+  width: 150px;
+  height: 160px;
+}
+
+[class^="build-rune-slot-"]{
+  cursor: pointer;
+}
+
+.build-rune-slot-1,
+.build-rune-slot-4
+{
+  position: relative;
+  width: 42px;
+  height: 50px;
+}
+
+.build-rune-slot-2,
+.build-rune-slot-3,
+.build-rune-slot-5,
+.build-rune-slot-6
+{
+  position: relative;
+  width: 50px;
+  height: 38px;
+}
+
+.build-rune-slot-1{
+  left: 54px;
+  top: 10px;
+}
+
+.build-rune-slot-2{
+  left: 85px;
+  top: -9px;
+}
+
+.build-rune-slot-3{
+  left: 85px;
+  top: -9px;
+}
+
+.build-rune-slot-4{
+  left: 54px;
+  top: -28px;
+}
+
+.build-rune-slot-5{
+  left: 14px;
+  top: -94px;
+}
+
+.build-rune-slot-6{
+  left: 14px;
+  top: -173px;
+}
+
+.build-rune-symbol{
+  width: 32px;
+  height: 32px;
+}
+
+.build-rune-slot-1 .build-rune-symbol{
+  position: relative;
+  left: 4px;
+  top: 13px;
+}
+
+.build-rune-slot-2 .build-rune-symbol{
+  position: relative;
+  left: 5px;
+  top: 2px;
+}
+
+.build-rune-slot-3 .build-rune-symbol{
+  position: relative;
+  left: 5px;
+  top: 2px;
+}
+
+.build-rune-slot-4 .build-rune-symbol{
+  position: relative;
+  left: 5px;
+  top: 5px;
+}
+
+.build-rune-slot-5 .build-rune-symbol{
+  position: relative;
+  left: 11px;
+  top: 3px;
+}
+
+.build-rune-slot-6 .build-rune-symbol{
+  position: relative;
+  left: 11px;
+  top: 3px;
+}
+
+.build-rune-add{
+  color: rgb(55, 255, 55);
+}
+
+.build-rune-slot-1 .build-rune-add{
+  position: relative;
+  left: 11px;
+  top: 18px;
+}
+
+.build-rune-slot-2 .build-rune-add{
+  position: relative;
+  left: 12px;
+  top: 7px;
+}
+
+.build-rune-slot-3 .build-rune-add{
+  position: relative;
+  left: 12px;
+  top: 7px;
+}
+
+.build-rune-slot-4 .build-rune-add{
+  position: relative;
+  left: 11px;
+  top: 8px;
+}
+
+.build-rune-slot-5 .build-rune-add{
+  position: relative;
+  left: 18px;
+  top: 8px;
+}
+
+.build-rune-slot-6 .build-rune-add{
+  position: relative;
+  left: 18px;
+  top: 8px;
+}
+
+.build-artifact{
+  width: 68px;
+  height: 94px;
+}
+
+.build-artifact-type{
+  position: relative;
+  top: 13px;
+  left: 11px;
+  width: 46px;
+  height: 68px;
+}
+
+.build-artifact-instance{
+  position: relative;
+  left: 14px;
+  top: 21px;
+  color: rgb(55, 255, 55);
+  cursor: pointer;
 }

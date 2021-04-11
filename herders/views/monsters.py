@@ -491,16 +491,12 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     except ObjectDoesNotExist:
         return HttpResponseBadRequest()
 
-    # Get all slotted runes and artifacts, with None in place of empty slots
-    runes = [instance.default_build.runes.filter(slot=slot + 1).first() for slot in range(6)]
-    artifacts = {
-        desc.lower(): instance.default_build.artifacts.filter(slot=slot).first()
-        for slot, desc in ArtifactInstance.SLOT_CHOICES
-    }
 
     context = {
-        'runes': runes,
-        'artifacts': artifacts,
+        'runes': instance.default_build.runes_per_slot,
+        'artifacts': instance.default_build.artifacts_per_slot,
+        'runes_rta': instance.rta_build.runes_per_slot,
+        'artifacts_rta': instance.rta_build.artifacts_per_slot,
         'instance': instance,
         'profile_name': profile_name,
         'is_owner': is_owner,

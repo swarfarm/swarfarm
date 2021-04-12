@@ -10,3 +10,4 @@ python manage.py migrate
 echo "Loading initial data..."
 python manage.py loaddata bestiary_data
 python manage.py loaddata initial_auth_groups
+python manage.py loaddata reports

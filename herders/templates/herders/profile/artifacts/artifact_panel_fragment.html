@@ -2,34 +2,33 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="panel panel-default artifact-panel">
-    <div class="panel-heading condensed">
+<div class="card shadow-sm m-1 rune-box-border artifact-panel">
+    <div class="card-header p-1 d-flex justify-content-between">
+        <div class="rune-text fw-lighter rune-text-{{ artifact.get_quality_display|lower }}">{{ artifact }}</div>
         {% if is_owner %}
-        <div class="btn-group pull-right">
-            <button class="btn btn-default btn-xs artifact-edit" data-artifact-id="{{ artifact.pk.hex }}">
-                <span class="glyphicon glyphicon-pencil"></span>
+        <div class="btn-group float-right">
+            <button class="btn btn-link btn-sm artifact-edit p-0 text-dark" data-artifact-id="{{ artifact.pk.hex }}">
+                <i class="fas fa-edit fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
             </button>
-            <button class="btn btn-default btn-xs artifact-delete" data-artifact-id="{{ artifact.pk.hex }}">
-                <span class="glyphicon glyphicon-trash text-danger"></span>
+            <button class="btn btn-link btn-sm artifact-delete p-0 text-dark" data-artifact-id="{{ artifact.pk.hex }}">
+                <i class="fas fa-trash fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"></i>
             </button>
         </div>
         {% endif %}
-        <p class="panel-title rune-text rune-text-{{ artifact.get_quality_display|lower }}">{{ artifact }}</p>
     </div>
 
-    <div class="panel-body condensed">
-        {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact hide_original_quality=True only %}
-        <ul class="list-unstyled">
-            <li class="rune-main-stat">{{ artifact.get_main_stat_display }} +{{ artifact.main_stat_value }}</li>
+    <div class="card-body p-1">
+        <div class="d-flex">
+            {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact hide_original_quality=True only %}
+            <ul class="list-unstyled fw-lighter mb-0">
+                <li class="rune-main-stat">{{ artifact.get_main_stat_display }} +{{ artifact.main_stat_value }}</li>
             </ul>
-        <div class="clearfix"></div>
-        <ul class="list-unstyled">
+        </div>
+        <ul class="list-unstyled fw-lighter">
             {% for disp in artifact.get_effects_display %}
                 <li>{{ disp }}</li>
             {% endfor %}
         </ul>
-
-        <div class="clearfix"></div>
 
         {% if artifact.assigned_to %}
             <div class="rune-assigned-to">
@@ -52,10 +51,10 @@
                 </div>
             </div>
         {% endif %}
-        <ul class="top-right list-unstyled">
+        <ul class="top-right-rune list-unstyled fw-lighter">
             {% if artifact.original_quality is not None %}
                 <li>
-                    Orig: <span class="label rune-label-{{ artifact.get_original_quality_display|lower }}">
+                    Orig: <span class="badge rune-label-{{ artifact.get_original_quality_display|lower }}">
                         {{ artifact.get_original_quality_display }}
                     </span>
                 </li>

@@ -85,17 +85,25 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <h3 class="card-title fw-lighter">RTA Build</h3>
                     {% if is_owner and instance.rta_build.runes.count %}
-                    <button class="btn btn-xs btn-outline-danger rune-remove-all" data-instance-id="{{ instance.pk.hex }}">Remove All</button>
+                    <button class="btn btn-xs btn-outline-danger rune-remove-all">Remove All</button>
                     {% endif %}
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body {% comment %} To delete, when RTA features implemented {% endcomment %}enable-blur{% comment %} here it ends {% endcomment %}">
+                {% comment %} To delete, when RTA features implemented {% endcomment %}
+                <div style="filter: blur(0); position: absolute; left: 35%; top: 35%; display: flex; flex-direction: column; z-index: 9999;">
+                    <i class="fas fa-exclamation-triangle fa-5x text-center text-warning"></i>
+                    <hr />
+                    <span class="fw-light h2">IN PROGRESS</span>
+                </div>
+                {% comment %} Here it ends {% endcomment %}
                 <div class="d-flex flex-wrap">
                     <div class="d-flex align-items-center flex-wrap justify-content-center instance-build">
                         {% with artifact=artifacts_rta.element %}
                         <div class="build-artifact" style="background-image: url({{ img_url_prefix }}builds/rta_build_artifacts.png); background-repeat: no-repeat;" loading="lazy">
-                            {% if artifact %}
-                            <div class="artifact {{ artifact.get_quality_display|lower }} {{ artifact.get_slot_display|lower }}" data-artifact-id="{{ artifact.pk.hex }}">
+                            {% comment %} To uncomment when RTA features implemented {% endcomment %}
+                            {% comment %} {% if artifact %}
+                            <div class="artifact {{ artifact.get_quality_display|lower }} {{ artifact.get_slot_display|lower }}" >
                                 <div class="artifact-symbol {{ artifact.get_precise_slot_display|lower }}"></div>
                             </div>
                             {% elif is_owner %}
@@ -104,32 +112,33 @@
                                 style="background-image: url({{ img_url_prefix }}builds/artifact_element.png); background-repeat: no-repeat;" 
                                 loading="lazy"
                             >
-                                <i class="fas fa-plus fa-lg build-artifact-instance artifact-assign" data-artifact-slot="{{ instance.monster.get_element_display|lower }}"></i>
+                                <i class="fas fa-plus fa-lg build-artifact-instance"></i>
                             </div>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
                         </div>
                         {% endwith %}
 
                         <div class="build-runes mx-2" style="background-image: url({{ img_url_prefix }}builds/rta_build_runes.png); background-repeat: no-repeat; background-size: contain;" loading="lazy">
-                            {% for slot, rune in runes_rta.items %}
+                            {% comment %} To uncomment when RTA features implemented {% endcomment %}
+                            {% comment %} {% for slot, rune in runes_rta.items %}
                                 <div 
                                     class="build-rune-slot-{{ slot }}" 
                                     style="background-image: url({{ img_url_prefix }}runes/rune{{ slot }}.png); background-repeat: no-repeat;" 
                                     loading="lazy"
-                                    data-rune-slot="{{ slot }}"
                                 >
                                     {% if rune %}
                                         <img class="build-rune-symbol" src="{{ img_url_prefix }}/runes/{{ rune.get_type_display|lower }}.png"/>
                                     {% elif is_owner %}
-                                        <i class="fas fa-plus fa-lg build-rune-add rune-assign" data-rune-slot="{{ slot }}"></i>
+                                        <i class="fas fa-plus fa-lg build-rune-add"></i>
                                     {% endif %}
                                 </div>
-                            {% endfor %}
+                            {% endfor %} {% endcomment %}
                         </div>
                         {% with artifact=artifacts_rta.archetype %}
                         <div class="build-artifact" style="background-image: url({{ img_url_prefix }}builds/rta_build_artifacts.png); background-repeat: no-repeat;" loading="lazy">
-                            {% if artifact %}
-                            <div class="artifact {{ artifact.get_quality_display|lower }} {{ artifact.get_slot_display|lower }}" data-artifact-id="{{ artifact.pk.hex }}">
+                            {% comment %} To uncomment when RTA features implemented {% endcomment %}
+                            {% comment %} {% if artifact %}
+                            <div class="artifact {{ artifact.get_quality_display|lower }} {{ artifact.get_slot_display|lower }}">
                                 <div class="artifact-symbol {{ artifact.get_precise_slot_display|lower }}"></div>
                             </div>
                             {% elif is_owner %}
@@ -138,19 +147,20 @@
                                 style="background-image: url({{ img_url_prefix }}builds/artifact_archetype.png); background-repeat: no-repeat;" 
                                 loading="lazy"
                             >
-                                <i class="fas fa-plus fa-lg build-artifact-instance artifact-assign" data-artifact-slot="{{ instance.monster.get_archetype_display|lower }}"></i>
+                                <i class="fas fa-plus fa-lg build-artifact-instance"></i>
                             </div>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
                         </div>
                         {% endwith %}
                     </div>
                     <div class="ps-2 fw-lighter">
-                        <div class="d-flex flex-column">
+                        {% comment %} To uncomment when RTA features implemented {% endcomment %}
+                        {% comment %} <div class="d-flex flex-column">
                             <div><strong>Main Stat: </strong>{% if runes_rta.2 %}{{ runes_rta.2.get_main_stat_display }}{% else %}-{% endif %} / {% if runes_rta.4 %}{{ runes_rta.4.get_main_stat_display }}{% else %}-{% endif %} / {% if runes_rta.6 %}{{ runes_rta.6.get_main_stat_display }}{% else %}-{% endif %}</div>
                             <div><strong>Sets: </strong>{{ instance.rta_build.rune_set_text }}</div>
                             <div><strong>Avg. Efficiency: </strong>{{ instance.rta_build.avg_efficiency|floatformat:"-2" }}%</div>
                             <div><strong>Artifacts Main Stat: </strong>{% if artifacts_rta.element %}{{ artifacts_rta.element.get_main_stat_display }}{% else %}-{% endif %} / {% if artifacts_rta.archetype %}{{ artifacts_rta.archetype.get_main_stat_display }}{% else %}-{% endif %}</div>
-                        </div>
+                        </div> {% endcomment %}
                     </div>
                 </div>
             </div>

@@ -1154,6 +1154,10 @@ button.rune-assign-choice {
   background-color: rgba(255, 0, 0, 0.2);
 }
 
+.enable-blur > *{
+  filter: blur(15px);
+}
+
 .build-runes{
   width: 150px;
   height: 160px;

@@ -181,7 +181,7 @@ class Building(models.Model, base.Elements):
     area = models.IntegerField(choices=AREA_CHOICES, null=True, blank=True)
     affected_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     element = models.CharField(max_length=6, choices=base.Elements.ELEMENT_CHOICES, blank=True, null=True)
-    stat_bonus = ArrayField(models.IntegerField(blank=True, null=True))
+    stat_bonus = ArrayField(models.FloatField(blank=True, null=True))
     upgrade_cost = ArrayField(models.IntegerField(blank=True, null=True))
     description = models.TextField(null=True, blank=True)
     icon_filename = models.CharField(max_length=100, null=True, blank=True)

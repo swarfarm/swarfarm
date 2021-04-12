@@ -819,7 +819,10 @@ class DungeonLog(LogEntry):
             elif key in DungeonItemDrop.PARSE_KEYS:
                 reward_objs.append(DungeonItemDrop.parse(key=key, val=val))
             elif isinstance(val, dict):
-                if 'item_master_type' in val:
+                if key == 'event_crate':
+                    # Don't care, skip it
+                    continue
+                elif 'item_master_type' in val:
                     # Parse by master type
                     if val['item_master_type'] in DungeonItemDrop.PARSE_ITEM_TYPES:
                         reward_objs.append(DungeonItemDrop.parse(**val))
@@ -831,9 +834,6 @@ class DungeonLog(LogEntry):
                     reward_objs.append(DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_ESSENCE, **val}))
                 elif key == 'random_scroll':
                     reward_objs.append(DungeonItemDrop.parse(**{'item_master_type': GameItem.CATEGORY_SUMMON_SCROLL, **val}))
-                elif key == 'event_crate':
-                    # Don't care, skip it
-                    continue
                 elif key == 'changestones':
                     reward_objs.append(DungeonRuneCraftDrop.parse(**val))
                 else:

@@ -819,7 +819,10 @@ class DungeonLog(LogEntry):
             elif key in DungeonItemDrop.PARSE_KEYS:
                 reward_objs.append(DungeonItemDrop.parse(key=key, val=val))
             elif isinstance(val, dict):
-                if 'item_master_type' in val:
+                if key == 'event_crate':
+                    # Don't care, skip it
+                    continue
+                elif 'item_master_type' in val:
                     # Parse by master type
                     if val['item_master_type'] in DungeonItemDrop.PARSE_ITEM_TYPES:
                         reward_objs.append(DungeonItemDrop.parse(**val))

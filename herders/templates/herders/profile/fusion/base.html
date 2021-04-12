@@ -16,7 +16,7 @@
         <li class="nav-item py-0">
             <a class="nav-link fw-lighter py-1 text-muted fusion-tab" style="cursor: pointer;" data-fusion="{{ fusion.product.bestiary_slug }}">
                 <img src="{{ img_url_prefix }}monsters/{{ fusion.product.image_filename }}" class="monster-inline" loading="lazy" />
-                {{ fusion.product.base_stars }}<i class="fas fa-star"></i> {{ fusion.product.name }}{% if fusion.acquired %} - <i class="fas fa-check-circle"></i> Acquired!{% endif %}
+                {{ fusion.product.base_stars }}<i class="fas fa-star fa-xs"></i> {{ fusion.product.name }}{% if fusion.acquired %} - <i class="fas fa-check-circle"></i> Acquired!{% endif %}
             </a>
         </li>
         {% endfor %}

@@ -54,8 +54,10 @@ blockquote{
   overflow-y: auto;
   border: 0;
   border-radius: 0;
-  padding-top: 20px;
+  padding-top: 10px;
+  margin-top: 9px;
   width: 300px;
+  padding-bottom: 40px;
 }
 
 .btn-abs-top-right{
@@ -100,6 +102,8 @@ blockquote{
   .subnavmenu-fixed-left{
     top: 30px;
     width: 0px;
+    padding-bottom: 0;
+    z-index: 1003;
   }
   .card-dungeon-md{
     width: 45%;
@@ -168,6 +172,14 @@ blockquote{
 
 .card-progress-error{
   background-color: rgba(255, 66, 77, .25)!important;
+}
+
+.fusion-success{
+  background-color:rgba(55, 255, 55, .25);
+}
+
+.fusion-danger{
+  background-color: rgba(255, 55, 55, .25);
 }
 
 .card a{

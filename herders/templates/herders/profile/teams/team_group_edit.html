@@ -3,9 +3,9 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-6 col-md-offset-3">
+        <div class="col-md-6 offset-md-3">
             {% if validation_errors %}
-                <div class="alert alert-danger" role="alert">
+                <div class="callout callout-danger" role="alert">
                     <p>{{ validation_errors }}</p>
                 </div>
             {% endif %}

@@ -91,6 +91,9 @@ blockquote{
   .navmenu-collapsed {
     display: none;
   }
+  .team-list{
+    margin-right: 10px;
+  }
 }
 
 .instance-build{
@@ -145,6 +148,10 @@ blockquote{
 
 .page-link{
   color: #000;
+}
+
+.rounded-none{
+  border-radius: 0;
 }
 
 .card-monster.active{
@@ -854,22 +861,6 @@ div.disabled {
   width: 100%;
   background: #000000;
   opacity: 0.6;
-}
-
-.team-list {
-  width: 275px;
-  float: left;
-}
-.team-list-expand {
-  margin-bottom: 20px;
-}
-
-.team-detail {
-  margin-left: 300px;
-}
-
-#team-detail > div.panel > div.panel-body:after {
-  clear: none;
 }
 
 .team-list-group button {

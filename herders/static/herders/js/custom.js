@@ -237,8 +237,8 @@ $('body')
     .on('click', '[data-skill-field]', SetMaxSkillLevel)
     .on('select2:selecting', '[data-set-stars]', SetStars)
     .on('click', '.essence-storage', function() { EssenceStorage() })
-    .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
-    .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
+    .on('click', '.closeall', function() { $('.panel-collapse.show').collapse('hide'); })
+    .on('click', '.openall', function() { $('.panel-collapse:not(".show")').collapse('show'); })
     .on('click', '.data-logs-detach', function() { DetachDataLogs() })
     .on('change switchChange.bootstrapToggle', '.auto-submit', function() {
         clearTimeout(autosubmitDelay);

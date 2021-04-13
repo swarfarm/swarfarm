@@ -29,8 +29,8 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalAddTeamGroupTitle">Add Group</h4>
+                        <h5 class="modal-title" id="modalAddTeamGroupTitle">Add Group</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form method="post" action="{% url 'herders:team_group_add' profile_name=profile_name %}?next={{ request.path }}" >
                         {% crispy add_team_group_form %}
@@ -40,10 +40,15 @@
         </div>
     {% endif %}
 
-    <div id="team-list" class="team-list pull-left"></div>
-
-    <div class="team-detail">
-        <div id="team-detail"></div>
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div id="team-list" class="team-list float-left"></div>
+        </div>
+        <div class="col-12 col-lg-8">
+            <div class="team-detail">
+                <div id="team-detail"></div>
+            </div>
+        </div>
     </div>
 
 {% endblock profile %}

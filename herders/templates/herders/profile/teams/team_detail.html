@@ -3,195 +3,52 @@
 {% load markdown_deux_tags %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="panel panel-default">
-    <div class="panel-body">
-        <div>
-            {% if is_owner %}
-                <div class="btn-group pull-right">
-                    <a href="#{{ team.pk.hex }}" class="btn btn-info team-edit" data-team-id="{{ team.pk.hex }}">
-                        <span class="glyphicon glyphicon-pencil"></span> Edit
-                    </a>
-                    <a href="{% url 'herders:team_delete' profile_name=profile_name team_id=team.pk.hex %}" class="btn btn-danger">
-                        <span class="glyphicon glyphicon-remove"></span> Delete
-                    </a>
-                </div>
+<div class="card shadow border-0">
+    <div class="card-header bg-white">
+        {% if is_owner %}
+            <div class="float-right">
+                <a href="#{{ team.pk.hex }}" class="btn btn-link text-muted team-edit" data-team-id="{{ team.pk.hex }}">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'herders:team_delete' profile_name=profile_name team_id=team.pk.hex %}" class="btn btn-link">
+                    <i class="fas fa-trash text-danger"></i>
+                </a>
+            </div>
+        {% endif %}
+        <h1 class="fw-lighter">{{ team.group.name }} - {{ team.name }}</h1>
+    </div>
+    {% if team.description %}
+    <div class="card-header bg-white">
+        {{ team.description|markdown }}
+    </div>
+    {% endif %}
+    {% if team_buffs %}
+    <div class="card-header bg-white d-flex flex-wrap monster-skill-effects w-100">
+        {% if team.leader.monster.leader_skill %}
+        <img src="{{ img_url_prefix }}skills/leader/{{ team.leader.monster.leader_skill.icon_filename }}" loading="lazy" 
+                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ team.leader.monster.leader_skill.skill_string }}" />
+        {% endif %}
+        {% for effect in team_buffs %}
+            {% if effect.icon_filename %}
+            <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" loading="lazy" 
+                    data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
+            {% else %}
+            <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                <span>{{ effect.name }}</span>
+            </span>
             {% endif %}
-
-            <h1>{{ team.group.name }} - {{ team.name }}</h1>
-        </div>
-        {% if team.description %}
-        <div>
-           {{ team.description|markdown }}
-        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="card-header bg-white">
+        <div class="card-title fw-lighter h4">Leader</div>
+        {% if team.leader %}
+            {% include 'herders/profile/teams/team_unit_detail.html' with unit=team.leader %}
         {% endif %}
-        {% if team_buffs %}
-        <table class="table table-condensed monster-table">
-            <td width="225px">Combined Team Buffs/Debuffs:</td>
-            <td class="monster-skill-effects">
-                {% if team.leader.monster.leader_skill %}
-                <img src="{{ img_url_prefix }}skills/leader/{{ team.leader.monster.leader_skill.icon_filename }}" loading="lazy" 
-                     data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ team.leader.monster.leader_skill.skill_string }}" />
-                {% endif %}
-                {% for effect in team_buffs %}
-                {% if effect.icon_filename %}
-                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" loading="lazy" 
-                        data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
-                {% else %}
-                <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                    <span>{{ effect.name }}</span>
-                </span>
-                {% endif %}
-                {% endfor %}
-            </td>
-        </table>
-        {% endif %}
-        <table class="table table-hover table-condensed monster-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th class="monster-stars-column">Stars</th>
-                    <th class="monster-level-column">Level</th>
-                    <th class="monster-element">Element</th>
-                    <th>Archetype</th>
-                    <th>Leader Skill</th>
-                    <th>Skill Effects</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td colspan="8"><h4>Leader</h4></td></tr>
-                <tr>
-                    {% if team.leader %}
-                    <td class="monster-image monster-popover" data-instance-id="{{ team.leader.pk.hex }}" title="{{ team.leader }}">
-                        <div>
-                            <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=team.leader.pk.hex %}" target="_blank">
-                                <img src="{{ img_url_prefix }}monsters/{{ team.leader.monster.image_filename }}" class="monster-thumb" loading="lazy" />
-                                <span>
-                                    {% for x in team.leader.stars|get_range %}
-                                        {% if team.leader.monster.is_awakened %}
-                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
-                                        {% elif team.leader.monster.can_awaken %}
-                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
-                                        {% else %}
-                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
-                                        {% endif %}
-                                    {% endfor %}
-                                </span>
-                                <span class="image-plus image-plus-right">{% if team.leader.is_max_level %}MAX{% endif %}{{ team.leader.level }}</span>
-                            </a>
-                        </div>
-                    </td>
-                    <td>{{ team.leader.monster.name|title }}</td>
-                    <td class="monster-stars-column">{{ team.leader.stars }}<span class="glyphicon glyphicon-star"></span></td>
-                    <td>
-                        {% if team.leader.is_max_level %}MAX{% endif %}{{ team.leader.level }}
-                        {% if team.leader.is_max_level %}
-                            {% if team.leader.stars == 6 %}
-                                <span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span>
-                            {% else %}
-                                <span class="glyphicon glyphicon-upload" style="color:darkorange;" data-toggle="tooltip" data-placement="top" title="Ready for Evolution!"></span>
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                    <td class="monster-element">
-                        <img src="{{ img_url_prefix }}elements/{{ team.leader.monster.element }}.png" loading="lazy" />
-                        <span>{{ team.leader.monster.element }}</span>
-                    </td>
-                    <td>{{ team.leader.monster.archetype|title }}</td>
-                    <td class="monster-leader-skill">
-                        {% if team.leader.monster.leader_skill %}
-                        <img src="{{ img_url_prefix }}skills/leader/{{ team.leader.monster.leader_skill.icon_filename }}" loading="lazy" 
-                             data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ team.leader.monster.leader_skill.skill_string }}" />
-                        {% endif %}
-                    </td>
-                    <td class="monster-skill-effects">
-                        {% for skill in team.leader.monster.skills.all %}
-                            {% if skill.aoe %}
-                                <span class="skill-effect skill-effect-buff">
-                                    <span>AOE</span>
-                                </span>
-                            {% endif %}
-                            {% for effect in skill.effect.all %}
-                                {% if effect.icon_filename %}
-                                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" loading="lazy" 
-                                    data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
-                                {% else %}
-                                    <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                                        <span>{{ effect.name }}</span>
-                                    </span>
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
-                    </td>
-
-                    {% else %}
-                    <td colspan="8">None</td>
-                    {% endif %}
-                </tr>
-                <tr><td colspan="8"><h4>Members</h4></td></tr>
-                {% for instance in team.roster.all %}
-                    <tr>
-                        <td class="monster-image monster-popover" data-instance-id="{{ instance.pk.hex }}" title="{{ instance }}">
-                            <div>
-                                <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}" target="_blank">
-                                <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" class="monster-thumb" loading="lazy" />
-                                <span>
-                                    {% for x in instance.stars|get_range %}
-                                        {% if instance.monster.is_awakened %}
-                                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
-                                        {% elif instance.monster.can_awaken %}
-                                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
-                                        {% else %}
-                                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
-                                        {% endif %}
-                                    {% endfor %}
-                                </span>
-                                <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
-                                </a>
-                            </div>
-                        </td>
-                        <td>{{ instance.monster.name|title }}</td>
-                        <td class="monster-stars-column">{{ instance.stars }}<span class="glyphicon glyphicon-star"></span></td>
-                        <td>
-                            {% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}
-                            {% if instance.is_max_level %}
-                                {% if instance.stars == 6 %}
-                                    <span class="glyphicon glyphicon-ok-circle" style="color:darkgreen"></span>
-                                {% else %}
-                                    <span class="glyphicon glyphicon-upload" style="color:darkorange;" data-toggle="tooltip" data-placement="top" title="Ready for Evolution!"></span>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                        <td class="monster-element">
-                            <img src="{{ img_url_prefix }}elements/{{ instance.monster.element }}.png" loading="lazy" />
-                            <span>{{ instance.monster.element }}</span>
-                        </td>
-                        <td>{{ instance.monster.archetype|title }}</td>
-                        <td class="monster-leader-skill">
-                            {% if instance.monster.leader_skill %}
-                            <img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}" loading="lazy" 
-                                 data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ instance.monster.leader_skill.skill_string }}" />
-                            {% endif %}
-                        </td>
-                        <td class="monster-skill-effects">
-                            {% for skill in instance.monster.skills.all %}
-                                {% for effect in skill.effect.all %}
-                                    {% if effect.icon_filename %}
-                                        <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" loading="lazy" 
-                                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
-                                    {% else %}
-                                        <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
-                                            <span>{{ effect.name }}</span>
-                                        </span>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="8">No Members</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    </div>
+    <div class="card-body d-flex flex-wrap">
+        {% for instance in team.roster.all %}
+            {% include 'herders/profile/teams/team_unit_detail.html' with unit=instance %}
+        {% endfor %}
     </div>
 </div>

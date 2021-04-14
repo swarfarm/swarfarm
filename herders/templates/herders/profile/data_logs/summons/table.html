@@ -5,16 +5,6 @@
     Table - Summons - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    <li><a href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}">Summons</a></li>
-    {% if view_name == 'herders:data_log_summons_dashboard' %}
-        <li class="active">Table</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}">Table</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block log_table %}
     {% static 'herders/images/' as img_url_prefix %}
 

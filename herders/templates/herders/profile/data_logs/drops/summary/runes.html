@@ -1,12 +1,12 @@
 {% load staticfiles humanize utils %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Runes</h3>
+<div class="card shadow-sm border-0 mb-3">
+    <div class="card-header bg-white">
+        <h3 class="card-title fw-lighter">Runes</h3>
     </div>
 
-    <div class="panel-body">
+    <div class="card-body">
         {% for rune in runes %}
             <div class="rune-image" style="margin-right:0!important;" data-toggle="tooltip" data-placement="top" title="{{ rune.stars }}⭐ {{ rune.quality }} {{ rune.type }} Rune x{{ rune.count|intcomma }}">
                 <div class="rune-bg {{ rune.quality|lower }}">
@@ -24,7 +24,7 @@
                 </div>
             </div>
         {% empty %}
-            <p>None!</p>
+            <div class="callout callout-warning fw-lighter">None!</div>
         {% endfor %}
     </div>
 </div>

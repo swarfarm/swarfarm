@@ -5,61 +5,105 @@
 {% endblock %}
 
 {% block logs %}
-    <h1>Personal Data Logs</h1>
-
     {% if total == 0 %}
-        <div class="alert alert-warning" role="alert">
-            You don't have any data logs yet! See the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.
+        <div class="callout callout-warning" role="alert">
+            <h4 class="fw-lighter">No data!</h4>
+            You don't have any data logs yet! See the <a class="text-decoration-none" href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.
         </div>
     {% else %}
-        <a class="btn btn-danger data-logs-detach" role="button">Detach All Logs</a>
+        <a class="btn btn-outline-danger data-logs-detach mb-3" role="button">Detach All Logs</a>
     {% endif %}
 
-    <ul class="list-unstyled">
-        <li>
-            <a href="{% url 'herders:data_log_magic_shop_dashboard' profile_name=profile_name %}">
-                <h2>Magic Shop Refresh <small>{{ counts.magic_shop }} log{{ counts.magic_shop|pluralize }}</small></h2>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'herders:data_log_wish_dashboard' profile_name=profile_name %}">
-                <h2>Wishes <small>{{ counts.wish }} log{{ counts.wish|pluralize }}</small></h2>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'herders:data_log_rune_craft_dashboard' profile_name=profile_name %}">
-                <h2>Rune Crafting <small>{{ counts.rune_crafting }} log{{ counts.rune_crafting|pluralize }}</small></h2>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'herders:data_log_magic_box_craft_dashboard' profile_name=profile_name %}">
-                <h2>Magic Box Crafting <small>{{ counts.magic_box }} log{{ counts.magic_box|pluralize }}</small></h2>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}">
-                <h2>Summons <small>{{ counts.summons }} log{{ counts.summons|pluralize }}</small></h2>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}">
-                <h2>Dungeons <small>{{ counts.dungeons }} log{{ counts.dungeons|pluralize }}</small></h2>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'herders:data_log_rift_dungeon_dashboard' profile_name=profile_name %}">
-                <h2>Elemental Rift Beast <small>{{ counts.rift_beast }} log{{ counts.rift_beast|pluralize }}</small></h2>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'herders:data_log_rift_raid_dashboard' profile_name=profile_name %}">
-                <h2>Rift Raid <small>{{ counts.rift_raid }} log{{ counts.rift_raid|pluralize }}</small></h2>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'herders:data_log_world_boss_dashboard' profile_name=profile_name %}">
-                <h2>World Boss <small>{{ counts.world_boss }} log{{ counts.world_boss|pluralize }}</small></h2>
-            </a>
-        </li>
-    </ul>
+    <div class="row">
+        <div class="col-12 col-lg-3 col-md-3 mb-3">
+            <div class="card shadow border-0 h-100">
+                <a href="{% url 'herders:data_log_magic_shop_dashboard' profile_name=profile_name %}"> 
+                    <div class="card-body">
+                        Magic Shop Refresh
+                        <div class="float-right text-muted">{{ counts.magic_shop }} log{{ counts.magic_shop|pluralize }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 col-md-3 mb-3">
+            <div class="card shadow border-0 h-100">
+                <a href="{% url 'herders:data_log_wish_dashboard' profile_name=profile_name %}"> 
+                    <div class="card-body">
+                        Wish
+                        <div class="float-right text-muted">{{ counts.wish }} log{{ counts.wish|pluralize }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 col-md-3 mb-3">
+            <div class="card shadow border-0 h-100">
+                <a href="{% url 'herders:data_log_rune_craft_dashboard' profile_name=profile_name %}"> 
+                    <div class="card-body">
+                        Rune Crafting
+                        <div class="float-right text-muted">{{ counts.rune_crafting }} log{{ counts.rune_crafting|pluralize }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 col-md-3 mb-3">
+            <div class="card shadow border-0 h-100">
+                <a href="{% url 'herders:data_log_magic_box_craft_dashboard' profile_name=profile_name %}"> 
+                    <div class="card-body">
+                        Magic Box Crafting
+                        <div class="float-right text-muted">{{ counts.magic_box }} log{{ counts.magic_box|pluralize }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 col-md-3 mb-3">
+            <div class="card shadow border-0 h-100">
+                <a href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}"> 
+                    <div class="card-body">
+                        Summons
+                        <div class="float-right text-muted">{{ counts.summons }} log{{ counts.summons|pluralize }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 col-md-3 mb-3">
+            <div class="card shadow border-0 h-100">
+                <a href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}"> 
+                    <div class="card-body">
+                        Dungeons
+                        <div class="float-right text-muted">{{ counts.dungeons }} log{{ counts.dungeons|pluralize }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 col-md-3 mb-3">
+            <div class="card shadow border-0 h-100">
+                <a href="{% url 'herders:data_log_rift_dungeon_dashboard' profile_name=profile_name %}"> 
+                    <div class="card-body">
+                        Elemental Rift Beast
+                        <div class="float-right text-muted">{{ counts.rift_beast }} log{{ counts.rift_beast|pluralize }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 col-md-3 mb-3">
+            <div class="card shadow border-0 h-100">
+                <a href="{% url 'herders:data_log_rift_raid_dashboard' profile_name=profile_name %}"> 
+                    <div class="card-body">
+                        Rift Raid
+                        <div class="float-right text-muted">{{ counts.rift_raid }} log{{ counts.rift_raid|pluralize }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 col-md-3 mb-3">
+            <div class="card shadow border-0 h-100">
+                <a href="{% url 'herders:data_log_world_boss_dashboard' profile_name=profile_name %}"> 
+                    <div class="card-body">
+                        World Boss
+                        <div class="float-right text-muted">{{ counts.world_boss }} log{{ counts.world_boss|pluralize }}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
 {% endblock logs %}

@@ -4,30 +4,18 @@
     Personal Data Log Help - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% if request.resolver_match.view_name == 'herders:data_log_help' %}
-        <li class="active">Help</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_help' profile_name=profile_name %}">Help</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block logs %}
-    <h2>How to get personal logs</h2>
+    <h2 class="fw-lighter">How to get personal logs</h2>
     <ol>
-        <li>Download the latest package from the <a href="https://github.com/Xzandro/sw-exporter/releases/latest" target="_blank">SW-Exporter</a> project on Github.</li>
-        <li><a href="{% url 'herders:import_swparser' profile_name=profile_name %}">One time only - import your game data via Summoner's War JSON Import</a></li>
+        <li>Download the latest package from the <a class="text-decoration-none" href="https://github.com/Xzandro/sw-exporter/releases/latest" target="_blank">SW-Exporter</a> project on Github.</li>
+        <li><a class="text-decoration-none" href="{% url 'herders:import_swparser' profile_name=profile_name %}">One time only - import your game data via Summoner's War JSON Import</a></li>
         <li>Play the game while connected to the proxy.</li>
     </ol>
 
-    <div class="alert alert-warning" role="alert"><strong>Important!</strong> Data logs are only stored for a 6 month period.</div>
+    <div class="callout callout-warning fw-lighter" role="alert"><h4 class="fw-lighter">Important!</h4> Data logs are only stored for a 6 month period.</div>
 
     <h2>FAQs</h2>
     <dl>
-        <dt>Where are the statistics?</dt>
-        <dd>They are under development and coming soon.</dd>
-
         <dt>Can I download my data logs?</dt>
         <dd>API access to data logs is coming soon.</dd>
 

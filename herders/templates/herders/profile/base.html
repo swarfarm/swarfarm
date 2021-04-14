@@ -56,26 +56,26 @@
             </li>
             <li class="nav-item py-0{% if view == 'teams' and is_owner %} active{% endif %}">
                 <a class="nav-link text-reset fw-lighter" href="{% url 'herders:teams' profile_name=profile_name %}">
-                    <i class="fas fa-users"></i> Teams
+                    <i class="fas fa-users text-muted"></i> Teams
                 </a>
                 {% block team_menu %}{% endblock team_menu %}
             </li>
             {% if is_owner %}
                 <li class="nav-item py-0">
                     <a class="nav-link text-reset fw-lighter" href="{% url 'herders:storage' profile_name=profile_name %}">
-                        <i class="fas fa-archive"></i> Material Storage
+                        <i class="fas fa-archive text-muted"></i> Material Storage
                     </a>
                 </li>
             {% endif %}
             <li class="nav-item py-0">
                 <a class="nav-link text-reset fw-lighter" href="{% url 'herders:buildings' profile_name=profile_name %}">
-                    <i class="fas fa-building"></i> Buildings
+                    <i class="fas fa-building text-muted"></i> Buildings
                 </a>
             </li>
             {% if is_owner %}
                 <li class="nav-item py-0{% if view == 'data_log' %} active{% endif %}">
                     <a class="nav-link text-reset fw-lighter" href="{% url 'herders:data_log_dashboard' profile_name=profile_name %}">
-                        <i class="fas fa-database"></i> Data Logs
+                        <i class="fas fa-database text-muted"></i> Data Logs
                     </a>
                     {% block data_log_menu %}{% endblock data_log_menu %}
                 </li>
@@ -83,7 +83,7 @@
             {% if is_owner %}
                 <li class="nav-item py-0{% if view == 'stats' %} active{% endif %}">
                     <a class="nav-link text-reset fw-lighter" href="{% url 'herders:profile_stats' profile_name=profile_name %}">
-                        <i class="fas fa-chart-bar"></i> Statistics
+                        <i class="fas fa-chart-bar text-muted"></i> Statistics
                     </a>
                     {% block profile_stats_menu %}{% endblock profile_stats_menu %}
                 </li>

@@ -17,9 +17,9 @@
                 {{ profile_name }}'s Profile
                 {% if user.is_authenticated %}
                     {% if summoner not in user.summoner.following.all %}
-                        <small><a href="{% url 'herders:profile_follow_add' profile_name=user.username follow_username=summoner.user.username%}?next={{ request.path }}" class="pull-right text-success"><span class="fa fa-user"></span> Follow</a></small>
+                        <small><a href="{% url 'herders:profile_follow_add' profile_name=user.username follow_username=summoner.user.username%}?next={{ request.path }}" class="btn btn-outline-success float-right"><i class="fas fa-user-plus"></i> Follow</a></small>
                     {% else %}
-                        <small><a href="{% url 'herders:profile_follow_remove' profile_name=user.username follow_username=summoner.user.username%}?next={{ request.path }}" class="pull-right text-danger"><span class="glyphicon glyphicon-remove-circle"></span> Unfollow</a></small>
+                        <small><a href="{% url 'herders:profile_follow_remove' profile_name=user.username follow_username=summoner.user.username%}?next={{ request.path }}" class="btn btn-outline-danger float-right"><i class="fas fa-user-times"></i> Unfollow</a></small>
                     {% endif %}
                 {% endif %}
             </p>

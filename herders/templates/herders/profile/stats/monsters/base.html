@@ -14,10 +14,10 @@ Monsters - {{ block.super }}
             {% include 'herders/profile/stats/table.html' with title="Summary" data=monsters.summary %}
             {% include 'herders/profile/stats/table.html' with title="Stars" data=monsters.stars %}
 
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
+            <div class="grid-item col-md-6 col-sm-12 col-xs-12 col-12">
                 <div class="grid-item-content w-100">
                     <div class="card shadow border-0 m-2">
-                        <div class="card-body">
+                        <div class="card-body table-responsive">
                             <table class="table comparison-table-5">
                                 <thead>
                                     <th><h3>Natural Stars</h3></th>

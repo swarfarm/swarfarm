@@ -7,18 +7,18 @@ Summary - {{ block.super }}
 
 {% block content_compare %}
     <div class="profile-compare-header">
-        <h1>{{ profile_name }} <small>vs</small> {{ follower_name }}</h1>
+        <h1 class="fw-lighter">{{ profile_name }} <small>vs</small> {{ follower_name }}</h1>
     </div>
-
 
     <div class="profile-compare-monsters-ajax">
         <a href="{% url 'herders:profile_compare_builds' profile_name follower_name %}">
-            <div class="btn btn-primary">Compare builds</div>
+            <div class="btn btn-outline-dark">Compare builds</div>
         </a>
     </div>
+    <hr />
     <div class="container-fluid">
         <div class="grid">
-            <div class="grid-sizer col-md-6 col-sm-12 col-xs-12"></div>
+            <div class="grid-sizer col-md-6 col-sm-12 col-xs-12 col-12"></div>
             {% include 'herders/profile/compare/table.html' with title="Runes" data=comparison.runes %}
             {% include 'herders/profile/compare/table.html' with title="Artifacts" data=comparison.artifacts %}
             {% include 'herders/profile/compare/table.html' with title="Monsters" data=comparison.monsters %}

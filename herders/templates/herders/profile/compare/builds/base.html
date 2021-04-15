@@ -7,166 +7,183 @@ Builds - {{ block.super }}
 {% endblock title %}
 
 {% block content_compare %}
-    <h1>Builds</h1>
-    <hr />
-    <div class="container">
-        {% crispy form %}
+    <div class="container-fluid">
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white">
+                <h3 class="fw-lighter">Select monsters to compare</h3>
+            </div>
+            <div class="card-body">
+                {% crispy form %}
+            </div>
+        </div>
 
         {% if comparison %}
             <hr />
             <div class="grid">
-                <div class="grid-sizer col-lg-4 col-md-12 col-xs-12"></div>
-                <div class="grid-item col-lg-4 col-md-12 col-xs-12">
-                    <div class="grid-item-content table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th colspan="4" class="comparison-table-category"><h3>Monster</h3></th>
-                                </tr>
-                                <tr>
-                                    <th>Summoner</th>
-                                    <th>{{ profile_name }}</th>
-                                    <th></th>
-                                    <th>{{ follower_name }}</th>
-                                </tr>
-                                <tr>
-                                    <th>Monster</th>
-                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.summoner is_owner=False %}</th>
-                                    <th></th>
-                                    <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=follower_name instance=monsters.follower is_owner=False %}</th>
-                                </tr>
-                                <tr>
-                                    <th>Bestiary</th>
-                                    <th><a target="_blank" href="{% url 'bestiary:detail' monsters.summoner.monster.bestiary_slug %}" /><div class="btn btn-primary w-monster-box">{{ monsters.summoner.monster }}</div></th>
-                                    <th></th>
-                                    <th><a target="_blank" href="{% url 'bestiary:detail' monsters.follower.monster.bestiary_slug %}" /><div class="btn btn-primary w-monster-box">{{ monsters.follower.monster }}</div></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for record_name, record in comparison.monsters.items %}
-                                <tr>
-                                    <th>{{ record_name }}</th>
-                                    <td>
-                                        {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                        {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                        {% endif %}
-                                        {{ record.summoner }}
-                                    </td>
-                                    <td>
-                                        <span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
-                                            {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                        {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                        {% endif %}
-                                        {{ record.follower }}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="grid-sizer col-lg-4 col-md-12 col-xs-12 col-12"></div>
+                <div class="grid-item col-lg-4 col-md-12 col-xs-12 col-12">
+                    <div class="grid-item-content mx-2">
+                        <div class="card shadow border-0 mb-3">
+                            <div class="card-header bg-white text-center">
+                                <h3 class="fw-lighter">Monster</h3>
+                            </div>
+                            <div class="card-body table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Summoner</th>
+                                            <th class="text-center">{{ profile_name }}</th>
+                                            <th></th>
+                                            <th class="text-center">{{ follower_name }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Monster</th>
+                                            <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=profile_name instance=monsters.summoner is_owner=False %}</th>
+                                            <th></th>
+                                            <th>{% include 'herders/profile/monster_inventory/monster_box_snippet.html' with profile_name=follower_name instance=monsters.follower is_owner=False %}</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Bestiary</th>
+                                            <th><a target="_blank" href="{% url 'bestiary:detail' monsters.summoner.monster.bestiary_slug %}" /><div class="btn btn-outline-dark w-monster-box m-1">{{ monsters.summoner.monster }}</div></th>
+                                            <th></th>
+                                            <th><a target="_blank" href="{% url 'bestiary:detail' monsters.follower.monster.bestiary_slug %}" /><div class="btn btn-outline-dark w-monster-box m-1">{{ monsters.follower.monster }}</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for record_name, record in comparison.monsters.items %}
+                                        <tr>
+                                            <th>{{ record_name }}</th>
+                                            <td>
+                                                {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                                {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                                {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                                {% endif %}
+                                                {{ record.summoner }}
+                                            </td>
+                                            <td>
+                                                <span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                                    {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                                {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                                {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                                {% endif %}
+                                                {{ record.follower }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="grid-item col-lg-4 col-md-12 col-xs-12">
-                    <div class="grid-item-content table-responsive">
-                        <table class="table comparison-table">
-                            <thead>
-                                <tr>
-                                    <th colspan="4" class="comparison-table-category"><h3>Build</h3></th>
-                                </tr>
-                                <tr>
-                                    <th>Summoner</th>
-                                    <th>{{ profile_name }}</th>
-                                    <th></th>
-                                    <th>{{ follower_name }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for record_name, record in comparison.builds.items %}
-                                <tr>
-                                    <th>{{ record_name }}</th>
-                                    <td>
-                                        {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                        {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                        {% endif %}
-                                        {{ record.summoner }}
-                                    </td>
-                                    <td>
-                                        {% if record_name == 'Rune sets' %}
-                                            {% for diff in record.diff %}
-                                                <span class="comparison-difference-{% if diff.winner == 'follower'%}minus{% else %}plus{% endif %}">{{ diff.text }}</span><br />
-                                            {% endfor %}
-                                        {% else %}
-                                            <span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
-                                                {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                        {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                        {% endif %}
-                                        {{ record.follower }}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="grid-item col-lg-4 col-md-12 col-xs-12 col-12">
+                    <div class="grid-item-content mx-2">
+                        <div class="card shadow border-0 mb-3">
+                            <div class="card-header bg-white text-center">
+                                <h3 class="fw-lighter">Monster</h3>
+                            </div>
+                            <div class="card-body table-responsive">
+                                <table class="table comparison-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Summoner</th>
+                                            <th>{{ profile_name }}</th>
+                                            <th></th>
+                                            <th>{{ follower_name }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for record_name, record in comparison.builds.items %}
+                                        <tr>
+                                            <th>{{ record_name }}</th>
+                                            <td>
+                                                {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                                {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                                {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                                {% endif %}
+                                                {{ record.summoner }}
+                                            </td>
+                                            <td>
+                                                {% if record_name == 'Rune sets' %}
+                                                    {% for diff in record.diff %}
+                                                        <span class="comparison-difference-{% if diff.winner == 'follower'%}minus{% else %}plus{% endif %}">{{ diff.text }}</span><br />
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                                        {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                                {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                                {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                                {% endif %}
+                                                {{ record.follower }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="grid-item col-lg-4 col-md-12 col-xs-12">
-                    <div class="grid-item-content table-responsive">
-                        <table class="table comparison-table">
-                            <thead>
-                                <tr>
-                                    <th colspan="4" class="comparison-table-category"><h3>RTA Build</h3></th>
-                                </tr>
-                                <tr>
-                                    <th>Summoner</th>
-                                    <th>{{ profile_name }}</th>
-                                    <th></th>
-                                    <th>{{ follower_name }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for record_name, record in comparison.rta_builds.items %}
-                                <tr>
-                                    <th>{{ record_name }}</th>
-                                    <td>
-                                        {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                        {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                        {% endif %}
-                                        {{ record.summoner }}
-                                    </td>
-                                    <td>
-                                        {% if record_name == 'Rune sets' %}
-                                            {% for diff in record.diff %}
-                                                <span class="comparison-difference-{% if diff.winner == 'follower'%}minus{% else %}plus{% endif %}">{{ diff.text }}</span><br />
-                                            {% endfor %}
-                                        {% else %}
-                                            <span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
-                                                {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
-                                        {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
-                                        {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
-                                        {% endif %}
-                                        {{ record.follower }}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="grid-item col-lg-4 col-md-12 col-xs-12 col-12">
+                    <div class="grid-item-content mx-2">
+                        <div class="card shadow border-0 mb-3">
+                            <div class="card-header bg-white text-center">
+                                <h3 class="fw-lighter">Monster</h3>
+                            </div>
+                            <div class="card-body table-responsive">
+                                <table class="table comparison-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Summoner</th>
+                                            <th>{{ profile_name }}</th>
+                                            <th></th>
+                                            <th>{{ follower_name }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for record_name, record in comparison.rta_builds.items %}
+                                        <tr>
+                                            <th>{{ record_name }}</th>
+                                            <td>
+                                                {% if record.winner == "summoner" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                                {% elif record.winner == "follower" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                                {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                                {% endif %}
+                                                {{ record.summoner }}
+                                            </td>
+                                            <td>
+                                                {% if record_name == 'Rune sets' %}
+                                                    {% for diff in record.diff %}
+                                                        <span class="comparison-difference-{% if diff.winner == 'follower'%}minus{% else %}plus{% endif %}">{{ diff.text }}</span><br />
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <span class="comparison-difference-{% if record.winner == 'follower' %}minus{% elif record.winner == 'summoner' %}plus{% else %}tie{% endif %}">
+                                                        {% if record.winner != 'tie' %}{{ record.diff }}{% endif %}
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if record.winner == "follower" %}<span class="glyphicon glyphicon-ok-sign comparison-winner"/>
+                                                {% elif record.winner == "summoner" %}<span class="glyphicon glyphicon-remove-sign comparison-loser"/>
+                                                {% elif record.winner == "tie" %}<span class="glyphicon glyphicon-question-sign comparison-tie"/>
+                                                {% endif %}
+                                                {{ record.follower }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>            

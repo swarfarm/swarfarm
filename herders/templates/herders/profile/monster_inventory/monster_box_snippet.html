@@ -7,9 +7,9 @@
     <div class="card-header monster-box-actions fw-lighter px-0 py-1">
         {% if instance.custom_name %}{{ instance.custom_name }}{% else %}{{ instance.monster.name }}{% endif %}
     </div>
-    <div class="monster-box-thumb monster-popover" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }} - {{ instance.monster.get_element_display }} {% if instance.monster.awakens_from and instance.monster.awakens_from.obtainable %}{{ instance.monster.awakens_from.name }}{% endif %}">
+    <div class="monster-box-thumb monster-popover{% if not is_owner %} rounded-bottom{% endif %}" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }} - {{ instance.monster.get_element_display }} {% if instance.monster.awakens_from and instance.monster.awakens_from.obtainable %}{{ instance.monster.awakens_from.name }}{% endif %}">
         <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
-            {% include 'herders/profile/monster_portrait_large.html' with instance=instance only%}
+            {% include 'herders/profile/monster_portrait_large.html' with instance=instance is_owner=is_owner only %}
             <div class="image-plus-icon d-flex flex-column">
                 {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
                     <img src="{{ img_url_prefix }}icons/fusion.png" loading="lazy" />
@@ -25,7 +25,7 @@
                 {% if instance.fodder %}
                     <span class="fa-stack">
                         <i class="fas fa-square fa-stack-2x"></i>
-                        <i class="fas a-birthday-cake fa-stack-1x fa-inverse"></i>
+                        <i class="fas fa-birthday-cake fa-stack-1x fa-inverse"></i>
                     </span>
                 {% endif %}
                 {% if instance.in_storage %}

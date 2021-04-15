@@ -216,6 +216,8 @@ class MonsterInstance(models.Model, base.Stars):
         return self._calc_rune_stats(self.max_base_stats.copy())
     
     def _calc_rune_stats(self, base_stats):
+        if not self.default_build or not self.rta_build:
+            self._initialize_rune_build()
         rune_stats = self.default_build.rune_stats.copy()
     
         # Convert HP/ATK/DEF percentage bonuses to flat bonuses based on the base stats

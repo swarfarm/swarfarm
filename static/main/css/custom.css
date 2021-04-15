@@ -567,12 +567,6 @@ span.monster-image {
   margin: 1px;
 }
 
-@media (max-width: 768px){
-  .monster-box{
-    float: unset;
-  }
-}
-
 .monster-box .monster-star {
   height: 20px;
 }

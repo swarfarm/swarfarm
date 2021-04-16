@@ -158,10 +158,15 @@ class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ArtifactInstanceSerializer(serializers.HyperlinkedModelSerializer):
+    pk_hex = serializers.SerializerMethodField()
+
+    def get_pk_hex(self, obj):
+        return self.pk.hex
+
     class Meta:
         model = ArtifactInstance
         fields = (
-            'pk', 'element', 'get_element_display', 'assigned_to', 'rta_assigned_to', 'efficiency', 'max_efficiency',
+            'pk', 'pk_hex', 'element', 'get_element_display', 'assigned_to', 'rta_assigned_to', 'efficiency', 'max_efficiency',
             'quality', 'get_quality_display', 'original_quality', 'get_original_quality_display',
             'slot', 'get_slot_display', 'element', 'archetype',
             'level', 'main_stat', 'get_main_stat_display', 'main_stat_value',

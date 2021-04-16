@@ -257,7 +257,7 @@ $('body')
                     global: false
                 }).done(function (d) {
                     el.popover({
-                        trigger: 'manual',
+                        trigger: 'click',
                         content: d,
                         placement: popoverPlacement(el),
                         html: true,
@@ -265,10 +265,6 @@ $('body')
                         container: '#wrap',
                         template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
-
-                    if (el.is(":hover")) {
-                        el.popover('show');
-                    }
                 });
             }
         }, 250);
@@ -351,7 +347,7 @@ $('body')
 
         }, 250);
     })
-    .on('mouseleave', '.skill-popover, .monster-popover, .rune-popover, .artifact-popover', function(event) {
+    .on('mouseleave', '.skill-popover, .monster-popover, .artifact-popover', function(event) {
         $(this).popover('hide');
         clearTimeout(popoverDelay);
     })

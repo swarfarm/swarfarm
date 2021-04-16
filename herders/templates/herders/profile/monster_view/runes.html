@@ -36,10 +36,11 @@
                         <div class="build-runes" style="background-image: url({{ img_url_prefix }}builds/default_build_runes.png); background-repeat: no-repeat; background-size: contain;" loading="lazy">
                             {% for slot, rune in runes.items %}
                                 <div 
-                                    class="build-rune-slot-{{ slot }}" 
+                                    class="build-rune-slot-{{ slot }}{% if rune %} rune-popover{% endif %}" 
                                     style="background-image: url({{ img_url_prefix }}runes/rune{{ slot }}.png); background-repeat: no-repeat;" 
                                     loading="lazy"
                                     data-rune-slot="{{ slot }}"
+                                    {% if rune %}data-rune-id="{{ rune.pk.hex }}"{% endif %}
                                 >
                                     {% if rune %}
                                         <img class="build-rune-symbol" src="{{ img_url_prefix }}/runes/{{ rune.get_type_display|lower }}.png"/>

@@ -1014,7 +1014,8 @@ span.monster-source > span {
 }
 
 .monster-stats.popover {
-  max-width: 345px;
+  max-width: 400px;
+  min-width: 300px;
 }
 
 .monster-stats table {

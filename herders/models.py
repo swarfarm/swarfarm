@@ -288,6 +288,9 @@ class MonsterInstance(models.Model, base.Stars):
     def effective_hp(self):
         return int(ceil(self.hp() * (1140 + self.defense() * 3.5) / 1000))
 
+    def efficiency(self):
+        return self.default_build.avg_efficiency
+
     def get_max_level_stats(self):
         stats = {
             'base': {

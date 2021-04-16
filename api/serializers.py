@@ -213,7 +213,7 @@ class MonsterInstanceSerializer(serializers.ModelSerializer):
             'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes',
             'base_hp', 'base_attack', 'base_defense', 'base_speed', 'base_crit_rate', 'base_crit_damage', 'base_resistance', 'base_accuracy',
             'rune_hp', 'rune_attack', 'rune_defense', 'rune_speed', 'rune_crit_rate', 'rune_crit_damage', 'rune_resistance', 'rune_accuracy',
-            'hp', 'attack', 'defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy', 'effective_hp',
+            'hp', 'attack', 'defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy', 'effective_hp', 'efficiency',
             'team_leader', 'team_set', 'runes', 'artifacts', 'tags'
         )
         depth = 1

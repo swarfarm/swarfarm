@@ -19,7 +19,7 @@ $('body').on('submit', '.ajax-form', function() {
 page_content.on('click', '.team-link', function() {
     var team_id = $(this).data('team-id');
     team_detail.load('/profile/' + PROFILE_NAME + '/teams/detail/' + team_id + '/', function() {
-        $('[data-toggle="popover"]').popover();
+        $('[data-bs-toggle="popover"]').popover();
     });
 });
 
@@ -60,7 +60,7 @@ function load_new_team() {
     var hashStr = location.hash.replace("#","");
     if (hashStr) {
         team_detail.load('/profile/' + PROFILE_NAME + '/teams/detail/' + hashStr + '/', function() {
-            $('[data-toggle="popover"]').popover();
+            $('[data-bs-toggle="popover"]').popover();
         });
     }
     $('[data-input-id="id_leader-autocomplete"]').remove();

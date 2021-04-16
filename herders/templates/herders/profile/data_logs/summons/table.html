@@ -21,12 +21,12 @@
         <tr>
             <td>{{ log.timestamp }}</td>
             <td>
-                <div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ log.item.name }}">
+                <div class="monster-image" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ log.item.name }}">
                     <img src="{{ img_url_prefix }}items/{{ log.item.icon }}" class="monster-thumb" loading="lazy" />
                 </div>
             </td>
             <td>
-                <a href="{% url 'bestiary:detail' monster_slug=log.monster.bestiary_slug %}" class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ log.monster.get_element_display }} {{ log.monster.name }}">
+                <a href="{% url 'bestiary:detail' monster_slug=log.monster.bestiary_slug %}" class="monster-image" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ log.monster.get_element_display }} {{ log.monster.name }}">
                     <div>
                         <img src="{{ img_url_prefix }}monsters/{{ log.monster.image_filename }}" class="monster-thumb" loading="lazy" />
                         <span>

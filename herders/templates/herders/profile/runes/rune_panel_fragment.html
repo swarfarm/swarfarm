@@ -67,11 +67,11 @@
             {% if rune.value %}
                 <li class="mana-crystals">
                     <img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" loading="lazy" /> {{ rune.value }}
-                    {% if rune.marked_for_sale %}<span class="glyphicon glyphicon-piggy-bank" data-toggle="tooltip" data-placement="top" title="Marked for Sale"></span>{% endif %}
+                    {% if rune.marked_for_sale %}<span class="glyphicon glyphicon-piggy-bank" data-bs-toggle="tooltip" data-bs-placement="top" title="Marked for Sale"></span>{% endif %}
                 </li>
             {% endif %}
             {% if rune.efficiency %}
-                <li {% if rune.max_efficiency and rune.level < 12 %}data-toggle="tooltip" title="Max Eff: {{ rune.max_efficiency|floatformat:1 }}%"{% endif %}>
+                <li {% if rune.max_efficiency and rune.level < 12 %}data-bs-toggle="tooltip" title="Max Eff: {{ rune.max_efficiency|floatformat:1 }}%"{% endif %}>
                     Eff: {{ rune.efficiency|floatformat:1 }}%
                 </li>
             {% endif %}

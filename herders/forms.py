@@ -551,7 +551,7 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></span>'),
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></span>'),
         required=False,
         initial=True,
     )
@@ -1046,7 +1046,7 @@ class AssignRuneForm(forms.Form):
         required=False,
     )
     substat_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
         required=False,
     )
     level = forms.CharField(
@@ -1171,11 +1171,11 @@ class FilterRuneForm(forms.Form):
         required=False,
     )
     substat_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
         required=False,
     )
     substat_reverse = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If substats filters should be excluded."></span>'),
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="If substats filters should be excluded."></span>'),
         required=False,
     )
     has_gem = forms.NullBooleanField(
@@ -1527,7 +1527,7 @@ class FilterArtifactForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
         required=False,
     )
 
@@ -1630,7 +1630,7 @@ class AssignArtifactForm(forms.Form):
     )
     effects_logic = forms.BooleanField(
         label=mark_safe(
-            '<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+            '<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
         required=False,
     )
 

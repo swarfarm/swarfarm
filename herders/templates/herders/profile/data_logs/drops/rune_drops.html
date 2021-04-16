@@ -3,7 +3,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 {% for drop in drops %}
-<div class="rune-image drop-popover" style="margin-right:0!important;" data-popover-content="#rune{{ drop.pk }}">
+<div class="rune-image drop-popover" style="margin-right:0!important;" data-popover-body="#rune{{ drop.pk }}">
     <div class="rune-bg {{ drop.get_quality_display|lower }}">
         <div class="rune slot{{ drop.slot }}">
             <div class="rune-symbol {{ drop.get_type_display|lower }}"></div>

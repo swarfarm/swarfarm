@@ -63,7 +63,7 @@
                     <tr>
                         {% if request.user.is_authenticated %}
                         <td class="monster-info-icons-column">
-                            <button class="btn btn-link btn-xs monster-add" data-toggle="tooltip" data-placement="top" title="Add to collection" data-monster="{{ monster.pk }}" data-stars="{{ monster.base_stars }}">
+                            <button class="btn btn-link btn-xs monster-add" data-bs-toggle="tooltip" data-bs-placement="top" title="Add to collection" data-monster="{{ monster.pk }}" data-stars="{{ monster.base_stars }}">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </td>
@@ -98,7 +98,7 @@
                             {% if monster.leader_skill %}
                                 <div>
                                     <img src="{{ img_url_prefix }}skills/leader/{{ monster.leader_skill.icon_filename }}" loading="lazy" 
-                                         data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ monster.leader_skill.skill_string }}" />
+                                         data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="Leader Skill" data-bs-content="{{ monster.leader_skill.skill_string }}" />
                                     <span class="image-plus image-plus-top-left">{{ monster.leader_skill.amount }}%</span>
                                     <span class="visually-hidden">
                                         {{ monster.leader_skill.get_attribute_display }}
@@ -110,7 +110,7 @@
                         <td class="monster-awaken-materials">
                             <div class="d-flex">
                             {% for skill in monster.skills.all %}
-                                <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-placement="top">
+                                <div class="monster-skill-thumb pull-left skill-popover" data-skill-id="{{ skill.pk }}" title="{{ skill.name }}" data-bs-placement="top">
                                     <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
                                     {% if skill.max_level > 1 %}<span class="image-plus image-plus-right">{{ skill.max_level }}</span>{% endif %}
                                 </div>

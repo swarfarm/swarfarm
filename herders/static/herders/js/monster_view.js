@@ -13,13 +13,13 @@ function AssignRune(slot) {
         });
 
         //Init form elements
-        $("[data-toggle='toggle']").bootstrapToggle();
+        $("[data-bs-toggle='toggle']").bootstrapToggle();
         $("[data-provide='slider']").slider();
         initSelect();
-        $('[data-toggle="tooltip"]').tooltip({
+        $('[data-bs-toggle="tooltip"]').tooltip({
             container: 'body'
         });
-        $('[data-toggle="popover"]').popover({
+        $('[data-bs-toggle="popover"]').popover({
             html:true,
             viewport: {selector: 'body', padding: 2}
         });
@@ -166,13 +166,13 @@ function AssignArtifact(slot) {
         });
 
         //Init form elements
-        $("[data-toggle='toggle']").bootstrapToggle();
+        $("[data-bs-toggle='toggle']").bootstrapToggle();
         $("[data-provide='slider']").slider();
         initSelect();
-        $('[data-toggle="tooltip"]').tooltip({
+        $('[data-bs-toggle="tooltip"]').tooltip({
             container: 'body'
         });
-        $('[data-toggle="popover"]').popover({
+        $('[data-bs-toggle="popover"]').popover({
             html:true,
             viewport: {selector: 'body', padding: 2}
         });
@@ -389,7 +389,7 @@ function UpdateSkills() {
     }).done(function(result) {
         $('#monster-view-skills').html(result);
 
-        $('[data-toggle="popover"]').popover({
+        $('[data-bs-toggle="popover"]').popover({
             html:true
         });
     });

@@ -123,10 +123,11 @@ $('body')
 
             //Reinit everything
             initialize_table();
-            $('[data-toggle="tooltip"]').tooltip({
+            $('[data-bs-toggle="tooltip"]').tooltip({
                 container: 'body'
             });
-            $('[data-toggle="popover"]').popover({
+            $('[data-bs-toggle="popover"]').popover({
+                container: 'body',
                 html:true,
                 viewport: {selector: 'body', padding: 2}
             });

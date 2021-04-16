@@ -1,6 +1,6 @@
 <div id="assign_artifact_results">
     {% for artifact in filter %}
-        <button class="btn btn-default btn-block artifact-assign-choice artifact-popover" data-placement="right" data-artifact-id="{{ artifact.pk.hex }}" data-instance-id="{{ instance_id }}">
+        <button class="btn btn-default btn-block artifact-assign-choice artifact-popover" data-bs-placement="right" data-artifact-id="{{ artifact.pk.hex }}" data-instance-id="{{ instance_id }}">
             {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact only %}
             <ul class="list-unstyled">
                 <li>{{ artifact }}</li>

@@ -22,7 +22,7 @@
         {% if rune.value %}
             <li class="mana-crystals">
                 <img src="{{ img_url_prefix }}items/mana.png" class="inline-icon" loading="lazy" /> {{ rune.value }}
-                {% if rune.marked_for_sale %}<span class="glyphicon glyphicon-piggy-bank" data-toggle="tooltip" data-placement="top" title="Marked for Sale"></span>{% endif %}
+                {% if rune.marked_for_sale %}<span class="glyphicon glyphicon-piggy-bank" data-bs-toggle="tooltip" data-bs-placement="top" title="Marked for Sale"></span>{% endif %}
             </li>
         {% endif %}
         {% if rune.efficiency %}<li>Eff: {{ rune.efficiency|floatformat:1 }}%</li>{% endif %}

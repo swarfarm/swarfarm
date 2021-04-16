@@ -8,7 +8,7 @@
 
     <div class="card-body">
         {% for rune in runes %}
-            <div class="rune-image" style="margin-right:0!important;" data-toggle="tooltip" data-placement="top" title="{{ rune.stars }}⭐ {{ rune.quality }} {{ rune.type }} Rune x{{ rune.count|intcomma }}">
+            <div class="rune-image" style="margin-right:0!important;" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ rune.stars }}⭐ {{ rune.quality }} {{ rune.type }} Rune x{{ rune.count|intcomma }}">
                 <div class="rune-bg {{ rune.quality|lower }}">
                     <div class="rune slot1">
                         <div class="rune-symbol {{ rune.type|lower }}"></div>

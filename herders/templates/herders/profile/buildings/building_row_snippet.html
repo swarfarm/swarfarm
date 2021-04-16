@@ -3,7 +3,7 @@
 
 <tr class="inventory-element {% if bldg.instance.level != bldg.base.max_level %}fusion-danger{% endif %}" data-building-id="{{ bldg.base.pk }}">
     <td class="monster-image"><img src="{{ img_url_prefix }}buildings/{{ bldg.base.icon_filename }}" class="monster-thumb" loading="lazy" /></td>
-    <td>{{ bldg.base.name }} <span class="glyphicon glyphicon-question-sign" data-toggle="popover" data-container="body" data-trigger="hover" title="{{ bldg.base.name }}" data-content="{{ bldg.base.description }}"></span></td>
+    <td>{{ bldg.base.name }} <span class="glyphicon glyphicon-question-sign" data-bs-toggle="popover" data-bs-container="body" data-bs-trigger="hover" title="{{ bldg.base.name }}" data-bs-content="{{ bldg.base.description }}"></span></td>
     <td>{% if bldg.instance %}{{ bldg.instance.level }}{% else %}0{% endif %}/{{ bldg.base.max_level }}</td>
     <td>{{ bldg.base.get_affected_stat_display }} +{{ bldg.stat_bonus }}{% if bldg.percent_stat %}%{% endif %}</td>
     <td>

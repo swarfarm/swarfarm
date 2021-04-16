@@ -137,7 +137,7 @@ class FilterMonsterForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></span>'),
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></span>'),
         required=False,
         initial=True,
     )

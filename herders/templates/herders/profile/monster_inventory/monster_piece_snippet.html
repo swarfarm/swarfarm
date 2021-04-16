@@ -19,16 +19,16 @@
     <div class="card-footer monster-box-actions p-0 px-1">
         <div class="btn-group float-start" role="group">
             <button class="btn btn-link btn-sm monster-piece-edit p-0 text-dark" data-instance-id="{{ piece.pk.hex }}">
-                <i class="fas fa-edit fa-sm" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></i>
+                <i class="fas fa-edit fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
             </button>
             {% if piece.can_summon %}
             <button class="btn btn-link btn-sm monster-piece-summon p-0 ps-1" data-instance-id="{{ piece.pk.hex }}">
-                <i class="fas fa-plus text-success" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Summon"></i>
+                <i class="fas fa-plus text-success" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Summon"></i>
             </button>
             {% endif %}
         </div>
         <button class="btn btn-link btn-sm monster-piece-delete float-right p-0 text-dark" data-instance-id="{{ piece.pk.hex }}">
-            <i class="fas fa-trash fa-sm text-danger" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></i>
+            <i class="fas fa-trash fa-sm text-danger" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"></i>
         </button>
     </div>
     {% endif %}

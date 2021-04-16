@@ -56,7 +56,7 @@
                     {% for source in sources %}
                         {% if source.icon_filename %}
                         <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}" loading="lazy" 
-                                class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
+                                class="monster-source" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{{ source.name }}" />
                         {% else %}
                         <span class="monster-source"><span>{{ source }}</span></span>
                         {% endif %}
@@ -230,7 +230,7 @@
                                             </span>
                                             <span class="image-plus image-plus-right">{% if food_mon.is_max_level %}MAX{% endif %}{{ food_mon.level }}</span>
                                             {% if food_mon.ignore_for_fusion %}
-                                                <div class="disabled" data-toggle="tooltip" data-placement="top" data-container="body" title="Ignored for fusion progress"></div>
+                                                <div class="disabled" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="Ignored for fusion progress"></div>
                                             {% endif %}
                                         </a>
                                     </div>

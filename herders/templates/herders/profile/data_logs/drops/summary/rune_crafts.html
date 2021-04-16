@@ -9,7 +9,7 @@
 
     <div class="card-body">
         {% for craft in rune_crafts %}
-            <div class="rune-image" data-toggle="tooltip" title="{{ craft.quality }} {{ craft.rune }} {{ craft.type }} x{{ craft.count }}">
+            <div class="rune-image" data-bs-toggle="tooltip" title="{{ craft.quality }} {{ craft.rune }} {{ craft.type }} x{{ craft.count }}">
                 <div class="rune-bg {% if 'Immemorial' in craft.type %}immemorial{%endif %} {{ craft.quality|lower }}">
                     <div class="rune-craft {{ craft.type|slugify }} {{ craft.quality|lower }}">
                         <div class="craft-symbol {{ craft.rune|lower }}"></div>

@@ -25,7 +25,7 @@
         {% endif %}
 
         {% if artifact.efficiency is not None %}
-            <li {% if artifact.max_efficiency is not None and artifact.level < 12 %}data-toggle="tooltip" title="Max Eff: {{ artifact.max_efficiency|floatformat:1 }}%"{% endif %}>
+            <li {% if artifact.max_efficiency is not None and artifact.level < 12 %}data-bs-toggle="tooltip" title="Max Eff: {{ artifact.max_efficiency|floatformat:1 }}%"{% endif %}>
                 Eff: {{ artifact.efficiency|floatformat:1 }}%
             </li>
         {% endif %}

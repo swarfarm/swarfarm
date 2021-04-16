@@ -60,7 +60,7 @@ $('body')
             }
 
             $form.replaceWith(result.html);
-            $('[data-toggle="popover"]').popover({
+            $('[data-bs-toggle="popover"]').popover({
                 html:true,
                 viewport: {selector: 'body', padding: 2}
             });
@@ -150,7 +150,7 @@ $('body')
                 },
                 theme: 'bootstrap',
             });
-            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-bs-toggle="tooltip"]').tooltip();
         });
 
         return false;  //cancel default on submit action.

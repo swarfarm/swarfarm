@@ -1,52 +1,55 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<ul class="list-unstyled">
-    <li>
-        <div class="monster-skill-thumb pull-left">
-            <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
-            <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+<div class="card-body p-0 m-0">
+     <div class="{% if skill.level_progress_description or skill.effect|length > 0 or skill.aoe or skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
+        <div class="card-bestiary-monster-details">
+            <div class="monster-skill-thumb float-left">
+                <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
+                <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
+            </div>
+            <p class="fw-lighter">
+                {{ skill.description }}
+                {% if skill.cooltime %}
+                    (Reusable in {{ skill.cooltime }} turn{{ skill.cooltime|pluralize }}).
+                {% endif %}
+            </p>
         </div>
-        <p>
-            {{ skill.description }}
-            {% if skill.cooltime %}
-                (Reusable in {{ skill.cooltime }} turn{{ skill.cooltime|pluralize }}).
-            {% endif %}
-        </p>
-        <div class="clearfix"></div>
-    </li>
+    </div>
     {% if skill.level_progress_description %}
-    <li>
-        <p class="list-group-item-heading"><strong>Level-up Progress:</strong></p>
-        {{ skill.level_progress_description|linebreaks }}
-    </li>
+        <div class="{% if skill.effect|length > 0 or skill.aoe %}card-header{% else %}card-footer border-0{% endif %} bg-white">
+            <strong class="fw-normal">Level-up Progress</strong>
+            {{ skill.level_progress_description|linebreaks }}
+        </div>
     {% endif %}
     {% if skill.effect|length > 0 or skill.aoe %}
-    <li>
-        <p class="list-group-item-heading"><strong>Skill Effects:</strong></p>
-        <p>
-        {% if skill.aoe %}
-            <span class="skill-effect skill-effect-buff">
-                <span>AOE</span>
-            </span>
-        {% endif %}
-        {% for effect in skill.effect %}
-            {% if effect.icon_filename %}
-                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect" loading="lazy" />
-            {% else %}
-                <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}">
-                    <span>{{ effect.name }}</span>
-                </span>
-            {% endif %}
-        {% endfor %}
-        </p>
-        <p class="clearfix"></p>
-    </li>
+        <div class="{% if skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
+            <strong class="fw-normal">Skill effects</strong>
+            <div class="d-flex flex-wrap">
+                {% if skill.aoe %}
+                    <span class="skill-effect skill-effect-buff p-1 mb-1">
+                        <span>AOE</span>
+                    </span>
+                {% endif %}
+                {% for effect in skill.effect %}
+                    {% if effect.icon_filename %}
+                        <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect float-left mb-1" loading="lazy" 
+                            data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}"
+                        />
+                    {% else %}
+                        <span class="skill-effect p-1 mb-1 {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}">
+                            <span>{{ effect.name }}</span>
+                        </span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     {% endif %}
+
     {% if skill.multiplier_formula %}
-    <li>
-        <p class="list-group-item-heading"><strong>Multiplier Formula:</strong></p>
-        <p>{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
-    </li>
+    <div class="card-footer border-0 bg-white">
+        <strong class="fw-normal">Multiplier Formula</strong>
+        <p class="fw-lighter">{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
+    </div>
     {% endif %}
-</ul>
+</div>

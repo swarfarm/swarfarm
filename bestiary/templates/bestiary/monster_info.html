@@ -47,7 +47,7 @@
                     {% for source in sources %}
                         {% if source.icon_filename %}
                         <img src="{{ img_url_prefix }}icons/{{ source.icon_filename }}" loading="lazy" 
-                                class="monster-source" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ source.name }}" />
+                                class="monster-source" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{{ source.name }}" />
                         {% else %}
                         <span class="monster-source"><span>{{ source }}</span></span>
                         {% endif %}

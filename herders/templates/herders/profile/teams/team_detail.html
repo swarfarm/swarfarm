@@ -26,14 +26,14 @@
     <div class="card-header bg-white d-flex flex-wrap monster-skill-effects w-100">
         {% if team.leader.monster.leader_skill %}
         <img src="{{ img_url_prefix }}skills/leader/{{ team.leader.monster.leader_skill.icon_filename }}" loading="lazy" 
-                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="Leader Skill" data-content="{{ team.leader.monster.leader_skill.skill_string }}" />
+                data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="Leader Skill" data-bs-content="{{ team.leader.monster.leader_skill.skill_string }}" />
         {% endif %}
         {% for effect in team_buffs %}
             {% if effect.icon_filename %}
             <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" loading="lazy" 
-                    data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"/>
+                    data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}"/>
             {% else %}
-            <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+            <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}">
                 <span>{{ effect.name }}</span>
             </span>
             {% endif %}

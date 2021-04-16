@@ -1005,8 +1005,12 @@ span.monster-source > span {
   color: #fff;
 }
 
-.monster-stats > .popover-content {
-  padding: 0 0 15px 0;
+.monster-stats > .popover-body,
+.rune-stats > .popover-body,
+.artifact-stats > .popover-body,
+.monster-skill > .popover-body
+{
+  padding: 0;
 }
 
 .monster-stats.popover {
@@ -1017,7 +1021,7 @@ span.monster-source > span {
   margin: 3px;
 }
 
-.monster-stats > .popover-title {
+.monster-stats > .popover-header {
   padding: 6px 3px;
 }
 

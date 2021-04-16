@@ -10,7 +10,7 @@ function update_building_inventory() {
     }).done(function (result) {
         $('#buildings').html(result);
         ToggleLoading($('body'), false);
-        $('[data-toggle="popover"]').popover({
+        $('[data-bs-toggle="popover"]').popover({
             html:true,
             viewport: {selector: 'body', padding: 2}
         });

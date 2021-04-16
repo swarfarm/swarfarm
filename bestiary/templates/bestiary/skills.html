@@ -66,10 +66,10 @@
                     {% for effect in skill.effect.all %}
                         {% if effect.icon_filename %}
                             <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect float-left mb-1" loading="lazy" 
-                                data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}"
+                                data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}"
                             />
                         {% else %}
-                            <span class="skill-effect p-1 mb-1 {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-toggle="popover" data-trigger="hover" data-placement="top" data-container="body" title="{{ effect.name }}" data-content="{{ effect.description }}">
+                            <span class="skill-effect p-1 mb-1 {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}">
                                 <span>{{ effect.name }}</span>
                             </span>
                         {% endif %}

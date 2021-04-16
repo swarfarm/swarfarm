@@ -152,11 +152,11 @@
                 container : 'body',
                 placement: 'left',
                 content: function() {
-                  var content = $(this).attr("data-popover-content");
+                  var content = $(this).attr("data-popover-body");
                   return $(content).children(".popover-body").html();
                 },
                 title: function() {
-                  var title = $(this).attr("data-popover-content");
+                  var title = $(this).attr("data-popover-body");
                   return $(title).children(".popover-heading").html();
                 }
             });

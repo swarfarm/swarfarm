@@ -356,10 +356,10 @@ $('body')
             $('#monster-inventory').replaceWith(data);
 
             //Reinit everything
-            $('[data-toggle="tooltip"]').tooltip({
+            $('[data-bs-toggle="tooltip"]').tooltip({
                 container: 'body'
             });
-            $('[data-toggle="popover"]').popover({
+            $('[data-bs-toggle="popover"]').popover({
                 html:true,
                 viewport: {selector: 'body', padding: 2}
             });

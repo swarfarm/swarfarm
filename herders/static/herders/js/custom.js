@@ -8,24 +8,19 @@ $(function () {
     // Can't set dropdownParent via DAL.
     $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
-    $('[data-toggle="tooltip"]').tooltip({
+    $('[data-bs-toggle="tooltip"]').tooltip({
         container: 'body'
     });
-    $('[data-toggle="popover"]').popover({
+    $('[data-bs-toggle="popover"]').popover({
         html:true,
         viewport: {selector: 'body', padding: 2}
     });
-
-    $('.inline-editable').editable();
 
     $('.rating').rating();
 
     DisplayMessages();
     initSelect();
 });
-
-//x-editable options
-$.fn.editable.defaults.container = 'body';
 
 // Various select2 templates for the types of autocompletes
 function iconSelect2Template(option) {
@@ -268,7 +263,7 @@ $('body')
                         html: true,
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
-                        template: '<div class="rune-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
 
                     if (el.is(":hover")) {
@@ -296,7 +291,7 @@ $('body')
                         html: true,
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
-                        template: '<div class="rune-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
 
                     if (el.is(":hover")) {
@@ -322,7 +317,7 @@ $('body')
                     placement: popoverPlacement(el),
                     container: 'body',
                     viewport: {selector: 'body', padding: 2},
-                    template: '<div class="monster-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                    template: '<div class="monster-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                 });
 
                 if (el.is(":hover")) {
@@ -347,7 +342,7 @@ $('body')
                     placement: popoverPlacement(el),
                     container: '#wrap',
                     viewport: {selector: '#wrap', padding: 2},
-                    template: '<div class="monster-skill popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                    template: '<div class="monster-skill shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                 });
                 if (el.is(":hover")) {
                     el.popover('show');
@@ -374,13 +369,13 @@ function popoverPlacement(element) {
         elDistanceFromRight = windowWidth - (element.offset().left + elWidth);
 
     if (windowWidth - elWidth < 250) {
-        return 'auto top';
+        return 'auto';
     }
     else if (elDistanceFromRight < 500) {
-        return 'auto left';
+        return 'auto';
     }
     else {
-        return 'auto right';
+        return 'auto';
     }
 }
 

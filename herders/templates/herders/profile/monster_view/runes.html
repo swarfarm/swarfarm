@@ -16,9 +16,14 @@
                 <div class="d-flex flex-wrap">
                     <div class="d-flex align-items-center flex-wrap justify-content-center instance-build">
                         {% with artifact=artifacts.element %}
-                        <div class="build-artifact" style="background-image: url({{ img_url_prefix }}builds/default_build_artifacts.png); background-repeat: no-repeat;" loading="lazy">
+                        <div 
+                            class="build-artifact{% if artifact %} artifact-popover{% endif %}" 
+                            style="background-image: url({{ img_url_prefix }}builds/default_build_artifacts.png); background-repeat: no-repeat; cursor: pointer;" 
+                            loading="lazy"
+                            {% if artifact %}data-artifact-id="{{ artifact.pk.hex }}"{% endif %}
+                        >
                             {% if artifact %}
-                            <div class="artifact {{ artifact.get_quality_display|lower }} {{ artifact.get_slot_display|lower }}" data-artifact-id="{{ artifact.pk.hex }}">
+                            <div class="artifact {{ artifact.get_quality_display|lower }} {{ artifact.get_slot_display|lower }}">
                                 <div class="artifact-symbol {{ artifact.get_precise_slot_display|lower }}"></div>
                             </div>
                             {% elif is_owner %}
@@ -51,7 +56,12 @@
                             {% endfor %}
                         </div>
                         {% with artifact=artifacts.archetype %}
-                        <div class="build-artifact" style="background-image: url({{ img_url_prefix }}builds/default_build_artifacts.png); background-repeat: no-repeat;" loading="lazy">
+                        <div 
+                            class="build-artifact{% if artifact %} artifact-popover{% endif %}" 
+                            style="background-image: url({{ img_url_prefix }}builds/default_build_artifacts.png); background-repeat: no-repeat; cursor: pointer;" 
+                            loading="lazy"
+                            {% if artifact %}data-artifact-id="{{ artifact.pk.hex }}"{% endif %}                           
+                        >
                             {% if artifact %}
                             <div class="artifact {{ artifact.get_quality_display|lower }} {{ artifact.get_slot_display|lower }}" data-artifact-id="{{ artifact.pk.hex }}">
                                 <div class="artifact-symbol {{ artifact.get_precise_slot_display|lower }}"></div>

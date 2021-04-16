@@ -281,7 +281,7 @@ $('body')
                     global: false
                 }).done(function (d) {
                     el.popover({
-                        trigger: 'manual',
+                        trigger: 'click',
                         content: d,
                         placement: popoverPlacement(el),
                         html: true,
@@ -347,7 +347,7 @@ $('body')
 
         }, 250);
     })
-    .on('mouseleave', '.skill-popover, .monster-popover, .artifact-popover', function(event) {
+    .on('mouseleave', '.skill-popover, .monster-popover', function(event) {
         $(this).popover('hide');
         clearTimeout(popoverDelay);
     })

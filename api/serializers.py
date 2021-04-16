@@ -144,10 +144,15 @@ class MonsterTagSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class RuneInstanceSerializer(serializers.HyperlinkedModelSerializer):
+    pk_hex = serializers.SerializerMethodField()
+
+    def get_pk_hex(self, obj):
+        return obj.pk.hex
+
     class Meta:
         model = RuneInstance
         fields = (
-            'pk', 'type', 'get_type_display', 'assigned_to', 'rta_assigned_to', 'efficiency', 'notes', 'marked_for_sale',
+            'pk', 'pk_hex', 'type', 'get_type_display', 'assigned_to', 'rta_assigned_to', 'efficiency', 'notes', 'marked_for_sale',
             'stars', 'level', 'slot', 'quality', 'original_quality', 'value', 'get_quality_display', 'get_original_quality_display',
             'main_stat', 'get_main_stat_rune_display', 'main_stat_value',
             'innate_stat', 'get_innate_stat_rune_display', 'innate_stat_value',
@@ -161,7 +166,7 @@ class ArtifactInstanceSerializer(serializers.HyperlinkedModelSerializer):
     pk_hex = serializers.SerializerMethodField()
 
     def get_pk_hex(self, obj):
-        return self.pk.hex
+        return obj.pk.hex
 
     class Meta:
         model = ArtifactInstance

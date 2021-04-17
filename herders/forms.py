@@ -1779,11 +1779,11 @@ class MonsterImportOptionsLayout(Layout):
                 Field('missing_rune_action'),
                 Div(
                     Field('ignore_validation'),
-                    css_class='alert alert-warning condensed',
+                    css_class='callout callout-warning',
                 ),
                 Div(
                     Field('clear_profile'),
-                    css_class='alert alert-danger condensed',
+                    css_class='callout callout-danger',
                 ),
                 Field('save_defaults'),
                 css_class='list-group-item',

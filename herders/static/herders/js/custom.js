@@ -1,12 +1,15 @@
 var element_loading_template = '<div class="spinner-overlay text-center"><div class="spinner spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
 var popoverDelay = null;
 var autosubmitDelay = null;
+var myDefaultAllowList = bootstrap.Tooltip.Default.allowList
 
 //Initialize all bootstrap tooltips and popovers
 $(function () {
     // Cancel default focus stuff for modal windows so select2 works properly.
     // Can't set dropdownParent via DAL.
     $.fn.modal.Constructor.prototype.enforceFocus = function () {};
+
+    myDefaultAllowList.div = ['data-rune-id', 'data-artifact-id']
 
     $('[data-bs-toggle="tooltip"]').tooltip({
         container: 'body'
@@ -94,7 +97,7 @@ bootbox.setDefaults({
     onEscape: true
 });
 
-PNotify.prototype.options.styling = "bootstrap3";
+PNotify.prototype.options.styling = "bootstrap4";
 PNotify.prototype.options.stack.firstpos1 = 60;
 PNotify.prototype.options.stack.spacing1 = 10;
 
@@ -259,10 +262,11 @@ $('body')
                     el.popover({
                         trigger: 'click',
                         content: d,
-                        placement: popoverPlacement(el),
+                        placement: 'auto',
                         html: true,
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
+                        allowList: myDefaultAllowList,
                         template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
                 });
@@ -283,16 +287,13 @@ $('body')
                     el.popover({
                         trigger: 'click',
                         content: d,
-                        placement: popoverPlacement(el),
+                        placement: 'auto',
                         html: true,
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
+                        allowList: myDefaultAllowList,
                         template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
-
-                    if (el.is(":hover")) {
-                        el.popover('show');
-                    }
                 });
             }
         }, 250);
@@ -310,7 +311,7 @@ $('body')
                     trigger: 'manual',
                     content: d,
                     html: true,
-                    placement: popoverPlacement(el),
+                    placement: 'auto',
                     container: 'body',
                     viewport: {selector: 'body', padding: 2},
                     template: '<div class="monster-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
@@ -335,7 +336,7 @@ $('body')
                     trigger: 'manual',
                     content: d,
                     html: true,
-                    placement: popoverPlacement(el),
+                    placement: 'auto',
                     container: '#wrap',
                     viewport: {selector: '#wrap', padding: 2},
                     template: '<div class="monster-skill shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
@@ -358,22 +359,6 @@ $('body')
         $form.submit();
         return false;
     });
-
-function popoverPlacement(element) {
-    var windowWidth = jQuery(window).width(),
-        elWidth = element.width(),
-        elDistanceFromRight = windowWidth - (element.offset().left + elWidth);
-
-    if (windowWidth - elWidth < 250) {
-        return 'auto';
-    }
-    else if (elDistanceFromRight < 500) {
-        return 'auto';
-    }
-    else {
-        return 'auto';
-    }
-}
 
 //Bulk add
 $('#bulkAddFormset').formset({

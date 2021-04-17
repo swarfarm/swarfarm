@@ -65,6 +65,7 @@ function CreateNewRune(slot) {
 }
 
 function UnassignRune(rune_id) {
+    $('.rune-stats').popover('hide');
     bootbox.dialog({
         message: 'Remove from slot or delete completely?',
         title: 'Remove Rune',
@@ -133,11 +134,12 @@ function RemoveAllRunes(instance_id) {
         });
     }
     else {
-        alert("Unspecified monster to remove runes from!");
+        alert("Unspecified monster to remove runes & artifacts from!");
     }
 }
 
 function EditRune(rune_id) {
+    $('.rune-stats').popover('hide');
     //Pull in edit form on modal show
     $.ajax({
         type: 'get',
@@ -196,6 +198,7 @@ function AssignArtifactChoice(artifact_id, monster_id) {
 }
 
 function EditArtifact(artifact_id) {
+    $('.rune-stats').popover('hide');
     //Pull in edit form on modal show
     $.ajax({
         type: 'get',
@@ -231,6 +234,7 @@ function CreateNewArtifact(slot) {
 }
 
 function UnassignArtifact(artifact_id) {
+    $('.rune-stats').popover('hide');
     bootbox.dialog({
         message: 'Remove from slot or delete completely?',
         title: 'Remove Artifact',
@@ -425,7 +429,6 @@ $('body')
     .on('click', '.artifact-unassign', function() { UnassignArtifact($(this).data('artifact-id')) })
     .on('click', '.artifact-assign', function() { AssignArtifact($(this).data('artifact-slot')) })
     .on('click', '.artifact-assign-choice', function() { AssignArtifactChoice($(this).data('artifact-id'), $(this).data('instance-id')) })
-    .on('click', '.artifact-remove-all', function() { RemoveAllArtifacts($(this).data('instance-id'))})
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-copy', function() { CopyMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })

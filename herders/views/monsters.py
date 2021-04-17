@@ -610,7 +610,8 @@ def monster_instance_remove_runes(request, profile_name, instance_id):
             return HttpResponseBadRequest()
         else:
             instance.default_build.runes.clear()
-            messages.success(request, 'Removed all runes from ' + str(instance))
+            instance.default_build.artifacts.clear()
+            messages.success(request, 'Removed all runes & artifacts from ' + str(instance))
             response_data = {
                 'code': 'success',
             }

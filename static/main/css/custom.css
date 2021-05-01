@@ -44,6 +44,11 @@ blockquote{
   background-color:rgba(0, 174, 239, .25);
 }
 
+.callout-success{
+  border-color:rgb(34, 175, 67);
+  background-color:rgba(34, 175, 67, 0.25);
+}
+
 .subnavmenu-fixed-left {
   z-index: 1001;
   position: fixed;

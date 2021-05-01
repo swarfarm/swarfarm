@@ -8,7 +8,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <h3 class="card-title fw-lighter">Default Build</h3>
                     {% if is_owner and instance.default_build.runes.count %}
-                    <button class="btn btn-xs btn-outline-danger rune-remove-all" data-instance-id="{{ instance.pk.hex }}">Remove All</button>
+                    <button class="btn btn-sm btn-outline-danger rune-remove-all" data-instance-id="{{ instance.pk.hex }}">Remove All</button>
                     {% endif %}
                 </div>
             </div>
@@ -96,7 +96,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <h3 class="card-title fw-lighter">RTA Build</h3>
                     {% if is_owner and instance.rta_build.runes.count %}
-                    <button class="btn btn-xs btn-outline-danger rune-remove-all">Remove All</button>
+                    <button class="btn btn-sm btn-outline-danger rune-remove-all">Remove All</button>
                     {% endif %}
                 </div>
             </div>

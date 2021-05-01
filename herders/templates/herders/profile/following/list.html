@@ -32,17 +32,17 @@ Friends - {{ block.super }}
                         </div>
                         <div class="card-footer bg-white">
                             {% if friend.obj.public %}
-                                <a href="{% url 'herders:profile_default' profile_name=friend.obj.user.username %}" class="btn btn-xs btn-info float-right ms-1">
+                                <a href="{% url 'herders:profile_default' profile_name=friend.obj.user.username %}" class="btn btn-sm btn-info float-right ms-1">
                                     <i class="fas fa-user"></i>
                                 </a>
                             {% endif %}
 
                             {% if friend.following %}
-                                <a href="{% url 'herders:profile_follow_remove' profile_name=profile_name follow_username=friend.obj.user.username %}?next={{ return_path }}" class="btn btn-xs btn-danger float-right ms-1">
+                                <a href="{% url 'herders:profile_follow_remove' profile_name=profile_name follow_username=friend.obj.user.username %}?next={{ return_path }}" class="btn btn-sm btn-danger float-right ms-1">
                                     <i class="fas fa-user-minus"></i>
                                 </a>
                             {% else %}
-                                <a href="{% url 'herders:profile_follow_add' profile_name=profile_name follow_username=friend.obj.user.username %}?next={{ return_path }}" class="btn btn-xs btn-success float-right ms-1">
+                                <a href="{% url 'herders:profile_follow_add' profile_name=profile_name follow_username=friend.obj.user.username %}?next={{ return_path }}" class="btn btn-sm btn-success float-right ms-1">
                                     <i class="fas fa-user-plus"></i>
                                 </a>
                             {% endif %}
@@ -50,7 +50,7 @@ Friends - {{ block.super }}
                             {% if friend.followed_by and friend.following %}
                             <a 
                                 href="{% url 'herders:profile_compare' profile_name=profile_name follow_username=friend.obj.user.username %}"
-                                class="btn btn-xs btn-info float-right ms-1"
+                                class="btn btn-sm btn-info float-right ms-1"
                             >
                                 <i class="fas fa-user-friends"></i>
                             </a>
@@ -61,7 +61,7 @@ Friends - {{ block.super }}
                                 tabindex="0"
                                 class="d-inline-block float-right"
                             >
-                                <a href="#" class="btn btn-xs btn-info float-right ms-1 disabled">
+                                <a href="#" class="btn btn-sm btn-info float-right ms-1 disabled">
                                     <i class="fas fa-user-friends"></i>
                                 </a>
                             </span>

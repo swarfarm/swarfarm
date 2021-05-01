@@ -97,7 +97,7 @@ bootbox.setDefaults({
     onEscape: true
 });
 
-PNotify.prototype.options.styling = "bootstrap4";
+PNotify.prototype.options.styling = "bootstrap3";
 PNotify.prototype.options.stack.firstpos1 = 60;
 PNotify.prototype.options.stack.spacing1 = 10;
 
@@ -177,7 +177,7 @@ function SetStars(e) {
         }
 
         //Set custom name visibility
-        $(custom_name_field).toggleClass('hidden', !monster.homunculus);
+        $(custom_name_field).toggleClass('visually-hidden', !monster.homunculus);
     });
 }
 
@@ -519,8 +519,8 @@ function update_craft_stat_options(craft, stat_input) {
 // Artifact form common functions
 function update_artifact_slot_visibility() {
     const is_element = $('#id_slot').val() === "1";
-    $('#div_id_element').toggleClass('hidden', !is_element);
-    $('#div_id_archetype').toggleClass('hidden', is_element);
+    $('#div_id_element').toggleClass('visually-hidden', !is_element);
+    $('#div_id_archetype').toggleClass('visually-hidden', is_element);
 }
 
 var RUNE_MAIN_STAT_VALUES = {

@@ -652,51 +652,55 @@ def monster_instance_edit(request, profile_name, instance_id):
         if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
             form.helper['skill_1_level'].wrap(
                 FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id),
+                StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id, css_class='btn-outline-dark'),
+                wrapper_class='btn-group'
             )
-            form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
+            form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level, css_class='form-control')
             form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
         else:
-            form.helper['skill_1_level'].wrap(Div, css_class="hidden")
+            form.helper['skill_1_level'].wrap(Div, css_class="visually-hidden")
 
         if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
             form.helper['skill_2_level'].wrap(
                 FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id),
+                StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id, css_class='btn-outline-dark'),
                 min=1,
                 max=skills[1]['skill'].max_level,
+                wrapper_class='btn-group'
             )
-            form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
+            form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level, css_class='form-control')
             form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
         else:
-            form.helper['skill_2_level'].wrap(Div, css_class="hidden")
+            form.helper['skill_2_level'].wrap(Div, css_class="visually-hidden")
 
         if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
             form.helper['skill_3_level'].wrap(
                 FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id),
+                StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id, css_class='btn-outline-dark'),
                 min=1,
                 max=skills[2]['skill'].max_level,
+                wrapper_class='btn-group'
             )
-            form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
+            form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level, css_class='form-control')
             form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
         else:
-            form.helper['skill_3_level'].wrap(Div, css_class="hidden")
+            form.helper['skill_3_level'].wrap(Div, css_class="visually-hidden")
 
         if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
             form.helper['skill_4_level'].wrap(
                 FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id),
+                StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id, css_class='btn-outline-dark'),
                 min=1,
                 max=skills[1]['skill'].max_level,
+                wrapper_class='btn-group'
             )
-            form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
+            form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level, css_class='form-control')
             form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
         else:
-            form.helper['skill_4_level'].wrap(Div, css_class="hidden")
+            form.helper['skill_4_level'].wrap(Div, css_class="visually-hidden")
 
         if not instance.monster.homunculus:
-            form.helper['custom_name'].wrap(Div, css_class="hidden")
+            form.helper['custom_name'].wrap(Div, css_class="visually-hidden")
 
         if request.method == 'POST' and form.is_valid():
             mon = form.save()

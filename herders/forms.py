@@ -288,7 +288,7 @@ class AddMonsterInstanceForm(forms.ModelForm):
             Field('priority',),
             Field('notes'),
             FormActions(
-                Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal'),
+                Button('cancel', 'Cancel', css_class='btn btn-link', data_bs_dismiss='modal'),
                 Submit('save', 'Save'),
                 css_class='float-right',
             ),
@@ -386,7 +386,7 @@ class EditMonsterInstanceForm(ModelForm):
             ),
             Div(
                 FormActions(
-                    HTML("""<button class="btn btn-link" data-bs-dismiss="modal">Cancel</button>"""),
+                    HTML("""<button type="button" class="btn btn-link" data-bs-dismiss="modal">Cancel</button>"""),
                     Submit('save', 'Save', css_class='btn btn-primary'),
                     css_class='float-right',
                 ),
@@ -788,7 +788,7 @@ class MonsterPieceForm(forms.ModelForm):
             Field('pieces'),
             FormActions(
                 Submit('save', 'Save', css_class='btn btn-primary'),
-                Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+                Button('cancel', 'Cancel', css_class='btn btn-link', data_bs_dismiss='modal')
             ),
         )
 
@@ -813,7 +813,7 @@ class AddTeamGroupForm(ModelForm):
             Div(
                 FormActions(
                     Submit('save', 'Save', css_class='btn btn-primary'),
-                    Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+                    Button('cancel', 'Cancel', css_class='btn btn-link', data_bs_dismiss='modal')
                 ),
                 css_class='modal-footer',
             )

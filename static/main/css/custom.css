@@ -49,6 +49,15 @@ blockquote{
   background-color:rgba(34, 175, 67, 0.25);
 }
 
+.bootbox-close-button{
+  border: none;
+  background: none;
+}
+
+.select2-container{
+  z-index: 9999;
+}
+
 .subnavmenu-fixed-left {
   z-index: 1001;
   position: fixed;
@@ -301,7 +310,7 @@ footer {
   margin-right: 0 !important;
 }
 
-.inline-editable:hover {
+.editable editable-click:hover {
   cursor: pointer;
   position: relative;
 }
@@ -316,7 +325,7 @@ a.editable-click:hover {
   border-bottom: dashed 1px #0088cc;
 }
 
-.inline-editable:hover:after {
+.editable editable-click:hover:after {
   padding-right: 5px;
   float: right;
   font-family: "Glyphicons Halflings";

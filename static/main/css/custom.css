@@ -677,10 +677,6 @@ span.monster-image {
   min-width: 205px;
 }
 
-.rating-symbol .glyphicon {
-  font-size: 140%;
-}
-
 .card-bestiary-monster-details{
   display: flex;
   flex-wrap: wrap;
@@ -692,6 +688,31 @@ span.monster-image {
 
 #id_monster-wrapper {
   display: inline !important;
+}
+
+#assign_artifact_results,
+#assign_rune_results
+{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.artifact-popover-hover,
+.rune-popover-hover
+{
+  margin: 0;
+  padding: 0;
+  width: 50px;
+  height: 50px;
+}
+
+.artifact-popover-hover .rune-image,
+.rune-popover-hover .rune-image
+{
+  margin: 0;
+  padding: 0;
 }
 
 .image-plus {
@@ -1053,12 +1074,6 @@ div.monster-bulk-monster {
   position: absolute;
   bottom: 5px;
   right: 5px;
-}
-
-button.rune-assign-choice {
-  text-align: left;
-  margin: 0;
-  padding: 5px;
 }
 
 .bottom-right {

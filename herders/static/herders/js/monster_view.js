@@ -32,7 +32,7 @@ function AssignRuneChoice(rune_id, monster_id) {
         url: '/profile/' + PROFILE_NAME + '/runes/assign/' + monster_id + '/' + rune_id + '/'
     }).done(function (response) {
         if (response.code === 'success') {
-            $('.modal.in').modal('hide');
+            $('.modal.show').modal('hide');
             UpdateRunes();
             UpdateStats();
         }
@@ -187,7 +187,7 @@ function AssignArtifactChoice(artifact_id, monster_id) {
         url: '/profile/' + PROFILE_NAME + '/artifacts/assign/' + monster_id + '/' + artifact_id + '/'
     }).done(function (response) {
         if (response.code === 'success') {
-            $('.modal.in').modal('hide');
+            $('.modal.show').modal('hide');
             UpdateRunes();
             UpdateStats();
         }
@@ -517,7 +517,7 @@ $('body')
             data: $form.serialize()
         }).done(function (result) {
             if (result.code === 'success') {
-                $('.modal.in').modal('hide');
+                $('.modal.show').modal('hide');
                 UpdateAll();
 
                 if (result.removeElement) {
@@ -525,7 +525,7 @@ $('body')
                 }
             }
             else if (result.code === 'edit') {
-                $('.modal.in').modal('hide');
+                $('.modal.show').modal('hide');
                 UpdateAll();
                 EditMonster(INSTANCE_ID);
             }

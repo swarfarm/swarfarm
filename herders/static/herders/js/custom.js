@@ -273,6 +273,31 @@ $('body')
             }
         }, 250);
     })
+    .on('mouseenter', '.rune-popover-hover', function() {
+        var el = $(this);
+        popoverDelay = setTimeout(function () {
+            var rune_id = el.data('rune-id');
+
+            if (rune_id.length > 0) {
+                $.ajax({
+                    url: API_URL + 'runes/' + el.data('rune-id') + '.html',
+                    type: 'get',
+                    global: false
+                }).done(function (d) {
+                    el.popover({
+                        trigger: 'hover',
+                        content: d,
+                        placement: 'auto',
+                        html: true,
+                        viewport: {selector: '#wrap', padding: 2},
+                        container: '#wrap',
+                        allowList: myDefaultAllowList,
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                    });
+                });
+            }
+        }, 250);
+    })
     .on('mouseenter', '.artifact-popover', function() {
         var el = $(this);
         popoverDelay = setTimeout(function () {
@@ -286,6 +311,31 @@ $('body')
                 }).done(function (d) {
                     el.popover({
                         trigger: 'click',
+                        content: d,
+                        placement: 'auto',
+                        html: true,
+                        viewport: {selector: '#wrap', padding: 2},
+                        container: '#wrap',
+                        allowList: myDefaultAllowList,
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                    });
+                });
+            }
+        }, 250);
+    })
+    .on('mouseenter', '.artifact-popover-hover', function() {
+        var el = $(this);
+        popoverDelay = setTimeout(function () {
+            var rune_id = el.data('artifact-id');
+
+            if (rune_id.length > 0) {
+                $.ajax({
+                    url: API_URL + 'artifacts/' + el.data('artifact-id') + '.html',
+                    type: 'get',
+                    global: false
+                }).done(function (d) {
+                    el.popover({
+                        trigger: 'hover',
                         content: d,
                         placement: 'auto',
                         html: true,

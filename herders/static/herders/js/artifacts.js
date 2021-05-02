@@ -51,7 +51,7 @@ $('body')
             global: false
         }).done(function(result) {
             if (result.code === 'success') {
-                $('.modal.in').modal('hide');
+                $('.modal.show').modal('hide');
                 update_artifact_inventory();
 
                 if (result.removeElement) {

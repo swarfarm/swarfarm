@@ -46,7 +46,7 @@ $('body')
             data: $form.serialize()
         }).done(function(data) {
             if (data.code === 'success') {
-                $('.modal.in').modal('hide');
+                $('.modal.show').modal('hide');
                 update_building_inventory();
             }
             else {

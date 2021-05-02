@@ -275,8 +275,8 @@ class AddMonsterInstanceForm(forms.ModelForm):
                 data_custom_name_field='div_{}'.format(self['custom_name'].auto_id),
                 data_set_stars='',
             ),
-            Field('custom_name', wrapper_class='hidden'),
-            Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+            Field('custom_name', wrapper_class='visually-hidden'),
+            Field('stars', value=1, data_start=0, data_stop=6, data_stars=6),
             FieldWithButtons(
                 Field('level', value=1, min=1, max=40, css_class='form-control'),
                 StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level='', css_class='btn btn-outline-dark'),
@@ -1132,8 +1132,8 @@ class AssignRuneForm(forms.Form):
 
         Field('innate_stat', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Field('substats', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='dark', data_off='All', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('slot', type='hidden'),
+        Field('substat_logic', data_bs_toggle='toggle', data_on='One or More', data_onstyle='dark', data_off='All', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed ps-0'),
+        Field('slot', wrapper_class='visually-hidden'),
     )
 
     def clean(self):
@@ -1649,7 +1649,7 @@ class AssignArtifactForm(forms.Form):
     )
     effects_logic = forms.BooleanField(
         label=mark_safe(
-            '<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+            '<i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></i>'),
         required=False,
     )
 
@@ -1677,8 +1677,8 @@ class AssignArtifactForm(forms.Form):
         ),
         Field('main_stat', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Field('effects', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('effects_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('slot', wrapper_class='hidden'),
+        Field('effects_logic', data_bs_toggle='toggle', data_on='One or More', data_onstyle='dark', data_off='All', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed ps-0'),
+        Field('slot', wrapper_class='visually-hidden'),
     )
 
     def clean(self):

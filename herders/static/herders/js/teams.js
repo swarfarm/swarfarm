@@ -10,7 +10,7 @@ $('body').on('submit', '.ajax-form', function() {
         url: $form.attr('action'),
         data: $form.serialize()
     }).done(function(result) {
-        $('.modal.in').modal('hide');
+        $('.modal.show').modal('hide');
     });
 
     return false;  //cancel default on submit action.

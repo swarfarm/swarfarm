@@ -278,7 +278,7 @@ $('body')
             data: $form.serialize()
         }).done(function(data) {
             if (data.code === 'success') {
-                $('.modal.in').modal('hide');
+                $('.modal.show').modal('hide');
                 if (data.instance_id != 'undefined') {
                     // Try to find a matching monster container and replace it
                     var $monster_container = $('.inventory-element[data-instance-id="' + data.instance_id + '"]');

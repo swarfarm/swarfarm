@@ -5,16 +5,6 @@
     Table - Rune Crafting - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    <li><a href="{% url 'herders:data_log_rune_craft_dashboard' profile_name=profile_name %}">Rune Crafting</a></li>
-    {% if view_name == 'herders:data_log_rune_craft_table' %}
-        <li class="active">Table</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_rune_craft_table' profile_name=profile_name %}">Table</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block log_table %}
     <table class="table table-striped table-condensed">
         <thead>

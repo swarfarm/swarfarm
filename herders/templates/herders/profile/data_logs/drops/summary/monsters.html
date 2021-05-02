@@ -1,14 +1,14 @@
 {% load staticfiles humanize utils %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Monsters</h3>
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-header bg-white">
+        <h3 class="card-title fw-lighter">Monsters</h3>
     </div>
 
-    <div class="panel-body">
+    <div class="card-body">
         {% for monster in monsters %}
-            <div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ monster.stars }}⭐ {% if not monster.is_awakened %}{{ monster.element }}{% endif %} {{ monster.name }} x{{ monster.count }}">
+            <div class="monster-image" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ monster.stars }}⭐ {% if not monster.is_awakened %}{{ monster.element }}{% endif %} {{ monster.name }} x{{ monster.count }}">
                 <img src="{{ img_url_prefix }}monsters/{{ monster.icon }}" alt="{{ monster.name }}" class="monster-thumb" loading="lazy" />
                 <span>
                     {% for x in monster.stars|get_range %}
@@ -24,7 +24,7 @@
                 <span class="image-plus image-plus-right">{{ monster.count|humanize_number }}</span >
             </div>
         {% empty %}
-            <p>None!</p>
+            <div class="callout callout-warning fw-lighter">None!</div>
         {% endfor %}
     </div>
 </div>

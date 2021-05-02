@@ -3,40 +3,45 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div id="rune-inventory">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="btn-group">
-                <button class="btn btn-default rune-view-mode active" data-mode="list">
-                    <span class="glyphicon glyphicon-th-list"></span> List
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-dark rune-view-mode active" data-mode="list">
+                    <i class="fas fa-th-list"></i> List
                 </button>
-                <button class="btn btn-default rune-view-mode" data-mode="box">
-                    <span class="glyphicon glyphicon-th-large"></span> Box
+                <button class="btn btn-outline-dark rune-view-mode" data-mode="box">
+                    <i class="fas fa-th-large"></i> Box
                 </button>
-                <button class="btn btn-default rune-view-mode" data-mode="grid">
-                    <span class="glyphicon glyphicon-th"></span> Grid
+                <button class="btn btn-outline-dark rune-view-mode" data-mode="grid">
+                    <i class="fas fa-table"></i> Grid
                 </button>
-                <button class="btn btn-default rune-view-mode" data-mode="crafts">
+                <button class="btn btn-outline-dark rune-view-mode" data-mode="crafts">
                     <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" loading="lazy" />
                 </button>
             </div>
-            <span class="pull-right">{{ filtered_count }} of {{ total_count }} rune{{ total_count|pluralize }}</span>
+
+            <span class="float-right fw-lighter text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> rune{{ total_count|pluralize }}</span>
         </div>
+
+        <div class="card-body table-responsive">
         {% if not total_count %}
-            <div class="panel-body">
-                <div class="alert alert-warning">You don't have any runes!</div>
+            <div class="callout callout-warning">
+                <h2 class="fw-lighter">No runes!</h2>
+                <p class="fw-lighter">You don't have any runes!</p>
             </div>
         {% elif not filtered_count %}
-            <div class="panel-body">
-                <div class="alert alert-warning">All runes were filtered out.</div>
+            <div class="callout callout-warning">
+                <h2 class="fw-lighter">No records!</h2>
+                <p class="fw-lighter">All runes were filtered out!</p>
             </div>
         {% else %}
             <table class="table table-condensed monster-table" id="runeInventoryTable">
-                <thead>
+                <thead class="bg-white">
                 <tr>
                     <th>Type</th>
                     <th>Value</th>
                     <th>Efficiency</th>
-                    <th data-toggle="tooltip" data-container="body" title="With perfect substat upgrades to +12">Max Efficiency</th>
+                    <th data-bs-toggle="tooltip" data-bs-container="body" title="With perfect substat upgrades to +12">Max Efficiency</th>
                     <th>Slot</th>
                     <th>Stars</th>
                     <th>Level</th>
@@ -56,7 +61,7 @@
                 {% for rune in runes %}
                 <tr>
                     <td>
-                        <span class="hidden">{{ rune.get_type_display }}</span>
+                        <span class="visually-hidden">{{ rune.get_type_display }}</span>
                         {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
                     </td>
                     <td>{% if rune.value %}{{ rune.value }}{% endif %}</td>
@@ -67,13 +72,13 @@
                     <td>{{ rune.level }}</td>
                     <td>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</td>
                     <td>{% if rune.innate_stat %}{{ rune.get_innate_stat_rune_display }} +{{ rune.innate_stat_value }}{% if rune.innate_stat in rune.PERCENT_STATS %}%{% endif %}{% endif %}</td>
-                    <td>{% if rune.substats|length >= 1 %}<span class="hidden">{{ rune.substats.0 }}</span>{{ rune.substat_rune_display.0 }} <span class="{% if rune.substats_grind_value.0 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.0|add:rune.substats_grind_value.0 }}{% if rune.substats.0 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.0 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span>{% endif %}</td>
-                    <td>{% if rune.substats|length >= 2 %}<span class="hidden">{{ rune.substats.1 }}</span>{{ rune.substat_rune_display.1 }} <span class="{% if rune.substats_grind_value.1 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.1|add:rune.substats_grind_value.1 }}{% if rune.substats.1 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.1 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span>{% endif %}</td>
-                    <td>{% if rune.substats|length >= 3 %}<span class="hidden">{{ rune.substats.2 }}</span>{{ rune.substat_rune_display.2 }} <span class="{% if rune.substats_grind_value.2 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.2|add:rune.substats_grind_value.2 }}{% if rune.substats.2 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.2 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span>{% endif %}</td>
-                    <td>{% if rune.substats|length >= 4 %}<span class="hidden">{{ rune.substats.3 }}</span>{{ rune.substat_rune_display.3 }} <span class="{% if rune.substats_grind_value.3 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.3|add:rune.substats_grind_value.3 }}{% if rune.substats.3 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.3 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span>{% endif %}</td>
+                    <td>{% if rune.substats|length >= 1 %}<span class="visually-hidden">{{ rune.substats.0 }}</span>{{ rune.substat_rune_display.0 }} <span class="{% if rune.substats_grind_value.0 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.0|add:rune.substats_grind_value.0 }}{% if rune.substats.0 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.0 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span>{% endif %}</td>
+                    <td>{% if rune.substats|length >= 2 %}<span class="visually-hidden">{{ rune.substats.1 }}</span>{{ rune.substat_rune_display.1 }} <span class="{% if rune.substats_grind_value.1 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.1|add:rune.substats_grind_value.1 }}{% if rune.substats.1 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.1 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span>{% endif %}</td>
+                    <td>{% if rune.substats|length >= 3 %}<span class="visually-hidden">{{ rune.substats.2 }}</span>{{ rune.substat_rune_display.2 }} <span class="{% if rune.substats_grind_value.2 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.2|add:rune.substats_grind_value.2 }}{% if rune.substats.2 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.2 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span>{% endif %}</td>
+                    <td>{% if rune.substats|length >= 4 %}<span class="visually-hidden">{{ rune.substats.3 }}</span>{{ rune.substat_rune_display.3 }} <span class="{% if rune.substats_grind_value.3 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.3|add:rune.substats_grind_value.3 }}{% if rune.substats.3 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.3 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span>{% endif %}</td>
                     <td>
                         {% if rune.assigned_to %}
-                        <span class="hidden">{{ rune.assigned_to.monster.name }}-{{ rune.assigned_to.pk }}</span>
+                        <span class="visually-hidden">{{ rune.assigned_to.monster.name }}-{{ rune.assigned_to.pk }}</span>
                         <div class="monster-image">
                             <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}" target="_blank">
                                 <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb" loading="lazy" />
@@ -96,19 +101,19 @@
                     <td>{% if rune.notes %}{{ rune.notes }}{% endif %}</td>
                     <td>
                         {% if rune.marked_for_sale %}
-                        <span class="hidden">Yes</span><span class="text-succes glyphicon glyphicon-ok"></span>
+                        <span class="visually-hidden">Yes</span><i class="far fa-check-circle text-success"></i>
                         {% else %}
-                        <span class="hidden">No</span>
+                        <span class="visually-hidden">No</span>
                         {% endif %}
                     </td>
                     {% if is_owner %}
                     <td>
                         <div class="btn-group">
-                            <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
-                                <span class="glyphicon glyphicon-pencil"></span>
+                            <button class="btn btn-default btn-sm rune-edit" data-rune-id="{{ rune.pk.hex }}">
+                                <i class="fas fa-edit fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
                             </button>
-                            <button class="btn btn-default btn-xs rune-delete" data-rune-id="{{ rune.pk.hex }}">
-                                <span class="glyphicon glyphicon-trash text-danger"></span>
+                            <button class="btn btn-default btn-sm rune-delete" data-rune-id="{{ rune.pk.hex }}">
+                                <i class="fas fa-trash fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"></i>
                             </button>
                         </div>
                     </td>

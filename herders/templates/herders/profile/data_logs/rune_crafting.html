@@ -22,7 +22,7 @@
         <td>{{ log.timestamp }}</td>
         <td>{{ log.get_craft_level_display }}</td>
         <td>
-            <div class="rune-image drop-popover" style="margin-right:0!important;" data-popover-content="#rune{{ log.pk }}">
+            <div class="rune-image drop-popover" style="margin-right:0!important;" data-popover-body="#rune{{ log.pk }}">
             <div class="rune-bg {{ log.get_quality_display|lower }}">
                 <div class="rune slot{{ log.slot }}">
                     <div class="rune-symbol {{ log.get_type_display|lower }}"></div>
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="hidden" id="rune{{ log.pk }}">
+        <div class="visually-hidden" id="rune{{ log.pk }}">
             <div class="popover-heading">
                 {{ drop }}
             </div>

@@ -1,45 +1,47 @@
-<h1>
+<h1 class="fw-normal">
     {{ dungeon.name }}
+    
+    <div class="btn-group" role="group">
+        {% if is_scenario %}
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-lg btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="fw-lighter">{{ level.get_difficulty_display }}</span>
+            </button>
 
-    {% if is_scenario %}
-    <div class="btn-group" style="display: inline-block">
-        <button class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{ level.get_difficulty_display }} <span class="caret"></span>
-        </button>
+            <ul class="dropdown-menu">
+                {% for _, difficulty in level.DIFFICULTY_CHOICES %}
+                <li>
+                    <a class="dropdown-item fw-lighter" href="{% url 'bestiary:dungeon_detail_difficulty' slug=dungeon.slug difficulty=difficulty.lower floor=level.floor %}">
+                        {{ difficulty }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
 
-        <ul class="dropdown-menu">
-            <li>
-            {% for _, difficulty in level.DIFFICULTY_CHOICES %}
-                <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=dungeon.slug difficulty=difficulty.lower floor=level.floor %}">
-                    {{ difficulty }}
-                </a>
-            {% endfor %}
-            </li>
-        </ul>
+        {% if floor_range|length > 1 %}
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-lg btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="fw-lighter">B{{ level.floor }}</span>
+            </button>
+
+            <ul class="dropdown-menu">
+                {% for floor in floor_range %}
+                <li>
+                    {% if is_scenario %}
+                    <a class="dropdown-item fw-lighter" href="{% url 'bestiary:dungeon_detail_difficulty' slug=dungeon.slug difficulty=level.get_difficulty_display.lower floor=floor %}">
+                        B{{ floor }}
+                    </a>
+                    {% else %}
+                    <a class="dropdown-item fw-lighter" href="{% url 'bestiary:dungeon_detail' slug=dungeon.slug floor=floor %}">
+                        B{{ floor }}
+                    </a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
-
-    {% if floor_range|length > 1 %}
-    <div class="btn-group" style="display: inline-block">
-        <button class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        B{{ level.floor }} <span class="caret"></span>
-        </button>
-
-        <ul class="dropdown-menu">
-            {% for floor in floor_range %}
-            <li>
-                {% if is_scenario %}
-                <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=dungeon.slug difficulty=level.get_difficulty_display.lower floor=floor %}">
-                    B{{ floor }}
-                </a>
-                {% else %}
-                <a href="{% url 'bestiary:dungeon_detail' slug=dungeon.slug floor=floor %}">
-                    B{{ floor }}
-                </a>
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
 </h1>

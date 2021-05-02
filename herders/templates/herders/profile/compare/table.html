@@ -1,15 +1,22 @@
-<div class="grid-item col-md-6 col-sm-12 col-xs-12">
-    <div class="grid-item-content table-responsive">
-        <table class="table comparison-table">
-            <thead>
-                <th>{{ title }}</th>
-                <th>{{ profile_name }}</th>
-                <th></th>
-                <th>{{ follower_name }}</th>
-            </thead>
-            <tbody>
-                {% include 'herders/profile/compare/row.html' with records=data %}
-            </tbody>
-        </table>
+<div class="grid-item col-md-6 col-sm-12 col-xs-12 col-12">
+    <div class="grid-item-content m-2">
+        <div class="card shadow border-0 mb-2">
+            <div class="card-header bg-white">
+                <h5 class="fw-lighter">{{ title }}</h5>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table comparison-table">
+                    <thead>
+                        <th></th>
+                        <th>{{ profile_name }}</th>
+                        <th></th>
+                        <th>{{ follower_name }}</th>
+                    </thead>
+                    <tbody>
+                        {% include 'herders/profile/compare/row.html' with records=data %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>

@@ -1,6 +1,7 @@
-var element_loading_template = '<div class="spinner-overlay"><div class="spinner"></div></div>';
+var element_loading_template = '<div class="spinner-overlay text-center"><div class="spinner spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
 var popoverDelay = null;
 var autosubmitDelay = null;
+var myDefaultAllowList = bootstrap.Tooltip.Default.allowList
 
 //Initialize all bootstrap tooltips and popovers
 $(function () {
@@ -8,24 +9,21 @@ $(function () {
     // Can't set dropdownParent via DAL.
     $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
-    $('[data-toggle="tooltip"]').tooltip({
+    myDefaultAllowList.div = ['data-rune-id', 'data-artifact-id']
+
+    $('[data-bs-toggle="tooltip"]').tooltip({
         container: 'body'
     });
-    $('[data-toggle="popover"]').popover({
+    $('[data-bs-toggle="popover"]').popover({
         html:true,
         viewport: {selector: 'body', padding: 2}
     });
-
-    $('.inline-editable').editable();
 
     $('.rating').rating();
 
     DisplayMessages();
     initSelect();
 });
-
-//x-editable options
-$.fn.editable.defaults.container = 'body';
 
 // Various select2 templates for the types of autocompletes
 function iconSelect2Template(option) {
@@ -39,7 +37,7 @@ function iconSelect2Template(option) {
 }
 
 // Init all the select2s with the appropriate templates
-$.fn.select2.defaults.set("theme", "bootstrap");
+$.fn.select2.defaults.set("theme", "bootstrap-5");
 $.fn.select2.defaults.set("width", "100%");
 $.fn.select2.defaults.set("allowClear", true);
 $.fn.select2.defaults.set("escapeMarkup", function(m) {return m;});
@@ -179,7 +177,7 @@ function SetStars(e) {
         }
 
         //Set custom name visibility
-        $(custom_name_field).toggleClass('hidden', !monster.homunculus);
+        $(custom_name_field).toggleClass('visually-hidden', !monster.homunculus);
     });
 }
 
@@ -237,8 +235,8 @@ $('body')
     .on('click', '[data-skill-field]', SetMaxSkillLevel)
     .on('select2:selecting', '[data-set-stars]', SetStars)
     .on('click', '.essence-storage', function() { EssenceStorage() })
-    .on('click', '.closeall', function() { $('.panel-collapse.in').collapse('hide'); })
-    .on('click', '.openall', function() { $('.panel-collapse:not(".in")').collapse('show'); })
+    .on('click', '.closeall', function() { $('.panel-collapse.show').collapse('hide'); })
+    .on('click', '.openall', function() { $('.panel-collapse:not(".show")').collapse('show'); })
     .on('click', '.data-logs-detach', function() { DetachDataLogs() })
     .on('change switchChange.bootstrapToggle', '.auto-submit', function() {
         clearTimeout(autosubmitDelay);
@@ -262,18 +260,40 @@ $('body')
                     global: false
                 }).done(function (d) {
                     el.popover({
-                        trigger: 'manual',
+                        trigger: 'click',
                         content: d,
-                        placement: popoverPlacement(el),
+                        placement: 'auto',
                         html: true,
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
-                        template: '<div class="rune-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                        allowList: myDefaultAllowList,
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
+                });
+            }
+        }, 250);
+    })
+    .on('mouseenter', '.rune-popover-hover', function() {
+        var el = $(this);
+        popoverDelay = setTimeout(function () {
+            var rune_id = el.data('rune-id');
 
-                    if (el.is(":hover")) {
-                        el.popover('show');
-                    }
+            if (rune_id.length > 0) {
+                $.ajax({
+                    url: API_URL + 'runes/' + el.data('rune-id') + '.html',
+                    type: 'get',
+                    global: false
+                }).done(function (d) {
+                    el.popover({
+                        trigger: 'hover',
+                        content: d,
+                        placement: 'auto',
+                        html: true,
+                        viewport: {selector: '#wrap', padding: 2},
+                        container: '#wrap',
+                        allowList: myDefaultAllowList,
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                    });
                 });
             }
         }, 250);
@@ -290,18 +310,40 @@ $('body')
                     global: false
                 }).done(function (d) {
                     el.popover({
-                        trigger: 'manual',
+                        trigger: 'click',
                         content: d,
-                        placement: popoverPlacement(el),
+                        placement: 'auto',
                         html: true,
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
-                        template: '<div class="rune-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                        allowList: myDefaultAllowList,
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
+                });
+            }
+        }, 250);
+    })
+    .on('mouseenter', '.artifact-popover-hover', function() {
+        var el = $(this);
+        popoverDelay = setTimeout(function () {
+            var rune_id = el.data('artifact-id');
 
-                    if (el.is(":hover")) {
-                        el.popover('show');
-                    }
+            if (rune_id.length > 0) {
+                $.ajax({
+                    url: API_URL + 'artifacts/' + el.data('artifact-id') + '.html',
+                    type: 'get',
+                    global: false
+                }).done(function (d) {
+                    el.popover({
+                        trigger: 'hover',
+                        content: d,
+                        placement: 'auto',
+                        html: true,
+                        viewport: {selector: '#wrap', padding: 2},
+                        container: '#wrap',
+                        allowList: myDefaultAllowList,
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                    });
                 });
             }
         }, 250);
@@ -319,10 +361,10 @@ $('body')
                     trigger: 'manual',
                     content: d,
                     html: true,
-                    placement: popoverPlacement(el),
+                    placement: 'auto',
                     container: 'body',
                     viewport: {selector: 'body', padding: 2},
-                    template: '<div class="monster-stats popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                    template: '<div class="monster-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                 });
 
                 if (el.is(":hover")) {
@@ -344,10 +386,10 @@ $('body')
                     trigger: 'manual',
                     content: d,
                     html: true,
-                    placement: popoverPlacement(el),
+                    placement: 'auto',
                     container: '#wrap',
                     viewport: {selector: '#wrap', padding: 2},
-                    template: '<div class="monster-skill popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                    template: '<div class="monster-skill shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
                 });
                 if (el.is(":hover")) {
                     el.popover('show');
@@ -356,7 +398,7 @@ $('body')
 
         }, 250);
     })
-    .on('mouseleave', '.skill-popover, .monster-popover, .rune-popover, .artifact-popover', function(event) {
+    .on('mouseleave', '.skill-popover, .monster-popover', function(event) {
         $(this).popover('hide');
         clearTimeout(popoverDelay);
     })
@@ -367,22 +409,6 @@ $('body')
         $form.submit();
         return false;
     });
-
-function popoverPlacement(element) {
-    var windowWidth = jQuery(window).width(),
-        elWidth = element.width(),
-        elDistanceFromRight = windowWidth - (element.offset().left + elWidth);
-
-    if (windowWidth - elWidth < 250) {
-        return 'auto top';
-    }
-    else if (elDistanceFromRight < 500) {
-        return 'auto left';
-    }
-    else {
-        return 'auto right';
-    }
-}
 
 //Bulk add
 $('#bulkAddFormset').formset({
@@ -409,7 +435,8 @@ monster_table.tablesorter({
         filter_searchDelay : 300,
         filter_saveFilters : save_filters,
         filter_searchFiltered : true
-    }
+    },
+    theme: 'bootstrap',
 });
 
 //Get list of current filters and set buttons properly
@@ -542,8 +569,8 @@ function update_craft_stat_options(craft, stat_input) {
 // Artifact form common functions
 function update_artifact_slot_visibility() {
     const is_element = $('#id_slot').val() === "1";
-    $('#div_id_element').toggleClass('hidden', !is_element);
-    $('#div_id_archetype').toggleClass('hidden', is_element);
+    $('#div_id_element').toggleClass('visually-hidden', !is_element);
+    $('#div_id_archetype').toggleClass('visually-hidden', is_element);
 }
 
 var RUNE_MAIN_STAT_VALUES = {

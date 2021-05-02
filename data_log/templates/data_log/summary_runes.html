@@ -9,7 +9,7 @@
                 <h5>Sets</h5>
                     <p class="list-group-item-text">
                         {% for set in runes.sets %}
-                            <div class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ set.type }}">
+                            <div class="monster-image" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ set.type }}">
                                 <img src="{{ img_url_prefix }}runes/{{ set.type|lower }}.png" alt="{{ set.type }}" class="monster-thumb" loading="lazy" />
                             </div>
                         {% endfor %}

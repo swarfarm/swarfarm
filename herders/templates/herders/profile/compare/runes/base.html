@@ -6,10 +6,18 @@ Runes - {{ block.super }}
 {% endblock title %}
 
 {% block runes_menu %}
-    {% if is_owner%}
-        <ul class="dropdown-menu navmenu-nav">
+    {% if is_owner %}
+        <ul class="navbar-nav ps-2">
             {% for rune_craft_name, rune_craft_slug in subviews.items %}
-                <li><a href="{% url 'herders:profile_compare_rune_crafts' profile_name follower_name rune_craft_slug %}">{{ rune_craft_name }}s</a></li>
+            <li class="nav-item py-0">
+                <a 
+                    class="nav-link fw-lighter py-0 text-muted monster-add" 
+                    href="{% url 'herders:profile_compare_rune_crafts' profile_name follower_name rune_craft_slug %}" 
+                    style="cursor: pointer;"
+                >
+                    {{ rune_craft_name }}s
+                </a>
+            </li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -17,7 +25,7 @@ Runes - {{ block.super }}
 
 
 {% block content_compare %}
-    <h1>Runes</h1>
+    <h1 class="fw-lighter">Runes</h1>
     <hr />
     <div class="container-fluid">
         <div class="grid">

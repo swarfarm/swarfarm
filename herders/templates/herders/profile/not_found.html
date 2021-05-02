@@ -3,6 +3,14 @@
 {% block title %}Not Public - {{ block.super }}{% endblock title %}
 
 {% block content %}
-    <h1>Profile does not exist</h1>
-    <p>Sorry, you ended up at a profile that doesn't exist. Check for typos or incorrect links.</p>
+    <div class="page-wrap d-flex flex-row align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-12 text-center">
+                    <span class="display-1 d-block">Profile does not exist</span>
+                    <div class="mb-4 lead">Sorry, you ended up at a profile that doesn't exist. Check for typos or incorrect links.</div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

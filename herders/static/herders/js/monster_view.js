@@ -13,13 +13,13 @@ function AssignRune(slot) {
         });
 
         //Init form elements
-        $("[data-toggle='toggle']").bootstrapToggle();
+        $("[data-bs-toggle='toggle']").bootstrapToggle();
         $("[data-provide='slider']").slider();
         initSelect();
-        $('[data-toggle="tooltip"]').tooltip({
+        $('[data-bs-toggle="tooltip"]').tooltip({
             container: 'body'
         });
-        $('[data-toggle="popover"]').popover({
+        $('[data-bs-toggle="popover"]').popover({
             html:true,
             viewport: {selector: 'body', padding: 2}
         });
@@ -32,7 +32,7 @@ function AssignRuneChoice(rune_id, monster_id) {
         url: '/profile/' + PROFILE_NAME + '/runes/assign/' + monster_id + '/' + rune_id + '/'
     }).done(function (response) {
         if (response.code === 'success') {
-            $('.modal.in').modal('hide');
+            $('.modal.show').modal('hide');
             UpdateRunes();
             UpdateStats();
         }
@@ -65,6 +65,7 @@ function CreateNewRune(slot) {
 }
 
 function UnassignRune(rune_id) {
+    $('.rune-stats').popover('hide');
     bootbox.dialog({
         message: 'Remove from slot or delete completely?',
         title: 'Remove Rune',
@@ -72,7 +73,7 @@ function UnassignRune(rune_id) {
         buttons: {
             unassign: {
                 label: 'Remove from Slot',
-                className: 'btn-default pull-left',
+                className: 'btn-outline-dark float-left',
                 callback: function () {
                     $.ajax({
                         type: 'get',
@@ -133,11 +134,12 @@ function RemoveAllRunes(instance_id) {
         });
     }
     else {
-        alert("Unspecified monster to remove runes from!");
+        alert("Unspecified monster to remove runes & artifacts from!");
     }
 }
 
 function EditRune(rune_id) {
+    $('.rune-stats').popover('hide');
     //Pull in edit form on modal show
     $.ajax({
         type: 'get',
@@ -166,13 +168,13 @@ function AssignArtifact(slot) {
         });
 
         //Init form elements
-        $("[data-toggle='toggle']").bootstrapToggle();
+        $("[data-bs-toggle='toggle']").bootstrapToggle();
         $("[data-provide='slider']").slider();
         initSelect();
-        $('[data-toggle="tooltip"]').tooltip({
+        $('[data-bs-toggle="tooltip"]').tooltip({
             container: 'body'
         });
-        $('[data-toggle="popover"]').popover({
+        $('[data-bs-toggle="popover"]').popover({
             html:true,
             viewport: {selector: 'body', padding: 2}
         });
@@ -185,7 +187,7 @@ function AssignArtifactChoice(artifact_id, monster_id) {
         url: '/profile/' + PROFILE_NAME + '/artifacts/assign/' + monster_id + '/' + artifact_id + '/'
     }).done(function (response) {
         if (response.code === 'success') {
-            $('.modal.in').modal('hide');
+            $('.modal.show').modal('hide');
             UpdateRunes();
             UpdateStats();
         }
@@ -196,6 +198,7 @@ function AssignArtifactChoice(artifact_id, monster_id) {
 }
 
 function EditArtifact(artifact_id) {
+    $('.rune-stats').popover('hide');
     //Pull in edit form on modal show
     $.ajax({
         type: 'get',
@@ -231,6 +234,7 @@ function CreateNewArtifact(slot) {
 }
 
 function UnassignArtifact(artifact_id) {
+    $('.rune-stats').popover('hide');
     bootbox.dialog({
         message: 'Remove from slot or delete completely?',
         title: 'Remove Artifact',
@@ -238,7 +242,7 @@ function UnassignArtifact(artifact_id) {
         buttons: {
             unassign: {
                 label: 'Remove from Slot',
-                className: 'btn-default pull-left',
+                className: 'btn-outline-dark float-left',
                 callback: function () {
                     $.ajax({
                         type: 'get',
@@ -389,7 +393,7 @@ function UpdateSkills() {
     }).done(function(result) {
         $('#monster-view-skills').html(result);
 
-        $('[data-toggle="popover"]').popover({
+        $('[data-bs-toggle="popover"]').popover({
             html:true
         });
     });
@@ -425,7 +429,6 @@ $('body')
     .on('click', '.artifact-unassign', function() { UnassignArtifact($(this).data('artifact-id')) })
     .on('click', '.artifact-assign', function() { AssignArtifact($(this).data('artifact-slot')) })
     .on('click', '.artifact-assign-choice', function() { AssignArtifactChoice($(this).data('artifact-id'), $(this).data('instance-id')) })
-    .on('click', '.artifact-remove-all', function() { RemoveAllArtifacts($(this).data('instance-id'))})
     .on('click', '.monster-edit', function() { EditMonster($(this).data('instance-id')) })
     .on('click', '.monster-copy', function() { CopyMonster($(this).data('instance-id')) })
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
@@ -514,7 +517,7 @@ $('body')
             data: $form.serialize()
         }).done(function (result) {
             if (result.code === 'success') {
-                $('.modal.in').modal('hide');
+                $('.modal.show').modal('hide');
                 UpdateAll();
 
                 if (result.removeElement) {
@@ -522,7 +525,7 @@ $('body')
                 }
             }
             else if (result.code === 'edit') {
-                $('.modal.in').modal('hide');
+                $('.modal.show').modal('hide');
                 UpdateAll();
                 EditMonster(INSTANCE_ID);
             }

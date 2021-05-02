@@ -1,53 +1,61 @@
 {% if d.level_set.count > 1 %}
     {% if d.category == d.CATEGORY_SCENARIO %}
         {# List floors by difficulty #}
-        <ul class="pagination pagination-compact">
-            <li class="disabled"><a>Normal</a></li>
-            {% for l in d.level_set.all %}
-                {% if l.difficulty == l.DIFFICULTY_NORMAL %}
-                <li>
-                    <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='normal' floor=l.floor %}">
-                        B{{ l.floor }}
-                    </a>
-                </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
+        <div class="card-header bg-white p-2">
+            <div class="fw-lighter">Normal</div>
+            <ul class="pagination pagination-sm flex-wrap mb-0">
+                {% for l in d.level_set.all %}
+                    {% if l.difficulty == l.DIFFICULTY_NORMAL %}
+                    <li class="page-item">
+                        <a class="page-link me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='normal' floor=l.floor %}">
+                            B{{ l.floor }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
 
-        <div class="clearfix"></div>
+        <div class="card-header bg-white p-2">
+            <div class="fw-lighter">Hard</div>
+            <ul class="pagination pagination-sm flex-wra mb-0">
+                {% for l in d.level_set.all %}
+                    {% if l.difficulty == l.DIFFICULTY_HARD %}
+                    <li class="page-item">
+                        <a class="page-link me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hard' floor=l.floor %}">
+                            B{{ l.floor }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
 
-        <ul class="pagination pagination-compact">
-            <li class="disabled"><a>Hard</a></li>
-            {% for l in d.level_set.all %}
-                {% if l.difficulty == l.DIFFICULTY_HARD %}
-                <li>
-                    <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hard' floor=l.floor %}">
-                        B{{ l.floor }}
-                    </a>
-                </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-
-        <div class="clearfix"></div>
-
-        <ul class="pagination pagination-compact">
-            <li class="disabled"><a>Hell</a></li>
-            {% for l in d.level_set.all %}
-                {% if l.difficulty == l.DIFFICULTY_HELL %}
-                <li>
-                    <a href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hell' floor=l.floor %}">
-                        B{{ l.floor }}
-                    </a>
-                </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
+        <div class="card-footer bg-white p-2 border-0">
+            <div class="fw-lighter">Hell</div>
+            <ul class="pagination pagination-sm flex-wrap mb-0">
+                {% for l in d.level_set.all %}
+                    {% if l.difficulty == l.DIFFICULTY_HELL %}
+                    <li class="page-item">
+                        <a class="page-link me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hell' floor=l.floor %}">
+                            B{{ l.floor }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
     {% else %}
-        <ul class="pagination pagination-compact">
-        {% for l in d.level_set.all %}
-            <li><a href="{% url 'bestiary:dungeon_detail' slug=d.slug floor=l.floor %}">B{{ l.floor }}</a></li>
-        {% endfor %}
-        </ul>
+        <div class="card-footer bg-white p-2 border-0 align-items-center">
+            <ul class="pagination pagination-sm flex-wrap mb-0">
+                {% for l in d.level_set.all %}
+                    <li class="page-item">
+                        <a class="page-link me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail' slug=d.slug floor=l.floor %}">B{{ l.floor }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     {% endif %}
+{% else %}
+    <div class="fw-lighter p-2">Only one level</div>
 {% endif %}

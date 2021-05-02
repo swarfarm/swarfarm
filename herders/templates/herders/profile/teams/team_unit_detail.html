@@ -1,0 +1,51 @@
+{% load utils %}
+{% load staticfiles %}
+{% static 'herders/images/' as img_url_prefix %}
+
+
+<div class="card shadow-sm border-0 mb-1 w-100">
+    <div class="card-body d-flex flex-wrap p-0">
+        <div class="monster-image monster-popover" data-instance-id="{{ unit.pk.hex }}" title="{{ unit }}">
+            <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=unit.pk.hex %}" target="_blank">
+                <img src="{{ img_url_prefix }}monsters/{{ unit.monster.image_filename }}" class="monster-thumb" loading="lazy" />
+                <span>
+                    {% for x in unit.stars|get_range %}
+                        {% if unit.monster.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
+                        {% elif unit.monster.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="image-plus image-plus-right">{% if unit.is_max_level %}MAX{% endif %}{{ unit.level }}</span>
+            </a>
+        </div>
+        <div class="monster-leader-skill">
+            {% if unit.monster.leader_skill %}
+            <img src="{{ img_url_prefix }}skills/leader/{{ unit.monster.leader_skill.icon_filename }}" loading="lazy" 
+                    data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="Leader Skill" data-bs-content="{{ unit.monster.leader_skill.skill_string }}" />
+            {% endif %}
+        </div>
+        <div class="monster-skill-effects" style="width: auto;">
+            {% for skill in unit.monster.skills.all %}
+                {% if skill.aoe %}
+                    <span class="skill-effect skill-effect-buff">
+                        <span>AOE</span>
+                    </span>
+                {% endif %}
+                {% for effect in skill.effect.all %}
+                    {% if effect.icon_filename %}
+                    <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" loading="lazy" 
+                        data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}"/>
+                    {% else %}
+                        <span class="skill-effect {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}">
+                            <span>{{ effect.name }}</span>
+                        </span>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

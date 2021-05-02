@@ -5,52 +5,52 @@
 <div id="monster-inventory">
     {% static 'herders/images/' as img_url_prefix %}
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="btn-group">
-                <button class="btn btn-default profile-view-mode" data-mode="list">
-                    <span class="glyphicon glyphicon-th-list"></span> List
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-dark profile-view-mode" data-mode="list">
+                    <i class="fas fa-th-list"></i> List
                 </button>
-                <button class="btn btn-default profile-view-mode active" data-mode="box">
-                    <span class="glyphicon glyphicon-th-large"></span> Box
+                <button class="btn btn-outline-dark profile-view-mode active" data-mode="box">
+                    <i class="fas fa-th-large"></i> Box
                 </button>
-                <button class="btn btn-default profile-view-mode" data-mode="pieces">
-                    <span class="fa fa-puzzle-piece"></span> Pieces
+                <button class="btn btn-outline-dark profile-view-mode" data-mode="pieces">
+                    <i class="fas fa-puzzle-piece"></i> Pieces
                 </button>
-                <button class="btn btn-default profile-view-mode" data-mode="collection">
-                    <span class="fa fa-users"></span> Collection
+                <button class="btn btn-outline-dark profile-view-mode" data-mode="collection">
+                    <i class="fas fa-layer-group"></i> Collection
                 </button>
             </div>
 
             <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Grouped By {{ box_grouping|title }} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    {% if not box_grouping == 'stars' %}<li><a class="box-group-mode" data-mode="stars">Stars</a></li>{% endif %}
-                    {% if not box_grouping == 'natural_stars' %}<li><a class="box-group-mode" data-mode="natural_stars">Natural Stars</a></li>{% endif %}
-                    {% if not box_grouping == 'level' %}<li><a class="box-group-mode" data-mode="level">Level</a></li>{% endif %}
-                    {% if not box_grouping == 'element' %}<li><a class="box-group-mode" data-mode="attribute">Element</a></li>{% endif %}
-                    {% if not box_grouping == 'archetype' %}<li><a class="box-group-mode" data-mode="archetype">Archetype</a></li>{% endif %}
-                    {% if not box_grouping == 'family' %}<li><a class="box-group-mode" data-mode="family">Family</a></li>{% endif %}
-                    {% if not box_grouping == 'priority' %}<li><a class="box-group-mode" data-mode="priority">Priority</a></li>{% endif %}
+                    {% if not box_grouping == 'stars' %}<li><a class="dropdown-item dropdown-link box-group-mode text-muted" data-mode="stars">Stars</a></li>{% endif %}
+                    {% if not box_grouping == 'natural stars' %}<li><a class="dropdown-item dropdown-link box-group-mode text-muted" data-mode="natural_stars">Natural Stars</a></li>{% endif %}
+                    {% if not box_grouping == 'level' %}<li><a class="dropdown-item dropdown-link box-group-mode text-muted" data-mode="level">Level</a></li>{% endif %}
+                    {% if not box_grouping == 'element' %}<li><a class="dropdown-item dropdown-link box-group-mode text-muted" data-mode="attribute">Element</a></li>{% endif %}
+                    {% if not box_grouping == 'archetype' %}<li><a class="dropdown-item dropdown-link box-group-mode text-muted" data-mode="archetype">Archetype</a></li>{% endif %}
+                    {% if not box_grouping == 'family' %}<li><a class="dropdown-item dropdown-link box-group-mode text-muted" data-mode="family">Family</a></li>{% endif %}
+                    {% if not box_grouping == 'priority' %}<li><a class="dropdown-item dropdown-link box-group-mode text-muted" data-mode="priority">Priority</a></li>{% endif %}
                 </ul>
             </div>
-            <span class="pull-right">{{ filtered_count }} of {{ total_count }} monster{{ total_count|pluralize }}</span>
+            <span class="float-right fw-lighter text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> monster{{ total_count|pluralize }}</span>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             {% if monsters %}
                 {% for groupname, monsters in monster_stable.items %}
                     {% if monsters|length > 0 %}
-                        <div class="panel panel-default">
-                            <div class="panel-heading collapsible">
-                                <a role="button" data-toggle="collapse" data-target="#monstergroup{{ forloop.counter }}">
+                        <div class="card shadow-sm border-0 mb-3 pb-2">
+                            <div class="card-header bg-white collapsible">
+                                <a role="button" data-bs-toggle="collapse" data-bs-target="#monstergroup{{ forloop.counter }}" aria-expanded="true">
                                     <strong>{{ groupname|capfirst }}</strong>
                                 </a>
-                                <span class="pull-right">{{ monsters|length }} monster{{ monsters|length|pluralize }}</span>
+                                <span class="float-right fw-lighter text-muted">{{ monsters|length }} monster{{ monsters|length|pluralize }}</span>
                             </div>
-                            <div id="monstergroup{{ forloop.counter }}" class="collapse in">
-                                <div class="panel-body">
+                            <div id="monstergroup{{ forloop.counter }}" class="collapse in show">
+                                <div class="card-body">
                                     {% for instance in monsters %}
                                         {% include 'herders/profile/monster_inventory/monster_box_snippet.html' %}
                                     {% endfor %}
@@ -60,7 +60,10 @@
                     {% endif %}
                 {% endfor %}
             {% else %}
-                <div class="alert alert-warning">Your search returned no results or you have no monsters!</div>
+                <div class="callout callout-warning">
+                    <h2 class="fw-lighter">No records!</h2>
+                    <p class="fw-lighter">Your search returned no results or you have no monsters!</p>
+                </div>
             {% endif %}
         </div>
     </div>

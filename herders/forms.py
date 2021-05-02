@@ -38,7 +38,7 @@ class CrispyAuthenticationForm(AuthenticationForm):
             Field('username'),
             Field('password'),
             Hidden('next', value='{{ next }}'),
-            FormActions(Submit('login', 'Log In', css_class='btn-lg btn-primary btn-block')),
+            FormActions(Submit('login', 'Log In', css_class='float-right')),
         )
 
 
@@ -53,7 +53,7 @@ class CrispyPasswordChangeForm(PasswordChangeForm):
             Field('old_password'),
             Field('new_password1'),
             Field('new_password2'),
-            FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
+            FormActions(Submit('submit', 'Submit', css_class='float-right')),
         )
 
 
@@ -66,7 +66,7 @@ class CrispyPasswordResetForm(PasswordResetForm):
         self.helper.form_action = 'password_reset'
         self.helper.layout = Layout(
             Field('email'),
-            FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
+            FormActions(Submit('submit', 'Submit', css_class='float-right')),
         )
 
 
@@ -79,7 +79,7 @@ class CrispySetPasswordForm(SetPasswordForm):
         self.helper.layout = Layout(
             Field('new_password1'),
             Field('new_password2'),
-            FormActions(Submit('submit', 'Submit', css_class='btn-lg btn-primary btn-block')),
+            FormActions(Submit('submit', 'Submit', css_class='float-right')),
         )
 
 
@@ -102,7 +102,7 @@ class CrispyChangeUsernameForm(forms.Form):
     helper.form_action = 'username_change'
     helper.layout = Layout(
         Field('username', css_class='input-sm'),
-        FormActions(Submit('change', 'Change', css_class='btn-lg btn-primary btn-block'))
+        FormActions(Submit('change', 'Change', css_class='float-right'))
     )
 
 
@@ -124,6 +124,7 @@ class RegisterUserForm(forms.Form):
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput)
     summoner_name = forms.CharField(label="Summoner's War Account Name", required=False, help_text='Not required. Visible to others if you make your SWARFARM account public.')
     is_public = forms.BooleanField(label='Make my SWARFARM account visible to others', required=False)
+    dark_mode = forms.BooleanField(label='[In Progress] Dark Mode', required=False)
     server = forms.ChoiceField(label="Summoner's War Server", choices=[(None, '---')] + Summoner.SERVER_CHOICES, required=False)
     captcha = ReCaptchaField()
 
@@ -137,8 +138,9 @@ class RegisterUserForm(forms.Form):
         Field('summoner_name', css_class='input-sm'),
         Field('server'),
         Field('is_public'),
+        Field('dark_mode'),
         Field('captcha'),
-        FormActions(Submit('register', 'Register', css_class='btn-lg btn-primary btn-block'))
+        FormActions(Submit('register', 'Register', css_class='float-right'))
     )
 
 
@@ -171,6 +173,7 @@ class EditSummonerForm(ModelForm):
             Div(
                 Field('summoner_name'),
                 Field('public'),
+                Field('dark_mode'),
                 Field('timezone'),
                 Field('server'),
             ),
@@ -181,12 +184,14 @@ class EditSummonerForm(ModelForm):
         fields = (
             'summoner_name',
             'public',
+            'dark_mode',
             'timezone',
             'server',
         )
         labels = {
             'summoner_name': "Summoner's War Account Name",
             'public': 'Make my SWARFARM account visible to others',
+            'dark_mode': '[In Progress] Dark Mode',
         }
 
 
@@ -234,7 +239,7 @@ class EditBuildingForm(ModelForm):
         self.helper.layout = Layout(
             Field('level', autocomplete='off'),
             FormActions(
-                Submit('save', 'Save', css_class='btn-success')
+                Submit('save', 'Save', css_class='btn-success float-right')
             )
         )
 
@@ -270,11 +275,12 @@ class AddMonsterInstanceForm(forms.ModelForm):
                 data_custom_name_field='div_{}'.format(self['custom_name'].auto_id),
                 data_set_stars='',
             ),
-            Field('custom_name', wrapper_class='hidden'),
-            Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+            Field('custom_name', wrapper_class='visually-hidden'),
+            Field('stars', value=1, data_start=0, data_stop=6, data_stars=6),
             FieldWithButtons(
-                Field('level', value=1, min=1, max=40),
-                StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
+                Field('level', value=1, min=1, max=40, css_class='form-control'),
+                StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level='', css_class='btn btn-outline-dark'),
+                wrapper_class='btn-group',
             ),
             Field('fodder', css_class='checkbox'),
             Field('in_storage', css_class='checkbox'),
@@ -282,8 +288,9 @@ class AddMonsterInstanceForm(forms.ModelForm):
             Field('priority',),
             Field('notes'),
             FormActions(
-                Submit('save', 'Save', css_class='btn btn-primary'),
-                Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+                Button('cancel', 'Cancel', css_class='btn btn-link', data_bs_dismiss='modal'),
+                Submit('save', 'Save'),
+                css_class='float-right',
             ),
         )
 
@@ -291,7 +298,7 @@ class AddMonsterInstanceForm(forms.ModelForm):
         model = MonsterInstance
         fields = ('monster', 'custom_name', 'stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority', 'notes')
         labels = {
-            'ignore_for_fusion': mark_safe('<span class="glyphicon glyphicon-lock"></span>Locked'),
+            'ignore_for_fusion': mark_safe('<i class="fas fa-lock"></i>Locked'),
         }
 
 
@@ -330,16 +337,17 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
                 wrapper_class='full-width',
             ),
             HTML('</td><td>'),
-            InlineField('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+            InlineField('stars', css_class='rating visually-hidden form-control', value=1, data_start=0, data_stop=6, data_stars=6),
             HTML('</td><td>'),
             FieldWithButtons(
-                Field('level', value=1, min=1, max=40),
-                StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
+                Field('level', value=1, min=1, max=40, css_class='form-control'),
+                StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level='', css_class="btn-outline-dark"),
+                wrapper_class='btn-group',
             ),
             HTML('</td><td>'),
-            Field('in_storage'),
+            Field('in_storage', css_class='form-check-input p-0'),
             HTML('</td><td>'),
-            Field('fodder'),
+            Field('fodder', css_class='form-check-input p-0'),
             HTML('</td>'),
         )
 
@@ -359,10 +367,11 @@ class EditMonsterInstanceForm(ModelForm):
         self.helper.layout = Layout(
             Div(
                 Field('custom_name'),
-                Field('stars', css_class='rating hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+                Field('stars', css_class='rating visually-hidden', value=1, data_start=0, data_stop=6, data_stars=6),
                 FieldWithButtons(
-                    Field('level', value=1, min=1, max=40),
-                    StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level=''),
+                    Field('level', value=1, min=1, max=40, css_class='form-control'),
+                    StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level='', css_class='btn-outline-dark'),
+                    wrapper_class='btn-group',
                 ),
                 Field('fodder', css_class='checkbox'),
                 Field('in_storage', css_class='checkbox'),
@@ -377,8 +386,9 @@ class EditMonsterInstanceForm(ModelForm):
             ),
             Div(
                 FormActions(
+                    HTML("""<button type="button" class="btn btn-link" data-bs-dismiss="modal">Cancel</button>"""),
                     Submit('save', 'Save', css_class='btn btn-primary'),
-                    HTML("""<button class="btn btn-link" data-dismiss="modal">Cancel</button>"""),
+                    css_class='float-right',
                 ),
             )
         )
@@ -388,7 +398,7 @@ class EditMonsterInstanceForm(ModelForm):
         fields = ('custom_name', 'stars', 'level', 'fodder', 'in_storage', 'ignore_for_fusion', 'priority',
                   'skill_1_level', 'skill_2_level', 'skill_3_level', 'skill_4_level', 'notes', 'tags')
         labels = {
-            'ignore_for_fusion': mark_safe('<span class="glyphicon glyphicon-lock"></span>Locked'),
+            'ignore_for_fusion': mark_safe('<i class="fas fa-lock"></i>Locked'),
         }
         widgets = {
             'tags': autocomplete.ModelSelect2Multiple(url='monster-tag-autocomplete')
@@ -416,8 +426,9 @@ class PowerUpMonsterInstanceForm(forms.Form):
         Field('monster'),
         Field('ignore_evolution'),
         FormActions(
-            Submit('power_up', 'Power Up', css_class='btn btn-primary'),
             Submit('evolve', 'Evolve', css_class='btn btn-primary'),
+            Submit('power_up', 'Power Up', css_class='btn btn-primary'),
+            css_class='float-right',
         )
     )
 
@@ -437,8 +448,9 @@ class AwakenMonsterInstanceForm(forms.Form):
         ),
         Div(
             FormActions(
-                Submit('awaken', 'Awaken', css_class='btn btn-primary'),
                 HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
+                Submit('awaken', 'Awaken', css_class='btn btn-primary'),
+                css_class='float-right',
             ),
         )
     )
@@ -551,7 +563,7 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></span>'),
+        label=mark_safe('<i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></i>'),
         required=False,
         initial=True,
     )
@@ -668,7 +680,15 @@ class FilterMonsterInstanceForm(forms.Form):
                             data_slider_ticks_labels='["0", "7"]',
                             wrapper_class='form-group-sm form-group-condensed col-lg-6'
                         ),
-                        Field('effects_logic', data_toggle='toggle', data_on='Any Skill', data_onstyle='primary', data_off='One Skill', data_offstyle='primary', data_width='125px', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                        Field(
+                            'effects_logic',
+                            data_toggle='toggle', 
+                            data_on='Any Skill', 
+                            data_onstyle='dark', 
+                            data_off='One Skill', 
+                            data_width='125px', 
+                            wrapper_class='form-group-sm form-group-condensed col-lg-6 ps-0'
+                        ),
                         css_class='row'
                     ),
                 ),
@@ -687,13 +707,13 @@ class FilterMonsterInstanceForm(forms.Form):
         Div(
             Div(
                 Submit('apply', 'Apply', css_class='btn-success '),
-                css_class='btn-group'
+                css_class='btn-group w-50'
             ),
             Div(
-                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
-                css_class='btn-group'
+                Button('resetBtn', 'Reset Filters', css_class='btn-outline-danger reset'),
+                css_class='btn-group w-50'
             ),
-            css_class='btn-group btn-group-justified'
+            css_class='btn-group w-100'
         ),
     )
 
@@ -768,7 +788,7 @@ class MonsterPieceForm(forms.ModelForm):
             Field('pieces'),
             FormActions(
                 Submit('save', 'Save', css_class='btn btn-primary'),
-                Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+                Button('cancel', 'Cancel', css_class='btn btn-link', data_bs_dismiss='modal')
             ),
         )
 
@@ -793,7 +813,7 @@ class AddTeamGroupForm(ModelForm):
             Div(
                 FormActions(
                     Submit('save', 'Save', css_class='btn btn-primary'),
-                    Button('cancel', 'Cancel', css_class='btn btn-link', data_dismiss='modal')
+                    Button('cancel', 'Cancel', css_class='btn btn-link', data_bs_dismiss='modal')
                 ),
                 css_class='modal-footer',
             )
@@ -815,7 +835,7 @@ class EditTeamGroupForm(ModelForm):
             FormActions(
                 Submit('save', 'Save', css_class='btn btn-primary'),
                 HTML("""<a href="{{ return_path }}" class="btn btn-link">Cancel</a>"""),
-                HTML("""<a href="{% url 'herders:team_group_delete' profile_name=profile_name group_id=group_id%}" class="btn btn-danger pull-right">Delete</a>"""),
+                HTML("""<a href="{% url 'herders:team_group_delete' profile_name=profile_name group_id=group_id%}" class="btn btn-danger float-right">Delete</a>"""),
             ),
         )
 
@@ -962,12 +982,12 @@ class AddRuneInstanceForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_method = 'post'
         self.helper.form_id = 'addRuneForm'
-        self.helper.form_class = 'ajax-form'
+        self.helper.form_class = 'ajax-form row'
         self.helper.include_media = False
         self.helper.layout = Layout(
             Div(
                 Field('type', template="crispy/rune_button_radio_select.html"),
-                css_class='col-md-2',
+                css_class='col-md-3',
             ),
             Div(
                 Div(
@@ -979,46 +999,46 @@ class AddRuneInstanceForm(ModelForm):
                 ),
                 Div(
                     Div(
-                        HTML('<label class="col-md-2 control-label">Main Stat</label>'),
+                        HTML('<label class="col-md-4 control-label">Main Stat</label>'),
                         Field('main_stat', wrapper_class='col-md-4 inline-horizontal'),
-                        Field('main_stat_value', wrapper_class='col-md-3 inline-horizontal'),
-                        css_class='form-group form-group-condensed',
+                        Field('main_stat_value', wrapper_class='col-md-4 inline-horizontal'),
+                        css_class='form-group form-group-A row',
                     ),
                     Div(
-                        HTML('<label class="col-md-2 control-label">Innate Stat</label>'),
+                        HTML('<label class="col-md-4 control-label">Innate Stat</label>'),
                         Field('innate_stat', wrapper_class='col-md-4 inline-horizontal'),
-                        Field('innate_stat_value', wrapper_class='col-md-3 inline-horizontal', placeholder='Value'),
-                        css_class='form-group form-group-condensed',
+                        Field('innate_stat_value', wrapper_class='col-md-4 inline-horizontal', placeholder='Value'),
+                        css_class='form-group form-group-condensed row',
                     ),
                     Div(
                         Field('substats', wrapper_class='col-sm-3'),
                         Field('substat_values', wrapper_class='col-sm-3'),
-                        Field('substats_enchanted', wrapper_class='col-sm-3'),
+                        Field('substats_enchanted', css_class='form-checkbox', wrapper_class='col-sm-3'),
                         Field('substats_grind_value', wrapper_class='col-sm-3'),
                         css_class='row'
                     ),
                     Div(
                         HTML('<label class="col-md-2 control-label">Assign To</label>'),
                         Div(
-                            Field('assigned_to', wrapper_class='col-md-4', data_placeholder='Start typing...'),
+                            Field('assigned_to', wrapper_class='col-md-12', data_placeholder='Start typing...'),
                         ),
-                        css_class='form-group form-group-condensed',
+                        css_class='form-group form-group-condensed row',
                     ),
                     Div(
                         HTML('<label class="col-md-2 control-label">Notes</label>'),
                         Div(
                             Field('notes', rows="4", wrapper_class='col-md-10'),
-                            Field('marked_for_sale', wrapper_class='col-md-offset-2 col-md-10'),
+                            Field('marked_for_sale'),
                         ),
-                        css_class='form-group form-group-condensed',
+                        css_class='form-group form-group-condensed row',
                     ),
                     css_class='form-horizontal',
                 ),
-                css_class='col-md-10',
+                css_class='col-md-9',
             ),
-            Div(css_class='clearfix'),
             FormActions(
-                Submit('save', 'Save'),
+                Submit('save', 'Save', css_class='float-right'),
+                css_class='col-12',
             ),
         )
 
@@ -1046,7 +1066,7 @@ class AssignRuneForm(forms.Form):
         required=False,
     )
     substat_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
+        label=mark_safe('<i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></i>'),
         required=False,
     )
     level = forms.CharField(
@@ -1112,8 +1132,8 @@ class AssignRuneForm(forms.Form):
 
         Field('innate_stat', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Field('substats', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('substat_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('slot', type='hidden'),
+        Field('substat_logic', data_bs_toggle='toggle', data_on='One or More', data_onstyle='dark', data_off='All', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed ps-0'),
+        Field('slot', wrapper_class='visually-hidden'),
     )
 
     def clean(self):
@@ -1171,11 +1191,11 @@ class FilterRuneForm(forms.Form):
         required=False,
     )
     substat_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether a rune must contain ALL substats or at least one of the filtered substats."></span>'),
         required=False,
     )
     substat_reverse = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If substats filters should be excluded."></span>'),
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="If substats filters should be excluded."></span>'),
         required=False,
     )
     has_gem = forms.NullBooleanField(
@@ -1274,19 +1294,17 @@ class FilterRuneForm(forms.Form):
                         'substat_logic',
                         data_toggle='toggle',
                         data_on='One or More',
-                        data_onstyle='primary',
+                        data_onstyle='dark',
                         data_off='All',
-                        data_offstyle='primary',
                         data_width='125px',
-                        wrapper_class='form-group-sm form-group-condensed',
+                        wrapper_class='form-group-sm form-group-condensed ps-0',
                     ), 
                     Field(
                         'substat_reverse',
                         data_toggle='toggle',
                         data_on='Exclude',
-                        data_onstyle='primary',
+                        data_onstyle='dark',
                         data_off='Include',
-                        data_offstyle='primary',
                         data_width='125px',
                         wrapper_class='form-group-sm form-group-condensed',
                     ),
@@ -1321,13 +1339,13 @@ class FilterRuneForm(forms.Form):
         Div(
             Div(
                 Submit('apply', 'Apply', css_class='btn-success '),
-                css_class='btn-group'
+                css_class='btn-group w-50'
             ),
             Div(
-                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
-                css_class='btn-group'
+                Button('resetBtn', 'Reset Filters', css_class='btn-outline-danger reset'),
+                css_class='btn-group w-50'
             ),
-            css_class='btn-group btn-group-justified'
+            css_class='btn-group w-100'
         ),
     )
 
@@ -1395,20 +1413,22 @@ class AddRuneCraftInstanceForm(ModelForm):
         self.helper.form_class = 'ajax-form'
         self.helper.layout = Layout(
             Div(
-                Field('rune', template="crispy/rune_button_radio_select.html"),
-                css_class='col-md-4',
+                Div(
+                    Field('rune', template="crispy/rune_button_radio_select.html"),
+                    css_class='col-md-5',
+                ),
+                Div(
+                    Field('type'),
+                    Field('stat'),
+                    Field('quality'),
+                    Field('quantity'),
+                    css_class='col-md-7',
+                ),
+                css_class='row'
             ),
-            Div(
-                Field('type'),
-                Field('stat'),
-                Field('quality'),
-                Field('quantity'),
-                css_class='col-md-8',
-            ),
-            Div(css_class='clearfix'),
             FormActions(
-                Submit('save', 'Save'),
-            )
+                Submit('save', 'Save', css_class='float-right'),
+            ),
         )
 
     class Meta:
@@ -1468,8 +1488,8 @@ class ArtifactInstanceForm(ModelForm):
             Div(
                 Div(
                     Field('slot', wrapper_class='col-md-4 inline-horizontal'),
-                    Field('element', wrapper_class='col-md-4 inline-horizontal hidden'),
-                    Field('archetype', wrapper_class='col-md-4 inline-horizontal hidden'),
+                    Field('element', wrapper_class='col-md-4 inline-horizontal visually-hidden'),
+                    Field('archetype', wrapper_class='col-md-4 inline-horizontal visually-hidden'),
                     Field('original_quality', wrapper_class='col-md-4 inline-horizontal'),
                     css_class='row'
                 ),
@@ -1490,7 +1510,7 @@ class ArtifactInstanceForm(ModelForm):
             ),
             Div(css_class='clearfix'),
             FormActions(
-                Submit('save', 'Save'),
+                Submit('save', 'Save', css_class='float-right'),
             ),
         )
 
@@ -1527,7 +1547,7 @@ class FilterArtifactForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+        label=mark_safe('<i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></i>'),
         required=False,
     )
 
@@ -1564,11 +1584,10 @@ class FilterArtifactForm(forms.Form):
                     'effects_logic',
                     data_toggle='toggle',
                     data_on='One or More',
-                    data_onstyle='primary',
+                    data_onstyle='dark',
                     data_off='All',
-                    data_offstyle='primary',
                     data_width='125px',
-                    wrapper_class='form-group-sm form-group-condensed',
+                    wrapper_class='form-group-sm form-group-condensed ps-0',
                 ),
 
                 css_class='col-md-4 col-sm-6'
@@ -1578,13 +1597,13 @@ class FilterArtifactForm(forms.Form):
         Div(
             Div(
                 Submit('apply', 'Apply', css_class='btn-success '),
-                css_class='btn-group'
+                css_class='btn-group w-50'
             ),
             Div(
-                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
-                css_class='btn-group'
+                Button('resetBtn', 'Reset Filters', css_class='btn-outline-danger reset'),
+                css_class='btn-group w-50'
             ),
-            css_class='btn-group btn-group-justified'
+            css_class='btn-group w-100'
         ),
     )
 
@@ -1630,7 +1649,7 @@ class AssignArtifactForm(forms.Form):
     )
     effects_logic = forms.BooleanField(
         label=mark_safe(
-            '<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></span>'),
+            '<i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Whether an artifact must contain ALL effects or at least one."></i>'),
         required=False,
     )
 
@@ -1658,8 +1677,8 @@ class AssignArtifactForm(forms.Form):
         ),
         Field('main_stat', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
         Field('effects', css_class='select2 auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('effects_logic', data_toggle='toggle', data_on='One or More', data_onstyle='primary', data_off='All', data_offstyle='primary', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed'),
-        Field('slot', wrapper_class='hidden'),
+        Field('effects_logic', data_bs_toggle='toggle', data_on='One or More', data_onstyle='dark', data_off='All', data_width='125px', css_class='auto-submit', wrapper_class='form-group-sm form-group-condensed ps-0'),
+        Field('slot', wrapper_class='visually-hidden'),
     )
 
     def clean(self):
@@ -1779,11 +1798,11 @@ class MonsterImportOptionsLayout(Layout):
                 Field('missing_rune_action'),
                 Div(
                     Field('ignore_validation'),
-                    css_class='alert alert-warning condensed',
+                    css_class='callout callout-warning',
                 ),
                 Div(
                     Field('clear_profile'),
-                    css_class='alert alert-danger condensed',
+                    css_class='callout callout-danger',
                 ),
                 Field('save_defaults'),
                 css_class='list-group-item',
@@ -1802,13 +1821,13 @@ class ImportSWParserJSONForm(MonsterImportOptionsMixin, forms.Form):
     helper.layout = Layout(
         Div(
             Div(
-                Field('json_file', template='crispy/file_upload.html'),
+                Field('json_file', template='crispy/file_upload.html', css_class='form-control'),
                 css_class='list-group-item',
             ),
             MonsterImportOptionsLayout(),
             Div(
                 FormActions(
-                    Submit('import', 'Import'),
+                    Submit('import', 'Import', css_class='float-right'),
                 ),
                 css_class='list-group-item',
             ),

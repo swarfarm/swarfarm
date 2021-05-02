@@ -5,47 +5,49 @@
     Elemental Rift Beasts - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% if view_name == 'herders:data_log_rift_dungeon_dashboard' %}
-        <li class="active">Rift Beasts</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_rift_dungeon_dashboard' profile_name=profile_name %}">Rift Beasts</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block logs %}
-    <h2>Rift Beast Log Summary</h2>
     {% if total_count %}
-        {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
-        <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
-        <p>Kill Rate: {{ success_rate|floatformat:-2 }}%</p>
-        <p>Avg Grade:
-            <input
-                type="text"
-                name="grade_slider"
-                data-provide="slider"
-                data-slider-enabled="false"
-                data-slider-tooltip="hide"
-                data-slider-precision="1"
-                data-slider-min="1"
-                data-slider-max="12"
-                data-slider-value="{{ grade_stats.avg }}"
-                data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
-                data-slider-ticks-labels='["F", "D", "C", "B-", "B", "B+", "A-", "A", "A+", "S", "SS", "SSS"]'
-            />
-        </p>
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white">
+                <h2 class="fw-lighter">Rift Beast Log Summary</h2>
+            </div>
+            <div class="card-body">
+                {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
+                <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
+                <p>Kill Rate: {{ success_rate|floatformat:-2 }}%</p>
+            </div>
+        </div>
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white">
+                <h4 class="fw-lighter">Average Grade</h4>
+            </div>
 
+            <div class="card-body">
+                <input
+                    type="text"
+                    name="grade_slider"
+                    data-provide="slider"
+                    data-slider-enabled="false"
+                    data-slider-tooltip="hide"
+                    data-slider-precision="1"
+                    data-slider-min="1"
+                    data-slider-max="12"
+                    data-slider-value="{{ grade_stats.avg }}"
+                    data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
+                    data-slider-ticks-labels='["F", "D", "C", "B-", "B", "B+", "A-", "A", "A+", "S", "SS", "SSS"]'
+                />
+            </div>
+        </div>
+        <hr />
         <div class="row">
             <div class="col-lg-9 col-md-8 col-sm-12">
-                <div class="row">
+                <div class="card shadow border-0 mb-3">
                     <div
-                        class="col-xs-12 report-chart"
+                        class="report-chart"
                         data-chart="{% chart dashboard.energy_spent title="Energy Spent by Beast" series_name="Energy" sorted='value' reverse=True %}"
                         style="height: 300px"
                     ></div>
                     <div class="col-xs-12">
-                        <h3>Drops Acquired</h3>
                         <div class="row">
                             <div class="col-sm-6 col-md-4 col-md-3">
                                 {% include 'herders/profile/data_logs/drops/summary/items.html' with items=dashboard.recent_drops.items only %}
@@ -62,16 +64,18 @@
             </div>
 
             <div class="col-lg-3 col-md-4 col-sm-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Quick Links</h3>
+                <div class="card shadow border-0 mb-3">
+                    <div class="card-header bg-white">
+                        <h3 class="card-title fw-lighter">Quick Links</h3>
                     </div>
-                    <div class="list-group">
-                        <a href="{% url 'herders:data_log_rift_dungeon_table' profile_name=profile_name %}" class="list-group-item">View As Table</a>
-                        {% for level in level_list %}
-                            <a href="{% url 'herders:data_log_rift_dungeon_detail' profile_name=profile_name slug=level.dungeon.slug %}" class="list-group-item">{{ level.dungeon }}</a>
-                        {% endfor %}
+                    <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
+                        <a href="{% url 'herders:data_log_rift_dungeon_table' profile_name=profile_name %}">View As Table</a>
                     </div>
+                    {% for level in level_list %}
+                        <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
+                            <a href="{% url 'herders:data_log_rift_dungeon_detail' profile_name=profile_name slug=level.dungeon.slug %}">{{ level.dungeon }}</a>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="alert alert-success" role="alert">Username changed successfully changed to {{ user.username }}. Use this to log in from now on.</div>
+    <div class="callout callout-success" role="alert">
+        <h2 class="fw-lighter">Username change</h2>
+        Username changed successfully changed to {{ user.username }}. Use this to log in from now on.
+    </div>
 {% endblock %}

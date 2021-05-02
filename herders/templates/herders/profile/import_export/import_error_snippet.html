@@ -1,10 +1,9 @@
 {% if errors|length > 0 %}
-<div class="alert alert-danger">
+<div class="callout callout-danger">
     <ul class="list-unstyled">
-    {% for error in errors %}
-    <li><strong>ERROR: </strong>{{ error }}</li>
-    {% endfor %}
+        {% for error in errors %}
+        <li><strong>ERROR: </strong>{{ error }}</li>
+        {% endfor %}
     </ul>
-
 </div>
 {% endif %}

@@ -3,31 +3,36 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div id="rune-inventory">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="btn-group">
-                <button class="btn btn-default rune-view-mode" data-mode="list">
-                    <span class="glyphicon glyphicon-th-list"></span> List
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-dark rune-view-mode" data-mode="list">
+                    <i class="fas fa-th-list"></i> List
                 </button>
-                <button class="btn btn-default rune-view-mode" data-mode="box">
-                    <span class="glyphicon glyphicon-th-large"></span> Box
+                <button class="btn btn-outline-dark rune-view-mode" data-mode="box">
+                    <i class="fas fa-th-large"></i> Box
                 </button>
-                <button class="btn btn-default rune-view-mode active" data-mode="grid">
-                    <span class="glyphicon glyphicon-th"></span> Grid
+                <button class="btn btn-outline-dark rune-view-mode active" data-mode="grid">
+                    <i class="fas fa-table"></i> Grid
                 </button>
-                <button class="btn btn-default rune-view-mode" data-mode="crafts">
+                <button class="btn btn-outline-dark rune-view-mode" data-mode="crafts">
                     <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" loading="lazy" />
                 </button>
             </div>
-            <span class="pull-right">{{ filtered_count }} of {{ total_count }} rune{{ total_count|pluralize }}</span>
+
+            <span class="float-right fw-lighter text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> rune{{ total_count|pluralize }}</span>
         </div>
+
+        <div class="card-body table-responsive">
         {% if not total_count %}
-            <div class="panel-body">
-                <div class="alert alert-warning">You don't have any runes!</div>
+            <div class="callout callout-warning">
+                <h2 class="fw-lighter">No runes!</h2>
+                <p class="fw-lighter">You don't have any runes!</p>
             </div>
         {% elif not filtered_count %}
-            <div class="panel-body">
-                <div class="alert alert-warning">All runes were filtered out.</div>
+            <div class="callout callout-warning">
+                <h2 class="fw-lighter">No records!</h2>
+                <p class="fw-lighter">All runes were filtered out!</p>
             </div>
         {% else %}
             <table class="table table-condensed table-bordered table-hover monster-table" id="runeInventoryTable">
@@ -38,7 +43,7 @@
                     <th>Stars</th>
                     <th>Value</th>
                     <th>Efficiency</th>
-                    <th data-toggle="tooltip" data-container="body" title="With perfect substat upgrades to +12">Max Efficiency</th>
+                    <th data-bs-toggle="tooltip" data-bs-container="body" title="With perfect substat upgrades to +12">Max Efficiency</th>
                     <th>HP %</th>
                     <th>HP</th>
                     <th>DEF %</th>
@@ -60,7 +65,7 @@
                 {% for rune in runes %}
                 <tr>
                     <td>
-                        <span class="hidden">{{ rune.get_type_display }}</span>
+                        <span class="visually-hidden">{{ rune.get_type_display }}</span>
                         {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
                     </td>
                     <td>{{ rune.slot }}</td>
@@ -81,7 +86,7 @@
                     <td>{% if rune.get_acc %}<span {% if rune.main_stat == rune.STAT_ACCURACY_PCT %}class="lead"{% endif %}>{{ rune.get_acc }}%</span>{% endif %}</td>
                     <td>
                         {% if rune.assigned_to %}
-                        <span class="hidden">{{ rune.assigned_to.monster.name }}-{{ rune.assigned_to.pk }}</span>
+                        <span class="visually-hidden">{{ rune.assigned_to.monster.name }}-{{ rune.assigned_to.pk }}</span>
                         <div class="monster-image">
                             <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=rune.assigned_to.pk.hex %}" target="_blank">
                                 <img src="{{ img_url_prefix }}monsters/{{ rune.assigned_to.monster.image_filename }}" class="monster-thumb" loading="lazy" />
@@ -104,19 +109,19 @@
                     <td>{% if rune.notes %}{{ rune.notes }}{% endif %}</td>
                     <td>
                         {% if rune.marked_for_sale %}
-                        <span class="hidden">Yes</span><span class="text-success glyphicon glyphicon-ok"></span>
+                        <span class="visually-hidden">Yes</span><i class="far fa-check-circle text-success"></i>
                         {% else %}
-                        <span class="hidden">No</span>
+                        <span class="visually-hidden">No</span>
                         {% endif %}
                     </td>
                     {% if is_owner %}
                     <td>
                         <div class="btn-group">
                             <button class="btn btn-default btn-xs rune-edit" data-rune-id="{{ rune.pk.hex }}">
-                                <span class="glyphicon glyphicon-pencil"></span>
+                                <i class="fas fa-edit fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
                             </button>
                             <button class="btn btn-default btn-xs rune-delete" data-rune-id="{{ rune.pk.hex }}">
-                                <span class="glyphicon glyphicon-trash text-danger"></span>
+                                <i class="fas fa-trash fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"></i>
                             </button>
                         </div>
                     </td>

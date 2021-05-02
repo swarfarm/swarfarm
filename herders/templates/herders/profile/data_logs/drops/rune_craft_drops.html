@@ -3,7 +3,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 {% for drop in drops %}
-<div class="rune-image" data-toggle="tooltip" data-placement="top" title="{{ drop.get_type_display }} {{ drop }}">
+<div class="rune-image" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ drop.get_type_display }} {{ drop }}">
     <div class="rune-bg {{ drop.get_quality_display|lower }}">
         <div class="rune-craft {{ drop.get_type_display|slugify }} {{ drop.get_quality_display|lower }}">
             <div class="craft-symbol {{ drop.get_rune_display|lower }}"></div>

@@ -1,14 +1,14 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="panel panel-default">
-    <div class="panel-body">
+<div class="card shadow border-0 mb-3">
+    <div class="card-body">
         <div class="row">
             <div class="col-sm-2">Glory Points</div>
             <div class="col-sm-8">
-                <div class="progress">
+                <div class="progress mt-1">
                     <div class="progress-bar glory-progress-bar" role="progressbar" aria-valuenow="{{ spent_glory }}" aria-valuemin="0" aria-valuemax="{{ total_glory_cost }}" style="width: {{ glory_progress }}%;min-width:2em;">
-                        <span>{{ glory_progress|floatformat:"-1" }}%</span>
+                        {{ glory_progress|floatformat:"-1" }}%
                     </div>
                 </div>
             </div>
@@ -17,7 +17,7 @@
         <div class="row">
             <div class="col-sm-2">Guild Points</div>
             <div class="col-sm-8">
-                <div class="progress">
+                <div class="progress mt-1">
                     <div class="progress-bar guild-progress-bar" role="progressbar" aria-valuenow="{{ spent_guild }}" aria-valuemin="0" aria-valuemax="{{ total_guild_cost }}" style="width: {{ guild_progress }}%;min-width:2em;">
                         {{ guild_progress|floatformat:"-1" }}%
                     </div>
@@ -28,21 +28,25 @@
     </div>
 </div>
 
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-    <th data-sorter="false"></th>
-    <th>Building</th>
-    <th>Level</th>
-    <th>Bonus</th>
-    <th>Area of Effect</th>
-    <th>Upgrade Progress</th>
-    {% if is_owner %}<th data-sorter="false"></th>{% endif %}
-</tr>
-</thead>
-<tbody>
-{% for bldg in buildings %}
-    {% include 'herders/profile/buildings/building_row_snippet.html' with bldg=bldg is_owner=is_owner only %}
-{% endfor %}
-</tbody>
-</table>
+<div class="card shadow border-0 mb-3">
+    <div class="card-body table-responsive">
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th data-sorter="false"></th>
+                    <th>Building</th>
+                    <th>Level</th>
+                    <th>Bonus</th>
+                    <th>Area of Effect</th>
+                    <th>Upgrade Progress</th>
+                    {% if is_owner %}<th data-sorter="false"></th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for bldg in buildings %}
+                {% include 'herders/profile/buildings/building_row_snippet.html' with bldg=bldg is_owner=is_owner only %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -5,23 +5,18 @@
     {{ level }} - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% if view_name == 'herders:data_log_rift_raid_detail' %}
-        <li class="active">{{ level }}</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_rift_raid_detail' with profile_name=profile_name floor=level.floor only %}">{{ level }}</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block logs %}
-    <h2>{{ level }}</h2>
     {% if total_count %}
-        <ul class="list list-inline">
-            {% if start_date %}<li>{{ start_date }} - {{ end_date }}</li>{% endif %}
-            <li>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</li>
-            <li>Success Rate: {{ success_rate|floatformat:-2 }}%</li>
-        </ul>
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white d-flex flex-wrap justify-content-between">
+                <h4 class="fw-lighter">{{ level }}</h4>
+            </div>
+            <div class="card-body">
+                {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
+                <p>Total Runs: {{ total_count }}</p>{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</p>
+                <p>Success Rate: {{ success_rate|floatformat:-2 }}%</p>
+            </div>
+        </div>
 
         <hr />
         {% include 'data_log/clear_time.html' with clear_times=report.clear_time only %}

@@ -5,39 +5,60 @@
     World Boss - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% if view_name == 'herders:data_log_world_boss_dashboard' %}
-        <li class="active">World Boss</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_world_boss_dashboard' profile_name=profile_name %}">World Boss</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block logs %}
-    <h2>World Boss Log Summary</h2>
     {% if total_count %}
-        {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
-        <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
-        <p>Avg Grade:
-            <input
-                type="text"
-                name="grade_slider"
-                data-provide="slider"
-                data-slider-enabled="false"
-                data-slider-tooltip="hide"
-                data-slider-precision="1"
-                data-slider-min="1"
-                data-slider-max="12"
-                data-slider-value="{{ grade_stats.avg }}"
-                data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
-                data-slider-ticks-labels='["F", "D", "C", "B-", "B", "B+", "A-", "A", "A+", "S", "SS", "SSS"]'
-            />
-        </p>
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white d-flex flex-wrap justify-content-between">
+                <h2 class="fw-lighter">World Boss Log Summary</h2>
+            </div>
+            <div class="card-body">
+                {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
+                <p>Total Runs: {{ total_count }}</p>{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
+            </div>
+        </div>
+
+        {% include 'data_log/clear_time.html' with clear_times=report.clear_time only %}
 
         <div class="row">
-            <div class="col-lg-9 col-md-8 col-sm-12">
-                <h3>Drops Acquired</h3>
+            <div class="col-md-6 col-sm-12 mb-3">
+                <div class="card shadow border-0 mb-3 h-100">
+                    <div class="card-header bg-white">
+                        <h3 class="fw-lighter">Avg Grade</h3>
+                    </div>
+                    <div class="card-body">
+                        <input
+                            type="text"
+                            name="grade_slider"
+                            data-provide="slider"
+                            data-slider-enabled="false"
+                            data-slider-tooltip="hide"
+                            data-slider-precision="1"
+                            data-slider-min="1"
+                            data-slider-max="12"
+                            data-slider-value="{{ grade_stats.avg }}"
+                            data-slider-ticks="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
+                            data-slider-ticks-labels='["F", "D", "C", "B-", "B", "B+", "A-", "A", "A+", "S", "SS", "SSS"]'
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12 mb-3">
+                <div class="card shadow border-0 mb-3 h-100">
+                    <div class="card-header bg-white">
+                        <h3 class="fw-lighter">Avg Damage</h3>
+                    </div>
+                    <div class="card-body">
+                    {% if damage_histogram %}
+                        <div
+                            class="report-chart"
+                            data-chart="{% chart damage_histogram title="Damage Done" %}"
+                            style="height: 300px"
+                        ></div>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-8 col-sm-12 mb-3">
                 <div class="row">
                     <div class="col-sm-6 col-md-4 col-md-3">
                         {% include 'herders/profile/data_logs/drops/summary/items.html' with items=dashboard.recent_drops.items only %}
@@ -51,26 +72,17 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-4 col-sm-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Quick Links</h3>
+            <div class="col-lg-3 col-md-4 col-sm-12 mb-3">
+                <div class="card shadow border-0 mb-3 h-100">
+                    <div class="card-header bg-white">
+                        <h3 class="card-title fw-lighter">Quick Links</h3>
                     </div>
-                    <div class="list-group">
-                        <a href="{% url 'herders:data_log_world_boss_table' profile_name=profile_name %}" class="list-group-item">View As Table</a>
+                    <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
+                        <a href="{% url 'herders:data_log_world_boss_table' profile_name=profile_name %}">View As Table</a>
                     </div>
                 </div>
             </div>
         </div>
-
-        {% if damage_histogram %}
-            <div
-                class="report-chart"
-                data-chart="{% chart damage_histogram title="Damage Done" %}"
-                style="height: 300px"
-            ></div>
-        {% endif %}
-
         <hr />
         {% include 'data_log/summary.html' with summary=report.summary only %}
         <hr />

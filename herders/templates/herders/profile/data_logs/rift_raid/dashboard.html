@@ -5,49 +5,51 @@
     Rift Raid - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% if view_name == 'herders:data_log_rift_raid_dashboard' %}
-        <li class="active">Rift Raid</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_rift_raid_dashboard' profile_name=profile_name %}">Rift Raid</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block logs %}
-    <h2>Rift Raid Summary</h2>
     {% if total_count %}
-        {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
-        <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
-        <p>Success Rate: {{ success_rate|floatformat:-2 }}%</p>
-
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white">
+                <h2 class="fw-lighter">Rift Raid Summary</h2>
+            </div>
+            <div class="card-body">
+                {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
+                <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
+                <p>Success Rate: {{ success_rate|floatformat:-2 }}%</p>
+            </div>
+        </div>
+        <hr />
         <div class="row">
             <div class="col-lg-9 col-md-8 col-sm-12">
-                <h3>Drops Acquired</h3>
-                <div class="row">
-                    <div class="col-sm-6 col-md-4 col-md-3">
-                        {% include 'herders/profile/data_logs/drops/summary/items.html' with items=dashboard.recent_drops.items only %}
-                    </div>
-                    <div class="col-sm-6 col-md-4 col-md-3">
-                        {% include 'herders/profile/data_logs/drops/summary/rune_crafts.html' with rune_crafts=dashboard.recent_drops.rune_crafts only %}
-                    </div>
-                    <div class="col-sm-6 col-md-4 col-md-3">
-                        {% include 'herders/profile/data_logs/drops/summary/monsters.html' with monsters=dashboard.recent_drops.monsters only %}
+                <div class="card shadow border-0 mb-3">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-sm-6 col-md-4 col-md-3">
+                                {% include 'herders/profile/data_logs/drops/summary/items.html' with items=dashboard.recent_drops.items only %}
+                            </div>
+                            <div class="col-sm-6 col-md-4 col-md-3">
+                                {% include 'herders/profile/data_logs/drops/summary/rune_crafts.html' with runes=dashboard.recent_drops.rune_crafts only %}
+                            </div>
+                            <div class="col-sm-6 col-md-4 col-md-3">
+                                {% include 'herders/profile/data_logs/drops/summary/monsters.html' with monsters=dashboard.recent_drops.monsters only %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-3 col-md-4 col-sm-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Quick Links</h3>
+                <div class="card shadow border-0 mb-3">
+                    <div class="card-header bg-white">
+                        <h3 class="card-title fw-lighter">Quick Links</h3>
                     </div>
-                    <div class="list-group">
-                        <a href="{% url 'herders:data_log_rift_raid_table' profile_name=profile_name %}" class="list-group-item">View As Table</a>
-                        {% for level in level_list %}
-                            <a href="{% url 'herders:data_log_rift_raid_detail' profile_name=profile_name floor=level.floor %}" class="list-group-item">{{ level }}</a>
-                        {% endfor %}
+                    <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
+                        <a href="{% url 'herders:data_log_rift_raid_table' profile_name=profile_name %}">View As Table</a>
                     </div>
+                    {% for level in level_list %}
+                        <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
+                            <a href="{% url 'herders:data_log_rift_raid_detail' profile_name=profile_name floor=level.floor %}">{{ level }}</a>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

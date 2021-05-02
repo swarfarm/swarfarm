@@ -1,33 +1,44 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="rune-panel">
-    {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact hide_original_quality=True only %}
-    <ul class="list-unstyled">
-        <li class="rune-main-stat">{{ artifact.get_main_stat_display }} +{{ artifact.main_stat_value }}</li>
+<div class="rune-panel card shadow border-0">
+    <div class="card-header bg-white p-1 m-0">
+        <div class="btn-group float-right">
+            <div class="btn btn-link artifact-edit p-0 text-dark" data-artifact-id="{{ artifact.pk_hex }}">
+                <i class="fas fa-edit" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
+            </div>
+            <div class="btn btn-link artifact-unassign p-0 text-danger" data-artifact-id="{{ artifact.pk_hex }}">
+                <i class="fas fa-trash" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"></i>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-1">
+        <div class="d-flex">
+            {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact hide_original_quality=True only %}
+            <ul class="list-unstyled fw-lighter mb-0">
+                <li class="rune-main-stat">{{ artifact.get_main_stat_display }} +{{ artifact.main_stat_value }}</li>
+            </ul>
+        </div>
+        <ul class="list-unstyled fw-lighter">
+            {% for disp in artifact.get_effects_display %}
+                <li>{{ disp }}</li>
+            {% endfor %}
         </ul>
-    <div class="clearfix"></div>
-    <ul class="list-unstyled">
-        {% for disp in artifact.get_effects_display %}
-            <li>{{ disp }}</li>
-        {% endfor %}
-    </ul>
 
-    <div class="clearfix"></div>
+        <ul class="top-right-rune list-unstyled fw-lighter">
+            {% if artifact.original_quality is not None %}
+                <li>
+                    Orig: <span class="badge rune-label-{{ artifact.get_original_quality_display|lower }}">
+                        {{ artifact.get_original_quality_display }}
+                    </span>
+                </li>
+            {% endif %}
 
-    <ul class="top-right list-unstyled">
-        {% if artifact.original_quality is not None %}
-            <li>
-                Orig: <span class="label rune-label-{{ artifact.get_original_quality_display|lower }}">
-                    {{ artifact.get_original_quality_display }}
-                </span>
-            </li>
-        {% endif %}
-
-        {% if artifact.efficiency is not None %}
-            <li {% if artifact.max_efficiency is not None and artifact.level < 12 %}data-toggle="tooltip" title="Max Eff: {{ artifact.max_efficiency|floatformat:1 }}%"{% endif %}>
-                Eff: {{ artifact.efficiency|floatformat:1 }}%
-            </li>
-        {% endif %}
-    </ul>
+            {% if artifact.efficiency is not None %}
+                <li {% if artifact.max_efficiency is not None and artifact.level < 12 %}data-bs-toggle="tooltip" title="Max Eff: {{ artifact.max_efficiency|floatformat:1 }}%"{% endif %}>
+                    Eff: {{ artifact.efficiency|floatformat:1 }}%
+                </li>
+            {% endif %}
+        </ul>
+    </div>
 </div>

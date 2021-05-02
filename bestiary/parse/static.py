@@ -74,11 +74,26 @@ def decrypt_images(**kwargs):
         if encrypted.peek('bytes:5') == b'Joker':
             print(f'Converting Joker container JPEG to PNG {im_path}')
             with open(im_path, 'rb') as f:
-                img = JokerContainerFile(f)
+                bts = f.read()
+                first_img = bts.find(b'JFIF')
+                second_img = bts.rfind(b'JFIF')
+                imgs = []
+                if second_img > -1 and first_img != second_img:
+                    imgs = [bts[:second_img], bts[second_img:]]
+                    # Add Joker & header to immitate new file
+                    imgs[1] = imgs[0][imgs[0].find(b'Joker'):first_img] + imgs[1]
+                    imgs = [JokerContainerFile(img, read=False) for img in imgs]
+                else:
+                    img = JokerContainerFile(bts, read=False)
 
             # Open it as a jpg and resave to disk
             try:
-                new_imfile = Image.open(io.BytesIO(img.data.tobytes()))
+                if len(imgs) > 1:
+                    new_imfile = Image.open(io.BytesIO(imgs[0].data.tobytes()))
+                    new_mask = Image.open(io.BytesIO(imgs[1].data.tobytes())).convert('L')
+                    new_imfile.putalpha(new_mask)
+                else:
+                    new_imfile = Image.open(io.BytesIO(img.data.tobytes()))
                 new_imfile.save(im_path)
             except IOError:
                 print(f'Unable to open {im_path}')

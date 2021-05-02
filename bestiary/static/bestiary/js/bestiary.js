@@ -53,10 +53,11 @@ function initialize_table() {
             columnSelector_container : '#column-selectors',
             columnSelector_saveColumns: true,
             columnSelector_mediaquery: false,
-            columnSelector_layout: '<label class="checkbox-inline"><input type="checkbox">{name}</label>',
+            columnSelector_layout: '<div class="form-check me-3"><label class="form-check-label"><input class="form-check-input" type="checkbox">{name}</label></div>',
             stickyHeaders_zIndex : 2,
             stickyHeaders_offset: 50
-        }
+        },
+        theme: 'bootstrap',
     })
     .bind('sortBegin', function(e, table) {
         var sortColumn = e.target.config.sortList[0][0];
@@ -122,10 +123,11 @@ $('body')
 
             //Reinit everything
             initialize_table();
-            $('[data-toggle="tooltip"]').tooltip({
+            $('[data-bs-toggle="tooltip"]').tooltip({
                 container: 'body'
             });
-            $('[data-toggle="popover"]').popover({
+            $('[data-bs-toggle="popover"]').popover({
+                container: 'body',
                 html:true,
                 viewport: {selector: 'body', padding: 2}
             });
@@ -177,7 +179,7 @@ $('body')
             data: $form.serialize()
         }).done(function(data) {
             if (data.code === 'success') {
-                $('.modal.in').modal('hide');
+                $('.modal.show').modal('hide');
             }
             else {
                 $form.replaceWith(data.html);

@@ -40,7 +40,7 @@ class BestiaryQuickSearchForm(forms.Form):
             Field(
                 'name',
             ),
-            css_class='input-group'
+            css_class='input-group navbar-autocomplete'
         ),
     )
 
@@ -137,7 +137,7 @@ class FilterMonsterForm(forms.Form):
         required=False,
     )
     effects_logic = forms.BooleanField(
-        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></span>'),
+        label=mark_safe('<i class="fas fa-info-circle ms-1" data-bs-toggle="tooltip" title="Whether all effect filters must be on ONE individual skill or can be spread across ANY skill in a monster\'s skill set."></i>'),
         required=False,
         initial=True,
     )
@@ -152,7 +152,7 @@ class FilterMonsterForm(forms.Form):
             Fieldset(
                 'General',
                 Div(
-                    Field('name', wrapper_class='form-group-sm form-group-condensed col-md-8'),
+                    Field('name', wrapper_class='col-md-8'),
                     Field(
                         'natural_stars',
                         data_provide='slider',
@@ -162,22 +162,22 @@ class FilterMonsterForm(forms.Form):
                         data_slider_step='1',
                         data_slider_ticks='[1, 6]',
                         data_slider_ticks_labels='["1", "6"]',
-                        wrapper_class='form-group-sm form-group-condensed col-md-4'
+                        wrapper_class='col-md-4', 
                     ),
                     Field(
                         'awaken_level',
                         css_class='select2',
-                        wrapper_class='form-group-sm form-group-condensed col-md-6'
+                        wrapper_class='col-md-6', 
                     ),
-                    Field('fusion_food', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field('fusion_food', wrapper_class='col-md-6'),
                     Field(
                         'element',
                         css_class='select2',
                         data_result_template='iconSelect2Template',
                         data_selection_template='iconSelect2Template',
-                        wrapper_class='form-group-sm form-group-condensed col-md-6'
+                        wrapper_class='col-md-6', 
                     ),
-                    Field('archetype', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-md-6'),
+                    Field('archetype', css_class='select2', wrapper_class='col-md-6'),
                     css_class='row',
                 ),
                 css_class='col-md-4'
@@ -190,19 +190,19 @@ class FilterMonsterForm(forms.Form):
                         css_class='select2',
                         data_result_template='iconSelect2Template',
                         data_selection_template='iconSelect2Template',
-                        wrapper_class='form-group-sm form-group-condensed col-lg-6'
+                        wrapper_class='col-lg-6'
                     ),
                     Field(
                         'debuffs',
                         css_class='select2',
                         data_result_template='iconSelect2Template',
                         data_selection_template='iconSelect2Template',
-                        wrapper_class='form-group-sm form-group-condensed col-lg-6'
+                        wrapper_class='col-lg-6'
                     ),
-                    Field('other_effects', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
-                    Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
-                    Field('skills__passive', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
-                    Field('skills__aoe', wrapper_class='form-group-sm form-group-condensed col-lg-6'),
+                    Field('other_effects', css_class='select2', wrapper_class='col-lg-6'),
+                    Field('skills__scaling_stats__pk', css_class='select2', wrapper_class='col-lg-6'),
+                    Field('skills__passive', wrapper_class='col-lg-6', ),
+                    Field('skills__aoe', wrapper_class='col-lg-6', ),
                     Field(
                         'skills__cooltime',
                         data_provide='slider',
@@ -212,7 +212,7 @@ class FilterMonsterForm(forms.Form):
                         data_slider_step='1',
                         data_slider_ticks='[0, 13]',
                         data_slider_ticks_labels='["0", "13"]',
-                        wrapper_class='col-lg-6'
+                        wrapper_class='col-lg-6', 
                     ),
                     Field(
                         'skills__hits',
@@ -223,17 +223,16 @@ class FilterMonsterForm(forms.Form):
                         data_slider_step='1',
                         data_slider_ticks='[0, 7]',
                         data_slider_ticks_labels='["0", "7"]',
-                        wrapper_class='form-group-sm form-group-condensed col-lg-6'
+                        wrapper_class='col-lg-6', 
                     ),
                     Field(
                         'effects_logic',
                         data_toggle='toggle',
                         data_on='Any Skill',
-                        data_onstyle='primary',
+                        data_onstyle='dark',
                         data_off='One Skill',
-                        data_offstyle='primary',
                         data_width='125px',
-                        wrapper_class='form-group-sm form-group-condensed col-lg-12'
+                        wrapper_class='col-lg-12 ps-0',                      
                     ),
                     css_class='row'
                 ),
@@ -241,8 +240,8 @@ class FilterMonsterForm(forms.Form):
             ),
             Fieldset(
                 'Leader Skill',
-                Field('leader_skill__attribute', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
-                Field('leader_skill__area', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field('leader_skill__attribute', css_class='select2'),
+                Field('leader_skill__area', css_class='select2'),
                 css_class='col-md-4'
             ),
             css_class='row'
@@ -250,13 +249,13 @@ class FilterMonsterForm(forms.Form):
         Div(
             Div(
                 Submit('apply', 'Apply', css_class='btn-success'),
-                css_class='btn-group'
+                css_class='btn-group w-50'
             ),
             Div(
-                Button('resetBtn', 'Reset Filters', css_class='btn-danger reset'),
-                css_class='btn-group'
+                Button('resetBtn', 'Reset Filters', css_class='btn-outline-danger reset'),
+                css_class='btn-group w-50'
             ),
-            css_class='btn-group btn-group-justified'
+            css_class='btn-group w-100'
         ),
         Field('page', value=1, type='hidden'),
         Field('sort', value='', type='hidden'),

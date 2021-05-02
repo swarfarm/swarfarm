@@ -1,76 +1,75 @@
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-mainnav">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand hidden-sm" href="{% url 'news:latest_news' %}">
-                SWARFARM
-            </a>
-        </div>
+        <a class="navbar-brand hidden-sm nav-link d-lg-none d-xl-block" href="{% url 'news:latest_news' %}">
+            SWARFARM
+        </a>
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#bs-mainnav" aria-controls="bs-mainnav" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
 
         <div class="collapse navbar-collapse" id="bs-mainnav">
-            <ul class="nav navbar-nav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-middle">
                 {% if user.is_authenticated %}
-                    <li {% if view == 'profile' and is_owner %}class="active"{% endif %}>
-                         <a href="{% url 'herders:profile_default' profile_name=user.username %}">
-                            <img src="{% static 'herders/images/icons/monster.png' %}" loading="lazy" /> My Profile
+                    <li class="nav-item {% if view == 'profile' and is_owner %} active{% endif %}">
+                         <a class="nav-link" href="{% url 'herders:profile_default' profile_name=user.username %}">
+                            <i class="fas fa-skull"></i> My Profile
                         </a>
                     </li>
                 {% endif %}
 
-                <li {% if view == 'bestiary' %}class="active"{% endif %}>
-                    <a href="{% url 'bestiary:home' %}">
-                        <span class="fa fa-book"></span> Bestiary
+                <li class="nav-item {% if view == 'bestiary' %} active{% endif %}">
+                    <a class="nav-link" href="{% url 'bestiary:home' %}">
+                        <i class="fas fa-book"></i> Bestiary
                     </a>
                 </li>
 
-                <li {% if view == 'dungeons' %}class="active"{% endif %}>
-                    <a href="{% url 'bestiary:dungeons' %}">
-                        <img src="{% static 'herders/images/icons/battle.png' %}" alt="dungeon icon" loading="lazy" /> Dungeons
+                <li class="nav-item {% if view == 'dungeons' %} active{% endif %}">
+                    <a class="nav-link" href="{% url 'bestiary:dungeons' %}">
+                        <i class="fas fa-dungeon"></i> Dungeons
                     </a>
                 </li>
-                <li {% if view == 'data_reports' %}class="active"{% endif %}>
-                    <a href="{% url 'data_log:data_reports' %}">
-                        <span class="fa fa-database"></span> Data Logs
+                <li class="nav-item {% if view == 'data_reports' %} active{% endif %}">
+                    <a class="nav-link" href="{% url 'data_log:data_reports' %}">
+                        <i class="fas fa-database"></i> Data Logs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link patreon" href="https://www.patreon.com/porksmash" target="_blank">
+                        <i class="fab fa-patreon"></i> Patreon
                     </a>
                 </li>
 
-                <li>
-                    <div style="max-width:300px">{% crispy bestiary_quick_search %}</div>
+                <li class="nav-item">
+                    <div style="padding-top: 3px;max-width:300px">{% crispy bestiary_quick_search %}</div>
                 </li>
             </ul>
             {% if user.is_authenticated %}
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                        {{ user.username }} <span class="caret"></span>
+            <ul class="navbar-nav navbar-right align-middle">
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" role="button" id="navbarUserDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ user.username }}
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}">Edit Profile</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdownMenuLink">
+                        <li class="dropdown-item"><a class="nav-link" href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}"><i class="fas fa-edit"></i> Edit Profile</a></li>
                         {% if user.is_staff %}
-                            <li><a href="{% url 'admin:index' %}">Site Admin</a></li>
+                            <li class="dropdown-item"><a class="nav-link" href="{% url 'admin:index' %}"><i class="fas fa-tools"></i> Site Admin</a></li>
                         {% endif %}
-                        <li><a href="{% url 'herders:import_export_home' profile_name=user.username %}"><span class="fa fa-cloud-download"></span> Import/Export</a></li>
-                        <li><a href="{% url 'feedback:index' %}"><span class="fa fa-comments"></span> Feedback</a></li>
-                        <li><a href="{% url 'herders:profile_following' profile_name=user.username %}"><span class="fa fa-user"></span> Friends</a></li>
-                        <li class="divider"><a href="{% url 'admin:index' %}" class="btn btn-default">Site Admin</a></li>
-                        <li><a href="{% url 'logout' %}">Log out</a></li>
+                        <li class="dropdown-item"><a class="nav-link" href="{% url 'herders:import_export_home' profile_name=user.username %}"><i class="fas fa-cloud-upload-alt"></i> Import/Export</a></li>
+                        <li class="dropdown-item"><a class="nav-link" href="{% url 'feedback:index' %}"><i class="fas fa-comments"></i> Feedback</a></li>
+                        <li class="dropdown-item"><a class="nav-link" href="{% url 'herders:profile_following' profile_name=user.username %}"><i class="fas fa-user-friends"></i> Friends</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li class="dropdown-item"><a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Log out</a></li>
                     </ul>
                 </li>
             </ul>
             {% else %}
             {# Show login form and register button #}
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="{% url 'login' %}" class="navbar-link">Log In</a></li>
-                <li><a href="{% url 'herders:register' %}" class="navbar-link">Register</a></li>
+            <ul class="navbar-nav navbar-right">
+                <li class="nav-item" ><a class="nav-link" href="{% url 'login' %}" class="navbar-link">Log In</a></li>
+                <li class="nav-item" ><a class="nav-link" href="{% url 'herders:register' %}" class="navbar-link">Register</a></li>
             </ul>
             {% endif %}
         </div>

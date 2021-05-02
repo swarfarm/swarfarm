@@ -1,5 +1,6 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Max, Q
+from django.db.models.query import QuerySet
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -140,13 +141,22 @@ def dungeons(request):
             Q(category=Dungeon.CATEGORY_SECRET) | Q(slug='dimension-predator')
         ).prefetch_related(
             'level_set',
-            # Prefetch('level_set', queryset=Level.objects.normal(), to_attr='normal'),
-            # Prefetch('level_set', queryset=Level.objects.hard(), to_attr='hard'),
-            # Prefetch('level_set', queryset=Level.objects.hell(), to_attr='hell'),
         )
-
-        if d.count() > 0:
-            context['dungeons'][category] = d
+        # push Hall of [element] to the end
+        if cat_id == Dungeon.CATEGORY_CAIROS:
+            d_s = []
+            halls = []
+            for dung in d:
+                if 'hall-of-' in dung.slug:
+                    halls.append(dung)
+                else:
+                    d_s.append(dung)
+            d_s += halls
+            if len(d_s) > 0:
+                context['dungeons'][category] = d_s
+        else:
+            if d.count() > 0:
+                context['dungeons'][category] = d
 
     return render(request, 'dungeons/base.html', context)
 

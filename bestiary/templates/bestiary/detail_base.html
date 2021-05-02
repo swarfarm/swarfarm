@@ -8,25 +8,24 @@
 {% block content %}
     {% static 'herders/images/' as img_url_prefix %}
 
-    <ul class="nav nav-tabs" role="tablist">
+    <div class="d-flex justify-content-center flex-wrap">
         {% for mon in family %}
-            <li role="presentation" {% if mon.bestiary_slug == active_slug %}class="active"{% endif %}>
-                <a href="{% url 'bestiary:detail' monster_slug=mon.bestiary_slug %}" role="tab">
-                    <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ mon.image_filename }}" loading="lazy" /> {{ mon }} {% if mon.is_awakened %}({{ mon.get_element_display }}){% endif %}
-                </a>
-            </li>
+            <div class="card border-0 shadow-sm mb-3 mx-3 p-0 card-monster card-dungeon-sm{% if mon.bestiary_slug == active_slug %} active{% endif %}">
+                <div class="card-body p-0">
+                    <a href="{% url 'bestiary:detail' monster_slug=mon.bestiary_slug %}" class="nav-link p-3{% if mon.bestiary_slug == active_slug %} active{% endif %}">
+                        <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ mon.image_filename }}" loading="lazy" /> {{ mon }} {% if mon.is_awakened %}({{ mon.get_element_display }}){% endif %}
+                    </a>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
-
-    <div class="tab-content bordered">
-        <div role="tabpanel" class="tab-pane active">
-            {% for m in monsters %}
-                {% include 'bestiary/monster_detail.html' with monster=m %}
-
-                {% if monsters|length > 1 and not forloop.last %}<hr />{% endif %}
-            {% endfor %}
-        </div>
     </div>
+    <hr />
+
+    {% for m in monsters %}
+        {% include 'bestiary/monster_detail.html' with monster=m %}
+
+        {% if monsters|length > 1 and not forloop.last %}<hr />{% endif %}
+    {% endfor %}
 
 {% endblock content %}
 

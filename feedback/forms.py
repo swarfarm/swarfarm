@@ -70,10 +70,10 @@ class SearchForm(forms.Form):
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_show_labels = False
-    helper.form_class = 'pull-right col-sm-3 col-md-4'
+    helper.form_class = 'float-right col-sm-3 col-md-4'
     helper.layout = Layout(
         FieldWithButtons(
-            Field('search', placeholder='Search...'),
-            StrictButton('<span class="glyphicon glyphicon-search"></span>', type='submit', css_class='btn btn-primary')
+            Field('search', placeholder='Search...', css_class="form-control"),
+            StrictButton('<i class="fas fa-search"></i>', type='submit', css_class='btn btn-outline-dark')
         ),
     )

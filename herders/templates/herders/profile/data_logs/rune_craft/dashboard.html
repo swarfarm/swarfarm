@@ -5,21 +5,18 @@
     Rune Crafting - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% if view_name == 'herders:data_log_rune_craft_dashboard' %}
-        <li class="active">Rune Crafting</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_rune_craft_dashboard' profile_name=profile_name %}">Rune Crafting</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block logs %}
-    <h2>Rune Crafting Log Summary</h2>
     {% if total_count %}
-        <a href="{% url 'herders:data_log_rune_craft_table' profile_name=profile_name %}" class="pull-right btn btn-default">View as Table</a>
-        {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
-        <p>Total Logs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white d-flex flex-wrap justify-content-between">
+                <h4 class="fw-lighter">Rune Crafting Log Summary</h4>
+                <a href="{% url 'herders:data_log_rune_craft_table' profile_name=profile_name %}" class="float-right btn btn-outline-dark">View as Table</a>
+            </div>
+            <div class="card-body">
+                {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
+                <p>Total Logs: {{ total_count }}</p>{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
+            </div>
+        </div>
         <hr />
         {% include 'data_log/runes.html' with runes=report only %}
     {% else %}

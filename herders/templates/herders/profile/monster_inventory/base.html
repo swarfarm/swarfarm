@@ -13,22 +13,24 @@
 {% endblock %}
 
 {% block monster_menu %}
-    {% if is_owner%}
-        <ul class="dropdown-menu navmenu-nav">
-            <li><a class="monster-add"><span class="glyphicon glyphicon-plus"></span> Add Monster</a></li>
-            <li><a class="quick-fodder-menu"><span class="fa fa-clock-o"></span> Quick Fodder</a></li>
-            <li><a href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}" ><span class="fa fa-list-ul"></span> Bulk Add</a></li>
-            <li><a href="{% url 'herders:monster_compare' profile_name=profile_name %}" ><span class="fa fa-exchange"></span> Compare</a></li>
+    {% if is_owner %}
+        <ul class="navbar-nav ps-2">
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-add" style="cursor: pointer;"><i class="fas fa-plus"></i> Add Monster</a></li>
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted quick-fodder-menu" style="cursor: pointer;"><i class="far fa-clock"></i> Quick Fodder</a></li>
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}" ><i class="fas fa-list-ul"></i> Bulk Add</a></li>
+            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:monster_compare' profile_name=profile_name %}" ><i class="fas fa-exchange-alt"></i> Compare</a></li>
         </ul>
     {% endif %}
 {% endblock monster_menu %}
 
 {% block profile %}
-    <div class="filters">
-        <button class="btn btn-default btn-block filter-header collapsed" data-toggle="collapse" data-target="#monsterFilterCollapse">
-            <span class="glyphicon glyphicon-filter"></span> Filters
-        </button>
-        <div class="collapse" id="monsterFilterCollapse">
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-header bg-white">
+            <button class="btn btn-outline-dark btn-block w-100 collapsed" data-bs-toggle="collapse" data-bs-target="#monsterFilterCollapse">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+        </div>
+        <div class="card-body collapse" id="monsterFilterCollapse">
             {% crispy monster_filter_form %}
         </div>
     </div>

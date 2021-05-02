@@ -6,19 +6,21 @@
 {% endblock css %}
 
 {% block logs %}
-    <div class="panel panel-default">
-        <div class="panel-heading">
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
             {% include "./pagination.html" %}
         </div>
 
         {% if paginator.count == 0 %}
-            <div class="panel-body">
+            <div class="card-body">
                 <p>No logs found! Check the <a href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.</p>
             </div>
         {% else %}
-            {% block log_table %}{% endblock log_table %}
+            <div class="table-responsive">
+                {% block log_table %}{% endblock log_table %}
+            </div>
         {% endif %}
 
-        <div class="panel-footer">{% include "./pagination.html" %}</div>
+        <div class="card-footer bg-white">{% include "./pagination.html" %}</div>
     </div>
 {% endblock logs %}

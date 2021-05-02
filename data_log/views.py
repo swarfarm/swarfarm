@@ -242,8 +242,7 @@ def data_report_summon(request):
 
     # get newest reports per item, iterator to not download all SummonReports
     for report in SummonReport.objects.order_by('-generated_on').iterator(chunk_size=10):
-        if not report.item.category:
-            # unknown item
+        if str(report.item) == 'UNKNOWN ITEM':
             continue
         if report.item in item_list:
             break

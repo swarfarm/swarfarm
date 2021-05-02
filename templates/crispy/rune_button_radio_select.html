@@ -10,11 +10,11 @@
             </label>
         {% endif %}
 
-        <div class="{{ field_class }}"{% if flat_attrs %} {{ flat_attrs|safe }}{% endif %} data-toggle="buttons">
+        <div class="{{ field_class }}"{% if flat_attrs %} {{ flat_attrs|safe }}{% endif %} data-bs-toggle="buttons">
             {% include 'bootstrap3/layout/field_errors_block.html' %}
 
             {% for choice in field.field.choices %}
-            <label class="btn btn-default btn-block rune-button rune-button-{{ choice.1|lower }} rune-button-text {% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} active{% endif %}">
+            <label class="btn btn-outline-dark btn-block w-100 rune-button rune-button-{{ choice.1|lower }} rune-button-text">
                 <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0 }}" {{ field.field.widget.attrs|flatatt }}><span class="badge pull-right"></span> {{ choice.1 }}
             </label>
             {% endfor %}

@@ -159,17 +159,6 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
             #
 
             base_monsters = Monster.objects.filter(base_monster_filters).exclude(material).order_by('skill_group_id', 'com2us_id').values('name', 'com2us_id', 'element', 'skill_group_id', 'skill_ups_to_max')
-            devilmons_count = monster_filter.qs.filter(monster__com2us_id=61105).count()
-
-            try:
-                devilmon_material_storage = MaterialStorage.objects.select_related(
-                    'item').get(owner=summoner, item__name__icontains='devilmon')
-                devilmons_count += devilmon_material_storage.quantity
-            except MaterialStorage.DoesNotExist:
-                pass
-            except MultipleObjectsReturned:
-                # TODO: should be better handling for this
-                pass
 
             skill_groups = itertools.groupby(base_monsters, lambda mon: mon['skill_group_id'])
             for skill_group_id, records in skill_groups:
@@ -180,7 +169,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                     'name': records[0]['name'],
                     'elements': {},
                     'possible_skillups': 0,
-                    'devilmons_count': devilmons_count,
+                    'skillups_need': 0,
                 }
                 elements = itertools.groupby(records, lambda mon: mon['element'])
                 for element, records_element in elements:
@@ -191,6 +180,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                         'skill_ups_to_max': None,
                         'skillups_max': records_element[0]['skill_ups_to_max'],
                     }
+                    data['skillups_need'] += records_element[0]['skill_ups_to_max']
                 monster_stable[skill_group_id] = data
 
             for mon in monster_filter.qs.filter(awakened).exclude(base_material):
@@ -208,20 +198,26 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                 skill_ups_to_max = mon.skill_ups_to_max()
                 if not skill_ups_to_max:
                     data['skilled_up'] = True
+                    monster_stable[mon.monster.skill_group_id]['skillups_need'] -= data['skillups_max']
                     continue
 
                 if not data['skill_ups_to_max'] or skill_ups_to_max < data['skill_ups_to_max']:
+                    monster_stable[mon.monster.skill_group_id]['skillups_need'] -= data['skill_ups_to_max'] or data['skillups_max']
+                    monster_stable[mon.monster.skill_group_id]['skillups_need'] += skill_ups_to_max
                     data['skill_ups_to_max'] = skill_ups_to_max
 
             # some other field than `monster__skill_group_id` is needed, so all records are saved, not only unique ones
             skill_up_mons = monster_filter.qs.filter(base_unawakened).exclude(base_material).values('id', 'monster__skill_group_id')
             for skill_group_id, records in itertools.groupby(skill_up_mons, lambda x: x['monster__skill_group_id']):
-                monster_stable[skill_group_id]['possible_skillups'] += len(list(records))
+                r_c = len(list(records))
+                monster_stable[skill_group_id]['possible_skillups'] += r_c
+                monster_stable[skill_group_id]['skillups_need'] -= r_c
 
             for mss_item in MonsterShrineStorage.objects.select_related('item').filter(owner=summoner, item__awaken_level=Monster.AWAKEN_LEVEL_UNAWAKENED):
                 skill_group_id = mss_item.item.skill_group_id
                 if skill_group_id in monster_stable:
                     monster_stable[skill_group_id]['possible_skillups'] += mss_item.quantity
+                    monster_stable[skill_group_id]['skillups_need'] -= mss_item.quantity
             
             monster_stable = sorted(monster_stable.values(), key=lambda x: x['name'])
             context['monster_stable'] = monster_stable
@@ -495,16 +491,12 @@ def monster_instance_view_runes(request, profile_name, instance_id):
     except ObjectDoesNotExist:
         return HttpResponseBadRequest()
 
-    # Get all slotted runes and artifacts, with None in place of empty slots
-    runes = [instance.default_build.runes.filter(slot=slot + 1).first() for slot in range(6)]
-    artifacts = {
-        desc.lower(): instance.default_build.artifacts.filter(slot=slot).first()
-        for slot, desc in ArtifactInstance.SLOT_CHOICES
-    }
 
     context = {
-        'runes': runes,
-        'artifacts': artifacts,
+        'runes': instance.default_build.runes_per_slot,
+        'artifacts': instance.default_build.artifacts_per_slot,
+        'runes_rta': instance.rta_build.runes_per_slot,
+        'artifacts_rta': instance.rta_build.artifacts_per_slot,
         'instance': instance,
         'profile_name': profile_name,
         'is_owner': is_owner,
@@ -590,6 +582,7 @@ def monster_instance_view_info(request, profile_name, instance_id):
         'profile_name': profile_name,
         'fusion_ingredient_in': ingredient_in,
         'fusion_product_of': product_of,
+        'is_owner': (request.user.is_authenticated and request.user.summoner == instance.owner),
         'skillups': instance.get_possible_skillups(),
     }
 
@@ -617,7 +610,8 @@ def monster_instance_remove_runes(request, profile_name, instance_id):
             return HttpResponseBadRequest()
         else:
             instance.default_build.runes.clear()
-            messages.success(request, 'Removed all runes from ' + str(instance))
+            instance.default_build.artifacts.clear()
+            messages.success(request, 'Removed all runes & artifacts from ' + str(instance))
             response_data = {
                 'code': 'success',
             }
@@ -658,51 +652,55 @@ def monster_instance_edit(request, profile_name, instance_id):
         if len(skills) >= 1 and skills[0]['skill'].max_level > 1:
             form.helper['skill_1_level'].wrap(
                 FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id),
+                StrictButton("Max", name="Set_Max_Skill_1", data_skill_field=form['skill_1_level'].auto_id, css_class='btn-outline-dark'),
+                wrapper_class='btn-group'
             )
-            form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level)
+            form.helper['skill_1_level'].wrap(Field, min=1, max=skills[0]['skill'].max_level, css_class='form-control')
             form.fields['skill_1_level'].label = skills[0]['skill'].name + " Level"
         else:
-            form.helper['skill_1_level'].wrap(Div, css_class="hidden")
+            form.helper['skill_1_level'].wrap(Div, css_class="visually-hidden")
 
         if len(skills) >= 2 and skills[1]['skill'].max_level > 1:
             form.helper['skill_2_level'].wrap(
                 FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id),
+                StrictButton("Max", name="Set_Max_Skill_2", data_skill_field=form['skill_2_level'].auto_id, css_class='btn-outline-dark'),
                 min=1,
                 max=skills[1]['skill'].max_level,
+                wrapper_class='btn-group'
             )
-            form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level)
+            form.helper['skill_2_level'].wrap(Field, min=1, max=skills[1]['skill'].max_level, css_class='form-control')
             form.fields['skill_2_level'].label = skills[1]['skill'].name + " Level"
         else:
-            form.helper['skill_2_level'].wrap(Div, css_class="hidden")
+            form.helper['skill_2_level'].wrap(Div, css_class="visually-hidden")
 
         if len(skills) >= 3 and skills[2]['skill'].max_level > 1:
             form.helper['skill_3_level'].wrap(
                 FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id),
+                StrictButton("Max", name="Set_Max_Skill_3", data_skill_field=form['skill_3_level'].auto_id, css_class='btn-outline-dark'),
                 min=1,
                 max=skills[2]['skill'].max_level,
+                wrapper_class='btn-group'
             )
-            form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level)
+            form.helper['skill_3_level'].wrap(Field, min=1, max=skills[2]['skill'].max_level, css_class='form-control')
             form.fields['skill_3_level'].label = skills[2]['skill'].name + " Level"
         else:
-            form.helper['skill_3_level'].wrap(Div, css_class="hidden")
+            form.helper['skill_3_level'].wrap(Div, css_class="visually-hidden")
 
         if len(skills) >= 4 and skills[3]['skill'].max_level > 1:
             form.helper['skill_4_level'].wrap(
                 FieldWithButtons,
-                StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id),
+                StrictButton("Max", name="Set_Max_Skill_4", data_skill_field=form['skill_4_level'].auto_id, css_class='btn-outline-dark'),
                 min=1,
                 max=skills[1]['skill'].max_level,
+                wrapper_class='btn-group'
             )
-            form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level)
+            form.helper['skill_4_level'].wrap(Field, min=1, max=skills[3]['skill'].max_level, css_class='form-control')
             form.fields['skill_4_level'].label = skills[3]['skill'].name + " Level"
         else:
-            form.helper['skill_4_level'].wrap(Div, css_class="hidden")
+            form.helper['skill_4_level'].wrap(Div, css_class="visually-hidden")
 
         if not instance.monster.homunculus:
-            form.helper['custom_name'].wrap(Div, css_class="hidden")
+            form.helper['custom_name'].wrap(Div, css_class="visually-hidden")
 
         if request.method == 'POST' and form.is_valid():
             mon = form.save()

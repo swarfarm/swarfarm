@@ -1,63 +1,62 @@
 {% load utils %}
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <p class="panel-title"><strong>Stats</strong></p>
-    </div>
-    <div class="table-responsive">
-        {% with monster.get_stats_for_all_stars as stats %}
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Grade</th>
-                        {% for key,value in stats.items %}
-                            <th>
-                                {{ key }}<span class="glyphicon glyphicon-star"></span>
-                            </th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>HP</td>
-                        {% for grade,stats in stats.items %}
-                            <td>{{ stats.HP }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>ATK</td>
-                        {% for grade,stats in stats.items %}
-                            <td>{{ stats.ATK }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>DEF</td>
-                        {% for grade,stats in stats.items %}
-                            <td>{{ stats.DEF }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td>SPD</td>
-                        <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.speed }}</td>
-                    </tr>
-                    <tr>
-                        <td>CRIT Rate</td>
-                        <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.crit_rate }}%</td>
-                    </tr>
-                    <tr>
-                        <td>CRIT DMG</td>
-                        <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.crit_damage }}%</td>
-                    </tr>
-                    <tr>
-                        <td>Accuracy</td>
-                        <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.accuracy }}%</td>
-                    </tr>
-                    <tr>
-                        <td>Resistance</td>
-                        <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.resistance }}%</td>
-                    </tr>
-                </tbody>
-            </table>
-        {% endwith %}
+<div class="card border-0 shadow mb-3">
+    <div class="card-body">
+        <div class="table-responsive">
+            {% with monster.get_stats_for_all_stars as stats %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Grade</th>
+                            {% for key,value in stats.items %}
+                                <th>
+                                    {{ key }}<i class="fas fa-star"></i>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>HP</td>
+                            {% for grade,stats in stats.items %}
+                                <td>{{ stats.HP }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>ATK</td>
+                            {% for grade,stats in stats.items %}
+                                <td>{{ stats.ATK }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>DEF</td>
+                            {% for grade,stats in stats.items %}
+                                <td>{{ stats.DEF }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>SPD</td>
+                            <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.speed }}</td>
+                        </tr>
+                        <tr>
+                            <td>CRIT Rate</td>
+                            <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.crit_rate }}%</td>
+                        </tr>
+                        <tr>
+                            <td>CRIT DMG</td>
+                            <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.crit_damage }}%</td>
+                        </tr>
+                        <tr>
+                            <td>Accuracy</td>
+                            <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.accuracy }}%</td>
+                        </tr>
+                        <tr>
+                            <td>Resistance</td>
+                            <td colspan="{{ 6|subtract:monster.base_stars|add:2 }}">{{ monster.resistance }}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% endwith %}
+        </div>
     </div>
 </div>

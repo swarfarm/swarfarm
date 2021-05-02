@@ -3,8 +3,8 @@
 
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="monster-box inventory-element" data-instance-id="{{ piece.pk.hex }}">
-    <div class="monster-box-actions">
+<div class="card shadow-sm m-1 monster-box inventory-element" data-instance-id="{{ piece.pk.hex }}">
+    <div class="card-header monster-box-actions fw-lighter px-0 py-1">
         {{ piece.monster.name }}
     </div>
     <div class="monster-box-thumb">
@@ -16,21 +16,20 @@
     </div>
 
     {% if is_owner %}
-    <div class="monster-box-actions">
-        <button class="btn btn-link btn-xs monster-piece-delete pull-right" data-instance-id="{{ piece.pk.hex }}">
-            <span class="glyphicon glyphicon-trash text-danger" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
-        </button>
-
-        <div class="btn-group pull-left">
-            <button class="btn btn-link btn-xs monster-piece-edit" data-instance-id="{{ piece.pk.hex }}">
-                <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
+    <div class="card-footer monster-box-actions p-0 px-1">
+        <div class="btn-group float-start" role="group">
+            <button class="btn btn-link btn-sm monster-piece-edit p-0 text-dark" data-instance-id="{{ piece.pk.hex }}">
+                <i class="fas fa-edit fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
             </button>
             {% if piece.can_summon %}
-            <button class="btn btn-link btn-xs monster-piece-summon pull-right" data-instance-id="{{ piece.pk.hex }}">
-                <span class="glyphicon glyphicon-plus text-success" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Summon"></span>
+            <button class="btn btn-link btn-sm monster-piece-summon p-0 ps-1" data-instance-id="{{ piece.pk.hex }}">
+                <i class="fas fa-plus text-success" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Summon"></i>
             </button>
             {% endif %}
         </div>
+        <button class="btn btn-link btn-sm monster-piece-delete float-right p-0 text-dark" data-instance-id="{{ piece.pk.hex }}">
+            <i class="fas fa-trash fa-sm text-danger" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"></i>
+        </button>
     </div>
     {% endif %}
 </div>

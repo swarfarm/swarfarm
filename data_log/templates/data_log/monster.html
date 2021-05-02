@@ -1,36 +1,66 @@
 {% load report_charts %}
 
 {% if monsters %}
-    <h2>Monsters</h2>
-    <div
-        class="report-chart"
-        data-chart="{% chart monsters.monsters title="Monsters - Unique" sorted='value' reverse=True %}"
-        style="height: 300px"
-    ></div>
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <h2 class="fw-lighter">Monsters</h2>
+        </div>
+        <div class="card-body">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body">
+                    <div
+                        class="report-chart"
+                        data-chart="{% chart monsters.monsters title="Monsters - Unique" sorted='value' reverse=True %}"
+                        style="height: 300px"
+                    ></div>
+                </div>
+            </div>
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body">
+                    <div
+                        class="report-chart"
+                        data-chart="{% chart monsters.family title="Monsters - By Family" sorted='value' reverse=True %}"
+                        style="height: 300px"
+                    ></div>
+                </div>
+            </div>
+        </div>
+        <div class="row mx-1">
+            <div class="col-12 col-sm-4">
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body">
+                        <div
+                            class="report-chart"
+                            data-chart="{% chart monsters.nat_stars type='pie' title="Natural Stars" percentage=False sorted='key' %}"
+                            style="height: 300px"
+                        ></div>
+                    </div>
+                </div>
+            </div>
 
-    <div
-        class="report-chart"
-        data-chart="{% chart monsters.family title="Monsters - By Family" sorted='value' reverse=True %}"
-        style="height: 300px"
-    ></div>
+            <div class="col-12 col-sm-4">
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body">
+                        <div
+                            class="report-chart"
+                            data-chart="{% chart monsters.element type='pie' title="Element" percentage=False sorted='key' colors='element' %}"
+                            style="height: 300px"
+                        ></div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="row">
-        <div
-            class="report-chart col-md-4 col-sm-6"
-            data-chart="{% chart monsters.nat_stars type='pie' title="Natural Stars" percentage=False sorted='key' %}"
-            style="height: 300px"
-        ></div>
-
-        <div
-            class="report-chart col-md-4 col-sm-6"
-            data-chart="{% chart monsters.element type='pie' title="Element" percentage=False sorted='key' colors='element' %}"
-            style="height: 300px"
-        ></div>
-
-        <div
-            class="report-chart col-md-4 col-sm-6"
-            data-chart="{% chart monsters.awakened type='pie' title="Awakened/Unawakened" percentage=False %}"
-            style="height: 300px"
-        ></div>
+            <div class="col-12 col-sm-4">
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body">
+                        <div
+                            class="report-chart"
+                            data-chart="{% chart monsters.awakened type='pie' title="Awakened/Unawakened" percentage=False %}"
+                            style="height: 300px"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endif %}

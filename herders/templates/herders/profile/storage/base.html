@@ -9,54 +9,30 @@
 
 {% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <p class="panel-title">Elemental Essences</p>
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <h3 class="card-title fw-lighter">Elemental Essences</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <div class="row">
                 {% for essence in essence_mats %}
                 <div class="col-md-4 col-sm-6">
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            <h4 class="list-group-item-heading">{{ essence.name }}</h4>
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-header bg-white">
+                            <h4 class="fw-lighter">{{ essence.name }}</h4>
                         </div>
-                        <div class="list-group-item">
+                        <div class="card-header bg-white d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_low.png" class="monster-inline pull-left" loading="lazy" />
-                            <div class="inline-editable essence-input"
-                                 data-type="number"
-                                 data-name="{{ essence.field_name }}.low"
-                                 data-send="always"
-                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
-                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
-                            >
-                                {{ essence.qty.0 }}
-                            </div>
-                        </div>
-                        <div class="list-group-item">
+                            <div class="essence-input">{{ essence.qty.0 }}</div>
+                        </div> 
+                        <div class="card-header bg-white d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_mid.png" class="monster-inline pull-left" loading="lazy" />
-                            <div class="inline-editable essence-input"
-                                 data-type="number"
-                                 data-name="{{ essence.field_name }}.mid"
-                                 data-send="always"
-                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
-                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
-                            >
-                                {{ essence.qty.1 }}
-                            </div>
-                        </div>
-                        <div class="list-group-item">
+                            <div class="essence-input">{{ essence.qty.1 }}</div>
+                        </div> 
+                        <div class="card-body d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_high.png" class="monster-inline pull-left" loading="lazy" />
-                            <div class="inline-editable essence-input"
-                                 data-type="number"
-                                 data-name="{{ essence.field_name }}.high"
-                                 data-send="always"
-                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
-                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
-                            >
-                                {{ essence.qty.2 }}
-                            </div>
-                        </div>
+                            <div class="essence-input">{{ essence.qty.2 }}</div>
+                        </div> 
                     </div>
                 </div>
                 {% endfor %}
@@ -64,28 +40,21 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <p class="panel-title">Crafting Materials</p>
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <h3 class="card-title fw-lighter">Crafting Materials</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <div class="row">
                 {% for craft in craft_mats %}
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
-                    <div class="panel panel-default">
-                        <div class="panel-body condensed">
-                            <p>{{ craft.name }}</p>
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-header bg-white">
+                            {{ craft.name }}
+                        </div>
+                        <div class="card-body d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}items/craft_material_{{ craft.field_name }}.png" class="monster-inline pull-left" loading="lazy" />
-                            <div id="craft_{{ craft.field_name }}"
-                                 class="inline-editable essence-input"
-                                 data-type="number"
-                                 data-name="{{ craft.field_name }}"
-                                 data-send="always"
-                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
-                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
-                            >
-                                {{ craft.qty }}
-                            </div>
+                            <div id="craft_{{ craft.field_name }}" class="essence-input">{{ craft.qty }}</div>
                         </div>
                     </div>
                 </div>
@@ -94,28 +63,21 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <p class="panel-title">Enhancing Monsters</p>
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <h3 class="card-title fw-lighter">Enhancing Monsters</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <div class="row">
                 {% for monster in monster_mats %}
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
-                    <div class="panel panel-default">
-                        <div class="panel-body condensed">
-                            <p>{{ monster.name }}</p>
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-header bg-white">
+                            {{ monster.name }}
+                        </div>
+                        <div class="card-body d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}items/monster_{% if 'rainbowmon' in monster.field_name %}rainbowmon{% else %}{{ monster.field_name }}{% endif %}.png" class="monster-inline pull-left" loading="lazy" />
-                            <div id="craft_{{ monster.field_name }}"
-                                 class="inline-editable essence-input"
-                                 data-type="number"
-                                 data-name="{{ monster.field_name }}"
-                                 data-send="always"
-                                 data-url="{% url 'herders:storage_update' profile_name=profile_name %}"
-                                 data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
-                            >
-                                {{ monster.qty }}
-                            </div>
+                            <div id="craft_{{ monster.field_name }}" class="essence-input">{{ monster.qty }}</div>
                         </div>
                     </div>
                 </div>
@@ -124,17 +86,19 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <p class="panel-title">Monster Shrine</p>
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <h3 class="card-title fw-lighter">Monster Shrine</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <div class="row">
                 {% for monster in monster_shrine_mats %}
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
-                    <div class="panel panel-default">
-                        <div class="panel-body condensed">
-                            <p>{{ monster.name }}</p>
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-header bg-white">
+                            {{ monster.name }}
+                        </div>
+                        <div class="card-body d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}monsters/{{ monster.img }}" class="monster-inline pull-left" loading="lazy" />
                             <div id="monster_{{ monster.field_name }}" class="essence-input">
                                 {{ monster.qty }}

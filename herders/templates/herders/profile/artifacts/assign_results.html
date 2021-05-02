@@ -1,15 +1,11 @@
 <div id="assign_artifact_results">
     {% for artifact in filter %}
-        <button class="btn btn-default btn-block artifact-assign-choice artifact-popover" data-placement="right" data-artifact-id="{{ artifact.pk.hex }}" data-instance-id="{{ instance_id }}">
+        <button class="btn artifact-assign-choice artifact-popover-hover" data-bs-placement="right" data-artifact-id="{{ artifact.pk.hex }}" data-instance-id="{{ instance_id }}">
             {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact only %}
-            <ul class="list-unstyled">
-                <li>{{ artifact }}</li>
-                <li>{{ artifact.get_main_stat_artifact_display }}</li>
-            </ul>
         </button>
     {% empty %}
-        <div class="alert alert-warning">
-            Your search has no results.
+        <div class="callout callout-warning">
+            <h2 class="fw-lighter">No results!</h2>Sorry, your search has no results.
         </div>
     {% endfor %}
 </div>

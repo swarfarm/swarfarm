@@ -3,14 +3,14 @@
 
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="monster-box inventory-element" data-instance-id="{{ instance.pk.hex }}">
-    <div class="monster-box-actions">
+<div class="card shadow-sm m-1 monster-box inventory-element" data-instance-id="{{ instance.pk.hex }}">
+    <div class="card-header monster-box-actions fw-lighter px-0 py-1">
         {% if instance.custom_name %}{{ instance.custom_name }}{% else %}{{ instance.monster.name }}{% endif %}
     </div>
-    <div class="monster-box-thumb monster-popover" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }} - {{ instance.monster.get_element_display }} {% if instance.monster.awakens_from and instance.monster.awakens_from.obtainable %}{{ instance.monster.awakens_from.name }}{% endif %}">
+    <div class="monster-box-thumb monster-popover{% if not is_owner %} rounded-bottom{% endif %}" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }} - {{ instance.monster.get_element_display }} {% if instance.monster.awakens_from and instance.monster.awakens_from.obtainable %}{{ instance.monster.awakens_from.name }}{% endif %}">
         <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=instance.pk.hex %}">
-            {% include 'herders/profile/monster_portrait_large.html' with instance=instance only%}
-            <div class="image-plus-icon">
+            {% include 'herders/profile/monster_portrait_large.html' with instance=instance is_owner=is_owner only %}
+            <div class="image-plus-icon d-flex flex-column">
                 {% if instance.monster.fusion_food and not instance.ignore_for_fusion %}
                     <img src="{{ img_url_prefix }}icons/fusion.png" loading="lazy" />
                 {% elif instance.monster.fusion_food and instance.ignore_for_fusion %}
@@ -18,47 +18,46 @@
                 {% endif %}
                 {% if instance.ignore_for_fusion %}
                     <span class="fa-stack">
-                        <span class="fa fa-square fa-stack-2x"></span>
-                        <span class="fa fa-lock fa-stack-1x fa-inverse"></span>
+                        <i class="fas fa-square fa-stack-2x"></i>
+                        <i class="fas fa-lock fa-stack-1x fa-inverse"></i>
                     </span>
                 {% endif %}
                 {% if instance.fodder %}
                     <span class="fa-stack">
-                        <span class="fa fa-square fa-stack-2x"></span>
-                        <span class="fa fa-birthday-cake fa-stack-1x fa-inverse"></span>
+                        <i class="fas fa-square fa-stack-2x"></i>
+                        <i class="fas fa-birthday-cake fa-stack-1x fa-inverse"></i>
                     </span>
                 {% endif %}
                 {% if instance.in_storage %}
                     <span class="fa-stack">
-                        <span class="fa fa-square fa-stack-2x"></span>
-                        <span class="fa fa-bed fa-stack-1x fa-inverse"></span>
+                        <i class="fas fa-square fa-stack-2x"></i>
+                        <i class="fas fa-bed fa-stack-1x fa-inverse"></i>
                     </span>
                 {% endif %}
             </div>
 
-            <span class="image-plus image-plus-right">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
+            <span class="image-plus image-plus-left">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
         </a>
     </div>
 
     {% if is_owner %}
-    <div class="monster-box-actions">
-        <button class="btn btn-link btn-xs monster-delete pull-right" data-instance-id="{{ instance.pk.hex }}">
-            <span class="glyphicon glyphicon-trash text-danger" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></span>
-        </button>
-
-        <div class="btn-group pull-left">
-            <button class="btn btn-link btn-xs monster-edit" data-instance-id="{{ instance.pk.hex }}">
-                <span class="glyphicon glyphicon-edit" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Edit"></span>
+    <div class="card-footer monster-box-actions p-0 px-1">
+        <div class="btn-group float-start" role="group">
+            <button class="btn btn-link btn-sm monster-edit p-0 text-dark" data-instance-id="{{ instance.pk.hex }}">
+                <i class="fas fa-edit fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
             </button>
-            <button class="btn btn-link btn-xs monster-copy" data-instance-id="{{ instance.pk.hex }}">
-                <span class="glyphicon glyphicon-copy" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Copy"></span>
+            <button class="btn btn-link btn-sm monster-copy p-0 text-dark" data-instance-id="{{ instance.pk.hex }}">
+                <i class="fas fa-copy fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy"></i>
             </button>
             {% if instance.monster.awakens_to is not None %}
-            <button class="btn btn-link btn-xs monster-awaken" data-instance-id="{{ instance.pk.hex }}">
-                <span class="glyphicon glyphicon-star" style="color:purple" data-toggle="tooltip" data-placement="top" title="Awaken"></span>
+            <button class="btn btn-link btn-sm monster-awaken p-0 text-dark ps-1" data-instance-id="{{ instance.pk.hex }}">
+                <i class="fas fa-angle-double-up fa-sm" style="color:purple" data-bs-toggle="tooltip" data-bs-placement="top" title="Awaken"></i>
             </button>
             {% endif %}
         </div>
+        <button class="btn btn-link btn-sm monster-delete float-right p-0 text-dark" data-instance-id="{{ instance.pk.hex }}">
+            <i class="fas fa-trash fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"></i>
+        </button>
     </div>
     {% endif %}
 </div>

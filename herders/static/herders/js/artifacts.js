@@ -51,7 +51,7 @@ $('body')
             global: false
         }).done(function(result) {
             if (result.code === 'success') {
-                $('.modal.in').modal('hide');
+                $('.modal.show').modal('hide');
                 update_artifact_inventory();
 
                 if (result.removeElement) {
@@ -60,7 +60,7 @@ $('body')
             }
 
             $form.replaceWith(result.html);
-            $('[data-toggle="popover"]').popover({
+            $('[data-bs-toggle="popover"]').popover({
                 html:true,
                 viewport: {selector: 'body', padding: 2}
             });
@@ -147,9 +147,10 @@ $('body')
                     filter_reset: '.reset',
                     stickyHeaders_zIndex : 2,
                     stickyHeaders_offset: 50
-                }
+                },
+                theme: 'bootstrap',
             });
-            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-bs-toggle="tooltip"]').tooltip();
         });
 
         return false;  //cancel default on submit action.

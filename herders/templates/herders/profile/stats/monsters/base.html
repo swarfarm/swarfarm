@@ -6,7 +6,7 @@ Monsters - {{ block.super }}
 {% endblock title %}
 
 {% block content_stats %}
-    <h1>Monsters</h1>
+    <h1 class="fw-lighter">Monsters</h1>
     <hr />
     <div class="container-fluid">
         <div class="grid">
@@ -14,52 +14,56 @@ Monsters - {{ block.super }}
             {% include 'herders/profile/stats/table.html' with title="Summary" data=monsters.summary %}
             {% include 'herders/profile/stats/table.html' with title="Stars" data=monsters.stars %}
 
-            <div class="grid-item col-md-6 col-sm-12 col-xs-12">
-                <div class="grid-item-content table-responsive">
-                    <table class="table comparison-table-5">
-                        <thead>
-                            <th><h3>Natural Stars</h3></th>
-                            <th><h3>Category</h3></th>
-                            <th><h3>Subcategory</h3></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for star_name, star_count in monsters.natural_stars.items %}
-                                {% if star_name >= 4 %}
-                                    <tr>
-                                        <th rowspan="4">{{ star_name }}⭐</th>
-                                        <th rowspan="2">Fusion/Free</th>
-                                        <th>Elemental</th>
-                                        <td>{{ star_count.fusion.elemental }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>L&D</th>
-                                        <td>{{ star_count.fusion.ld }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th rowspan="2">Not Fusion/Free</th>
-                                        <th>Elemental</th>
-                                        <td>{{ star_count.nonfusion.elemental }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>L&D</th>
-                                        <td>{{ star_count.nonfusion.ld }}</td>
-                                    </tr>
-                                {% else %}
-                                    <tr>
-                                        <th rowspan="2">{{ star_name }}⭐</th>
-                                        <th rowspan="2">All</th>
-                                        <th>Elemental</th>
-                                        <td>{{ star_count.nonfusion.elemental }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>L&D</th>
-                                        <td> {{ star_count.nonfusion.ld }}</td>
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="grid-item col-md-6 col-sm-12 col-xs-12 col-12">
+                <div class="grid-item-content w-100">
+                    <div class="card shadow border-0 m-2">
+                        <div class="card-body table-responsive">
+                            <table class="table comparison-table-5">
+                                <thead>
+                                    <th><h3>Natural Stars</h3></th>
+                                    <th><h3>Category</h3></th>
+                                    <th><h3>Subcategory</h3></th>
+                                    <th></th>
+                                </thead>
+                                <tbody>
+                                    {% for star_name, star_count in monsters.natural_stars.items %}
+                                        {% if star_name >= 4 %}
+                                            <tr>
+                                                <th rowspan="4">{{ star_name }}⭐</th>
+                                                <th rowspan="2">Fusion/Free</th>
+                                                <th>Elemental</th>
+                                                <td>{{ star_count.fusion.elemental }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>L&D</th>
+                                                <td>{{ star_count.fusion.ld }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th rowspan="2">Not Fusion/Free</th>
+                                                <th>Elemental</th>
+                                                <td>{{ star_count.nonfusion.elemental }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>L&D</th>
+                                                <td>{{ star_count.nonfusion.ld }}</td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <th rowspan="2">{{ star_name }}⭐</th>
+                                                <th rowspan="2">All</th>
+                                                <th>Elemental</th>
+                                                <td>{{ star_count.nonfusion.elemental }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>L&D</th>
+                                                <td> {{ star_count.nonfusion.ld }}</td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             

@@ -13,7 +13,7 @@
     <div class="monster-awaken-materials">
     {% for element, essences in available_essences.items %}
         {% for size, count in essences.items %}
-            <div class="element-essence" data-toggle="tooltip" data-placement="top" data-container="body" title="{{ element|capfirst }} {{ size|capfirst }}">
+            <div class="element-essence" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-container="body" title="{{ element|capfirst }} {{ size|capfirst }}">
                 <img src="{{ img_url_prefix }}items/essence_{{ element }}_{{ size }}.png" style="
                 {% if count.sufficient %}
                     border: 5px solid green

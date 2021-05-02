@@ -1,14 +1,11 @@
 <div id="assign_rune_results">
     {% for rune in filter %}
-        <button class="btn btn-default btn-block rune-assign-choice rune-popover" data-placement="right" data-rune-id="{{ rune.pk.hex }}" data-instance-id="{{ instance_id }}">
+        <button class="btn btn-default btn-block rune-assign-choice rune-popover-hover" data-bs-placement="right" data-rune-id="{{ rune.pk.hex }}" data-instance-id="{{ instance_id }}">
             {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune only %}
-            <ul class="list-unstyled">
-                <li>{{ rune }}</li>
-                <li>{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</li>
-            </ul>
         </button>
     {% empty %}
-        <div class="alert alert-warning">
+        <div class="callout callout-warning">
+            <h2 class="fw-lighter">No results!</h2>
             Your search has no results.
         </div>
     {% endfor %}

@@ -41,6 +41,7 @@ class Summoner(models.Model):
     following = models.ManyToManyField(
         "self", related_name='followed_by', symmetrical=False)
     public = models.BooleanField(default=False, blank=True)
+    dark_mode = models.BooleanField(default=False, blank=True)
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
     preferences = JSONField(default=dict, blank=True)
@@ -216,6 +217,8 @@ class MonsterInstance(models.Model, base.Stars):
         return self._calc_rune_stats(self.max_base_stats.copy())
     
     def _calc_rune_stats(self, base_stats):
+        if not self.default_build or not self.rta_build:
+            self._initialize_rune_build()
         rune_stats = self.default_build.rune_stats.copy()
     
         # Convert HP/ATK/DEF percentage bonuses to flat bonuses based on the base stats
@@ -285,6 +288,9 @@ class MonsterInstance(models.Model, base.Stars):
 
     def effective_hp(self):
         return int(ceil(self.hp() * (1140 + self.defense() * 3.5) / 1000))
+
+    def efficiency(self):
+        return self.default_build.avg_efficiency
 
     def get_max_level_stats(self):
         stats = {
@@ -533,6 +539,13 @@ class RuneBuild(models.Model):
         return f'{self.name} - {self.rune_set_summary}'
 
     @cached_property
+    def rune_set_text(self):
+        main_stat_text = self.rune_set_summary.find(' - ')
+        if main_stat_text > -1:
+            return self.rune_set_summary[:main_stat_text]
+        return self.rune_set_summary
+
+    @cached_property
     def rune_set_summary(self):
         num_equipped = self.runes.count()
 
@@ -552,10 +565,10 @@ class RuneBuild(models.Model):
         if num_equipped > active_set_required_count:
             active_set_names.append('Broken')
 
-        set_summary = '/'.join(active_set_names)
+        set_summary = ' / '.join(active_set_names)
 
         # Build main stat list for even slots
-        main_stat_summary = '/'.join([
+        main_stat_summary = ' / '.join([
             rune.get_main_stat_display() for rune in self.runes.filter(slot__in=[2, 4, 6])
         ])
 
@@ -637,22 +650,21 @@ class RuneBuild(models.Model):
             Avg('efficiency'))['efficiency__avg'] or 0.0
 
     def clear_cache_properties(self):
-        try:
-            del self.rune_set_summary
-        except AttributeError:
-            pass 
-        try:
-            del self.rune_set_bonus_text
-        except AttributeError:
-            pass 
-        try:
-            del self.active_rune_sets
-        except AttributeError:
-            pass 
-        try:
-            del self.rune_stats
-        except AttributeError:
-            pass
+        fields = [
+            self.rune_set_text,
+            self.rune_set_summary,
+            self.rune_set_bonus_text,
+            self.active_rune_sets,
+            self.rune_stats,
+            self.runes_per_slot,
+            self.artifacts_per_slot
+        ]
+
+        for field in fields: 
+            try:
+                del field
+            except AttributeError:
+                pass 
 
     def assign_rune(self, rune):
         # Clear any existing rune in slot
@@ -663,6 +675,29 @@ class RuneBuild(models.Model):
         # Clear any existing artifact in slot
         self.artifacts.remove(*self.artifacts.filter(slot=artifact.slot))
         self.artifacts.add(artifact)
+
+    @cached_property
+    def runes_per_slot(self):
+        runes = OrderedDict([(i, None) for i in range(1, 7)])
+        for rune in self.runes.all():
+            runes[rune.slot] = rune
+
+        return runes
+
+    @cached_property
+    def artifacts_per_slot(self):
+        artifacts = OrderedDict([(desc.lower(), None) for _, desc in ArtifactInstance.SLOT_CHOICES])
+
+        for artifact in self.artifacts.all():
+            artifacts[artifact.get_slot_display().lower()] = artifact
+
+        return artifacts
+
+    def get_artifact_element(self):
+        return self.artifacts_per_slot[Artifact.SLOT_ELEMENTAL]
+
+    def get_artifact_archetype(self):
+        return self.artifacts_per_slot[Artifact.SLOT_ARCHETYPE]
 
 
 class RuneCraftInstance(RuneCraft):

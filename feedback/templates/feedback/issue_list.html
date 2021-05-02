@@ -3,62 +3,61 @@
 {% load humanize %}
 
 {% block issues %}
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            {% crispy search_form %}
-            <p class="panel-title">Feedback and Suggestions</p>
-            <div class="clearfix"></div>
-        </div>
-
-        {% if issue_list.count %}
-            <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Topic</th>
-                        <th>Status</th>
-                        <th>Comments</th>
-                        {% if request.user.is_superuser %}
-                            <th>Public</th>
-                            <th></th>
-                        {% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for issue in issue_list %}
-                    <tr>
-                        <td><a href="{{ issue.get_absolute_url }}">#{{ issue.pk }}</a></td>
-                        <td>
-                            <h4>{% if not issue.public %}<span class="glyphicon glyphicon-lock text-danger" data-toggle="tooltip" data-placement="top" data-container="body" title="Private Feedback"></span> {% endif %}{{ issue.subject }}</h4>
-                            <p class="text-muted">Submitted by {{ issue.user }} {{ issue.submitted|naturaltime }}</p>
-                        </td>
-                        <td>
-                            {{ issue.get_status_html }}
-                        </td>
-                        <td>
-                            <span class="glyphicon glyphicon-comment"></span> {{ issue.comment_count }}
-                        </td>
-                        {% if request.user.is_superuser %}
-                            <td>{% if issue.public %}<span class="glyphicon glyphicon-ok-circle"></span>{% endif %}</td>
-                            <td>
-                                <a href="{% url 'admin:feedback_issue_change' issue.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
-                            </td>
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <div class="panel-body">
-                <div class="alert alert-info" role="alert">No Results!</div>
+    {% if issue_list.count %}
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white">
+                {% crispy search_form %}
+                <p class="card-title fw-lighter">Feedback and Suggestions</p>
             </div>
-        {% endif %}
+            <div class="table-responsive card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Topic</th>
+                            <th>Status</th>
+                            <th>Comments</th>
+                            {% if request.user.is_superuser %}
+                                <th>Public</th>
+                                <th></th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in issue_list %}
+                        <tr>
+                            <td><a href="{{ issue.get_absolute_url }}">#{{ issue.pk }}</a></td>
+                            <td>
+                                <h4 class="fw-lighter">{% if not issue.public %}<i class="fas fa-user-lock"></i> {% endif %}{{ issue.subject }}</h4>
+                                <p class="text-muted fw-lighter mb-0">Submitted by {{ issue.user }} {{ issue.submitted|naturaltime }}</p>
+                            </td>
+                            <td>{{ issue.get_status_html }}</td>
+                            <td>
+                                <i class="fas fa-comments"></i> {{ issue.comment_count }}
+                            </td>
+                            {% if request.user.is_superuser %}
+                                <td>{% if issue.public %}<i class="fas fa-check"></i>{% endif %}</td>
+                                <td>
+                                    <a class="text-reset" target="_blank" href="{% url 'admin:feedback_issue_change' issue.pk %}"><i class="fas fa-edit"></i></a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-        {% if is_paginated %}
-        <div class="panel-footer">
-            {% include "pagination.html" %}
+            {% if is_paginated %}
+            <div class="card-footer bg-white">
+                {% include "pagination.html" %}
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-    </div>
+    {% else %}
+        <div class="callout callout-info">
+            <h2 class="fw-lighter">No Results!</h2>
+            <p>There is not even a single feedback to show!</p>
+        </div>
+    {% endif %}
 
 {% endblock issues %}

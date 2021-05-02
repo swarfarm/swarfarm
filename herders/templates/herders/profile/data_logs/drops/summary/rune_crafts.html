@@ -2,14 +2,14 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Grindstones and Enchant Gems</h3>
+<div class="card shadow-sm border-0 mb-3">
+    <div class="card-header bg-white">
+        <h3 class="card-title fw-lighter">Grindstones & Enchants</h3>
     </div>
 
-    <div class="panel-body">
+    <div class="card-body">
         {% for craft in rune_crafts %}
-            <div class="rune-image" data-toggle="tooltip" title="{{ craft.quality }} {{ craft.rune }} {{ craft.type }} x{{ craft.count }}">
+            <div class="rune-image" data-bs-toggle="tooltip" title="{{ craft.quality }} {{ craft.rune }} {{ craft.type }} x{{ craft.count }}">
                 <div class="rune-bg {% if 'Immemorial' in craft.type %}immemorial{%endif %} {{ craft.quality|lower }}">
                     <div class="rune-craft {{ craft.type|slugify }} {{ craft.quality|lower }}">
                         <div class="craft-symbol {{ craft.rune|lower }}"></div>
@@ -20,7 +20,7 @@
                 </span>
             </div>
         {% empty %}
-            <p>None!</p>
+            <div class="callout callout-warning fw-lighter">None!</div>
         {% endfor %}
     </div>
 </div>

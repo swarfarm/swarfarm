@@ -2,43 +2,55 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div id="rune-inventory">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="btn-group">
-                <button class="btn btn-default rune-view-mode" data-mode="list">
-                    <span class="glyphicon glyphicon-th-list"></span> List
+    <div class="card shadow border-0 mb-3">
+        <div class="card-header bg-white">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-dark rune-view-mode" data-mode="list">
+                    <i class="fas fa-th-list"></i> List
                 </button>
-                <button class="btn btn-default rune-view-mode" data-mode="box">
-                    <span class="glyphicon glyphicon-th-large"></span> Box
+                <button class="btn btn-outline-dark rune-view-mode" data-mode="box">
+                    <i class="fas fa-th-large"></i> Box
                 </button>
-                <button class="btn btn-default rune-view-mode" data-mode="grid">
-                    <span class="glyphicon glyphicon-th"></span> Grid
+                <button class="btn btn-outline-dark rune-view-mode" data-mode="grid">
+                    <i class="fas fa-table"></i> Grid
                 </button>
-                <button class="btn btn-default rune-view-mode active" data-mode="crafts">
+                <button class="btn btn-outline-dark rune-view-mode active" data-mode="crafts">
                     <img src="{{ img_url_prefix }}runes/enchant_gem_legend.png" loading="lazy" />
                 </button>
             </div>
         </div>
-        <div class="panel-body">
-            <ul class="nav nav-tabs" role="tablist">
-                {% for craft_type in crafts.keys %}
-                <li role="presentation" {% if forloop.first %}class="active"{% endif %}>
-                    <a href="#{{ craft_type|slugify }}_tab" aria-controls="{{ craft_type|slugify }}_tab" role="tab" data-toggle="tab">{{ craft_type }}</a>
-                </li>
+
+        <div class="card-body">
+            <ul class="nav nav-pills mb-3" id="dungeons-tab" role="tablist">
+                {% for craft_type in crafts %}
+                    <li class="nav-item card border-0 shadow-sm mb-3 mx-3 p-0" role="presentation">
+                        <button 
+                            class="nav-link card-body card-monster{% if forloop.first %} active{% endif %}" 
+                            id="{{ craft_type|slugify }}_tab-tab" 
+                            data-bs-toggle="pill" 
+                            data-bs-target="#{{ craft_type|slugify }}_tab" 
+                            type="button" 
+                            role="tab" 
+                            aria-controls="{{ craft_type|slugify }}_tab" 
+                            aria-selected="true"
+                        >
+                            {{ craft_type }}
+                        </button>
+                    </li>
                 {% endfor %}
             </ul>
 
-            <div class="tab-content bordered">
+            <div class="tab-content">
                 {% for craft_type, craft_group in crafts.items %}
-                <div role="tabpanel" class="tab-pane {% if forloop.first %}active{% endif %}" id="{{ craft_type|slugify }}_tab">
+                <div role="tabpanel" class="tab-pane fade{% if forloop.first %} show active{% endif %}" id="{{ craft_type|slugify }}_tab" aria-labelledby="{{ craft_type|slugify }}_tab-tab">
                     {% for rune_type, rune_crafts in craft_group.items %}
                         {% if rune_crafts|length %}
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <p class="panel-title">{{ rune_type }}</p>
+                            <div class="card border-0 shadow-sm mb-3">
+                                <div class="card-header bg-white">
+                                    <p class="card-title h4 fw-lighter">{{ rune_type }}</p>
                                 </div>
-                                <div class="panel-body">
-                                    <div class="flex">
+                                <div class="card-body">
+                                    <div class="flex flex-wrap">
                                     {% for craft in rune_crafts %}
                                         {% include 'herders/profile/runes/craft_panel_fragment.html' with craft=craft %}
                                     {% endfor %}

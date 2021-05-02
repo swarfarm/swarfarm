@@ -5,23 +5,17 @@
     {{ item }} - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% if view_name == 'herders:data_log_summons_detail' %}
-        <li class="active">{{ item }}</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_summons_detail' profile_name=profile_name slug=item.slug %}">{{ item }}</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block logs %}
-    <h2>{{ item }}</h2>
     {% if total_count %}
-        <ul class="list list-inline">
-            {% if start_date %}<li>{{ start_date }} - {{ end_date }}</li>{% endif %}
-            <li>Total Summons: {{ total_count }}{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</li>
-        </ul>
-
+        <div class="card shadow border-0 mb-3">
+            <div class="card-header bg-white d-flex flex-wrap justify-content-between">
+                <h4 class="fw-lighter">{{ item }}</h4>
+            </div>
+            <div class="card-body">
+                {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
+                <p>Total Logs: {{ total_count }}</p>{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</p>
+            </div>
+        </div>
         <hr />
         {% include 'data_log/monster.html' with monsters=report only %}
     {% else %}

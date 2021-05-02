@@ -63,6 +63,7 @@ def register(request):
                         user=new_user,
                         summoner_name=form.cleaned_data['summoner_name'],
                         public=form.cleaned_data['is_public'],
+                        dark_mode=form.cleaned_data['dark_mode'],
                     )
                     new_summoner.save()
 
@@ -166,10 +167,32 @@ def following(request, profile_name):
 
     is_owner = (request.user.is_authenticated and summoner.user == request.user)
 
+    followed_by = {f.pk: f for f in summoner.followed_by.all()}
+    friends = {
+        f.pk: {
+            'obj': f,
+            'following': True,
+            'followed_by': False,
+        } for f in summoner.following.all()
+    }
+
+    for f_pk, f_obj in followed_by.items():
+        if f_pk in friends:
+            friends[f_pk]['followed_by'] = True
+        else:
+            friends[f_pk] = {
+                'obj': f_obj,
+                'following': False,
+                'followed_by': True,
+            }
+
+    friends = sorted(list(friends.values()), key=lambda el: (-el['following'], -el['followed_by']))
+
     context = {
         'is_owner': is_owner,
         'profile_name': profile_name,
         'summoner': summoner,
+        'friends': friends,
         'view': 'following',
         'return_path': return_path,
     }

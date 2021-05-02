@@ -3,18 +3,27 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-            {% if next %}
-                {% if user.is_authenticated %}
-                    <p>Your account doesn't have access to this page. To proceed,
-                    please login with an account that has access.</p>
-                {% else %}
-                    <p>Please login to see this page.</p>
-                {% endif %}
-            {% endif %}
+        <div class="col-md-4 offset-md-4">
+            <div class="card shadow border-0 my-3">
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-user fa-5x text-center"></i>
+                    </div>
+                    {% if next %}
+                        {% if user.is_authenticated %}
+                            <p>Your account doesn't have access to this page. To proceed,
+                            please login with an account that has access.</p>
+                        {% else %}
+                            <p>Please login to see this page.</p>
+                        {% endif %}
+                    {% endif %}
 
-            {% crispy form %}
-            <p class="pull-right"><a href="{% url 'password_reset' %}">Lost password?</a></p>
+                    {% crispy form %}
+                </div>
+                <div class="card-footer bg-white">
+                    <p class="float-right"><a class="nav-link" href="{% url 'password_reset' %}">Lost password?</a></p>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

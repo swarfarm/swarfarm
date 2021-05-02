@@ -5,16 +5,6 @@
     Table - Wish - {{ block.super }}
 {% endblock %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    <li><a href="{% url 'herders:data_log_wish_dashboard' profile_name=profile_name %}">Wishes</a></li>
-    {% if view_name == 'herders:data_log_wish_table' %}
-        <li class="active">Table</li>
-    {% else %}
-        <li><a href="{% url 'herders:data_log_wish_table' profile_name=profile_name %}">Table</a></li>
-    {% endif %}
-{% endblock %}
-
 {% block log_table %}
     <table class="table table-striped table-condensed">
         <thead>

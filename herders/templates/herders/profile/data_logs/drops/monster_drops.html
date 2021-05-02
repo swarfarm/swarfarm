@@ -3,7 +3,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 {% for drop in drops %}
-<a href="{% url 'bestiary:detail' monster_slug=drop.monster.bestiary_slug %}" class="monster-image" data-toggle="tooltip" data-placement="top" title="{{ log.monster.get_element_display }} {{ drop.monster.name }}">
+<a href="{% url 'bestiary:detail' monster_slug=drop.monster.bestiary_slug %}" class="monster-image" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ log.monster.get_element_display }} {{ drop.monster.name }}">
     <div>
         <img src="{{ img_url_prefix }}monsters/{{ drop.monster.image_filename }}" class="monster-thumb" loading="lazy" />
         <span>

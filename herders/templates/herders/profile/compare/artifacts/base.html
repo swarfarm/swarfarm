@@ -6,16 +6,24 @@ Artifacts - {{ block.super }}
 {% endblock title %}
 
 {% block artifacts_menu %}
-    {% if is_owner%}
-        <ul class="dropdown-menu navmenu-nav">
-            <li><a href="{% url 'herders:profile_compare_artifact_crafts' profile_name follower_name %}">Enchants</a></li>
+    {% if is_owner %}
+        <ul class="navbar-nav ps-2">
+            <li class="nav-item py-0">
+                <a 
+                    class="nav-link fw-lighter py-0 text-muted monster-add" 
+                    href="{% url 'herders:profile_compare_artifact_crafts' profile_name follower_name %}" 
+                    style="cursor: pointer;"
+                >
+                    Enchants
+                </a>
+            </li>
         </ul>
     {% endif %}
 {% endblock artifacts_menu %}
 
 
 {% block content_compare %}
-    <h1>Artifacts</h1>
+    <h1 class="fw-lighter">Artifacts</h1>
     <hr />
     <div class="container-fluid">
         <div class="grid">

@@ -42,7 +42,9 @@
 {% block javascript %}
     <script>
         $( document ).ready(function() {
-            var simplemde = new SimpleMDE();
+            var simplemde = new SimpleMDE({
+                forceSync: true,
+            });
         });
     </script>
 {% endblock javascript %}

@@ -63,6 +63,7 @@ def register(request):
                         user=new_user,
                         summoner_name=form.cleaned_data['summoner_name'],
                         public=form.cleaned_data['is_public'],
+                        dark_mode=form.cleaned_data['dark_mode'],
                     )
                     new_summoner.save()
 

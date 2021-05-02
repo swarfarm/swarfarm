@@ -73,7 +73,7 @@ function UnassignRune(rune_id) {
         buttons: {
             unassign: {
                 label: 'Remove from Slot',
-                className: 'btn-default pull-left',
+                className: 'btn-outline-dark float-left',
                 callback: function () {
                     $.ajax({
                         type: 'get',
@@ -242,7 +242,7 @@ function UnassignArtifact(artifact_id) {
         buttons: {
             unassign: {
                 label: 'Remove from Slot',
-                className: 'btn-default pull-left',
+                className: 'btn-outline-dark float-left',
                 callback: function () {
                     $.ajax({
                         type: 'get',

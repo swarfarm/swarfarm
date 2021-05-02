@@ -88,18 +88,22 @@
     </div>
 
     {% if instance.runes|length > 0 %}
-    <div class="row-border-bottom my-1">
-        {% for rune in instance.runes %}
-        {% include 'api/rune_instance/thumbnail.html' with rune=rune only %}
-        {% endfor %}
+    <div class="row">
+        <div class="row-border-bottom my-1">
+            {% for rune in instance.runes %}
+            {% include 'api/rune_instance/thumbnail.html' with rune=rune only %}
+            {% endfor %}
+        </div>
     </div>
     {% endif %}
 
     {% if instance.artifacts|length > 0 %}
-    <div class="row-border-bottom my-1">
-        {% for artifact in instance.artifacts %}
-            {% include 'api/artifact_instance/thumbnail.html' with artifact=artifact only %}
-        {% endfor %}
+    <div class="row">
+        <div class="row-border-bottom my-1">
+            {% for artifact in instance.artifacts %}
+                {% include 'api/artifact_instance/thumbnail.html' with artifact=artifact only %}
+            {% endfor %}
+        </div>
     </div>
     {% endif %}
 

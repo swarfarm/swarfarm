@@ -4,7 +4,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="card shadow-sm m-1 monster-box inventory-element" data-instance-id="{{ instance.pk.hex }}">
-    <div class="card-header monster-box-actions fw-lighter px-0 py-1">
+    <div class="card-header monster-box-actions fw-bolder px-0 py-1">
         {% if instance.custom_name %}{{ instance.custom_name }}{% else %}{{ instance.monster.name }}{% endif %}
     </div>
     <div class="monster-box-thumb monster-popover{% if not is_owner %} rounded-bottom{% endif %}" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }} - {{ instance.monster.get_element_display }} {% if instance.monster.awakens_from and instance.monster.awakens_from.obtainable %}{{ instance.monster.awakens_from.name }}{% endif %}">
@@ -36,7 +36,7 @@
                 {% endif %}
             </div>
 
-            <span class="image-plus image-plus-left">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
+            <span class="image-plus fw-lighter image-plus-left">{% if instance.is_max_level %}MAX{% endif %}{{ instance.level }}</span>
         </a>
     </div>
 

@@ -367,7 +367,7 @@ class EditMonsterInstanceForm(ModelForm):
         self.helper.layout = Layout(
             Div(
                 Field('custom_name'),
-                Field('stars', css_class='rating visually-hidden', value=1, data_start=0, data_stop=6, data_stars=6),
+                Field('stars', value=1, data_start=0, data_stop=6, data_stars=6),
                 FieldWithButtons(
                     Field('level', value=1, min=1, max=40, css_class='form-control'),
                     StrictButton("Max", name="Set_Max_Level", data_stars_field=self['stars'].auto_id, data_level_field=self['level'].auto_id, data_set_max_level='', css_class='btn-outline-dark'),

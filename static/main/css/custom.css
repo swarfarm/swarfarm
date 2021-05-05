@@ -389,6 +389,10 @@ select.short {
   border-radius: 3px;
 }
 
+.image-plus-main.fa-puzzle-piece{
+  padding-top: 5px;
+}
+
 .tag {
   background: #e5e5e5;
   border-radius: 3px;
@@ -618,6 +622,10 @@ span.monster-image {
   width: 100%;
   line-height: 12px;
   font-size: 12px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 .monster-level-column {

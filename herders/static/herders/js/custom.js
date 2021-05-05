@@ -97,7 +97,7 @@ bootbox.setDefaults({
     onEscape: true
 });
 
-PNotify.prototype.options.styling = "bootstrap3";
+PNotify.prototype.options.styling = "fontawesome";
 PNotify.prototype.options.stack.firstpos1 = 60;
 PNotify.prototype.options.stack.spacing1 = 10;
 

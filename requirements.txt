@@ -38,7 +38,7 @@ dpkt==1.9.2
 drf-extensions==0.5.0
 drf-nested-routers==0.91
 drf-ujson==1.2
-eventlet==0.25.1
+eventlet==0.31.0
 greenlet==0.4.15
 gunicorn==20.0.4
 idna==2.8

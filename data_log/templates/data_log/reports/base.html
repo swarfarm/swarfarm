@@ -16,34 +16,34 @@
         </button>
     </div>
     <div class="navmenu subnavmenu-fixed-left offcanvas-sm bg-light shadow">
-        <a href="{% url 'data_log:data_reports' %}" class="nav-link fw-lighter text-reset h3">Data Logs</a>
+        <a href="{% url 'data_log:data_reports' %}" class="nav-link text-reset h3">Data Logs</a>
         <button type="button" class="d-lg-none navbar-toggler btn-abs-top-right" onClick="closeSidebarMobile()">
             <i class="fas fa-times"></i>
         </button>
         <ul class="navbar-nav">
             {% with reports.shop_refresh as report %}
                 <li class="nav-item py-0{% if subview == 'magic_shop' %} active{% endif %}">
-                    <a class="nav-link text-reset fw-lighter" href="{% url 'data_log:magic_shop_refresh' %}">Magic Shop</a>
+                    <a class="nav-link text-reset" href="{% url 'data_log:magic_shop_refresh' %}">Magic Shop</a>
                 </li>
             {% endwith %}
             {% with reports.magic_box as report %}
                 <li class="nav-item py-0{% if subview == 'magic_box' %} active{% endif %}">
-                    <a class="nav-link text-reset fw-lighter" href="{% url 'data_log:magic_box_crafting' %}">Magic Box</a>
+                    <a class="nav-link text-reset" href="{% url 'data_log:magic_box_crafting' %}">Magic Box</a>
                 </li>
             {% endwith %}
             {% with reports.wish as report %}
                 <li class="nav-item py-0{% if subview == 'wish' %} active{% endif %}">
-                    <a class="nav-link text-reset fw-lighter" href="{% url 'data_log:wish' %}">Wish</a>
+                    <a class="nav-link text-reset" href="{% url 'data_log:wish' %}">Wish</a>
                 </li>
             {% endwith %}
             {% with reports.summon as report %}
                 <li class="nav-item py-0{% if subview == 'summon' %} active{% endif %}">
-                    <a class="nav-link text-reset fw-lighter" href="{% url 'data_log:summon' %}">Summon</a>
+                    <a class="nav-link text-reset" href="{% url 'data_log:summon' %}">Summon</a>
                 </li>
             {% endwith %}
             {% with reports.rune_crafting as report %}
                 <li class="nav-item py-0{% if subview == 'rune_crafting' %} active{% endif %}">
-                    <a class="nav-link text-reset fw-lighter" href="{% url 'data_log:rune_crafting' %}">Rune Crafting</a>
+                    <a class="nav-link text-reset" href="{% url 'data_log:rune_crafting' %}">Rune Crafting</a>
                 </li>
             {% endwith %}
         </ul>
@@ -56,7 +56,7 @@
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
                         <div class="card-header bg-white">
-                            <h3 class="fw-lighter">Magic Shop</h3>
+                            <h3>Magic Shop</h3>
                         </div>
                         <div class="card-body">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
@@ -64,7 +64,7 @@
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
                         <div class="card-footer bg-white">
-                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:magic_shop_refresh' %}">Details</a>
+                            <a class="btn btn-outline-dark float-right" href="{% url 'data_log:magic_shop_refresh' %}">Details</a>
                         </div>
                     </div>
                 </div>
@@ -73,14 +73,14 @@
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
                         <div class="card-header bg-white">
-                            <h3 class="fw-lighter">Magic Box</h3>
+                            <h3>Magic Box</h3>
                         </div>
                         <div class="card-body">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
                         <div class="card-footer bg-white">
-                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:magic_box_crafting' %}">Details</a>
+                            <a class="btn btn-outline-dark float-right" href="{% url 'data_log:magic_box_crafting' %}">Details</a>
                         </div>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
                         <div class="card-header bg-white">
-                            <h3 class="fw-lighter">Wish</h3>
+                            <h3>Wish</h3>
                         </div>
                         <div class="card-body">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
@@ -97,7 +97,7 @@
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
                         <div class="card-footer bg-white">
-                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:wish' %}">Details</a>
+                            <a class="btn btn-outline-dark float-right" href="{% url 'data_log:wish' %}">Details</a>
                         </div>
                     </div>
                 </div>
@@ -106,14 +106,14 @@
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
                         <div class="card-header bg-white">
-                            <h3 class="fw-lighter">Summon</h3>
+                            <h3>Summon</h3>
                         </div>
                         <div class="card-body">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
                         <div class="card-footer bg-white">
-                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:summon' %}">Details</a>
+                            <a class="btn btn-outline-dark float-right" href="{% url 'data_log:summon' %}">Details</a>
                         </div>
                     </div>
                 </div>
@@ -122,14 +122,14 @@
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
                         <div class="card-header bg-white">
-                            <h3 class="fw-lighter">Rune Crafting</h3>
+                            <h3>Rune Crafting</h3>
                         </div>
                         <div class="card-body">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
                         <div class="card-footer bg-white">
-                            <a class="btn btn-outline-dark fw-lighter float-right" href="{% url 'data_log:rune_crafting' %}">Details</a>
+                            <a class="btn btn-outline-dark float-right" href="{% url 'data_log:rune_crafting' %}">Details</a>
                         </div>
                     </div>
                 </div>

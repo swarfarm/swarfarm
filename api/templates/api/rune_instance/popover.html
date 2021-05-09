@@ -15,18 +15,18 @@
     <div class="card-body p-1">
         <div class="d-flex">
             {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune hide_original_quality=True only %}
-            <ul class="list-unstyled fw-lighter mb-0">
+            <ul class="list-unstyled mb-0">
                 <li class="rune-main-stat">{{ rune.get_main_stat_rune_display }} +{{ rune.main_stat_value }}{% if rune.main_stat in rune.PERCENT_STATS %}%{% endif %}</li>
                 {% if rune.innate_stat %}<li>{{ rune.get_innate_stat_rune_display }} +{{ rune.innate_stat_value }}{% if rune.innate_stat in rune.PERCENT_STATS %}%{% endif %}</li>{% endif %}
             </ul>
         </div>
-        <ul class="list-unstyled fw-lighter">
+        <ul class="list-unstyled">
             {% if rune.substats|length >= 1 %}<li>{{ rune.substat_rune_display.0 }} <span class="{% if rune.substats_grind_value.0 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.0|add:rune.substats_grind_value.0 }}{% if rune.substats.0 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.0 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span></li>{% endif %}
             {% if rune.substats|length >= 2 %}<li>{{ rune.substat_rune_display.1 }} <span class="{% if rune.substats_grind_value.1 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.1|add:rune.substats_grind_value.1 }}{% if rune.substats.1 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.1 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span></li>{% endif %}
             {% if rune.substats|length >= 3 %}<li>{{ rune.substat_rune_display.2 }} <span class="{% if rune.substats_grind_value.2 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.2|add:rune.substats_grind_value.2 }}{% if rune.substats.2 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.2 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span></li>{% endif %}
             {% if rune.substats|length >= 4 %}<li>{{ rune.substat_rune_display.3 }} <span class="{% if rune.substats_grind_value.3 %}rune-grindstone-text{% endif %}">+{{ rune.substat_values.3|add:rune.substats_grind_value.3 }}{% if rune.substats.3 in rune.PERCENT_STATS %}%{% endif %} {% if rune.substats_enchanted.3 %}<img src="{{ img_url_prefix }}runes/enchanted.png" alt="enchanted"/>{% endif %}</span></li>{% endif %}
         </ul>
-        {% if rune.notes %}<p class="fw-lighter mb-0{% if rune.assigned_to %} rune-box-notes{% endif %}"><strong>Notes:</strong> {{ rune.notes }}</p>{% endif %}
+        {% if rune.notes %}<p class="mb-0{% if rune.assigned_to %} rune-box-notes{% endif %}"><strong>Notes:</strong> {{ rune.notes }}</p>{% endif %}
         <ul class="top-right-rune list-unstyled">
             {% if rune.original_quality %}
                 <li>

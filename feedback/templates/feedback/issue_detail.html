@@ -6,8 +6,8 @@
 {% block issues %}
     <div class="card shadow-sm border-0 mb-3">
         <div class="card-header bg-white">
-            <h5 class="fw-lighter">{{ issue.get_status_html }}</h5>
-            <h1 class="fw-lighter">{% if not issue.public %}<i class="fas fa-user-lock"></i> {% endif %}{{ issue.subject }}</h1>
+            <h5>{{ issue.get_status_html }}</h5>
+            <h1>{% if not issue.public %}<i class="fas fa-user-lock"></i> {% endif %}{{ issue.subject }}</h1>
             {% if perms.feedback.edit_issue %}
                 <a 
                     class="btn btn-link btn-abs-top-right" 
@@ -19,18 +19,18 @@
             </p>
         </div>
         <div class="card-body">
-            <span class="h4 fw-lighter" {% if issue.user.is_superuser %}data-bs-toggle="tooltip" data-bs-placement="top" title="Admin"{% endif %}>
+            <span class="h4" {% if issue.user.is_superuser %}data-bs-toggle="tooltip" data-bs-placement="top" title="Admin"{% endif %}>
                 {% if issue.user.is_superuser %}<i class="fas fa-user-shield"></i> {% endif %}{{ issue.user }} <small class="text-muted float-right">{{ issue.submitted|naturaltime }}</small>
             </span>
-            <p class="fw-lighter">{{ issue.description|markdown }}</p>
+            <p>{{ issue.description|markdown }}</p>
         </div>
         {% for comment in issue.discussion_set.all %}
         <hr />
         <div class="card-body">
-            <span class="h4 fw-lighter" {% if comment.user.is_superuser %}data-bs-toggle="tooltip" data-bs-placement="top" title="Admin"{% endif %}>
+            <span class="h4" {% if comment.user.is_superuser %}data-bs-toggle="tooltip" data-bs-placement="top" title="Admin"{% endif %}>
                 {% if comment.user.is_superuser %}<i class="fas fa-user-shield"></i> {% endif %}{{ comment.user }} <small class="text-muted float-right">{{ comment.timestamp|naturaltime }}</small>
             </span>
-            <p class="fw-lighter">{{ comment.comment|markdown }}</p>
+            <p>{{ comment.comment|markdown }}</p>
         </div>
         {% endfor %}
         <div class="card-footer bg-white">

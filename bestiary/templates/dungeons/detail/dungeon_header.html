@@ -5,13 +5,13 @@
         {% if is_scenario %}
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-lg btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="fw-lighter">{{ level.get_difficulty_display }}</span>
+                <span>{{ level.get_difficulty_display }}</span>
             </button>
 
             <ul class="dropdown-menu">
                 {% for _, difficulty in level.DIFFICULTY_CHOICES %}
                 <li>
-                    <a class="dropdown-item fw-lighter" href="{% url 'bestiary:dungeon_detail_difficulty' slug=dungeon.slug difficulty=difficulty.lower floor=level.floor %}">
+                    <a class="dropdown-item" href="{% url 'bestiary:dungeon_detail_difficulty' slug=dungeon.slug difficulty=difficulty.lower floor=level.floor %}">
                         {{ difficulty }}
                     </a>
                 </li>
@@ -23,18 +23,18 @@
         {% if floor_range|length > 1 %}
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-lg btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="fw-lighter">B{{ level.floor }}</span>
+                <span>B{{ level.floor }}</span>
             </button>
 
             <ul class="dropdown-menu">
                 {% for floor in floor_range %}
                 <li>
                     {% if is_scenario %}
-                    <a class="dropdown-item fw-lighter" href="{% url 'bestiary:dungeon_detail_difficulty' slug=dungeon.slug difficulty=level.get_difficulty_display.lower floor=floor %}">
+                    <a class="dropdown-item" href="{% url 'bestiary:dungeon_detail_difficulty' slug=dungeon.slug difficulty=level.get_difficulty_display.lower floor=floor %}">
                         B{{ floor }}
                     </a>
                     {% else %}
-                    <a class="dropdown-item fw-lighter" href="{% url 'bestiary:dungeon_detail' slug=dungeon.slug floor=floor %}">
+                    <a class="dropdown-item" href="{% url 'bestiary:dungeon_detail' slug=dungeon.slug floor=floor %}">
                         B{{ floor }}
                     </a>
                     {% endif %}

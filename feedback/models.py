@@ -28,18 +28,18 @@ class Issue(models.Model):
     def get_status_html(self):
         if self.closed:
             if self.github_issue_url:
-                return mark_safe('<a href="{}" target="_blank" class="btn badge bg-success fw-lighter"><i class="fas fa-check"></i> Implemented</a>'.format(
+                return mark_safe('<a href="{}" target="_blank" class="btn badge bg-success"><i class="fas fa-check"></i> Implemented</a>'.format(
                     self.github_issue_url,
                 ))
             else:
-                return mark_safe('<span class="badge bg-secondary fw-lighter">Closed</span>')
+                return mark_safe('<span class="badge bg-secondary">Closed</span>')
         else:
             if self.github_issue_url:
-                return mark_safe('<a href="{}" target="_blank" class="btn badge bg-info fw-lighter">Accepted - Tracked on <i class="fab fa-github"></i> GitHub</a>'.format(
+                return mark_safe('<a href="{}" target="_blank" class="btn badge bg-info">Accepted - Tracked on <i class="fab fa-github"></i> GitHub</a>'.format(
                      self.github_issue_url,
                 ))
             else:
-                return mark_safe('<span class="badge bg-secondary fw-lighter">Under Discussion</span>')
+                return mark_safe('<span class="badge bg-secondary">Under Discussion</span>')
 
     class Meta:
         ordering = ['-latest_comment']

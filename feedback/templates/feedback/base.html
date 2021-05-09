@@ -11,22 +11,22 @@
         </button>
     </div>
     <div class="navmenu subnavmenu-fixed-left offcanvas-sm bg-light shadow">
-        <a href="{% url 'feedback:index' %}" class="nav-link fw-lighter text-reset h3">Feedback</a>
+        <a href="{% url 'feedback:index' %}" class="nav-link text-reset h3">Feedback</a>
         <button type="button" class="d-lg-none navbar-toggler btn-abs-top-right" onClick="closeSidebarMobile()">
             <i class="fas fa-times"></i>
         </button>
         <ul class="navbar-nav">
             <li class="nav-item py-0{% if mode == 'open' %} active{% endif %}">
-                <a class="nav-link text-reset fw-lighter" href="{% url 'feedback:index' %}"><i class="fas fa-unlock"></i> Open</a>
+                <a class="nav-link text-reset" href="{% url 'feedback:index' %}"><i class="fas fa-unlock"></i> Open</a>
             </li>
             <li class="nav-item py-0{% if mode == 'closed' %} active{% endif %}">
-                <a class="nav-link text-reset fw-lighter" href="{% url 'feedback:closedissue_list' %}"><i class="fas fa-lock"></i> Closed</a>
+                <a class="nav-link text-reset" href="{% url 'feedback:closedissue_list' %}"><i class="fas fa-lock"></i> Closed</a>
             </li>
             <li class="nav-item py-0{% if mode == 'add' %} active{% endif %}">
-                <a class="nav-link text-reset fw-lighter" href="{% url 'feedback:issue_add' %}"><i class="fas fa-plus"></i> New Feedback</a>
+                <a class="nav-link text-reset" href="{% url 'feedback:issue_add' %}"><i class="fas fa-plus"></i> New Feedback</a>
             </li>
             <li class="nav-item py-0{% if mode == 'mine' %} active{% endif %}">
-                <a class="nav-link text-reset fw-lighter" href="{% url "feedback:myissue_list" %}"><i class="fas fa-headset"></i> My Feedback</a>
+                <a class="nav-link text-reset" href="{% url "feedback:myissue_list" %}"><i class="fas fa-headset"></i> My Feedback</a>
             </li>
         </ul>
     </div>

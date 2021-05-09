@@ -17,13 +17,13 @@
 
     {% if is_owner%}
         <ul class="navbar-nav ps-2">
-            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-edit" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-edit"></i> Edit</a></li>
-            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-copy" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-clone"></i> Copy</a></li>
-            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-power-up" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-chevron-up"></i> Power Up</a></li>
+            <li class="nav-item py-0"><a class="nav-link py-0 text-muted monster-edit" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-edit"></i> Edit</a></li>
+            <li class="nav-item py-0"><a class="nav-link py-0 text-muted monster-copy" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-clone"></i> Copy</a></li>
+            <li class="nav-item py-0"><a class="nav-link py-0 text-muted monster-power-up" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-chevron-up"></i> Power Up</a></li>
             {% if instance.monster.awakens_to is not None %}
-                <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-awaken" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-angle-double-up" style="color: purple;"></i> Awaken</a></li>
+                <li class="nav-item py-0"><a class="nav-link py-0 text-muted monster-awaken" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-angle-double-up" style="color: purple;"></i> Awaken</a></li>
             {% endif %}
-            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-delete" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-trash text-danger"></i> Delete</a></li>
+            <li class="nav-item py-0"><a class="nav-link py-0 text-muted monster-delete" data-instance-id="{{ instance.pk.hex }}" style="cursor: pointer;"><i class="fas fa-trash text-danger"></i> Delete</a></li>
         </ul>
     {% endif %}
 {% endblock monster_menu %}

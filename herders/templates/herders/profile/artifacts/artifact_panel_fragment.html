@@ -4,7 +4,7 @@
 
 <div class="card shadow-sm m-1 rune-box-border artifact-panel">
     <div class="card-header p-1 d-flex justify-content-between">
-        <div class="rune-text fw-lighter rune-text-{{ artifact.get_quality_display|lower }}">{{ artifact }}</div>
+        <div class="rune-text rune-text-{{ artifact.get_quality_display|lower }}">{{ artifact }}</div>
         {% if is_owner %}
         <div class="btn-group float-right">
             <button class="btn btn-link btn-sm artifact-edit p-0 text-dark" data-artifact-id="{{ artifact.pk.hex }}">
@@ -20,11 +20,11 @@
     <div class="card-body p-1">
         <div class="d-flex">
             {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact hide_original_quality=True only %}
-            <ul class="list-unstyled fw-lighter mb-0">
+            <ul class="list-unstyled mb-0">
                 <li class="rune-main-stat">{{ artifact.get_main_stat_display }} +{{ artifact.main_stat_value }}</li>
             </ul>
         </div>
-        <ul class="list-unstyled fw-lighter">
+        <ul class="list-unstyled">
             {% for disp in artifact.get_effects_display %}
                 <li>{{ disp }}</li>
             {% endfor %}
@@ -51,7 +51,7 @@
                 </div>
             </div>
         {% endif %}
-        <ul class="top-right-rune list-unstyled fw-lighter">
+        <ul class="top-right-rune list-unstyled">
             {% if artifact.original_quality is not None %}
                 <li>
                     Orig: <span class="badge rune-label-{{ artifact.get_original_quality_display|lower }}">

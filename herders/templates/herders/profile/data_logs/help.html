@@ -5,14 +5,14 @@
 {% endblock %}
 
 {% block logs %}
-    <h2 class="fw-lighter">How to get personal logs</h2>
+    <h2>How to get personal logs</h2>
     <ol>
         <li>Download the latest package from the <a class="text-decoration-none" href="https://github.com/Xzandro/sw-exporter/releases/latest" target="_blank">SW-Exporter</a> project on Github.</li>
         <li><a class="text-decoration-none" href="{% url 'herders:import_swparser' profile_name=profile_name %}">One time only - import your game data via Summoner's War JSON Import</a></li>
         <li>Play the game while connected to the proxy.</li>
     </ol>
 
-    <div class="callout callout-warning fw-lighter" role="alert"><h4 class="fw-lighter">Important!</h4> Data logs are only stored for a 6 month period.</div>
+    <div class="callout callout-warning" role="alert"><h4>Important!</h4> Data logs are only stored for a 6 month period.</div>
 
     <h2>FAQs</h2>
     <dl>

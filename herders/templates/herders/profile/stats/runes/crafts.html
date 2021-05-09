@@ -5,7 +5,7 @@
 {% endblock title %}
 
 {% block content_stats %}
-    <h1 class="fw-lighter">Rune {{ craft_type }}s</h1>
+    <h1>Rune {{ craft_type }}s</h1>
     <hr />
     <div class="container-fluid">
         <div class="grid">
@@ -16,7 +16,7 @@
             {% include 'herders/profile/stats/table.html' with title="Quality" data=crafts.quality %}
         </div>
         {% if not immemorial %}
-            <h2 class="fw-lighter">Detailed view</h2>
+            <h2>Detailed view</h2>
             <hr />
             <div class="grid">
                 <div class="grid-sizer col-md-6 col-sm-12 col-xs-12"></div>

@@ -9,7 +9,7 @@
     {% if total_count %}
         <div class="card shadow border-0 mb-3">
             <div class="card-header bg-white">
-                <h2 class="fw-lighter">Rift Raid Summary</h2>
+                <h2>Rift Raid Summary</h2>
             </div>
             <div class="card-body">
                 {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
@@ -40,7 +40,7 @@
             <div class="col-lg-3 col-md-4 col-sm-12">
                 <div class="card shadow border-0 mb-3">
                     <div class="card-header bg-white">
-                        <h3 class="card-title fw-lighter">Quick Links</h3>
+                        <h3 class="card-title">Quick Links</h3>
                     </div>
                     <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
                         <a href="{% url 'herders:data_log_rift_raid_table' profile_name=profile_name %}">View As Table</a>

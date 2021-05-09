@@ -15,18 +15,18 @@
                     {% if not box_grouping == 'equipped' %}<li><a class="dropdown-item dropdown-link box-group-mode text-muted" data-mode="equipped">Equipped</a></li>{% endif %}
                 </ul>
             </div>
-            <span class="float-right fw-lighter text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> artifact{{ total_count|pluralize }}</span>
+            <span class="float-right text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> artifact{{ total_count|pluralize }}</span>
         </div>
         <div class="card-body">
             {% if not total_count %}
                 <div class="callout callout-warning">
-                    <h2 class="fw-lighter">No artifacts!</h2>
-                    <p class="fw-lighter">You don't have any artifacts!</p>
+                    <h2>No artifacts!</h2>
+                    <p>You don't have any artifacts!</p>
                 </div>
             {% elif not filtered_count %}
                 <div class="callout callout-warning">
-                    <h2 class="fw-lighter">No records!</h2>
-                    <p class="fw-lighter">All artifacts were filtered out!</p>
+                    <h2>No records!</h2>
+                    <p>All artifacts were filtered out!</p>
                 </div>
             {% else %}
                 {% for group in artifacts %}
@@ -36,7 +36,7 @@
                                 <a role="button" data-bs-toggle="collapse" data-bs-target="#runegroup{{ forloop.counter }}" aria-expanded="true">
                                     <strong>{{ group.name }}</strong>
                                 </a>
-                                <span class="float-right fw-lighter text-muted">{% with num_runes=group.artifacts|length %}{{ num_runes }} artifact{{ num_runes|pluralize }}{% endwith %}</span>
+                                <span class="float-right text-muted">{% with num_runes=group.artifacts|length %}{{ num_runes }} artifact{{ num_runes|pluralize }}{% endwith %}</span>
                             </div>
                             <div id="runegroup{{ forloop.counter }}" class="collapse in show">
                                 <div class="card-body">
@@ -49,7 +49,7 @@
                                                     <a role="button" data-bs-toggle="collapse" data-bs-target="#runegroup{{ forloop.counter }}nested{{ group.name|lower }}" aria-expanded="true">
                                                         <strong>{{ nested_group.grouper }}</strong>
                                                     </a>
-                                                    <span class="float-right fw-lighter text-muted">{% with num_runes=nested_group.list|length %}{{ num_runes }} artifact{{ num_runes|pluralize }}{% endwith %}</span>
+                                                    <span class="float-right text-muted">{% with num_runes=nested_group.list|length %}{{ num_runes }} artifact{{ num_runes|pluralize }}{% endwith %}</span>
                                                 </div>
                                                 <div id="runegroup{{ forloop.counter }}nested{{ group.name|lower }}" class="collapse in show">
                                                     <div class="card-body">

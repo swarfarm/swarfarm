@@ -9,7 +9,7 @@
     {% if total_count %}
         <div class="card shadow border-0 mb-3">
             <div class="card-header bg-white d-flex flex-wrap justify-content-between">
-                <h4 class="fw-lighter">{{ dungeon }}</h4>
+                <h4>{{ dungeon }}</h4>
             </div>
             <div class="card-body">
                 {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
@@ -24,7 +24,7 @@
             <div class="col-md-6 col-sm-12">
                 <div class="card shadow border-0 mb-3 h-100">
                     <div class="card-header bg-white">
-                        <h3 class="fw-lighter">Avg Grade</h3>
+                        <h3>Avg Grade</h3>
                     </div>
                     <div class="card-body">
                         <input
@@ -47,7 +47,7 @@
             <div class="col-md-6 col-sm-12">
                 <div class="card shadow border-0 mb-3 h-100">
                     <div class="card-header bg-white">
-                        <h3 class="fw-lighter">Avg Grade</h3>
+                        <h3>Avg Grade</h3>
                     </div>
                     <div class="card-body">
                     {% if damage_histogram %}

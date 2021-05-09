@@ -11,7 +11,7 @@
 
     {% if validation_errors %}
         <div class="callout callout-danger" role="alert">
-            <h2 class="fw-lighter">Errors</h2>
+            <h2>Errors</h2>
             Please fix the following errors:
             <ul>
                 {% for error,error_string in validation_errors.items %}
@@ -28,7 +28,7 @@
 
     <div class="card shadow border-0 mb-3">
         <div class="card-header bg-white">
-            <h4 class="fw-lighter">Bulk Add</h4>
+            <h4>Bulk Add</h4>
         </div>
         <div class="card-body table-responsive">
             <form method="post" action="{{ bulk_add_formset_action }}" class="form-inline" id="bulkAddFormset" data-formset-prefix="{{ bulk_add_formset.prefix }}">

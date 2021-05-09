@@ -24,8 +24,8 @@
         </div>
         <div class="card-body">
             <div class="callout callout-warning">
-                <h2 class="fw-lighter">No 2A & Devilmons!</h2>
-                <p class="fw-lighter">This view does NOT include 2A monsters & Devilmons!</p>
+                <h2>No 2A & Devilmons!</h2>
+                <p>This view does NOT include 2A monsters & Devilmons!</p>
             </div>
             {% if monster_stable %}
             <div class="card-deck row">
@@ -34,7 +34,7 @@
                     <div class="card shadow-sm border-0 m-1 h-100">
                         <div class="card-header">
                             {{ mon.name }}
-                            {% if mon.possible_skillups %}<span class="float-right fw-lighter"><strong>{{ mon.possible_skillups}}</strong> possible skillups{% endif %}
+                            {% if mon.possible_skillups %}<span class="float-right"><strong>{{ mon.possible_skillups}}</strong> possible skillups{% endif %}
                         </div>
                         <div class="card-body py-0">
                             {% for el, data in mon.elements.items %}
@@ -44,7 +44,7 @@
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column">
                                             <p><strong>Acquired</strong></p>
-                                            <p class="fw-lighter h3">
+                                            <p class="h3">
                                             {% if data.skill_ups_to_max or data.skilled_up %}
                                                 <i class="fas fa-check"></i>
                                             {% else %}
@@ -56,7 +56,7 @@
                                     <div class="col-12 col-md-6">
                                         <div class="d-flex flex-column">
                                             <p><strong>Skillups left</strong></p>
-                                            <p class="fw-lighter h3">
+                                            <p class="h3">
                                             {% if data.skilled_up %}
                                                 0
                                             {% elif data.skill_ups_to_max %}
@@ -73,9 +73,9 @@
                         </div>
                         <div class="card-footer">
                         {% if mon.skillups_need > 0 %}
-                            <span class="fw-lighter float-right">Missing <strong>{{ mon.skillups_need }}</strong> skillups</span>
+                            <span class="float-right">Missing <strong>{{ mon.skillups_need }}</strong> skillups</span>
                         {% else %}
-                            <span class="fw-lighter float-right">Enough skillups</span>
+                            <span class="float-right">Enough skillups</span>
                         {% endif %}
                         </div>
                     </div>
@@ -84,8 +84,8 @@
             </div>
             {% else %}
             <div class="callout callout-warning">
-                <h2 class="fw-lighter">No records!</h2>
-                <p class="fw-lighter">Your search returned no results or you have no monsters!</p>
+                <h2>No records!</h2>
+                <p>Your search returned no results or you have no monsters!</p>
             </div>
             {% endif %}
         </div>

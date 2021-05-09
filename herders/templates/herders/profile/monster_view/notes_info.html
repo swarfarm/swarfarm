@@ -43,15 +43,15 @@
         <div class="card border-0 mb-3 ps-2">
             {% if instance.created and is_owner %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Summoned on</div>
-                <div class="fw-lighter">{{ instance.created }}</div>
+                <div>Summoned on</div>
+                <div>{{ instance.created }}</div>
             </div>
             {% endif %}
 
             {% with sources=instance.monster.source.all %}
             {% if sources|length %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Sources</div>
+                <div>Sources</div>
                 <div>
                     {% for source in sources %}
                         {% if source.icon_filename %}
@@ -69,7 +69,7 @@
             {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
                 {% with instance.monster.awakens_to as awakened %}
                 <div class="card-header bg-white card-bestiary-monster-details">
-                    <div class="fw-lighter">Awakens to</div>
+                    <div>Awakens to</div>
                     <div>
                         <span class="monster-image">
                             <a href="{% url 'bestiary:detail' monster_slug=awakened.bestiary_slug %}" target="_blank">
@@ -84,22 +84,22 @@
                     </div>
                 </div>
                 <div class="card-header bg-white card-bestiary-monster-details">
-                    <div class="fw-lighter">Awakening bonus</div>
-                    <div class="fw-lighter">{{ instance.monster.awaken_bonus }}</div>
+                    <div>Awakening bonus</div>
+                    <div>{{ instance.monster.awaken_bonus }}</div>
                 </div>
                 {% endwith %}
             {% endif %}
 
             {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Awakening Essences</div>
+                <div>Awakening Essences</div>
                 <div>{% include 'bestiary/awakening_essences.html' with monster=instance.monster only %}</div>
             </div>
             {% endif %}
 
             {% if instance.tags.all|length %}<tr>
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Tags</div>
+                <div>Tags</div>
                 <div class="align-items-center">
                 {% for tag in instance.tags.all %}
                     <span class="tag">{{ tag }}</span>
@@ -110,22 +110,22 @@
 
             {% if instance.notes and instance.notes != "" %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Notes</div>
-                <div class="fw-lighter">{{ instance.notes|markdown }}</div>
+                <div>Notes</div>
+                <div>{{ instance.notes|markdown }}</div>
             </div>
             {% endif %}
 
             {% if instance.priority %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Priority</div>
-                <div class="fw-lighter">{{ instance.get_priority_display }}</div>
+                <div>Priority</div>
+                <div>{{ instance.get_priority_display }}</div>
             </div>
             {% endif %}
 
 
             {% if fusion_ingredient_in|length %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Fusion Ingredient For</div>
+                <div>Fusion Ingredient For</div>
                 <div>
                     {% for fusion in fusion_ingredient_in %}
                         <div class="monster-image">
@@ -151,7 +151,7 @@
                 
             {% if fusion_product_of %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Fusion Product Of</div>
+                <div>Fusion Product Of</div>
                 <div class="monster-image">
                     <a href="{% url 'herders:fusion' profile_name=profile_name %}#{{ fusion_product_of.product.bestiary_slug }}">
                         <img src="{{ img_url_prefix }}monsters/{{ fusion_product_of.product.image_filename }}" class="monster-thumb" loading="lazy" />
@@ -173,8 +173,8 @@
 
             {% if instance.team_set.count or instance.team_leader.count %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Teams</div>
-                <div class="fw-lighter">
+                <div>Teams</div>
+                <div>
                     <ul class="list-unstyled">
                     {% for team in instance.team_leader.all %}
                         <li><a href="{% url 'herders:teams' profile_name=profile_name %}#{{ team.pk.hex }}">{{ team.group.name }} - {{ team.name }} (Lead)</a></li>
@@ -188,8 +188,8 @@
             {% endif %}
 
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Skill-ups to Max</div>
-                <div class="fw-lighter">
+                <div>Skill-ups to Max</div>
+                <div>
                     {% if instance.skill_ups_to_max > 0 %}
                         {{ instance.skill_ups_to_max }}
                     {% else %}
@@ -200,8 +200,8 @@
 
             {% if instance.skill_ups_to_max %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Possible skill-ups</div>
-                <div class="fw-lighter">
+                <div>Possible skill-ups</div>
+                <div>
                     {% if skillups.none %}
                         None!
                     {% else %}

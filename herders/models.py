@@ -651,18 +651,18 @@ class RuneBuild(models.Model):
 
     def clear_cache_properties(self):
         fields = [
-            self.rune_set_text,
-            self.rune_set_summary,
-            self.rune_set_bonus_text,
-            self.active_rune_sets,
-            self.rune_stats,
-            self.runes_per_slot,
-            self.artifacts_per_slot
+            "rune_set_text",
+            "rune_set_summary",
+            "rune_set_bonus_text",
+            "active_rune_sets",
+            "rune_stats",
+            "runes_per_slot",
+            "artifacts_per_slot",
         ]
 
         for field in fields: 
             try:
-                del field
+                delattr(self, field)
             except AttributeError:
                 pass 
 

@@ -39,7 +39,7 @@
                 Select Columns
             </button>
 
-            <span class="float-right fw-lighter text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> monster{{ total_count|pluralize }}</span>
+            <span class="float-right text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> monster{{ total_count|pluralize }}</span>
         </div>
         
         <div id="column-selector-collapse" class="collapse">
@@ -102,8 +102,8 @@
                 </div>
             {% else %}
                 <div class="callout callout-warning">
-                    <h2 class="fw-lighter">No records!</h2>
-                    <p class="fw-lighter">Your search returned no results or you have no monsters!</p>
+                    <h2>No records!</h2>
+                    <p>Your search returned no results or you have no monsters!</p>
                 </div>
             {% endif %}
         </div>

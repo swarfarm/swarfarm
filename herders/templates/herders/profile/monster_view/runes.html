@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-6">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h3 class="card-title fw-lighter">Default Build</h3>
+                    <h3 class="card-title">Default Build</h3>
                     {% if is_owner and instance.default_build.runes.count %}
                     <button class="btn btn-sm btn-outline-danger rune-remove-all" data-instance-id="{{ instance.pk.hex }}">Remove All</button>
                     {% endif %}
@@ -14,7 +14,7 @@
             </div>
             <div class="col-6">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h3 class="card-title fw-lighter">RTA Build</h3>
+                    <h3 class="card-title">RTA Build</h3>
                     {% if is_owner and instance.rta_build.runes.count %}
                     <button class="btn btn-sm btn-outline-danger rune-remove-all">Remove All</button>
                     {% endif %}
@@ -89,7 +89,7 @@
                     </div>
                     {% endwith %}
                 </div>
-                <div class="ps-2 fw-lighter">
+                <div class="ps-2">
                     <div class="d-flex flex-column">
                         <div><strong>Main Stat: </strong>{% if runes.2 %}{{ runes.2.get_main_stat_display }}{% else %}-{% endif %} / {% if runes.4 %}{{ runes.4.get_main_stat_display }}{% else %}-{% endif %} / {% if runes.6 %}{{ runes.6.get_main_stat_display }}{% else %}-{% endif %}</div>
                         <div><strong>Sets: </strong>{{ instance.default_build.rune_set_text }}</div>
@@ -163,7 +163,7 @@
                     </div>
                     {% endwith %}
                 </div>
-                <div class="ps-2 fw-lighter">
+                <div class="ps-2">
                     {% comment %} To uncomment when RTA features implemented {% endcomment %}
                     {% comment %} <div class="d-flex flex-column">
                         <div><strong>Main Stat: </strong>{% if runes_rta.2 %}{{ runes_rta.2.get_main_stat_display }}{% else %}-{% endif %} / {% if runes_rta.4 %}{{ runes_rta.4.get_main_stat_display }}{% else %}-{% endif %} / {% if runes_rta.6 %}{{ runes_rta.6.get_main_stat_display }}{% else %}-{% endif %}</div>

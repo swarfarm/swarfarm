@@ -3,7 +3,7 @@
 
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-header bg-white">
-        <h3 class="card-title fw-lighter">Monsters</h3>
+        <h3 class="card-title">Monsters</h3>
     </div>
 
     <div class="card-body">
@@ -24,7 +24,7 @@
                 <span class="image-plus image-plus-right">{{ monster.count|humanize_number }}</span >
             </div>
         {% empty %}
-            <div class="callout callout-warning fw-lighter">None!</div>
+            <div class="callout callout-warning">None!</div>
         {% endfor %}
     </div>
 </div>

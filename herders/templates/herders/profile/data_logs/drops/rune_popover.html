@@ -5,12 +5,12 @@
 <div class="rune-panel">
     <div class="d-flex">
         {% include 'herders/profile/runes/rune_image_fragment.html' with rune=drop only %}
-        <ul class="list-unstyled fw-lighter mb-0">
+        <ul class="list-unstyled mb-0">
             <li class="rune-main-stat">{{ drop.get_main_stat_rune_display }} +{{ drop.main_stat_value }}{% if drop.main_stat in drop.PERCENT_STATS %}%{% endif %}</li>
             {% if rune.innate_stat %}<li>{{ drop.get_innate_stat_rune_display }} +{{ drop.innate_stat_value }}{% if drop.innate_stat in drop.PERCENT_STATS %}%{% endif %}</li>{% endif %}
         </ul>
     </div>
-    <ul class="list-unstyled fw-lighter">
+    <ul class="list-unstyled">
         {% for x in drop.substats|length|get_range %}
             <li>
                 {{ drop.substat_rune_display|key:x }}
@@ -18,7 +18,7 @@
             </li>
         {% endfor %}
     </ul>
-    <ul class="top-right list-unstyled fw-lighter">
+    <ul class="top-right list-unstyled">
         {% if drop.original_quality %}
             <li>Orig. <span class="badge rune-label-{{ drop.get_original_quality_display|lower }}">{{ drop.get_original_quality_display }}</span></li>
         {% endif %}

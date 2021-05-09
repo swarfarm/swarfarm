@@ -7,7 +7,7 @@
         <div class="card shadow border-0 mb-3">
             <div class="card-header bg-white">
                 {% crispy search_form %}
-                <p class="card-title fw-lighter">Feedback and Suggestions</p>
+                <p class="card-title">Feedback and Suggestions</p>
             </div>
             <div class="table-responsive card-body">
                 <table class="table table-sm">
@@ -28,8 +28,8 @@
                         <tr>
                             <td><a href="{{ issue.get_absolute_url }}">#{{ issue.pk }}</a></td>
                             <td>
-                                <h4 class="fw-lighter">{% if not issue.public %}<i class="fas fa-user-lock"></i> {% endif %}{{ issue.subject }}</h4>
-                                <p class="text-muted fw-lighter mb-0">Submitted by {{ issue.user }} {{ issue.submitted|naturaltime }}</p>
+                                <h4>{% if not issue.public %}<i class="fas fa-user-lock"></i> {% endif %}{{ issue.subject }}</h4>
+                                <p class="text-muted mb-0">Submitted by {{ issue.user }} {{ issue.submitted|naturaltime }}</p>
                             </td>
                             <td>{{ issue.get_status_html }}</td>
                             <td>
@@ -55,7 +55,7 @@
         </div>
     {% else %}
         <div class="callout callout-info">
-            <h2 class="fw-lighter">No Results!</h2>
+            <h2>No Results!</h2>
             <p>There is not even a single feedback to show!</p>
         </div>
     {% endif %}

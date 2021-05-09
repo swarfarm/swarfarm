@@ -20,19 +20,19 @@
                 </button>
             </div>
 
-            <span class="float-right fw-lighter text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> rune{{ total_count|pluralize }}</span>
+            <span class="float-right text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> rune{{ total_count|pluralize }}</span>
         </div>
 
         <div class="card-body table-responsive">
         {% if not total_count %}
             <div class="callout callout-warning">
-                <h2 class="fw-lighter">No runes!</h2>
-                <p class="fw-lighter">You don't have any runes!</p>
+                <h2>No runes!</h2>
+                <p>You don't have any runes!</p>
             </div>
         {% elif not filtered_count %}
             <div class="callout callout-warning">
-                <h2 class="fw-lighter">No records!</h2>
-                <p class="fw-lighter">All runes were filtered out!</p>
+                <h2>No records!</h2>
+                <p>All runes were filtered out!</p>
             </div>
         {% else %}
             <table class="table table-condensed table-bordered table-hover monster-table" id="runeInventoryTable">

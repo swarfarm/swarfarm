@@ -8,13 +8,13 @@ Friends - {{ block.super }}
 {% block content %}
     {% if not friends %}
     <div class="callout callout-danger">
-        <h1 class="fw-lighter">You have no friends <i class="fas fa-sad-tear"></i></h1>
-        <p class="fw-lighter">Consider adding someone to your friend list, so we can show you new features, like comparing your profile/builds with your friend's profile/build.
+        <h1>You have no friends <i class="fas fa-sad-tear"></i></h1>
+        <p>Consider adding someone to your friend list, so we can show you new features, like comparing your profile/builds with your friend's profile/build.
     </div>
     {% else %}
     <div class="callout callout-info">
-        <h1 class="fw-lighter">Info</h1>
-        <p class="fw-lighter">In order to compare profile/build with your friend, you need to <strong>follow each other</strong>. In addition, both profiles need to be <strong>Public</strong>
+        <h1>Info</h1>
+        <p>In order to compare profile/build with your friend, you need to <strong>follow each other</strong>. In addition, both profiles need to be <strong>Public</strong>
     </div>
     <div class="row">
         {% for friend in friends %}
@@ -22,13 +22,13 @@ Friends - {{ block.super }}
                 <div class="col-lg-4 col-xl-3 col-md-6 mb-3">
                     <div class="card h-100 border-0 shadow mb-3" >
                         <div class="card-header bg-white">
-                            <small class="fw-lighter fs-5"><strong>Username</strong>: {{ friend.obj.user.username }}</small>
+                            <small class="fs-5"><strong>Username</strong>: {{ friend.obj.user.username }}</small>
                         </div>
                         <div class="card-body">
-                            <h1 class="card-title fw-lighter">{{ friend.obj.summoner_name }}</h1>
-                            <h5 class="card-text fw-lighter">Server<div class="link-info float-right">{{ friend.obj.get_server_display }}</div>
-                            <h5 class="card-text fw-lighter">Following{% if friend.following %}<i class="fas fa-check link-success float-right"></i>{% else %}<i class="fas fa-times link-danger float-right"></i>{% endif %}
-                            <h5 class="card-text fw-lighter">Followed By{% if friend.followed_by %}<i class="fas fa-check link-success float-right"></i>{% else %}<i class="fas fa-times link-danger float-right"></i>{% endif %}
+                            <h1 class="card-title">{{ friend.obj.summoner_name }}</h1>
+                            <h5 class="card-text">Server<div class="link-info float-right">{{ friend.obj.get_server_display }}</div>
+                            <h5 class="card-text">Following{% if friend.following %}<i class="fas fa-check link-success float-right"></i>{% else %}<i class="fas fa-times link-danger float-right"></i>{% endif %}
+                            <h5 class="card-text">Followed By{% if friend.followed_by %}<i class="fas fa-check link-success float-right"></i>{% else %}<i class="fas fa-times link-danger float-right"></i>{% endif %}
                         </div>
                         <div class="card-footer bg-white">
                             {% if friend.obj.public %}

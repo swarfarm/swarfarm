@@ -8,7 +8,7 @@
                 <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
                 <span class="image-plus image-plus-right">{{ skill.max_level }}</span>
             </div>
-            <p class="fw-lighter">
+            <p>
                 {{ skill.description }}
                 {% if skill.cooltime %}
                     (Reusable in {{ skill.cooltime }} turn{{ skill.cooltime|pluralize }}).
@@ -49,7 +49,7 @@
     {% if skill.multiplier_formula %}
     <div class="card-footer border-0 bg-white">
         <strong class="fw-normal">Multiplier Formula</strong>
-        <p class="fw-lighter">{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
+        <p>{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
     </div>
     {% endif %}
 </div>

@@ -7,7 +7,7 @@
 {% block logs %}
     {% if total == 0 %}
         <div class="callout callout-warning" role="alert">
-            <h4 class="fw-lighter">No data!</h4>
+            <h4>No data!</h4>
             You don't have any data logs yet! See the <a class="text-decoration-none" href="{% url 'herders:data_log_help' profile_name=profile_name %}">data log help section</a> to get started.
         </div>
     {% else %}

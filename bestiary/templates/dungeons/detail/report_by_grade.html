@@ -5,9 +5,9 @@
         <div class="card shadow-sm border-0 mb-3">
             <div class="card-body">
                 <ul class="list-unstyled pb-0">
-                    <li class="fw-lighter">Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
-                    <li class="fw-lighter">{{ report.log_count }} records</li>
-                    <li class="fw-lighter">{{ report.unique_contributors }} unique contributors</li>
+                    <li>Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
+                    <li>{{ report.log_count }} records</li>
+                    <li>{{ report.unique_contributors }} unique contributors</li>
                 </ul>
             </div>
         </div>
@@ -49,7 +49,7 @@
             <div class="tab-pane fade show active" id="rating-0" role="tabpanel" aria-labelledby="rating-0-tab">
                 <div class="card border-0 shadow-sm m-3 card-dungeon-md card-dungeon-sm">
                     <div class="card-header bg-white">
-                        <h4 class="fw-lighter">Summary</h4>
+                        <h4>Summary</h4>
                     </div>
                     <div class="card-body">
                         {% include 'dungeons/detail/report_by_grade_summary_table.html' with table=report.report.summary only %}

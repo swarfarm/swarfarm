@@ -16,7 +16,7 @@
             {% if monster.obtainable %}
             <div class="monster-box-actions">
                 <button class="btn btn-link btn-sm monster-add text-decoration-none" data-monster="{{ monster.pk }}" data-stars="{{ monster.stars }}">
-                    <small class="fw-lighter"><i class="fas fa-plus"></i> Collection</small>
+                    <small><i class="fas fa-plus"></i> Collection</small>
                 </button>
             </div>
             {% endif %}
@@ -25,7 +25,7 @@
         <div class="card border-0 mb-3 ps-2">
             {% if monster.transforms_to %}
             <div class="card-header bg-white d-flex justify-content-between flex-wrap">
-                <div class="fw-lighter">Transforms Into</div>
+                <div>Transforms Into</div>
                 <a href="{% url 'bestiary:detail' monster_slug=monster.transforms_to.bestiary_slug  %}">
                     {{ monster.transforms_to }} <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ monster.transforms_to.image_filename }}" />
                 </a>
@@ -34,7 +34,7 @@
 
             {% if monster.awaken_bonus %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Awakening Bonus</div>
+                <div>Awakening Bonus</div>
                 {{ monster.awaken_bonus }}
             </div>
             {% endif %}
@@ -42,7 +42,7 @@
             {% with sources=monster.source.all %}
             {% if sources|length %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Sources</div>
+                <div>Sources</div>
                 <div>
                     {% for source in sources %}
                         {% if source.icon_filename %}
@@ -59,14 +59,14 @@
 
             {% if monster.can_awaken and not monster.is_awakened %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Awakening Essences</div>
+                <div>Awakening Essences</div>
                 <div>{% include 'bestiary/awakening_essences.html' %}</div>
             </div>
             {% endif %}
             {% with fusion_set=monster.fusion_ingredient_for.all %}
             {% if fusion_set|length %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Fusion Ingredient For</div>
+                <div>Fusion Ingredient For</div>
                 <div>
                     {% for fusion in fusion_set %}
                         <a href="{% url 'bestiary:detail' monster_slug=fusion.product.bestiary_slug %}">
@@ -80,7 +80,7 @@
                 
             {% if monster.fusion %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Fusion Product Of</div>
+                <div>Fusion Product Of</div>
                 <div>
                     {% for fusion_from in monster.fusion.ingredients.all %}
                         <a href="{% url 'bestiary:detail' monster_slug=fusion_from.bestiary_slug %}">
@@ -93,7 +93,7 @@
 
             {% if monster.skill_ups_to_max %}
             <div class="card-header bg-white card-bestiary-monster-details">
-                <div class="fw-lighter">Skill-ups to Max</div>
+                <div>Skill-ups to Max</div>
                 <div class="monster-image">
                     <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb" loading="lazy" />
                     <span class="image-plus image-plus-main">{{ monster.skill_ups_to_max }}</span>

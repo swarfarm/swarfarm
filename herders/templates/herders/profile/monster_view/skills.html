@@ -8,8 +8,8 @@
             <div class="card-body d-flex">
                 <div class="monster-skill-thumb float-left"><img src="{{ img_url_prefix }}skills/leader/{{ instance.monster.leader_skill.icon_filename }}" loading="lazy" /></div>
                 <div>
-                    <h4 class="fw-lighter mb-0">Leader Skill</h4>
-                    <div class="fw-lighter">
+                    <h4 class="mb-0">Leader Skill</h4>
+                    <div>
                         {{ instance.monster.leader_skill.skill_string }}
                     </div>
                 </div>
@@ -22,7 +22,7 @@
     <div class="{% if instance.monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
         <div class="card border-0 shadow mb-3">
             <div class="card-header bg-white">
-                <p class="card-title fw-lighter"><strong>{{ skill.skill.name }}</strong></p>
+                <p class="card-title"><strong>{{ skill.skill.name }}</strong></p>
             </div>
 
             <div class="{% if skill.skill.level_progress_description_list|length > 0 or skill.skill.effect.all|length > 0 or skill.skill.aoe or skill.skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
@@ -31,7 +31,7 @@
                         <img src="{{ img_url_prefix }}skills/{{ skill.skill.icon_filename }}" loading="lazy" />
                         <span class="image-plus image-plus-right">{{ skill.level }}/{{ skill.skill.max_level }}</span>
                     </div>
-                    <p class="fw-lighter">
+                    <p>
                         {{ skill.skill.description }}
                         {% if skill.skill.cooltime %}
                             (Reusable in {{ skill.skill.cooltime }} turn{{ skill.skill.cooltime|pluralize }}).
@@ -43,7 +43,7 @@
             {% if skill.skill.level_progress_description_list|length > 0 %}
             <div class="{% if skill.skill.effect.all|length > 0 or skill.skill.aoe %}card-header{% else %}card-footer border-0{% endif %} bg-white">
                 <strong class="fw-normal">Level-up Progress</strong>
-                <ul class="list-unstyled fw-lighter">
+                <ul class="list-unstyled">
                     {% for line in skill.skill.level_progress_description_list %}
                         <li>{% if forloop.counter >= skill.level %}<span class="text-muted">{% else %}<i class="fas fa-check text-success"></i> <span>{% endif %}{{ line }}</span></li>
                     {% endfor %}
@@ -78,7 +78,7 @@
             {% if skill.skill.multiplier_formula %}
             <div class="card-footer border-0 bg-white">
                 <strong class="fw-normal">Multiplier Formula</strong>
-                <p class="fw-lighter">{{ skill.skill.multiplier_formula|safe }} {% if skill.skill.hits > 1 %}x{{ skill.skill.hits }}{% endif %}</p>
+                <p>{{ skill.skill.multiplier_formula|safe }} {% if skill.skill.hits > 1 %}x{{ skill.skill.hits }}{% endif %}</p>
             </div>
             {% endif %}
         </div>

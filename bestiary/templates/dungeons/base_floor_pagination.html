@@ -2,7 +2,7 @@
     {% if d.category == d.CATEGORY_SCENARIO %}
         {# List floors by difficulty #}
         <div class="card-header bg-white p-2">
-            <div class="fw-lighter">Normal</div>
+            <div>Normal</div>
             <ul class="pagination pagination-sm flex-wrap mb-0">
                 {% for l in d.level_set.all %}
                     {% if l.difficulty == l.DIFFICULTY_NORMAL %}
@@ -17,7 +17,7 @@
         </div>
 
         <div class="card-header bg-white p-2">
-            <div class="fw-lighter">Hard</div>
+            <div>Hard</div>
             <ul class="pagination pagination-sm flex-wra mb-0">
                 {% for l in d.level_set.all %}
                     {% if l.difficulty == l.DIFFICULTY_HARD %}
@@ -32,7 +32,7 @@
         </div>
 
         <div class="card-footer bg-white p-2 border-0">
-            <div class="fw-lighter">Hell</div>
+            <div>Hell</div>
             <ul class="pagination pagination-sm flex-wrap mb-0">
                 {% for l in d.level_set.all %}
                     {% if l.difficulty == l.DIFFICULTY_HELL %}
@@ -57,5 +57,5 @@
         </div>
     {% endif %}
 {% else %}
-    <div class="fw-lighter p-2">Only one level</div>
+    <div class="p-2">Only one level</div>
 {% endif %}

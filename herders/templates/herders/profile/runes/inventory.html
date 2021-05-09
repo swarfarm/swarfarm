@@ -30,19 +30,19 @@
                     {% if not box_grouping == 'element' %}<li><a class="dropdown-item dropdown-link box-group-mode text-muted" data-mode="equipped">Equipped</a></li>{% endif %}
                 </ul>
             </div>
-            <span class="float-right fw-lighter text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> rune{{ total_count|pluralize }}</span>
+            <span class="float-right text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> rune{{ total_count|pluralize }}</span>
         </div>
 
         <div class="card-body">
             {% if not total_count %}
                 <div class="callout callout-warning">
-                    <h2 class="fw-lighter">No runes!</h2>
-                    <p class="fw-lighter">You don't have any runes!</p>
+                    <h2>No runes!</h2>
+                    <p>You don't have any runes!</p>
                 </div>
             {% elif not filtered_count %}
                 <div class="callout callout-warning">
-                    <h2 class="fw-lighter">No records!</h2>
-                    <p class="fw-lighter">All runes were filtered out!</p>
+                    <h2>No records!</h2>
+                    <p>All runes were filtered out!</p>
                 </div>
             {% else %}
                 {% for group in runes %}
@@ -52,7 +52,7 @@
                                 <a role="button" data-bs-toggle="collapse" data-bs-target="#runegroup{{ forloop.counter }}" aria-expanded="true">
                                     <strong>{{ group.name }}</strong>
                                 </a>
-                                <span class="float-right fw-lighter text-muted">{% with num_runes=group.runes|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
+                                <span class="float-right text-muted">{% with num_runes=group.runes|length %}{{ num_runes }} rune{{ num_runes|pluralize }}{% endwith %}</span>
                             </div>
                             <div id="runegroup{{ forloop.counter }}" class="collapse in show">
                                 <div class="card-body">

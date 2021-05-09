@@ -15,7 +15,7 @@
                 </a>
             </div>
         {% endif %}
-        <h1 class="fw-lighter">{{ team.group.name }} - {{ team.name }}</h1>
+        <h1>{{ team.group.name }} - {{ team.name }}</h1>
     </div>
     {% if team.description %}
     <div class="card-header bg-white">
@@ -41,7 +41,7 @@
     </div>
     {% endif %}
     <div class="card-header bg-white">
-        <div class="card-title fw-lighter h4">Leader</div>
+        <div class="card-title h4">Leader</div>
         {% if team.leader %}
             {% include 'herders/profile/teams/team_unit_detail.html' with unit=team.leader %}
         {% endif %}

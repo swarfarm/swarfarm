@@ -9,7 +9,7 @@
     {% if total_count %}
         <div class="card shadow border-0 mb-3">
             <div class="card-header bg-white d-flex flex-wrap justify-content-between">
-                <h2 class="fw-lighter">World Boss Log Summary</h2>
+                <h2>World Boss Log Summary</h2>
             </div>
             <div class="card-body">
                 {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
@@ -23,7 +23,7 @@
             <div class="col-md-6 col-sm-12 mb-3">
                 <div class="card shadow border-0 mb-3 h-100">
                     <div class="card-header bg-white">
-                        <h3 class="fw-lighter">Avg Grade</h3>
+                        <h3>Avg Grade</h3>
                     </div>
                     <div class="card-body">
                         <input
@@ -45,7 +45,7 @@
             <div class="col-md-6 col-sm-12 mb-3">
                 <div class="card shadow border-0 mb-3 h-100">
                     <div class="card-header bg-white">
-                        <h3 class="fw-lighter">Avg Damage</h3>
+                        <h3>Avg Damage</h3>
                     </div>
                     <div class="card-body">
                     {% if damage_histogram %}
@@ -75,7 +75,7 @@
             <div class="col-lg-3 col-md-4 col-sm-12 mb-3">
                 <div class="card shadow border-0 mb-3 h-100">
                     <div class="card-header bg-white">
-                        <h3 class="card-title fw-lighter">Quick Links</h3>
+                        <h3 class="card-title">Quick Links</h3>
                     </div>
                     <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
                         <a href="{% url 'herders:data_log_world_boss_table' profile_name=profile_name %}">View As Table</a>

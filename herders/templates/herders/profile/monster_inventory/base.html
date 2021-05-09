@@ -15,10 +15,10 @@
 {% block monster_menu %}
     {% if is_owner %}
         <ul class="navbar-nav ps-2">
-            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted monster-add" style="cursor: pointer;"><i class="fas fa-plus"></i> Add Monster</a></li>
-            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted quick-fodder-menu" style="cursor: pointer;"><i class="far fa-clock"></i> Quick Fodder</a></li>
-            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}" ><i class="fas fa-list-ul"></i> Bulk Add</a></li>
-            <li class="nav-item py-0"><a class="nav-link fw-lighter py-0 text-muted" href="{% url 'herders:monster_compare' profile_name=profile_name %}" ><i class="fas fa-exchange-alt"></i> Compare</a></li>
+            <li class="nav-item py-0"><a class="nav-link py-0 text-muted monster-add" style="cursor: pointer;"><i class="fas fa-plus"></i> Add Monster</a></li>
+            <li class="nav-item py-0"><a class="nav-link py-0 text-muted quick-fodder-menu" style="cursor: pointer;"><i class="far fa-clock"></i> Quick Fodder</a></li>
+            <li class="nav-item py-0"><a class="nav-link py-0 text-muted" href="{% url 'herders:monster_instance_bulk_add' profile_name=profile_name %}" ><i class="fas fa-list-ul"></i> Bulk Add</a></li>
+            <li class="nav-item py-0"><a class="nav-link py-0 text-muted" href="{% url 'herders:monster_compare' profile_name=profile_name %}" ><i class="fas fa-exchange-alt"></i> Compare</a></li>
         </ul>
     {% endif %}
 {% endblock monster_menu %}

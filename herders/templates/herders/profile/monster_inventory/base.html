@@ -25,12 +25,12 @@
 
 {% block profile %}
     <div class="card shadow-sm border-0 mb-3">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <button class="btn btn-outline-dark btn-block w-100 collapsed" data-bs-toggle="collapse" data-bs-target="#monsterFilterCollapse">
                 <i class="fas fa-filter"></i> Filters
             </button>
         </div>
-        <div class="card-body collapse" id="monsterFilterCollapse">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} collapse" id="monsterFilterCollapse">
             {% crispy monster_filter_form %}
         </div>
     </div>

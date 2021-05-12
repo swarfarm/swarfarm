@@ -3,7 +3,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="card shadow-sm border-0 mb-3">
-    <div class="card-header bg-white m-0 mx-1">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} m-0 mx-1">
         {% if is_owner %}
         <div class="btn-group float-right">
             <button class="btn btn-link btn-sm rune-craft-edit p-0 text-dark" data-craft-id="{{ craft.pk.hex }}">
@@ -17,7 +17,7 @@
         <p class="card-title rune-text rune-text-{{ craft.get_quality_display|lower }}">{{ craft }}</p>
     </div>
 
-    <div class="card-body d-flex justify-content-between m-0 pb-0">
+    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} d-flex justify-content-between m-0 pb-0">
         {% include 'herders/profile/runes/craft_image_fragment.html' with craft=craft only %}
 
         <ul class="list-unstyled d-flex flex-column align-items-end pb-0">

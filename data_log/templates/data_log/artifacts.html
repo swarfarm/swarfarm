@@ -1,16 +1,16 @@
 {% load report_charts %}
 
 <div class="card border-0 shadow mb-3 h-100">
-    <div class="card-header bg-white">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
         <h2>Artifact Drops</h2>
     </div>
-    <div class="card-body">
+    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
         <h3 class="card-title">Type/slot</h3>
         <div class="row">
             {% if artifacts.element.total > 0 %}
             <div class="col-md-6 col-lg-4">
                 <div class="card border-0 shadow-sm p-0 my-1">
-                    <div class="card-body"> 
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}"> 
                         <div
                             class="report-chart"
                             data-chart="{% chart artifacts.element type='pie' title="Element" sorted='key' colors='element' %}"
@@ -24,7 +24,7 @@
             {% if artifacts.archetype.total > 0 %}
             <div class="col-md-6 col-lg-4">
                 <div class="card border-0 shadow-sm p-0 my-1">
-                    <div class="card-body"> 
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}"> 
                         <div
                             class="report-chart"
                             data-chart="{% chart artifacts.archetype type='pie' title="Archetype" sorted='key' %}"
@@ -37,7 +37,7 @@
 
             <div class="col-md-6 col-lg-4">
                 <div class="card border-0 shadow-sm p-0 my-1">
-                    <div class="card-body"> 
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}"> 
                         <div
                             class="report-chart"
                             data-chart="{% chart artifacts.quality type='pie' title="Quality" sorted='quality' colors='quality' %}"
@@ -49,7 +49,7 @@
 
             <div class="col-md-6 col-lg-4">
                 <div class="card border-0 shadow-sm p-0 my-1">
-                    <div class="card-body"> 
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}"> 
                         <div
                             class="report-chart"
                             data-chart="{% chart artifacts.main_stat type='pie' title="Main Stat" sorted='key' %}"
@@ -63,10 +63,10 @@
 </div>
 
 <div class="card border-0 shadow mb-3 h-100">
-    <div class="card-header bg-white">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
         <h2>Artifact Drops</h2>
     </div>
-    <div class="card-body">
+    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
         <h3 class="card-title">Secondary Effects</h3>
         <div class="row">
             <div class="col-12">
@@ -81,10 +81,10 @@
 </div>
 
 <div class="card border-0 shadow mb-3 h-100">
-    <div class="card-header bg-white">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
         <h2>Artifact Drops</h2>
     </div>
-    <div class="card-body">
+    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
         <h3 class="card-title">Other</h3>
         <div class="row">
             <div class="col-12">

@@ -10,10 +10,10 @@
 
     {% if craft_list %}
         <div class="card shadow border-0 mb-3">
-            <div class="card-header bg-white">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                 <h2>Rune Crafting Log Summary</h2>
             </div>
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
                 <p>Total Runes Crafted: {{ dashboard.runes_crafted.total }}</p>
             </div>
@@ -33,11 +33,11 @@
 
             <div class="col-lg-3 col-md-4 col-sm-12">
                 <div class="card shadow border-0 mb-3">
-                    <div class="card-header bg-white">
+                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                         <h3 class="card-title">Quick Links</h3>
                     </div>
                     {% for craft in craft_list %}
-                        <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
+                        <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <a href="{% url 'data_log:rune_crafting_detail' slug=craft.slug %}">
                                 {{ craft.name }}
                             </a>

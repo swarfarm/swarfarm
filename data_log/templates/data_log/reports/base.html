@@ -15,7 +15,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
-    <div class="navmenu subnavmenu-fixed-left offcanvas-sm bg-light shadow">
+    <div class="navmenu subnavmenu-fixed-left offcanvas-sm {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %} shadow">
         <a href="{% url 'data_log:data_reports' %}" class="nav-link text-reset h3">Data Logs</a>
         <button type="button" class="d-lg-none navbar-toggler btn-abs-top-right" onClick="closeSidebarMobile()">
             <i class="fas fa-times"></i>
@@ -55,15 +55,15 @@
             {% with reports.shop_refresh as report %}
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
-                        <div class="card-header bg-white">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <h3>Magic Shop</h3>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
                             <p>Contributors<span class="float-right">{% if report.unique_contributors %}{{ report.unique_contributors }}{% else %}0{% endif %}</p>
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
-                        <div class="card-footer bg-white">
+                        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <a class="btn btn-outline-dark float-right" href="{% url 'data_log:magic_shop_refresh' %}">Details</a>
                         </div>
                     </div>
@@ -72,14 +72,14 @@
             {% with reports.magic_box as report %}
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
-                        <div class="card-header bg-white">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <h3>Magic Box</h3>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
-                        <div class="card-footer bg-white">
+                        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <a class="btn btn-outline-dark float-right" href="{% url 'data_log:magic_box_crafting' %}">Details</a>
                         </div>
                     </div>
@@ -88,15 +88,15 @@
             {% with reports.wish as report %}
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
-                        <div class="card-header bg-white">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <h3>Wish</h3>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
                             <p>Contributors<span class="float-right">{% if report.unique_contributors %}{{ report.unique_contributors }}{% else %}0{% endif %}</p>
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
-                        <div class="card-footer bg-white">
+                        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <a class="btn btn-outline-dark float-right" href="{% url 'data_log:wish' %}">Details</a>
                         </div>
                     </div>
@@ -105,14 +105,14 @@
             {% with reports.summon as report %}
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
-                        <div class="card-header bg-white">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <h3>Summon</h3>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
-                        <div class="card-footer bg-white">
+                        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <a class="btn btn-outline-dark float-right" href="{% url 'data_log:summon' %}">Details</a>
                         </div>
                     </div>
@@ -121,14 +121,14 @@
             {% with reports.rune_crafting as report %}
                 <div class="col-12 col-lg-4 col-md-4 mb-3">
                     <div class="card shadow border-0 h-100">
-                        <div class="card-header bg-white">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <h3>Rune Crafting</h3>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <p>Records<span class="float-right">{% if report.log_count %}{{ report.log_count }}{% else %}0{% endif %}</p>
                             <p>Created<span class="float-right">{% if report.generated_on %}{{ report.generated_on }}{% else %}-{% endif %}</p>
                         </div>
-                        <div class="card-footer bg-white">
+                        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <a class="btn btn-outline-dark float-right" href="{% url 'data_log:rune_crafting' %}">Details</a>
                         </div>
                     </div>

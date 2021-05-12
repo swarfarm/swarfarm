@@ -10,7 +10,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
-    <div class="navmenu subnavmenu-fixed-left offcanvas-sm bg-light shadow">
+    <div class="navmenu subnavmenu-fixed-left offcanvas-sm {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %} shadow">
         <a href="{% url 'feedback:index' %}" class="nav-link text-reset h3">Feedback</a>
         <button type="button" class="d-lg-none navbar-toggler btn-abs-top-right" onClick="closeSidebarMobile()">
             <i class="fas fa-times"></i>

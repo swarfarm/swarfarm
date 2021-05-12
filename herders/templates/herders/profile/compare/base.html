@@ -6,7 +6,7 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
 {% endblock title %}
 
 {% block content %}
-    <div class="navmenu subnavmenu-fixed-left offcanvas-sm bg-light shadow">
+    <div class="navmenu subnavmenu-fixed-left offcanvas-sm {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %} shadow">
         <p class="nav-item py-0"><h4 class="ps-3">{% if can_compare %}{{profile_name}} <small>vs</small> {{ follower_name }}{% else %}private profile{% endif %}</h4></p>
         <button type="button" class="d-lg-none navbar-toggler btn-abs-top-right" onClick="closeSidebarMobile()">
             <i class="fas fa-times"></i>

@@ -9,10 +9,10 @@ Builds - {{ block.super }}
 {% block content_compare %}
     <div class="container-fluid">
         <div class="card shadow border-0 mb-3">
-            <div class="card-header bg-white">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                 <h3>Select monsters to compare</h3>
             </div>
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 {% crispy form %}
             </div>
         </div>
@@ -24,10 +24,10 @@ Builds - {{ block.super }}
                 <div class="grid-item col-lg-4 col-md-12 col-xs-12 col-12">
                     <div class="grid-item-content mx-2">
                         <div class="card shadow border-0 mb-3">
-                            <div class="card-header bg-white text-center">
+                            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} text-center">
                                 <h3>Monster</h3>
                             </div>
-                            <div class="card-body table-responsive">
+                            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} table-responsive">
                                 <table class="table">
                                     <thead>
                                         <tr>
@@ -83,10 +83,10 @@ Builds - {{ block.super }}
                 <div class="grid-item col-lg-4 col-md-12 col-xs-12 col-12">
                     <div class="grid-item-content mx-2">
                         <div class="card shadow border-0 mb-3">
-                            <div class="card-header bg-white text-center">
+                            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} text-center">
                                 <h3>Monster</h3>
                             </div>
-                            <div class="card-body table-responsive">
+                            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} table-responsive">
                                 <table class="table comparison-table">
                                     <thead>
                                         <tr>
@@ -136,10 +136,10 @@ Builds - {{ block.super }}
                 <div class="grid-item col-lg-4 col-md-12 col-xs-12 col-12">
                     <div class="grid-item-content mx-2">
                         <div class="card shadow border-0 mb-3">
-                            <div class="card-header bg-white text-center">
+                            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} text-center">
                                 <h3>Monster</h3>
                             </div>
-                            <div class="card-body table-responsive">
+                            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} table-responsive">
                                 <table class="table comparison-table">
                                     <thead>
                                         <tr>

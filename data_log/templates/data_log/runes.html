@@ -2,15 +2,15 @@
 
 {% if runes %}
     <div class="card border-0 shadow mb-3 h-100">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <h2>Rune Drops</h2>
         </div>
-        <div class="card-body">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <h3 class="card-title">Type/slot</h3>
             <div class="row">
                 <div class="col-md-6 col-lg-3">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.type type='pie' title="Rune Set" sorted='rune'%}"
@@ -22,7 +22,7 @@
 
                 <div class="col-md-6 col-lg-3">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.slot type='pie' title="Slot" sorted='key' %}"
@@ -34,7 +34,7 @@
 
                 <div class="col-md-6 col-lg-3">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.stars type='pie' title="Stars" sorted='key' %}"
@@ -46,7 +46,7 @@
 
                 <div class="col-md-6 col-lg-3">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.quality type='pie' title="Quality" sorted='quality' colors='quality' %}"
@@ -60,15 +60,15 @@
     </div>
 
     <div class="card border-0 shadow mb-3 h-100">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <h2>Rune Drops</h2>
         </div>
-        <div class="card-body">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <h3 class="card-title">Stats</h3>
             <div class="row">
                 <div class="col-md-6 col-lg-4">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.slot_2_main_stat title="Slot 2 Main Stat" percentage=True sorted='value' reverse=True %}"
@@ -80,7 +80,7 @@
 
                 <div class="col-md-6 col-lg-4">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.slot_4_main_stat title="Slot 4 Main Stat" percentage=True sorted='value' reverse=True %}"
@@ -92,7 +92,7 @@
 
                 <div class="col-md-6 col-lg-4">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.slot_6_main_stat title="Slot 6 Main Stat" percentage=True sorted='value' reverse=True %}"
@@ -104,7 +104,7 @@
 
                 <div class="col-md-6 col-lg-6">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.innate_stat title="By Innate Stat" percentage=True sorted='value' reverse=True %}"
@@ -116,7 +116,7 @@
 
                 <div class="col-md-6 col-lg-6">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.substats title="By Substats" percentage=True sorted='value' reverse=True %}"
@@ -130,15 +130,15 @@
     </div>
 
     <div class="card border-0 shadow mb-3 h-100">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <h2>Rune Drops</h2>
         </div>
-        <div class="card-body">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <h3 class="card-title">Other</h3>
             <div class="row">
                 <div class="col-sm-12 col-md-6 col-lg-6">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.value title="Rune Sell Value" legend=True colors='quality' sorted='quality' %}"
@@ -150,7 +150,7 @@
 
                 <div class="col-sm-12 col-md-6 col-lg-6">
                     <div class="card border-0 shadow-sm p-0 my-1">
-                        <div class="card-body">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
                                 class="report-chart"
                                 data-chart="{% chart runes.max_efficiency title="Maximum Efficiency Distribution" legend=True colors='quality' sorted='quality' %}"

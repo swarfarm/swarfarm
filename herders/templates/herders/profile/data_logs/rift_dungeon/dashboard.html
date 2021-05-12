@@ -8,21 +8,21 @@
 {% block logs %}
     {% if total_count %}
         <div class="card shadow border-0 mb-3">
-            <div class="card-header bg-white">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                 <h2>Rift Beast Log Summary</h2>
             </div>
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
                 <p>Total Runs: {{ total_count }}{% if records_limited %}. <small>Record count limited.</small>{% endif %}</p>
                 <p>Kill Rate: {{ success_rate|floatformat:-2 }}%</p>
             </div>
         </div>
         <div class="card shadow border-0 mb-3">
-            <div class="card-header bg-white">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                 <h4>Average Grade</h4>
             </div>
 
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 <input
                     type="text"
                     name="grade_slider"
@@ -65,14 +65,14 @@
 
             <div class="col-lg-3 col-md-4 col-sm-12">
                 <div class="card shadow border-0 mb-3">
-                    <div class="card-header bg-white">
+                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                         <h3 class="card-title">Quick Links</h3>
                     </div>
-                    <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
+                    <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                         <a href="{% url 'herders:data_log_rift_dungeon_table' profile_name=profile_name %}">View As Table</a>
                     </div>
                     {% for level in level_list %}
-                        <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} bg-white">
+                        <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <a href="{% url 'herders:data_log_rift_dungeon_detail' profile_name=profile_name slug=level.dungeon.slug %}">{{ level.dungeon }}</a>
                         </div>
                     {% endfor %}

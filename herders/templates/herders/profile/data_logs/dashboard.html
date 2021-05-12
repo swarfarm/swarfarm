@@ -18,7 +18,7 @@
         <div class="col-12 col-lg-3 col-md-3 mb-3">
             <div class="card shadow border-0 h-100">
                 <a href="{% url 'herders:data_log_magic_shop_dashboard' profile_name=profile_name %}"> 
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         Magic Shop Refresh
                         <div class="float-right text-muted">{{ counts.magic_shop }} log{{ counts.magic_shop|pluralize }}</div>
                     </div>
@@ -28,7 +28,7 @@
         <div class="col-12 col-lg-3 col-md-3 mb-3">
             <div class="card shadow border-0 h-100">
                 <a href="{% url 'herders:data_log_wish_dashboard' profile_name=profile_name %}"> 
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         Wish
                         <div class="float-right text-muted">{{ counts.wish }} log{{ counts.wish|pluralize }}</div>
                     </div>
@@ -38,7 +38,7 @@
         <div class="col-12 col-lg-3 col-md-3 mb-3">
             <div class="card shadow border-0 h-100">
                 <a href="{% url 'herders:data_log_rune_craft_dashboard' profile_name=profile_name %}"> 
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         Rune Crafting
                         <div class="float-right text-muted">{{ counts.rune_crafting }} log{{ counts.rune_crafting|pluralize }}</div>
                     </div>
@@ -48,7 +48,7 @@
         <div class="col-12 col-lg-3 col-md-3 mb-3">
             <div class="card shadow border-0 h-100">
                 <a href="{% url 'herders:data_log_magic_box_craft_dashboard' profile_name=profile_name %}"> 
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         Magic Box Crafting
                         <div class="float-right text-muted">{{ counts.magic_box }} log{{ counts.magic_box|pluralize }}</div>
                     </div>
@@ -58,7 +58,7 @@
         <div class="col-12 col-lg-3 col-md-3 mb-3">
             <div class="card shadow border-0 h-100">
                 <a href="{% url 'herders:data_log_summons_dashboard' profile_name=profile_name %}"> 
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         Summons
                         <div class="float-right text-muted">{{ counts.summons }} log{{ counts.summons|pluralize }}</div>
                     </div>
@@ -68,7 +68,7 @@
         <div class="col-12 col-lg-3 col-md-3 mb-3">
             <div class="card shadow border-0 h-100">
                 <a href="{% url 'herders:data_log_dungeon_dashboard' profile_name=profile_name %}"> 
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         Dungeons
                         <div class="float-right text-muted">{{ counts.dungeons }} log{{ counts.dungeons|pluralize }}</div>
                     </div>
@@ -78,7 +78,7 @@
         <div class="col-12 col-lg-3 col-md-3 mb-3">
             <div class="card shadow border-0 h-100">
                 <a href="{% url 'herders:data_log_rift_dungeon_dashboard' profile_name=profile_name %}"> 
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         Elemental Rift Beast
                         <div class="float-right text-muted">{{ counts.rift_beast }} log{{ counts.rift_beast|pluralize }}</div>
                     </div>
@@ -88,7 +88,7 @@
         <div class="col-12 col-lg-3 col-md-3 mb-3">
             <div class="card shadow border-0 h-100">
                 <a href="{% url 'herders:data_log_rift_raid_dashboard' profile_name=profile_name %}"> 
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         Rift Raid
                         <div class="float-right text-muted">{{ counts.rift_raid }} log{{ counts.rift_raid|pluralize }}</div>
                     </div>
@@ -98,7 +98,7 @@
         <div class="col-12 col-lg-3 col-md-3 mb-3">
             <div class="card shadow border-0 h-100">
                 <a href="{% url 'herders:data_log_world_boss_dashboard' profile_name=profile_name %}"> 
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         World Boss
                         <div class="float-right text-muted">{{ counts.world_boss }} log{{ counts.world_boss|pluralize }}</div>
                     </div>

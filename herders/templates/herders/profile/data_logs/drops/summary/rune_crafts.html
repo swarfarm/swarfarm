@@ -3,11 +3,11 @@
 
 
 <div class="card shadow-sm border-0 mb-3">
-    <div class="card-header bg-white">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
         <h3 class="card-title">Grindstones & Enchants</h3>
     </div>
 
-    <div class="card-body">
+    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
         {% for craft in rune_crafts %}
             <div class="rune-image" data-bs-toggle="tooltip" title="{{ craft.quality }} {{ craft.rune }} {{ craft.type }} x{{ craft.count }}">
                 <div class="rune-bg {% if 'Immemorial' in craft.type %}immemorial{%endif %} {{ craft.quality|lower }}">

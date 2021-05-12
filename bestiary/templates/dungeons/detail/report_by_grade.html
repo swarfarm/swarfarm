@@ -3,7 +3,7 @@
 {% block report %}
     {% if report %}
         <div class="card shadow-sm border-0 mb-3">
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 <ul class="list-unstyled pb-0">
                     <li>Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
                     <li>{{ report.log_count }} records</li>
@@ -15,7 +15,7 @@
         <ul class="nav nav-pills mb-3" id="rating-tab" role="tablist">
             <li class="nav-item card border-0 shadow-sm mb-3 mx-1 p-0" role="presentation">
                 <button 
-                    class="nav-link card-body card-monster active" 
+                    class="nav-link card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} card-monster active" 
                     id="rating-0-tab" 
                     data-bs-toggle="pill" 
                     data-bs-target="#rating-0" 
@@ -30,7 +30,7 @@
             {% for grade_report in report.report.reports reversed %}
             <li class="nav-item card border-0 shadow-sm mb-3 mx-1 p-0" role="presentation">
                 <button 
-                    class="nav-link card-body card-monster" 
+                    class="nav-link card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} card-monster" 
                     id="rating-{{ forloop.counter }}-tab" 
                     data-bs-toggle="pill" 
                     data-bs-target="#rating-{{ forloop.counter }}" 
@@ -48,10 +48,10 @@
         <div class="tab-content" id="rating-tabContent">
             <div class="tab-pane fade show active" id="rating-0" role="tabpanel" aria-labelledby="rating-0-tab">
                 <div class="card border-0 shadow-sm m-3 card-dungeon-md card-dungeon-sm">
-                    <div class="card-header bg-white">
+                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                         <h4>Summary</h4>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         {% include 'dungeons/detail/report_by_grade_summary_table.html' with table=report.report.summary only %}
                     </div>
                 </div>

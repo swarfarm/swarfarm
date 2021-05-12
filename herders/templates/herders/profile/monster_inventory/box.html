@@ -6,7 +6,7 @@
     {% static 'herders/images/' as img_url_prefix %}
 
     <div class="card shadow border-0 mb-3">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <div class="btn-group" role="group">
                 <button class="btn btn-outline-dark profile-view-mode" data-mode="list">
                     <i class="fas fa-th-list"></i> List
@@ -38,19 +38,19 @@
             </div>
             <span class="float-right text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> monster{{ total_count|pluralize }}</span>
         </div>
-        <div class="card-body">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             {% if monsters %}
                 {% for groupname, monsters in monster_stable.items %}
                     {% if monsters|length > 0 %}
                         <div class="card shadow-sm border-0 mb-3 pb-2">
-                            <div class="card-header bg-white collapsible">
+                            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} collapsible">
                                 <a role="button" data-bs-toggle="collapse" data-bs-target="#monstergroup{{ forloop.counter }}" aria-expanded="true">
                                     <strong>{{ groupname|capfirst }}</strong>
                                 </a>
                                 <span class="float-right text-muted">{{ monsters|length }} monster{{ monsters|length|pluralize }}</span>
                             </div>
                             <div id="monstergroup{{ forloop.counter }}" class="collapse in show">
-                                <div class="card-body">
+                                <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                                     {% for instance in monsters %}
                                         {% include 'herders/profile/monster_inventory/monster_box_snippet.html' %}
                                     {% endfor %}

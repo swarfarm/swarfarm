@@ -10,7 +10,7 @@
     <div class="col-lg-6">
         {% include 'bestiary/stat_table.html' %}
         <div class="card border-0 shadow mb-3">
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 <div class="bestiary-stat-chart" data-monster="{{ monster.pk }}" style="width:100%; height:500px"></div>
             </div>
         </div>

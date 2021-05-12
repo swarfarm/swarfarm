@@ -8,10 +8,10 @@
 {% block reports %}
     {% if log_count %}
         <div class="card shadow border-0 mb-3">
-            <div class="card-header bg-white">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                 <h2>Wish Log Summary</h2>
             </div>
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 {% if start_timestamp %}<p>{{ start_timestamp }} - {{ end_timestamp }}</p>{% endif %}
                 <p>Total Logs: {{ log_count }}</p>
             </div>

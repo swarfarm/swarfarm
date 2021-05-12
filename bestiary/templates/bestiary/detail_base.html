@@ -11,7 +11,7 @@
     <div class="d-flex justify-content-center flex-wrap">
         {% for mon in family %}
             <div class="card border-0 shadow-sm mb-3 mx-3 p-0 card-monster card-dungeon-sm{% if mon.bestiary_slug == active_slug %} active{% endif %}">
-                <div class="card-body p-0">
+                <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} p-0">
                     <a href="{% url 'bestiary:detail' monster_slug=mon.bestiary_slug %}" class="nav-link p-3{% if mon.bestiary_slug == active_slug %} active{% endif %}">
                         <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ mon.image_filename }}" loading="lazy" /> {{ mon }} {% if mon.is_awakened %}({{ mon.get_element_display }}){% endif %}
                     </a>

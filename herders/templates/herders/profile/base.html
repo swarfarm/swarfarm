@@ -9,7 +9,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
-    <div class="navmenu subnavmenu-fixed-left offcanvas-sm bg-light shadow">
+    <div class="navmenu subnavmenu-fixed-left offcanvas-sm {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %} shadow">
         {% if is_owner %}
             <h3 class="nav-link text-reset">My Profile</h3>
         {% else %}

@@ -407,7 +407,7 @@ select.short {
   -webkit-transition: color 0.2s;
 }
 
-.bg-white th{
+.{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} th{
   background-color: white!important;
 }
 
@@ -1365,4 +1365,9 @@ div.monster-bulk-monster {
 
 .active-dark{
   background-color: #111111!important;
+}
+
+.dark blockquote{
+  border-color: #ededed;
+  color: #ededed50;
 }

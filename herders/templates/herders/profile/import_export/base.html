@@ -7,22 +7,22 @@
     <div class="row">
         <div class="col-lg-4 offset-lg-2 mb-3">
             <div class="card border-0 shadow h-100">
-                <div class="card-body">
+                <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                     <h1 class="card-title">Import JSON Data</h1>
                     <p>Upload extracted JSON data produced by using the <a href="https://github.com/Xzandro/sw-exporter">Summoner's War Exporter</a></p>
                 </div>
-                <div class="card-footer border-0 bg-white">
+                <div class="card-footer border-0 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                     <a class="btn btn-primary btn-block" href="{% url 'herders:import_swparser' profile_name=request.user.username  %}" role="button">Import SW JSON</a>
                 </div>
             </div>
         </div>
         <div class="col-lg-4 mb-3">
             <div class="card border-0 shadow h-100">
-                <div class="card-body">
+                <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                     <h1 class="card-title">Export SWOP Optimizer</h1>
                     <p>Windows 10 app or <a href="http://tool.swop.one" target="_blank">online version</a></p>
                 </div>
-                <div class="card-footer border-0 bg-white">
+                <div class="card-footer border-0 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                     <a class="btn btn-primary" href="{% url 'herders:export_win10_optimizer' profile_name=request.user.username  %}" role="button">Download File</a>
                 </div>
             </div>

@@ -41,7 +41,7 @@
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
-    <body class="d-flex h-100 flex-column">
+    <body class="d-flex h-100 flex-column{% if user.is_authenticated and user.summoner.dark_mode %} dark{% endif %}">
         <div id="wrap">
             <!--[if lt IE 8]>
                 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>

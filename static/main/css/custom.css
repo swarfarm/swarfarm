@@ -1351,3 +1351,18 @@ div.monster-bulk-monster {
   color: rgb(55, 255, 55);
   cursor: pointer;
 }
+
+.dark{
+  background-color: #111111;
+  color: white;
+}
+
+.dark .select2-results__options,
+.dark .select2-search
+{
+  background-color: #111111;
+}
+
+.active-dark{
+  background-color: #111111!important;
+}

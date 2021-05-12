@@ -124,7 +124,7 @@ class RegisterUserForm(forms.Form):
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput)
     summoner_name = forms.CharField(label="Summoner's War Account Name", required=False, help_text='Not required. Visible to others if you make your SWARFARM account public.')
     is_public = forms.BooleanField(label='Make my SWARFARM account visible to others', required=False)
-    dark_mode = forms.BooleanField(label='[In Progress] Dark Mode', required=False)
+    dark_mode = forms.BooleanField(label='Dark Mode', required=False)
     server = forms.ChoiceField(label="Summoner's War Server", choices=[(None, '---')] + Summoner.SERVER_CHOICES, required=False)
     captcha = ReCaptchaField()
 
@@ -191,7 +191,7 @@ class EditSummonerForm(ModelForm):
         labels = {
             'summoner_name': "Summoner's War Account Name",
             'public': 'Make my SWARFARM account visible to others',
-            'dark_mode': '[In Progress] Dark Mode',
+            'dark_mode': 'Dark Mode',
         }
 
 

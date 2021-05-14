@@ -6,7 +6,7 @@
     {% static 'herders/images/' as img_url_prefix %}
 
     <div class="card shadow border-0 mb-3">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <div class="btn-group" role="group">
                 <button class="btn btn-outline-dark profile-view-mode" data-mode="list">
                     <i class="fas fa-th-list"></i> List
@@ -22,7 +22,7 @@
                 </button>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <div class="callout callout-warning">
                 <h2>No 2A & Devilmons!</h2>
                 <p>This view does NOT include 2A monsters & Devilmons!</p>
@@ -36,9 +36,9 @@
                             {{ mon.name }}
                             {% if mon.possible_skillups %}<span class="float-right"><strong>{{ mon.possible_skillups}}</strong> possible skillups{% endif %}
                         </div>
-                        <div class="card-body py-0">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} py-0">
                             {% for el, data in mon.elements.items %}
-                            <div class="card-header {% if forloop.last%}border-0 {% endif %}bg-white p-0 py-2 monster-element">
+                            <div class="card-header {% if forloop.last%}border-0 {% endif %}{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} p-0 py-2 monster-element">
                                 <img src="{% static 'herders/images/elements/'|add:el|add:'.png' %}" />
                                 <div class="row">
                                     <div class="col-12 col-md-6">

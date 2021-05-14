@@ -5,11 +5,11 @@
 {% block issues %}
     {% if issue_list.count %}
         <div class="card shadow border-0 mb-3">
-            <div class="card-header bg-white">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                 {% crispy search_form %}
                 <p class="card-title">Feedback and Suggestions</p>
             </div>
-            <div class="table-responsive card-body">
+            <div class="table-responsive card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 <table class="table table-sm">
                     <thead>
                         <tr>
@@ -48,7 +48,7 @@
             </div>
 
             {% if is_paginated %}
-            <div class="card-footer bg-white">
+            <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                 {% include "pagination.html" %}
             </div>
             {% endif %}

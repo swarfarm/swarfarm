@@ -20,7 +20,7 @@
         {% for category in dungeons %}
             <li class="nav-item card border-0 shadow-sm mb-3 mx-3 p-0" role="presentation">
                 <button 
-                    class="nav-link card-body card-monster{% if forloop.first %} active{% endif %}" 
+                    class="nav-link card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} card-monster{% if forloop.first %} active{% endif %}" 
                     id="dungeons-{{ forloop.counter }}-tab" 
                     data-bs-toggle="pill" 
                     data-bs-target="#dungeons-{{ forloop.counter }}" 
@@ -41,7 +41,7 @@
             <div class="d-flex flex-wrap justify-content-around">
             {% for d in cat_dungeons %}
                 <div class="card border-0 shadow m-3 card-dungeon-md card-dungeon-sm">
-                    <div class="card-header bg-white">
+                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                         {% if d.icon %}
                             <a href="{% url 'bestiary:dungeon_detail_no_floor' slug=d.slug %}">
                                 <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="media-object dungeon-icon" loading="lazy" />
@@ -51,7 +51,7 @@
                             <h4>{{ d.name }}</h4>
                         </a>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} p-0">
                         {% include 'dungeons/base_floor_pagination.html' %}
                     </div>
                 </div>

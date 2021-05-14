@@ -407,7 +407,7 @@ select.short {
   -webkit-transition: color 0.2s;
 }
 
-.bg-white th{
+.{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} th{
   background-color: white!important;
 }
 
@@ -1350,4 +1350,24 @@ div.monster-bulk-monster {
   top: 21px;
   color: rgb(55, 255, 55);
   cursor: pointer;
+}
+
+.dark{
+  background-color: #111111;
+  color: white;
+}
+
+.dark .select2-results__options,
+.dark .select2-search
+{
+  background-color: #111111;
+}
+
+.active-dark{
+  background-color: #111111!important;
+}
+
+.dark blockquote{
+  border-color: #ededed;
+  color: #ededed50;
 }

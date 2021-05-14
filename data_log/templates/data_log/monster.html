@@ -2,12 +2,12 @@
 
 {% if monsters %}
     <div class="card shadow border-0 mb-3">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <h2>Monsters</h2>
         </div>
-        <div class="card-body">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <div class="card shadow-sm border-0 mb-3">
-                <div class="card-body">
+                <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                     <div
                         class="report-chart"
                         data-chart="{% chart monsters.monsters title="Monsters - Unique" sorted='value' reverse=True %}"
@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="card shadow-sm border-0 mb-3">
-                <div class="card-body">
+                <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                     <div
                         class="report-chart"
                         data-chart="{% chart monsters.family title="Monsters - By Family" sorted='value' reverse=True %}"
@@ -28,7 +28,7 @@
         <div class="row mx-1">
             <div class="col-12 col-sm-4">
                 <div class="card shadow-sm border-0 mb-3">
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         <div
                             class="report-chart"
                             data-chart="{% chart monsters.nat_stars type='pie' title="Natural Stars" percentage=False sorted='key' %}"
@@ -40,7 +40,7 @@
 
             <div class="col-12 col-sm-4">
                 <div class="card shadow-sm border-0 mb-3">
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         <div
                             class="report-chart"
                             data-chart="{% chart monsters.element type='pie' title="Element" percentage=False sorted='key' colors='element' %}"
@@ -52,7 +52,7 @@
 
             <div class="col-12 col-sm-4">
                 <div class="card shadow-sm border-0 mb-3">
-                    <div class="card-body">
+                    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                         <div
                             class="report-chart"
                             data-chart="{% chart monsters.awakened type='pie' title="Awakened/Unawakened" percentage=False %}"

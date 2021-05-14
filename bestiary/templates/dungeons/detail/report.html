@@ -10,7 +10,7 @@
     {% if report %}
     {% cache 86400 dungeon_report dungeon.pk level.difficulty level.floor %}
         <div class="card shadow border-0 mb-3">
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 <ul class="list-unstyled">
                     <li>Date Range: {{ report.start_timestamp|date:"SHORT_DATE_FORMAT" }} - {{ report.end_timestamp|date:"SHORT_DATE_FORMAT" }}</li>
                     <li>{{ report.log_count }} records</li>

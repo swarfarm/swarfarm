@@ -2,11 +2,11 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="card shadow-sm border-0 mb-3">
-    <div class="card-header bg-white">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
         <h3 class="card-title">Runes</h3>
     </div>
 
-    <div class="card-body">
+    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
         {% for rune in runes %}
             <div class="rune-image" style="margin-right:0!important;" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ rune.stars }}⭐ {{ rune.quality }} {{ rune.type }} Rune x{{ rune.count|intcomma }}">
                 <div class="rune-bg {{ rune.quality|lower }}">

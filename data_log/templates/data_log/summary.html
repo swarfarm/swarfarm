@@ -4,10 +4,10 @@
     <div class="row">
         <div class="col-md-6 mb-3 mb-md-3 mb-lg-0">
             <div class="card border-0 shadow mb-3 h-100">
-                <div class="card-header bg-white">
+                <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                     <h2>Summary</h2>
                 </div>
-                <div class="card-body">
+                <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                     <div class="report-chart" data-chart="{{ summary.chart|drop_summary }}"  style="height: 300px"></div>
                 </div>
             </div>
@@ -15,10 +15,10 @@
 
         <div class="col-md-6">
             <div class="card border-0 shadow mb-3 h-100">
-                <div class="card-header bg-white">
+                <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                     <h2>Summary</h2>
                 </div>
-                <div class="card-body">
+                <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                     <div class="table-responsive">
                         <table class="table">
                             <thead>

@@ -9,24 +9,24 @@
                 Select Columns
             </button>
             <div class="pagination float-right">
-                <button class="page-item page-link border-0 pager-btn bg-light" {% if not monsters.has_previous %} disabled{% endif %} {% if monsters.has_previous %}data-page="{{ monsters.previous_page_number }}"{% endif %} aria-label="Previous">
+                <button class="page-item page-link border-0 pager-btn {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %}" {% if not monsters.has_previous %} disabled{% endif %} {% if monsters.has_previous %}data-page="{{ monsters.previous_page_number }}"{% endif %} aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </button>
 
                 {% for page_num in page_range %}
-                <button class="page-item page-link border-0 pager-btn bg-light{% if page_num == monsters.number %} active{% endif %}" data-page="{{ page_num }}" aria-label="Previous">
+                <button class="page-item page-link border-0 pager-btn {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %}{% if page_num == monsters.number %} active{% endif %}" data-page="{{ page_num }}" aria-label="Previous">
                     {{ page_num }}
                 </button>
                 {% endfor %}
 
-                <button class="page-item page-link border-0 pager-btn bg-light" {% if not monsters.has_next %}disabled{% endif %} {% if monsters.has_next %}data-page="{{ monsters.next_page_number }}"{% endif %} aria-label="Next">
+                <button class="page-item page-link border-0 pager-btn {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %}" {% if not monsters.has_next %}disabled{% endif %} {% if monsters.has_next %}data-page="{{ monsters.next_page_number }}"{% endif %} aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </button>
             </div>
         </div>
 
         <div id="column-selector-collapse" class="collapse">
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 <div id="column-selectors" class="d-flex flex-wrap align-items-center justify-content-center"></div>
             </div>
         </div>
@@ -34,7 +34,7 @@
         {% if monsters|length %}
         <div class="table-responsive">
             <table id="bestiary_table" class="table table-hover table-condensed monster-table" data-save-filters="false">
-                <thead class="bg-white">
+                <thead class="{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                     <tr>
                         {% if request.user.is_authenticated %}<th data-sorter="false" data-columnSelector="disable"></th>{% endif %}
                         <th data-sorter="false" data-columnSelector="disable"></th>
@@ -146,25 +146,25 @@
             </table>
         </div>
         {% elif init_load %}
-            <div class="card-body"></div>
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}"></div>
         {% else %}
-        <div class="card-body">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <div class="callout callout-warning"><h2>No results!</h2>Looks like there's nothing to show...</div>
         </div>
         {% endif %}
         <div class="card-footer">
             <div class="pagination float-right">
-                <button class="page-item page-link border-0 pager-btn bg-light" {% if not monsters.has_previous %} disabled{% endif %} {% if monsters.has_previous %}data-page="{{ monsters.previous_page_number }}"{% endif %} aria-label="Previous">
+                <button class="page-item page-link border-0 pager-btn {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %}" {% if not monsters.has_previous %} disabled{% endif %} {% if monsters.has_previous %}data-page="{{ monsters.previous_page_number }}"{% endif %} aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </button>
 
                 {% for page_num in page_range %}
-                <button class="page-item page-link border-0 pager-btn bg-light{% if page_num == monsters.number %} active{% endif %}" data-page="{{ page_num }}" aria-label="Previous">
+                <button class="page-item page-link border-0 pager-btn {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %}{% if page_num == monsters.number %} active{% endif %}" data-page="{{ page_num }}" aria-label="Previous">
                     {{ page_num }}
                 </button>
                 {% endfor %}
 
-                <button class="page-item page-link border-0 pager-btn bg-light" {% if not monsters.has_next %}disabled{% endif %} {% if monsters.has_next %}data-page="{{ monsters.next_page_number }}"{% endif %} aria-label="Next">
+                <button class="page-item page-link border-0 pager-btn {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %}" {% if not monsters.has_next %}disabled{% endif %} {% if monsters.has_next %}data-page="{{ monsters.next_page_number }}"{% endif %} aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </button>
             </div>

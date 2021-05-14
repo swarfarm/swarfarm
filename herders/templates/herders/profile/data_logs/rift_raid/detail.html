@@ -8,10 +8,10 @@
 {% block logs %}
     {% if total_count %}
         <div class="card shadow border-0 mb-3">
-            <div class="card-header bg-white d-flex flex-wrap justify-content-between">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} d-flex flex-wrap justify-content-between">
                 <h4>{{ level }}</h4>
             </div>
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 {% if start_date %}<p>{{ start_date }} - {{ end_date }}</p>{% endif %}
                 <p>Total Runs: {{ total_count }}</p>{% if records_limited %}. <small>Record count limited starting {{ start_date }}.</small>{% endif %}</p>
                 <p>Success Rate: {{ success_rate|floatformat:-2 }}%</p>

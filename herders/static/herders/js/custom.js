@@ -267,7 +267,7 @@ $('body')
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
                         allowList: myDefaultAllowList,
-                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
                 });
             }
@@ -292,7 +292,7 @@ $('body')
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
                         allowList: myDefaultAllowList,
-                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
                 });
             }
@@ -317,7 +317,7 @@ $('body')
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
                         allowList: myDefaultAllowList,
-                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
                 });
             }
@@ -342,7 +342,7 @@ $('body')
                         viewport: {selector: '#wrap', padding: 2},
                         container: '#wrap',
                         allowList: myDefaultAllowList,
-                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                        template: '<div class="rune-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} fw-lighter"></h3><div class="popover-body"></div></div>'
                     });
                 });
             }
@@ -364,7 +364,7 @@ $('body')
                     placement: 'auto',
                     container: 'body',
                     viewport: {selector: 'body', padding: 2},
-                    template: '<div class="monster-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                    template: '<div class="monster-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} fw-lighter"></h3><div class="popover-body"></div></div>'
                 });
 
                 if (el.is(":hover")) {
@@ -389,7 +389,7 @@ $('body')
                     placement: 'auto',
                     container: '#wrap',
                     viewport: {selector: '#wrap', padding: 2},
-                    template: '<div class="monster-skill shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header bg-white fw-lighter bg-white fw-lighter"></h3><div class="popover-body"></div></div>'
+                    template: '<div class="monster-skill shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} fw-lighter {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} fw-lighter"></h3><div class="popover-body"></div></div>'
                 });
                 if (el.is(":hover")) {
                     el.popover('show');

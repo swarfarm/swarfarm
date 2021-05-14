@@ -27,10 +27,10 @@
     {% endif %}
 
     <div class="card shadow border-0 mb-3">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <h4>Bulk Add</h4>
         </div>
-        <div class="card-body table-responsive">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} table-responsive">
             <form method="post" action="{{ bulk_add_formset_action }}" class="form-inline" id="bulkAddFormset" data-formset-prefix="{{ bulk_add_formset.prefix }}">
                 {% csrf_token %}
                 {{ bulk_add_formset.management_form|crispy }}

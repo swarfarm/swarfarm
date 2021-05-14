@@ -1,5 +1,5 @@
 <div class="card border-0 shadow mb-3 h-100">
-    <div class="card-header bg-white pb-0">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} pb-0">
         <p class="card-title">Stats</p>
     </div>
     <div class="nav nav-pills btn-group" role="group">

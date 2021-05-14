@@ -4,7 +4,7 @@
 
 <div id="monster-inventory">
     <div class="card shadow border-0 mb-3">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <div class="btn-group" role="group">
                 <button class="btn btn-outline-dark profile-view-mode active" data-mode="list">
                     <i class="fas fa-th-list"></i> List
@@ -43,16 +43,16 @@
         </div>
         
         <div id="column-selector-collapse" class="collapse">
-            <div class="card-body">
+            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 <div id="column-selectors" class="d-flex flex-wrap align-items-center justify-content-center"></div>
             </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             {% if monsters %}
                 <div class="table-responsive">
                     <table id="monster_table" class="table table-hover table-condensed monster-table" data-save-filters="true">
-                        <thead class="bg-white">
+                        <thead class="{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <tr>
                                 <th data-sorter="false" data-columnSelector="disable"></th>
                                 <th>Name</th>

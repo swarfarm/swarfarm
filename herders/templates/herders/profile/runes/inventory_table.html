@@ -4,7 +4,7 @@
 
 <div id="rune-inventory">
     <div class="card shadow border-0 mb-3">
-        <div class="card-header bg-white">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <div class="btn-group" role="group">
                 <button class="btn btn-outline-dark rune-view-mode active" data-mode="list">
                     <i class="fas fa-th-list"></i> List
@@ -23,7 +23,7 @@
             <span class="float-right text-muted"><strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> rune{{ total_count|pluralize }}</span>
         </div>
 
-        <div class="card-body table-responsive">
+        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} table-responsive">
         {% if not total_count %}
             <div class="callout callout-warning">
                 <h2>No runes!</h2>
@@ -36,7 +36,7 @@
             </div>
         {% else %}
             <table class="table table-condensed monster-table" id="runeInventoryTable">
-                <thead class="bg-white">
+                <thead class="{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                 <tr>
                     <th>Type</th>
                     <th>Value</th>

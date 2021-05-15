@@ -2,7 +2,7 @@
 
 {% if monsters %}
     <div class="card shadow border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             <h2>Monsters</h2>
         </div>
         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mx-1">
+        <div class="row mx-0{% if user.is_authenticated and user.summoner.dark_mode %} bg-dark{% endif %}">
             <div class="col-12 col-sm-4">
                 <div class="card shadow-sm border-0 mb-3">
                     <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">

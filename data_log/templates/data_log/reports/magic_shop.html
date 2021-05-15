@@ -8,7 +8,7 @@
 {% block reports %}
     {% if log_count %}
         <div class="card shadow border-0 mb-3">
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                 <h2>Magic Shop Log Summary</h2>
             </div>
             <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
@@ -17,11 +17,11 @@
             </div>
         </div>
         <hr />
-        {% include 'data_log/summary.html' with summary=report.summary hide_monsters=True only %}
+        {% include 'data_log/summary.html' with summary=report.summary hide_monsters=True user=user only %}
         <hr />
-        {% include 'data_log/monster.html' with monsters=report.monsters only %}
+        {% include 'data_log/monster.html' with monsters=report.monsters user=user only %}
         <hr />
-        {% include 'data_log/runes.html' with runes=report.runes only %}
+        {% include 'data_log/runes.html' with runes=report.runes user=user only %}
     {% else %}
         {% include 'data_log/reports/no_data.html' %}
     {% endif %}

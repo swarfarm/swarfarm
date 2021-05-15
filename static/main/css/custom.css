@@ -155,6 +155,11 @@ blockquote{
   color: #fff;
 }
 
+.pager-btn.bg-dark.active{
+  background-color: #ededed!important;
+  color: #212529!important;
+}
+
 .page-link{
   color: #000;
 }
@@ -407,7 +412,7 @@ select.short {
   -webkit-transition: color 0.2s;
 }
 
-.{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} th{
+.bg-white th{
   background-color: white!important;
 }
 
@@ -1370,4 +1375,8 @@ div.monster-bulk-monster {
 .dark blockquote{
   border-color: #ededed;
   color: #ededed50;
+}
+
+.border-dark{
+  border-color: #ededed50!important;
 }

@@ -5,7 +5,7 @@
 
 {% block issues %}
     <div class="card shadow-sm border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             <h5>{{ issue.get_status_html }}</h5>
             <h1>{% if not issue.public %}<i class="fas fa-user-lock"></i> {% endif %}{{ issue.subject }}</h1>
             {% if perms.feedback.edit_issue %}
@@ -25,7 +25,7 @@
             <p>{{ issue.description|markdown }}</p>
         </div>
         {% for comment in issue.discussion_set.all %}
-        <hr />
+        <hr class="{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark {% endif %}m-0"/>
         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <span class="h4" {% if comment.user.is_superuser %}data-bs-toggle="tooltip" data-bs-placement="top" title="Admin"{% endif %}>
                 {% if comment.user.is_superuser %}<i class="fas fa-user-shield"></i> {% endif %}{{ comment.user }} <small class="text-muted float-right">{{ comment.timestamp|naturaltime }}</small>

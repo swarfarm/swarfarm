@@ -21,7 +21,7 @@ Friends - {{ block.super }}
             {% if friend.obj.public %}
                 <div class="col-lg-4 col-xl-3 col-md-6 mb-3">
                     <div class="card h-100 border-0 shadow mb-3" >
-                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                             <small class="fs-5"><strong>Username</strong>: {{ friend.obj.user.username }}</small>
                         </div>
                         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
@@ -30,7 +30,7 @@ Friends - {{ block.super }}
                             <h5 class="card-text">Following{% if friend.following %}<i class="fas fa-check link-success float-right"></i>{% else %}<i class="fas fa-times link-danger float-right"></i>{% endif %}
                             <h5 class="card-text">Followed By{% if friend.followed_by %}<i class="fas fa-check link-success float-right"></i>{% else %}<i class="fas fa-times link-danger float-right"></i>{% endif %}
                         </div>
-                        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                             {% if friend.obj.public %}
                                 <a href="{% url 'herders:profile_default' profile_name=friend.obj.user.username %}" class="btn btn-sm btn-info float-right ms-1">
                                     <i class="fas fa-user"></i>

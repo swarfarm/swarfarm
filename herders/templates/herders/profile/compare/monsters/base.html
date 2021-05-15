@@ -21,7 +21,7 @@ Monsters - {{ block.super }}
                             <h5>Natural stars</h5>
                         </div>
                         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} table-responsive">
-                            <table class="table comparison-table-6">
+                            <table class="table comparison-table-6{% if user.is_authenticated and user.summoner.dark_mode %} table-dark{% endif %}">
                                 <thead>
                                     <th>Natural Stars</th>
                                     <th>Category</th>

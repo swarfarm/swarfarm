@@ -12,7 +12,7 @@ Summary - {{ block.super }}
 
     <div class="profile-compare-monsters-ajax">
         <a href="{% url 'herders:profile_compare_builds' profile_name follower_name %}">
-            <div class="btn btn-outline-dark">Compare builds</div>
+            <div class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %}">Compare builds</div>
         </a>
     </div>
     <hr />

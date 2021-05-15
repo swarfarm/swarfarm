@@ -60,7 +60,7 @@
                         <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'herders:import_export_home' profile_name=user.username %}"><i class="fas fa-cloud-upload-alt"></i> Import/Export</a></li>
                         <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'feedback:index' %}"><i class="fas fa-comments"></i> Feedback</a></li>
                         <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'herders:profile_following' profile_name=user.username %}"><i class="fas fa-user-friends"></i> Friends</a></li>
-                        <li class="dropdown-divider"></li>
+                        <li class="dropdown-divider text-light"></li>
                         <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Log out</a></li>
                     </ul>
                 </li>

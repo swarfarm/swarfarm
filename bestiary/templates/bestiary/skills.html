@@ -45,7 +45,7 @@
 
             {% if skill.level_progress_description_list|length > 0 %}
             <div class="{% if skill.effect.all|length > 0 or skill.aoe %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
-                <strong class="fw-normal">Level-up Progress</strong>
+                <strong class="fw-bolder">Level-up Progress</strong>
                 <ul class="list-unstyled">
                     {% for line in skill.level_progress_description_list %}
                         <li>{{ line }}</li>
@@ -56,7 +56,7 @@
 
             {% if skill.effect.all|length > 0 or skill.aoe %}
             <div class="{% if skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
-                <strong class="fw-normal">Skill effects</strong>
+                <strong class="fw-bolder">Skill effects</strong>
                 <div class="d-flex flex-wrap">
                     {% if skill.aoe %}
                         <span class="skill-effect skill-effect-buff p-1 mb-1">
@@ -80,7 +80,7 @@
 
             {% if skill.multiplier_formula %}
             <div class="card-footer border-0 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
-                <strong class="fw-normal">Multiplier Formula</strong>
+                <strong class="fw-bolder">Multiplier Formula</strong>
                 <p>{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
             </div>
             {% endif %}

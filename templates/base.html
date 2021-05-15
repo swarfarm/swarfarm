@@ -57,7 +57,7 @@
             </div>
         {% block modal %}{% endblock modal %}
         </div>
-        <footer class="footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %}" >
+        <footer class="footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark shadow-none{% else %}bg-light{% endif %}" >
             <div class="d-flex align-items-center flex-nowrap">
                 <span class="mx-2">Images belong to Com2Us</span>
                 <i class="fas fa-ellipsis-v mx-2 d-none d-md-block"></i>

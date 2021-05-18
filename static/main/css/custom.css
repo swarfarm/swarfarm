@@ -160,6 +160,10 @@ blockquote{
   color: #212529!important;
 }
 
+.bg-dark-elevate{
+  background-color: #00000033!important;
+}
+
 .page-link{
   color: #000;
 }
@@ -576,13 +580,20 @@ span.monster-image {
   left: 31px;
 }
 
+.bg-unset{
+  background-color: unset!important;
+}
+
 .monster-box {
   width: 102px;
   position: relative;
   float: left;
   border: 1px solid rgba(0, 0, 0, .1);
-  border-radius: 6px;
   margin: 1px;
+}
+
+.artifact-symbol.dark{
+  background-color: unset!important;
 }
 
 .monster-box .monster-star {

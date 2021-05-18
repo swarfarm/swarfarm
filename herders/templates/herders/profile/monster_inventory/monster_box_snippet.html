@@ -4,7 +4,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="card shadow-sm m-1 monster-box inventory-element" data-instance-id="{{ instance.pk.hex }}">
-    <div class="card-header monster-box-actions fw-bolder px-0 py-1">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% endif %} monster-box-actions fw-bolder px-0 py-1">
         {% if instance.custom_name %}{{ instance.custom_name }}{% else %}{{ instance.monster.name }}{% endif %}
     </div>
     <div class="monster-box-thumb monster-popover{% if not is_owner %} rounded-bottom{% endif %}" data-instance-id="{{ instance.pk.hex }}" title="{{ instance.monster.name }} - {{ instance.monster.get_element_display }} {% if instance.monster.awakens_from and instance.monster.awakens_from.obtainable %}{{ instance.monster.awakens_from.name }}{% endif %}">
@@ -41,21 +41,21 @@
     </div>
 
     {% if is_owner %}
-    <div class="card-footer monster-box-actions p-0 px-1">
+    <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% endif %} monster-box-actions p-0 px-1">
         <div class="btn-group float-start" role="group">
-            <button class="btn btn-link btn-sm monster-edit p-0 text-dark" data-instance-id="{{ instance.pk.hex }}">
+            <button class="btn btn-link btn-sm monster-edit p-0 text-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else  %}dark{% endif %}" data-instance-id="{{ instance.pk.hex }}">
                 <i class="fas fa-edit fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
             </button>
-            <button class="btn btn-link btn-sm monster-copy p-0 text-dark" data-instance-id="{{ instance.pk.hex }}">
+            <button class="btn btn-link btn-sm monster-copy p-0 text-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else  %}dark{% endif %}" data-instance-id="{{ instance.pk.hex }}">
                 <i class="fas fa-copy fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy"></i>
             </button>
             {% if instance.monster.awakens_to is not None %}
-            <button class="btn btn-link btn-sm monster-awaken p-0 text-dark ps-1" data-instance-id="{{ instance.pk.hex }}">
+            <button class="btn btn-link btn-sm monster-awaken p-0 text-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else  %}dark{% endif %} ps-1" data-instance-id="{{ instance.pk.hex }}">
                 <i class="fas fa-angle-double-up fa-sm" style="color:purple" data-bs-toggle="tooltip" data-bs-placement="top" title="Awaken"></i>
             </button>
             {% endif %}
         </div>
-        <button class="btn btn-link btn-sm monster-delete float-right p-0 text-dark" data-instance-id="{{ instance.pk.hex }}">
+        <button class="btn btn-link btn-sm monster-delete float-right p-0 text-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else  %}dark{% endif %}" data-instance-id="{{ instance.pk.hex }}">
             <i class="fas fa-trash fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"></i>
         </button>
     </div>

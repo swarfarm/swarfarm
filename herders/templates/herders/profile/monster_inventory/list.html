@@ -6,25 +6,25 @@
     <div class="card shadow border-0 mb-3">
         <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
             <div class="btn-group" role="group">
-                <button class="btn btn-outline-dark profile-view-mode active" data-mode="list">
+                <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} profile-view-mode active" data-mode="list">
                     <i class="fas fa-th-list"></i> List
                 </button>
-                <button class="btn btn-outline-dark profile-view-mode" data-mode="box">
+                <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} profile-view-mode" data-mode="box">
                     <i class="fas fa-th-large"></i> Box
                 </button>
-                <button class="btn btn-outline-dark profile-view-mode" data-mode="pieces">
+                <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} profile-view-mode" data-mode="pieces">
                     <i class="fas fa-puzzle-piece"></i> Pieces
                 </button>
-                <button class="btn btn-outline-dark profile-view-mode" data-mode="collection">
+                <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} profile-view-mode" data-mode="collection">
                     <i class="fas fa-layer-group"></i> Collection
                 </button>
             </div>
 
             <div class="btn-group">
-                <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Grouped By {{ box_grouping|title }} <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu {% if user.is_authenticated and user.summoner.dark_mode %}dropdown-menu-dark{% endif %}">
                     {% if not box_grouping == 'stars' %}<li class="dropdown-item"><a class="dropdown-link box-group-mode text-muted" data-mode="stars">Stars</a></li>{% endif %}
                     {% if not box_grouping == 'natural stars' %}<li class="dropdown-item"><a class="dropdown-link box-group-mode text-muted" data-mode="natural_stars">Natural Stars</a></li>{% endif %}
                     {% if not box_grouping == 'level' %}<li class="dropdown-item"><a class="dropdown-link box-group-mode text-muted" data-mode="level">Level</a></li>{% endif %}
@@ -35,7 +35,7 @@
                 </ul>
             </div>
 
-            <button class="btn btn-outline-dark column-select toggle collapsed" data-bs-toggle="collapse" data-bs-target="#column-selector-collapse">
+            <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} column-select toggle collapsed" data-bs-toggle="collapse" data-bs-target="#column-selector-collapse">
                 Select Columns
             </button>
 
@@ -51,7 +51,7 @@
         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             {% if monsters %}
                 <div class="table-responsive">
-                    <table id="monster_table" class="table table-hover table-condensed monster-table" data-save-filters="true">
+                    <table id="monster_table" class="table table-hover table-condensed monster-table {% if user.is_authenticated and user.summoner.dark_mode %}table-dark{% endif %}" data-save-filters="true">
                         <thead class="{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
                             <tr>
                                 <th data-sorter="false" data-columnSelector="disable"></th>

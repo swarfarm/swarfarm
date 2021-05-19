@@ -364,7 +364,7 @@ $('body')
                     placement: 'auto',
                     container: 'body',
                     viewport: {selector: 'body', padding: 2},
-                    template: '<div class="monster-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} fw-lighter"></h3><div class="popover-body"></div></div>'
+                    template: '<div class="monster-stats shadow-lg border-0 popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header fw-lighter"></h3><div class="popover-body"></div></div>'
                 });
 
                 if (el.is(":hover")) {

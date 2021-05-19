@@ -2,7 +2,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="card shadow border-0 mb-3">
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
         <div class="btn-group btn-group-justified team-list-expand">
             <div class="btn-group" role="group">
                 <button class="btn btn-outline-dark openall"><span class="fas fa-angle-double-down"></span> Expand All</button>
@@ -44,7 +44,7 @@
             <p><strong>Group list is empty!</strong></p>
         {% endfor %}
     </div>
-    <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+    <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
         <div class="btn-group btn-group-justified team-list-expand mt-3">
             <div class="btn-group" role="group">
                 <button class="btn btn-outline-dark openall"><span class="fas fa-angle-double-down"></span> Expand All</button>

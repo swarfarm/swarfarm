@@ -1,7 +1,7 @@
 {% if d.level_set.count > 1 %}
     {% if d.category == d.CATEGORY_SCENARIO %}
         {# List floors by difficulty #}
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} p-2">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} p-2">
             <div>Normal</div>
             <ul class="pagination pagination-sm flex-wrap mb-0">
                 {% for l in d.level_set.all %}
@@ -16,7 +16,7 @@
             </ul>
         </div>
 
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} p-2">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} p-2">
             <div>Hard</div>
             <ul class="pagination pagination-sm flex-wra mb-0">
                 {% for l in d.level_set.all %}
@@ -31,7 +31,7 @@
             </ul>
         </div>
 
-        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} p-2 border-0">
+        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} p-2 border-0">
             <div>Hell</div>
             <ul class="pagination pagination-sm flex-wrap mb-0">
                 {% for l in d.level_set.all %}
@@ -46,7 +46,7 @@
             </ul>
         </div>
     {% else %}
-        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} p-2 border-0 align-items-center">
+        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} p-2 border-0 align-items-center">
             <ul class="pagination pagination-sm flex-wrap mb-0">
                 {% for l in d.level_set.all %}
                     <li class="page-item">

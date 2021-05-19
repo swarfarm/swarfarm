@@ -8,7 +8,7 @@
 {% block logs %}
     {% if total_count %}
         <div class="card shadow border-0 mb-3">
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} d-flex flex-wrap justify-content-between">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} d-flex flex-wrap justify-content-between">
                 <h4>{{ dungeon }}</h4>
             </div>
             <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
@@ -23,7 +23,7 @@
         <div class="row">
             <div class="col-md-6 col-sm-12">
                 <div class="card shadow border-0 mb-3 h-100">
-                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                         <h3>Avg Grade</h3>
                     </div>
                     <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
@@ -46,7 +46,7 @@
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="card shadow border-0 mb-3 h-100">
-                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                         <h3>Avg Grade</h3>
                     </div>
                     <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">

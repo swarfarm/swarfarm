@@ -1,5 +1,5 @@
 <div class="card border-0 shadow mb-3 h-100 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} pb-0">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} pb-0">
         <p class="card-title">Stats</p>
     </div>
     <div class="nav nav-pills btn-group {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}" role="group">
@@ -83,7 +83,7 @@
 
         {# Building stats #}
         <div role="tabpanel" class="tab-pane fade" id="stats_buildings">
-            <table class="table table-condensed table-bordered text-center">
+            <table class="table table-condensed table-bordered text-center {% if user.is_authenticated and user.summoner.dark_mode %}table-dark{% endif %}">
                 <thead>
                 <tr>
                     <th class="text-center">Stat</th>
@@ -153,7 +153,7 @@
 
         {# Guild battle stats #}
         <div role="tabpanel" class="tab-pane fade" id="stats_guild">
-            <table class="table table-condensed table-bordered text-center">
+            <table class="table table-condensed table-bordered text-center {% if user.is_authenticated and user.summoner.dark_mode %}table-dark{% endif %}">
                 <thead>
                 <tr>
                     <th class="text-center">Stat</th>

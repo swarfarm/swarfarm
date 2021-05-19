@@ -48,7 +48,7 @@
             </div>
 
             {% if is_paginated %}
-            <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+            <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                 {% include "pagination.html" %}
             </div>
             {% endif %}

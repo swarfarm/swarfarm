@@ -21,7 +21,7 @@
     {% for skill in monster.skills.all %}
     <div class="{% if monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
         <div class="card border-0 shadow mb-3">
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                 {% if request.user.is_superuser %}
                     <a href="{% url 'admin:bestiary_skill_change' object_id=skill.pk %}" class="btn btn-sm edit-skill float-right" target="_blank"><i class="fas fa-edit"></i></span></a>
                 {% endif %}

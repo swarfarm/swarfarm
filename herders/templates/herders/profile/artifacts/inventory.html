@@ -3,7 +3,7 @@
 
 <div id="rune-inventory">
     <div class="card shadow border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             <div class="btn-group">
                 <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Grouped By {{ box_grouping|title }} <span class="caret"></span>
@@ -32,7 +32,7 @@
                 {% for group in artifacts %}
                     {% if group.artifacts|length %}
                         <div class="card shadow-sm border-0 mb-3 pb-2">
-                            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} collapsible">
+                            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} collapsible">
                                 <a role="button" data-bs-toggle="collapse" data-bs-target="#runegroup{{ forloop.counter }}" aria-expanded="true">
                                     <strong>{{ group.name }}</strong>
                                 </a>
@@ -45,7 +45,7 @@
                                         {% regroup group.artifacts by get_main_stat_display as nested_groups %}
                                         {% for nested_group in nested_groups %}
                                             <div class="card shadow-sm border-0 mb-3 pb-2">
-                                                <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} collapsible">
+                                                <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} collapsible">
                                                     <a role="button" data-bs-toggle="collapse" data-bs-target="#runegroup{{ forloop.counter }}nested{{ group.name|lower }}" aria-expanded="true">
                                                         <strong>{{ nested_group.grouper }}</strong>
                                                     </a>

@@ -7,7 +7,7 @@
 
 {% block logs %}
     <div class="card shadow border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             {% include "./pagination.html" %}
         </div>
 
@@ -21,6 +21,6 @@
             </div>
         {% endif %}
 
-        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">{% include "./pagination.html" %}</div>
+        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">{% include "./pagination.html" %}</div>
     </div>
 {% endblock logs %}

@@ -41,7 +41,7 @@
             <div class="d-flex flex-wrap justify-content-around">
             {% for d in cat_dungeons %}
                 <div class="card border-0 shadow m-3 card-dungeon-md card-dungeon-sm">
-                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                         {% if d.icon %}
                             <a href="{% url 'bestiary:dungeon_detail_no_floor' slug=d.slug %}">
                                 <img src="{{ img_url_prefix }}dungeons/{{ d.icon }}" alt="{{ d.name }} icon" class="media-object dungeon-icon" loading="lazy" />

@@ -207,7 +207,10 @@ blockquote{
 }
 
 .fusion-danger{
-  background-color: rgba(255, 55, 55, .25);
+  background-color: rgba(255, 55, 55, .25)!important;
+}
+.fusion-danger td{
+  background-color: unset!important;
 }
 
 .card a{

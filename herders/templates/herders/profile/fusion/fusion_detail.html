@@ -13,20 +13,22 @@
             <div class="float-right"><img src="{{ img_url_prefix }}items/mana.png" style="height: 1em;" loading="lazy" />{{ fusion.cost }}</div>
         </div>
     </div>
-    <div class="monster-box">
-        <div class="monster-box-thumb">
-            <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}" loading="lazy" />
-            <span>
-                {% for x in fusion.instance.base_stars|get_range %}
-                    {% if fusion.instance.is_awakened %}
-                        <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
-                    {% elif fusion.instance.can_awaken %}
-                        <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
-                    {% else %}
-                        <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
-                    {% endif %}
-                {% endfor %}
-            </span>
+    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} p-0">
+        <div class="monster-box">
+            <div class="monster-box-thumb">
+                <img src="{{ img_url_prefix }}monsters/{{ fusion.instance.image_filename }}" loading="lazy" />
+                <span>
+                    {% for x in fusion.instance.base_stars|get_range %}
+                        {% if fusion.instance.is_awakened %}
+                            <img src="{{ img_url_prefix }}stars/star-awakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
+                        {% elif fusion.instance.can_awaken %}
+                            <img src="{{ img_url_prefix }}stars/star-unawakened.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
+                        {% else %}
+                            <img src="{{ img_url_prefix }}stars/star-fodder.png" class="monster-star monster-star-{{ forloop.counter }}" loading="lazy" />
+                        {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
         </div>
     </div>
 </div>
@@ -36,7 +38,7 @@
         <h3 class="card-title">Fusion Ingredients</h3>
     </div>
     <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} p-0 table-responsive">
-        <table class="table table-condensed monster-table fusion-ingredients">
+        <table class="table table-condensed monster-table fusion-ingredients {% if user.is_authenticated and user.summoner.dark_mode %}table-dark{% endif %}">
             <thead>
                 <tr>
                     <th colspan="2">Ingredient</th>
@@ -188,7 +190,7 @@
         <h3 class="card-title">Awakening Essences</h3>
     </div>
     <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} p-0 table-responsive">
-        <table class="table table-condensed monster-table text-center">
+        <table class="table table-condensed monster-table text-center {% if user.is_authenticated and user.summoner.dark_mode %}table-dark{% endif %}">
             <thead>
                 <tr>
                     <th></th>

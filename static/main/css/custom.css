@@ -1165,6 +1165,10 @@ div.monster-bulk-monster {
   padding: 10px;
 }
 
+.bg-none{
+  background-color: unset!important;
+}
+
 .dungeon-icon {
   height: 100px;
 }

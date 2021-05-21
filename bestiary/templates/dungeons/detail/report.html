@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        {% include 'dungeons/detail/report_snippet.html' with report=report.report only %}
+        {% include 'dungeons/detail/report_snippet.html' with report=report.report user=user only %}
 
     {% endcache %}
     {% else %}

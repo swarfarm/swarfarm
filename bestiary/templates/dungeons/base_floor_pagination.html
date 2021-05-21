@@ -7,7 +7,7 @@
                 {% for l in d.level_set.all %}
                     {% if l.difficulty == l.DIFFICULTY_NORMAL %}
                     <li class="page-item">
-                        <a class="page-link me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='normal' floor=l.floor %}">
+                        <a class="page-link {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate text-light{% endif %} me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='normal' floor=l.floor %}">
                             B{{ l.floor }}
                         </a>
                     </li>
@@ -22,7 +22,7 @@
                 {% for l in d.level_set.all %}
                     {% if l.difficulty == l.DIFFICULTY_HARD %}
                     <li class="page-item">
-                        <a class="page-link me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hard' floor=l.floor %}">
+                        <a class="page-link {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate text-light{% endif %} me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hard' floor=l.floor %}">
                             B{{ l.floor }}
                         </a>
                     </li>
@@ -37,7 +37,7 @@
                 {% for l in d.level_set.all %}
                     {% if l.difficulty == l.DIFFICULTY_HELL %}
                     <li class="page-item">
-                        <a class="page-link me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hell' floor=l.floor %}">
+                        <a class="page-link {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate text-light{% endif %} me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail_difficulty' slug=d.slug difficulty='hell' floor=l.floor %}">
                             B{{ l.floor }}
                         </a>
                     </li>
@@ -50,7 +50,7 @@
             <ul class="pagination pagination-sm flex-wrap mb-0">
                 {% for l in d.level_set.all %}
                     <li class="page-item">
-                        <a class="page-link me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail' slug=d.slug floor=l.floor %}">B{{ l.floor }}</a>
+                        <a class="page-link {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate text-light{% endif %} me-1 mb-1 border-0 shadow-sm" href="{% url 'bestiary:dungeon_detail' slug=d.slug floor=l.floor %}">B{{ l.floor }}</a>
                     </li>
                 {% endfor %}
             </ul>

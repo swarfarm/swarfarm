@@ -4,7 +4,7 @@
 {% if table|length %}
     <h4>Average Quantity per 100 Runs</h4>
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped {% if user.is_authenticated and user.summoner.dark_mode %}table-dark{% endif %}">
             <thead>
             <tr>
                 <th>Grade</th>

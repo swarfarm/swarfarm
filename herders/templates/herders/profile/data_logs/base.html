@@ -26,7 +26,7 @@
 {% block profile %}
     {% if form %}
         <div class="filters mb-3">
-            <button class="btn btn-outline-dark btn-block filter-header collapsed w-100" data-bs-toggle="collapse" data-bs-target="#monsterFilterCollapse">
+            <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} btn-block filter-header collapsed w-100" data-bs-toggle="collapse" data-bs-target="#monsterFilterCollapse">
                 <i class="fas fa-filter"></i> Filters
             </button>
             <div class="collapse" id="monsterFilterCollapse">

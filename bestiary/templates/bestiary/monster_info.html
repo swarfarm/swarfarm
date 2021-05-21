@@ -14,7 +14,7 @@
             {% include 'bestiary/monster/portrait_large.html' with monster=monster only %}
 
             {% if monster.obtainable %}
-            <div class="monster-box-actions">
+            <div class="monster-box-actions ">
                 <button class="btn btn-link btn-sm monster-add text-decoration-none" data-monster="{{ monster.pk }}" data-stars="{{ monster.stars }}">
                     <small><i class="fas fa-plus"></i> Collection</small>
                 </button>
@@ -22,7 +22,7 @@
             {% endif %}
         </div>
 
-        <div class="card border-0 mb-3 ps-2">
+        <div class="card border-0 mb-3 ps-2 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             {% if monster.transforms_to %}
             <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} d-flex justify-content-between flex-wrap">
                 <div>Transforms Into</div>

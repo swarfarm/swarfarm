@@ -38,7 +38,7 @@
                         </div>
                         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate border-dark{% endif %} py-0">
                             {% for el, data in mon.elements.items %}
-                            <div class="card-header {% if forloop.last%}border-0 {% endif %}{% if user.is_authenticated and user.summoner.dark_mode %}bg-unset border-dark{% endif %} p-0 py-2 monster-element">
+                            <div class="card-header bg-unset {% if forloop.last%}border-0 {% endif %}{% if user.is_authenticated and user.summoner.dark_mode %}border-dark{% endif %} p-0 py-2 monster-element">
                                 <img src="{% static 'herders/images/elements/'|add:el|add:'.png' %}" />
                                 <div class="row">
                                     <div class="col-12 col-md-6">

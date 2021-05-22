@@ -20,17 +20,17 @@
         <hr />
         <div class="row">
             <div class="col-lg-9 col-md-8 col-sm-12">
-                <div class="card shadow border-0 mb-3">
+                <div class="card shadow border-0 mb-3 {% if user.is_authenticated and user.summoner.dark_mode %}dark{% endif %}">
                     <div class="col-xs-12">
                         <div class="row">
                             <div class="col-sm-6 col-md-4 col-md-3">
-                                {% include 'herders/profile/data_logs/drops/summary/items.html' with items=dashboard.recent_drops.items only %}
+                                {% include 'herders/profile/data_logs/drops/summary/items.html' with items=dashboard.recent_drops.items user=user only %}
                             </div>
                             <div class="col-sm-6 col-md-4 col-md-3">
-                                {% include 'herders/profile/data_logs/drops/summary/rune_crafts.html' with runes=dashboard.recent_drops.rune_crafts only %}
+                                {% include 'herders/profile/data_logs/drops/summary/rune_crafts.html' with runes=dashboard.recent_drops.rune_crafts user=user only %}
                             </div>
                             <div class="col-sm-6 col-md-4 col-md-3">
-                                {% include 'herders/profile/data_logs/drops/summary/monsters.html' with monsters=dashboard.recent_drops.monsters only %}
+                                {% include 'herders/profile/data_logs/drops/summary/monsters.html' with monsters=dashboard.recent_drops.monsters user=user only %}
                             </div>
                         </div>
                     </div>
@@ -42,12 +42,12 @@
                     <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                         <h3 class="card-title">Quick Links</h3>
                     </div>
-                    <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
-                        <a href="{% url 'herders:data_log_rift_raid_table' profile_name=profile_name %}">View As Table</a>
+                    <div class="{% if forloop.last %}card-footer border-0{% else %}card-header border-dark{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                        <a href="{% url 'herders:data_log_rift_raid_table' profile_name=profile_name %}" class="{% if user.is_authenticated and user.summoner.dark_mode %}link-light{% endif %}">View As Table</a>
                     </div>
                     {% for level in level_list %}
-                        <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
-                            <a href="{% url 'herders:data_log_rift_raid_detail' profile_name=profile_name floor=level.floor %}">{{ level }}</a>
+                        <div class="{% if forloop.last %}card-footer border-0{% else %}card-header border-dark{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                            <a href="{% url 'herders:data_log_rift_raid_detail' profile_name=profile_name floor=level.floor %}" class="{% if user.is_authenticated and user.summoner.dark_mode %}link-light{% endif %}">{{ level }}</a>
                         </div>
                     {% endfor %}
                 </div>

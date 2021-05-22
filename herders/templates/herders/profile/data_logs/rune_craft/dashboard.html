@@ -18,7 +18,7 @@
             </div>
         </div>
         <hr />
-        {% include 'data_log/runes.html' with runes=report only %}
+        {% include 'data_log/runes.html' with user=user runes=report only %}
     {% else %}
         {% include 'herders/profile/data_logs/no_data.html' %}
     {% endif %}

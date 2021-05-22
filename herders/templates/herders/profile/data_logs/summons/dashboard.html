@@ -36,11 +36,11 @@
                         <h3 class="card-title">Quick Links</h3>
                     </div>
                     <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
-                        <a href="{% url 'herders:data_log_summons_table' profile_name=profile_name %}">View As Table</a>
+                        <a href="{% url 'herders:data_log_summons_table' profile_name=profile_name %}" class="{% if user.is_authenticated and user.summoner.dark_mode %}link-light{% endif %}">View As Table</a>
                     </div>
                     {% for item in item_list %}
                         <div class="{% if forloop.last %}card-footer border-0{% else %}card-header{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
-                            <a href="{% url 'herders:data_log_summons_detail' profile_name=profile_name slug=item.slug %}">
+                            <a href="{% url 'herders:data_log_summons_detail' profile_name=profile_name slug=item.slug %}" class="{% if user.is_authenticated and user.summoner.dark_mode %}link-light{% endif %}">
                                 <img src="{{ img_url_prefix }}items/{{ item.icon }}" class="image-inline" alt="{{ item.name }} icon" loading="lazy" />
                                 {{ item }}
                             </a>

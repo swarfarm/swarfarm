@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        {% include 'data_log/clear_time.html' with clear_times=report.clear_time only %}
+        {% include 'data_log/clear_time.html' with user=user clear_times=report.clear_time only %}
 
         <div class="row">
             <div class="col-md-6 col-sm-12">
@@ -63,11 +63,11 @@
         </div>
 
         <hr />
-        {% include 'data_log/summary.html' with summary=report.summary only %}
+        {% include 'data_log/summary.html' with user=user summary=report.summary only %}
         <hr />
-        {% include 'data_log/runes.html' with runes=report.runes only %}
+        {% include 'data_log/runes.html' with user=user runes=report.runes only %}
         <hr />
-        {% include 'data_log/rune_crafts.html' with rune_crafts=report.rune_crafts only %}
+        {% include 'data_log/rune_crafts.html' with user=user rune_crafts=report.rune_crafts only %}
     {% else %}
         {% include 'herders/profile/data_logs/no_data.html' %}
     {% endif %}

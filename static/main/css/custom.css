@@ -1415,3 +1415,7 @@ body.dark .popover-body
 body.dark .bootbox-close-button{
   color: white!important;
 }
+
+.dark .highcharts-background {
+  fill: #212529!important;
+}

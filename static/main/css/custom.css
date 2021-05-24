@@ -610,6 +610,10 @@ span.monster-image {
   margin: 1px;
 }
 
+body.dark .monster-box {
+  border: 1px solid #808080;
+}
+
 .artifact-symbol.dark{
   background-color: unset!important;
 }
@@ -1411,7 +1415,7 @@ div.monster-bulk-monster {
 }
 
 .border-dark{
-  border-color: #ededed50!important;
+  border-color: #808080!important;
 }
 
 body.dark .modal-header,

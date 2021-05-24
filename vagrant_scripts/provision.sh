@@ -38,11 +38,13 @@ curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv
 echo 'export PATH="/home/vagrant/.pyenv/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+echo 'eval "$(pyenv init --path)"' >> ~/.profile
 
 # Repeat above commands because 'source ~/.bashrc' doesn't work here
 export PATH="/home/vagrant/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
+eval "$(pyenv init --path)"
 
 # Install python + init virtualenv
 pyenv install 3.6.8

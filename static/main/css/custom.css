@@ -1406,7 +1406,10 @@ body.dark .modal-header,
 body.dark .modal-body,
 body.dark .modal-footer,
 body.dark .popover-header,
-body.dark .popover-body
+body.dark .popover-body,
+body.dark .list-group-item,
+body.dark .CodeMirror,
+body.dark .editor-preview
 {
   background-color: #212529;
   color: white;
@@ -1416,6 +1419,15 @@ body.dark .bootbox-close-button{
   color: white!important;
 }
 
-.dark .highcharts-background {
+body.dark .highcharts-background {
   fill: #212529!important;
+}
+
+body.dark .editor-toolbar a{
+  color: white!important;
+  background-color: unset;
+}
+
+body.dark .editor-toolbar.disabled-for-preview a:not(.no-disable){
+  background-color: #ffffff33!important;
 }

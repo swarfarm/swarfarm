@@ -28,9 +28,9 @@
                 </button>
             </li>
             {% for grade_report in report.report.reports reversed %}
-            <li class="nav-item card border-0 shadow-sm mb-3 mx-1 p-0" role="presentation">
+            <li class="nav-item card border-0 shadow-sm mb-3 mx-1 p-0 {% if user.is_authenticated and user.summoner.dark_mode %}bg-none{% endif %}" role="presentation">
                 <button 
-                    class="nav-link card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} card-monster" 
+                    class="nav-link card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark text-light{% endif %} card-monster" 
                     id="rating-{{ forloop.counter }}-tab" 
                     data-bs-toggle="pill" 
                     data-bs-target="#rating-{{ forloop.counter }}" 
@@ -48,11 +48,11 @@
         <div class="tab-content" id="rating-tabContent">
             <div class="tab-pane fade show active" id="rating-0" role="tabpanel" aria-labelledby="rating-0-tab">
                 <div class="card border-0 shadow-sm m-3 card-dungeon-md card-dungeon-sm">
-                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                         <h4>Summary</h4>
                     </div>
                     <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
-                        {% include 'dungeons/detail/report_by_grade_summary_table.html' with table=report.report.summary only %}
+                        {% include 'dungeons/detail/report_by_grade_summary_table.html' with table=report.report.summary user=user only %}
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                 <div class="tab-pane fade" id="rating-{{ forloop.counter }}" role="tabpanel" aria-labelledby="rating-{{ forloop.counter }}-tab">
                     <h2>{{ grade_report.grade }}</h2>
                     {% if grade_report.report %}
-                        {% include 'dungeons/detail/report_snippet.html' with report=grade_report.report only %}
+                        {% include 'dungeons/detail/report_snippet.html' with report=grade_report.report user=user only %}
                     {% else %}
                         <p>No report generated for this grade yet</p>
                     {% endif %}

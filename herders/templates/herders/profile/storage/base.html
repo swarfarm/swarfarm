@@ -10,26 +10,26 @@
 {% block profile %}
     {% static 'herders/images/' as img_url_prefix %}
     <div class="card shadow border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             <h3 class="card-title">Elemental Essences</h3>
         </div>
         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <div class="row">
                 {% for essence in essence_mats %}
                 <div class="col-md-4 col-sm-6">
-                    <div class="card shadow-sm border-0 mb-3">
-                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                    <div class="card shadow-sm border-0 mb-3 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate border-dark{% else %}bg-white{% endif %}">
                             <h4>{{ essence.name }}</h4>
                         </div>
-                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} d-flex flex-wrap">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate{% else %}bg-white{% endif %} d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_low.png" class="monster-inline pull-left" loading="lazy" />
                             <div class="essence-input">{{ essence.qty.0 }}</div>
                         </div> 
-                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} d-flex flex-wrap">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate{% else %}bg-white{% endif %} d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_mid.png" class="monster-inline pull-left" loading="lazy" />
                             <div class="essence-input">{{ essence.qty.1 }}</div>
                         </div> 
-                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} d-flex flex-wrap">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate{% endif %} d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}/items/essence_{{ essence.element }}_high.png" class="monster-inline pull-left" loading="lazy" />
                             <div class="essence-input">{{ essence.qty.2 }}</div>
                         </div> 
@@ -41,18 +41,18 @@
     </div>
 
     <div class="card shadow border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             <h3 class="card-title">Crafting Materials</h3>
         </div>
         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <div class="row">
                 {% for craft in craft_mats %}
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
-                    <div class="card shadow-sm border-0 mb-3">
-                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                    <div class="card shadow-sm border-0 mb-3 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate border-dark{% else %}bg-white{% endif %}">
                             {{ craft.name }}
                         </div>
-                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} d-flex flex-wrap">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate{% endif %} d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}items/craft_material_{{ craft.field_name }}.png" class="monster-inline pull-left" loading="lazy" />
                             <div id="craft_{{ craft.field_name }}" class="essence-input">{{ craft.qty }}</div>
                         </div>
@@ -64,18 +64,18 @@
     </div>
 
     <div class="card shadow border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             <h3 class="card-title">Enhancing Monsters</h3>
         </div>
         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <div class="row">
                 {% for monster in monster_mats %}
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
-                    <div class="card shadow-sm border-0 mb-3">
-                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                    <div class="card shadow-sm border-0 mb-3 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate border-dark{% else %}bg-white{% endif %}">
                             {{ monster.name }}
                         </div>
-                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} d-flex flex-wrap">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate{% endif %} d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}items/monster_{% if 'rainbowmon' in monster.field_name %}rainbowmon{% else %}{{ monster.field_name }}{% endif %}.png" class="monster-inline pull-left" loading="lazy" />
                             <div id="craft_{{ monster.field_name }}" class="essence-input">{{ monster.qty }}</div>
                         </div>
@@ -87,18 +87,18 @@
     </div>
 
     <div class="card shadow border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             <h3 class="card-title">Monster Shrine</h3>
         </div>
         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             <div class="row">
                 {% for monster in monster_shrine_mats %}
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
-                    <div class="card shadow-sm border-0 mb-3">
-                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+                    <div class="card shadow-sm border-0 mb-3 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate border-dark{% else %}bg-white{% endif %}">
                             {{ monster.name }}
                         </div>
-                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} d-flex flex-wrap">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate{% endif %} d-flex flex-wrap">
                             <img src="{{ img_url_prefix }}monsters/{{ monster.img }}" class="monster-inline pull-left" loading="lazy" />
                             <div id="monster_{{ monster.field_name }}" class="essence-input">
                                 {{ monster.qty }}

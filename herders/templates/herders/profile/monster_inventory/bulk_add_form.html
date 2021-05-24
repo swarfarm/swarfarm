@@ -27,14 +27,14 @@
     {% endif %}
 
     <div class="card shadow border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             <h4>Bulk Add</h4>
         </div>
         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} table-responsive">
             <form method="post" action="{{ bulk_add_formset_action }}" class="form-inline" id="bulkAddFormset" data-formset-prefix="{{ bulk_add_formset.prefix }}">
                 {% csrf_token %}
                 {{ bulk_add_formset.management_form|crispy }}
-                <table class="table table-condensed">
+                <table class="table table-condensed {% if user.is_authenticated and user.summoner.dark_mode %}table-dark{% endif %}">
                     <thead>
                     <tr>
                         <th>Monster</th>
@@ -53,7 +53,7 @@
 
                 <div class="row">
                     <div class="btn-group" role="group" aria-label="Form Buttons">
-                        <button type="button" class="btn btn-outline-dark" data-formset-add>Add Another</button>
+                        <button type="button" class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %}" data-formset-add>Add Another</button>
                         <input type="submit" name="submit" value="Submit" class="btn btn-success" id="submit-id-submit"/>
                         <a href="{{ return_path }}" class="btn btn-outline-danger">Cancel</a>
                     </div>

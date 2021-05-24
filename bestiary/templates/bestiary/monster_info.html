@@ -3,7 +3,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="card border-0 shadow mb-3">
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
         <span class="card-title"><strong><img src="{{ img_url_prefix }}elements/{{ monster.element }}.png" style="height:1em" loading="lazy" /> {{ monster.name }}</strong> - <small>{{ monster.get_archetype_display }}</small></span>
         {% if request.user.is_superuser %}
             <a href="{% url 'admin:bestiary_monster_change' object_id=monster.pk %}" class="btn btn-sm edit-skill float-right" target="_blank"><i class="fas fa-edit"></i></a>
@@ -14,7 +14,7 @@
             {% include 'bestiary/monster/portrait_large.html' with monster=monster only %}
 
             {% if monster.obtainable %}
-            <div class="monster-box-actions">
+            <div class="monster-box-actions ">
                 <button class="btn btn-link btn-sm monster-add text-decoration-none" data-monster="{{ monster.pk }}" data-stars="{{ monster.stars }}">
                     <small><i class="fas fa-plus"></i> Collection</small>
                 </button>
@@ -22,9 +22,9 @@
             {% endif %}
         </div>
 
-        <div class="card border-0 mb-3 ps-2">
+        <div class="card border-0 mb-3 ps-2 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
             {% if monster.transforms_to %}
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} d-flex justify-content-between flex-wrap">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} d-flex justify-content-between flex-wrap">
                 <div>Transforms Into</div>
                 <a href="{% url 'bestiary:detail' monster_slug=monster.transforms_to.bestiary_slug  %}">
                     {{ monster.transforms_to }} <img class="monster-thumb" src="{{ img_url_prefix }}monsters/{{ monster.transforms_to.image_filename }}" />
@@ -33,7 +33,7 @@
             {% endif %}
 
             {% if monster.awaken_bonus %}
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
                 <div>Awakening Bonus</div>
                 {{ monster.awaken_bonus }}
             </div>
@@ -41,7 +41,7 @@
 
             {% with sources=monster.source.all %}
             {% if sources|length %}
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
                 <div>Sources</div>
                 <div>
                     {% for source in sources %}
@@ -58,14 +58,14 @@
             {% endwith %}
 
             {% if monster.can_awaken and not monster.is_awakened %}
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
                 <div>Awakening Essences</div>
                 <div>{% include 'bestiary/awakening_essences.html' %}</div>
             </div>
             {% endif %}
             {% with fusion_set=monster.fusion_ingredient_for.all %}
             {% if fusion_set|length %}
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
                 <div>Fusion Ingredient For</div>
                 <div>
                     {% for fusion in fusion_set %}
@@ -79,7 +79,7 @@
             {% endwith %}
                 
             {% if monster.fusion %}
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
                 <div>Fusion Product Of</div>
                 <div>
                     {% for fusion_from in monster.fusion.ingredients.all %}
@@ -92,7 +92,7 @@
             {% endif %}
 
             {% if monster.skill_ups_to_max %}
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} card-bestiary-monster-details">
                 <div>Skill-ups to Max</div>
                 <div class="monster-image">
                     <img src="{{ img_url_prefix }}monsters/devilmon_dark.png" class="monster-thumb" loading="lazy" />

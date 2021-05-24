@@ -5,7 +5,7 @@
 
 <div class="card shadow-sm border-0 mb-1 w-100">
     <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} d-flex flex-wrap p-0">
-        <div class="monster-image monster-popover" data-instance-id="{{ unit.pk.hex }}" title="{{ unit }}">
+        <div class="monster-image monster-popover {% if user.is_authenticated and user.summoner.dark_mode %}border-dark{% endif %}" data-instance-id="{{ unit.pk.hex }}" title="{{ unit }}">
             <a href="{% url 'herders:monster_instance_view' profile_name=profile_name instance_id=unit.pk.hex %}" target="_blank">
                 <img src="{{ img_url_prefix }}monsters/{{ unit.monster.image_filename }}" class="monster-thumb" loading="lazy" />
                 <span>

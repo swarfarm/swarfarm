@@ -6,18 +6,18 @@
     {% static 'herders/images/' as img_url_prefix %}
 
     <div class="card shadow border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
             <div class="btn-group" role="group">
-                <button class="btn btn-outline-dark profile-view-mode" data-mode="list">
+                <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} profile-view-mode" data-mode="list">
                     <i class="fas fa-th-list"></i> List
                 </button>
-                <button class="btn btn-outline-dark profile-view-mode" data-mode="box">
+                <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} profile-view-mode" data-mode="box">
                     <i class="fas fa-th-large"></i> Box
                 </button>
-                <button class="btn btn-outline-dark profile-view-mode" data-mode="pieces">
+                <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} profile-view-mode" data-mode="pieces">
                     <i class="fas fa-puzzle-piece"></i> Pieces
                 </button>
-                <button class="btn btn-outline-dark profile-view-mode active" data-mode="collection">
+                <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} profile-view-mode active" data-mode="collection">
                     <i class="fas fa-layer-group"></i> Collection
                 </button>
             </div>
@@ -31,14 +31,14 @@
             <div class="card-deck row">
                 {% for mon in monster_stable %}
                 <div class="col-12 col-md-4 col-lg-3 mb-3">
-                    <div class="card shadow-sm border-0 m-1 h-100">
-                        <div class="card-header">
+                    <div class="card shadow-sm border-0 m-1 h-100 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
+                        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate border-dark{% endif %}">
                             {{ mon.name }}
                             {% if mon.possible_skillups %}<span class="float-right"><strong>{{ mon.possible_skillups}}</strong> possible skillups{% endif %}
                         </div>
-                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} py-0">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate border-dark{% endif %} py-0">
                             {% for el, data in mon.elements.items %}
-                            <div class="card-header {% if forloop.last%}border-0 {% endif %}{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} p-0 py-2 monster-element">
+                            <div class="card-header bg-unset {% if forloop.last%}border-0 {% endif %}{% if user.is_authenticated and user.summoner.dark_mode %}border-dark{% endif %} p-0 py-2 monster-element">
                                 <img src="{% static 'herders/images/elements/'|add:el|add:'.png' %}" />
                                 <div class="row">
                                     <div class="col-12 col-md-6">
@@ -71,7 +71,7 @@
                             </div>
                             {% endfor %}
                         </div>
-                        <div class="card-footer">
+                        <div class="card-footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark-elevate border-dark{% endif %}">
                         {% if mon.skillups_need > 0 %}
                             <span class="float-right">Missing <strong>{{ mon.skillups_need }}</strong> skillups</span>
                         {% else %}

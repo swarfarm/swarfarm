@@ -3,7 +3,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="card shadow-sm m-1 rune-box-border rune-panel">
-    <div class="card-header p-1 d-flex justify-content-between">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% endif %} p-1 d-flex justify-content-between">
         <div class="rune-text rune-text-{{ rune.get_quality_display|lower }}">{{ rune }}</div>
         {% if is_owner %}
         <div class="btn-group float-right">

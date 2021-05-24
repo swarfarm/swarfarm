@@ -52,6 +52,9 @@ blockquote{
 .bootbox-close-button{
   border: none;
   background: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
 .select2-container{
@@ -155,6 +158,15 @@ blockquote{
   color: #fff;
 }
 
+.pager-btn.bg-dark.active{
+  background-color: #ededed!important;
+  color: #212529!important;
+}
+
+.bg-dark-elevate{
+  background-color: #00000033!important;
+}
+
 .page-link{
   color: #000;
 }
@@ -195,7 +207,10 @@ blockquote{
 }
 
 .fusion-danger{
-  background-color: rgba(255, 55, 55, .25);
+  background-color: rgba(255, 55, 55, .25)!important;
+}
+.fusion-danger td{
+  background-color: unset!important;
 }
 
 .card a{
@@ -407,7 +422,7 @@ select.short {
   -webkit-transition: color 0.2s;
 }
 
-.{% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} th{
+.bg-white th{
   background-color: white!important;
 }
 
@@ -571,13 +586,20 @@ span.monster-image {
   left: 31px;
 }
 
+.bg-unset{
+  background-color: unset!important;
+}
+
 .monster-box {
   width: 102px;
   position: relative;
   float: left;
   border: 1px solid rgba(0, 0, 0, .1);
-  border-radius: 6px;
   margin: 1px;
+}
+
+.artifact-symbol.dark{
+  background-color: unset!important;
 }
 
 .monster-box .monster-star {
@@ -1143,6 +1165,10 @@ div.monster-bulk-monster {
   padding: 10px;
 }
 
+.bg-none{
+  background-color: unset!important;
+}
+
 .dungeon-icon {
   height: 100px;
 }
@@ -1360,7 +1386,7 @@ div.monster-bulk-monster {
 .dark .select2-results__options,
 .dark .select2-search
 {
-  background-color: #111111;
+  color: black;
 }
 
 .active-dark{
@@ -1370,4 +1396,38 @@ div.monster-bulk-monster {
 .dark blockquote{
   border-color: #ededed;
   color: #ededed50;
+}
+
+.border-dark{
+  border-color: #ededed50!important;
+}
+
+body.dark .modal-header,
+body.dark .modal-body,
+body.dark .modal-footer,
+body.dark .popover-header,
+body.dark .popover-body,
+body.dark .list-group-item,
+body.dark .CodeMirror,
+body.dark .editor-preview
+{
+  background-color: #212529;
+  color: white;
+}
+
+body.dark .bootbox-close-button{
+  color: white!important;
+}
+
+body.dark .highcharts-background {
+  fill: #212529!important;
+}
+
+body.dark .editor-toolbar a{
+  color: white!important;
+  background-color: unset;
+}
+
+body.dark .editor-toolbar.disabled-for-preview a:not(.no-disable){
+  background-color: #ffffff33!important;
 }

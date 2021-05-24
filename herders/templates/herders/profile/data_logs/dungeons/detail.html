@@ -8,7 +8,7 @@
 {% block logs %}
     {% if total_count %}
         <div class="card shadow border-0 mb-3">
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} d-flex flex-wrap justify-content-between">
+            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} d-flex flex-wrap justify-content-between">
                 <h4>{{ level }}</h4>
             </div>
             <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
@@ -18,26 +18,26 @@
             </div>
         </div>
         <hr />
-        {% include 'data_log/summary.html' with summary=report.summary only %}
+        {% include 'data_log/summary.html' with user=user summary=report.summary only %}
 
         {% if report.clear_time %}
             <hr />
-            {% include 'data_log/clear_time.html' with clear_times=report.clear_time only %}
+            {% include 'data_log/clear_time.html' with user=user clear_times=report.clear_time only %}
         {% endif %}
 
         {% if report.runes %}
             <hr />
-            {% include 'data_log/runes.html' with runes=report.runes only %}
+            {% include 'data_log/runes.html' with user=user runes=report.runes only %}
         {% endif %}
 
         {% if report.rune_crafts.gem or report.rune_crafts.grindstone %}
             <hr />
-            {% include 'data_log/rune_crafts.html' with rune_crafts=report.rune_crafts only %}
+            {% include 'data_log/rune_crafts.html' with user=user rune_crafts=report.rune_crafts only %}
         {% endif %}
 
         {% if report.artifacts %}
             <hr />
-            {% include 'data_log/artifacts.html' with artifacts=report.artifacts only %}
+            {% include 'data_log/artifacts.html' with user=user artifacts=report.artifacts only %}
         {% endif %}
     {% else %}
         {% include 'herders/profile/data_logs/no_data.html' %}

@@ -2,14 +2,14 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="card shadow-sm border-0 mb-3">
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} m-0 mx-1">
+<div class="card {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} shadow-sm border-0 mb-3">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} m-0 mx-1">
         {% if is_owner %}
         <div class="btn-group float-right">
-            <button class="btn btn-link btn-sm rune-craft-edit p-0 text-dark" data-craft-id="{{ craft.pk.hex }}">
+            <button class="btn btn-link btn-sm rune-craft-edit p-0 text-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %}" data-craft-id="{{ craft.pk.hex }}">
                 <i class="fas fa-edit fa-sm" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
             </button>
-            <button class="btn btn-link btn-sm rune-craft-delete p-0 text-dark" data-craft-id="{{ craft.pk.hex }}">
+            <button class="btn btn-link btn-sm rune-craft-delete p-0 text-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %}" data-craft-id="{{ craft.pk.hex }}">
                 <i class="fas fa-trash fa-sm text-danger" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"></i>
             </button>
         </div>

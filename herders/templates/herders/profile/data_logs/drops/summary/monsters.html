@@ -2,7 +2,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="card border-0 shadow-sm mb-3">
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
         <h3 class="card-title">Monsters</h3>
     </div>
 

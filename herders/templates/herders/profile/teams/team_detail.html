@@ -4,7 +4,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="card shadow border-0">
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
         {% if is_owner %}
             <div class="float-right">
                 <a href="#{{ team.pk.hex }}" class="btn btn-link text-muted team-edit" data-team-id="{{ team.pk.hex }}">
@@ -18,12 +18,12 @@
         <h1>{{ team.group.name }} - {{ team.name }}</h1>
     </div>
     {% if team.description %}
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
         {{ team.description|markdown }}
     </div>
     {% endif %}
     {% if team_buffs %}
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} d-flex flex-wrap monster-skill-effects w-100">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} d-flex flex-wrap monster-skill-effects w-100">
         {% if team.leader.monster.leader_skill %}
         <img src="{{ img_url_prefix }}skills/leader/{{ team.leader.monster.leader_skill.icon_filename }}" loading="lazy" 
                 data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="Leader Skill" data-bs-content="{{ team.leader.monster.leader_skill.skill_string }}" />
@@ -40,13 +40,13 @@
         {% endfor %}
     </div>
     {% endif %}
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
         <div class="card-title h4">Leader</div>
         {% if team.leader %}
             {% include 'herders/profile/teams/team_unit_detail.html' with unit=team.leader %}
         {% endif %}
     </div>
-    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} d-flex flex-wrap">
+    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% endif %} d-flex flex-wrap">
         {% for instance in team.roster.all %}
             {% include 'herders/profile/teams/team_unit_detail.html' with unit=instance %}
         {% endfor %}

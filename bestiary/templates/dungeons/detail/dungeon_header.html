@@ -4,11 +4,11 @@
     <div class="btn-group" role="group">
         {% if is_scenario %}
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-lg btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="btn btn-lg btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 <span>{{ level.get_difficulty_display }}</span>
             </button>
 
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu {% if user.is_authenticated and user.summoner.dark_mode %}dropdown-menu-dark{% endif %}">
                 {% for _, difficulty in level.DIFFICULTY_CHOICES %}
                 <li>
                     <a class="dropdown-item" href="{% url 'bestiary:dungeon_detail_difficulty' slug=dungeon.slug difficulty=difficulty.lower floor=level.floor %}">
@@ -22,11 +22,11 @@
 
         {% if floor_range|length > 1 %}
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-lg btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="btn btn-lg btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 <span>B{{ level.floor }}</span>
             </button>
 
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu {% if user.is_authenticated and user.summoner.dark_mode %}dropdown-menu-dark{% endif %}">
                 {% for floor in floor_range %}
                 <li>
                     {% if is_scenario %}

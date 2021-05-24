@@ -2,7 +2,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="rune-panel card shadow border-0">
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %} p-1 m-0">
+    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} p-1 m-0">
         <div class="btn-group float-right">
             <div class="btn btn-link rune-edit p-0 text-dark" data-rune-id="{{ rune.pk_hex }}">
                 <i class="fas fa-edit" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>

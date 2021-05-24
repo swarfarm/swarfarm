@@ -22,8 +22,8 @@
 
 {% block profile %}
     <div class="card shadow-sm border-0 mb-3">
-        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
-            <button class="btn btn-outline-dark btn-block w-100 collapsed" data-bs-toggle="collapse" data-bs-target="#runeFilterCollapse">
+        <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+            <button class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %} btn-block w-100 collapsed" data-bs-toggle="collapse" data-bs-target="#runeFilterCollapse">
                 <i class="fas fa-filter"></i> Filters
             </button>
         </div>

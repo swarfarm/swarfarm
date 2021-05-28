@@ -337,7 +337,7 @@ class BulkAddMonsterInstanceForm(forms.ModelForm):
                 wrapper_class='full-width',
             ),
             HTML('</td><td>'),
-            InlineField('stars', css_class='rating visually-hidden form-control', value=1, data_start=0, data_stop=6, data_stars=6),
+            InlineField('stars', value=1, data_start=0, data_stop=6, data_stars=6),
             HTML('</td><td>'),
             FieldWithButtons(
                 Field('level', value=1, min=1, max=40, css_class='form-control'),
@@ -1897,8 +1897,8 @@ class FilterLogTimeRangeLayout(Layout):
         super().__init__(
             Fieldset(
                 'Log Time Span',
-                Field('timestamp__gte', autocomplete='off'),
-                Field('timestamp__lte', autocomplete='off'),
+                Field('timestamp__gte', autocomplete='off', template='crispy/datetimepicker.html'),
+                Field('timestamp__lte', autocomplete='off', template='crispy/datetimepicker.html'),
             ),
         )
 

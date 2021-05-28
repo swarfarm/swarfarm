@@ -59,6 +59,7 @@ function AddMonster() {
             message: result.html
         }).on('shown.bs.modal', function() {
             $(this).attr('id', 'addMonsterModal');
+            $(this).removeAttr('tabindex');
         });
         $('.rating').rating();
     })

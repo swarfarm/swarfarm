@@ -434,7 +434,7 @@ $('body')
     .on('click', '.monster-delete', function() { DeleteMonster($(this).data('instance-id')) })
     .on('click', '.monster-awaken', function() { AwakenMonster($(this).data('instance-id')) })
     .on('click', '.monster-power-up', function() { PowerUpMonster($(this).data('instance-id')) })
-    .on('click', '#addNewRune', function() { CreateNewRune($("#id_assign-slot_0").val()) })
+    .on('click', '#addNewRune', function() { CreateNewRune($("#id_assign-slot").val()) })
     .on('click', '#addNewArtifact', function() { CreateNewArtifact($("#id_assign-slot").val()[0]) })
     .on('submit', '#AssignRuneForm', function() {
         var $form = $(this);

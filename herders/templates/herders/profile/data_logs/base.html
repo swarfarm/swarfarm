@@ -40,7 +40,6 @@
 
 {% block javascript %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.45/js/bootstrap-datetimepicker.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script type="application/javascript">
         $(function(){
@@ -58,24 +57,6 @@
                   return $(title).children(".popover-heading").html();
                 }
             });
-        });
-
-        // Initialize datetime pickers
-        var datetimeopts = {
-            'format': 'YYYY-MM-DD HH:mm:ss',
-            'showTodayButton': true,
-            'useCurrent': false,
-            'showClear': true,
-            'showClose': true
-        };
-        $('#id_timestamp__gte').datetimepicker(datetimeopts);
-        $('#id_timestamp__lte').datetimepicker(datetimeopts);
-
-        $("#id_timestamp__gte").on("dp.change", function (e) {
-            $('#id_timestamp__lte').data("DateTimePicker").minDate(e.date);
-        });
-        $("#id_timestamp__lte").on("dp.change", function (e) {
-            $('#id_timestamp__gte').data("DateTimePicker").maxDate(e.date);
         });
     </script>
 {% endblock %}

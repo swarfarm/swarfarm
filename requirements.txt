@@ -47,7 +47,7 @@ itypes==1.1.0
 Jinja2==2.11.3
 jsonschema==3.2.0
 kombu==4.6.7
-markdown2==2.3.10
+markdown2==2.4.0
 MarkupSafe==1.1.0
 monotonic==1.5
 more-itertools==8.7.0

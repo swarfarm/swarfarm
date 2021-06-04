@@ -11,7 +11,7 @@ chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
 crispy-bootstrap5==0.3.1
-Django==2.2.20
+Django==2.2.21
 django-appconf==1.0.2
 django-autocomplete-light==3.3.2
 django-celery-beat==1.5.0

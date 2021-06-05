@@ -61,6 +61,10 @@ blockquote{
   z-index: 9999;
 }
 
+body :not(.modal) .select2-container{
+  z-index: unset;
+}
+
 .subnavmenu-fixed-left {
   z-index: 1001;
   position: fixed;
@@ -1429,6 +1433,10 @@ body.dark .editor-preview
 {
   background-color: #212529;
   color: white;
+}
+
+body.dark .CodeMirror-cursor{
+  border-color: white!important;
 }
 
 body.dark .bootbox-close-button{

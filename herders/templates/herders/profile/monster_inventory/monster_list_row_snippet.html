@@ -134,6 +134,7 @@
     <td>{{ instance.resistance }}%</td>
     <td>{{ instance.accuracy }}%</td>
     <td>{{ instance.effective_hp }}</td>
+    <td>{% if instance.default_build.rune_set_text != "Empty" %}{{ instance.default_build.rune_set_text }}{% endif %}</td>
     <td class="monster-awaken-materials">
         {% if instance.monster.can_awaken and not instance.monster.is_awakened %}
             {% include 'bestiary/awakening_essences.html' with monster=instance.monster only %}

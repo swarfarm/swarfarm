@@ -255,12 +255,14 @@ def edit(request, profile_name, artifact_id):
             artifact = form.save()
 
             if orig_assigned_to and artifact.assigned_to != orig_assigned_to:
-                # Unassign from old monster
                 orig_assigned_to.default_build.artifacts.remove(artifact)
-
-            if artifact.assigned_to:
-                # Assign to new monster
                 artifact.assigned_to.default_build.assign_artifact(artifact)
+            elif not orig_assigned_to and artifact.assigned_to:
+                artifact.assigned_to.default_build.assign_artifact(artifact)
+            elif orig_assigned_to and artifact.assigned_to == orig_assigned_to:
+                artifact.assigned_to.default_build.clear_cache_properties()
+                artifact.assigned_to.default_build.update_stats()
+                artifact.assigned_to.default_build.save()
                 
             messages.success(request, 'Saved changes to ' + str(artifact))
             form = ArtifactInstanceForm()

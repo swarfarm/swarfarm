@@ -298,9 +298,13 @@ def rune_edit(request, profile_name, rune_id):
 
             if orig_assigned_to and rune.assigned_to != orig_assigned_to:
                 orig_assigned_to.default_build.runes.remove(rune)
-
-            if rune.assigned_to:
                 rune.assigned_to.default_build.assign_rune(rune)
+            elif not orig_assigned_to and rune.assigned_to:
+                rune.assigned_to.default_build.assign_rune(rune)
+            elif orig_assigned_to and rune.assigned_to == orig_assigned_to:
+                rune.assigned_to.default_build.clear_cache_properties()
+                rune.assigned_to.default_build.update_stats()
+                rune.assigned_to.default_build.save()
 
             messages.success(request, 'Saved changes to ' + str(rune))
             form = AddRuneInstanceForm(auto_id='edit_id_%s')

@@ -700,7 +700,9 @@ def sync_upgrade_rune(summoner, log_data):
             # new substat/roll, recalculate build
             monster = rune.assigned_to
             if monster:
-                monster.default_build.assign_rune(rune)
+                monster.default_build.clear_cache_properties()
+                monster.default_build.update_stats()
+                monster.default_build.save()
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,
@@ -756,7 +758,9 @@ def sync_grind_enchant_rune(summoner, log_data):
             rune.save()
             monster = rune.assigned_to
             if monster:
-                monster.default_build.assign_rune(rune)
+                monster.default_build.clear_cache_properties()
+                monster.default_build.update_stats()
+                monster.default_build.save()
         else:
             assigned_to = MonsterInstance.objects.filter(
                 owner=summoner,
@@ -791,7 +795,9 @@ def sync_reapp_rune(summoner, log_data):
         rune.save()
         monster = rune.assigned_to
         if monster:
-            monster.default_build.assign_rune(rune)
+            monster.default_build.clear_cache_properties()
+            monster.default_build.update_stats()
+            monster.default_build.save()
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,
@@ -945,7 +951,9 @@ def sync_upgrade_artifact(summoner, log_data):
             artifact.save()
             monster = artifact.assigned_to
             if monster:
-                monster.default_build.assign_artifact(artifact)
+                monster.default_build.clear_cache_properties()
+                monster.default_build.update_stats()
+                monster.default_build.save()
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,
@@ -1051,7 +1059,9 @@ def sync_artifact_post_enchant(summoner, log_data):
         artifact.save()
         monster = artifact.assigned_to
         if monster:
-            monster.default_build.assign_artifact(artifact)
+            monster.default_build.clear_cache_properties()
+            monster.default_build.update_stats()
+            monster.default_build.save()
     else:
         assigned_to = MonsterInstance.objects.filter(
             owner=summoner,

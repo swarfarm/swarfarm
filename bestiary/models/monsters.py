@@ -203,11 +203,11 @@ class Monster(models.Model, base.Elements, base.Stars, base.Archetype):
         # Magic multipliers taken from summoner's war wikia calculator. Used to calculate stats for lvl 1 and lvl MAX
         magic_multipliers = [
             {'1': 1.0, 'max': 1.9958},
-            {'1': 1.5966, 'max': 3.03050646},
-            {'1': 2.4242774, 'max': 4.364426603},
-            {'1': 3.4914444, 'max': 5.941390935},
-            {'1': 4.7529032, 'max': 8.072330795},
-            {'1': 6.4582449, 'max': 10.97901633},
+            {'1': 1.9958, 'max': 3.03050646},
+            {'1': 3.03050646, 'max': 4.364426603},
+            {'1': 4.364426603, 'max': 5.941390935},
+            {'1': 5.941390935, 'max': 8.072330795},
+            {'1': 8.072330795, 'max': 10.97901633},
         ]
 
         max_lvl = 10 + grade * 5

@@ -38,7 +38,7 @@ Friends - {{ block.super }}
                             {% endif %}
 
                             {% if friend.following %}
-                                <a href="{% url 'herders:profile_follow_remove' profile_name=profile_name follow_username=friend.obj.user.username %}?next={{ return_path }}" class="btn btn-sm btn-danger float-right ms-1">
+                                <a href="{% url 'herders:profile_follow_remove' profile_name=profile_name follow_username=friend.obj.user.username %}?next={{ return_path }}" class="btn btn-sm btn-danger float-left ms-1">
                                     <i class="fas fa-user-minus"></i>
                                 </a>
                             {% else %}

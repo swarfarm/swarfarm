@@ -486,10 +486,11 @@ def sync_convert_monster_to_material_storage(summoner, log_data):
         if not ids_to_remove:
             return
 
-        MonsterInstance.objects.filter(
+        for mon in MonsterInstance.objects.filter(
             owner=summoner,
             com2us_id__in=ids_to_remove
-        ).delete()
+        ):
+            mon.delete()
 
         for item in log_data['response'].get('inventory_item_list', []):
             _sync_item(item, summoner)

@@ -201,6 +201,7 @@ _preprocess_erratum = {
     2816: [remove_multiplier], # Water Sylphid S3
     2901: [replace_attack_def_with_just_def],  # Water Dragon S1
     2909: [fix_holy_light_multiplier],  # Light Dragon S2
+    4214: [remove_multiplier], # Light Chimera S3
     4606: [remove_multiplier], # Water Howl (Unawakened) S2
     4607: [remove_multiplier], # Fire Howl (Unawakened) S2
     4608: [remove_multiplier], # Wind Howl (Unawakened) S2

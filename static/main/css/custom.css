@@ -1455,3 +1455,8 @@ body.dark .editor-toolbar a{
 body.dark .editor-toolbar.disabled-for-preview a:not(.no-disable){
   background-color: #ffffff33!important;
 }
+
+body.dark .btn-outline-dark{
+  color: #f8f9fa;
+  border-color: #f8f9fa;
+}

@@ -117,9 +117,8 @@ class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
 
     def get_filters(self):
         # Only retrieve filter keys used by the current form
-        filter_data = self.request.session.get(self.get_session_key(), {})
         return {
-            k: v for k, v in filter_data.items() if k in self.get_form_class().base_fields
+            k: v for k, v in self.request.POST.items() if k in self.get_form_class().base_fields
         }
 
 

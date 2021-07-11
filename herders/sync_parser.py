@@ -490,6 +490,9 @@ def sync_convert_monster_to_material_storage(summoner, log_data):
             owner=summoner,
             com2us_id__in=ids_to_remove
         ):
+            # explicitly delete rune builds, so we won't get unexpected 500
+            mon.default_build.delete()
+            mon.rta_build.delete()
             mon.delete()
 
         for item in log_data['response'].get('inventory_item_list', []):

@@ -102,7 +102,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-6">
+                <div class="col-md-6 col-lg-4">
                     <div class="card border-0 shadow-sm p-0 my-1">
                         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
@@ -114,7 +114,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-6">
+                <div class="col-md-6 col-lg-4">
                     <div class="card border-0 shadow-sm p-0 my-1">
                         <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                             <div
@@ -125,6 +125,20 @@
                         </div>
                     </div>
                 </div>
+
+                {% if runes.legend_stars %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm p-0 my-1">
+                        <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
+                            <div
+                                class="report-chart"
+                                data-chart="{% chart runes.legend_stars type='pie' title="Quality" sorted='quality' colors='quality' %}"
+                                style="height: 300px"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

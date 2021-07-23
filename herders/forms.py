@@ -1782,7 +1782,7 @@ class MonsterImportOptionsLayout(Layout):
             Div(
                 HTML("""<h4 class="list-group-item-heading">Monster Filters</h4>"""),
                 HTML("""<p class="text-warning">Note: If a monster is filtered out, it's equipped runes will not be imported either!</p>"""),
-                Field('minimum_stars', template='crispy/button_radio_select.html'),
+                Field('minimum_stars'),
                 Field('ignore_silver'),
                 Field('ignore_material'),
                 Field('except_with_runes'),

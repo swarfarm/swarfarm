@@ -502,7 +502,22 @@ def get_rune_report(qs, total_log_count, **kwargs):
             'type': 'histogram',
             'width': 500,
             'data': histogram(qs, 'value', range(min_value, max_value, 500), slice_on='quality')
-        }
+        },
+        'legend_stars': {
+            'type': 'occurrences',
+            'total': qs.count(),
+            'data': transform_to_dict(
+                list(
+                    qs.filter(
+                        quality=Rune.QUALITY_LEGEND
+                    ).values(
+                        grade=Concat(Cast('stars', CharField()), Value('⭐'))
+                    ).annotate(
+                        count=Count('pk')
+                    ).filter(count__gt=min_count).order_by('-count')
+                )
+            ),
+        },
     }
 
 

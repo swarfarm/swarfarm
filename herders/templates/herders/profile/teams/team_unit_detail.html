@@ -35,7 +35,7 @@
                         <span>AOE</span>
                     </span>
                 {% endif %}
-                {% for effect in skill.effect.all %}
+                {% for effect in skill.effects_distinct %}
                     {% if effect.icon_filename %}
                     <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}" loading="lazy" 
                         data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}"/>

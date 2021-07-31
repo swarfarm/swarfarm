@@ -58,6 +58,16 @@ class Skill(models.Model):
         verbose_name = 'Skill'
         verbose_name_plural = 'Skills'
 
+    def effects_distinct(self):
+        c2us_ids = []
+        effects_distinct = []
+        for effect in self.effect.all():
+            if effect.pk not in c2us_ids:
+                c2us_ids.append(effect.pk)
+                effects_distinct.append(effect)
+        
+        return effects_distinct
+
     def copy_effects_from(self, other_skill):
         # Copy all the effects from another skill
         # Detailed skill effects

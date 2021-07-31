@@ -25,7 +25,7 @@
                 <p class="card-title"><strong>{{ skill.skill.name }}</strong></p>
             </div>
 
-            <div class="{% if skill.skill.level_progress_description_list|length > 0 or skill.skill.effect.all|length > 0 or skill.skill.aoe or skill.skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+            <div class="{% if skill.skill.level_progress_description_list|length > 0 or skill.skill.effects_distinct|length > 0 or skill.skill.aoe or skill.skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                 <div class="card-bestiary-monster-details">
                     <div class="monster-skill-thumb float-left">
                         <img src="{{ img_url_prefix }}skills/{{ skill.skill.icon_filename }}" loading="lazy" />
@@ -41,7 +41,7 @@
             </div>
 
             {% if skill.skill.level_progress_description_list|length > 0 %}
-            <div class="{% if skill.skill.effect.all|length > 0 or skill.skill.aoe %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+            <div class="{% if skill.skill.effects_distinct|length > 0 or skill.skill.aoe %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                 <strong class="fw-bolder">Level-up Progress</strong>
                 <ul class="list-unstyled">
                     {% for line in skill.skill.level_progress_description_list %}
@@ -51,7 +51,7 @@
             </div>
             {% endif %}
 
-            {% if skill.skill.effect.all|length > 0 or skill.skill.aoe %}
+            {% if skill.skill.effects_distinct|length > 0 or skill.skill.aoe %}
             <div class="{% if skill.skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
                 <strong class="fw-bolder">Skill effects</strong>
                 <div class="d-flex flex-wrap">
@@ -60,7 +60,7 @@
                             <span>AOE</span>
                         </span>
                     {% endif %}
-                    {% for effect in skill.skill.effect.all %}
+                    {% for effect in skill.skill.effects_distinct %}
                         {% if effect.icon_filename %}
                             <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect float-left mb-1" loading="lazy" 
                                 data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}"

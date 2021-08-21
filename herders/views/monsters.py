@@ -183,7 +183,7 @@ def monster_inventory(request, profile_name, view_mode=None, box_grouping=None):
                     data['skillups_need'] += records_element[0]['skill_ups_to_max']
                 monster_stable[skill_group_id] = data
 
-            for mon in monster_filter.qs.filter(awakened).exclude(base_material):
+            for mon in monster_filter.qs.exclude(base_material):
                 mon_skill_group = monster_stable.get(mon.monster.skill_group_id)
                 if not mon_skill_group:
                     continue # if skill group doesnt exist, don't care

@@ -17,7 +17,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from bestiary.fields import AdvancedSelectMultiple
-from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level, GameItem
+from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dungeon, Level, GameItem, Rune
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from data_log.models import RiftDungeonLog, WorldBossLog, CraftRuneLog, MagicBoxCraft
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
@@ -567,6 +567,11 @@ class FilterMonsterInstanceForm(forms.Form):
         required=False,
         initial=True,
     )
+    default_build__active_rune_sets = forms.MultipleChoiceField(
+        label='Equipped sets',
+        choices=Rune.TYPE_CHOICES,
+        required=False,
+    )
 
     helper = FormHelper()
     helper.form_method = 'get'
@@ -633,6 +638,11 @@ class FilterMonsterInstanceForm(forms.Form):
                         Field(
                             'monster__awaken_level',
                             css_class='select2',
+                        ),
+                        Field(
+                            'default_build__active_rune_sets', 
+                            css_class='select2', 
+                            wrapper_class='form-group-sm'
                         ),
                         InlineRadios('fodder', wrapper_class='form-group-sm form-group-condensed'),
                         InlineRadios('in_storage', wrapper_class='form-group-sm form-group-condensed'),

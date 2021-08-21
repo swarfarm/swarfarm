@@ -1,7 +1,7 @@
 import django_filters
 from django.db.models import Q
 
-from bestiary.models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat, RuneCraft
+from bestiary.models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat, RuneCraft, Rune
 from .models import MonsterInstance, MonsterTag, RuneInstance, ArtifactInstance, RuneCraftInstance
 
 
@@ -22,6 +22,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
     monster__skills__aoe = django_filters.BooleanFilter(method='filter_bypass')
     effects_logic = django_filters.BooleanFilter(method='filter_bypass')
     monster__fusion_food = django_filters.BooleanFilter(method='filter_monster__fusion_food')
+    default_build__active_rune_sets = django_filters.MultipleChoiceFilter(choices=Rune.TYPE_CHOICES, method='filter_default_build__active_rune_sets')
 
     class Meta:
         model = MonsterInstance
@@ -45,6 +46,7 @@ class MonsterInstanceFilter(django_filters.FilterSet):
             'fodder': ['exact'],
             'in_storage': ['exact'],
             'monster__fusion_food': ['exact'],
+            'default_build__active_rune_sets': ['in'],
         }
 
     def filter_monster__name(self, queryset, name, value):
@@ -55,6 +57,18 @@ class MonsterInstanceFilter(django_filters.FilterSet):
                 | Q(monster__awakens_from__awakens_from__name__icontains=value)
                 | Q(monster__awakens_to__name__icontains=value)
             )
+        else:
+            return queryset
+    
+    def filter_default_build__active_rune_sets(self, queryset, name, value):
+        if value:
+            pks = []
+            queryset = queryset.filter(default_build__isnull=False)
+            for q in queryset:
+                if all(int(v) in q.default_build.active_rune_sets for v in value):
+                    pks.append(q.pk)
+
+            return queryset.filter(pk__in=pks)
         else:
             return queryset
 

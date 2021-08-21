@@ -53,7 +53,7 @@ def _bestiary_inventory(request):
             'name': 'name',
             'stars': 'base_stars',
             'element': 'element',
-            'type': 'archetype',
+            'archetype': 'archetype',
             'awakens-to': 'awakens_to__name',
             'awakens-from': 'awakens_from__name',
             'leader-skill': 'leader_skill__amount',

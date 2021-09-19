@@ -119,7 +119,7 @@
                 </div>
                 <div class="tab-pane fade" id="collection-2" role="tabpanel" aria-labelledby="collection-2-tab">
                     <div class="d-flex flex-wrap justify-content-around">
-                        <table class="table table-responsive">
+                        <table class="table table-responsive {% if user.is_authenticated and user.summoner.dark_mode %}table-dark{% endif %}">
                             <tbody>
                                 <tr>
                                     <td class="monster-collection cell not-owned legend">Not owned or not awakened</td>
@@ -129,7 +129,7 @@
                             </tbody>
                         </table>
 
-                        <table class="table table-responsive">
+                        <table class="table table-responsive {% if user.is_authenticated and user.summoner.dark_mode %}table-dark{% endif %}">
                             <thead>
                                 <tr>
                                     <th scope="col"></th>

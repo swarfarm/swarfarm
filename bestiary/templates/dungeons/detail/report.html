@@ -8,7 +8,6 @@
     {% endif %}
     
     {% if report %}
-    {% cache 86400 dungeon_report dungeon.pk level.difficulty level.floor %}
         <div class="card shadow border-0 mb-3">
             <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
                 <ul class="list-unstyled">
@@ -21,7 +20,6 @@
 
         {% include 'dungeons/detail/report_snippet.html' with report=report.report user=user only %}
 
-    {% endcache %}
     {% else %}
         <div class="callout callout-info">
             <h1>No data <i class="fas fa-sad-tear"></i></h1>

@@ -4,7 +4,7 @@ bcrypt==3.1.7
 billiard==3.6.1.0
 bitstring==3.1.6
 bugsnag==3.6.0
-celery==4.3.0
+celery==5.2.2
 certifi==2018.11.29
 cffi==1.11.5
 chardet==3.0.4

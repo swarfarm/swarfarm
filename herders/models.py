@@ -46,6 +46,11 @@ class Summoner(models.Model):
     notes = models.TextField(null=True, blank=True)
     preferences = JSONField(default=dict, blank=True)
     last_update = models.DateTimeField(auto_now=True)
+    consent_report = models.BooleanField(null=True, blank=True)
+    consent_top = models.BooleanField(null=True, blank=True)
+
+    def has_given_consent(self):
+        return self.consent_report is not None and self.consent_top is not None
 
     def get_rune_counts(self):
         counts = {}

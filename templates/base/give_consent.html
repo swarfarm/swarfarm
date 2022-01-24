@@ -1,0 +1,47 @@
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+<div class="modal fade" id="modal-give-consent" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-give-consent-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-give-consent-label">Consent</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <strong>TODO TEXT</strong><br>
+            Keep in mind that below consent works only for private profiles. Public profiles will be used regardless of your consent.<br />
+            <strong>TODO TEXT</strong><br>
+            <br />
+            <div class="form-check form-switch">
+                <label class="form-check-label" for="consent-report">I want my profile to be used in statistics (full anonymity)</label>
+                <input class="form-check-input" type="checkbox" role="switch" id="consent-report" name="consent_report" checked>
+            </div>
+            <div class="form-check form-switch">
+                <label class="form-check-label" for="consent-top">I want my monsters to be displayed in TOP builds (full anonymity)</label>
+                <input class="form-check-input" type="checkbox" role="switch" id="consent-top" name="consent_top" checked>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-{% if user.is_authenticated and user.summoner.dark_mode %}light{% else %}dark{% endif %}" id="button-give-consent">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    let modal = null;
+    $(document).ready(function() {
+        modal = bootstrap.Modal.getOrCreateInstance($("#modal-give-consent"));
+        modal.toggle();
+    })
+
+    $(document).on('click','#button-give-consent',function(){
+        modal.toggle();
+        let data = {
+            "consent-report": $("#consent-report").prop('checked'),
+            "consent-top": $("#consent-top").prop('checked'),
+        }
+        console.log(data);
+    });
+</script>

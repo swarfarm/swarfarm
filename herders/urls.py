@@ -8,6 +8,7 @@ app_name = 'herders'
 urlpatterns = [
     # User management stuff
     url(r'^register/$', views.profile.register, name='register'),  # Register new user
+    url(r'^consent/$', views.profile.set_consent, name='consent'),  # Set consent
 
     # User profiles and monster views
     url(r'^profile/(?P<profile_name>[a-zA-Z0-9_@.]+)/', include([

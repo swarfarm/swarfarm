@@ -126,6 +126,8 @@ class RegisterUserForm(forms.Form):
     is_public = forms.BooleanField(label='Make my SWARFARM account visible to others', required=False)
     dark_mode = forms.BooleanField(label='Dark Mode', required=False)
     server = forms.ChoiceField(label="Summoner's War Server", choices=[(None, '---')] + Summoner.SERVER_CHOICES, required=False)
+    consent_report = forms.BooleanField(label='I agree that my profile will be used in statistics', required=False, initial=True)
+    consent_top = forms.BooleanField(label='I agree that my monsters will be featured on the TOP list', required=False, initial=True)
     captcha = ReCaptchaField()
 
     helper = FormHelper()
@@ -139,6 +141,8 @@ class RegisterUserForm(forms.Form):
         Field('server'),
         Field('is_public'),
         Field('dark_mode'),
+        Field('consent_report'),
+        Field('consent_top'),
         Field('captcha'),
         FormActions(Submit('register', 'Register', css_class='float-right'))
     )
@@ -164,6 +168,9 @@ class EditUserForm(ModelForm):
 
 
 class EditSummonerForm(ModelForm):
+    consent_report = forms.BooleanField(label='I agree that my profile will be used in statistics', required=False, initial=True)
+    consent_top = forms.BooleanField(label='I agree that my monsters will be featured on the TOP list', required=False, initial=True)
+
     def __init__(self, *args, **kwargs):
         super(EditSummonerForm, self).__init__(*args, **kwargs)
 
@@ -174,6 +181,8 @@ class EditSummonerForm(ModelForm):
                 Field('summoner_name'),
                 Field('public'),
                 Field('dark_mode'),
+                Field('consent_report'),
+                Field('consent_top'),
                 Field('timezone'),
                 Field('server'),
             ),
@@ -185,6 +194,8 @@ class EditSummonerForm(ModelForm):
             'summoner_name',
             'public',
             'dark_mode',
+            'consent_report',
+            'consent_top',
             'timezone',
             'server',
         )

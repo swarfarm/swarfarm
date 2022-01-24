@@ -126,6 +126,8 @@ class RegisterUserForm(forms.Form):
     is_public = forms.BooleanField(label='Make my SWARFARM account visible to others', required=False)
     dark_mode = forms.BooleanField(label='Dark Mode', required=False)
     server = forms.ChoiceField(label="Summoner's War Server", choices=[(None, '---')] + Summoner.SERVER_CHOICES, required=False)
+    consent_report = forms.BooleanField(label='I want my profile to be used in statistics (full anonymity for private profiles)', required=False, initial=True)
+    consent_top = forms.BooleanField(label='I want my monsters to be displayed in TOP builds (full anonymity for private profiles)', required=False, initial=True)
     captcha = ReCaptchaField()
 
     helper = FormHelper()
@@ -139,6 +141,8 @@ class RegisterUserForm(forms.Form):
         Field('server'),
         Field('is_public'),
         Field('dark_mode'),
+        Field('consent_report'),
+        Field('consent_top'),
         Field('captcha'),
         FormActions(Submit('register', 'Register', css_class='float-right'))
     )

@@ -64,6 +64,8 @@ def register(request):
                         summoner_name=form.cleaned_data['summoner_name'],
                         public=form.cleaned_data['is_public'],
                         dark_mode=form.cleaned_data['dark_mode'],
+                        consent_report=form.cleaned_data['consent_report'],
+                        consent_top=form.cleaned_data['consent_top'],
                     )
                     new_summoner.save()
 
@@ -1168,3 +1170,18 @@ def stats_monsters(request, profile_name):
     }
 
     return render(request, 'herders/profile/stats/monsters/base.html', context)
+
+
+@username_case_redirect
+@login_required
+def set_consent(request):
+    data = request.POST
+    c_report = (data['consent-report'] == 'true')
+    c_top = (data['consent-top'] == 'true')
+    
+    summoner = request.user.summoner
+    summoner.consent_report = c_report
+    summoner.consent_top = c_top
+    summoner.save()
+
+    return redirect(request.META.get('HTTP_REFERER'))

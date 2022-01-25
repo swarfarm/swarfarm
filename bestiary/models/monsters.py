@@ -484,3 +484,11 @@ class Fusion(models.Model):
                 cost['dark']['high'] += ingredient.awakens_from.awaken_mats_dark_high
 
         return cost
+
+
+class BalancePatch(models.Model):
+    date = models.DateField(primary_key=True, unique=True)
+    monsters = models.ManyToManyField(Monster, related_name='balance_patches')
+
+    def __str__(self):
+        return self.date

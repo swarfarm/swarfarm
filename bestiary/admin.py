@@ -294,3 +294,10 @@ class DungeonAdmin(admin.ModelAdmin):
 class GameItemAdmin(admin.ModelAdmin):
     list_display = ('image_tag', 'com2us_id', 'category', 'name', 'sell_value')
     list_filter = ('category', )
+
+
+@admin.register(models.BalancePatch)
+class BalancePatchAdmin(admin.ModelAdmin):
+    list_display = ('date', )
+    search_fields = ('monsters__name', )
+    filter_horizontal = ('monsters', )

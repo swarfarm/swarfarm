@@ -304,5 +304,5 @@ class BalancePatchAdmin(admin.ModelAdmin):
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "monsters":
-            kwargs["queryset"] = models.Monster.objects.filter(awaken_level__in=[models.Monster.AWAKEN_LEVEL_AWAKENED, models.Monster.AWAKEN_LEVEL_SECOND])
+            kwargs["queryset"] = models.Monster.objects.filter(awaken_level__in=[models.Monster.AWAKEN_LEVEL_AWAKENED, models.Monster.AWAKEN_LEVEL_SECOND], obtainable=True)
         return super(BalancePatchAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)

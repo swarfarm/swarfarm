@@ -132,7 +132,7 @@ class EffectDetailInline(admin.TabularInline):
 @admin.register(models.Skill)
 class SkillAdmin(admin.ModelAdmin):
     readonly_fields = ('used_on',)
-    list_display = ('image_url', 'name', 'icon_filename', 'description', 'slot', 'passive',)
+    list_display = ('image_url', 'name', 'used_on', 'icon_filename', 'description', 'slot', 'passive',)
     filter_vertical = ('scaling_stats', )
     search_fields = ['com2us_id', 'name', 'description']
     list_filter = ['slot', 'passive']

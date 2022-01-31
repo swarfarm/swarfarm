@@ -3,7 +3,7 @@ from django.utils.timezone import get_current_timezone
 from jsonschema.exceptions import best_match
 
 from bestiary.models import Monster, Building, GameItem
-from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance, ArtifactInstance, ArtifactCraftInstance
+from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance, ArtifactInstance, ArtifactCraftInstance, Summoner
 from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
 default_import_options = {
@@ -65,6 +65,18 @@ def parse_sw_json(data, owner, options):
     parsed_monster_shrine = {}
     parsed_monster_pieces = []
     parsed_buildings = {}
+
+    server_id_mapping = {
+        None: None,
+        1: Summoner.SERVER_GLOBAL,
+        2: Summoner.SERVER_KOREA,
+        3: Summoner.SERVER_JAPAN,
+        4: Summoner.SERVER_CHINA,
+        5: Summoner.SERVER_ASIA,
+        6: Summoner.SERVER_EUROPE,
+    }
+    
+    server_id = server_id_mapping[data.get('server_id', None)]
 
     # Grab the friend
     if data.get('command') == 'VisitFriend':
@@ -320,6 +332,7 @@ def parse_sw_json(data, owner, options):
 
     import_results = {
         'wizard_id': wizard_id,
+        'server_id': server_id,
         'monsters': parsed_mons,
         'monster_pieces': parsed_monster_pieces,
         'runes': parsed_runes,

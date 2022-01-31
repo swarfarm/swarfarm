@@ -58,6 +58,7 @@ def com2us_data_import(data, user_id, import_options):
         # Update summoner and inventory
         if results['wizard_id']:
             summoner.com2us_id = results['wizard_id']
+            summoner.server = results['server_id']
             summoner.save()
 
         # inventory bulk update or create

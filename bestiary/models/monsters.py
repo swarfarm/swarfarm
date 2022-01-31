@@ -494,3 +494,6 @@ class BalancePatch(models.Model):
 
     def __str__(self):
         return str(self.date)
+    
+    class Meta:
+        get_latest_by = 'date'

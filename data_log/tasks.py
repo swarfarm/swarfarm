@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from celery import shared_task
 from django.db import transaction
@@ -47,7 +47,7 @@ def _generate_monster_statistic_report(start_date, monster_pk, server, is_rta, m
         monster = Monster.objects.get(pk=monster_pk)
         report = {}
         sr = StatisticsReport.objects.create(
-            start_date=start_date,
+            start_date=datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S").date(),
             monster=monster,
             server=server,
             is_rta=is_rta,
@@ -56,7 +56,9 @@ def _generate_monster_statistic_report(start_date, monster_pk, server, is_rta, m
         )
         monsterinstances = sr.monsterinstances(profiles, filter_by_date=False)
 
-        print(monster, server, is_rta, min_box_6stars, profiles.count(), len(monsterinstances))
+        sr.generate_report(monsterinstances)
+
+        print(f"Report #{sr.pk} for {sr.monster} generated from {start_date} to {timezone.now().date()}")
 
 
 @shared_task
@@ -82,4 +84,5 @@ def generate_statistics_reports():
                 profiles_f = profiles_f.annotate(stars6=Count('monsterinstance__stars')).filter(stars6__gte=min_box_6stars).distinct()
             for monster in monsters: 
                 for is_rta in is_rta_options:
-                    _generate_monster_statistic_report(start_date, monster.pk, server, is_rta, min_box_6stars, list(profiles_f.values_list('pk', flat=True)))
+                    _generate_monster_statistic_report.delay(start_date, monster.pk, server, is_rta, min_box_6stars, list(profiles_f.values_list('pk', flat=True)))
+                    print(start_date, monster, server, is_rta, min_box_6stars, profiles_f.count())

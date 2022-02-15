@@ -4,7 +4,7 @@ from django.db import models
 
 from bestiary.models import Level, GameItem, BalancePatch, Monster
 from data_log.models.log_models import CraftRuneLog, MagicBoxCraft
-from herders.models import MonsterInstance, RuneBuild
+from herders.models import MonsterInstance, RuneBuild, RuneInstance
 
 
 class Report(models.Model):
@@ -120,3 +120,94 @@ class StatisticsReport(models.Model):
                     continue
 
         return monsters
+    
+    def generate_report(self, monsters):
+        categories = [
+            "sets", "sets_4", "sets_2", 
+            "slot_2", "slot_4", "slot_6", 
+            "slots_2_4_6"
+        ]
+
+        build_attr = 'default_build'
+        if self.is_rta:
+            build_attr = 'rta_build'
+
+        report = {
+            "charts": {category: {"data": {}, "type": "occurrences", "total": 0,} for category in categories},
+            "top": sorted(monsters, key=lambda m: getattr(m, build_attr).avg_efficiency, reverse=True)[:20],
+        }
+        mons_top = []
+        for top in report["top"]:
+            mons_top.append({
+                'is_public': top.owner.consent_top,
+                'obj': "", # TODO: temp, should be serializer
+            })
+        report["top"] = mons_top
+
+        for monster in monsters:
+            build = getattr(monster, build_attr)
+            if not build:
+                continue
+
+            slot_2 = build.runes.filter(slot=2).first()
+            slot_2_ms = slot_2.get_main_stat_display() if slot_2 else None
+            if slot_2_ms:
+                r_s_2 = report["charts"]["slot_2"]
+                if slot_2_ms not in r_s_2["data"]:
+                    r_s_2["data"][slot_2_ms] = 0
+                r_s_2["data"][slot_2_ms] += 1
+                
+            slot_4 = build.runes.filter(slot=4).first()
+            slot_4_ms = slot_4.get_main_stat_display() if slot_4 else None
+            if slot_4_ms:
+                r_s_4 = report["charts"]["slot_4"]
+                if slot_4_ms not in r_s_4["data"]:
+                    r_s_4["data"][slot_4_ms] = 0
+                r_s_4["data"][slot_4_ms] += 1
+
+            slot_6 = build.runes.filter(slot=6).first()
+            slot_6_ms = slot_6.get_main_stat_display() if slot_6 else None
+            if slot_6_ms:
+                r_s_6 = report["charts"]["slot_6"]
+                if slot_6_ms not in r_s_6["data"]:
+                    r_s_6["data"][slot_6_ms] = 0
+                r_s_6["data"][slot_6_ms] += 1
+
+            slot_2_4_6 = ' / '.join([rune_ms if rune_ms else '-' for rune_ms in [slot_2_ms, slot_4_ms, slot_6_ms]])
+            r_s_2_4_6 = report["charts"]["slots_2_4_6"]
+            if slot_2_4_6 not in r_s_2_4_6["data"]:
+                r_s_2_4_6["data"][slot_2_4_6] = 0
+            r_s_2_4_6["data"][slot_2_4_6] += 1
+
+            completed_sets = build.active_rune_sets
+            for set_ in completed_sets:
+                required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[set_]
+                name = RuneInstance.TYPE_CHOICES[set_ - 1][1]
+                if required == 4:
+                    r_s_4 = report["charts"]["sets_4"]
+                    if name not in r_s_4["data"]:
+                        r_s_4["data"][name] = 0
+                    r_s_4["data"][name] += 1
+                elif required == 2:
+                    r_s_4 = report["charts"]["sets_2"]
+                    if name not in r_s_2["data"]:
+                        r_s_2["data"][name] = 0
+                    r_s_2["data"][name] += 1
+
+            sets = build.rune_set_text
+            r_s = report["charts"]["sets"]
+            if sets not in r_s["data"]:
+                r_s["data"][sets] = 0
+            r_s["data"][sets] += 1
+
+            for cat in categories:
+                rep_cat = report["charts"][cat]
+                rep_cat["data"] = {k: v for k, v in sorted(rep_cat["data"].items(), key=lambda item: item[1], reverse=True)}
+                keys = list(rep_cat["data"].keys())
+                proper_data = {k: v for k, v in rep_cat["data"].items() if k not in keys[5:]}
+                other = sum([v for k, v in rep_cat["data"].items() if k in keys[5:]])
+                rep_cat["data"] = {**proper_data, **{"Other": other}}
+                rep_cat["total"] = sum([v for k, v in rep_cat["data"].items()])
+
+        self.report = report
+        self.save()

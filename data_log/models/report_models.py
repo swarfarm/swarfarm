@@ -83,7 +83,14 @@ class StatisticsReport(models.Model):
 
     @property
     def included_balance_patches(self):
-        return BalancePatch.objects.filter(date__gt=self.start_date, date__lt=self.generated_on.date())
+        return BalancePatch.objects.filter(date__gt=self.start_date, date__lt=self.generated_on.date(), monsters=self.monster)
+    
+    @property
+    def min_monsters_count(self):
+        MIN_COUNT = 1000
+        server = 250 if self.server else 0
+        min_box_6stars = self.min_box_6stars * 4
+        return MIN_COUNT - server - min_box_6stars
     
     def __str__(self):
         return f'{self.monster}, {self.start_date}, {self.server if self.server else "All"}, {"RTA" if self.is_rta else "Default"}, {self.min_box_6stars}+ 6*'
@@ -104,21 +111,25 @@ class StatisticsReport(models.Model):
             builds = monsters_t.filter(rta_build__isnull=False).values_list('rta_build', flat=True)
         else:
             builds = monsters_t.filter(default_build__isnull=False).values_list('default_build', flat=True)
-        
+
         monsters_b_pks = RuneBuild.objects.filter(pk__in=builds).annotate(c=models.Count('runes')).filter(c=6).distinct().values_list('monster', flat=True)
-        data_monsters = MonsterInstance.objects.filter(pk__in=monsters_b_pks)
+        data_monsters = MonsterInstance.objects.filter(pk__in=monsters_b_pks).select_related('owner')
+
+        bps = self.included_balance_patches.filter(monsters=self.monster)
+        bps_date = None
+        if bps.exists():
+            bps_date = bps.latest().date
+
         monsters = []
         for monster in data_monsters:
             monster_update = monster.owner.last_update.date()
-            bps = self.included_balance_patches.filter(monsters=monster.monster)
-            if bps.exists():
-                if monster_update > bps.latest().date:
+            if bps_date:
+                if monster_update > bps_date:
                     monsters.append(monster)
                     continue
             elif monster_update >= self.start_date:
                     monsters.append(monster)
                     continue
-
         return monsters
     
     def generate_report(self, monsters):
@@ -132,12 +143,21 @@ class StatisticsReport(models.Model):
         if self.is_rta:
             build_attr = 'rta_build'
 
+        m_count = len(monsters)
         report = {
             "charts": {category: {"data": {}, "type": "occurrences", "total": 0,} for category in categories},
-            "top": sorted(monsters, key=lambda m: getattr(m, build_attr).avg_efficiency, reverse=True)[:20],
+            "top": [],
+            "count": m_count,
+            "calc": True,
         }
+        if m_count < max(self.min_monsters_count, 100):
+            report["calc"] = False
+            self.report = report
+            self.save()
+            return 
+        
         mons_top = []
-        for top in report["top"]:
+        for top in sorted(monsters, key=lambda m: getattr(m, build_attr).avg_efficiency, reverse=True)[:20]:
             mons_top.append({
                 'is_public': top.owner.consent_top,
                 'obj': "", # TODO: temp, should be serializer

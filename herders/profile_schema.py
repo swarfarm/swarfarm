@@ -202,6 +202,7 @@ HubUserLoginSchema = {
         },
         'wizard_id': {'type': 'number'},
         'command': {'type': 'string'},
+        'server_id': {'type': 'number'},
     },
     'required': [
         'building_list',

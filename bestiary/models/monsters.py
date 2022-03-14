@@ -384,7 +384,9 @@ class Monster(models.Model, base.Elements, base.Stars, base.Archetype):
         ordering = ['name', 'element']
 
     def __str__(self):
-        if self.is_awakened:
+        if self.awaken_level == self.AWAKEN_LEVEL_SECOND:
+            return self.name + ' (2A)'
+        elif self.is_awakened:
             return self.name
         else:
             return self.name + ' (' + self.element.capitalize() + ')'
@@ -491,4 +493,7 @@ class BalancePatch(models.Model):
     monsters = models.ManyToManyField(Monster, related_name='balance_patches')
 
     def __str__(self):
-        return self.date
+        return str(self.date)
+    
+    class Meta:
+        get_latest_by = 'date'

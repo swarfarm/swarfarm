@@ -114,22 +114,17 @@ class StatisticsReport(models.Model):
 
         monsters_b_pks = RuneBuild.objects.filter(pk__in=builds).annotate(c=models.Count('runes')).filter(c=6).distinct().values_list('monster', flat=True)
         data_monsters = MonsterInstance.objects.filter(pk__in=monsters_b_pks).select_related('owner')
+        monsters = []
 
         bps = self.included_balance_patches.filter(monsters=self.monster)
         bps_date = None
         if bps.exists():
             bps_date = bps.latest().date
-
-        monsters = []
-        for monster in data_monsters:
-            monster_update = monster.owner.last_update.date()
-            if bps_date:
-                if monster_update > bps_date:
-                    monsters.append(monster)
-                    continue
-            elif monster_update >= self.start_date:
-                    monsters.append(monster)
-                    continue
+            bps_monsters = data_monsters.filter(owner__last_update__date__gt=bps_date)
+            monsters += list(bps_monsters)
+            data_monsters = data_monsters.exclude(pk__in=bps_monsters)
+        
+        monsters += list(data_monsters.filter(owner__last_update__date__gte=self.start_date))
         return monsters
     
     def generate_report(self, monsters):

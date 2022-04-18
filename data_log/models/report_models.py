@@ -5,6 +5,7 @@ from django.db import models
 from bestiary.models import Level, GameItem, BalancePatch, Monster
 from data_log.models.log_models import CraftRuneLog, MagicBoxCraft
 from herders.models import MonsterInstance, RuneBuild, RuneInstance
+from herders.serializers import MonsterStatisticsReportInstanceSerializer
 
 
 class Report(models.Model):
@@ -90,7 +91,7 @@ class StatisticsReport(models.Model):
         MIN_COUNT = 1000
         server = 250 if self.server else 0
         min_box_6stars = self.min_box_6stars * 4
-        return MIN_COUNT - server - min_box_6stars
+        return max(MIN_COUNT - server - min_box_6stars, 100)
     
     def __str__(self):
         return f'{self.monster}, {self.start_date}, {self.server if self.server else "All"}, {"RTA" if self.is_rta else "Default"}, {self.min_box_6stars}+ 6*'
@@ -145,7 +146,7 @@ class StatisticsReport(models.Model):
             "count": m_count,
             "calc": True,
         }
-        if m_count < max(self.min_monsters_count, 100):
+        if m_count < self.min_monsters_count:
             report["calc"] = False
             self.report = report
             self.save()
@@ -155,7 +156,7 @@ class StatisticsReport(models.Model):
         for top in sorted(monsters, key=lambda m: getattr(m, build_attr).avg_efficiency, reverse=True)[:20]:
             mons_top.append({
                 'is_public': top.owner.consent_top,
-                'obj': "", # TODO: temp, should be serializer
+                'obj': MonsterStatisticsReportInstanceSerializer(top).data,
             })
         report["top"] = mons_top
 
@@ -163,8 +164,19 @@ class StatisticsReport(models.Model):
             build = getattr(monster, build_attr)
             if not build:
                 continue
+                
+            slot_2, slot_4, slot_6 = None, None, None
+            for rune in build.runes.all():
+                if rune.slot == 2:
+                    slot_2 = rune
+                    continue
+                elif rune.slot == 4:
+                    slot_4 = rune
+                    continue
+                elif rune.slot == 6:
+                    slot_6 = rune
+                    continue
 
-            slot_2 = build.runes.filter(slot=2).first()
             slot_2_ms = slot_2.get_main_stat_display() if slot_2 else None
             if slot_2_ms:
                 r_s_2 = report["charts"]["slot_2"]
@@ -172,7 +184,6 @@ class StatisticsReport(models.Model):
                     r_s_2["data"][slot_2_ms] = 0
                 r_s_2["data"][slot_2_ms] += 1
                 
-            slot_4 = build.runes.filter(slot=4).first()
             slot_4_ms = slot_4.get_main_stat_display() if slot_4 else None
             if slot_4_ms:
                 r_s_4 = report["charts"]["slot_4"]
@@ -180,7 +191,6 @@ class StatisticsReport(models.Model):
                     r_s_4["data"][slot_4_ms] = 0
                 r_s_4["data"][slot_4_ms] += 1
 
-            slot_6 = build.runes.filter(slot=6).first()
             slot_6_ms = slot_6.get_main_stat_display() if slot_6 else None
             if slot_6_ms:
                 r_s_6 = report["charts"]["slot_6"]

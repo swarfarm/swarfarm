@@ -7,6 +7,8 @@ from data_log.models.log_models import CraftRuneLog, MagicBoxCraft
 from herders.models import MonsterInstance, RuneBuild, RuneInstance
 from herders.serializers import MonsterStatisticsReportInstanceSerializer
 
+from itertools import groupby
+
 
 class Report(models.Model):
     content_type = models.ForeignKey(
@@ -160,38 +162,64 @@ class StatisticsReport(models.Model):
             })
         report["top"] = mons_top
 
-        for monster in monsters:
-            build = getattr(monster, build_attr)
-            if not build:
-                continue
-                
-            slot_2, slot_4, slot_6 = None, None, None
-            for rune in build.runes.all():
-                if rune.slot == 2:
-                    slot_2 = rune
-                    continue
-                elif rune.slot == 4:
-                    slot_4 = rune
-                    continue
-                elif rune.slot == 6:
-                    slot_6 = rune
-                    continue
 
-            slot_2_ms = slot_2.get_main_stat_display() if slot_2 else None
+        rune_main_stats = dict(RuneInstance.STAT_CHOICES)
+        builds_pks = [getattr(monster, build_attr).pk for monster in monsters]
+        builds = RuneBuild.objects.prefetch_related('runes').filter(pk__in=builds_pks).order_by('pk').values('pk', 'runes__slot', 'runes__main_stat', 'runes__type')
+        for build, group in groupby(builds, key=lambda x: x['pk']):
+            data = list(group)
+            num_equipped = len(data)
+            
+            set_counts = {}
+            completed_sets = []
+            slot_2, slot_4, slot_6 = None, None, None
+            for rune in data:
+                if rune['runes__slot'] == 2:
+                    slot_2 = rune
+                if rune['runes__slot'] == 4:
+                    slot_4 = rune
+                if rune['runes__slot'] == 6:
+                    slot_6 = rune
+                
+                if rune['runes__type'] not in set_counts:
+                    set_counts[rune['runes__type']] = 0
+                set_counts[rune['runes__type']] += 1
+
+            for set_type, set_count in set_counts.items():
+                required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[set_type]
+                present = set_count
+                completed_sets.extend([set_type] * (present // required))
+            
+            active_set_names = [
+                RuneInstance.TYPE_CHOICES[rune_type - 1][1] for rune_type in completed_sets
+            ]
+            active_set_required_count = sum([
+                RuneInstance.RUNE_SET_BONUSES[rune_set]['count'] for rune_set in completed_sets
+            ])
+            if num_equipped > active_set_required_count:
+                active_set_names.append('Broken')
+
+            sets = ' / '.join(active_set_names)
+            r_s = report["charts"]["sets"]
+            if sets not in r_s["data"]:
+                r_s["data"][sets] = 0
+            r_s["data"][sets] += 1
+
+            slot_2_ms = rune_main_stats[slot_2['runes__main_stat']] if slot_2 else None
             if slot_2_ms:
                 r_s_2 = report["charts"]["slot_2"]
                 if slot_2_ms not in r_s_2["data"]:
                     r_s_2["data"][slot_2_ms] = 0
                 r_s_2["data"][slot_2_ms] += 1
                 
-            slot_4_ms = slot_4.get_main_stat_display() if slot_4 else None
+            slot_4_ms =rune_main_stats[slot_4['runes__main_stat']] if slot_4 else None
             if slot_4_ms:
                 r_s_4 = report["charts"]["slot_4"]
                 if slot_4_ms not in r_s_4["data"]:
                     r_s_4["data"][slot_4_ms] = 0
                 r_s_4["data"][slot_4_ms] += 1
 
-            slot_6_ms = slot_6.get_main_stat_display() if slot_6 else None
+            slot_6_ms = rune_main_stats[slot_6['runes__main_stat']] if slot_6 else None
             if slot_6_ms:
                 r_s_6 = report["charts"]["slot_6"]
                 if slot_6_ms not in r_s_6["data"]:
@@ -203,27 +231,6 @@ class StatisticsReport(models.Model):
             if slot_2_4_6 not in r_s_2_4_6["data"]:
                 r_s_2_4_6["data"][slot_2_4_6] = 0
             r_s_2_4_6["data"][slot_2_4_6] += 1
-
-            completed_sets = build.active_rune_sets
-            for set_ in completed_sets:
-                required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[set_]
-                name = RuneInstance.TYPE_CHOICES[set_ - 1][1]
-                if required == 4:
-                    r_s_4 = report["charts"]["sets_4"]
-                    if name not in r_s_4["data"]:
-                        r_s_4["data"][name] = 0
-                    r_s_4["data"][name] += 1
-                elif required == 2:
-                    r_s_4 = report["charts"]["sets_2"]
-                    if name not in r_s_2["data"]:
-                        r_s_2["data"][name] = 0
-                    r_s_2["data"][name] += 1
-
-            sets = build.rune_set_text
-            r_s = report["charts"]["sets"]
-            if sets not in r_s["data"]:
-                r_s["data"][sets] = 0
-            r_s["data"][sets] += 1
 
             for cat in categories:
                 rep_cat = report["charts"][cat]

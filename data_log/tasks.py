@@ -11,6 +11,8 @@ from .reports.generate import generate_dungeon_log_reports, generate_magic_box_c
     generate_world_boss_dungeon_reports, generate_rune_crafting_reports
 from herders.models import Summoner
 
+import time
+
 
 @shared_task
 def generate_all_reports():
@@ -49,8 +51,16 @@ def _generate_monster_statistic_report(start_date, monster, server, is_rta, min_
             min_box_6stars=min_box_6stars,
             report=report
         )
+        start = time.time()
         monsterinstances = sr.monsterinstances(profiles, filter_by_date=False)
+        print(f"\tMI: {round(time.time() - start, 2)}")
+        print(f"\tMI (Count): {len(monsterinstances)}")
+
+        start = time.time()
         sr.generate_report(monsterinstances)
+        print(f"\tR: {round(time.time() - start, 2)}")
+
+        print(f"\tReport #{sr.pk} for [{len(monsterinstances)}] {sr.monster} generated from {start_date} to {timezone.now().date()}")
 
 
 @shared_task
@@ -77,6 +87,13 @@ def generate_statistics_reports():
         for min_box_6stars in min_box_6stars_list:
             if min_box_6stars:
                 profiles_f = profiles_f.annotate(stars6=Count('monsterinstance__stars')).filter(stars6__gte=min_box_6stars).distinct()
-            for monster in monsters: 
+            for monster in monsters:
                 for is_rta in is_rta_options:
+                    print(f"========================================")
+                    print(f"\tMonster: {monster}")
+                    print(f"\tStart date: {start_date}")
+                    print(f"\tServer: {server}")
+                    print(f"\tRTA: {is_rta}")
+                    print(f"\tMin 6* in box: {min_box_6stars}")
+                    print(f"\tProfiles: {profiles_f.count()}")
                     _generate_monster_statistic_report(start_date, monster, server, is_rta, min_box_6stars, profiles_f)

@@ -53,23 +53,27 @@ def _generate_monster_statistic_report(start_date, monster, server, is_rta, min_
         )
         start = time.time()
         monsterinstances = sr.monsterinstances(profiles, filter_by_date=False)
-        print(f"MI: {round(time.time() - start, 2)}")
+        print(f"\tMI: {round(time.time() - start, 2)}")
+        print(f"\tMI (Count): {len(monsterinstances)}")
 
         start = time.time()
         sr.generate_report(monsterinstances)
-        print(f"R: {round(time.time() - start, 2)}")
+        print(f"\tR: {round(time.time() - start, 2)}")
 
-        print(f"Report #{sr.pk} for [{len(monsterinstances)}] {sr.monster} generated from {start_date} to {timezone.now().date()}")
+        print(f"\tReport #{sr.pk} for [{len(monsterinstances)}] {sr.monster} generated from {start_date} to {timezone.now().date()}")
 
 
 @shared_task
 def generate_statistics_reports():
     # 180d earlier
     start_date = (timezone.now() - timedelta(days=180)).date()
-    servers = [None] + list(dict(Summoner.SERVER_CHOICES).keys())
+    # servers = [None] + list(dict(Summoner.SERVER_CHOICES).keys())
+    servers = [None]
     monsters = Monster.objects.filter(awaken_level__in=[Monster.AWAKEN_LEVEL_AWAKENED, Monster.AWAKEN_LEVEL_SECOND], obtainable=True)
-    is_rta_options = [False, True]
-    min_box_6stars_list = [0, 50, 100, 200]
+    # is_rta_options = [False, True]
+    is_rta_options = [False]
+    # min_box_6stars_list = [0, 50, 100, 200]
+    min_box_6stars_list = [0, 200]
 
     profiles = Summoner.objects\
         .filter(consent_report__isnull=False, last_update__date__gte=start_date)\
@@ -83,7 +87,13 @@ def generate_statistics_reports():
         for min_box_6stars in min_box_6stars_list:
             if min_box_6stars:
                 profiles_f = profiles_f.annotate(stars6=Count('monsterinstance__stars')).filter(stars6__gte=min_box_6stars).distinct()
-            for monster in monsters: 
+            for monster in monsters:
                 for is_rta in is_rta_options:
+                    print(f"========================================")
+                    print(f"\tMonster: {monster}")
+                    print(f"\tStart date: {start_date}")
+                    print(f"\tServer: {server}")
+                    print(f"\tRTA: {is_rta}")
+                    print(f"\tMin 6* in box: {min_box_6stars}")
+                    print(f"\tProfiles: {profiles_f.count()}")
                     _generate_monster_statistic_report(start_date, monster, server, is_rta, min_box_6stars, profiles_f)
-                    print(start_date, monster, server, is_rta, min_box_6stars, profiles_f.count())

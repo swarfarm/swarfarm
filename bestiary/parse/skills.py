@@ -119,7 +119,7 @@ def skills():
             'description': game_data.strings.SKILL_DESCRIPTIONS.get(master_id, raw['description']).strip(),
             'slot': _get_skill_slot(master_id),
             'icon_filename': 'skill_icon_{0:04d}_{1}_{2}.png'.format(*raw['thumbnail']),
-            'cooltime': raw['cool time'] + 1 if raw['cool time'] > 0 else None,
+            'cooltime': raw['cool time'] if raw['cool time'] > 0 else None,
             'passive': bool(raw['passive']),
             'max_level': raw['max level'],
             'multiplier_formula_raw': json.dumps(raw['fun data']),

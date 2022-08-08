@@ -1,5 +1,6 @@
 from celery.result import AsyncResult
 from django.core.mail import mail_admins
+from django.db import transaction
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django_filters import rest_framework as filters
@@ -373,25 +374,24 @@ class SyncData(viewsets.ViewSet):
         post_save.disconnect(update_profile_date, sender=BuildingInstance)
 
         # Parse the log
-        try:
+        with transaction.atomic():
+            # force other sync command to wait for it to end
+            summoner = Summoner.objects.select_for_update().get(id=summoner.id)
             sync_conflict = active_log_commands[api_command].parse(
                 summoner,
                 log_data
             )
-        except Exception as e:
-            mail_admins('Sync server error', f'Request body:\n\n{log_data}')
-            raise e
 
-        if sync_conflict:
-            return Response({"detail": "Data conflict, synchronization failed. Try logging in again to synchronize your entire profile with SWARFARM"}, status=status.HTTP_409_CONFLICT)
+            if sync_conflict:
+                return Response({"detail": "Data conflict, synchronization failed. Try logging in again to synchronize your entire profile with SWARFARM"}, status=status.HTTP_409_CONFLICT)
 
-        # update summoner profile last update date
-        summoner.save()
-        response = {'detail': 'Log OK'}
+            # update summoner profile last update date
+            summoner.save()
+            response = {'detail': 'Log OK'}
 
-        # Check if accepted API params version matches the active version
-        if log_data.get('__version') != accepted_api_params['__version']:
-            response['reinit'] = True
+            # Check if accepted API params version matches the active version
+            if log_data.get('__version') != accepted_api_params['__version']:
+                response['reinit'] = True
 
         return Response(response)
 

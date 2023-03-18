@@ -178,7 +178,7 @@ class MonsterSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Monster
         fields = (
-            'id', 'url', 'bestiary_slug', 'com2us_id', 'family_id',
+            'id', 'url', 'bestiary_slug', 'com2us_id', 'family_id', 'skill_group_id',
             'name', 'image_filename', 'element', 'archetype', 'base_stars', 'natural_stars',
             'obtainable', 'can_awaken', 'awaken_level', 'awaken_bonus',
             'skills', 'skill_ups_to_max', 'leader_skill', 'homunculus_skills',

@@ -23,6 +23,7 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     ordering_fields = (
         'com2us_id',
         'family_id',
+        'skill_group_id',
         'name',
         'element',
         'archetype',

@@ -299,6 +299,9 @@ class SkillEffectDetail(models.Model):
     damage = models.BooleanField(default=False, help_text='Amount of this effect is based on damage dealt')
     note = models.TextField(blank=True, null=True, help_text="Explain anything else that doesn't fit in other fields")
 
+    class Meta:
+        ordering = ('pk', )
+
 
 class ScalingStat(models.Model):
     stat = models.CharField(max_length=20)

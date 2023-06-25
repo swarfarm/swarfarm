@@ -184,7 +184,7 @@ class MonsterSerializer(serializers.ModelSerializer):
             'skills', 'skill_ups_to_max', 'leader_skill', 'homunculus_skills',
             'base_hp', 'base_attack', 'base_defense', 'speed', 'crit_rate', 'crit_damage', 'resistance', 'accuracy',
             'raw_hp', 'raw_attack', 'raw_defense', 'max_lvl_hp', 'max_lvl_attack', 'max_lvl_defense',
-            'awakens_from', 'awakens_to', 'awaken_cost',
+            'awakens_from', 'awakens_to', 'awaken_cost', 'transforms_to',
             'source', 'fusion_food',
             'homunculus', 'craft_cost', 'craft_materials',
         )

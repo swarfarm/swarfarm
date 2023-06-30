@@ -588,11 +588,22 @@ class RuneBuild(models.Model):
     @cached_property
     def active_rune_sets(self):
         completed_sets = []
+        missing_one = []
+        has_intangible = self.runes.filter(type=RuneInstance.TYPE_INTANGIBLE).exists()
 
-        for set_counts in self.runes.values('type').order_by().annotate(count=Count('type')):
+        for set_counts in self.runes.exclude(type=RuneInstance.TYPE_INTANGIBLE).values('type').order_by().annotate(count=Count('type')):
             required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[set_counts['type']]
             present = set_counts['count']
             completed_sets.extend([set_counts['type']] * (present // required))
+            if has_intangible and present % required == 1:
+                missing_one.append(set_counts['type'])
+        
+        if len(missing_one) == 1:
+            missing_set = missing_one[0]
+            last_set_occur = completed_sets[::-1].index(missing_set)
+            if last_set_occur > -1:
+                proper_index = len(completed_sets) - last_set_occur
+                completed_sets[proper_index:proper_index] = missing_one
 
         return completed_sets
 

@@ -33,6 +33,8 @@ class RuneObjectBase(base.Stats, base.Quality, base.Stars):
     TYPE_ENHANCE = 19
     TYPE_ACCURACY = 20
     TYPE_TOLERANCE = 21
+    TYPE_INTANGIBLE = 22
+    TYPE_SEAL = 23
 
     TYPE_CHOICES = (
         (TYPE_ENERGY, 'Energy'),
@@ -56,6 +58,8 @@ class RuneObjectBase(base.Stats, base.Quality, base.Stars):
         (TYPE_ENHANCE, 'Enhance'),
         (TYPE_ACCURACY, 'Accuracy'),
         (TYPE_TOLERANCE, 'Tolerance'),
+        (TYPE_INTANGIBLE, 'Intangible'),
+        (TYPE_SEAL, 'Seal'),
     )
 
     # Mappings from com2us' API data to model defined values
@@ -81,6 +85,8 @@ class RuneObjectBase(base.Stats, base.Quality, base.Stars):
         21: TYPE_ENHANCE,
         22: TYPE_ACCURACY,
         23: TYPE_TOLERANCE,
+        24: TYPE_SEAL,
+        25: TYPE_INTANGIBLE,
     }
 
 
@@ -354,6 +360,8 @@ class Rune(models.Model, RuneObjectBase):
         RuneObjectBase.TYPE_ENHANCE: 2,
         RuneObjectBase.TYPE_ACCURACY: 2,
         RuneObjectBase.TYPE_TOLERANCE: 2,
+        RuneObjectBase.TYPE_INTANGIBLE: 1,
+        RuneObjectBase.TYPE_SEAL: 2,
     }
 
     RUNE_SET_BONUSES = {
@@ -503,6 +511,13 @@ class Rune(models.Model, RuneObjectBase):
             'value': 10.0,
             'team': True,
             'description': 'Tolerance 2 Set: Increase the Resistance of all allies by 10%',
+        },
+        RuneObjectBase.TYPE_SEAL: {
+            'count': 2,
+            'stat': None,
+            'value': None,
+            'team': False,
+            'description': 'Seal 2 Set: Seal effect on enemy with 15% chance',
         },
     }
 

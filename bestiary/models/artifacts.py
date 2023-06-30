@@ -67,6 +67,11 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
     EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD = 43
     EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD = 44
     EFFECT_CRIT_DMG_SINGLE_TARGET = 45
+    EFFECT_COUNTER_AND_COOP_DMG = 46
+    EFFECT_ATK_AND_DEF = 47
+    EFFECT_SK3_AND_SK4_CRIT_DMG = 48
+    EFFECT_1ST_ATK_CRIT_DMG = 49
+
 
     EFFECT_CHOICES = (
         (EFFECT_ATK_LOST_HP, 'ATK+ Proportional to Lost HP'),
@@ -114,6 +119,10 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         (EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD, "CRIT DMG+ up to N% as the enemy's HP condition is good"),
         (EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD, "CRIT DMG+ up to N% as the enemy's HP condition is bad"),
         (EFFECT_CRIT_DMG_SINGLE_TARGET, "Single-target skill CRIT DMG +%"),
+        (EFFECT_COUNTER_AND_COOP_DMG, "Counterattack and Cooperative Attack Damage Increased"),
+        (EFFECT_ATK_AND_DEF, "ATK and DEF Increased"),
+        (EFFECT_SK3_AND_SK4_CRIT_DMG, "Skill 3 and Skill 4 CRI Damage Increased"),
+        (EFFECT_1ST_ATK_CRIT_DMG, "First Attack CRI Damage Increased"),
     )
 
     EFFECT_STRINGS = {
@@ -162,6 +171,10 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD: "CRIT DMG+ up to {}% as the enemy's HP condition is good",
         EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD: "CRIT DMG+ up to {}% as the enemy's HP condition is bad",
         EFFECT_CRIT_DMG_SINGLE_TARGET: "Single-target skill CRIT DMG +{}% on your turn",
+        EFFECT_COUNTER_AND_COOP_DMG: "Damage Dealt by Counterattack/Attacking Together +{}%",
+        EFFECT_ATK_AND_DEF: "ATK/DEF Increasing Effect +{}%",
+        EFFECT_SK3_AND_SK4_CRIT_DMG: "[Skill 3/4] CRIT DMG +{}%",
+        EFFECT_1ST_ATK_CRIT_DMG: "First Attack CRIT DMG +{}%",
     }
 
     COM2US_EFFECT_MAP = {
@@ -190,6 +203,8 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         222: EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD,
         223: EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD,
         224: EFFECT_CRIT_DMG_SINGLE_TARGET,
+        225: EFFECT_COUNTER_AND_COOP_DMG,
+        226: EFFECT_ATK_AND_DEF,
         300: EFFECT_DMG_TO_FIRE,
         301: EFFECT_DMG_TO_WATER,
         302: EFFECT_DMG_TO_WIND,
@@ -210,6 +225,8 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         407: EFFECT_SK1_ACCURACY,
         408: EFFECT_SK2_ACCURACY,
         409: EFFECT_SK3_ACCURACY,
+        410: EFFECT_SK3_AND_SK4_CRIT_DMG,
+        411: EFFECT_1ST_ATK_CRIT_DMG,
     }
 
     slot = models.IntegerField(choices=SLOT_CHOICES)

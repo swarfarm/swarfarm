@@ -283,19 +283,10 @@ class Artifact(ArtifactObjectBase):
     MAX_NUMBER_OF_EFFECTS = 4
 
     EFFECT_VALUES = {
-        ArtifactObjectBase.EFFECT_ATK_LOST_HP: {'min': 9, 'max': 14},
-        ArtifactObjectBase.EFFECT_DEF_LOST_HP: {'min': 9, 'max': 14},
-        ArtifactObjectBase.EFFECT_SPD_LOST_HP: {'min': 9, 'max': 14},
-        ArtifactObjectBase.EFFECT_ATK: {'min': 3, 'max': 5},
-        ArtifactObjectBase.EFFECT_DEF: {'min': 2, 'max': 4},
         ArtifactObjectBase.EFFECT_SPD: {'min': 4, 'max': 6},
-        ArtifactObjectBase.EFFECT_COUNTER_DMG: {'min': 2, 'max': 4},
-        ArtifactObjectBase.EFFECT_COOP_ATTACK_DMG: {'min': 2, 'max': 4},
         ArtifactObjectBase.EFFECT_BOMB_DMG: {'min': 2, 'max': 4},
         ArtifactObjectBase.EFFECT_CRIT_DMG_RECEIVED: {'min': 2, 'max': 4},
         ArtifactObjectBase.EFFECT_LIFE_DRAIN: {'min': 5, 'max': 8},
-        ArtifactObjectBase.EFFECT_HP_REVIVE: {'min': 4, 'max': 6},
-        ArtifactObjectBase.EFFECT_ATB_REVIVE: {'min': 4, 'max': 6},
         ArtifactObjectBase.EFFECT_DMG_PCT_OF_HP: {'min': 0.2, 'max': 0.3},
         ArtifactObjectBase.EFFECT_DMG_PCT_OF_ATK: {'min': 2, 'max': 4},
         ArtifactObjectBase.EFFECT_DMG_PCT_OF_DEF: {'min': 2, 'max': 4},
@@ -312,8 +303,6 @@ class Artifact(ArtifactObjectBase):
         ArtifactObjectBase.EFFECT_DMG_FROM_DARK: {'min': 4, 'max': 6},
         ArtifactObjectBase.EFFECT_SK1_CRIT_DMG: {'min': 4, 'max': 6},
         ArtifactObjectBase.EFFECT_SK2_CRIT_DMG: {'min': 4, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK3_CRIT_DMG: {'min': 4, 'max': 6},
-        ArtifactObjectBase.EFFECT_SK4_CRIT_DMG: {'min': 4, 'max': 6},
         ArtifactObjectBase.EFFECT_SK1_RECOVERY: {'min': 4, 'max': 6},
         ArtifactObjectBase.EFFECT_SK2_RECOVERY: {'min': 4, 'max': 6},
         ArtifactObjectBase.EFFECT_SK3_RECOVERY: {'min': 4, 'max': 6},
@@ -323,6 +312,10 @@ class Artifact(ArtifactObjectBase):
         ArtifactObjectBase.EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD: {'min': 4, 'max': 6},
         ArtifactObjectBase.EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD: {'min': 8, 'max': 12},
         ArtifactObjectBase.EFFECT_CRIT_DMG_SINGLE_TARGET: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_1ST_ATK_CRIT_DMG: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_COUNTER_AND_COOP_DMG: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_ATK_AND_DEF: {'min': 3, 'max': 5},
+        ArtifactObjectBase.EFFECT_SK3_AND_SK4_CRIT_DMG: {'min': 4, 'max': 6},
 
         # The following effects were removed in patch 6.2.0, but still exist on old artifacts
         ArtifactObjectBase.EFFECT_CRIT_RATE: {'min': 3, 'max': 6},
@@ -330,6 +323,21 @@ class Artifact(ArtifactObjectBase):
         ArtifactObjectBase.EFFECT_DMG_RECEIVED_INABILITY: {'min': 1, 'max': 3},
         ArtifactObjectBase.EFFECT_REFLECT_DMG: {'min': 1, 'max': 3},
         ArtifactObjectBase.EFFECT_CRUSHING_HIT_DMG: {'min': 2, 'max': 4},
+
+        # The following effects were removed in patch 8.0.0, but still exist on old artifacts
+        ArtifactObjectBase.EFFECT_ATK_LOST_HP: {'min': 9, 'max': 14},
+        ArtifactObjectBase.EFFECT_DEF_LOST_HP: {'min': 9, 'max': 14},
+        ArtifactObjectBase.EFFECT_SPD_LOST_HP: {'min': 9, 'max': 14},
+        ArtifactObjectBase.EFFECT_HP_REVIVE: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_ATB_REVIVE: {'min': 4, 'max': 6},
+
+        # The following effects were combined in patch 8.0.0, but still exist on old artifacts
+        ArtifactObjectBase.EFFECT_COUNTER_DMG: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_COOP_ATTACK_DMG: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_ATK: {'min': 3, 'max': 5},
+        ArtifactObjectBase.EFFECT_DEF: {'min': 2, 'max': 4},
+        ArtifactObjectBase.EFFECT_SK3_CRIT_DMG: {'min': 4, 'max': 6},
+        ArtifactObjectBase.EFFECT_SK4_CRIT_DMG: {'min': 4, 'max': 6},
 
     }
 

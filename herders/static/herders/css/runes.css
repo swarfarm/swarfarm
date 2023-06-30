@@ -465,6 +465,14 @@ span.rune-set-bonus {
     background-image: url(/static/herders/images/runes/tolerance.png);
 }
 
+.rune-symbol.intangible, .craft-symbol.intangible {
+    background-image: url(/static/herders/images/runes/intangible.png);
+}
+
+.rune-symbol.seal, .craft-symbol.seal {
+    background-image: url(/static/herders/images/runes/seal.png);
+}
+
 .craft-symbol {
     display: inline-block;
     width: 100%;
@@ -515,6 +523,8 @@ span.rune-set-bonus {
 .rune-button-enhance { background-image: url(/static/herders/images/runes/enhance.png)!important;}
 .rune-button-accuracy { background-image: url(/static/herders/images/runes/accuracy.png)!important;}
 .rune-button-tolerance { background-image: url(/static/herders/images/runes/tolerance.png)!important;}
+.rune-button-intangible { background-image: url(/static/herders/images/runes/intangible.png)!important;}
+.rune-button-seal { background-image: url(/static/herders/images/runes/seal.png)!important;}
 
 .artifact-bg {
     width: 100%;

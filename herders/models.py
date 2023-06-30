@@ -590,20 +590,27 @@ class RuneBuild(models.Model):
         completed_sets = []
         missing_one = []
         has_intangible = self.runes.filter(type=RuneInstance.TYPE_INTANGIBLE).exists()
+        required_4 = False
 
         for set_counts in self.runes.exclude(type=RuneInstance.TYPE_INTANGIBLE).values('type').order_by().annotate(count=Count('type')):
             required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[set_counts['type']]
             present = set_counts['count']
             completed_sets.extend([set_counts['type']] * (present // required))
-            if has_intangible and present % required == 1:
+            if has_intangible and ((present + 1) % required) == 0:
                 missing_one.append(set_counts['type'])
+                required_4 = required == 4
         
         if len(missing_one) == 1:
             missing_set = missing_one[0]
-            last_set_occur = completed_sets[::-1].index(missing_set)
-            if last_set_occur > -1:
+            try:
+                last_set_occur = completed_sets[::-1].index(missing_set)
                 proper_index = len(completed_sets) - last_set_occur
                 completed_sets[proper_index:proper_index] = missing_one
+            except ValueError:
+                if required_4:
+                    completed_sets.insert(0, missing_set)
+                else:
+                    completed_sets.append(missing_set)
 
         return completed_sets
 

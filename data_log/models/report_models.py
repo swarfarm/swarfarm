@@ -183,13 +183,30 @@ class StatisticsReport(models.Model):
                 
                 if rune['runes__type'] not in set_counts:
                     set_counts[rune['runes__type']] = 0
-                set_counts[rune['runes__type']] += 1
+                set_counts[rune['runes__type']] += 1 
 
+            missing_one = []
+            has_intangible = set_counts.get(RuneInstance.TYPE_INTANGIBLE, 0) > 0
+            required_4 = False
             for set_type, set_count in set_counts.items():
                 required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[set_type]
                 present = set_count
-                completed_sets.extend([set_type] * (present // required))
+                if has_intangible and ((present + 1) % required) == 0:
+                    missing_one.append(set_type)
+                    required_4 = required == 4
             
+            if len(missing_one) == 1:
+                missing_set = missing_one[0]
+                try:
+                    last_set_occur = completed_sets[::-1].index(missing_set)
+                    proper_index = len(completed_sets) - last_set_occur
+                    completed_sets[proper_index:proper_index] = missing_one
+                except ValueError:
+                    if required_4:
+                        completed_sets.insert(0, missing_set)
+                    else:
+                        completed_sets.append(missing_set)
+                
             active_set_names = [
                 RuneInstance.TYPE_CHOICES[rune_type - 1][1] for rune_type in completed_sets
             ]

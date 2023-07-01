@@ -22,7 +22,7 @@ class LogEntry(models.Model):
 
     wizard_id = models.BigIntegerField()
     summoner = models.ForeignKey(Summoner, on_delete=models.SET_NULL, blank=True, null=True)
-    timestamp = models.DateTimeField(blank=True, null=True)
+    timestamp = models.DateTimeField(blank=True, null=True, db_index=True)
     server = models.IntegerField(choices=Summoner.SERVER_CHOICES, null=True, blank=True)
 
     class Meta:

@@ -70,14 +70,17 @@ sudo -u postgres psql swarfarm_dev -f ~/reset_sequences.sql > /dev/null
 sudo mv ~/swarfarm.socket /etc/systemd/system/swarfarm.socket
 sudo mv ~/swarfarm.service /etc/systemd/system/swarfarm.service
 sudo mv ~/celery.service /etc/systemd/system/celery.service
+sudo mv ~/celery_data_logs.service /etc/systemd/system/celery_data_logs.service
 sudo mv ~/celery_beat.service /etc/systemd/system/celery_beat.service
 
 sudo systemctl daemon-reload
 sudo systemctl enable swarfarm
 sudo systemctl enable celery
+sudo systemctl enable celery_data_logs
 sudo systemctl enable celery_beat
 sudo service swarfarm start
 sudo service celery start
+sudo service celery_data_logs start
 sudo service celery_beat start
 
 echo "Done! Check the console for any errors."

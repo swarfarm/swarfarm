@@ -126,7 +126,7 @@ class MonsterInstance(models.Model, base.Stars):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
     monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
-    com2us_id = models.BigIntegerField(blank=True, null=True)
+    com2us_id = models.BigIntegerField(db_index=True, blank=True, null=True)
     created = models.DateTimeField(blank=True, null=True)
     stars = models.IntegerField(choices=base.Stars.STAR_CHOICES)
     level = models.IntegerField()

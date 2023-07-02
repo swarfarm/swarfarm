@@ -8,7 +8,7 @@ from .monsters import Monster
 
 
 class Skill(models.Model):
-    com2us_id = models.IntegerField(blank=True, null=True, help_text='ID given in game data files')
+    com2us_id = models.IntegerField(db_index=True, blank=True, null=True, help_text='ID given in game data files')
     name = models.CharField(max_length=60)
     description = models.TextField()
     slot = models.IntegerField(default=1, help_text='Which button position the skill is in during battle')
@@ -259,7 +259,7 @@ class SkillEffect(models.Model):
         (TYPE_BUFF, 'Buff'),
     )
 
-    type = models.IntegerField(choices=TYPE_CHOICES, default=TYPE_NEUTRAL)
+    type = models.IntegerField(db_index=True, choices=TYPE_CHOICES, default=TYPE_NEUTRAL)
     is_buff = models.BooleanField(default=True, help_text='Effect is beneficial to affected monster')
     name = models.CharField(max_length=40)
     description = models.TextField()
@@ -305,7 +305,7 @@ class SkillEffectDetail(models.Model):
 
 class ScalingStat(models.Model):
     stat = models.CharField(max_length=20)
-    com2us_desc = models.CharField(max_length=30, null=True, blank=True)
+    com2us_desc = models.CharField(db_index=True, max_length=30, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):

@@ -34,7 +34,7 @@ class Dungeon(models.Model):
         (CATEGORY_OTHER, 'Other'),
     )
 
-    com2us_id = models.IntegerField()
+    com2us_id = models.IntegerField(db_index=True)
     enabled = models.BooleanField(default=False)
     name = models.CharField(max_length=100)
     slug = models.SlugField(blank=True, null=True)
@@ -129,7 +129,7 @@ class Wave(base.Orderable):
 class Enemy(base.Orderable, base.Stars):
     wave = models.ForeignKey(Wave, on_delete=models.CASCADE)
     monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
-    com2us_id = models.IntegerField()
+    com2us_id = models.IntegerField(db_index=True)
 
     boss = models.BooleanField(default=False)
     stars = models.IntegerField(choices=base.Stars.STAR_CHOICES)

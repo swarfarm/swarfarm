@@ -524,7 +524,7 @@ class Rune(models.Model, RuneObjectBase):
     type = models.IntegerField(choices=RuneObjectBase.TYPE_CHOICES)
     stars = models.IntegerField()
     level = models.IntegerField()
-    slot = models.IntegerField()
+    slot = models.IntegerField(db_index=True)
     quality = models.IntegerField(default=0, choices=RuneObjectBase.QUALITY_CHOICES)
     original_quality = models.IntegerField(choices=RuneObjectBase.QUALITY_CHOICES, blank=True, null=True)
     ancient = models.BooleanField(default=False)

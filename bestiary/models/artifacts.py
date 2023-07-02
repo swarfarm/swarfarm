@@ -229,9 +229,9 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
         411: EFFECT_1ST_ATK_CRIT_DMG,
     }
 
-    slot = models.IntegerField(choices=SLOT_CHOICES)
-    element = models.CharField(max_length=6, choices=base.Elements.NORMAL_ELEMENT_CHOICES, blank=True, null=True)
-    archetype = models.CharField(max_length=10, choices=base.Archetype.ARCHETYPE_CHOICES, blank=True, null=True)
+    slot = models.IntegerField(db_index=True, choices=SLOT_CHOICES)
+    element = models.CharField(db_index=True, max_length=6, choices=base.Elements.NORMAL_ELEMENT_CHOICES, blank=True, null=True)
+    archetype = models.CharField(db_index=True, max_length=10, choices=base.Archetype.ARCHETYPE_CHOICES, blank=True, null=True)
     quality = models.IntegerField(default=0, choices=base.Quality.QUALITY_CHOICES)
 
     class Meta:

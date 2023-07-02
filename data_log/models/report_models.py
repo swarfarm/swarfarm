@@ -48,7 +48,7 @@ class MagicShopRefreshReport(Report):
 
 
 class MagicBoxCraftingReport(Report):
-    box_type = models.IntegerField(choices=MagicBoxCraft.BOX_CHOICES)
+    box_type = models.IntegerField(db_index=True, choices=MagicBoxCraft.BOX_CHOICES)
 
 
 class WishReport(Report):
@@ -56,7 +56,7 @@ class WishReport(Report):
 
 
 class RuneCraftingReport(Report):
-    craft_level = models.IntegerField(choices=CraftRuneLog.CRAFT_CHOICES)
+    craft_level = models.IntegerField(db_index=True, choices=CraftRuneLog.CRAFT_CHOICES)
 
 
 class StatisticsReport(models.Model):

@@ -687,7 +687,7 @@ class DungeonLog(LogEntry):
 
     battle_key = models.BigIntegerField(db_index=True, null=True, blank=True)
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
-    success = models.NullBooleanField(help_text='Null indicates that run was not completed')
+    success = models.NullBooleanField(db_index=True, help_text='Null indicates that run was not completed')
     clear_time = models.DurationField(blank=True, null=True)
 
     @classmethod
@@ -1013,10 +1013,10 @@ class RiftDungeonLog(LogEntry):
     objects = RiftDungeonLogManager()
 
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
-    grade = models.IntegerField(choices=GRADE_CHOICES)
+    grade = models.IntegerField(db_index=True, choices=GRADE_CHOICES)
     total_damage = models.IntegerField()
     clear_time = models.DurationField()
-    success = models.BooleanField()
+    success = models.BooleanField(db_index=True)
 
     def __str__(self):
         return f'RiftDungeonLog {self.level} {self.grade}'
@@ -1089,7 +1089,7 @@ class RiftRaidLog(LogEntry):
 
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
     battle_key = models.BigIntegerField(db_index=True, null=True, blank=True)
-    success = models.NullBooleanField(help_text='Null indicates that run was not completed')
+    success = models.NullBooleanField(db_index=True, help_text='Null indicates that run was not completed')
     contribution_amount = models.IntegerField(blank=True, null=True)
     clear_time = models.DurationField(blank=True, null=True)
 

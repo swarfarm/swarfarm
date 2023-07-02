@@ -35,7 +35,7 @@ class Summoner(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     summoner_name = models.CharField(max_length=256, null=True, blank=True)
-    com2us_id = models.BigIntegerField(default=None, null=True, blank=True)
+    com2us_id = models.BigIntegerField(db_index=True, default=None, null=True, blank=True)
     server = models.IntegerField(
         choices=SERVER_CHOICES, default=SERVER_GLOBAL, null=True, blank=True)
     following = models.ManyToManyField(
@@ -503,9 +503,9 @@ class MonsterPiece(models.Model):
 class RuneInstance(Rune):
     # Upgrade success rate based on rune level
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    type = models.IntegerField(choices=Rune.TYPE_CHOICES)
+    type = models.IntegerField(db_index=True, choices=Rune.TYPE_CHOICES)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
-    com2us_id = models.BigIntegerField(blank=True, null=True)
+    com2us_id = models.BigIntegerField(db_index=True, blank=True, null=True)
     assigned_to = models.ForeignKey(
         MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='runes')
     rta_assigned_to = models.ForeignKey(
@@ -726,7 +726,7 @@ class RuneBuild(models.Model):
 class RuneCraftInstance(RuneCraft):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
-    com2us_id = models.BigIntegerField(blank=True, null=True)
+    com2us_id = models.BigIntegerField(db_index=True, blank=True, null=True)
     quantity = models.IntegerField(default=1)
 
     class Meta:
@@ -745,7 +745,7 @@ class RuneCraftInstance(RuneCraft):
 class ArtifactInstance(Artifact):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
-    com2us_id = models.BigIntegerField(blank=True, null=True)
+    com2us_id = models.BigIntegerField(db_index=True, blank=True, null=True)
     assigned_to = models.ForeignKey(
         MonsterInstance, on_delete=models.SET_NULL, blank=True, null=True, related_name='artifacts')
     rta_assigned_to = models.ForeignKey(
@@ -755,7 +755,7 @@ class ArtifactInstance(Artifact):
 class ArtifactCraftInstance(ArtifactCraft):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
-    com2us_id = models.BigIntegerField(blank=True, null=True)
+    com2us_id = models.BigIntegerField(db_index=True, blank=True, null=True)
     quantity = models.IntegerField(default=1)
 
 

@@ -75,8 +75,8 @@ class GameItem(models.Model):
         (CATEGORY_UNKNOWN, 'Unknown Category'),
     )
 
-    com2us_id = models.IntegerField()
-    category = models.IntegerField(choices=CATEGORY_CHOICES, help_text='Typically corresponds to `item_master_id` field')
+    com2us_id = models.IntegerField(db_index=True)
+    category = models.IntegerField(db_index=True, choices=CATEGORY_CHOICES, help_text='Typically corresponds to `item_master_id` field')
     name = models.CharField(max_length=200)
     icon = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(blank=True, default='')
@@ -177,7 +177,7 @@ class Building(models.Model, base.Elements):
         ARCANE_TOWER_SPD,
     ]
 
-    com2us_id = models.IntegerField()
+    com2us_id = models.IntegerField(db_index=True)
     name = models.CharField(max_length=30)
     max_level = models.IntegerField()
     area = models.IntegerField(choices=AREA_CHOICES, null=True, blank=True)

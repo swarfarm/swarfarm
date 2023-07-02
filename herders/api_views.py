@@ -374,24 +374,22 @@ class SyncData(viewsets.ViewSet):
         post_save.disconnect(update_profile_date, sender=BuildingInstance)
 
         # Parse the log
-        with transaction.atomic():
-            # force other sync command to wait for it to end
-            summoner = Summoner.objects.select_for_update().get(id=summoner.id)
-            sync_conflict = active_log_commands[api_command].parse(
-                summoner,
-                log_data
-            )
+        summoner = Summoner.objects.get(id=summoner.id)
+        sync_conflict = active_log_commands[api_command].parse(
+            summoner,
+            log_data
+        )
 
-            if sync_conflict:
-                return Response({"detail": "Data conflict, synchronization failed. Try logging in again to synchronize your entire profile with SWARFARM"}, status=status.HTTP_409_CONFLICT)
+        if sync_conflict:
+            return Response({"detail": "Data conflict, synchronization failed. Try logging in again to synchronize your entire profile with SWARFARM"}, status=status.HTTP_409_CONFLICT)
 
-            # update summoner profile last update date
-            summoner.save()
-            response = {'detail': 'Log OK'}
+        # update summoner profile last update date
+        summoner.save()
+        response = {'detail': 'Log OK'}
 
-            # Check if accepted API params version matches the active version
-            if log_data.get('__version') != accepted_api_params['__version']:
-                response['reinit'] = True
+        # Check if accepted API params version matches the active version
+        if log_data.get('__version') != accepted_api_params['__version']:
+            response['reinit'] = True
 
         return Response(response)
 

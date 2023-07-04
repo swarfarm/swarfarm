@@ -2,11 +2,24 @@
 {% load cache %}
 
 {% block report %}
+
     {% if waves %}
     {% include 'dungeons/detail/dungeon_waves.html' with waves=waves %}
     <hr />
     {% endif %}
     
+    {% if found_by_date %}
+        <div class="callout callout-warning">
+            <h1>Filtered report <i class="fas fa-clock"></i></h1>
+            <p>A filter has been applied to this report, which means that you are not currently viewing the latest one. If you want to see the latest entry, remove the filters</p>
+        </div>
+    {% elif found_by_date != None %}
+        <div class="callout callout-info">
+            <h1>Filter attempt <i class="fas fa-clock"></i></h1>
+            <p>A filter has been applied to this report, but sadly there was no data to generate report from, thus we are showing you the latest one in 2-week timespan (if enough data)</p>
+        </div>
+    {% endif %}
+
     {% if report %}
         <div class="card shadow border-0 mb-3">
             <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %}">
@@ -15,6 +28,24 @@
                     <li>{{ report.log_count }} records</li>
                     <li>{{ report.unique_contributors }} unique contributors</li>
                 </ul>
+                <form>
+                    <hr />
+                    <h3><strong style="color: red;">[BETA]</strong> Filter by date</h3>
+                    <span>You can generate new report by selecting time range (both fields required). If you pick longer timespan than 2 weeks (SWARFARM standard), it will automatically shrink in respect to end date (i.e. 2023-06-01, 2023-06-30 -> 2023-06-16, 2023-06-30).</span><br />
+                    <span>Keep in mind that it's still in beta and errors may occur. If you find something that doesn't work properly, please report in in Swarfarm Discord Dev server (pinned News).</span><br />
+                    <span>Reports with big enough sample size may take some time to generate, please be patient.</span><br /><br />
+                    <div class="d-flex">
+                        <div class="me-2">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" id="startDate" name="start_date" value="{{ start_date }}" class="form-control">
+                        </div>
+                        <div>
+                            <label for="startDate" class="form-label">End Date</label>
+                            <input type="date" id="endDate" name="end_date" value="{{ end_date }}" class="form-control">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success mt-3">Filter</button>
+                </form>
             </div>
         </div>
 

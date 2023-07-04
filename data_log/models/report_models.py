@@ -24,9 +24,10 @@ class Report(models.Model):
     log_count = models.IntegerField()
     unique_contributors = models.IntegerField()
     report = JSONField()
+    generated_by_user = models.BooleanField(default=False, db_index=True)
 
     class Meta:
-        get_latest_by = 'end_timestamp'
+        get_latest_by = 'generated_on'
 
     def __str__(self):
         return f"{self.end_timestamp} - {self.content_type}"

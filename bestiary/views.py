@@ -275,7 +275,7 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
         'waves': Wave.objects.filter(level=lvl).prefetch_related('enemy_set', 'enemy_set__monster'),
         'found_by_date': found_by_date,
         'start_date': start_date.strftime("%Y-%m-%d") if start_date else None,
-        'end_date': end_date.strftime("%Y-%m-%d") if start_date else None,
+        'end_date': end_date.strftime("%Y-%m-%d") if end_date else None,
     }
 
     by_grade = dung.category in [Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS, Dungeon.CATEGORY_WORLD_BOSS]

@@ -254,10 +254,7 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
             found_by_date = True
         
         if not report:
-            report = lvl.logs.filter(
-                start_timestamp__gte=now - timedelta(weeks=2),
-                end_timestamp__lte=now,
-            ).first() or lvl.logs.filter(generated_by_user=False).latest()
+            report = lvl.logs.filter(generated_by_user=False).latest()
             if start_date and end_date:
                 found_by_date = False
     except lvl.logs.model.DoesNotExist:

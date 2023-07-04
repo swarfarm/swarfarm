@@ -239,11 +239,14 @@ _preprocess_erratum = {
     # xxxx06 - pure element
     210106: [rename_monster_crystal_small, replace_crystal_image],
     210206: [rename_monster_crystal_small, replace_crystal_image],
+    210216: [rename_monster_crystal_small, replace_crystal_image],
     210306: [rename_monster_crystal_small, replace_crystal_image],
     210406: [rename_monster_crystal_small, replace_crystal_image],
     210506: [rename_monster_crystal_small, replace_crystal_image],
     210606: [rename_monster_crystal_medium, replace_crystal_image],
+    210616: [rename_monster_crystal_medium, replace_crystal_image],
     210706: [rename_monster_crystal_medium, replace_crystal_image],
+    210716: [rename_monster_crystal_medium, replace_crystal_image],
     210806: [rename_monster_crystal_medium, replace_crystal_image],
     210906: [rename_monster_crystal_medium, replace_crystal_image],
     211006: [rename_monster_crystal_medium, replace_crystal_image],
@@ -342,6 +345,11 @@ _preprocess_erratum = {
     101536: [rename_monster_tower],
     101546: [rename_monster_tower],
     101556: [rename_monster_tower],
+    
+    101816: [rename_monster_tower],
+    101826: [rename_monster_tower],
+    101916: [rename_monster_tower],
+    101926: [rename_monster_tower],
     # endregion
     
     # region Caiross Crystal Eyes [200xxx]
@@ -352,6 +360,8 @@ _preprocess_erratum = {
     200113: [rename_monster_crystal_medium],
     200204: [rename_monster_crystal_small],
     200214: [rename_monster_crystal_medium],
+    211206: [rename_monster_crystal_small],
+    211306: [rename_monster_crystal_small],
     # endregion
     
     # region Caiross Mid Bosses [62xxx]
@@ -366,6 +376,8 @@ _preprocess_erratum = {
     # 1120xx, 1121xx - family
     # xxxx2x, xxxx3x - order (2 - left, 3 - right)
     # xxxxx3, xxxxx4 - attribute (i.e. 3 - wind, steel fortress)
+    102066: [rename_monster_tower, replace_crystal_image],
+    102166: [rename_monster_tower, replace_crystal_image],
     112023: [rename_monster_tower, replace_crystal_image],
     112033: [rename_monster_tower, replace_crystal_image],
     112124: [rename_monster_tower, replace_crystal_image],

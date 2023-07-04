@@ -830,7 +830,7 @@ def grade_summary_report(qs, grade_choices):
     return report_data
 
 
-def _generate_level_report(level, model, content_type, start_date=None, end_date=None, report_timespan=timedelta(weeks=2), **kwargs):
+def _generate_level_report(level, model, content_type, start_date=None, end_date=None, report_timespan=timedelta(weeks=2), generated_by_user=False, **kwargs):
     records = slice_records(
         model.objects.filter(level=level, success=True), 
         minimum_count=2500, 
@@ -860,6 +860,7 @@ def _generate_level_report(level, model, content_type, start_date=None, end_date
             unique_contributors=records.aggregate(Count('wizard_id', distinct=True))[
                 'wizard_id__count'],
             report=report_data,
+            generated_by_user=generated_by_user,
         )
 
         return report
@@ -883,7 +884,7 @@ def generate_rift_raid_reports():
         models.RiftRaidLog, include_currency=True, exclude_social_points=True)
 
 
-def _generate_by_grade_report(level, model, content_type, start_date=None, end_date=None, report_timespan=timedelta(weeks=2), **kwargs):
+def _generate_by_grade_report(level, model, content_type, start_date=None, end_date=None, report_timespan=timedelta(weeks=2), generated_by_user=False, **kwargs):
     all_records = model.objects.none()
     report_data = {
         'reports': []
@@ -932,6 +933,7 @@ def _generate_by_grade_report(level, model, content_type, start_date=None, end_d
             unique_contributors=all_records.aggregate(Count('wizard_id', distinct=True))[
                 'wizard_id__count'],
             report=report_data,
+            generated_by_user=generated_by_user,
         )
         return report
 

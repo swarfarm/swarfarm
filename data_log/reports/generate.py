@@ -830,29 +830,40 @@ def grade_summary_report(qs, grade_choices):
     return report_data
 
 
+def _generate_level_report(level, model, content_type, start_date=None, end_date=None, report_timespan=timedelta(weeks=2), **kwargs):
+    records = slice_records(
+        model.objects.filter(level=level, success=True), 
+        minimum_count=2500, 
+        start_date=start_date, 
+        end_date=end_date, 
+        report_timespan=report_timespan
+    )
+
+    if records.count() > 0:
+        report_data = drop_report(records, **kwargs)
+
+        report = models.LevelReport.objects.create(
+            level=level,
+            content_type=content_type,
+            # first() and last() do not work on sliced qs
+            start_timestamp=records[records.count() - 1].timestamp,
+            end_timestamp=records[0].timestamp,
+            log_count=records.count(),
+            unique_contributors=records.aggregate(Count('wizard_id', distinct=True))[
+                'wizard_id__count'],
+            report=report_data,
+        )
+
+        return report
+
+
 def _generate_level_reports(model, **kwargs):
     content_type = ContentType.objects.get_for_model(model)
     levels = model.objects.values_list(
         'level', flat=True).distinct().order_by()
 
     for level in Level.objects.filter(pk__in=levels):
-        records = slice_records(model.objects.filter(
-            level=level, success=True), minimum_count=2500, report_timespan=timedelta(weeks=2))
-
-        if records.count() > 0:
-            report_data = drop_report(records, **kwargs)
-
-            models.LevelReport.objects.create(
-                level=level,
-                content_type=content_type,
-                # first() and last() do not work on sliced qs
-                start_timestamp=records[records.count() - 1].timestamp,
-                end_timestamp=records[0].timestamp,
-                log_count=records.count(),
-                unique_contributors=records.aggregate(Count('wizard_id', distinct=True))[
-                    'wizard_id__count'],
-                report=report_data,
-            )
+        _generate_level_report(level, model, content_type, report_timespan=timedelta(weeks=2), **kwargs)
 
 
 def generate_dungeon_log_reports(**kwargs):

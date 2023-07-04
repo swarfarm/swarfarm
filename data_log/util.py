@@ -1,4 +1,5 @@
 from math import trunc
+from datetime import datetime
 from django.core.mail import mail_admins
 
 from django.utils import timezone
@@ -8,6 +9,24 @@ def slice_records(qs, *args, **kwargs):
     report_timespan = kwargs.get('report_timespan')
     minimum_count = kwargs.get('minimum_count')
     maximum_count = kwargs.get('maximum_count')
+    start_date = kwargs.get('start_date')
+    end_date = kwargs.get('end_date')
+    now = timezone.now()
+
+    if start_date:
+        if isinstance(start_date, str):
+            start_date = timezone.make_aware(datetime.strptime(start_date, "%Y-%m-%d"))
+        elif not timezone.is_aware(start_date):
+            start_date = timezone.make_aware(start_date)
+    if end_date:
+        if isinstance(end_date, str):
+            end_date = timezone.make_aware(datetime.strptime(end_date, "%Y-%m-%d"))
+        elif not timezone.is_aware(end_date):
+            end_date = timezone.make_aware(end_date)
+        end_date = min(end_date, now)
+
+    if (end_date - start_date).days > report_timespan.days:
+        start_date = end_date - report_timespan
 
     if minimum_count and maximum_count:
         raise ValueError('Cannot use minimum_count and maximum_count at the same time.')
@@ -15,12 +34,14 @@ def slice_records(qs, *args, **kwargs):
     if qs.count() == 0:
         return qs
 
-    if report_timespan:
-        result = qs.filter(timestamp__gte=timezone.now() - report_timespan)
+    if start_date and end_date:
+        result = qs.filter(timestamp__gte=start_date, timestamp__lte=end_date)
+    elif report_timespan:
+        result = qs.filter(timestamp__gte=now - report_timespan)
     else:
         result = qs
 
-    if minimum_count or maximum_count:
+    if not (start_date and end_date) and (minimum_count or maximum_count):
         num_records = result.count()
 
         if num_records > 0:

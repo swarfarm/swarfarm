@@ -19,17 +19,17 @@ class Report(models.Model):
         help_text="The logging model used to generate this report"
     )
     generated_on = models.DateTimeField(auto_now_add=True)
-    start_timestamp = models.DateTimeField()
-    end_timestamp = models.DateTimeField()
+    start_timestamp = models.DateTimeField(db_index=True)
+    end_timestamp = models.DateTimeField(db_index=True)
     log_count = models.IntegerField()
     unique_contributors = models.IntegerField()
     report = JSONField()
 
     class Meta:
-        get_latest_by = 'generated_on'
+        get_latest_by = 'end_timestamp'
 
     def __str__(self):
-        return f"{self.generated_on} - {self.content_type}"
+        return f"{self.end_timestamp} - {self.content_type}"
 
 
 class LevelReport(Report):

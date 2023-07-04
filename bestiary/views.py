@@ -4,10 +4,16 @@ from django.db.models.query import QuerySet
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
 
 from .filters import MonsterFilter
 from .forms import FilterMonsterForm
 from .models import Monster, Dungeon, Level, Wave, Enemy
+from data_log.models import DungeonLog
+from data_log.reports.generate import _generate_level_report
+
+from datetime import datetime, timedelta
 
 
 def bestiary(request):
@@ -195,8 +201,37 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
     if not lvl:
         raise Http404()
 
+    found_by_date = False
     try:
-        report = lvl.logs.latest()
+        start_date = request.GET.get('start_date', None)
+        end_date = request.GET.get('end_date', None)
+        now = timezone.now()
+
+        report = None
+        if start_date:
+            start_date = timezone.make_aware(datetime.strptime(start_date, "%Y-%m-%d"))
+        if end_date:
+            end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            end_date = timezone.make_aware(end_date + timedelta(days=1))
+            end_date = min(end_date, now)
+
+        if start_date and end_date: 
+            report = lvl.logs.filter(
+                start_timestamp__gte=start_date,
+                end_timestamp__lte=end_date,
+            ).first()
+            if not report:
+                report = _generate_level_report(
+                    level=lvl, 
+                    model=DungeonLog,
+                    content_type=ContentType.objects.get_for_model(DungeonLog),
+                    start_date=start_date,
+                    end_date=end_date,
+                )
+            found_by_date = True
+        
+        if not report:
+            report = lvl.logs.latest()
     except lvl.logs.model.DoesNotExist:
         report = None
 
@@ -213,6 +248,9 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
         'level': lvl,
         'report': report,
         'waves': Wave.objects.filter(level=lvl).prefetch_related('enemy_set', 'enemy_set__monster'),
+        'found_by_date': found_by_date,
+        'start_date': start_date,
+        'end_date': end_date,
     }
 
     by_grade = dung.category in [Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS, Dungeon.CATEGORY_WORLD_BOSS]

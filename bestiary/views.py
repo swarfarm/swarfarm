@@ -13,7 +13,8 @@ from .models import Monster, Dungeon, Level, Wave, Enemy
 from data_log.models import DungeonLog, RiftDungeonLog, RiftRaidLog, WorldBossLog
 from data_log.reports.generate import _generate_level_report, _generate_by_grade_report
 
-from datetime import datetime, timedelta
+from datetime import datetime
+import pytz
 
 
 def bestiary(request):
@@ -223,24 +224,38 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
     try:
         start_date = request.GET.get('start_date', None)
         end_date = request.GET.get('end_date', None)
+        is_datetime = request.GET.get('is_datetime', "false") == "true"
         now = timezone.now()
 
         report = None
         try:
             if start_date:
-                start_date = timezone.make_aware(datetime.strptime(start_date, "%Y-%m-%d"))
+                if is_datetime:
+                    start_date = timezone.make_aware(datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S"), timezone=pytz.UTC)
+                else:
+                    start_date = timezone.make_aware(datetime.strptime(start_date, "%Y-%m-%d"))
             if end_date:
-                end_date = timezone.make_aware(datetime.strptime(end_date, "%Y-%m-%d"))
+                if is_datetime:
+                    end_date = timezone.make_aware(datetime.strptime(end_date, "%Y-%m-%dT%H:%M:%S"), timezone=pytz.UTC)
+                else:
+                    end_date = timezone.make_aware(datetime.strptime(end_date, "%Y-%m-%d"))
                 end_date = min(end_date, now)
         except ValueError:
             start_date = None
             end_date = None
 
-        if start_date and end_date: 
-            report = lvl.logs.filter(
-                start_timestamp__date=start_date.date(),
-                end_timestamp__date=end_date.date(),
-            ).first()
+        if start_date and end_date:
+            if is_datetime:
+                report = lvl.logs.filter(
+                    start_timestamp=start_date,
+                    end_timestamp=end_date,
+                ).first()
+            else:
+                report = lvl.logs.filter(
+                    start_timestamp__date=start_date.date(),
+                    end_timestamp__date=end_date.date(),
+                ).first()
+
             if not report:
                 dung_log = dungeon_log_mapper.get(dung.category, dungeon_log_mapper.get('default'))
                 report = dung_log['func'](

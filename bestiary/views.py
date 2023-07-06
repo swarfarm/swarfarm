@@ -207,18 +207,25 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
         Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS: {
             'log': RiftDungeonLog,
             'func': _generate_by_grade_report,
+            'kwargs': {}
         },
         Dungeon.CATEGORY_RIFT_OF_WORLDS_RAID: {
             'log': RiftRaidLog,
             'func': _generate_level_report,
+            'kwargs': {
+                'include_currency': True, 
+                'exclude_social_points': True,
+            },
         },
         Dungeon.CATEGORY_WORLD_BOSS: {
             'log': RiftDungeonLog,
             'func': _generate_by_grade_report,
+            'kwargs': {},
         },
         'default': {
             'log': DungeonLog,
             'func': _generate_level_report,
+            'kwargs': {},
         },
     }
     try:
@@ -265,6 +272,7 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
                     start_date=start_date,
                     end_date=end_date,
                     generated_by_user=True,
+                    **dung_log['kwargs'],
                 )
             found_by_date = True
         

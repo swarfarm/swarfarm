@@ -25,7 +25,7 @@ def slice_records(qs, *args, **kwargs):
             end_date = timezone.make_aware(end_date)
         end_date = min(end_date, now)
 
-    if (end_date - start_date).days > report_timespan.days:
+    if start_date and end_date and (end_date - start_date).days > report_timespan.days:
         start_date = end_date - report_timespan
 
     if minimum_count and maximum_count:

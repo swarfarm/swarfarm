@@ -116,7 +116,7 @@ class RuneInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         response = super(RuneInstanceViewSet, self).retrieve(request, *args, **kwargs)
 
         if request.accepted_renderer.format == 'html':
-            return Response({'rune': response.data}, template_name='api/rune_instance/popover.html')
+            return Response({'rune': response.data, 'rta_view': request.GET.get('rune-rta', 'false') == 'true'}, template_name='api/rune_instance/popover.html')
         return response
 
 
@@ -139,7 +139,7 @@ class ArtifactInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         response = super().retrieve(request, *args, **kwargs)
 
         if request.accepted_renderer.format == 'html':
-            return Response({'artifact': response.data}, template_name='api/artifact_instance/popover.html')
+            return Response({'artifact': response.data, 'rta_view': request.GET.get('artifact-rta', 'false') == 'true'}, template_name='api/artifact_instance/popover.html')
         return response
 
 

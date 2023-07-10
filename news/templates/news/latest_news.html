@@ -6,7 +6,7 @@
     {% if user.is_authenticated and user.summoner.dark_mode %}
         {% cache 60 latest_news_dark posts.number %}
             {% for post in posts %}
-                <div class="card border-0 shadow mb-3" >
+                <div class="card {% if not post.highlight %}border-0{% else %}border-danger{% endif %} shadow mb-3" >
                     <div class="card-header bg-dark border-dark">
                         {% if post.sticky %}<i class="fas fa-thumbtack patreon"></i>&nbsp;{% endif %}<small class="fw-lighter fs-5">{{ post.created|date:"DATE_FORMAT" }}</small>
                     </div>
@@ -60,7 +60,7 @@
     {% else %}
         {% cache 60 latest_news posts.number %}
             {% for post in posts %}
-                <div class="card border-0 shadow mb-3" >
+                <div class="card {% if not post.highlight %}border-0{% else %}border-danger{% endif %} shadow mb-3" >
                     <div class="card-header bg-white">
                         {% if post.sticky %}<i class="fas fa-thumbtack patreon"></i>&nbsp;{% endif %}<small class="fw-lighter fs-5">{{ post.created|date:"DATE_FORMAT" }}</small>
                     </div>

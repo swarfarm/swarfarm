@@ -7,6 +7,7 @@ class Article(models.Model):
     body = models.TextField()
     created = models.DateTimeField(default=timezone.now)
     sticky = models.BooleanField(default=False)
+    highlight = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

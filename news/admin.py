@@ -4,4 +4,4 @@ from .models import Article
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'sticky', 'created',)
+    list_display = ('title', 'sticky', 'highlight', 'created',)

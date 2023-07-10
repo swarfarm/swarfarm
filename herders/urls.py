@@ -96,6 +96,11 @@ urlpatterns = [
             re_path(r'^assign/(?P<instance_id>[0-9a-f]{32})/(?P<slot>[a-z]*)/', views.artifacts.assign, name='artifact_assign_with_slot'),
             re_path(r'^unassign/(?P<artifact_id>[0-9a-f]{32})/$', views.artifacts.unassign, name='artifact_unassign'),
         ])),
+        url(r'^rune-builds/', include([
+            url(r'^$', views.rune_builds.runebuilds, name='rune_builds'),
+            url(r'^inventory/$', views.rune_builds.rune_builds_inventory, name='rune_builds_inventory'),
+            url(r'^inventory/(?P<view_mode>(list|grid))/$', views.rune_builds.rune_builds_inventory, name='rune_builds_inventory_view_mode'),
+        ])),
         url(r'^buildings/', include([
             url(r'^$', views.profile.buildings, name='buildings'),
             url(r'^inventory/$', views.profile.buildings_inventory, name='buildings_inventory'),

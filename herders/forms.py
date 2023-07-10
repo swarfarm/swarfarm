@@ -21,7 +21,7 @@ from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dung
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from data_log.models import RiftDungeonLog, WorldBossLog, CraftRuneLog, MagicBoxCraft
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
-    RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactInstance
+    RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactInstance, RuneBuild
 
 STATIC_URL_PREFIX = static('herders/images/')
 
@@ -2326,4 +2326,374 @@ class CompareMonstersWithFollowerForm(forms.Form):
 
     def clean(self):
         super().clean()
-        
+
+
+
+class FilterRuneBuildForm(forms.Form):
+    active_sets = forms.MultipleChoiceField(
+        choices=(('2-slot', '2-Slot Sets'), ('4-slot', '4-Slot Sets')) + RuneInstance.TYPE_CHOICES,
+        required=False,
+    )
+    active_sets_all = forms.BooleanField(
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether a rune build must contain ALL sets or at least one of the filtered sets."></span>'),
+        required=False,
+    )
+    full = forms.NullBooleanField(
+        label='Completed',
+        required=False,
+        widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    )
+    full_include_artifacts = forms.BooleanField(
+        label=mark_safe('<span class="glyphicon glyphicon-info-sign" data-bs-toggle="tooltip" title="Whether artifacts should be included while looking for completed builds."></span>'),
+        required=False,
+    )
+    # is_grindable = forms.NullBooleanField(
+    #     label='Is Grindable',
+    #     required=False,
+    #     widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    # )
+    # is_enchantable = forms.NullBooleanField(
+    #     label='Is Enchantable',
+    #     required=False,
+    #     widget=forms.Select(choices=((None, '---'), (True, 'Yes'), (False, 'No')))
+    # )
+    
+    avg_efficiency = forms.CharField(
+        label='Avg. Efficiency',
+        required=False,
+    )
+    hp = forms.CharField(
+        label='HP',
+        required=False,
+    )
+    hp_pct = forms.CharField(
+        label='HP %',
+        required=False,
+    )
+    attack = forms.CharField(
+        label='ATK',
+        required=False,
+    )
+    attack_pct = forms.CharField(
+        label='ATK %',
+        required=False,
+    )
+    defense = forms.CharField(
+        label='DEF',
+        required=False,
+    )
+    defense_pct = forms.CharField(
+        label='DEF %',
+        required=False,
+    )
+    speed = forms.CharField(
+        label='SPD',
+        required=False,
+    )
+    speed_pct = forms.CharField(
+        label='SPD %',
+        required=False,
+    )
+    crit_rate = forms.CharField(
+        label='CRI Rate %',
+        required=False,
+    )
+    crit_damage = forms.CharField(
+        label='CRI Dmg %',
+        required=False,
+    )
+    resistance = forms.CharField(
+        label='Resistance %',
+        required=False,
+    )
+    accuracy = forms.CharField(
+        label='Accuracy %',
+        required=False,
+    )
+
+    helper = FormHelper()
+    helper.form_method = 'get'
+    helper.form_id = 'FilterInventoryForm'
+    helper.layout = Layout(
+        Div(
+            Div(
+                Field('active_sets', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field(
+                    'active_sets_all',
+                    data_toggle='toggle',
+                    data_on='All',
+                    data_onstyle='dark',
+                    data_off='Any',
+                    data_width='125px',
+                    wrapper_class='form-group-sm form-group-condensed ps-0',
+                ), 
+                Field('full', css_class='select2', wrapper_class='form-group-sm form-group-condensed'),
+                Field(
+                    'full_include_artifacts',
+                    data_toggle='toggle',
+                    data_on='Incl.Artifact',
+                    data_onstyle='dark',
+                    data_off='Excl.Artifact',
+                    data_width='125px',
+                    wrapper_class='form-group-sm form-group-condensed ps-0',
+                ),
+                # Field('is_grindable', wrapper_class='form-group-sm form-group-condensed'),
+                # Field('is_enchantable', wrapper_class='form-group-sm form-group-condensed'),
+                Field(
+                    'avg_efficiency',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='150',
+                    data_slider_value='[0, 150]',
+                    data_slider_step='1',
+                    data_slider_ticks='[0, 150]',
+                    data_slider_ticks_labels='["0", "150"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                css_class='col-md-4 col-sm-6',
+            ),
+            Div(
+                Field(
+                    'hp',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='50000',
+                    data_slider_value='[0, 50000]',
+                    data_slider_step='500',
+                    data_slider_ticks='[0, 50000]',
+                    data_slider_ticks_labels='["0", "50000"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                Field(
+                    'hp_pct',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='350',
+                    data_slider_value='[0, 350]',
+                    data_slider_step='5',
+                    data_slider_ticks='[0, 350]',
+                    data_slider_ticks_labels='["0", "350"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                Field(
+                    'attack',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='5000',
+                    data_slider_value='[0, 5000]',
+                    data_slider_step='50',
+                    data_slider_ticks='[0, 5000]',
+                    data_slider_ticks_labels='["0", "5000"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                Field(
+                    'attack_pct',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='350',
+                    data_slider_value='[0, 350]',
+                    data_slider_step='5',
+                    data_slider_ticks='[0, 350]',
+                    data_slider_ticks_labels='["0", "350"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                Field(
+                    'defense',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='5000',
+                    data_slider_value='[0, 5000]',
+                    data_slider_step='50',
+                    data_slider_ticks='[0, 5000]',
+                    data_slider_ticks_labels='["0", "5000"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                Field(
+                    'defense_pct',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='350',
+                    data_slider_value='[0, 350]',
+                    data_slider_step='5',
+                    data_slider_ticks='[0, 350]',
+                    data_slider_ticks_labels='["0", "350"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                css_class='col-md-4 col-sm-6'
+            ),
+            Div(
+                Field(
+                    'crit_rate',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='200',
+                    data_slider_value='[0, 200]',
+                    data_slider_step='1',
+                    data_slider_ticks='[0, 200]',
+                    data_slider_ticks_labels='["0", "200"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                Field(
+                    'crit_damage',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='500',
+                    data_slider_value='[0, 500]',
+                    data_slider_step='5',
+                    data_slider_ticks='[0, 500]',
+                    data_slider_ticks_labels='["0", "500"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                Field(
+                    'accuracy',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='200',
+                    data_slider_value='[0, 200]',
+                    data_slider_step='1',
+                    data_slider_ticks='[0, 200]',
+                    data_slider_ticks_labels='["0", "200"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                Field(
+                    'resistance',
+                    data_provide='slider',
+                    data_slider_min='0',
+                    data_slider_max='200',
+                    data_slider_value='[0, 200]',
+                    data_slider_step='1',
+                    data_slider_ticks='[0, 200]',
+                    data_slider_ticks_labels='["0", "200"]',
+                    wrapper_class='form-group-sm form-group-condensed'
+                ),
+                css_class='col-md-4 col-sm-6'
+            ),
+            css_class='row',
+        ),
+        Div(
+            Div(
+                Submit('apply', 'Apply', css_class='btn-success '),
+                css_class='btn-group w-50'
+            ),
+            Div(
+                Button('resetBtn', 'Reset Filters', css_class='btn-outline-danger reset'),
+                css_class='btn-group w-50'
+            ),
+            css_class='btn-group w-100'
+        ),
+    )
+
+    def clean(self):
+        super(FilterRuneBuildForm, self).clean()
+
+        # Process x-slot shortcuts for rune set
+        if '2-slot' in self.cleaned_data['active_sets']:
+            self.cleaned_data['active_sets'].remove('2-slot')
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
+                if count == 2:
+                    self.cleaned_data['active_sets'].append(rune_set)
+
+        if '4-slot' in self.cleaned_data['active_sets']:
+            self.cleaned_data['active_sets'].remove('4-slot')
+            for rune_set, count in RuneInstance.RUNE_SET_COUNT_REQUIREMENTS.items():
+                if count == 4:
+                    self.cleaned_data['active_sets'].append(rune_set)
+
+        # Split the slider ranges into two min/max fields for the filters
+        try:
+            [min_avg_eff, max_avg_eff] = self.cleaned_data['avg_efficiency'].split(',')
+        except:
+            min_avg_eff = 0
+            max_avg_eff = 150
+
+        self.cleaned_data['avg_efficiency__gte'] = int(min_avg_eff)
+        self.cleaned_data['avg_efficiency__lte'] = int(max_avg_eff)
+
+        try:
+            [min_hp, max_hp] = self.cleaned_data['hp'].split(',')
+        except:
+            min_hp = 0
+            max_hp = 50000
+
+        self.cleaned_data['hp__gte'] = int(min_hp)
+        self.cleaned_data['hp__lte'] = int(max_hp)
+
+        try:
+            [min_hp_pct, max_hp_pct] = self.cleaned_data['hp_pct'].split(',')
+        except:
+            min_hp_pct = 0
+            max_hp_pct = 350
+
+        self.cleaned_data['hp_pct__gte'] = int(min_hp_pct)
+        self.cleaned_data['hp_pct__lte'] = int(max_hp_pct)
+
+        try:
+            [min_attack, max_attack] = self.cleaned_data['attack'].split(',')
+        except:
+            min_attack = 0
+            max_attack = 5000
+
+        self.cleaned_data['attack__gte'] = int(min_attack)
+        self.cleaned_data['attack__lte'] = int(max_attack)
+
+        try:
+            [min_attack_pct, max_attack_pct] = self.cleaned_data['attack_pct'].split(',')
+        except:
+            min_attack_pct = 0
+            max_attack_pct = 350
+
+        self.cleaned_data['attack_pct__gte'] = int(min_attack_pct)
+        self.cleaned_data['attack_pct__lte'] = int(max_attack_pct)
+
+        try:
+            [min_defense, max_defense] = self.cleaned_data['defense'].split(',')
+        except:
+            min_defense = 0
+            max_defense = 5000
+
+        self.cleaned_data['defense__gte'] = int(min_defense)
+        self.cleaned_data['defense__lte'] = int(max_defense)
+        try:
+            [min_defense_pct, max_defense_pct] = self.cleaned_data['defense_pct'].split(',')
+        except:
+            min_defense_pct = 0
+            max_defense_pct = 350
+
+        self.cleaned_data['defense_pct__gte'] = int(min_defense_pct)
+        self.cleaned_data['defense_pct__lte'] = int(max_defense_pct)
+
+        try:
+            [min_crit_rate, max_crit_rate] = self.cleaned_data['crit_rate'].split(',')
+        except:
+            min_crit_rate = 0
+            max_crit_rate = 200
+
+        self.cleaned_data['crit_rate__gte'] = int(min_crit_rate)
+        self.cleaned_data['crit_rate__lte'] = int(max_crit_rate)
+
+        try:
+            [min_crit_damage, max_crit_damage] = self.cleaned_data['crit_damage'].split(',')
+        except:
+            min_crit_damage = 0
+            max_crit_damage = 500
+
+        self.cleaned_data['crit_damage__gte'] = int(min_crit_damage)
+        self.cleaned_data['crit_damage__lte'] = int(max_crit_damage)
+
+        try:
+            [min_accuracy, max_accuracy] = self.cleaned_data['accuracy'].split(',')
+        except:
+            min_accuracy = 0
+            max_accuracy = 200
+
+        self.cleaned_data['accuracy__gte'] = int(min_accuracy)
+        self.cleaned_data['accuracy__lte'] = int(max_accuracy)
+
+        try:
+            [min_resistance, max_resistance] = self.cleaned_data['resistance'].split(',')
+        except:
+            min_resistance = 0
+            max_resistance = 200
+
+        self.cleaned_data['resistance__gte'] = int(min_resistance)
+        self.cleaned_data['resistance__lte'] = int(max_resistance)

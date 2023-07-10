@@ -1,8 +1,9 @@
 import django_filters
-from django.db.models import Q
+from django.db.models import Q, Count
 
 from bestiary.models import Monster, SkillEffect, Skill, LeaderSkill, ScalingStat, RuneCraft, Rune
-from .models import MonsterInstance, MonsterTag, RuneInstance, ArtifactInstance, RuneCraftInstance
+from .models import MonsterInstance, MonsterTag, RuneInstance, ArtifactInstance, RuneCraftInstance, \
+    RuneBuild
 
 
 class MonsterInstanceFilter(django_filters.FilterSet):
@@ -390,3 +391,152 @@ class ArtifactInstanceFilter(django_filters.FilterSet):
 
     def filter_bypass(self, queryset, name, value):
         return queryset
+
+
+class RuneBuildFilter(django_filters.FilterSet):
+    full = django_filters.BooleanFilter(method='filter_full')
+    full_include_artifacts = django_filters.BooleanFilter(method='filter_full_include_artifacts')
+    active_sets = django_filters.MultipleChoiceFilter(choices=RuneInstance.TYPE_CHOICES, method='filter_active_sets')
+    active_sets_all = django_filters.BooleanFilter(method='filter_active_sets_all')
+    # is_grindable = django_filters.BooleanFilter(method='filter_is_grindable')
+    # is_enchantable = django_filters.BooleanFilter(method='filter_is_enchantable')
+
+    class Meta:
+        model = RuneBuild
+        fields = {
+            'avg_efficiency': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'hp': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'hp_pct': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'attack': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'attack_pct': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'defense': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'defense_pct': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'speed': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'speed_pct': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'crit_rate': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'crit_damage': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'resistance': ['exact', 'lte', 'lt', 'gte', 'gt'],
+            'accuracy': ['exact', 'lte', 'lt', 'gte', 'gt'],
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.summoner = kwargs.pop('summoner', None)
+        super(RuneBuildFilter, self).__init__(*args, **kwargs)
+    
+    def filter_active_sets(self, queryset, name, value):
+        all_active_sets = self.form.cleaned_data.get('active_sets_all', False)
+        compare_func = all if all_active_sets else any
+        ids = []
+        for rec in queryset:
+            if compare_func([int(rune_set) in rec.active_rune_sets for rune_set in value]):
+                ids.append(rec.id)
+    
+        return queryset.filter(pk__in=ids)
+    
+    def filter_full_include_artifacts(self, queryset, name, value):
+        # This field is just used to alter the logic of other filters
+        return queryset
+
+    def filter_active_sets_all(self, queryset, name, value):
+        # This field is just used to alter the logic of other filters
+        return queryset
+
+    def filter_full(self, queryset, name, value):
+        incl_artifacts = self.form.cleaned_data.get('full_include_artifacts', False)
+        queryset = queryset.annotate(r_c=Count('runes', distinct=True))
+        if incl_artifacts:
+            queryset = queryset.annotate(a_c=Count('artifacts', distinct=True))
+
+        if value:
+            queryset = queryset.filter(r_c=6)
+            if incl_artifacts:
+                queryset = queryset.filter(a_c=2)
+        else:
+            queryset = queryset.exclude(r_c=6)
+            if incl_artifacts:
+                queryset = queryset.exclude(a_c=2)
+        
+        return queryset
+
+    # def filter_is_grindable(self, queryset, name, value):
+    #     if not self.summoner:
+    #         return queryset # AssignRune
+
+    #     # {
+    #     #     normal: {
+    #     #         swift: [atk%, hp%, spd, res%],
+    #     #         ...
+    #     #     },
+    #     #     ancient: {
+    #     #         swift: [atk%, hp%, spd, res%],
+    #     #         ...
+    #     #     },
+    #     # }
+    #     grinds = {
+    #         RuneCraft.CRAFT_GRINDSTONE: {}, 
+    #         RuneCraft.CRAFT_ANCIENT_GRINDSTONE: {},
+    #     }
+    #     rune_grinds =  RuneCraftInstance.objects.only('type', 'rune', 'stat').filter(
+    #         owner=self.summoner,
+    #         quantity__gte=1,
+    #         type__in=grinds.keys(),
+    #     )
+
+    #     for re in rune_grinds:
+    #         if re.rune not in grinds[re.type]:
+    #             grinds[re.type][re.rune] = []
+    #         if re.stat not in grinds[re.type][re.rune]:
+    #             grinds[re.type][re.rune].append(re.stat)
+
+    #     query = Q()
+    #     for key, val in grinds.items():
+    #         for rune, stats in val.items():
+    #             for stat in stats:
+    #                 query |= (
+    #                     Q(runes__ancient=key == RuneCraft.CRAFT_ANCIENT_GRINDSTONE) 
+    #                     & Q(runes__type=rune) 
+    #                     & ~Q(runes__main_stat=stat) 
+    #                     & ~Q(runes__innate_stat=stat)
+    #                 )
+
+    #     if value:
+    #         return queryset.filter(query).distinct()
+    #     else:
+    #         return queryset.exclude(query).distinct()
+
+    # def filter_is_enchantable(self, queryset, name, value):
+    #     if not self.summoner:
+    #         return queryset # AssignRune
+
+    #     enchants = {
+    #         RuneCraft.CRAFT_ENCHANT_GEM: {}, 
+    #         RuneCraft.CRAFT_ANCIENT_GEM: {},
+    #     }
+
+    #     rune_enchants =  RuneCraftInstance.objects.only('type', 'rune', 'stat').filter(
+    #         owner=self.summoner,
+    #         quantity__gte=1,
+    #         type__in=enchants.keys(),
+    #     )
+
+    #     for re in rune_enchants:
+    #         if re.rune not in enchants[re.type]:
+    #             enchants[re.type][re.rune] = []
+    #         if re.stat not in enchants[re.type][re.rune]:
+    #             enchants[re.type][re.rune].append(re.stat)
+
+    #     query = Q()
+    #     for key, val in enchants.items():
+    #         for rune, stats in val.items():
+    #             for stat in stats:
+    #                 query |= (
+    #                     Q(runes__ancient=key == RuneCraft.CRAFT_ANCIENT_GEM) 
+    #                     & Q(runes__type=rune) 
+    #                     & ~Q(runes__main_stat=stat) 
+    #                     & ~Q(runes__innate_stat=stat)
+    #                 )
+
+    #     if value:
+    #         return queryset.filter(query).distinct()
+    #     else:
+    #         return queryset.exclude(query).distinct()

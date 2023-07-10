@@ -252,10 +252,11 @@ $('body')
         var el = $(this);
         popoverDelay = setTimeout(function () {
             var rune_id = el.data('rune-id');
+            var rune_rta = el.data('rune-rta') === true
 
             if (rune_id.length > 0) {
                 $.ajax({
-                    url: API_URL + 'runes/' + el.data('rune-id') + '.html',
+                    url: API_URL + 'runes/' + el.data('rune-id') + '.html?rune-rta=' + rune_rta,
                     type: 'get',
                     global: false
                 }).done(function (d) {
@@ -277,10 +278,11 @@ $('body')
         var el = $(this);
         popoverDelay = setTimeout(function () {
             var rune_id = el.data('rune-id');
+            var rune_rta = el.data('rune-rta') === true
 
             if (rune_id.length > 0) {
                 $.ajax({
-                    url: API_URL + 'runes/' + el.data('rune-id') + '.html',
+                    url: API_URL + 'runes/' + el.data('rune-id') + '.html?rune-rta=' + rune_rta,
                     type: 'get',
                     global: false
                 }).done(function (d) {
@@ -302,10 +304,11 @@ $('body')
         var el = $(this);
         popoverDelay = setTimeout(function () {
             var rune_id = el.data('artifact-id');
+            var rune_rta = el.data('artifact-rta') === true
 
             if (rune_id.length > 0) {
                 $.ajax({
-                    url: API_URL + 'artifacts/' + el.data('artifact-id') + '.html',
+                    url: API_URL + 'artifacts/' + el.data('artifact-id') + '.html?artifact-rta=' + rune_rta,
                     type: 'get',
                     global: false
                 }).done(function (d) {
@@ -327,10 +330,11 @@ $('body')
         var el = $(this);
         popoverDelay = setTimeout(function () {
             var rune_id = el.data('artifact-id');
+            var rune_rta = el.data('artifact-rta') === true
 
             if (rune_id.length > 0) {
                 $.ajax({
-                    url: API_URL + 'artifacts/' + el.data('artifact-id') + '.html',
+                    url: API_URL + 'artifacts/' + el.data('artifact-id') + '.html?artifact-rta=' + rune_rta,
                     type: 'get',
                     global: false
                 }).done(function (d) {

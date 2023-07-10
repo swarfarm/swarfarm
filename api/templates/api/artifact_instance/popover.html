@@ -2,6 +2,7 @@
 {% static 'herders/images/' as img_url_prefix %}
 
 <div class="rune-panel card shadow border-0">
+    {% if not rta_view %}
     <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} p-1 m-0">
         <div class="btn-group float-right">
             <div class="btn btn-link artifact-edit p-0 text-dark" data-artifact-id="{{ artifact.pk_hex }}">
@@ -12,6 +13,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
     <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} p-1">
         <div class="d-flex">
             {% include 'herders/profile/artifacts/artifact_image_fragment.html' with artifact=artifact hide_original_quality=True only %}

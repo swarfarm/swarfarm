@@ -205,23 +205,61 @@ class _TableDefs:
     DIMENSIONAL_HOLE_MAP = 100
     DIMENSIONAL_HOLE_DUNGEONS = 101
     DIMENSIONAL_HOLE_MODELS = 102
-    # Unknown table 103 - Arcane Tower, Summoner Circle, Temple of Wishes
-    # Unknown table 104 - some effect sets
+    BUILDING_SKINS = 103
+    TRANSMOG_EFFECTS = 104
     TUTORIAL_MAP = 105
     ARENA_LEAGUE_RANKS = 106
     ARENA_LEAGUE_REWARDS = 107
-    BATTLE_APPEARANCE_TRANSMOG = 108
+    # Unknown table 108 - probably arena league related
     GUILD_SIEGE_BACKGROUND_SKINS = 109
-    GUILD_SIEGE_SEASON_REWARDS = 110
+    # Unknown table 110 - random text
     CHAT_BANNED_WORDS9 = 111
     CHAT_BANNED_WORDS10 = 112
     WORLD_ARENA_EMOTICONS = 113
-    ARTIFACT_SUBSTAT_VALUES = 114
+    ARTIFACT_SUBSTAT_VALUES_OLD = 114
     ARTIFACT_ENCHANT_VALUES = 115
     ARTIFACT_SELL_VALUES = 116
     # Unknown table 117 - some x/y positions
     REPEAT_BATTLE_PLACES = 118
     WORLD_ARENA_ACHIEVEMENTS = 119
+    AIR_BALOON_MODEL = 120
+    # Unknown table 121 - some effects
+    MOCK_BATTLE = 122
+    NEW_UNITS_RESTRICTIONS = 123
+    HELP_SECTION = 124
+    ARTIFACT_SUBSTAT_VALUES = 125
+    VALENTINE_ICONS = 126
+    # Unknown table 127 - some rules
+    ARENA_SKINS = 128
+    # Unknown table 129 - some items; scrolls, devilmons, runes
+    # Unknown table 130 - rewards
+    SERVER_ARENA_BATTLE_POINTS = 131
+    ALERTS = 132
+    ACHIEVEMENTS2 = 133
+    TRAILERS = 134
+    # Unknown table 135
+    RANDOM_BOX_PACK = 136
+    USER_LOBBY_THEME = 137
+    GUILD_LOBBY_THEME = 138
+    # Unknown table 139 - Guild related rewards, drops currency (guild points + mana); maybe Monster Subjugation
+    # Unknown table 140
+    GUILD_BOSS_INFO = 141
+    WORLD_ARENA_MONSTERS_SUPPORT = 142
+    ARTIFACT_CONVERSION_COST = 143
+    GUILD_BOSS_REWARDS_PHASE_2 = 144
+    GUILD_BOSS_PHASES = 145
+    GUILD_BOSS_REWARDS_PHASE_3 = 146
+    CURRENCIES = 147
+    GUILD_WAR_NPC = 148
+    GUILD_WAR_RANKS = 149
+    GUILD_WAR_REWARDS = 150
+    CHALLENGES_2 = 151
+    AC_COLLAB_GAME_MODE_BUFFS_OLD = 152
+    AC_COLLAB_GAME_MODE_MONSTERS = 153
+    AC_COLLAB_GAME_MODE_BUFFS = 154
+    ARENA_SKINS2 = 155
+    EVOLUTION_SYSTEM = 156 # needed monsters to evolve
+    EVOLUTION_SYSTEM_COST = 157    
 
 
 class _LocalValueData:

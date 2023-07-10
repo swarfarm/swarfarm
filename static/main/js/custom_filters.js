@@ -60,10 +60,11 @@ function clean_multi_slider_min_max_params(params, multiSliderParams){
     // Need to check if these values are equal min-max, if yes -> delete them from query
     // Because there's no point in using Filter without any effect
     for (let name of multiSliderParams) {
+        if (params.get(name) === null) continue;
         var [valueMin, valueMax] = params.get(name).split(',')
         var el = $("input[name='" + name + "']")
         if(el.attr("data-slider-min") === valueMin && el.attr("data-slider-max") === valueMax){
-            params.delete(name)    
+            params.delete(name)
         }
     }
     return params.toString()

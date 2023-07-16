@@ -218,7 +218,7 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
             },
         },
         Dungeon.CATEGORY_WORLD_BOSS: {
-            'log': RiftDungeonLog,
+            'log': WorldBossLog,
             'func': _generate_by_grade_report,
             'kwargs': {},
         },
@@ -250,8 +250,19 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
         except ValueError:
             start_date = None
             end_date = None
+        
+        dung_log = dungeon_log_mapper.get(dung.category, dungeon_log_mapper.get('default'))
+        damage_from = request.GET.get('damage_from', None)
+        damage_to = request.GET.get('damage_to', None)
+        if damage_from:
+            damage_from = int(damage_from)
+        if damage_to:
+            damage_to = int(damage_to)
+        
+        if damage_from and damage_to:
+            damage_from, damage_to = min(damage_from, damage_to), max(damage_from, damage_to)
 
-        if start_date and end_date:
+        if start_date and end_date and not any([damage_from, damage_to]):
             if is_datetime:
                 report = lvl.logs.filter(
                     start_timestamp=start_date,
@@ -264,7 +275,6 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
                 ).first()
 
             if not report:
-                dung_log = dungeon_log_mapper.get(dung.category, dungeon_log_mapper.get('default'))
                 report = dung_log['func'](
                     level=lvl, 
                     model=dung_log['log'],
@@ -276,6 +286,19 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
                 )
             found_by_date = True
         
+        if any([damage_from, damage_to]) and dung_log['log'] in (RiftDungeonLog, WorldBossLog):
+            report = dung_log['func'](
+                level=lvl, 
+                model=dung_log['log'],
+                content_type=ContentType.objects.get_for_model(dung_log['log']),
+                start_date=start_date,
+                end_date=end_date,
+                generated_by_user=True,
+                damage_from=damage_from,
+                damage_to=damage_to,
+                **dung_log['kwargs'],
+            )
+
         if not report:
             report = lvl.logs.filter(generated_by_user=False).latest()
             if start_date and end_date:
@@ -299,6 +322,8 @@ def dungeon_detail(request, slug, difficulty=None, floor=None):
         'found_by_date': found_by_date,
         'start_date': start_date.strftime("%Y-%m-%d") if isinstance(start_date, datetime) else None,
         'end_date': end_date.strftime("%Y-%m-%d") if isinstance(end_date, datetime) else None,
+        'damage_from': damage_from,
+        'damage_to': damage_to,
     }
 
     by_grade = dung.category in [Dungeon.CATEGORY_RIFT_OF_WORLDS_BEASTS, Dungeon.CATEGORY_WORLD_BOSS]

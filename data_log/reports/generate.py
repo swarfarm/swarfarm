@@ -884,7 +884,16 @@ def generate_rift_raid_reports():
         models.RiftRaidLog, include_currency=True, exclude_social_points=True)
 
 
-def _generate_by_grade_report(level, model, content_type, start_date=None, end_date=None, report_timespan=timedelta(weeks=2), generated_by_user=False, **kwargs):
+def _generate_by_grade_report(level, 
+                              model, 
+                              content_type, 
+                              start_date=None, 
+                              end_date=None, 
+                              report_timespan=timedelta(weeks=2),
+                              generated_by_user=False, 
+                              damage_from=None, 
+                              damage_to=None,
+                              **kwargs):
     all_records = model.objects.none()
     report_data = {
         'reports': []
@@ -892,8 +901,24 @@ def _generate_by_grade_report(level, model, content_type, start_date=None, end_d
 
     # Generate a report by grade
     for grade, grade_desc in model.GRADE_CHOICES:
+        qs = model.objects.filter(level=level, grade=grade)
+        damage_filters = Q()
+        if model == models.WorldBossLog:
+            if damage_from:
+                damage_filters &= Q(damage__gte=damage_from)
+            if damage_to:
+                damage_filters &= Q(damage__lte=damage_to)
+        elif model == models.RiftDungeonLog:
+            if damage_from:
+                damage_filters &= Q(total_damage__gte=damage_from)
+            if damage_to:
+                damage_filters &= Q(total_damage__lte=damage_to)
+        
+        if damage_filters:
+            qs = qs.filter(damage_filters)
+
         records = slice_records(
-            model.objects.filter(level=level, grade=grade), 
+            qs, 
             minimum_count=2500, 
             start_date=start_date,
             end_date=end_date,

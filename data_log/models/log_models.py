@@ -1014,7 +1014,7 @@ class RiftDungeonLog(LogEntry):
 
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
     grade = models.IntegerField(db_index=True, choices=GRADE_CHOICES)
-    total_damage = models.IntegerField()
+    total_damage = models.IntegerField(db_index=True)
     clear_time = models.DurationField()
     success = models.BooleanField(db_index=True)
 
@@ -1228,7 +1228,7 @@ class WorldBossLog(LogEntry):
     level = models.ForeignKey(Level, on_delete=models.PROTECT)
     battle_key = models.BigIntegerField(null=True, blank=True)
     grade = models.IntegerField(choices=GRADE_CHOICES, null=True, blank=True)
-    damage = models.IntegerField()
+    damage = models.IntegerField(db_index=True)
     battle_points = models.IntegerField()
     bonus_battle_points = models.IntegerField()
     avg_monster_level = models.FloatField()

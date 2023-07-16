@@ -34,7 +34,7 @@ class DataLogView(SectionMixin, SummonerMixin, OwnerRequiredMixin, FormView):
     log_type = None
     timestamp_session_key = 'data_log_timestamps'
     log_count = None
-    max_records = 2000
+    max_records = 4000
 
     def get(self, request, *args, **kwargs):
         form = self.get_form()

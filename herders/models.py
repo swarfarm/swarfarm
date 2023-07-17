@@ -37,7 +37,7 @@ class Summoner(models.Model):
     summoner_name = models.CharField(max_length=256, null=True, blank=True)
     com2us_id = models.BigIntegerField(db_index=True, default=None, null=True, blank=True)
     server = models.IntegerField(
-        choices=SERVER_CHOICES, default=SERVER_GLOBAL, null=True, blank=True)
+        choices=SERVER_CHOICES, default=SERVER_GLOBAL, null=True, blank=True, db_index=True)
     following = models.ManyToManyField(
         "self", related_name='followed_by', symmetrical=False)
     public = models.BooleanField(default=False, blank=True)
@@ -45,9 +45,9 @@ class Summoner(models.Model):
     timezone = TimeZoneField(default='America/Los_Angeles')
     notes = models.TextField(null=True, blank=True)
     preferences = JSONField(default=dict, blank=True)
-    last_update = models.DateTimeField(auto_now=True)
-    consent_report = models.BooleanField(null=True, blank=True)
-    consent_top = models.BooleanField(null=True, blank=True)
+    last_update = models.DateTimeField(auto_now=True, db_index=True)
+    consent_report = models.BooleanField(null=True, blank=True, db_index=True)
+    consent_top = models.BooleanField(null=True, blank=True, db_index=True)
 
     def has_given_consent(self):
         return self.consent_report is not None and self.consent_top is not None
@@ -595,7 +595,8 @@ class RuneBuild(models.Model):
         for set_counts in self.runes.exclude(type=RuneInstance.TYPE_INTANGIBLE).values('type').order_by().annotate(count=Count('type')):
             required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[set_counts['type']]
             present = set_counts['count']
-            completed_sets.extend([set_counts['type']] * (present // required))
+            if set_counts['type'] != RuneInstance.TYPE_INTANGIBLE:
+                completed_sets.extend([set_counts['type']] * (present // required))
             if has_intangible and ((present + 1) % required) == 0:
                 missing_one.append(set_counts['type'])
                 required_4 = required == 4
@@ -611,6 +612,8 @@ class RuneBuild(models.Model):
                     completed_sets.insert(0, missing_set)
                 else:
                     completed_sets.append(missing_set)
+
+        completed_sets = sorted(completed_sets, key=RuneInstance.RUNE_SET_ORDER_REQUIREMENTS.get, reverse=True)
 
         return completed_sets
 

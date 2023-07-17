@@ -364,6 +364,8 @@ class Rune(models.Model, RuneObjectBase):
         RuneObjectBase.TYPE_SEAL: 2,
     }
 
+    RUNE_SET_ORDER_REQUIREMENTS = dict(sorted(RUNE_SET_COUNT_REQUIREMENTS.items(), key=lambda x: x[1], reverse=True))
+
     RUNE_SET_BONUSES = {
         RuneObjectBase.TYPE_ENERGY: {
             'count': 2,

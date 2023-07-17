@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 
-from bestiary.models import Level, GameItem, BalancePatch, Monster
+from bestiary.models import Level, GameItem, Monster
 from data_log.models.log_models import CraftRuneLog, MagicBoxCraft
 from herders.models import MonsterInstance, RuneBuild, RuneInstance
 from herders.serializers import MonsterStatisticsReportInstanceSerializer
@@ -84,17 +84,24 @@ class StatisticsReport(models.Model):
     server = models.IntegerField(choices=SERVER_CHOICES, null=True, blank=True)
     monster = models.ForeignKey(Monster, on_delete=models.CASCADE)
     report = JSONField()
-
-    @property
-    def included_balance_patches(self):
-        return BalancePatch.objects.filter(date__gt=self.start_date, date__lt=self.generated_on.date(), monsters=self.monster)
     
     @property
     def min_monsters_count(self):
-        MIN_COUNT = 1000
-        server = 250 if self.server else 0
-        min_box_6stars = self.min_box_6stars * 4
-        return max(MIN_COUNT - server - min_box_6stars, 100)
+        if self.server:
+            min_count = 150
+        else:
+            min_count = 300
+        
+        if self.monster.element in (Monster.ELEMENT_LIGHT, Monster.ELEMENT_DARK):
+            min_count /= 2
+
+        if self.monster.natural_stars == 5:
+            min_count /= 15
+
+        if self.min_box_6stars:
+            min_count /= 5
+
+        return min_count
     
     def __str__(self):
         return f'{self.monster}, {self.start_date}, {self.server if self.server else "All"}, {"RTA" if self.is_rta else "Default"}, {self.min_box_6stars}+ 6*'
@@ -103,11 +110,12 @@ class StatisticsReport(models.Model):
         unique_together = (('monster', 'start_date', 'is_rta', 'min_box_6stars', 'server'),)
         get_latest_by = 'start_date'
     
-    def monsterinstances(self, profiles, filter_by_date=True):
-        # this method doesn't filter by min_box_6stars and server - performance issues
+    def monsterinstances(self, profiles, filter_by_date=True, server=None):
         if filter_by_date:
             profiles = profiles.filter(last_update__date__gte=self.start_date)
-        profiles_f = profiles.filter(monsterinstance__monster=self.monster)
+        if server:
+            profiles = profiles.filter(server=server)
+        profiles_f = profiles.filter(monsterinstance__monster=self.monster, monsterinstance__stars=6, monsterinstance__level=40)
 
         monsters_t_pks = profiles_f.values_list('monsterinstance', flat=True)
         monsters_t = MonsterInstance.objects.filter(pk__in=monsters_t_pks)
@@ -119,14 +127,6 @@ class StatisticsReport(models.Model):
         monsters_b_pks = RuneBuild.objects.filter(pk__in=builds).annotate(c=models.Count('runes')).filter(c=6).distinct().values_list('monster', flat=True)
         data_monsters = MonsterInstance.objects.filter(pk__in=monsters_b_pks).select_related('owner')
         monsters = []
-
-        bps = self.included_balance_patches.filter(monsters=self.monster)
-        bps_date = None
-        if bps.exists():
-            bps_date = bps.latest().date
-            bps_monsters = data_monsters.filter(owner__last_update__date__gt=bps_date)
-            monsters += list(bps_monsters)
-            data_monsters = data_monsters.exclude(pk__in=bps_monsters)
         
         monsters += list(data_monsters.filter(owner__last_update__date__gte=self.start_date))
         return monsters
@@ -148,12 +148,13 @@ class StatisticsReport(models.Model):
             "top": [],
             "count": m_count,
             "calc": True,
+            "min_count": self.min_monsters_count,
         }
         if m_count < self.min_monsters_count:
             report["calc"] = False
             self.report = report
             self.save()
-            return 
+            return
         
         mons_top = []
         for top in sorted(monsters, key=lambda m: getattr(m, build_attr).avg_efficiency, reverse=True)[:20]:
@@ -163,7 +164,6 @@ class StatisticsReport(models.Model):
             })
         report["top"] = mons_top
 
-
         rune_main_stats = dict(RuneInstance.STAT_CHOICES)
         builds_pks = [getattr(monster, build_attr).pk for monster in monsters]
         builds = RuneBuild.objects.prefetch_related('runes').filter(pk__in=builds_pks).order_by('pk').values('pk', 'runes__slot', 'runes__main_stat', 'runes__type')
@@ -172,7 +172,6 @@ class StatisticsReport(models.Model):
             num_equipped = len(data)
             
             set_counts = {}
-            completed_sets = []
             slot_2, slot_4, slot_6 = None, None, None
             for rune in data:
                 if rune['runes__slot'] == 2:
@@ -186,12 +185,15 @@ class StatisticsReport(models.Model):
                     set_counts[rune['runes__type']] = 0
                 set_counts[rune['runes__type']] += 1 
 
+            completed_sets = []
             missing_one = []
             has_intangible = set_counts.get(RuneInstance.TYPE_INTANGIBLE, 0) > 0
             required_4 = False
             for set_type, set_count in set_counts.items():
                 required = RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[set_type]
                 present = set_count
+                if set_type != RuneInstance.TYPE_INTANGIBLE:
+                    completed_sets.extend([set_type] * (present // required))
                 if has_intangible and ((present + 1) % required) == 0:
                     missing_one.append(set_type)
                     required_4 = required == 4
@@ -207,6 +209,8 @@ class StatisticsReport(models.Model):
                         completed_sets.insert(0, missing_set)
                     else:
                         completed_sets.append(missing_set)
+
+            completed_sets = sorted(completed_sets, key=RuneInstance.RUNE_SET_ORDER_REQUIREMENTS.get, reverse=True)
                 
             active_set_names = [
                 RuneInstance.TYPE_CHOICES[rune_type - 1][1] for rune_type in completed_sets
@@ -222,6 +226,15 @@ class StatisticsReport(models.Model):
             if sets not in r_s["data"]:
                 r_s["data"][sets] = 0
             r_s["data"][sets] += 1
+
+            for completed_set in completed_sets:
+                required = str(RuneInstance.RUNE_SET_COUNT_REQUIREMENTS[completed_set])
+                name = RuneInstance.TYPE_CHOICES[completed_set - 1][1]
+                key = 'sets_' + required
+                r_s_2_4 = report["charts"][key]
+                if name not in r_s_2_4["data"]:
+                    r_s_2_4["data"][name] = 0
+                r_s_2_4["data"][name] += 1
 
             slot_2_ms = rune_main_stats[slot_2['runes__main_stat']] if slot_2 else None
             if slot_2_ms:

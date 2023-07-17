@@ -294,15 +294,3 @@ class DungeonAdmin(admin.ModelAdmin):
 class GameItemAdmin(admin.ModelAdmin):
     list_display = ('image_tag', 'com2us_id', 'category', 'name', 'sell_value')
     list_filter = ('category', )
-
-
-@admin.register(models.BalancePatch)
-class BalancePatchAdmin(admin.ModelAdmin):
-    list_display = ('date', )
-    search_fields = ('monsters__name', )
-    filter_horizontal = ('monsters', )
-
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == "monsters":
-            kwargs["queryset"] = models.Monster.objects.filter(awaken_level__in=[models.Monster.AWAKEN_LEVEL_AWAKENED, models.Monster.AWAKEN_LEVEL_SECOND], obtainable=True)
-        return super(BalancePatchAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)

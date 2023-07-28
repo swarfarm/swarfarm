@@ -116,7 +116,7 @@ def skills():
 
         defaults = {
             'name': game_data.strings.SKILL_NAMES.get(master_id, f'skill_{master_id}').strip(),
-            'description': game_data.strings.SKILL_DESCRIPTIONS.get(master_id, raw['description']).strip(),
+            'description': game_data.strings.SKILL_DESCRIPTIONS.get(master_id, raw['desc']).strip(),
             'slot': _get_skill_slot(master_id),
             'icon_filename': 'skill_icon_{0:04d}_{1}_{2}.png'.format(*raw['thumbnail']),
             'cooltime': raw['cool time'] if raw['cool time'] > 0 else None,

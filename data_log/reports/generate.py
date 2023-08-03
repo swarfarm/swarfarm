@@ -562,9 +562,9 @@ def get_artifact_report(qs, total_log_count, **kwargs):
             'total': qs.count(),
             'data': transform_to_dict(
                 replace_value_with_choice(
-                    list(qs.values('quality').annotate(count=Count('pk')).filter(count__gt=min_count).order_by(
+                    list(qs.values('original_quality').annotate(count=Count('pk')).filter(count__gt=min_count).order_by(
                         '-count')),
-                    {'quality': qs.model.QUALITY_CHOICES}
+                    {'original_quality': qs.model.QUALITY_CHOICES}
                 )
             ),
         },

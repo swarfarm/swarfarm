@@ -77,7 +77,7 @@ class StatisticsReport(models.Model):
         (SERVER_CHINA, 'China'),
     ]
 
-    generated_on = models.DateTimeField(auto_now_add=True)
+    generated_on = models.DateTimeField(auto_now_add=True, db_index=True)
     start_date = models.DateField()
     is_rta = models.BooleanField(default=False)
     min_box_6stars = models.IntegerField(default=0)
@@ -132,6 +132,7 @@ class StatisticsReport(models.Model):
         return monsters
     
     def generate_report(self, monsters):
+        MINIMUM_THRESHOLD = 0.005
         categories = [
             "sets", "sets_4", "sets_2", 
             "slot_2", "slot_4", "slot_6", 
@@ -271,6 +272,14 @@ class StatisticsReport(models.Model):
                 other = sum([v for k, v in rep_cat["data"].items() if k in keys[5:]])
                 rep_cat["data"] = {**proper_data, **{"Other": other}}
                 rep_cat["total"] = sum([v for k, v in rep_cat["data"].items()])
+                min_count = MINIMUM_THRESHOLD * rep_cat["total"]
+                for k, v in rep_cat.items():
+                    if v < min_count and k != "Other":
+                        rep_cat["Other"] += v
+                        rep_cat.pop(k)
+                
+                if rep_cat["Other"] < min_count:
+                    rep_cat.pop("Other")
 
         self.report = report
         self.save()

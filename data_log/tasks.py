@@ -63,7 +63,7 @@ def _generate_monster_statistic_report(start_date, monster_id, server, is_rta, m
 def generate_statistics_reports(server_idx=0, is_rta=False, min_box_6stars=0, days_timespan=180):
     start_date = (timezone.now() - timedelta(days=days_timespan)).date()
     servers = [None] + list(dict(Summoner.SERVER_CHOICES).keys())
-    monsters = Monster.objects.filter(awaken_level__in=[Monster.AWAKEN_LEVEL_AWAKENED, Monster.AWAKEN_LEVEL_SECOND], obtainable=True)
+    monsters = Monster.objects.filter(awaken_level__in=[Monster.AWAKEN_LEVEL_AWAKENED, Monster.AWAKEN_LEVEL_SECOND], obtainable=True, awakens_to__isnull=True)
 
     profiles = Summoner.objects\
         .filter(consent_report=True, last_update__date__gte=start_date)\

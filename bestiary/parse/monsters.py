@@ -575,6 +575,11 @@ _postprocess_erratum = {
     16033: [definitely_2a],
     16034: [definitely_2a],
     16035: [definitely_2a],
+    16531: [definitely_2a], # Living Armors
+    16532: [definitely_2a],
+    16533: [definitely_2a],
+    16534: [definitely_2a],
+    16535: [definitely_2a],
 }
 
 

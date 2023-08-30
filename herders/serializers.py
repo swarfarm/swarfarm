@@ -112,6 +112,7 @@ class MonsterInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
 
 class MonsterStatisticsReportInstanceSerializer(serializers.ModelSerializer):
     owner = serializers.CharField(source='owner.user')
+    id = serializers.CharField(source='id.hex')
 
     class Meta:
         model = MonsterInstance

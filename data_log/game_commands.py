@@ -104,13 +104,21 @@ active_log_commands = {
     'BattleDimensionHoleDungeonResult_v2': GameApiCommand(
         schemas.battle_dimension_hole_result_v2,
         models.DungeonLog.parse_dimension_hole_result_v2
-    )
+    ),
+    'battleStartDimensionHoleRaid': GameApiCommand(
+        schemas.battle_dimension_raid_start,
+        dispatch_dungeon_wave_parse
+    ),
+    'battleResultDimensionHoleRaid': GameApiCommand(
+        schemas.battle_dimension_raid_result,
+        models.DungeonLog.parse_dimension_raid_result
+    ),
 }
 
 accepted_api_params = {
     cmd: parser.accepted_commands for cmd, parser in active_log_commands.items()
 }
-accepted_api_params['__version'] = 10
+accepted_api_params['__version'] = 11
 
 
 # Utility functions

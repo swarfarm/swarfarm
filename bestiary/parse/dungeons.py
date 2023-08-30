@@ -256,6 +256,16 @@ def dimensional_hole_waves(log_data):
     _parse_wave_data(level, log_data['response']['dungeon_units'])
 
 
+@shared_task
+def dimensional_raid_waves(log_data):
+    level = Level.objects.get(
+        dungeon__category=Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+        dungeon__com2us_id=log_data['request']['raid_id'],
+        floor=log_data['request']['difficulty'],
+    )
+    _parse_wave_data(level, log_data['response']['raid_unit_list'])
+
+
 command_map = {
     'BattleScenarioStart': {
         'fn': scenario_waves,
@@ -279,6 +289,13 @@ command_map = {
             'difficulty',
         ],
     },
+    'battleStartDimensionHoleRaid': {
+        'fn': dimensional_raid_waves,
+        'cache keys': [
+            'raid_id',
+            'difficulty',
+        ]
+    }
 }
 
 

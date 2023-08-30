@@ -50,7 +50,7 @@
             </li>
             <li class="nav-item py-0{% if view == 'rune_builds' and is_owner %} active{% if user.is_authenticated and user.summoner.dark_mode %} active-dark{% endif %}{% endif %}">
                 <a class="nav-link text-reset" href="{% url 'herders:rune_builds' profile_name=profile_name %}">
-                    <img class="submenu-icon" src="{% static 'herders/images/builds/rta_build_runes.png' %}" loading="lazy" /> [Beta] Rune Builds
+                    <img class="submenu-icon" src="{% static 'herders/images/builds/rta_build_runes.png' %}" loading="lazy" /> Rune Builds
                 </a>
                 {% block rune_builds_menu %}{% endblock rune_builds_menu %}
             </li>

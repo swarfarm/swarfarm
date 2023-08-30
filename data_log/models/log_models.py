@@ -809,6 +809,50 @@ class DungeonLog(LogEntry):
         log_entry.parse_rewards(log_data['response']['reward'])
         log_entry.parse_changed_item_list(log_data['response']['changed_item_list'])
 
+    @classmethod
+    def parse_dimension_raid_result(cls, summoner, log_data):
+        if log_data['response']['practice_mode']:
+            # Don't parse practice modes
+            return
+
+        dungeon_id = log_data['response']['raid_id']
+        floor = log_data['response']['difficulty']
+
+        log_entry = cls(summoner=summoner)
+        log_entry.parse_common_log_data(log_data)
+        try:
+            log_entry.level = Level.objects.get(
+                dungeon__category=Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+                dungeon__com2us_id=dungeon_id,
+                floor=floor,
+            )
+        except Level.DoesNotExist:
+            # Create a placeholder level for later updating
+            try:
+                d = Dungeon.objects.get(category=Dungeon.CATEGORY_DIMENSIONAL_HOLE, com2us_id=dungeon_id)
+            except Dungeon.DoesNotExist:
+                # Create the dungeon
+                d = Dungeon.objects.create(
+                    com2us_id=dungeon_id,
+                    enabled=False,
+                    name='UNKNOWN DUNGEON',
+                    category=Dungeon.CATEGORY_DIMENSIONAL_HOLE,
+                )
+
+            # Create the level
+            log_entry.level = Level.objects.create(
+                dungeon=d,
+                floor=floor,
+            )
+            mail_admins('New Level Created', f'New level {floor} created in dungeon com2us ID {dungeon_id}.')
+
+        log_entry.success = log_data['request']['win_lose'] == 1
+        log_entry.clear_time = timedelta(milliseconds=log_data['request']['clear_time'])
+        log_entry.save()
+        log_entry.parse_rewards(log_data['response']['reward'])
+        log_entry.parse_changed_item_list(log_data['response']['changed_item_list'])
+
+
     def parse_rewards(self, rewards):
         if not rewards:
             # If there are no rewards, it's an empty list. Exit early since later code assumes rewards is a dict

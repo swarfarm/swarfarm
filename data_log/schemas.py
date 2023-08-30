@@ -615,3 +615,87 @@ battle_dimension_hole_result_v2 = {
     },
     'required': ['request', 'response'],
 }
+
+battle_dimension_raid_start = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/battle_dimension_raid_start.json',
+    'title': 'battle_dimension_raid_start',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+            },
+            'required': [
+                'wizard_id',
+                'command',
+            ],
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+                'raid_unit_list': {'type': 'array'},
+                'battle_key': {'type': 'number'},
+                'raid_id': {'type': 'number'},
+                'difficulty': {'type': 'number'},
+            },
+            'required': [
+                'tzone',
+                'tvalue',
+                'raid_unit_list',
+                'battle_key',
+                'raid_id',
+                'difficulty',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}
+
+battle_dimension_raid_result = {
+    '$schema': 'http://json-schema.org/draft-04/schema#',
+    'id': 'http://swarfarm.com/schemas/battle_dimension_raid_result.json',
+    'title': 'battle_dimension_raid_result',
+    'type': 'object',
+    'properties': {
+        'request': {
+            'type': 'object',
+            'properties': {
+                'wizard_id': {'type': 'number'},
+                'command': {'type': 'string'},
+                'win_lose': {'type': 'number'},
+                'clear_time': {'type': 'number'},
+            },
+            'required': [
+                'wizard_id',
+                'command',
+                'win_lose',
+                'clear_time',
+            ]
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'raid_id': {'type': 'number'},
+                'difficulty': {'type': 'number'},
+                'reward': {'type': ['object', 'array']},
+                'changed_item_list': {'type': ['null', 'array']},
+                'practice_mode': {'type': 'number'},
+                'tzone': {'type': 'string'},
+                'tvalue': {'type': 'number'},
+            },
+            'required': [
+                'raid_id',
+                'difficulty',
+                'practice_mode',
+                'tzone',
+                'tvalue',
+            ]
+        }
+    },
+    'required': ['request', 'response'],
+}

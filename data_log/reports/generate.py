@@ -11,7 +11,7 @@ from data_log.util import slice_records, floor_to_nearest, ceil_to_nearest, repl
     transform_to_dict, round_timedelta
 
 # Any drops that occur less than this percentage of time are filtered out
-MINIMUM_THRESHOLD = 0.005
+MINIMUM_THRESHOLD = 0.001
 CLEAR_TIME_BIN_WIDTH = timedelta(seconds=5)
 
 

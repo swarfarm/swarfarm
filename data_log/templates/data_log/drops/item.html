@@ -8,9 +8,9 @@
     <div class="media-body">
         <h4 class="media-heading">{{ item.name }}</h4>
         <ul class="list list-unstyled">
-            <li>Chance: {{ item.drop_chance|stringformat:".1f" }}%</li>
+            <li>Chance: {{ item.drop_chance|stringformat:".3f" }}%</li>
             <li>Qty {{ item.min }}{% if item.max != item.min %} - {{ item.max }}{% endif %}</li>
-            <li>Per 100 runs: {{ item.qty_per_100|floatformat:2 }}</li>
+            <li>Per 100 runs: {{ item.qty_per_100|floatformat:3 }}</li>
         </ul>
     </div>
 </div>

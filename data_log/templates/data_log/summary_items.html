@@ -10,9 +10,9 @@
             <td>
                 {{ item.name }}
             </td>
-            <td>{{ item.drop_chance|floatformat }}%</td>
+            <td>{{ item.drop_chance|floatformat:3 }}%</td>
             <td>{{ item.min }}{% if item.max != item.min %} - {{ item.max }}{% endif %}</td>
-            <td>{{ item.qty_per_100|floatformat }}</td>
+            <td>{{ item.qty_per_100|floatformat:3 }}</td>
         </tr>
     {% endfor %}
 {% endif %}

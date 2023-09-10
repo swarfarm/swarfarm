@@ -260,6 +260,8 @@ class _TableDefs:
     ARENA_SKINS2 = 155
     EVOLUTION_SYSTEM = 156 # needed monsters to evolve
     EVOLUTION_SYSTEM_COST = 157    
+    # Unknown table 158 - Something reward-related
+    # Unknown table 159 - Something quest-related
 
 
 class _LocalValueData:

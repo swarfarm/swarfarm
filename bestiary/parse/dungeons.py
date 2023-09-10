@@ -53,6 +53,10 @@ def dimensional_hole():
             # 2A dungeon - append monster name to dungeon name
             monster = Monster.objects.get(com2us_id=raw['limit text unitid'])
             dungeon_name += f' - {monster.name}'
+        elif raw['dungeon type'] == 4:
+            # Dim Raid - get 2A default name and append Raid
+            dungeon_name = game_data.strings.DIMENSIONAL_HOLE_DUNGEON_NAMES[raw['dimension id'] * 10 + 2]
+            dungeon_name += ' - Raid'
 
         dungeon, created = Dungeon.objects.update_or_create(
             com2us_id=dungeon_id,
@@ -68,7 +72,11 @@ def dimensional_hole():
             print(f'Added new dungeon {dungeon}')
 
         level_ids = []
-        for difficulty in range(len(raw['boss unit id'])):
+        level_range = len(raw['boss unit id'])
+        if raw['dungeon type'] == 4:
+            # Dim raid - for some reason Com2us included only 2 levels where in fact there are 5
+            level_range = 5
+        for difficulty in range(level_range):
             level, created = Level.objects.update_or_create(
                 dungeon=dungeon,
                 floor=difficulty + 1,
@@ -85,7 +93,6 @@ def dimensional_hole():
                 print(f'Added new level for {dungeon} - {level}')
 
         Level.objects.filter(dungeon=dungeon).exclude(pk__in=level_ids).delete()
-
 
 def rift_raids():
     for master_id, raw in game_data.tables.RIFT_RAIDS.items():

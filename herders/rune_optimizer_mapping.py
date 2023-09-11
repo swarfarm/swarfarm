@@ -107,6 +107,8 @@ rune_set_map = {
     RuneInstance.TYPE_ENHANCE: 21,
     RuneInstance.TYPE_ACCURACY: 22,
     RuneInstance.TYPE_TOLERANCE: 23,
+    RuneInstance.TYPE_SEAL: 24,
+    RuneInstance.TYPE_INTANGIBLE: 25,
 }
 
 rune_stat_type_map = {

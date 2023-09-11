@@ -97,7 +97,7 @@ def _create_new_rune(rune_info, summoner, assigned_to=None):
     if not rune_info:
         return
 
-    reward_rune = parse_rune_data(rune_info, summoner)
+    reward_rune, _ = parse_rune_data(rune_info, summoner)
     reward_rune.save()
     mon = reward_rune.assigned_to
     if mon:
@@ -119,7 +119,7 @@ def _create_new_artifact(artifact_info, summoner, assigned_to=None):
     if not artifact_info:
         return
 
-    reward_artifact = parse_artifact_data(artifact_info, summoner)
+    reward_artifact, _ = parse_artifact_data(artifact_info, summoner)
     reward_artifact.save()
     mon = reward_artifact.assigned_to
     if mon:

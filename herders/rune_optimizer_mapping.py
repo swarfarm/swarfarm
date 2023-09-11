@@ -23,6 +23,8 @@ type_encode_dict = {
     RuneInstance.TYPE_ENHANCE: 'Enhance',
     RuneInstance.TYPE_ACCURACY: 'Accuracy',
     RuneInstance.TYPE_TOLERANCE: 'Tolerance',
+    RuneInstance.TYPE_SEAL: 'Seal',
+    RuneInstance.TYPE_INTANGIBLE: 'Intangible',
 }
 
 stat_encode_dict = {
@@ -61,6 +63,8 @@ type_decode_dict = {
     'Enhance': RuneInstance.TYPE_ENHANCE,
     'Accuracy': RuneInstance.TYPE_ACCURACY,
     'Tolerance': RuneInstance.TYPE_TOLERANCE,
+    'Seal': RuneInstance.TYPE_SEAL,
+    'Intangible': RuneInstance.TYPE_INTANGIBLE,
 }
 
 stat_decode_dict = {

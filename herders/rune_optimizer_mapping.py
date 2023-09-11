@@ -179,6 +179,8 @@ artifact_effect_map = {
     ArtifactInstance.EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD: 222,
     ArtifactInstance.EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD: 223,
     ArtifactInstance.EFFECT_CRIT_DMG_SINGLE_TARGET: 224,
+    ArtifactInstance.EFFECT_COUNTER_AND_COOP_DMG: 225,
+    ArtifactInstance.EFFECT_ATK_AND_DEF: 226,
     ArtifactInstance.EFFECT_DMG_TO_FIRE: 300,
     ArtifactInstance.EFFECT_DMG_TO_WATER: 301,
     ArtifactInstance.EFFECT_DMG_TO_WIND: 302,
@@ -199,6 +201,8 @@ artifact_effect_map = {
     ArtifactInstance.EFFECT_SK1_ACCURACY: 407,
     ArtifactInstance.EFFECT_SK2_ACCURACY: 408,
     ArtifactInstance.EFFECT_SK3_ACCURACY: 409,
+    ArtifactInstance.EFFECT_SK3_AND_SK4_CRIT_DMG: 410,
+    ArtifactInstance.EFFECT_1ST_ATK_CRIT_DMG: 411,
 }
 
 archetype_map = {

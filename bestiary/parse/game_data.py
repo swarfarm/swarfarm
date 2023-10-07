@@ -210,7 +210,7 @@ class _TableDefs:
     TUTORIAL_MAP = 105
     ARENA_LEAGUE_RANKS = 106
     ARENA_LEAGUE_REWARDS = 107
-    # Unknown table 108 - probably arena league related
+    UNIT_APPEAR_EFFECT_INFO = 108  # unitappeareffectinfo.csv
     GUILD_SIEGE_BACKGROUND_SKINS = 109
     SIEGE_SEASON_REWARDS = 110
     CHAT_BANNED_WORDS9 = 111

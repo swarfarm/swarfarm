@@ -469,7 +469,7 @@ class DungeonLogArchive(LogArchive):
             'battle_key': log.battle_key,
             'level_id': log.level_id,
             'success': log.success,
-            'clear_time': log.clear_time.total_seconds() if log.clear_time else None,
+            'clear_time': log.clear_time,
         }, **LogArchive.archive_data(log)}
 
 
@@ -592,7 +592,7 @@ class RiftDungeonLogArchive(LogArchive):
             'level_id': log.level_id,
             'grade': log.grade,
             'total_damage': log.total_damage,
-            'clear_time': log.clear_time.total_seconds() if log.clear_time else None,
+            'clear_time': log.clear_time,
             'success': log.success,
         }, **LogArchive.archive_data(log)}
 
@@ -657,7 +657,7 @@ class RiftRaidLogArchive(LogArchive):
             'battle_key': log.battle_key,
             'success': log.success,
             'contribution_amount': log.contribution_amount,
-            'clear_time': log.clear_time.total_seconds() if log.clear_time else None,
+            'clear_time': log.clear_time,
         }, **LogArchive.archive_data(log)}
 
 

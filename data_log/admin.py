@@ -301,8 +301,3 @@ class WishReportAdmin(admin.ModelAdmin):
 @admin.register(models.RuneCraftingReport)
 class RuneCraftingReportAdmin(admin.ModelAdmin):
     readonly_fields = ('generated_on', 'craft_level',)
-
-
-@admin.register(models.StatisticsReport)
-class StatisticsReportAdmin(admin.ModelAdmin):
-    readonly_fields = ('generated_on', 'start_date', 'server', 'is_rta', 'min_box_6stars', 'monster')

@@ -1,6 +1,7 @@
 from django.db.models import Q
 
 import math
+from pytz.exceptions import NonExistentTimeError
 
 from archive.models.log_models import WorldBossLogArchive, WorldBossLogItemDropArchive, WorldBossLogMonsterDropArchive, WorldBossLogRuneDropArchive, \
     WishLogArchive, WishLogItemDropArchive, WishLogMonsterDropArchive, WishLogRuneDropArchive, \
@@ -73,42 +74,45 @@ def _archive_log(date_to, options):
         to_create_secret_dungeon_drop_archive = []
         ids_to_delete = []
         for log in qs_log[:BATCH_SIZE]:
-            archive_log = archive_model.objects.create(**archive_model.archive_data(log))
+            try:
+                archive_log = archive_model.objects.create(**archive_model.archive_data(log))
 
-            if item_submodel:
-                to_create_item_drop_archive += [item_submodel(
-                    **item_submodel.archive_data(archive_log, item)
-                ) for item in log.items.all()]
+                if item_submodel:
+                    to_create_item_drop_archive += [item_submodel(
+                        **item_submodel.archive_data(archive_log, item)
+                    ) for item in log.items.all()]
 
-            if monster_submodel:
-                to_create_monster_drop_archive += [monster_submodel(
-                    **monster_submodel.archive_data(archive_log, monster)
-                ) for monster in log.monsters.all()]
+                if monster_submodel:
+                    to_create_monster_drop_archive += [monster_submodel(
+                        **monster_submodel.archive_data(archive_log, monster)
+                    ) for monster in log.monsters.all()]
 
-            if monster_pieces_submodel:
-                to_create_monster_pieces_drop_archive += [monster_pieces_submodel(
-                    **monster_pieces_submodel.archive_data(archive_log, item)
-                ) for item in log.monster_pieces.all()]
+                if monster_pieces_submodel:
+                    to_create_monster_pieces_drop_archive += [monster_pieces_submodel(
+                        **monster_pieces_submodel.archive_data(archive_log, item)
+                    ) for item in log.monster_pieces.all()]
 
-            if rune_submodel:
-                to_create_rune_drop_archive += [rune_submodel(
-                    **rune_submodel.archive_data(archive_log, rune)
-                ) for rune in log.runes.all()]
+                if rune_submodel:
+                    to_create_rune_drop_archive += [rune_submodel(
+                        **rune_submodel.archive_data(archive_log, rune)
+                    ) for rune in log.runes.all()]
 
-            if rune_crafts_submodel:
-                to_create_rune_crafts_drop_archive += [rune_crafts_submodel(
-                    **rune_crafts_submodel.archive_data(archive_log, item)
-                ) for item in log.rune_crafts.all()]
+                if rune_crafts_submodel:
+                    to_create_rune_crafts_drop_archive += [rune_crafts_submodel(
+                        **rune_crafts_submodel.archive_data(archive_log, item)
+                    ) for item in log.rune_crafts.all()]
 
-            if artifact_submodel:
-                to_create_artifact_drop_archive += [artifact_submodel(
-                    **artifact_submodel.archive_data(archive_log, item)
-                ) for item in log.artifacts.all()]
+                if artifact_submodel:
+                    to_create_artifact_drop_archive += [artifact_submodel(
+                        **artifact_submodel.archive_data(archive_log, item)
+                    ) for item in log.artifacts.all()]
 
-            if secret_dungeon_submodel:
-                to_create_secret_dungeon_drop_archive += [secret_dungeon_submodel(
-                    **secret_dungeon_submodel.archive_data(archive_log, item)
-                ) for item in log.secret_dungeons.all()]
+                if secret_dungeon_submodel:
+                    to_create_secret_dungeon_drop_archive += [secret_dungeon_submodel(
+                        **secret_dungeon_submodel.archive_data(archive_log, item)
+                    ) for item in log.secret_dungeons.all()]
+            except NonExistentTimeError:
+                pass
 
             ids_to_delete.append(log.id)
         

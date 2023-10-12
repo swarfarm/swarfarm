@@ -1,12 +1,13 @@
 from celery import shared_task, current_task, states
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_admins
-from django.db import transaction, IntegrityError
-from django.db.models.signals import post_save
+from django.db import IntegrityError
+from django.db.models.signals import post_save, m2m_changed
 
-from .models import Summoner, MaterialStorage, MonsterShrineStorage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactCraftInstance, ArtifactInstance
+from .models import RuneBuild, Summoner, MaterialStorage, MonsterShrineStorage, MonsterInstance, MonsterPiece, \
+    RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactCraftInstance, ArtifactInstance
 from .profile_parser import parse_sw_json
-from .signals import update_profile_date
+from .signals import update_profile_date, validate_rune_build_runes, validate_rune_build_artifacts, update_rune_build_stats
 
 from bestiary.models import GameItem, Monster
 
@@ -52,6 +53,12 @@ def com2us_data_import(data, user_id, import_options):
     post_save.disconnect(update_profile_date, sender=MaterialStorage)
     post_save.disconnect(update_profile_date, sender=MonsterShrineStorage)
     post_save.disconnect(update_profile_date, sender=BuildingInstance)
+    # Disconnect Rune Build m2m-changed signal to avoid mass spamming updates
+    # We'll update it explicitly
+    m2m_changed.disconnect(validate_rune_build_runes, sender=RuneBuild.runes.through)
+    m2m_changed.disconnect(validate_rune_build_artifacts, sender=RuneBuild.artifacts.through)
+    m2m_changed.disconnect(update_rune_build_stats, sender=RuneBuild.runes.through)
+    m2m_changed.disconnect(update_rune_build_stats, sender=RuneBuild.artifacts.through)
 
     # Update summoner and inventory
     if results['wizard_id']:
@@ -131,30 +138,65 @@ def com2us_data_import(data, user_id, import_options):
         current_task.update_state(state=states.STARTED, meta={'step': 'runes'})
 
     # Save imported runes
-    for rune in results['runes'].values():
-        rune.save()
-        imported_runes.append(rune.pk)
+    if results['runes']['to_create']:
+        RuneInstance.objects.bulk_create(results['runes']['to_create'].values(), batch_size=1000)
+    if results['runes']['to_update']:
+        RuneInstance.objects.bulk_update(results['runes']['to_create'].values(), batch_size=1000, fields=[
+            'type', 'marked_for_sale', 'notes', 'stars', 'level', 'slot', 'quality', 
+            'original_quality', 'ancient', 'value', 'main_stat', 'main_stat_value', 
+            'innate_stat', 'innate_stat_value', 'substats', 'substat_values', 
+            'substats_enchanted', 'substats_grind_value', 'has_hp', 'has_atk', 
+            'has_def', 'has_crit_rate', 'has_crit_dmg', 'has_speed', 'has_resist', 
+            'has_accuracy', 'efficiency', 'max_efficiency', 'substat_upgrades_remaining', 
+            'has_grind', 'has_gem',
+        ])
+    imported_runes = list(results['runes']['to_create'].keys()) + list(results['runes']['to_update'].keys())
 
     if not current_task.request.called_directly:
         current_task.update_state(
             state=states.STARTED, meta={'step': 'artifacts'})
 
     # Save imported artifacts
-    for artifact in results['artifacts'].values():
-        artifact.save()
-        imported_artifacts.append(artifact.pk)
+    if results['artifacts']['to_create']:
+        ArtifactInstance.objects.bulk_create(results['artifacts']['to_create'].values(), batch_size=1000)
+    if results['artifacts']['to_update']:
+        ArtifactInstance.objects.bulk_update(results['artifacts']['to_create'].values(), batch_size=1000, fields=[
+            'level', 'original_quality', 'main_stat', 'main_stat_value', 'effects', 'effects_value', 
+            'effects_upgrade_count', 'effects_reroll_count', 'efficiency', 'max_efficiency',
+        ])
+    imported_artifacts = list(results['artifacts']['to_create'].keys()) + list(results['artifacts']['to_update'].keys())
 
     if not current_task.request.called_directly:
         current_task.update_state(
             state=states.STARTED, meta={'step': 'monsters'})
 
+    # Refresh owner runes and artifacts to decrease query hits 
+    owner_runes = {r['com2us_id']: r['id'] for r in RuneInstance.objects.values('id', 'com2us_id').filter(owner=summoner)}
+    owner_artifacts = {r['com2us_id']: r['id'] for r in ArtifactInstance.objects.values('id', 'com2us_id').filter(owner=summoner)}
+
     # Save the imported monsters
     for mon in results['monsters'].values():
         mon['obj'].save()
-        mon['obj'].default_build.runes.set(mon['runes'], clear=True)
-        mon['obj'].default_build.artifacts.set(mon['artifacts'], clear=True)
-        mon['obj'].rta_build.runes.clear()
-        mon['obj'].rta_build.artifacts.clear()
+        mon_runes = [owner_runes.get(c2us_id, None) for c2us_id in mon['runes'] if owner_runes.get(c2us_id, None)]
+        mon_artifacts = [owner_artifacts.get(c2us_id, None) for c2us_id in mon['artifacts'] if owner_artifacts.get(c2us_id, None)]
+        if mon['is_new']:
+            if mon_runes:
+                mon['obj'].default_build.runes.add(*mon_runes,)
+            if mon_artifacts:
+                mon['obj'].default_build.artifacts.add(*mon_artifacts)
+            
+        else:
+            mon['obj'].default_build.runes.set(mon_runes, clear=True)
+            mon['obj'].default_build.artifacts.set(mon_artifacts, clear=True)
+            mon['obj'].rta_build.runes.clear()
+            mon['obj'].rta_build.artifacts.clear()
+            mon['obj'].rta_build.clear_cache_properties()
+            mon['obj'].rta_build.update_stats()
+            mon['obj'].rta_build.save()
+
+        mon['obj'].default_build.clear_cache_properties()
+        mon['obj'].default_build.update_stats()
+        mon['obj'].default_build.save()
         imported_monsters.append(mon['obj'].pk)
 
     # Update saved monster pieces
@@ -202,47 +244,52 @@ def com2us_data_import(data, user_id, import_options):
 
     for mon_id, rune_ids in assignments.items():
         try:
-            mon = MonsterInstance.objects.filter(
-                owner=summoner).get(com2us_id=mon_id)
-            runes = RuneInstance.objects.filter(
-                owner=summoner, com2us_id__in=rune_ids)
-            mon.rta_build.runes.set(runes, clear=True)
-        except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
-            # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
-            continue
+            mon = results['monsters'].get(mon_id, None)
+            if not mon:
+                continue
+            mon_runes = [owner_runes.get(c2us_id, None) for c2us_id in rune_ids if owner_runes.get(c2us_id, None)]
+            if not mon_runes:
+                continue
+            if mon['is_new']:
+                mon['obj'].rta_build.runes.add(*mon_runes)
+            else:
+                mon['obj'].rta_build.runes.set(mon_runes, clear=True)
+            mon['obj'].rta_build.clear_cache_properties()
+            mon['obj'].rta_build.update_stats()
+            mon['obj'].rta_build.save()
         except ValidationError:
-            slots = runes.values_list('slot', flat=True)
             mail_admins('Rune Build Validation Error',
-                        f'monster: {mon.id}\r\nrunes: {rune_ids}\r\nslots: {slots}')
-
+                        f'monster: {mon.id}\r\nrunes: {rune_ids}')
             # Continue with import
-            continue
 
-    # Set RTA artofact builds assignments
+    # Set RTA artifact builds assignments
     assignments = {}
     for assignment in results['rta_assignments_artifacts']:
         mon_com2us_id = assignment['occupied_id']
         if mon_com2us_id not in assignments:
             assignments[mon_com2us_id] = []
         assignments[mon_com2us_id].append(assignment['artifact_id'])
+
     for mon_id, artifact_ids in assignments.items():
         try:
-            mon = MonsterInstance.objects.filter(
-                owner=summoner).get(com2us_id=mon_id)
-            artifacts = ArtifactInstance.objects.filter(
-                owner=summoner, com2us_id__in=artifact_ids)
-            mon.rta_build.artifacts.set(artifacts, clear=True)
-        except (MonsterInstance.MultipleObjectsReturned, MonsterInstance.DoesNotExist):
-            # Continue with import in case monster was not imported or doesn't exist in user profile for some reason
-            continue
+            mon = results['monsters'].get(mon_id, None)
+            if not mon:
+                continue
+            mon_artifacts = [owner_artifacts.get(c2us_id, None) for c2us_id in rune_ids if owner_artifacts.get(c2us_id, None)]
+            if not mon_artifacts:
+                continue
+            if mon['is_new']:
+                mon['obj'].rta_build.artifacts.add(*mon_artifacts)
+            else:
+                mon['obj'].rta_build.artifacts.set(mon_artifacts, clear=True)
+            mon['obj'].rta_build.clear_cache_properties()
+            mon['obj'].rta_build.update_stats()
+            mon['obj'].rta_build.save()
         except ValidationError:
-            slots = artifacts.values_list('slot', flat=True)
             mail_admins('Artifaact Build Validation Error',
-                        f'monster: {mon.id}\r\artifacts: {artifact_ids}\r\nslots: {slots}')
-
+                        f'monster: {mon.id}\r\artifacts: {artifact_ids}')
             # Continue with import
             continue
-
 
     # Delete objects missing from import
     if import_options['delete_missing_monsters']:
@@ -253,11 +300,11 @@ def com2us_data_import(data, user_id, import_options):
 
     if import_options['delete_missing_runes']:
         RuneInstance.objects.filter(owner=summoner).exclude(
-            pk__in=imported_runes).delete()
+            com2us_id__in=imported_runes).delete()
         RuneCraftInstance.objects.filter(owner=summoner).exclude(
             pk__in=imported_crafts).delete()
         ArtifactInstance.objects.filter(owner=summoner).exclude(
-            pk__in=imported_artifacts).delete()
+            com2us_id__in=imported_artifacts).delete()
         ArtifactCraftInstance.objects.filter(owner=summoner).exclude(
             pk__in=imported_artifact_crafts).delete()
 

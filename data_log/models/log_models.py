@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import JSONField
 from django.core.mail import mail_admins
 from django.db import models
 
-from bestiary.models import Monster, Dungeon, Level, GameItem, Rune, RuneCraft, Artifact, ArtifactCraft
+from bestiary.models import Monster, Dungeon, Level, GameItem, Rune, RuneCraft, Artifact
 from herders.models import Summoner
 
 

@@ -670,7 +670,7 @@ class Rune(models.Model, RuneObjectBase):
 
     def get_max_efficiency(self):
         # Max efficiency does not include grinds
-        efficiency = self.get_efficiency()
+        efficiency = self.efficiency
         new_stats = min(4 - len(self.substats), self.substat_upgrades_remaining)
         old_stats = self.substat_upgrades_remaining - new_stats
 

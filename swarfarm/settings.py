@@ -127,6 +127,7 @@ INSTALLED_APPS = [
     'news',
     'feedback',
     'data_log',
+    'archive',
 ]
 
 if DEBUG:

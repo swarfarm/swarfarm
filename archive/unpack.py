@@ -30,6 +30,7 @@ def _unpack_log(options):
     secret_dungeon_submodel = options.get('secret_dungeon_submodel', None)
 
     files_to_unpack = glob.glob(f'**/SWARFARM_Pack_Log_{archive_model.__name__}.part*.json', recursive=True)
+    files_to_unpack.sort()
     files_to_unpack_c = len(files_to_unpack)
     results = 0
     print(f"[{archive_model.__name__}] Found {str(files_to_unpack_c)} parts to unpack")
@@ -69,7 +70,10 @@ def _unpack_log(options):
             
             if 'timestamp' in archive_record and archive_record['timestamp'] and not archive_record['timestamp'].endswith('+00:00'):
                 archive_record['timestamp'] += '+00:00'
-            archive_obj = archive_model.objects.create(**archive_record)
+            try:
+                archive_obj = archive_model.objects.create(**archive_record)
+            except:
+                continue
             for item in items_data:
                 item['log'] = archive_obj
                 items.append(item_submodel(**item))

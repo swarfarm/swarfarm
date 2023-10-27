@@ -28,6 +28,7 @@ def _unpack_log(options):
     rune_crafts_submodel = options.get('rune_crafts_submodel', None)
     artifact_submodel = options.get('artifact_submodel', None)
     secret_dungeon_submodel = options.get('secret_dungeon_submodel', None)
+    skip_batch_to = options.get('skip_batch_to', 1)
 
     files_to_unpack = glob.glob(f'**/SWARFARM_Pack_Log_{archive_model.__name__}.part*.json', recursive=True)
     files_to_unpack.sort()
@@ -41,6 +42,9 @@ def _unpack_log(options):
         extension = filename_rev.find('.')
         part_number = filename_rev[extension + 1:part_txt][::-1]
         part_number = int(part_number)
+        if part_number < skip_batch_to: # .part#######. -> part_number
+            print(f"[{archive_model.__name__}] Skipping batch {str(part_number)}")
+            continue
         print(f"\tUnpacking part #{str(part_number)} ;)")
         with open(file_to_unpack, 'r') as f:
             records_to_unpack = json.load(f)
@@ -117,29 +121,33 @@ def _unpack_log(options):
     print(f"[{archive_model.__name__}] Done unpacking {str(files_to_unpack_c)} parts, which resulted in adding {str(results)} records")
 
 
-def unpack_world_boss_logs():
+def unpack_world_boss_logs(skip_batch_to=1):
     options = {
         'archive_model': WorldBossLogArchive,
 
         'item_submodel': WorldBossLogItemDropArchive,
         'monster_submodel': WorldBossLogMonsterDropArchive,
         'rune_submodel': WorldBossLogRuneDropArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 
 
-def unpack_wish_logs():
+def unpack_wish_logs(skip_batch_to=1):
     options = {
         'archive_model': WishLogArchive,
 
         'item_submodel': WishLogItemDropArchive,
         'monster_submodel': WishLogMonsterDropArchive,
         'rune_submodel': WishLogRuneDropArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 
 
-def unpack_dungeon_logs():
+def unpack_dungeon_logs(skip_batch_to=1):
     options = {
         'archive_model': DungeonLogArchive,
 
@@ -150,11 +158,13 @@ def unpack_dungeon_logs():
         'rune_crafts_submodel': DungeonRuneCraftDropArchive,
         'artifact_submodel': DungeonArtifactDropArchive,
         'secret_dungeon_submodel': DungeonSecretDungeonDropArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 
 
-def unpack_rift_dungeon_logs():
+def unpack_rift_dungeon_logs(skip_batch_to=1):
     options = {
         'archive_model': RiftDungeonLogArchive,
 
@@ -162,60 +172,74 @@ def unpack_rift_dungeon_logs():
         'monster_submodel': RiftDungeonMonsterDropArchive,
         'rune_submodel': RiftDungeonRuneDropArchive,
         'rune_crafts_submodel': RiftDungeonRuneCraftDropArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 
 
-def unpack_raid_dungeon_logs():
+def unpack_raid_dungeon_logs(skip_batch_to=1):
     options = {
         'archive_model': RiftRaidLogArchive,
 
         'item_submodel': RiftRaidItemDropArchive,
         'monster_submodel': RiftRaidMonsterDropArchive,
         'rune_crafts_submodel': RiftRaidRuneCraftDropArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 
 
-def unpack_magic_box_craft_logs():
+def unpack_magic_box_craft_logs(skip_batch_to=1):
     options = {
         'archive_model': MagicBoxCraftArchive,
 
         'item_submodel': MagicBoxCraftItemDropArchive,
         'rune_submodel': MagicBoxCraftRuneDropArchive,
         'rune_crafts_submodel': MagicBoxCraftRuneCraftDropArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 
 
-def unpack_shop_refresh_logs():
+def unpack_shop_refresh_logs(skip_batch_to=1):
     options = {
         'archive_model': ShopRefreshLogArchive,
 
         'item_submodel': ShopRefreshItemDropArchive,
         'rune_submodel': ShopRefreshRuneDropArchive,
         'monster_submodel': ShopRefreshMonsterDropArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 
 
-def unpack_summon_logs():
+def unpack_summon_logs(skip_batch_to=1):
     options = {
         'archive_model': SummonLogArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 
 
-def unpack_craft_rune_logs():
+def unpack_craft_rune_logs(skip_batch_to=1):
     options = {
         'archive_model': CraftRuneLogArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 
 
-def unpack_full_logs():
+def unpack_full_logs(skip_batch_to=1):
     options = {
         'archive_model': FullLogArchive,
+
+        'skip_batch_to': skip_batch_to,
     }
     _unpack_log(options)
 

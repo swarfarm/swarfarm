@@ -110,7 +110,7 @@ class _TableDefs:
     OBSTACLES = 5
     MONSTERS = 6
     MONSTER_LEVELING = 7
-    # Unknown table 8 - some sort of effect mapping
+    MONSTER_RARE_EFFECT = 8  # idk what is that; unitrare.csv in libc2ssmon.so
     SKILL_EFFECTS = 9
     SKILLS = 10
     SUMMON_METHODS = 11
@@ -121,13 +121,13 @@ class _TableDefs:
     SCENARIO_BOSSES = 16
     SCENARIO_LEVELS = 17
     CAIROS_BOSS_INTROS = 18
-    # Unknown table 19 - more effect mapping
+    EFFECT_INFO = 19
     WORLD_MAP = 20
     ARENA_RANKS = 21
     MONTHLY_REWARDS = 22
     CAIROS_DUNGEON_LIST = 23
     INVITE_FRIEND_REWARDS_OLD = 24
-    # Unknown table 25 - probably x/y positions of 3d models in dungeons/scenarios
+    UNIT_POSITIONS = 25  # battlemappoint.csv in libc2ssmon.so
     AWAKENING_ESSENCES = 26
     ACCOUNT_BOOSTS = 27  # XP boost, mana boost, etc
     ARENA_WIN_STREAK_BONUSES = 28
@@ -143,9 +143,9 @@ class _TableDefs:
     RUNE_UPGRADE_COSTS_AND_CHANCES = 38
     SCENARIO_REGIONS = 39
     PURCHASEABLE_ITEMS2 = 40
-    # Unknown table 41 - scroll/cost related?
+    EVENT_SALE = 41  # idk what is that
     MAIL_ITEMS = 42
-    # Unknown table 43 - angelmon reward sequences?
+    EVENT_PRODUCT = 43  # idk what is that
     MONSTER_FUSION_RECIPES_OLD = 44
     TOA_REWARDS = 45
     MONSTER_FUSION_RECIPES = 46
@@ -156,7 +156,7 @@ class _TableDefs:
     RUNE_STAT_VALUES = 51
     GUILD_RANKS = 52
     GUILD_UNASPECTED_SUMMON_PIECES = 53  # Ifrit and Cowgirl pieces
-    # Unknown table 54 - possible rune crafting or package
+    RUNE_BOX_INFO = 54
     MONSTER_TRANSMOGS = 55
     ELEMENTAL_RIFT_DUNGEONS = 56
     WORLD_BOSS_SCRIPT = 57
@@ -168,7 +168,7 @@ class _TableDefs:
     GRINDSTONES = 63
     RUNE_CRAFT_APPLY_COSTS = 64
     RIFT_RAIDS = 65
-    # Unknown table 66 - some sort of reward related
+    IRENE_EVENT_INFO = 66
     ELLIA_COSTUME_ITEMS = 67
     CHAT_BANNED_WORDS2 = 68
     CHAT_BANNED_WORDS3 = 69
@@ -185,23 +185,23 @@ class _TableDefs:
     CHAT_BANNED_WORDS8 = 80
     ARENA_CHOICE_UI = 81
     IFRIT_TRANSMOGS = 82
-    # Unknown table 83 - value lists related to game version
+    BATTLE_VERSION_INFO = 83  # idk what is that
     CHALLENGES = 84
-    # Unknown table 85 - some sort of rules
+    RTPVP_RULE_INFO = 85  # RTA battle types (normal, 4*, 20* max)
     WORLD_ARENA_SEASON_REWARDS = 86
     WORLD_ARENA_RANKS2 = 87
     WORLD_ARENA_REWARD_LIST = 88
     GUILD_SIEGE_MAP = 89
     GUILD_SIEGE_REWARD_BOXES = 90
     GUILD_SIEGE_RANKINGS = 91
-    # Unknown table 92 - probably effects monster gets with every star
-    # Unknown table 93 - lobby - loading screen?
+    RUNE_REVALUE = 92
+    LOBBY_MAP_INFO = 93
     LABYRINTH_BATTLE_TYPES = 94
-    # Unknown table 95 - quest-related, probably something about lab
+    GUILD_QUESTS = 95
     LABYRINTH_BOXES = 96
-    # Unknown table 97
-    # Unknown table 98 - looks like siege-related, with score & rewards
-    # Unknown table 99 - one row, with desc `Welcome Gift`
+    RUNE_SUB_AND_PREFIX_EFFECT_RANGES = 97  # rune_effect_value_secondary.csv in libc2ssmon.so
+    ACHIEVEMENT_SCORE_REWARDS = 98
+    SPECIAL_GIFTS = 99
     DIMENSIONAL_HOLE_MAP = 100
     DIMENSIONAL_HOLE_DUNGEONS = 101
     DIMENSIONAL_HOLE_MODELS = 102
@@ -210,9 +210,9 @@ class _TableDefs:
     TUTORIAL_MAP = 105
     ARENA_LEAGUE_RANKS = 106
     ARENA_LEAGUE_REWARDS = 107
-    # Unknown table 108 - probably arena league related
+    UNIT_APPEAR_EFFECT_INFO = 108  # unitappeareffectinfo.csv
     GUILD_SIEGE_BACKGROUND_SKINS = 109
-    # Unknown table 110 - random text
+    SIEGE_SEASON_REWARDS = 110
     CHAT_BANNED_WORDS9 = 111
     CHAT_BANNED_WORDS10 = 112
     WORLD_ARENA_EMOTICONS = 113

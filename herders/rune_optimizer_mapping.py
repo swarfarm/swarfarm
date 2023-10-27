@@ -23,6 +23,8 @@ type_encode_dict = {
     RuneInstance.TYPE_ENHANCE: 'Enhance',
     RuneInstance.TYPE_ACCURACY: 'Accuracy',
     RuneInstance.TYPE_TOLERANCE: 'Tolerance',
+    RuneInstance.TYPE_SEAL: 'Seal',
+    RuneInstance.TYPE_INTANGIBLE: 'Intangible',
 }
 
 stat_encode_dict = {
@@ -61,6 +63,8 @@ type_decode_dict = {
     'Enhance': RuneInstance.TYPE_ENHANCE,
     'Accuracy': RuneInstance.TYPE_ACCURACY,
     'Tolerance': RuneInstance.TYPE_TOLERANCE,
+    'Seal': RuneInstance.TYPE_SEAL,
+    'Intangible': RuneInstance.TYPE_INTANGIBLE,
 }
 
 stat_decode_dict = {
@@ -107,6 +111,8 @@ rune_set_map = {
     RuneInstance.TYPE_ENHANCE: 21,
     RuneInstance.TYPE_ACCURACY: 22,
     RuneInstance.TYPE_TOLERANCE: 23,
+    RuneInstance.TYPE_SEAL: 24,
+    RuneInstance.TYPE_INTANGIBLE: 25,
 }
 
 rune_stat_type_map = {
@@ -177,6 +183,8 @@ artifact_effect_map = {
     ArtifactInstance.EFFECT_CRIT_DMG_UP_ENEMY_HP_GOOD: 222,
     ArtifactInstance.EFFECT_CRIT_DMG_UP_ENEMY_HP_BAD: 223,
     ArtifactInstance.EFFECT_CRIT_DMG_SINGLE_TARGET: 224,
+    ArtifactInstance.EFFECT_COUNTER_AND_COOP_DMG: 225,
+    ArtifactInstance.EFFECT_ATK_AND_DEF: 226,
     ArtifactInstance.EFFECT_DMG_TO_FIRE: 300,
     ArtifactInstance.EFFECT_DMG_TO_WATER: 301,
     ArtifactInstance.EFFECT_DMG_TO_WIND: 302,
@@ -197,6 +205,8 @@ artifact_effect_map = {
     ArtifactInstance.EFFECT_SK1_ACCURACY: 407,
     ArtifactInstance.EFFECT_SK2_ACCURACY: 408,
     ArtifactInstance.EFFECT_SK3_ACCURACY: 409,
+    ArtifactInstance.EFFECT_SK3_AND_SK4_CRIT_DMG: 410,
+    ArtifactInstance.EFFECT_1ST_ATK_CRIT_DMG: 411,
 }
 
 archetype_map = {

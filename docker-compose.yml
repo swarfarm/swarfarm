@@ -58,6 +58,8 @@ services:
     environment:
       - DATABASE_URL=psql://${SQL_USER:-swarfarmer_dev}:${SQL_PASS:-intentionallyweak}@postgres:5432/${SQL_DB:-swarfarm_dev}
     entrypoint: sh -c "/scripts/wait-for rabbitmq:5672 && /scripts/wait-for swarfarm:8000 -- celery --workdir=/app -A swarfarm.celery worker --loglevel=info"
+    volumes:
+      - .:/app
 
   celery_beat:
     image: swarfarm
@@ -71,6 +73,8 @@ services:
     environment:
       - DATABASE_URL=psql://${SQL_USER:-swarfarmer_dev}:${SQL_PASS:-intentionallyweak}@postgres:5432/${SQL_DB:-swarfarm_dev}
     entrypoint: sh -c "/scripts/wait-for rabbitmq:5672 && /scripts/wait-for swarfarm:8000 -- celery --workdir=/app -A swarfarm.celery beat --loglevel=info -S django"
+    volumes:
+      - .:/app
 
   nginx:
     image: nginx:alpine

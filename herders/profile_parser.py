@@ -179,6 +179,9 @@ def parse_sw_json(data, owner, options):
                         else:
                             created = True
                             monster_piece = MonsterPiece(owner=owner, monster=mon, pieces=quantity)
+                        
+                        if not monster_piece:
+                            continue
 
                         if not created and monster_piece.pieces != quantity:
                             monster_piece.pieces = quantity

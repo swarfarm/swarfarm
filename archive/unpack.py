@@ -1,6 +1,7 @@
 import math
 import json
 import glob
+from datetime import timedelta
 
 from archive.models.log_models import WorldBossLogArchive, WorldBossLogItemDropArchive, WorldBossLogMonsterDropArchive, WorldBossLogRuneDropArchive, \
     WishLogArchive, WishLogItemDropArchive, WishLogMonsterDropArchive, WishLogRuneDropArchive, \
@@ -74,6 +75,8 @@ def _unpack_log(options):
             
             if 'timestamp' in archive_record and archive_record['timestamp'] and not archive_record['timestamp'].endswith('+00:00'):
                 archive_record['timestamp'] += '+00:00'
+            if 'clear_time' in archive_record:
+                archive_record['clear_time'] = timedelta(seconds=archive_record['clear_time'])
             try:
                 archive_obj = archive_model.objects.create(**archive_record)
             except:

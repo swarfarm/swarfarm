@@ -75,7 +75,7 @@ def _unpack_log(options):
             
             if 'timestamp' in archive_record and archive_record['timestamp'] and not archive_record['timestamp'].endswith('+00:00'):
                 archive_record['timestamp'] += '+00:00'
-            if 'clear_time' in archive_record:
+            if 'clear_time' in archive_record and archive_record['clear_time']:
                 archive_record['clear_time'] = timedelta(seconds=archive_record['clear_time'])
             try:
                 archive_obj = archive_model.objects.create(**archive_record)

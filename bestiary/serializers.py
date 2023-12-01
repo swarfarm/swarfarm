@@ -207,39 +207,6 @@ class FusionSerializer(serializers.ModelSerializer):
         }
 
 
-class BuildingSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='bestiary/buildings-detail')
-    area = serializers.SerializerMethodField()
-    affected_stat = serializers.SerializerMethodField()
-    element = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Building
-        fields = [
-            'id',
-            'url',
-            'area',
-            'affected_stat',
-            'element',
-            'com2us_id',
-            'name',
-            'max_level',
-            'stat_bonus',
-            'upgrade_cost',
-            'description',
-            'icon_filename',
-        ]
-
-    def get_area(self, instance):
-        return instance.get_area_display()
-
-    def get_affected_stat(self, instance):
-        return instance.get_affected_stat_display()
-
-    def get_element(self, instance):
-        return instance.get_element_display()
-
-
 class DungeonSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='bestiary/dungeons-detail')
     levels = serializers.PrimaryKeyRelatedField(source='level_set', read_only=True, many=True)

@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.db.models.signals import post_save, m2m_changed
 
 from .models import RuneBuild, Summoner, MaterialStorage, MonsterShrineStorage, MonsterInstance, MonsterPiece, \
-    RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactCraftInstance, ArtifactInstance
+    RuneInstance, RuneCraftInstance, ArtifactCraftInstance, ArtifactInstance, LevelSkillInstance
 from .profile_parser import parse_sw_json
 from .signals import update_profile_date, validate_rune_build_runes, validate_rune_build_artifacts, update_rune_build_stats
 
@@ -52,7 +52,7 @@ def com2us_data_import(data, user_id, import_options):
     post_save.disconnect(update_profile_date, sender=ArtifactCraftInstance)
     post_save.disconnect(update_profile_date, sender=MaterialStorage)
     post_save.disconnect(update_profile_date, sender=MonsterShrineStorage)
-    post_save.disconnect(update_profile_date, sender=BuildingInstance)
+    post_save.disconnect(update_profile_date, sender=LevelSkillInstance)
     # Disconnect Rune Build m2m-changed signal to avoid mass spamming updates
     # We'll update it explicitly
     m2m_changed.disconnect(validate_rune_build_runes, sender=RuneBuild.runes.through)
@@ -125,14 +125,13 @@ def com2us_data_import(data, user_id, import_options):
         MonsterShrineStorage.objects.bulk_create(summoner_new_mon_shrine)
         MonsterShrineStorage.objects.bulk_update(summoner_old_mon_shrine, ['quantity'])
 
-    # Save imported buildings
-    for bldg in results['buildings'].values():
-        if bldg['new']:
-            bldg['obj'].save()
-
-    # Set missing buildings to level 0
-    BuildingInstance.objects.filter(owner=summoner).exclude(
-        pk__in=results['buildings'].keys()).update(level=0)
+    # Save imported summoner skills
+    for lvl_skill in results['level_skills'].values():
+        if lvl_skill['new']:
+            lvl_skill['obj'].save()
+    # Set missing level_skills to level 0
+    LevelSkillInstance.objects.filter(owner=summoner).exclude(
+        pk__in=results['level_skills'].keys()).update(level=0)
 
     if not current_task.request.called_directly:
         current_task.update_state(state=states.STARTED, meta={'step': 'runes'})

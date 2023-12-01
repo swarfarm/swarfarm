@@ -1,5 +1,5 @@
 """
-Profile CRUD, import/export, storage, and buildings
+Profile CRUD, import/export, storage
 """
 
 import json
@@ -22,8 +22,8 @@ from django.utils.text import slugify
 
 from herders.decorators import username_case_redirect
 from herders.forms import RegisterUserForm, CrispyChangeUsernameForm, DeleteProfileForm, EditUserForm, \
-    EditSummonerForm, EditBuildingForm, ImportSWParserJSONForm
-from herders.models import ArtifactInstance, MonsterInstance, RuneCraftInstance, RuneInstance, Summoner, MaterialStorage, MonsterShrineStorage, Building, BuildingInstance, ArtifactCraftInstance
+    EditSummonerForm, ImportSWParserJSONForm
+from herders.models import ArtifactInstance, MonsterInstance, RuneCraftInstance, RuneInstance, Summoner, MaterialStorage, MonsterShrineStorage, ArtifactCraftInstance
 from herders.profile_parser import validate_sw_json
 from herders.rune_optimizer_parser import export_win10
 from herders.tasks import com2us_data_import
@@ -437,165 +437,6 @@ def storage_update(request, profile_name):
         return HttpResponse()
     else:
         return HttpResponseForbidden()
-
-
-@username_case_redirect
-def buildings(request, profile_name):
-    try:
-        summoner = Summoner.objects.select_related(
-            'user').get(user__username=profile_name)
-    except Summoner.DoesNotExist:
-        return render(request, 'herders/profile/not_found.html')
-
-    is_owner = (request.user.is_authenticated and summoner.user == request.user)
-
-    context = {
-        'summoner': summoner,
-        'is_owner': is_owner,
-        'profile_name': profile_name,
-    }
-
-    return render(request, 'herders/profile/buildings/base.html', context)
-
-
-@username_case_redirect
-def buildings_inventory(request, profile_name):
-    try:
-        summoner = Summoner.objects.select_related(
-            'user').get(user__username=profile_name)
-    except Summoner.DoesNotExist:
-        return render(request, 'herders/profile/not_found.html')
-
-    is_owner = (request.user.is_authenticated and summoner.user == request.user)
-
-    all_buildings = Building.objects.all().order_by('name')
-
-    building_data = []
-    total_glory_cost = 0
-    spent_glory = 0
-    total_guild_cost = 0
-    spent_guild = 0
-
-    for b in all_buildings:
-        bldg_data = _building_data(summoner, b)
-        if b.area == Building.AREA_GENERAL:
-            total_glory_cost += sum(b.upgrade_cost)
-            spent_glory += bldg_data['spent_upgrade_cost']
-        elif b.area == Building.AREA_GUILD:
-            total_guild_cost += sum(b.upgrade_cost)
-            spent_guild += bldg_data['spent_upgrade_cost']
-
-        building_data.append(bldg_data)
-
-    context = {
-        'is_owner': is_owner,
-        'summoner': summoner,
-        'profile_name': profile_name,
-        'buildings': building_data,
-        'total_glory_cost': total_glory_cost,
-        'spent_glory': spent_glory,
-        'glory_progress': float(spent_glory) / total_glory_cost * 100,
-        'total_guild_cost': total_guild_cost,
-        'spent_guild': spent_guild,
-        'guild_progress': float(spent_guild) / total_guild_cost * 100,
-    }
-
-    return render(request, 'herders/profile/buildings/inventory.html', context)
-
-
-@username_case_redirect
-@login_required
-def building_edit(request, profile_name, building_id):
-    try:
-        summoner = Summoner.objects.select_related(
-            'user').get(user__username=profile_name)
-    except Summoner.DoesNotExist:
-        return HttpResponseBadRequest()
-
-    is_owner = (request.user.is_authenticated and summoner.user == request.user)
-    base_building = get_object_or_404(Building, pk=building_id)
-
-    try:
-        owned_instance = BuildingInstance.objects.get(
-            owner=summoner, building=base_building)
-    except BuildingInstance.DoesNotExist:
-        owned_instance = BuildingInstance.objects.create(
-            owner=summoner, level=0, building=base_building)
-
-    form = EditBuildingForm(request.POST or None, instance=owned_instance)
-    form.helper.form_action = reverse(
-        'herders:building_edit',
-        kwargs={'profile_name': profile_name, 'building_id': building_id}
-    )
-
-    context = {
-        'form': form,
-    }
-    context.update(csrf(request))
-
-    if is_owner:
-        if request.method == 'POST' and form.is_valid():
-            owned_instance = form.save()
-            messages.success(
-                request,
-                f'Updated {owned_instance.building.name} to level {owned_instance.level}'
-            )
-
-            response_data = {
-                'code': 'success',
-            }
-        else:
-            template = loader.get_template(
-                'herders/profile/buildings/edit_form.html')
-            response_data = {
-                'code': 'error',
-                'html': template.render(context),
-            }
-
-        return JsonResponse(response_data)
-    else:
-        return HttpResponseForbidden()
-
-
-def _building_data(summoner, building):
-    percent_stat = building.affected_stat in Building.PERCENT_STATS
-    total_upgrade_cost = sum(building.upgrade_cost)
-    if building.area == Building.AREA_GENERAL:
-        currency = 'glory_points.png'
-    else:
-        currency = 'guild_points.png'
-
-    try:
-        instance = BuildingInstance.objects.get(
-            owner=summoner, building=building)
-        if instance.level > 0:
-            stat_bonus = building.stat_bonus[instance.level - 1]
-        else:
-            stat_bonus = 0
-
-        remaining_upgrade_cost = instance.remaining_upgrade_cost()
-    except BuildingInstance.DoesNotExist:
-        instance = None
-        stat_bonus = 0
-        remaining_upgrade_cost = total_upgrade_cost
-    except BuildingInstance.MultipleObjectsReturned:
-        # Should only be 1 ever - use the first and delete the others.
-        instance = BuildingInstance.objects.filter(
-            owner=summoner, building=building).first()
-        BuildingInstance.objects.filter(
-            owner=summoner, building=building).exclude(pk=instance.pk).delete()
-        return _building_data(summoner, building)
-
-    return {
-        'base': building,
-        'instance': instance,
-        'stat_bonus': stat_bonus,
-        'percent_stat': percent_stat,
-        'spent_upgrade_cost': total_upgrade_cost - remaining_upgrade_cost,
-        'total_upgrade_cost': total_upgrade_cost,
-        'upgrade_progress': float(total_upgrade_cost - remaining_upgrade_cost) / total_upgrade_cost * 100,
-        'currency': currency,
-    }
 
 
 @username_case_redirect

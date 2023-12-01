@@ -11,6 +11,9 @@ class Command(BaseCommand):
         parse.static.decrypt_images()
         parse.static.crop_images()
 
+        self.stdout.write('Parsin summoner skill data...')
+        parse.game_data.level_skills()
+
         self.stdout.write('Parsing skill data...')
         parse.skills()
 

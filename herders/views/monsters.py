@@ -14,7 +14,7 @@ from django.template import loader
 from django.template.context_processors import csrf
 from django.urls import reverse
 
-from bestiary.models import Monster, Building, Fusion, ESSENCE_MAP, GameItem
+from bestiary.models import Monster, Fusion, ESSENCE_MAP, GameItem, LevelSkill
 from herders.decorators import username_case_redirect
 from herders.filters import MonsterInstanceFilter
 from herders.forms import CompareMonstersForm, FilterMonsterInstanceForm, \
@@ -512,11 +512,14 @@ def monster_instance_view_stats(request, profile_name, instance_id):
     except ObjectDoesNotExist:
         return HttpResponseBadRequest()
 
+    
+    level_skill_stats = instance.get_level_skill_stats(LevelSkill.AREA_BATTLE)
+    level_skill_guild_stats = instance.get_level_skill_stats(LevelSkill.AREA_GUILD)
+
     context = {
         'instance': instance,
         'max_stats': instance.get_max_level_stats(),
-        'bldg_stats': instance.get_building_stats(),
-        'guild_stats': instance.get_building_stats(Building.AREA_GUILD),
+        'level_skill_stats': {k: v + level_skill_guild_stats[k] for k, v in level_skill_stats.items()},
     }
 
     return render(request, 'herders/profile/monster_view/stats.html', context)

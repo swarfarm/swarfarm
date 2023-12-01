@@ -12,7 +12,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from timezone_field import TimeZoneField
 
-from bestiary.models import base, Monster, Building, Level, Rune, RuneCraft, Artifact, ArtifactCraft, GameItem
+from bestiary.models import base, Monster, Level, Rune, RuneCraft, Artifact, ArtifactCraft, GameItem, LevelSkill
 
 
 # Individual user/monster collection models
@@ -322,46 +322,46 @@ class MonsterInstance(models.Model, base.Stars):
 
         return stats
 
-    def get_building_stats(self, area=Building.AREA_GENERAL):
-        owned_bldgs = BuildingInstance.objects.filter(
-            Q(building__element__isnull=True) | Q(
-                building__element=self.monster.element),
+    def get_level_skill_stats(self, area=None):
+        owned_skills = LevelSkillInstance.objects.filter(
+            Q(level_skill__element__isnull=True) | Q(
+                level_skill__element=self.monster.element),
             owner=self.owner,
-            building__area=area,
-        ).select_related('building')
+        ).select_related('level_skill')
+
+        if area:
+            owned_skills = owned_skills.filter(level_skill__area=area)
 
         bonuses = {
-            Building.STAT_HP: 0,
-            Building.STAT_ATK: 0,
-            Building.STAT_DEF: 0,
-            Building.STAT_SPD: 0,
-            Building.STAT_CRIT_RATE_PCT: 0,
-            Building.STAT_CRIT_DMG_PCT: 0,
-            Building.STAT_RESIST_PCT: 0,
-            Building.STAT_ACCURACY_PCT: 0,
+            LevelSkill.STAT_HP: 0,
+            LevelSkill.STAT_ATK: 0,
+            LevelSkill.STAT_DEF: 0,
+            LevelSkill.STAT_SPD: 0,
+            LevelSkill.STAT_CRIT_RATE_PCT: 0,
+            LevelSkill.STAT_CRIT_DMG_PCT: 0,
+            LevelSkill.STAT_RESIST_PCT: 0,
+            LevelSkill.STAT_ACCURACY_PCT: 0,
         }
 
-        for b in owned_bldgs:
-            if b.building.affected_stat in bonuses.keys() and b.level > 0:
-                bonuses[b.building.affected_stat] += b.building.stat_bonus[b.level - 1]
+        for b in owned_skills:
+            if b.level_skill.affected_stat in bonuses.keys() and b.level > 0:
+                bonuses[b.level_skill.affected_stat] += sum(b.level_skill.stat_bonus[:b.level])
+                print(bonuses[b.level_skill.affected_stat])
 
-        building_stats = {
-            'hp': int(ceil(round(self.base_hp * (bonuses[Building.STAT_HP] / 100.0), 3))),
-            'attack': int(ceil(round(self.base_attack * (bonuses[Building.STAT_ATK] / 100.0), 3))),
-            'defense': int(ceil(round(self.base_defense * (bonuses[Building.STAT_DEF] / 100.0), 3))),
-            'speed': int(ceil(round(self.base_speed * (bonuses[Building.STAT_SPD] / 100.0), 3))),
-            'crit_rate': bonuses[Building.STAT_CRIT_RATE_PCT],
-            'crit_damage': bonuses[Building.STAT_CRIT_DMG_PCT],
-            'resistance': bonuses[Building.STAT_RESIST_PCT],
-            'accuracy': bonuses[Building.STAT_ACCURACY_PCT],
+        level_skill_stats = {
+            'hp': int(ceil(round(self.base_hp * (bonuses[LevelSkill.STAT_HP]), 3))),
+            'attack': int(ceil(round(self.base_attack * (bonuses[LevelSkill.STAT_ATK]), 3))),
+            'defense': int(ceil(round(self.base_defense * (bonuses[LevelSkill.STAT_DEF]), 3))),
+            'speed': int(ceil(round(self.base_speed * (bonuses[LevelSkill.STAT_SPD]), 3))),
+            'crit_rate': round(bonuses[LevelSkill.STAT_CRIT_RATE_PCT] * 100, 1),
+            'crit_damage': round(bonuses[LevelSkill.STAT_CRIT_DMG_PCT] * 100, 1),
+            'resistance': round(bonuses[LevelSkill.STAT_RESIST_PCT] * 100, 1),
+            'accuracy': round(bonuses[LevelSkill.STAT_ACCURACY_PCT] * 100, 1),
         }
 
-        building_stats['effective_hp'] = int(ceil((self.hp() + building_stats['hp']) * (1140 + 3.5 * (self.defense() + building_stats['defense'])) / 1000)) - self.effective_hp()
+        level_skill_stats['effective_hp'] = int(ceil((self.hp() + level_skill_stats['hp']) * (1140 + 3.5 * (self.defense() + level_skill_stats['defense'])) / 1000)) - self.effective_hp()
 
-        return building_stats
-
-    def get_guild_stats(self):
-        return self.get_building_stats(Building.AREA_GUILD)
+        return level_skill_stats
 
     def get_possible_skillups(self):
         same_skill_group = Q(
@@ -800,35 +800,21 @@ class Team(models.Model):
         return self.name
 
 
-class BuildingInstance(models.Model):
+class LevelSkillInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Summoner, on_delete=models.CASCADE)
-    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+    level_skill = models.ForeignKey(LevelSkill, on_delete=models.CASCADE)
     level = models.IntegerField()
 
-    class Meta:
-        ordering = ['building']
-
     def remaining_upgrade_cost(self):
-        return sum(self.building.upgrade_cost[self.level:])
+        return sum(self.level_skill.upgrade_cost[self.level:])
 
     def __str__(self):
-        return str(self.building) + ', Lv.' + str(self.level)
-
-    def clean(self):
-        from django.core.exceptions import ValidationError
-        if self.level and self.building and (self.level < 0 or self.level > self.building.max_level):
-            raise ValidationError({
-                'level': ValidationError(
-                    'Level must be between %s and %s' % (
-                        0, self.building.max_level),
-                    code='invalid_level',
-                )
-            })
+        return str(self.level_skill) + ', Lv.' + str(self.level)
 
     def update_fields(self):
-        self.level = min(max(0, self.level), self.building.max_level)
-
+        self.level = min(max(0, self.level), self.level_skill.max_level)
+    
     def save(self, *args, **kwargs):
         self.update_fields()
-        super(BuildingInstance, self).save(*args, **kwargs)
+        super(LevelSkillInstance, self).save(*args, **kwargs)

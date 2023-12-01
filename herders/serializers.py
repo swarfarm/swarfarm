@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_nested.relations import NestedHyperlinkedIdentityField
 
-from herders.models import ArtifactInstance, Summoner, MaterialStorage, MonsterShrineStorage, BuildingInstance, MonsterInstance, MonsterPiece, RuneInstance, \
+from herders.models import ArtifactInstance, Summoner, MaterialStorage, MonsterShrineStorage, MonsterInstance, MonsterPiece, RuneInstance, \
     RuneCraftInstance, TeamGroup, Team, RuneBuild
 
 
@@ -141,17 +141,6 @@ class MonsterShrineStorageSerializer(serializers.ModelSerializer, AddOwnerOnCrea
     class Meta:
         model = MonsterShrineStorage
         fields = ['id', 'url', 'item', 'quantity']
-
-
-class BuildingInstanceSerializer(serializers.ModelSerializer, AddOwnerOnCreate):
-    url = NestedHyperlinkedIdentityField(
-        view_name='profile/buildings-detail',
-        parent_lookup_kwargs={'user_pk': 'owner__user__username'},
-    )
-
-    class Meta:
-        model = BuildingInstance
-        fields = ['id', 'url', 'building', 'level']
 
 
 class SummonerSerializer(serializers.ModelSerializer):

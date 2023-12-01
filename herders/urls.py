@@ -19,7 +19,6 @@ urlpatterns = [
             url(r'^$', views.profile.storage, name='storage'),
             url(r'^update/$', views.profile.storage_update, name='storage_update'),
         ])),
-        url(r'^buildings/$', views.profile.buildings, name='profile_buildings'),
         url(r'^monster/', include([
             url(r'^compare/$', views.monsters.monster_compare, name='monster_compare'),
             url(r'^inventory/$', views.monsters.monster_inventory, name='monster_inventory'),
@@ -101,11 +100,6 @@ urlpatterns = [
             url(r'^inventory/$', views.rune_builds.rune_builds_inventory, name='rune_builds_inventory'),
             url(r'^inventory/(?P<view_mode>(list|grid))/$', views.rune_builds.rune_builds_inventory, name='rune_builds_inventory_view_mode'),
         ])),
-        url(r'^buildings/', include([
-            url(r'^$', views.profile.buildings, name='buildings'),
-            url(r'^inventory/$', views.profile.buildings_inventory, name='buildings_inventory'),
-            url(r'^edit/(?P<building_id>[0-9]+)/$', views.profile.building_edit, name='building_edit'),
-        ])),
         url(r'following/', include([
             url(r'^$', views.profile.following, name='profile_following'),
             url(r'^add/(?P<follow_username>[a-zA-Z0-9_@.]+)/$', views.profile.follow_add, name='profile_follow_add'),
@@ -118,7 +112,6 @@ urlpatterns = [
             url(r'^artifacts/$', views.compare.artifacts, name='profile_compare_artifacts'),
             url(r'^artifact_crafts/$', views.compare.artifact_crafts, name='profile_compare_artifact_crafts'),
             url(r'^monsters/$', views.compare.monsters, name='profile_compare_monsters'),
-            url(r'^buildings/$', views.compare.buildings, name='profile_compare_buildings'),
             url(r'^builds/$', views.compare.builds, name='profile_compare_builds'),
         ])),
         url(r'^data/$', views.profile.import_export_home, name='import_export_home'),

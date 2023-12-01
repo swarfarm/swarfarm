@@ -18,7 +18,7 @@ from herders.serializers import *
 from herders.profile_parser import validate_sw_json, default_import_options
 from herders.sync_commands import accepted_api_params, active_log_commands
 from herders.tasks import com2us_data_import
-from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactCraftInstance, ArtifactInstance
+from herders.models import Summoner, MaterialStorage, MonsterShrineStorage, MonsterInstance, MonsterPiece, RuneInstance, RuneCraftInstance, ArtifactCraftInstance, ArtifactInstance
 from herders.signals import update_profile_date
 
 from data_log.models import FullLog
@@ -224,15 +224,6 @@ class RuneCraftInstanceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     serializer_class = RuneCraftInstanceSerializer
 
 
-class BuildingViewSet(ProfileItemMixin, viewsets.ModelViewSet):
-    queryset = BuildingInstance.objects.all().select_related(
-        'building',
-        'owner',
-        'owner__user',
-    )
-    serializer_class = BuildingInstanceSerializer
-
-
 class MonsterPieceViewSet(ProfileItemMixin, viewsets.ModelViewSet):
     queryset = MonsterPiece.objects.all().select_related(
         'owner',
@@ -371,7 +362,6 @@ class SyncData(viewsets.ViewSet):
         post_save.disconnect(update_profile_date, sender=ArtifactCraftInstance)
         post_save.disconnect(update_profile_date, sender=MaterialStorage)
         post_save.disconnect(update_profile_date, sender=MonsterShrineStorage)
-        post_save.disconnect(update_profile_date, sender=BuildingInstance)
 
         # Parse the log
         summoner = Summoner.objects.get(id=summoner.id)

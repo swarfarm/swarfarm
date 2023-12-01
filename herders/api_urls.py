@@ -10,8 +10,6 @@ herders api routes
 Personal:
 /profile/<username>/
 /profile/<username>/storage/
-/profile/<username>/buildings/
-/profile/<username>/buildings/<id>
 /profile/<username>/monsters/
 /profile/<username>/monsters/<id>
 /profile/<username>/monster-pieces/
@@ -41,7 +39,6 @@ profile_router.register(r'runes', RuneInstanceViewSet, basename='profile/runes')
 profile_router.register(r'artifacts', ArtifactInstanceViewSet, basename='profile/artifacts')
 profile_router.register(r'rune-builds', RuneBuildViewSet, basename='profile/rune-builds')
 profile_router.register(r'rune-crafts', RuneCraftInstanceViewSet, basename='profile/rune-crafts')
-profile_router.register(r'buildings', BuildingViewSet, basename='profile/buildings')
 profile_router.register(r'team-groups', TeamGroupViewSet, basename='profile/team-groups')
 profile_router.register(r'teams', TeamViewSet, basename='profile/teams')
 profile_router.register(r'upload', ProfileJsonUpload, basename='profile/upload_legacy')

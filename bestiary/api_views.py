@@ -119,12 +119,6 @@ class FusionViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     pagination_class = pagination.BestiarySetPagination
 
 
-class BuildingViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = models.Building.objects.all().order_by('pk')
-    serializer_class = serializers.BuildingSerializer
-    pagination_class = pagination.BestiarySetPagination
-
-
 class DungeonViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Dungeon.objects.all().order_by('pk').prefetch_related('level_set')
     serializer_class = serializers.DungeonSerializer

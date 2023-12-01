@@ -11,6 +11,5 @@ router.register(r'leader-skills', viewsets.MonsterLeaderSkillViewSet, basename='
 router.register(r'homunculus-skills', viewsets.HomunculusSkillViewSet, basename='bestiary/homunculus-skills')
 router.register(r'items', viewsets.GameItemViewSet, basename='bestiary/items')
 router.register(r'fusions', viewsets.FusionViewSet, basename='bestiary/fusions')
-router.register(r'buildings', viewsets.BuildingViewSet, basename='bestiary/buildings')
 router.register(r'dungeons', viewsets.DungeonViewSet, basename='bestiary/dungeons')
 router.register(r'levels', viewsets.LevelViewSet, basename='bestiary/levels')

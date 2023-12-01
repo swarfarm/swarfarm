@@ -1,7 +1,7 @@
 import json
 import random
 
-from herders.models import MonsterInstance, BuildingInstance
+from herders.models import MonsterInstance
 from .rune_optimizer_mapping import *
 
 
@@ -40,11 +40,6 @@ def export_win10(summoner):
     for c in ArtifactCraftInstance.objects.filter(owner=summoner):
         artifact_craft_list.append(_convert_artifact_craft_to_win10_json(c))
 
-    # Build the decoration list
-    deco_list = []
-    for d in BuildingInstance.objects.filter(owner=summoner):
-        deco_list.append(_convert_deco_to_win10(d))
-
     return json.dumps({
         'building_list': buildings,
         'unit_list': unit_list,
@@ -52,7 +47,6 @@ def export_win10(summoner):
         'rune_craft_item_list': rune_craft_item_list,
         'artifacts': artifact_list,
         'artifact_crafts': artifact_craft_list,
-        'deco_list': deco_list,
         'wizard_id': summoner.com2us_id if summoner.com2us_id else 0,
     })
 
@@ -195,11 +189,4 @@ def _convert_artifact_craft_to_win10_json(craft):
         'master_id': int(f'1{craft_type:02d}{element:02d}{archetype:02d}{quality:02d}{effect:03d}'),
         'type': craft_type,
         'quantity': craft.quantity,
-    }
-
-
-def _convert_deco_to_win10(decoration):
-    return {
-        'master_id': decoration.building.com2us_id,
-        'level': decoration.level,
     }

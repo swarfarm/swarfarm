@@ -99,4 +99,4 @@ class MaterialStorageAdmin(admin.ModelAdmin):
 class MonsterShrineStorageAdmin(admin.ModelAdmin):
     readonly_fields = ('owner', )
 
-admin.site.register(models.BuildingInstance)
+admin.site.register(models.LevelSkillInstance)

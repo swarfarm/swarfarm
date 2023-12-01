@@ -21,7 +21,7 @@ from bestiary.models import Monster, SkillEffect, LeaderSkill, ScalingStat, Dung
 from bestiary.widgets import ElementSelectMultipleWidget, EffectSelectMultipleWidget
 from data_log.models import RiftDungeonLog, WorldBossLog, CraftRuneLog, MagicBoxCraft
 from .models import MonsterInstance, MonsterTag, MonsterPiece, Summoner, TeamGroup, Team, \
-    RuneInstance, RuneCraftInstance, BuildingInstance, ArtifactInstance, RuneBuild
+    RuneInstance, RuneCraftInstance, ArtifactInstance, RuneBuild
 
 STATIC_URL_PREFIX = static('herders/images/')
 
@@ -235,31 +235,6 @@ class DeleteProfileForm(forms.Form):
             css_class='col-md-6 col-md-offset-3',
         ),
     )
-
-
-# Profile forms
-class EditBuildingForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(EditBuildingForm, self).__init__(*args, **kwargs)
-
-        self.helper = FormHelper(self)
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'ajax-form'
-        self.helper.include_media = False
-        # self.helper.form_action must be set in view
-        self.helper.layout = Layout(
-            Field('level', autocomplete='off'),
-            FormActions(
-                Submit('save', 'Save', css_class='btn-success float-right')
-            )
-        )
-
-    class Meta:
-        model = BuildingInstance
-        fields = [
-            'level',
-        ]
-
 
 # MonsterInstance Forms
 class AddMonsterInstanceForm(forms.ModelForm):

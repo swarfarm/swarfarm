@@ -17,6 +17,7 @@ class Elements:
     ELEMENT_WATER = 'water'
     ELEMENT_LIGHT = 'light'
     ELEMENT_DARK = 'dark'
+    ELEMENT_INTANGIBLE = 'intangible'
 
     ELEMENT_CHOICES = (
         (ELEMENT_PURE, 'Pure'),
@@ -25,6 +26,7 @@ class Elements:
         (ELEMENT_WATER, 'Water'),
         (ELEMENT_LIGHT, 'Light'),
         (ELEMENT_DARK, 'Dark'),
+        (ELEMENT_INTANGIBLE, 'Intangible'),
     )
 
     NORMAL_ELEMENT_CHOICES = (
@@ -43,6 +45,7 @@ class Elements:
         4: ELEMENT_LIGHT,
         5: ELEMENT_DARK,
         6: ELEMENT_PURE,
+        98: ELEMENT_INTANGIBLE,
     }
 
 
@@ -53,6 +56,7 @@ class Archetype:
     ARCHETYPE_DEFENSE = 'defense'
     ARCHETYPE_MATERIAL = 'material'
     ARCHETYPE_NONE = 'none'
+    ARCHETYPE_INTANGIBLE = 'intangible'
 
     ARCHETYPE_CHOICES = (
         (ARCHETYPE_ATTACK, 'Attack'),
@@ -60,6 +64,7 @@ class Archetype:
         (ARCHETYPE_SUPPORT, 'Support'),
         (ARCHETYPE_DEFENSE, 'Defense'),
         (ARCHETYPE_MATERIAL, 'Material'),
+        (ARCHETYPE_INTANGIBLE, 'Intangible'),
     )
 
     COM2US_ARCHETYPE_MAP = {
@@ -68,7 +73,8 @@ class Archetype:
         2: ARCHETYPE_DEFENSE,
         3: ARCHETYPE_HP,
         4: ARCHETYPE_SUPPORT,
-        5: ARCHETYPE_MATERIAL
+        5: ARCHETYPE_MATERIAL,
+        98: ARCHETYPE_INTANGIBLE,
     }
 
 

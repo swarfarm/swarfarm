@@ -9,11 +9,11 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models.aggregates import Avg, Count, Max, Min, StdDev, Sum
 
-from bestiary.models import Rune, RuneCraft, Artifact, Monster, Building, Fusion
+from bestiary.models import Rune, RuneCraft, Artifact, Monster, Fusion
 
 from herders.aggregations import Median, Perc25, Perc75
 from herders.decorators import username_case_redirect
-from herders.models import BuildingInstance, MonsterShrineStorage, RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner, MonsterInstance
+from herders.models import MonsterShrineStorage, RuneInstance, RuneCraftInstance, ArtifactInstance, ArtifactCraftInstance, Summoner, MonsterInstance
 from herders.forms import CompareMonstersWithFollowerForm
 
 
@@ -90,10 +90,6 @@ def _compare_summary(summoner, follower):
                 "follower": MonsterInstance.objects.filter(owner=follower, monster__natural_stars=4).count(),
             },
         },
-        "buildings": {
-            'Remaining Towers Cost': {"summoner": 0, "follower": 0},
-            'Remaining Flags Cost': {"summoner": 0, "follower": 0},
-        }
     }
     runes_summoner_eff = _get_efficiency_statistics(
         RuneInstance, summoner, count=True, worth=True)
@@ -126,45 +122,7 @@ def _compare_summary(summoner, follower):
         for monster in monsters_owner:
             report['monsters'][f'Nat {monster.item.natural_stars}⭐'][owner_str] += monster.quantity or 0
 
-    buildings = BuildingInstance.objects.select_related(
-        'owner', 'building').filter(owner__in=owners).order_by('owner')
-    buildings_owners = {
-        "summoner": [],
-        "follower": [],
-    }
-    for owner, iter_ in itertools.groupby(buildings, key=attrgetter('owner')):
-        owner_str = "summoner"
-        if owner == follower:
-            owner_str = "follower"
-        buildings_owner = list(iter_)
-        for building in buildings_owner:
-            buildings_owners[owner_str].append(building.building.name)
-            remaining_cost = building.remaining_upgrade_cost()
-            if building.building.area == Building.AREA_GENERAL:
-                report['buildings']['Remaining Towers Cost'][owner_str] += remaining_cost or 0
-            else:
-                report['buildings']['Remaining Flags Cost'][owner_str] += remaining_cost or 0
-
-    for building in Building.objects.all().order_by('area', 'name'):
-        for owner in ["summoner", "follower"]:
-            if building.name not in buildings_owners[owner]:
-                upgrade_cost = sum(building.upgrade_cost)
-                if building.area == Building.AREA_GENERAL:
-                    report['buildings']['Remaining Towers Cost'][owner] += upgrade_cost or 0
-                else:
-                    report['buildings']['Remaining Flags Cost'][owner] += upgrade_cost or 0
-
     _find_comparison_winner(report)
-
-    # reverse comparison winner
-    if report['buildings']['Remaining Towers Cost']["winner"] == "summoner":
-        report['buildings']['Remaining Towers Cost']["winner"] = "follower"
-    elif report['buildings']['Remaining Towers Cost']["winner"] == "follower":
-        report['buildings']['Remaining Towers Cost']["winner"] = "summoner"
-    if report['buildings']['Remaining Flags Cost']["winner"] == "summoner":
-        report['buildings']['Remaining Flags Cost']["winner"] = "follower"
-    elif report['buildings']['Remaining Flags Cost']["winner"] == "follower":
-        report['buildings']['Remaining Flags Cost']["winner"] = "summoner"
 
     return report
 
@@ -690,101 +648,6 @@ def monsters(request, profile_name, follow_username):
     }
 
     return render(request, 'herders/profile/compare/monsters/base.html', context)
-
-
-def _compare_buildings(summoner, follower):
-    owners = [summoner, follower]
-    building_objs = Building.objects.all().order_by('area', 'name')
-    building_choices = {building.name: {"summoner": 0,
-                                        "follower": 0} for building in building_objs}
-    report = {
-        'summary': {
-            'Remaining Towers Cost': {"summoner": 0, "follower": 0},
-            'Remaining Flags Cost': {"summoner": 0, "follower": 0},
-        },
-        'levels': copy.deepcopy(building_choices),
-        'remaining_costs': copy.deepcopy(building_choices),
-    }
-    buildings = BuildingInstance.objects.select_related(
-        'owner', 'building').filter(owner__in=owners).order_by('owner')
-
-    for owner, iter_ in itertools.groupby(buildings, key=attrgetter('owner')):
-        owner_str = "summoner"
-        if owner == follower:
-            owner_str = "follower"
-        buildings_owner = list(iter_)
-        for building in buildings_owner:
-            remaining_cost = building.remaining_upgrade_cost()
-            if building.building.area == Building.AREA_GENERAL:
-                report['summary']['Remaining Towers Cost'][owner_str] += remaining_cost or 0
-            else:
-                report['summary']['Remaining Flags Cost'][owner_str] += remaining_cost or 0
-            report['remaining_costs'][building.building.name][owner_str] = remaining_cost
-            report['levels'][building.building.name][owner_str] = building.level
-
-    for building in building_objs:
-        for owner in ["summoner", "follower"]:
-            if report['levels'][building.name][owner] == 0 and report['remaining_costs'][building.name][owner] == 0:
-                upgrade_cost = sum(building.upgrade_cost)
-                report['remaining_costs'][building.name][owner] = upgrade_cost
-                if building.area == Building.AREA_GENERAL:
-                    report['summary']['Remaining Towers Cost'][owner] += upgrade_cost or 0
-                else:
-                    report['summary']['Remaining Flags Cost'][owner] += upgrade_cost or 0
-
-    _find_comparison_winner(report)
-
-    # reverse comparison winner
-    if report['summary']['Remaining Towers Cost']["winner"] == "summoner":
-        report['summary']['Remaining Towers Cost']["winner"] = "follower"
-    elif report['summary']['Remaining Towers Cost']["winner"] == "follower":
-        report['summary']['Remaining Towers Cost']["winner"] = "summoner"
-    if report['summary']['Remaining Flags Cost']["winner"] == "summoner":
-        report['summary']['Remaining Flags Cost']["winner"] = "follower"
-    elif report['summary']['Remaining Flags Cost']["winner"] == "follower":
-        report['summary']['Remaining Flags Cost']["winner"] = "summoner"
-
-    for key, val in report['remaining_costs'].items():
-        if val['winner'] == "summoner":
-            report['remaining_costs'][key]['winner'] = "follower"
-        elif val['winner'] == "follower":
-            report['remaining_costs'][key]['winner'] = "summoner"
-
-    return report
-
-
-@username_case_redirect
-@login_required
-def buildings(request, profile_name, follow_username):
-    try:
-        summoner = Summoner.objects.select_related(
-            'user').get(user__username=profile_name)
-    except Summoner.DoesNotExist:
-        return HttpResponseBadRequest()
-    try:
-        follower = Summoner.objects.select_related(
-            'user').get(user__username=follow_username)
-    except Summoner.DoesNotExist:
-        return HttpResponseBadRequest()
-
-    is_owner = (request.user.is_authenticated and summoner.user == request.user)
-
-    if not is_owner:
-        return render(request, 'herders/profile/not_public.html', {})
-
-    can_compare = (follower in summoner.following.all(
-    ) and follower in summoner.followed_by.all() and follower.public)
-
-    context = {
-        'is_owner': is_owner,
-        'can_compare': can_compare,
-        'profile_name': profile_name,
-        'follower_name': follow_username,
-        'buildings': _compare_buildings(summoner, follower),
-        'view': 'compare-buildings',
-    }
-
-    return render(request, 'herders/profile/compare/buildings/base.html', context)
 
 
 def _compare_monster_objects(mon_s, mon_f):

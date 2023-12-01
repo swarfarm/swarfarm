@@ -188,9 +188,9 @@ class FusionAdmin(admin.ModelAdmin):
     filter_horizontal = ('ingredients',)
 
 
-@admin.register(models.Building)
-class BuildingAdmin(admin.ModelAdmin):
-    list_display = ('image_url', 'name', 'com2us_id', 'affected_stat', 'area')
+@admin.register(models.LevelSkill)
+class LevelSkillAdmin(admin.ModelAdmin):
+    list_display = ('name', 'com2us_id', 'affected_stat', 'area')
     save_as = True
 
 

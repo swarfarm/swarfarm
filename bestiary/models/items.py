@@ -76,7 +76,7 @@ class GameItem(models.Model):
     )
 
     com2us_id = models.IntegerField(db_index=True)
-    category = models.IntegerField(db_index=True, choices=CATEGORY_CHOICES, help_text='Typically corresponds to `item_master_id` field')
+    category = models.IntegerField(db_index=True, choices=CATEGORY_CHOICES, help_text='Typically corresponds to `item_master_type` field')
     name = models.CharField(max_length=200)
     icon = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(blank=True, default='')
@@ -120,16 +120,17 @@ class ItemQuantity(models.Model):
         abstract = True
 
 
-class Building(models.Model, base.Elements):
-    AREA_GENERAL = 0
-    AREA_GUILD = 1
+class LevelSkill(models.Model, base.Elements):
+    AREA_BATTLE = 1
+    AREA_GUILD = 2
+    AREA_OTHER = 3
 
     AREA_CHOICES = [
-        (AREA_GENERAL, 'Everywhere'),
-        (AREA_GUILD, 'Guild Content'),
+        (AREA_BATTLE, 'Battle'),
+        (AREA_GUILD, 'Guild content'),
+        (AREA_OTHER, 'Other'),
     ]
 
-    # TODO: Replace these with base.Stats model
     STAT_HP = 0
     STAT_ATK = 1
     STAT_DEF = 2
@@ -184,15 +185,7 @@ class Building(models.Model, base.Elements):
     affected_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
     element = models.CharField(max_length=6, choices=base.Elements.ELEMENT_CHOICES, blank=True, null=True)
     stat_bonus = ArrayField(models.FloatField(blank=True, null=True))
-    upgrade_cost = ArrayField(models.IntegerField(blank=True, null=True))
     description = models.TextField(null=True, blank=True)
-    icon_filename = models.CharField(max_length=100, null=True, blank=True)
-
-    def image_url(self):
-        if self.icon_filename:
-            return mark_safe('<img src="%s" height="42" width="42" loading="lazy" />' % static('herders/images/buildings/' + self.icon_filename))
-        else:
-            return 'No Image'
 
     def __str__(self):
         return self.name

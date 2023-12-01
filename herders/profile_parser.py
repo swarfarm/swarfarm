@@ -2,8 +2,8 @@ from dateutil.parser import *
 from django.utils.timezone import get_current_timezone
 from jsonschema.exceptions import best_match
 
-from bestiary.models import Monster, Building, GameItem
-from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, BuildingInstance, ArtifactInstance, ArtifactCraftInstance, Summoner
+from bestiary.models import Monster, GameItem, LevelSkill
+from herders.models import MonsterInstance, RuneInstance, RuneCraftInstance, MonsterPiece, ArtifactInstance, ArtifactCraftInstance, Summoner, LevelSkillInstance
 from herders.profile_schema import HubUserLoginValidator, VisitFriendValidator
 
 default_import_options = {
@@ -64,7 +64,7 @@ def parse_sw_json(data, owner, options):
     parsed_inventory = {}
     parsed_monster_shrine = {}
     parsed_monster_pieces = []
-    parsed_buildings = {}
+    parsed_level_skills = {}
 
     base_monsters = {m.com2us_id: m for m in Monster.objects.order_by().only('com2us_id', 'archetype', 'can_awaken', 'element', 'fusion_food')}
     owner_monsters = {}
@@ -100,7 +100,7 @@ def parse_sw_json(data, owner, options):
         wizard_id = data['wizard_info'].get('wizard_id')
 
     building_list = data['building_list']
-    deco_list = data['deco_list']
+    level_skills = data['wizard_skill_list']  # Optional
     inventory_info = data.get('inventory_info')  # Optional
     unit_list = data['unit_list']
     runes_info = data.get('runes')  # Optional
@@ -110,6 +110,41 @@ def parse_sw_json(data, owner, options):
     artifact_craft_info = data.get('artifact_crafts')  # Optional
     monster_shrine_info = data.get('unit_storage_list')  # Optional
 
+    if isinstance(level_skills, dict):
+        level_skills = list(level_skills.values())
+    
+    for lvl_skill in level_skills:
+        try:
+            base_lvl_skill = LevelSkill.objects.get(com2us_id=lvl_skill['skill_id'])
+        except LevelSkill.DoesNotExist:
+            continue
+
+        level = lvl_skill['level']
+
+        try:
+            lvl_skill_instance = LevelSkillInstance.objects.get(
+                owner=owner, level_skill=base_lvl_skill)
+        except LevelSkillInstance.DoesNotExist:
+            lvl_skill_instance = LevelSkillInstance(
+                owner=owner, level_skill=base_lvl_skill)
+        except LevelSkillInstance.MultipleObjectsReturned:
+            # Should only be 1 ever - use the first and delete the others.
+            lvl_skill_instance = LevelSkillInstance.objects.filter(
+                owner=owner, level_skill=base_lvl_skill).first()
+            LevelSkillInstance.objects.filter(owner=owner, level_skill=base_lvl_skill).exclude(
+                pk=lvl_skill_instance.pk).delete()
+        if lvl_skill_instance.level != level:
+            lvl_skill_instance.level = level
+            parsed_level_skills[lvl_skill_instance.pk] = {
+                'obj': lvl_skill_instance,
+                'new': True,
+            }
+        else:
+            parsed_level_skills[lvl_skill_instance.pk] = {
+                'obj': lvl_skill_instance,
+                'new': False,
+            }
+
     # Buildings
     storage_building_id = None
     for building in building_list:
@@ -118,39 +153,6 @@ def parse_sw_json(data, owner, options):
             if building.get('building_master_id') == 25:
                 storage_building_id = building.get('building_id')
                 break
-
-    for deco in deco_list:
-        try:
-            base_building = Building.objects.get(com2us_id=deco['master_id'])
-        except Building.DoesNotExist:
-            continue
-
-        level = deco['level']
-
-        try:
-            building_instance = BuildingInstance.objects.get(
-                owner=owner, building=base_building)
-        except BuildingInstance.DoesNotExist:
-            building_instance = BuildingInstance(
-                owner=owner, building=base_building)
-        except BuildingInstance.MultipleObjectsReturned:
-            # Should only be 1 ever - use the first and delete the others.
-            building_instance = BuildingInstance.objects.filter(
-                owner=owner, building=base_building).first()
-            BuildingInstance.objects.filter(owner=owner, building=base_building).exclude(
-                pk=building_instance.pk).delete()
-
-        if building_instance.level != level:
-            building_instance.level = level
-            parsed_buildings[building_instance.pk] = {
-                'obj': building_instance,
-                'new': True,
-            }
-        else:
-            parsed_buildings[building_instance.pk] = {
-                'obj': building_instance,
-                'new': False,
-            }
 
     # Inventory - essences and summoning pieces
     owner_pieces = {p.monster_id: p for p in MonsterPiece.objects.filter(owner=owner).order_by()}
@@ -373,9 +375,9 @@ def parse_sw_json(data, owner, options):
         'artifact_crafts': parsed_artifact_crafts,
         'inventory': parsed_inventory,
         'monster_shrine': parsed_monster_shrine,
-        'buildings': parsed_buildings,
         'rta_assignments': data['world_arena_rune_equip_list'],
         'rta_assignments_artifacts': data['world_arena_artifact_equip_list'],
+        'level_skills': parsed_level_skills,
     }
 
     return import_results
@@ -389,6 +391,10 @@ def get_monster_from_id(com2us_id):
             'Unable to find monster matching ID ' + str(com2us_id))
     except Monster.DoesNotExist:
         return None
+
+
+def parse_level_skill_data(level_skill_data, owner):
+    pass
 
 
 def parse_rune_data(rune_data, owner, owner_runes=None):

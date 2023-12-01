@@ -26,9 +26,6 @@ Compare - {% if can_compare %}{{ follower_name }}{% else %}private profile {% en
             <li class="nav-item py-0{% if view == 'compare-monsters' %} active{% if user.is_authenticated and user.summoner.dark_mode %} active-dark{% endif %}{% endif %}">
                 <a class="nav-link text-reset" href="{% url 'herders:profile_compare_monsters' profile_name follower_name %}">Monsters</a>
             </li>
-            <li class="nav-item py-0{% if view == 'compare-buildings' %} active{% if user.is_authenticated and user.summoner.dark_mode %} active-dark{% endif %}{% endif %}">
-                <a class="nav-link text-reset" href="{% url 'herders:profile_compare_buildings' profile_name follower_name %}">Buildings</a>
-            </li>
             <li class="nav-item py-0{% if view == 'compare-builds' %} active{% if user.is_authenticated and user.summoner.dark_mode %} active-dark{% endif %}{% endif %}">
                 <a class="nav-link text-reset" href="{% url 'herders:profile_compare_builds' profile_name follower_name %}">Builds</a>
             </li>

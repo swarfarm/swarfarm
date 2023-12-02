@@ -346,7 +346,6 @@ class MonsterInstance(models.Model, base.Stars):
         for b in owned_skills:
             if b.level_skill.affected_stat in bonuses.keys() and b.level > 0:
                 bonuses[b.level_skill.affected_stat] += sum(b.level_skill.stat_bonus[:b.level])
-                print(bonuses[b.level_skill.affected_stat])
 
         level_skill_stats = {
             'hp': int(ceil(round(self.base_hp * (bonuses[LevelSkill.STAT_HP]), 3))),

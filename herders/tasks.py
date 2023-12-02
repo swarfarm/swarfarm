@@ -274,7 +274,7 @@ def com2us_data_import(data, user_id, import_options):
             mon = results['monsters'].get(mon_id, None)
             if not mon:
                 continue
-            mon_artifacts = [owner_artifacts.get(c2us_id, None) for c2us_id in rune_ids if owner_artifacts.get(c2us_id, None)]
+            mon_artifacts = [owner_artifacts.get(c2us_id, None) for c2us_id in artifact_ids if owner_artifacts.get(c2us_id, None)]
             if not mon_artifacts:
                 continue
             if mon['is_new']:

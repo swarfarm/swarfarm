@@ -181,7 +181,7 @@ class LeaderSkill(models.Model):
     attribute = models.IntegerField(choices=ATTRIBUTE_CHOICES, help_text='Monster stat which is granted the bonus')
     amount = models.IntegerField(help_text='Amount of bonus granted')
     area = models.IntegerField(choices=AREA_CHOICES, default=AREA_GENERAL, help_text='Where this leader skill has an effect')
-    element = models.CharField(max_length=6, null=True, blank=True, choices=base.Elements.ELEMENT_CHOICES, help_text='Element of monster which this leader skill applies to')
+    element = models.CharField(max_length=10, null=True, blank=True, choices=base.Elements.ELEMENT_CHOICES, help_text='Element of monster which this leader skill applies to')
 
     def skill_string(self):
         if self.area == self.AREA_DUNGEON:

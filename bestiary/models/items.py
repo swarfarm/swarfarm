@@ -183,7 +183,7 @@ class LevelSkill(models.Model, base.Elements):
     max_level = models.IntegerField()
     area = models.IntegerField(choices=AREA_CHOICES, null=True, blank=True)
     affected_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
-    element = models.CharField(max_length=6, choices=base.Elements.ELEMENT_CHOICES, blank=True, null=True)
+    element = models.CharField(max_length=10, choices=base.Elements.ELEMENT_CHOICES, blank=True, null=True)
     stat_bonus = ArrayField(models.FloatField(blank=True, null=True))
     description = models.TextField(null=True, blank=True)
 

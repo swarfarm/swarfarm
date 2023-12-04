@@ -230,7 +230,7 @@ class ArtifactObjectBase(models.Model, base.Quality, base.Archetype, base.Elemen
     }
 
     slot = models.IntegerField(db_index=True, choices=SLOT_CHOICES)
-    element = models.CharField(db_index=True, max_length=6, choices=base.Elements.NORMAL_ELEMENT_CHOICES, blank=True, null=True)
+    element = models.CharField(db_index=True, max_length=10, choices=base.Elements.NORMAL_ELEMENT_CHOICES, blank=True, null=True)
     archetype = models.CharField(db_index=True, max_length=10, choices=base.Archetype.ARCHETYPE_CHOICES, blank=True, null=True)
     quality = models.IntegerField(default=0, choices=base.Quality.QUALITY_CHOICES)
 

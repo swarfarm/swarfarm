@@ -37,7 +37,7 @@ class Monster(models.Model, base.Elements, base.Stars, base.Archetype):
     family_id = models.IntegerField(blank=True, null=True, help_text='Identifier that matches same family monsters')
     skill_group_id = models.IntegerField(blank=True, null=True, help_text='Identifier that matches same skillup monsters (i.e. Street Figher monsters with C2U counterparts)')
     image_filename = models.CharField(max_length=250, null=True, blank=True)
-    element = models.CharField(max_length=6, choices=base.Elements.ELEMENT_CHOICES, default=base.Elements.ELEMENT_FIRE)
+    element = models.CharField(max_length=10, choices=base.Elements.ELEMENT_CHOICES, default=base.Elements.ELEMENT_FIRE)
     archetype = models.CharField(max_length=10, choices=base.Archetype.ARCHETYPE_CHOICES, default=base.Archetype.ARCHETYPE_ATTACK)
     base_stars = models.IntegerField(choices=base.Stars.STAR_CHOICES, help_text='Display stars in game')
     natural_stars = models.IntegerField(choices=base.Stars.STAR_CHOICES, help_text="Stars of the monster's lowest awakened form")

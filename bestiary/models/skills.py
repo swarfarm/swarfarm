@@ -16,6 +16,7 @@ class Skill(models.Model):
     cooltime = models.IntegerField(null=True, blank=True, help_text='Number of turns until skill can be used again')
     hits = models.IntegerField(default=1, help_text='Number of times this skill hits an enemy')
     aoe = models.BooleanField(default=False, help_text='Skill affects all enemies or allies')
+    random = models.BooleanField(default=False, help_text='Skill attacks randomly')
     passive = models.BooleanField(default=False, help_text='Skill activates automatically')
     max_level = models.IntegerField()
     icon_filename = models.CharField(max_length=100, null=True, blank=True)

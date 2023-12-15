@@ -24,6 +24,8 @@ class Skill(models.Model):
     multiplier_formula_raw = models.CharField(max_length=150, null=True, blank=True, help_text='Multiplier formula given in game data files')
     scaling_stats = models.ManyToManyField('ScalingStat', blank=True, help_text='Monster stats which this skill scales on')
 
+    other_skill = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, help_text='Twin Angel mechanic')
+
     # Depreciated fields - to be removed
     level_progress_description = models.TextField(null=True, blank=True, help_text='Description of bonus each skill level')
 

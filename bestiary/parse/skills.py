@@ -100,7 +100,10 @@ def _extract_scaling_stats(mult_formula):
 
 
 def skills():
+    other_skills = {}
     for master_id, raw in game_data.tables.SKILLS.items():
+        if master_id < 18801 or master_id > 18830:
+            continue
         # Fix up raw data prior to parsing
         raw = preprocess_errata(master_id, raw)
 
@@ -129,6 +132,9 @@ def skills():
 
         skill = update_bestiary_obj(Skill, master_id, defaults)
 
+        if raw['other skill']:
+            other_skills[skill] = raw['other skill']
+
         # Update skill level up progress
         SkillUpgrade.objects.filter(skill=skill, level__gt=skill.max_level).delete()
         for idx, (upgr_type, amount) in enumerate(raw['level']):
@@ -146,6 +152,27 @@ def skills():
 
         # Post-process skill object with any known issues
         postprocess_errata(master_id, skill, raw)
+
+    for skill, other_skill_master_id in other_skills.items():
+        if skill.other_skill:
+            continue
+        try:
+            other_skill = Skill.objects.get(com2us_id=other_skill_master_id)
+        except Skill.DoesNotExist:
+            print(f'!!! Missing other skill {other_skill_master_id} for skill {skill.com2us_id}')
+            continue
+
+        if skill.slot == -1 and other_skill.slot != -1:
+            skill.slot = other_skill.slot
+        elif skill.slot != -1 and other_skill.slot == -1:
+            other_skill.slot = skill.slot
+        
+        skill.other_skill = other_skill
+        other_skill.other_skill = skill
+
+        skill.save()
+        other_skill.save()
+        print(f'!!! Added `other skill` relation for {skill.com2us_id} and {other_skill_master_id}')
 
 
 # Skill erratum

@@ -86,5 +86,75 @@
             {% endif %}
         </div>
     </div>
+
+    {% if skill.other_skill %}
+        <div class="{% if monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
+            <div class="card border-0 shadow mb-3">
+                <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                    {% if request.user.is_superuser %}
+                        <a href="{% url 'admin:bestiary_skill_change' object_id=skill.other_skill.pk %}" class="btn btn-sm edit-skill float-right" target="_blank"><i class="fas fa-edit"></i></span></a>
+                    {% endif %}
+                    <p class="card-title"><strong>{{ skill.other_skill.name }}</strong></p>
+                </div>
+
+                <div class="{% if skill.other_skill.level_progress_description_list|length > 0 or skill.other_skill.effects_distinct|length > 0 or skill.other_skill.aoe or skill.other_skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                    <div class="card-bestiary-monster-details">
+                        <div class="monster-skill-thumb float-left">
+                            <img src="{{ img_url_prefix }}skills/{{ skill.other_skill.icon_filename }}" loading="lazy" />
+                            <span class="image-plus image-plus-right">{{ skill.other_skill.max_level }}</span>
+                        </div>
+                        <p>
+                            {{ skill.other_skill.description }}
+                            {% if skill.other_skill.cooltime %}
+                                (Reusable in {{ skilskill.other_skilll.cooltime }} turn{{ skill.other_skill.cooltime|pluralize }}).
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                {% if skill.other_skill.level_progress_description_list|length > 0 %}
+                <div class="{% if skill.other_skill.effects_distinct|length > 0 or skill.other_skill.aoe %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                    <strong class="fw-bolder">Level-up Progress</strong>
+                    <ul class="list-unstyled">
+                        {% for line in skill.other_skill.level_progress_description_list %}
+                            <li>{{ line }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if skill.other_skill.effects_distinct|length > 0 or skill.other_skill.aoe %}
+                <div class="{% if skill.other_skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                    <strong class="fw-bolder">Skill effects</strong>
+                    <div class="d-flex flex-wrap">
+                        {% if skill.other_skill.aoe %}
+                            <span class="skill-effect skill-effect-buff p-1 mb-1">
+                                <span>AOE</span>
+                            </span>
+                        {% endif %}
+                        {% for effect in skill.other_skill.effects_distinct %}
+                            {% if effect.icon_filename %}
+                                <img src="{{ img_url_prefix }}buffs/{{ effect.icon_filename }}"  class="skill-effect float-left mb-1" loading="lazy" 
+                                    data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}"
+                                />
+                            {% else %}
+                                <span class="skill-effect p-1 mb-1 {% if effect.is_buff %}skill-effect-buff{% else %}skill-effect-debuff{% endif %}" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-container="body" title="{{ effect.name }}" data-bs-content="{{ effect.description }}">
+                                    <span>{{ effect.name }}</span>
+                                </span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if skill.other_skill.multiplier_formula %}
+                <div class="card-footer border-0 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                    <strong class="fw-bolder">Multiplier Formula</strong>
+                    <p>{{ skill.other_skill.multiplier_formula|safe }} {% if skill.other_skill.hits > 1 %}x{{ skill.other_skill.hits }}{% endif %}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
     {% endfor %}
 </div>

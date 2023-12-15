@@ -60,6 +60,8 @@ def _get_leader_skill(master_id):
 
 def monsters():
     for master_id, raw in game_data.tables.MONSTERS.items():
+        if master_id < 29105 or master_id > 29115:
+            continue
         raw = preprocess_errata(master_id, raw)
 
         # Parse basic monster information from game data

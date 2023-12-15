@@ -102,8 +102,6 @@ def _extract_scaling_stats(mult_formula):
 def skills():
     other_skills = {}
     for master_id, raw in game_data.tables.SKILLS.items():
-        if master_id < 18801 or master_id > 18830:
-            continue
         # Fix up raw data prior to parsing
         raw = preprocess_errata(master_id, raw)
 

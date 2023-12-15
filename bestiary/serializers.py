@@ -83,6 +83,7 @@ class SkillSerializer(serializers.HyperlinkedModelSerializer):
     effects = SkillEffectDetailSerializer(many=True, read_only=True, source='skilleffectdetail_set')
     scales_with = serializers.SerializerMethodField()
     used_on = serializers.PrimaryKeyRelatedField(source='monster_set', many=True, read_only=True)
+    other_skill = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = models.Skill

@@ -89,7 +89,7 @@ class SkillSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'com2us_id', 'name', 'description', 'slot', 'cooltime', 'hits', 'passive', 'aoe', 'random',
             'max_level', 'upgrades', 'effects', 'multiplier_formula', 'multiplier_formula_raw',
-            'scales_with', 'icon_filename', 'used_on', 'level_progress_description',
+            'scales_with', 'icon_filename', 'used_on', 'level_progress_description', 'other_skill',
         )
 
     def get_level_progress_description(self, instance):

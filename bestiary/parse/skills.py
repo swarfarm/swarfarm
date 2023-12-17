@@ -152,8 +152,6 @@ def skills():
         postprocess_errata(master_id, skill, raw)
 
     for skill, other_skill_master_id in other_skills.items():
-        if skill.other_skill:
-            continue
         try:
             other_skill = Skill.objects.get(com2us_id=other_skill_master_id)
         except Skill.DoesNotExist:

@@ -1026,3 +1026,16 @@ def set_consent(request):
     summoner.save()
 
     return redirect(request.META.get('HTTP_REFERER'))
+
+
+@username_case_redirect
+@login_required
+def recalc_rune_builds(request, profile_name):
+    from herders.tasks import update_rune_builds_for_summoner
+    try:
+        summoner = Summoner.objects.select_related('user').get(user__username=profile_name)
+    except Summoner.DoesNotExist:
+        return HttpResponse()
+
+    update_rune_builds_for_summoner.delay(summoner.pk)
+    return HttpResponse()

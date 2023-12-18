@@ -341,3 +341,12 @@ def swex_sync_monster_shrine(data, user_id):
     MonsterShrineStorage.objects.bulk_create(summoner_new_mon_shrine)
     MonsterShrineStorage.objects.bulk_update(
         summoner_old_mon_shrine, ['quantity'])
+
+
+@shared_task
+def update_rune_builds_for_summoner(summoner_pk):
+    summoner = Summoner.objects.get(pk=summoner_pk)
+    for rune_build in RuneBuild.objects.filter(owner=summoner):
+        rune_build.clear_cache_properties()
+        rune_build.update_stats()
+        rune_build.save()

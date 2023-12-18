@@ -13,6 +13,7 @@ urlpatterns = [
     # User profiles and monster views
     url(r'^profile/(?P<profile_name>[a-zA-Z0-9_@.]+)/', include([
         url(r'^$', views.monsters.monsters, name='profile_default'),
+        url(r'^recalc-rune-builds/$', views.profile.recalc_rune_builds, name='recalc_rune_builds'),
         url(r'^edit/$', views.profile.profile_edit, name='edit_profile'),
         url(r'^delete/$', views.profile.profile_delete, name='profile_delete'),
         url(r'^storage/', include([

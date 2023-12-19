@@ -140,7 +140,7 @@ def com2us_data_import(data, user_id, import_options):
     if results['runes']['to_create']:
         RuneInstance.objects.bulk_create(results['runes']['to_create'].values(), batch_size=1000)
     if results['runes']['to_update']:
-        RuneInstance.objects.bulk_update(results['runes']['to_create'].values(), batch_size=1000, fields=[
+        RuneInstance.objects.bulk_update(results['runes']['to_update'].values(), batch_size=1000, fields=[
             'type', 'marked_for_sale', 'notes', 'stars', 'level', 'slot', 'quality', 
             'original_quality', 'ancient', 'value', 'main_stat', 'main_stat_value', 
             'innate_stat', 'innate_stat_value', 'substats', 'substat_values', 
@@ -159,7 +159,7 @@ def com2us_data_import(data, user_id, import_options):
     if results['artifacts']['to_create']:
         ArtifactInstance.objects.bulk_create(results['artifacts']['to_create'].values(), batch_size=1000)
     if results['artifacts']['to_update']:
-        ArtifactInstance.objects.bulk_update(results['artifacts']['to_create'].values(), batch_size=1000, fields=[
+        ArtifactInstance.objects.bulk_update(results['artifacts']['to_update'].values(), batch_size=1000, fields=[
             'level', 'original_quality', 'main_stat', 'main_stat_value', 'effects', 'effects_value', 
             'effects_upgrade_count', 'effects_reroll_count', 'efficiency', 'max_efficiency',
         ])

@@ -158,9 +158,12 @@ def skills():
             print(f'!!! Missing other skill {other_skill_master_id} for skill {skill.com2us_id}')
             continue
 
-        if skill.slot == -1 and other_skill.slot != -1:
+        if other_skill.com2us_id == skill.com2us_id:
+            other_skill = None
+
+        if other_skill and skill.slot == -1 and other_skill.slot != -1 and skill.com2us_id != other_skill:
             skill.slot = other_skill.slot
-        elif skill.slot != -1 and other_skill.slot == -1:
+        elif other_skill and skill.slot != -1 and other_skill.slot == -1:
             other_skill.slot = skill.slot
         
         skill.other_skill = other_skill

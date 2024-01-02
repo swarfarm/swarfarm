@@ -92,8 +92,18 @@ class MonsterSerializer(serializers.HyperlinkedModelSerializer):
     awakens_from = AwakensMonsterSerializer(read_only=True)
     awakens_to = AwakensMonsterSerializer(read_only=True)
     source = MonsterSourceSerializer(many=True, read_only=True)
-    skills = MonsterSkillSerializer(many=True, read_only=True)
+    skills = serializers.SerializerMethodField()
     homunculus_skills = HomunculusSkillSerializer(many=True, source='homunculusskill_set')
+
+    def get_skills(self, obj):
+        _skills = obj.skills.all().select_related('other_skill')
+        skills = []
+        for s in _skills:
+           skills.append(s)
+           if s.other_skill:
+               skills.append(s.other_skill)
+        
+        return MonsterSkillSerializer(skills, many=True).data
 
     class Meta:
         model = Monster

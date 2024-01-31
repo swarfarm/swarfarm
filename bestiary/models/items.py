@@ -56,6 +56,7 @@ class GameItem(models.Model):
     CATEGORY_ARTIFACT = 73
     CATEGORY_ARTIFACT_CRAFT = 75
     CATEGORY_UNKNOWN = 82
+    CATEGORY_WITCHER = 101
 
     CATEGORY_CHOICES = (
         (CATEGORY_MONSTER, 'Monster'),
@@ -73,6 +74,7 @@ class GameItem(models.Model):
         (CATEGORY_ARTIFACT, 'Artifact'),
         (CATEGORY_ARTIFACT_CRAFT, 'Artifact Craft Material'),
         (CATEGORY_UNKNOWN, 'Unknown Category'),
+        (CATEGORY_WITCHER, 'Witcher'),
     )
 
     com2us_id = models.IntegerField(db_index=True)

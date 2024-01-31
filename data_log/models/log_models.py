@@ -949,6 +949,8 @@ class DungeonLog(LogEntry):
             elif item_type == GameItem.CATEGORY_SECRET_DUNGEON:
                 # Parse secret dungeon drop
                 changed_items_object.append(DungeonSecretDungeonDrop.parse(info))
+            elif item_type == GameItem.CATEGORY_WITCHER:
+                pass
             else:
                 raise ValueError(f"don't know how to parse changed item type {item_type} in {self.__class__.__name__}")
 

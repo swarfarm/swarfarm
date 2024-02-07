@@ -181,6 +181,33 @@ class LeaderSkill(models.Model):
         5: AREA_GUILD,
     }
 
+    COM2US_STAT_NEW_MAP = {
+        'HP': ATTRIBUTE_HP,
+        'ATK': ATTRIBUTE_ATK,
+        'DEF': ATTRIBUTE_DEF,
+        'SPD': ATTRIBUTE_SPD,
+        'CRR': ATTRIBUTE_CRIT_RATE,
+        'CRD': ATTRIBUTE_CRIT_DMG,
+        'RES': ATTRIBUTE_RESIST,
+        'ACC': ATTRIBUTE_ACCURACY,
+    }
+
+    COM2US_ELEMENT_MAP_NEW = {
+        'NONE': None,
+        'WATER': base.Elements.ELEMENT_WATER,
+        'FIRE': base.Elements.ELEMENT_FIRE,
+        'WIND': base.Elements.ELEMENT_WIND,
+        'LIGHT': base.Elements.ELEMENT_LIGHT,
+        'DARK': base.Elements.ELEMENT_DARK,
+    }
+
+    COM2US_AREA_MAP_NEW = {
+        'NONE': AREA_GENERAL,
+        'ARENA': AREA_ARENA,
+        'DUNGEON': AREA_DUNGEON,
+        'GUILD': AREA_GUILD,
+    }
+
     attribute = models.IntegerField(choices=ATTRIBUTE_CHOICES, help_text='Monster stat which is granted the bonus')
     amount = models.IntegerField(help_text='Amount of bonus granted')
     area = models.IntegerField(choices=AREA_CHOICES, default=AREA_GENERAL, help_text='Where this leader skill has an effect')

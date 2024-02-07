@@ -54,6 +54,20 @@ def _get_leader_skill(master_id):
             element=element,
         )
         return skill
+    elif raw['leaderskill type']:
+        raw_area_of_effect, raw_element, raw_stat = raw['leaderskill type'][0].split('_')
+        area_of_effect = LeaderSkill.COM2US_AREA_MAP_NEW[raw_area_of_effect]
+        element = LeaderSkill.COM2US_ELEMENT_MAP_NEW[raw_element]
+        stat = LeaderSkill.COM2US_STAT_NEW_MAP[raw_stat]
+        value = int(raw['leaderskill type'][1] * 100)
+
+        skill, _ = LeaderSkill.objects.get_or_create(
+            attribute=stat,
+            amount=value,
+            area=area_of_effect,
+            element=element,
+        )
+        return skill
     else:
         return None
 
@@ -109,6 +123,13 @@ def monsters():
             skill_ups_to_max = skill_max_sum - skill_set.count()
         else:
             skill_ups_to_max = None
+
+        # TWIN ANGELS OTHER_SKILL - FIX FOR OTHER MONSTERS
+        if master_id < 29100 or master_id > 29200:
+            for skill in skill_set:
+                if skill.other_skill:
+                    skill.other_skill = None
+                    skill.save()
 
         defaults = {
             'name': game_data.strings.MONSTER_NAMES.get(master_id, raw['unit name']),

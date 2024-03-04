@@ -5,7 +5,7 @@ billiard==3.6.1.0
 bitstring==3.1.6
 bugsnag==3.6.0
 celery==4.3.0
-certifi==2018.11.29
+certifi==2022.12.7
 cffi==1.11.5
 chardet==3.0.4
 coreapi==2.3.3

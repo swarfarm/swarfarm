@@ -15,7 +15,7 @@ Django==2.2.24
 django-appconf==1.0.2
 django-autocomplete-light==3.3.2
 django-celery-beat==1.5.0
-django-celery-results==1.1.2
+django-celery-results==2.4.0
 django-compressor==2.3
 django-cors-headers==3.5.0
 django-crispy-forms==1.11.2

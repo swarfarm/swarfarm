@@ -90,22 +90,8 @@ function initialize_charts() {
     });
 }
 
-function AddMonster(monster_pk, stars) {
-    $.ajax({
-        url: '/profile/' + PROFILE_NAME + '/monster/add/?monster=' + monster_pk.toString() + '&stars=' + stars.toString(),
-        type: 'get'
-    }).done( function(result) {
-        bootbox.dialog({
-            title: "Add Monster",
-            message: result.html
-        });
-        $('.rating').rating();
-    })
-}
-
 
 $('body')
-    .on('click', '.monster-add', function() { AddMonster($(this).data('monster'), $(this).data('stars')) })
     .on('submit', '#FilterBestiaryForm', function() {
         ToggleLoading($('body'), true);
 

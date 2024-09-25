@@ -3,7 +3,7 @@
 
 <div class="rune-panel card shadow border-0">
     {% if not rta_view %}
-    <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %} p-1 m-0">
+    <div class="card-header bg-white p-1 m-0">
         <div class="btn-group float-right">
             <div class="btn btn-link rune-edit p-0 text-dark" data-rune-id="{{ rune.pk_hex }}">
                 <i class="fas fa-edit" aria-hidden="true" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"></i>
@@ -14,7 +14,7 @@
         </div>
     </div>
     {% endif %}
-    <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} p-1">
+    <div class="card-body  p-1">
         <div class="d-flex">
             {% include 'herders/profile/runes/rune_image_fragment.html' with rune=rune hide_original_quality=True only %}
             <ul class="list-unstyled mb-0">

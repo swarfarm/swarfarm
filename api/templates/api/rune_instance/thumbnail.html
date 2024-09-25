@@ -1,7 +1,7 @@
 {% load staticfiles %}
 {% load utils %}
 {% static 'herders/images/' as img_url_prefix %}
-<div class="rune-box  {% if user.is_authenticated and user.summoner.dark_mode %}border-dark{% endif %}">
+<div class="rune-box">
     <div class="rune-box-actions">
         Slot {{ rune.slot }}
     </div>

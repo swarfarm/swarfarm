@@ -5,7 +5,7 @@ import django.contrib.postgres.fields
 import django.contrib.postgres.fields.jsonb
 from django.db import migrations, models
 import django.db.models.deletion
-import herders.models
+# import herders.models
 import timezone_field.fields
 import uuid
 

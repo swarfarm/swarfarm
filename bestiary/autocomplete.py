@@ -47,25 +47,3 @@ class BestiaryAutocomplete(FilterMultipleAutocompleteView):
 class QuickSearchAutocomplete(BestiaryAutocomplete):
     def get_result_label(self, item):
         return loader.get_template('autocomplete/bestiary_link.html').render({'choice': item})
-
-
-class DungeonAutocomplete(FilterMultipleAutocompleteView):
-    paginate_by = 15
-    queryset = Dungeon.objects.all().filter(enabled=True).exclude(category=Dungeon.CATEGORY_SECRET)
-    filter_fields = [
-        'name__icontains',
-    ]
-
-    def get_result_label(self, item):
-        return loader.get_template('autocomplete/dungeon_choice.html').render({'choice': item})
-
-
-class GameItemAutocomplete(FilterMultipleAutocompleteView):
-    paginate_by = 15
-    queryset = GameItem.objects.all()
-    filter_fields = [
-        'name__icontains',
-    ]
-
-    def get_result_label(self, item):
-        return loader.get_template('autocomplete/gameitem_choice.html').render({'choice': item})

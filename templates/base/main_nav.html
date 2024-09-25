@@ -1,9 +1,9 @@
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
-<nav class="navbar fixed-top navbar-expand-lg navbar-light {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-light{% endif %} shadow-sm{% if user.is_authenticated and user.summoner.dark_mode %} bg-dark{% endif %}">
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
-        <a class="navbar-brand hidden-sm nav-link d-lg-none d-xl-block{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'news:latest_news' %}">
+        <a class="navbar-brand hidden-sm nav-link d-lg-none d-xl-block" href="{% url 'news:latest_news' %}">
             SWARFARM
         </a>
         <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#bs-mainnav" aria-controls="bs-mainnav" aria-expanded="false" aria-label="Toggle navigation">
@@ -12,66 +12,15 @@
 
         <div class="collapse navbar-collapse" id="bs-mainnav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-middle">
-                {% if user.is_authenticated %}
-                    <li class="nav-item {% if view == 'profile' and is_owner %} active{% if user.is_authenticated and user.summoner.dark_mode %} active-dark {% endif %}{% endif %}">
-                         <a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'herders:profile_default' profile_name=user.username %}">
-                            <i class="fas fa-skull"></i> My Profile
-                        </a>
-                    </li>
-                {% endif %}
-
-                <li class="nav-item {% if view == 'bestiary' %} active{% if user.is_authenticated and user.summoner.dark_mode %} active-dark {% endif %}{% endif %}">
-                    <a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'bestiary:home' %}">
+                <li class="nav-item {% if view == 'bestiary' %} active{% endif %}">
+                    <a class="nav-link" href="{% url 'bestiary:home' %}">
                         <i class="fas fa-book"></i> Bestiary
                     </a>
                 </li>
-
-                <li class="nav-item {% if view == 'dungeons' %} active{% if user.is_authenticated and user.summoner.dark_mode %} active-dark {% endif %}{% endif %}">
-                    <a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'bestiary:dungeons' %}">
-                        <i class="fas fa-dungeon"></i> Dungeons
-                    </a>
-                </li>
-                <li class="nav-item {% if view == 'data_reports' %} active{% if user.is_authenticated and user.summoner.dark_mode %} active-dark {% endif %}{% endif %}">
-                    <a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'data_log:data_reports' %}">
-                        <i class="fas fa-database"></i> Data Logs
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link patreon" href="https://www.patreon.com/porksmash" target="_blank">
-                        <i class="fab fa-patreon"></i> Patreon
-                    </a>
-                </li>
-
                 <li class="nav-item">
                     <div style="padding-top: 3px;max-width:300px">{% crispy bestiary_quick_search %}</div>
                 </li>
             </ul>
-            {% if user.is_authenticated %}
-            <ul class="navbar-nav navbar-right align-middle">
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" role="button" id="navbarUserDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ user.username }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end {% if user.is_authenticated and user.summoner.dark_mode %} dropdown-menu-dark{% endif %}" aria-labelledby="navbarUserDropdownMenuLink">
-                        <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'herders:edit_profile' profile_name=user.username %}{% if return_path %}?next={{ return_path }}{% endif %}"><i class="fas fa-edit"></i> Edit Profile</a></li>
-                        {% if user.is_staff %}
-                            <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'admin:index' %}"><i class="fas fa-tools"></i> Site Admin</a></li>
-                        {% endif %}
-                        <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'herders:import_export_home' profile_name=user.username %}"><i class="fas fa-cloud-upload-alt"></i> Import/Export</a></li>
-                        <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'feedback:index' %}"><i class="fas fa-comments"></i> Feedback</a></li>
-                        <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'herders:profile_following' profile_name=user.username %}"><i class="fas fa-user-friends"></i> Friends</a></li>
-                        <li class="dropdown-divider text-light"></li>
-                        <li class="dropdown-item"><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Log out</a></li>
-                    </ul>
-                </li>
-            </ul>
-            {% else %}
-            {# Show login form and register button #}
-            <ul class="navbar-nav navbar-right">
-                <li class="nav-item" ><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'login' %}" class="navbar-link">Log In</a></li>
-                <li class="nav-item" ><a class="nav-link{% if user.is_authenticated and user.summoner.dark_mode %} text-light{% endif %}" href="{% url 'herders:register' %}" class="navbar-link">Register</a></li>
-            </ul>
-            {% endif %}
         </div>
     </div>
 </nav>

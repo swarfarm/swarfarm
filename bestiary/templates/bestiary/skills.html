@@ -5,7 +5,7 @@
     {% if monster.leader_skill %}
     <div class="col-lg-12">
         <div class="card border-0 shadow mb-3">
-            <div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% endif %} d-flex">
+            <div class="card-body  d-flex">
                 <div class="monster-skill-thumb float-left"><img src="{{ img_url_prefix }}skills/leader/{{ monster.leader_skill.icon_filename }}" loading="lazy" /></div>
                 <div>
                     <h4 class="mb-0">Leader Skill</h4>
@@ -21,14 +21,14 @@
     {% for skill in monster.skills.all %}
     <div class="{% if monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
         <div class="card border-0 shadow mb-3">
-            <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+            <div class="card-header bg-white">
                 {% if request.user.is_superuser %}
                     <a href="{% url 'admin:bestiary_skill_change' object_id=skill.pk %}" class="btn btn-sm edit-skill float-right" target="_blank"><i class="fas fa-edit"></i></span></a>
                 {% endif %}
                 <p class="card-title"><strong>{{ skill.name }}</strong></p>
             </div>
 
-            <div class="{% if skill.level_progress_description_list|length > 0 or skill.effects_distinct|length > 0 or skill.aoe or skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+            <div class="{% if skill.level_progress_description_list|length > 0 or skill.effects_distinct|length > 0 or skill.aoe or skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
                 <div class="card-bestiary-monster-details">
                     <div class="monster-skill-thumb float-left">
                         <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
@@ -44,7 +44,7 @@
             </div>
 
             {% if skill.level_progress_description_list|length > 0 %}
-            <div class="{% if skill.effects_distinct|length > 0 or skill.aoe %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+            <div class="{% if skill.effects_distinct|length > 0 or skill.aoe %}card-header{% else %}card-footer border-0{% endif %} bg-white">
                 <strong class="fw-bolder">Level-up Progress</strong>
                 <ul class="list-unstyled">
                     {% for line in skill.level_progress_description_list %}
@@ -55,7 +55,7 @@
             {% endif %}
 
             {% if skill.effects_distinct|length > 0 or skill.aoe %}
-            <div class="{% if skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+            <div class="{% if skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
                 <strong class="fw-bolder">Skill effects</strong>
                 <div class="d-flex flex-wrap">
                     {% if skill.aoe %}
@@ -79,7 +79,7 @@
             {% endif %}
 
             {% if skill.multiplier_formula %}
-            <div class="card-footer border-0 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+            <div class="card-footer border-0 bg-white">
                 <strong class="fw-bolder">Multiplier Formula</strong>
                 <p>{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
             </div>
@@ -90,14 +90,14 @@
     {% if skill.other_skill %}
         <div class="{% if monster.skills.count < 4 %}col-lg-4{% else %}col-lg-3{% endif %}">
             <div class="card border-0 shadow mb-3">
-                <div class="card-header {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                <div class="card-header bg-white">
                     {% if request.user.is_superuser %}
                         <a href="{% url 'admin:bestiary_skill_change' object_id=skill.other_skill.pk %}" class="btn btn-sm edit-skill float-right" target="_blank"><i class="fas fa-edit"></i></span></a>
                     {% endif %}
                     <p class="card-title"><strong>{{ skill.other_skill.name }}</strong></p>
                 </div>
 
-                <div class="{% if skill.other_skill.level_progress_description_list|length > 0 or skill.other_skill.effects_distinct|length > 0 or skill.other_skill.aoe or skill.other_skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                <div class="{% if skill.other_skill.level_progress_description_list|length > 0 or skill.other_skill.effects_distinct|length > 0 or skill.other_skill.aoe or skill.other_skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
                     <div class="card-bestiary-monster-details">
                         <div class="monster-skill-thumb float-left">
                             <img src="{{ img_url_prefix }}skills/{{ skill.other_skill.icon_filename }}" loading="lazy" />
@@ -113,7 +113,7 @@
                 </div>
 
                 {% if skill.other_skill.level_progress_description_list|length > 0 %}
-                <div class="{% if skill.other_skill.effects_distinct|length > 0 or skill.other_skill.aoe %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                <div class="{% if skill.other_skill.effects_distinct|length > 0 or skill.other_skill.aoe %}card-header{% else %}card-footer border-0{% endif %} bg-white">
                     <strong class="fw-bolder">Level-up Progress</strong>
                     <ul class="list-unstyled">
                         {% for line in skill.other_skill.level_progress_description_list %}
@@ -124,7 +124,7 @@
                 {% endif %}
 
                 {% if skill.other_skill.effects_distinct|length > 0 or skill.other_skill.aoe %}
-                <div class="{% if skill.other_skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                <div class="{% if skill.other_skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
                     <strong class="fw-bolder">Skill effects</strong>
                     <div class="d-flex flex-wrap">
                         {% if skill.other_skill.aoe %}
@@ -148,7 +148,7 @@
                 {% endif %}
 
                 {% if skill.other_skill.multiplier_formula %}
-                <div class="card-footer border-0 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark border-dark{% else %}bg-white{% endif %}">
+                <div class="card-footer border-0 bg-white">
                     <strong class="fw-bolder">Multiplier Formula</strong>
                     <p>{{ skill.other_skill.multiplier_formula|safe }} {% if skill.other_skill.hits > 1 %}x{{ skill.other_skill.hits }}{% endif %}</p>
                 </div>

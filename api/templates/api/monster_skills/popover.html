@@ -1,8 +1,8 @@
 {% load staticfiles %}
 {% static 'herders/images/' as img_url_prefix %}
 
-<div class="card-body {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% endif %} p-0 m-0">
-     <div class="{% if skill.level_progress_description or skill.effect|length > 0 or skill.aoe or skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+<div class="card-body  p-0 m-0">
+     <div class="{% if skill.level_progress_description or skill.effect|length > 0 or skill.aoe or skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
         <div class="card-bestiary-monster-details">
             <div class="monster-skill-thumb float-left">
                 <img src="{{ img_url_prefix }}skills/{{ skill.icon_filename }}" loading="lazy" />
@@ -17,13 +17,13 @@
         </div>
     </div>
     {% if skill.level_progress_description %}
-        <div class="{% if skill.effect|length > 0 or skill.aoe %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="{% if skill.effect|length > 0 or skill.aoe %}card-header{% else %}card-footer border-0{% endif %} bg-white">
             <strong class="fw-bolder">Level-up Progress</strong>
             {{ skill.level_progress_description|linebreaks }}
         </div>
     {% endif %}
     {% if skill.effect|length > 0 or skill.aoe %}
-        <div class="{% if skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+        <div class="{% if skill.multiplier_formula %}card-header{% else %}card-footer border-0{% endif %} bg-white">
             <strong class="fw-bolder">Skill effects</strong>
             <div class="d-flex flex-wrap">
                 {% if skill.aoe %}
@@ -47,7 +47,7 @@
     {% endif %}
 
     {% if skill.multiplier_formula %}
-    <div class="card-footer border-0 {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark{% else %}bg-white{% endif %}">
+    <div class="card-footer border-0 bg-white">
         <strong class="fw-bolder">Multiplier Formula</strong>
         <p>{{ skill.multiplier_formula|safe }} {% if skill.hits > 1 %}x{{ skill.hits }}{% endif %}</p>
     </div>

@@ -44,7 +44,7 @@
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
-    <body class="d-flex h-100 flex-column{% if user.is_authenticated and user.summoner.dark_mode %} dark{% endif %}">
+    <body class="d-flex h-100 flex-column">
         <div id="wrap">
             <!--[if lt IE 8]>
                 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -60,19 +60,17 @@
             </div>
         {% block modal %}{% endblock modal %}
         </div>
-        <footer class="footer {% if user.is_authenticated and user.summoner.dark_mode %}bg-dark shadow-none{% else %}bg-light{% endif %}" >
+        <footer class="footer bg-light" >
             <div class="d-flex align-items-center flex-nowrap">
                 <span class="mx-2">Images belong to Com2Us</span>
                 <i class="fas fa-ellipsis-v mx-2 d-none d-md-block"></i>
             </div>
             <div class="d-flex align-items-center flex-nowrap">
-                <a class="nav-link {% if user.is_authenticated and user.summoner.dark_mode %}link-light{% else %}link-dark{% endif %} mx-2" href="https://github.com/swarfarm/swarfarm" target="_blank"><i class="fab fa-github"></i></a>
-                <a class="nav-link {% if user.is_authenticated and user.summoner.dark_mode %}link-light{% else %}link-dark{% endif %} mx-2" href="/changelist/" target="_blank"><i class="fas fa-clipboard-list"></i></a>
-                <a class="nav-link patreon mx-2" href="https://www.patreon.com/porksmash" target="_blank"><i class="fab fa-patreon"></i></a>
+                <a class="nav-link link-dark mx-2" href="https://github.com/swarfarm/swarfarm" target="_blank"><i class="fab fa-github"></i></a>
             </div>
             <div class="d-flex align-items-center flex-nowrap justify-content-center">
                 <i class="fas fa-ellipsis-v mx-2 d-none d-md-block"></i>
-                <div class="mx-2 d-flex align-items-center"><i class="fas fa-copyright mx-2"></i> Porksmash 2023</div>
+                <div class="mx-2 d-flex align-items-center"><i class="fas fa-copyright mx-2"></i> Porksmash 2024</div>
             </div>
         </footer>
         <!-- /container -->
@@ -94,7 +92,6 @@
         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 
         <script type="text/javascript">
-            {% if profile_name %}var PROFILE_NAME = '{{ profile_name }}';{% endif %}
             var API_URL = '{% url 'api-root' %}';
         </script>
         {% autoescape off %}{% block javascript %}{% endblock javascript %}{% endautoescape %}

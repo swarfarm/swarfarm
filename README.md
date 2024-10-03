@@ -38,8 +38,7 @@ $ curl -H "Authorization: JWT <your_token>" https://swarfarm.com/api/v2/<endpoin
 
 ## Contributing
 You don't need to code to contribute ideas. If you have a feature request, notice a bug, inaccuracies in the monster/
-skill data, or anything else, submit an issue here on github or in the 
-[feedback section](https://swarfarm.com/feedback/) of the site. For UI ideas, chop together a quick example in paint 
+skill data, or anything else, submit an issue here on github. For UI ideas, chop together a quick example in paint 
 to help communicate your thoughts.
 
 Pull requests are always welcome, but first create an issue so the change can be discussed. Coding can begin after there

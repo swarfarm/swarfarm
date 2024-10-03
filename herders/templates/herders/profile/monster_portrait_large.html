@@ -1,7 +1,0 @@
-{% load staticfiles %}
-{% static 'herders/images/' as img_url_prefix %}
-
-<div class="monster-box-thumb{% if not is_owner %} rounded-bottom{% endif %}">
-    <img src="{{ img_url_prefix }}monsters/{{ instance.monster.image_filename }}" alt="{{ instance.monster.name }} portrait" loading="lazy" class="{% if not is_owner %} rounded-bottom{% endif %}" />
-    {% include './monster_portrait_stars.html' %}
-</div>

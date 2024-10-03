@@ -25,9 +25,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_4.min.css" integrity="sha512-2C6AmJKgt4B+bQc08/TwUeFKkq8CsBNlTaNcNgUmsDJSU1Fg+R6azDbho+ZzuxEkJnCjLZQMozSq3y97ZmgwjA==" crossorigin="anonymous" />
         <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-        {% if user.is_authenticated and user.summoner.dark_mode %}
-            <link rel="stylesheet" href="https://code.highcharts.com/css/themes/dark-unica.css">
-        {% endif %}
         {% block css %}{% endblock css %}
 
         {% compress css %}
@@ -112,9 +109,6 @@
         <script type="text/javascript" src="{% static 'main/js/custom_filters.js' %}"></script>
         {% block javascript_compressed %}{% endblock javascript_compressed %}
         <script type="text/javascript" src="{% static "herders/js/custom.js" %}"></script>
-        {% if user.is_authenticated and user.summoner.dark_mode %}
-            <script src="{% static 'main/js/highcharts_dark.js' %}"></script>
-        {% endif %}
         <script>
             function openSidebarMobile(){
                 $(".subnavmenu-fixed-left").animate({width: "300px"}, 500 );
@@ -124,10 +118,6 @@
             }
         </script>
         {% endcompress %}
-
-        {% if user.is_authenticated and not user.summoner.has_given_consent %}
-            {% include 'base/give_consent.html' %}
-        {% endif %}
 
         {% include 'autocomplete/media.html' %}
     </body>

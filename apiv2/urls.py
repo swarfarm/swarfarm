@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from rest_framework import routers
 from rest_framework_swagger.views import get_swagger_view
 
@@ -12,6 +12,7 @@ router.registry.extend(news_router.registry)
 router.registry.extend(bestiary_router.registry)
 
 api_urlpatterns = [
+    url(r'^', include(router.urls)),
 ]
 
 schema_view = get_swagger_view(

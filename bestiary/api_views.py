@@ -15,6 +15,8 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'source',
         'monstercraftcost_set',
         'monstercraftcost_set__item',
+        'awakencost_set',
+        'awakencost_set__item',
     ).order_by('pk')
     serializer_class = serializers.MonsterSerializer
     pagination_class = pagination.BestiarySetPagination

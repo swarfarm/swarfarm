@@ -128,6 +128,9 @@ class DungeonViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class LevelViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = models.Level.objects.all().order_by('pk')
+    queryset = models.Level.objects.all().order_by('pk').prefetch_related(
+        'wave_set',
+        'wave_set__enemy_set',
+    )
     serializer_class = serializers.LevelSerializer
     pagination_class = pagination.BestiarySetPagination

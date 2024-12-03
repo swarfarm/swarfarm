@@ -20,7 +20,6 @@ env = environ.Env(
     EMAIL_HOST_USER=(str, ''),
     EMAIL_HOST_PASSWORD=(str, ''),
     EMAIL_FROM=(str, ''),
-    CELERY_BROKER=(str, 'amqp://'),
     GOOGLE_API_KEY=(str, ''),
     RECAPTCHA_PUBLIC_KEY=(str, ''),
     RECAPTCHA_PRIVATE_KEY=(str, ''),
@@ -222,12 +221,6 @@ CACHES = {
         'LOCATION': env('CACHE_LOCATION'),
     }
 }
-
-# Celery
-CELERY_BROKER_URL = env('CELERY_BROKER')
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_TRACK_STARTED = True
 
 # Session config
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'

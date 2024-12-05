@@ -188,12 +188,6 @@ class FusionAdmin(admin.ModelAdmin):
     filter_horizontal = ('ingredients',)
 
 
-@admin.register(models.LevelSkill)
-class LevelSkillAdmin(admin.ModelAdmin):
-    list_display = ('name', 'com2us_id', 'affected_stat', 'area')
-    save_as = True
-
-
 # Dungeons and levels
 @admin.register(models.Enemy)
 class EnemyAdmin(admin.ModelAdmin):

@@ -1,10 +1,8 @@
-from django.contrib.postgres.fields import ArrayField
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db import models
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
-from . import base
 
 ESSENCE_MAP = {
     'magic': {
@@ -120,77 +118,6 @@ class ItemQuantity(models.Model):
 
     class Meta:
         abstract = True
-
-
-class LevelSkill(models.Model, base.Elements):
-    AREA_BATTLE = 1
-    AREA_GUILD = 2
-    AREA_OTHER = 3
-
-    AREA_CHOICES = [
-        (AREA_BATTLE, 'Battle'),
-        (AREA_GUILD, 'Guild content'),
-        (AREA_OTHER, 'Other'),
-    ]
-
-    STAT_HP = 0
-    STAT_ATK = 1
-    STAT_DEF = 2
-    STAT_SPD = 3
-    STAT_CRIT_RATE_PCT = 4
-    STAT_CRIT_DMG_PCT = 5
-    STAT_RESIST_PCT = 6
-    STAT_ACCURACY_PCT = 7
-    MAX_ENERGY = 8
-    MANA_STONE_STORAGE = 9
-    MANA_STONE_PRODUCTION = 10
-    ENERGY_PRODUCTION = 11
-    ARCANE_TOWER_ATK = 12
-    ARCANE_TOWER_SPD = 13
-
-    STAT_CHOICES = [
-        (STAT_HP, 'HP'),
-        (STAT_ATK, 'ATK'),
-        (STAT_DEF, 'DEF'),
-        (STAT_SPD, 'SPD'),
-        (STAT_CRIT_RATE_PCT, 'CRI Rate'),
-        (STAT_CRIT_DMG_PCT, 'CRI Dmg'),
-        (STAT_RESIST_PCT, 'Resistance'),
-        (STAT_ACCURACY_PCT, 'Accuracy'),
-        (MAX_ENERGY, 'Max. Energy'),
-        (MANA_STONE_STORAGE, 'Mana Stone Storage'),
-        (MANA_STONE_PRODUCTION, 'Mana Stone Production Rate'),
-        (ENERGY_PRODUCTION, 'Energy Production Rate'),
-        (ARCANE_TOWER_ATK, 'Arcane Tower ATK'),
-        (ARCANE_TOWER_SPD, 'Arcane Tower SPD'),
-    ]
-
-    PERCENT_STATS = [
-        STAT_HP,
-        STAT_ATK,
-        STAT_DEF,
-        STAT_SPD,
-        STAT_CRIT_RATE_PCT,
-        STAT_CRIT_DMG_PCT,
-        STAT_RESIST_PCT,
-        STAT_ACCURACY_PCT,
-        MANA_STONE_PRODUCTION,
-        ENERGY_PRODUCTION,
-        ARCANE_TOWER_ATK,
-        ARCANE_TOWER_SPD,
-    ]
-
-    com2us_id = models.IntegerField(db_index=True)
-    name = models.CharField(max_length=30)
-    max_level = models.IntegerField()
-    area = models.IntegerField(choices=AREA_CHOICES, null=True, blank=True)
-    affected_stat = models.IntegerField(choices=STAT_CHOICES, null=True, blank=True)
-    element = models.CharField(max_length=10, choices=base.Elements.ELEMENT_CHOICES, blank=True, null=True)
-    stat_bonus = ArrayField(models.FloatField(blank=True, null=True))
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return self.name
 
 
 class Source(models.Model):

@@ -404,6 +404,7 @@ class AwakenBonusType(IntEnum):
     STRENGTHEN_SKILL = 4
     SECONDARY_AWAKENING = 6
     ONLY_AWAKENED = 7
+    ONLY_AWAKENED_V2 = 8
 
 
 class MonsterCraftCost(ItemQuantity):

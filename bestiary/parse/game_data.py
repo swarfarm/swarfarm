@@ -8,8 +8,6 @@ from Crypto.Cipher import AES
 from bitstring import ConstBitStream, ReadError
 from django.conf import settings
 
-from bestiary.models.items import LevelSkill
-
 
 class JokerCipher:
     cipher = AES.new(
@@ -446,23 +444,3 @@ def save_to_disk():
             for key, text in strings[table_idx].items():
                 writer.writerow([table_idx, key, text.strip()])
 
-
-def level_skills():
-    for master_id, raw in tables.SUMMONER_SKILLS.items():       
-        ability = raw['ability'][1]
-        _, element, stat, bonuses = ability
-
-        data = {
-            'name': strings.SUMMONER_SKILL_NAMES.get(master_id, 'Unknown skill'),
-            'description': strings.SUMMONER_SKILL_DESCRIPTIONS.get(master_id, raw['desc']) ,
-            'max_level': len(bonuses),
-            'area': raw['type'],
-            # shift +1 in stat
-            'affected_stat': stat - 1 if stat and stat - 1 >= 0 and stat in [el[0] for el in LevelSkill.STAT_CHOICES] else None,
-            'stat_bonus': bonuses,
-            'element': LevelSkill.COM2US_ELEMENT_MAP.get(element, None) if element and element in [el for el in LevelSkill.COM2US_ELEMENT_MAP] else None,
-        }
-        LevelSkill.objects.update_or_create(
-            com2us_id=raw['skill id'],
-            defaults=data
-        )

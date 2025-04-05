@@ -15,6 +15,8 @@ class MonsterViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
         'source',
         'monstercraftcost_set',
         'monstercraftcost_set__item',
+        'awakencost_set',
+        'awakencost_set__item',
     ).order_by('pk')
     serializer_class = serializers.MonsterSerializer
     pagination_class = pagination.BestiarySetPagination
@@ -126,6 +128,9 @@ class DungeonViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class LevelViewSet(CacheResponseMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = models.Level.objects.all().order_by('pk')
+    queryset = models.Level.objects.all().order_by('pk').prefetch_related(
+        'wave_set',
+        'wave_set__enemy_set',
+    )
     serializer_class = serializers.LevelSerializer
     pagination_class = pagination.BestiarySetPagination

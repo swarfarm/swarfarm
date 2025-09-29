@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^', include('news.urls', namespace='news')),
 
     # Django auth/admin stuff
-    path('admin/clearcache/', include('clearcache.urls')),
+    url('admin/clearcache/', include('clearcache.urls')),
     url(r'^admin/', admin.site.urls),
 ]
 

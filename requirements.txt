@@ -13,6 +13,7 @@ crispy-bootstrap5==0.3.1
 Django==2.2.24
 django-appconf==1.0.2
 django-autocomplete-light==3.3.2
+django-clearcache==1.2.1
 django-compressor==2.3
 django-cors-headers==3.5.0
 django-crispy-forms==1.11.2

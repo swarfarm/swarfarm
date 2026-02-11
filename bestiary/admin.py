@@ -127,6 +127,8 @@ class EffectDetailInline(admin.TabularInline):
     formfield_overrides = {
         TextField: {'widget': TextInput},
     }
+    autocomplete_fields = ['effect']
+
 
 
 @admin.register(models.Skill)
@@ -168,6 +170,7 @@ class LeaderSkillAdmin(admin.ModelAdmin):
 @admin.register(models.SkillEffect)
 class EffectAdmin(admin.ModelAdmin):
     list_display = ('image_url', 'name', 'description', 'type')
+    search_fields = ('name',)
 
 
 @admin.register(models.ScalingStat)
